@@ -2,10 +2,9 @@
 const config = require( "../config/db.config.js" );
 const mongoose = require( "mongoose" );
 
-
 mongoose.Promise = global.Promise;
 
-const fear_db = {
+module.exports = {
     url: config.url,
     mongoose: mongoose,
     client: new mongoose.client( this.url ),
@@ -14,5 +13,3 @@ const fear_db = {
     products: require( "./product.model.js" ),
     orders: require( "./order.model.js" )
 };
-
-module.exports = fear_db;
