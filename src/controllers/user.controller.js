@@ -1,14 +1,13 @@
 const ErrorHandler = require("../utils/errorHandler");
 const asyncWrapper = require("../middleWare/asyncWrapper");
+
 const userModel = require("../model/userModel");
 const sendJWtToken = require("../utils/JwtToken");
 const sendEmail = require("../utils/sendEmail");
 const crypto = require("crypto");
 const cloudinary = require("cloudinary");
 
-
-// signUp controller>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-exports.registerUser = asyncWrapper(async (req, res) => {
+exports.register = async (req, res) => {
   const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
     folder: "Avatar", // this folder cloudainry data base manage by us
     width: 150,
@@ -27,10 +26,9 @@ exports.registerUser = asyncWrapper(async (req, res) => {
   });
   // sending the res and staus code along with token using sendJWtToken method
   sendJWtToken(user, 201, res);
-});
+};
 
-// Login User >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-exports.loginUser = asyncWrapper(async (req, res, next) => {
+exports.login = async (req, res, next) => {
   const { email, password } = req.body;
 
   // checking if user has given password and email both
@@ -53,7 +51,7 @@ exports.loginUser = asyncWrapper(async (req, res, next) => {
   }
 
   sendJWtToken(user, 200, res);
-});
+};
 
 // logOut Controller =>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
