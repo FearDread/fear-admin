@@ -54,7 +54,6 @@ module.exports = mongoose => {
       }
 
       this.password = await bcrypt.hash(this.password, 10);
-    
     });
 
     schema.methods.toJSON = function () {
@@ -68,8 +67,8 @@ module.exports = mongoose => {
     
       return jwt.sign(
         { id: this._id },
-        { expiresIn: process.env.JWT_EXPIRE },
-        process.env.JWT_SECRET
+        { expiresIn: config.JWT_EXPIRE },
+        config.JWT_SECRET
       );
     };
 
@@ -80,6 +79,7 @@ module.exports = mongoose => {
         .createHash("sha256")
         .update(resetPassToken)
         .toString("hex");
+      
       this.resetPasswordExpire = Date.now() + 15 * 60 * 1000;
     
       return reset_token;
@@ -89,7 +89,7 @@ module.exports = mongoose => {
       return await bcrypt.compare(password, this.password); 
     };
 
-    const User = mongoose.model( "user", schema);
+    const User = mongoose.model("users", schema);
     return User;
 };
 
