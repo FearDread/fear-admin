@@ -7,7 +7,7 @@ const path = require("path");
 const cors = require("cors");
 
 // routes
-const user = require("./routes/user");
+const user = require("./src/routes/user");
 const order = require("./routes/order");
 const product = require("./routes/product")
 const payment = require("./routes/payment");
