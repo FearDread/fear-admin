@@ -50,7 +50,7 @@ exports.login = async (req, res, next) => {
 
 // logOut Controller =>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-exports.logout = asyncWrapper(async (req, res) => {
+exports.logout = async (req, res) => {
   // delete token for logingOut user =>
   res.cookie("token", null, {
     // curr Token has null value
@@ -62,7 +62,7 @@ exports.logout = asyncWrapper(async (req, res) => {
     success: true,
     message: "User logged out",
   });
-});
+};
 
 //// Forgot Password >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 exports.forgotPassword = asyncWrapper(async (req, res, next) => {

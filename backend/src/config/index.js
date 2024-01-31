@@ -1,15 +1,15 @@
 
 module.exports = {
     PORT:5000,
-    DB_LINK:"mongodb+srv://feardread:S3W2pCIip3@fearcluster01.yzzupeq.mongodb.net/?retryWrites=true&w=majority",
+    DB_LINK:"mongodb+srv://feardread:S3W2pCIip3@fearcluster01.yzzupeq.mongodb.net/fear_master_api?retryWrites=true&w=majority",
     DB_USER:'feardread',
-    NODE_ENV:production,
+    NODE_ENV:'production',
     JWT_SECRET:"jwt-secret-key",
     JWT_EXPIRE:5,
     COOKIE_EXPIRE:'5d',
     SMTP_HOST:"smtp.gmail.com",
     SMTP_PORT:465,
-    SMTP_SERVICE:gmail,
+    SMTP_SERVICE:'gmail',
     SMTP_MAIL:"feardread2020@gmail.com",
     SMTP_PASSWORD:"S3W2pCIip3",
     SMTP_PASS:"S3W2pCIip3",
