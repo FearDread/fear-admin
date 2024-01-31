@@ -20,6 +20,6 @@ router.route("/password/forgot").post(forgotPassword);
 router.route("/password/update").put(isAuthenticatedUser, updatePassword);
 router.route("/profile/update").put(isAuthenticatedUser ,updateProfile);
 router.route("/admin/users").get(isAuthenticatedUser , authorizeRoles("admin") ,getAllUser);
-router.route("/admin/user/:id").get(isAuthenticatedUser , authorizeRoles("admin") , getSingleUser).put(isAuthentictedUser , authorizeRoles("admin") , updateUserRole).delete(isAuthentictedUser , authorizeRoles("admin") , deleteUser)
+router.route("/admin/user/:id").get(isAuthenticatedUser , authorizeRoles("admin") , getSingleUser).put(isAuthentictedUser , authorizeRoles("admin") , updateUserRole).delete(isAuthenticatedUser , authorizeRoles("admin") , deleteUser)
 
 module.exports = router;
