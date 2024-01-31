@@ -8,9 +8,9 @@ const cors = require("cors");
 
 // routes
 const user = require("./src/routes/user");
-const order = require("./routes/order");
-const product = require("./routes/product");
-const payment = require("./routes/payment");
+//const order = require("./routes/order");
+//const product = require("./routes/product");
+//const payment = require("./routes/payment");
 
 // for req.cookie to get token while autentication
 app.use(cookieParser());
@@ -20,10 +20,10 @@ app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 app.use(fileUpload());
 app.use(cors());
 
-app.use("/fear/api", product);
+//app.use("/fear/api", product);
 app.use("/fear/api", user);
-app.use("/fear/api", order);
-app.use("/fear/api", payment);
+//app.use("/fear/api", order);
+//app.use("/fear/api", payment);
 
 const __dirname1 = path.resolve();
 
