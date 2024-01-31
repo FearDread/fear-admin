@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 
 
 
-exports.isAuthorized = async ( req, res, next ) => {
+exports.isAuthenticatedUser = async ( req, res, next ) => {
   const authHeader = req.headers.authorization;
   const authCookie = req.cookies;
 
@@ -30,7 +30,7 @@ exports.authorizeRoles = (...roles) => {
  
   return (req , res , next) => {
     if ( roles.includes( req.user.role ) === false) { 
-        return next( this.authError ( 403 ))
+        return next( this.authError ( res, 403 ))
     }
    
     next();
