@@ -1,21 +1,19 @@
-const ErrorHandler = require("../utils/errorHandler");
-const asyncWrapper = require("../middleWare/asyncWrapper");
 
-const userModel = require("../model/userModel");
-const sendJWtToken = require("../utils/JwtToken");
-const sendEmail = require("../utils/sendEmail");
 const crypto = require("crypto");
 const cloudinary = require("cloudinary");
+const models = require("../models");
+const utils = require("../utils");
+
 
 exports.register = async (req, res) => {
   const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
-    folder: "Avatar", // this folder cloudainry data base manage by us
+    folder: "Avatar",
     width: 150,
     crop: "scale",
   });
 
   const { name, email, password } = req.body;
-  const user = await userModel.create({
+  const user = await models.users.create({
     name,
     password,
     email,
@@ -24,38 +22,35 @@ exports.register = async (req, res) => {
       url: myCloud.secure_url,
     },
   });
-  // sending the res and staus code along with token using sendJWtToken method
-  sendJWtToken(user, 201, res);
+
+  utils.send_jwt_token(user, 201, res);
 };
 
 exports.login = async (req, res, next) => {
   const { email, password } = req.body;
 
-  // checking if user has given password and email both
   if (!email || !password) {
-    return next(new ErrorHandler("Please Enter Email & Password", 400));
+    return next(new utils.handler("Please Enter Email & Password", 400));
   }
-  const user = await userModel.findOne({ email }).select("+password"); // .select("+password") because in schema we set set select : false so password is'nt return to anyone so we add +password here for verfication of pass
 
-  // jab user nhi mila data base main given credentials ke sath tab
+  const user = await models.users.findOne({ email }).select("+password");
+
   if (!user) {
-    return next(new ErrorHandler("Invalid email or password", 401));
+    return next(new utils.handler("Invalid email or password", 401));
   }
 
-  // comparePassword method defind in useSchema by use . it will comapre this password to hashfrom password at database
   const isPasswordMatched = await user.comparePassword(password);
 
-  // when password not mathced with original hashed password
   if (!isPasswordMatched) {
-    return next(new ErrorHandler("Invalid email or password", 401));
+    return next(new utils.handler("Invalid email or password", 401));
   }
 
-  sendJWtToken(user, 200, res);
+  utils.send_jwt_token(user, 200, res);
 };
 
 // logOut Controller =>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-exports.logoutUser = asyncWrapper(async (req, res) => {
+exports.logout = asyncWrapper(async (req, res) => {
   // delete token for logingOut user =>
   res.cookie("token", null, {
     // curr Token has null value
