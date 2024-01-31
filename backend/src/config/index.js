@@ -1,6 +1,6 @@
 
 module.exports = {
-    PORT:5000,
+    PORT:4000,
     DB_LINK:"mongodb+srv://feardread:S3W2pCIip3@fearcluster01.yzzupeq.mongodb.net/fear_master_api?retryWrites=true&w=majority",
     DB_USER:'feardread',
     NODE_ENV:'production',

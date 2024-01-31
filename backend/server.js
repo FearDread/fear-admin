@@ -1,6 +1,6 @@
 const app = require("./app");
-const config = require("src/config");
-const db = require("src/config/db");
+const config = require("./src/config");
+const db = require("./src/config/db");
 const cloudinary = require("cloudinary");
 
 // connect to db //
