@@ -466,7 +466,7 @@ function Dashboard(props) {
           <Col lg="6" md="12">
             <Card>
               <CardHeader>
-                <CardTitle tag="h4">Simple Table</CardTitle>
+                <CardTitle tag="h4">Users List</CardTitle>
               </CardHeader>
               <CardBody>
                 <Table className="tablesorter" responsive>
