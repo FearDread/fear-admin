@@ -293,11 +293,11 @@ exports.deleteUser = async (req, res, next) => {
 };
 
 // getAll user Admin>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-exports.getAllUser = async (req, res, next) => {
+exports.getAllUser = asyncWrapper(async (req, res, next) => {
   const users = await models.users.find();
 
   res.status(201).json({
     success: true,
     users: users,
   });
-};
+});
