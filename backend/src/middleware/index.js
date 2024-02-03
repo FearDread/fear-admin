@@ -20,12 +20,12 @@ exports.error = (err, req, res, next) => {
         err = new AppError(message , statusCode);
     }
 
-    res.status(statusCode);
-    res.json({
+    res.status(statusCode)
+       .json({
       message: err.message,
       stack: err.stack,
     });
-  };
+};
 
 exports.send_email = async (options) => {
     const transporter = nodeMailer.createTransport({
