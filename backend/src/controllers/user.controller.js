@@ -2,12 +2,13 @@
 const crypto = require("crypto");
 const cloudinary = require("cloudinary");
 const models = require("../models");
-const utils = require("../utils");
 const config = require("../config");
-const ErrorHandler = utils.handler;
 
+const asyncWrapper = require('express-async-errors');
+const AppError = require("../utils/app.error");
+const {send_jwt_token, send_email, error} = require("../middleware");
 
-exports.register = async (req, res) => {
+exports.register = asyncWrapper( async (req, res) => {
   const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
     folder: "Avatar",
     width: 150,
@@ -25,30 +26,30 @@ exports.register = async (req, res) => {
     },
   });
 
-  utils.send_jwt_token(user, 201, res);
-};
+  send_jwt_token(user, 201, res);
+});
 
-exports.login = async (req, res, next) => {
+exports.login = asyncWrapper( async (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return next(new ErrorHandler("Please Enter Email & Password", 400));
+    return next(new AppError("Please Enter Email & Password", 400));
   }
 
   const user = await models.users.findOne({ email }).select("+password");
 
   if (!user) {
-    return next(new ErrorHandler("Invalid email or password", 401));
+    return next(new AppError("Invalid email or password", 401));
   }
 
   const isPasswordMatched = await user.comparePassword(password);
 
   if (!isPasswordMatched) {
-    return next(new ErrorHandler("Invalid email or password", 401));
+    return next(new AppError("Invalid email or password", 401));
   }
 
-  utils.send_jwt_token(user, 200, res);
-};
+  send_jwt_token(user, 200, res);
+});
 
 // logOut
 
@@ -66,12 +67,12 @@ exports.logout = async (req, res) => {
 };
 
 //// Forgot Password
-exports.forgotPassword = async (req, res, next) => {
+exports.forgotPassword = asyncWrapper(async (req, res, next) => {
   const user = await models.users.findOne({ email: req.body.email });
 
   // when user with this email not found
   if (!user) {
-    return next(new ErrorHandler("User not found", 404));
+    return next(new AppError("User not found", 404));
   }
 
   // Get ResetPassword Token
@@ -93,7 +94,7 @@ exports.forgotPassword = async (req, res, next) => {
   const message = `Your password reset token is :- \n\n ${resetPasswordUrl} \n\nIf you have not requested this email then, please ignore it.`;
 
   try {
-    await sendEmail({
+    await send_email({
       // sendEmail is method writen by us in utils folder.
       email: user.email,
       subject: `Ecommerce Password Recovery`,
@@ -111,9 +112,9 @@ exports.forgotPassword = async (req, res, next) => {
 
     await user.save({ validateBeforeSave: false });
 
-    return next(new ErrorHandler(error.message, 500));
+    return next(new AppError(error.message, 500));
   }
-};
+});
 
 //>>>>>>>>>>>>>>> reset and update password :
 exports.resetPassword = async (req, res, next) => {
@@ -134,7 +135,7 @@ exports.resetPassword = async (req, res, next) => {
   // if user not with that token or expire token
   if (!user) {
     return next(
-      new ErrorHandler(
+      new AppError(
         "Reset Password Token is invalid or has been expired",
         400
       )
@@ -145,7 +146,7 @@ exports.resetPassword = async (req, res, next) => {
 
   if (req.body.password !== req.body.confirmPassword) {
     return next(
-      new ErrorHandler("Password does not equal to confirmPassword", 400)
+      new AppError("Password does not equal to confirmPassword", 400)
     );
   }
 
@@ -158,7 +159,7 @@ exports.resetPassword = async (req, res, next) => {
   // savw change to db
   await user.save();
   // this will send new token to user  bcz user succesfully logged in with new pass
-  utils.send_jwt_token(user, 200, res);
+  send_jwt_token(user, 200, res);
 };
 
 //// Get User Detail  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -178,16 +179,16 @@ exports.updatePassword = async (req, res, next) => {
   const isPasswordMatched = await user.compare_pass(req.body.oldPassword); // user.comparePassword this method define in user Schema  for comapre given normal pass to savde hash pass
   // when user not found
   if (!isPasswordMatched) {
-    return next(new ErrorHandler("Old password is incorrect", 400));
+    return next(new AppError("Old password is incorrect", 400));
   }
   if (req.body.newPassword !== req.body.confirmPassword) {
-    return next(new ErrorHandler("password does not match", 400));
+    return next(new AppError("password does not match", 400));
   }
   // now set the new pass
   user.password = req.body.newPassword;
   await user.save();
   // now send new token to user . becasue user loggedin with new pass
-  utils.send_jwt_token(user, 200, res);
+  send_jwt_token(user, 200, res);
 };
 
 //>>>>>> Update user Profile>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -238,7 +239,7 @@ exports.getSingleUser = async (req, res, next) => {
   // if user not found with that id
   if (!user) {
     return next(
-      new ErrorHandler(`User does not exist with Id: ${req.params.id}`)
+      new AppError(`User does not exist with Id: ${req.params.id}`)
     );
   }
 
