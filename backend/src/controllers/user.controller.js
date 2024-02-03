@@ -4,7 +4,7 @@ const cloudinary = require("cloudinary");
 const models = require("../models");
 const config = require("../config");
 
-const asyncWrapper = require('express-async-errors');
+const asyncWrapper = require('express-async-handler');
 const AppError = require("../utils/app.error");
 const {send_jwt_token, send_email, error} = require("../middleware");
 
