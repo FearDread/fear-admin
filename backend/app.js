@@ -10,7 +10,7 @@ const app_error = require("./src/middleware");
 // routes
 const user = require("./src/routes/user");
 //const order = require("./routes/order");
-//const product = require("./routes/product");
+const product = require("./routes/product");
 //const payment = require("./routes/payment");
 
 // for req.cookie to get token while autentication
@@ -22,7 +22,7 @@ app.use(app_error.error);
 app.use(fileUpload());
 app.use(cors());
 
-//app.use("/fear/api", product);
+app.use("/fear/api", product);
 app.use("/fear/api", user);
 //app.use("/fear/api", order);
 //app.use("/fear/api", payment);
