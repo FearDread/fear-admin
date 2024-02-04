@@ -9,7 +9,7 @@ const app_error = require("./src/middleware");
 
 // routes
 const user = require("./src/routes/user");
-const product = require("./src/routes/product");
+//const product = require("./src/routes/product");
 //const order = require("./routes/order");
 //const payment = require("./routes/payment");
 
@@ -22,7 +22,7 @@ app.use(app_error.error);
 app.use(fileUpload());
 app.use(cors());
 
-app.use("/fear/api", product);
+//app.use("/fear/api", product);
 app.use("/fear/api", user);
 //app.use("/fear/api", order);
 //app.use("/fear/api", payment);
