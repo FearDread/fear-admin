@@ -1,11 +1,11 @@
 const AppError = require("../utils/app.error");
 const models = require("../models");
-const asyncWrapper =require('express-async-handler');
+const asyncWrapper = require('express-async-handler');
 // const ApiFeatures = require("../utils/apiFeatures");
 const cloudinary = require("cloudinary");
 
 // >>>>>>>>>>>>>>>>>>>>> createProduct Admin route  >>>>>>>>>>>>>>>>>>>>>>>>
-exports.create = asyncWrapper(async (req, res) => {
+exports.createProduct = asyncWrapper(async (req, res) => {
   let images = []; 
 
   if (req.body.images) {
@@ -56,14 +56,13 @@ exports.getAllProducts = asyncWrapper(async (req, res) => {
   const resultPerPage = 6; 
   const productsCount = await ProductModel.countDocuments(); 
   const apiFeature = new ApiFeatures(ProductModel.find(), req.query)
-    .search() // Apply search filter based on the query parameters
-    .filter(); // Apply additional filters based on the query parameters
+    .search() 
+    .filter();
 
-  let products = await apiFeature.query; // Fetch the products based on the applied filters and search
+  let products = await apiFeature.query; 
+  let filteredProductCount = products.length;
 
-  let filteredProductCount = products.length; // Number of products after filtering (for pagination)
-
-  apiFeature.Pagination(resultPerPage); // Apply pagination to the products
+  apiFeature.Pagination(resultPerPage);
 
   // Mongoose no longer allows executing the same query object twice, so use .clone() to retrieve the products again
   products = await apiFeature.query.clone(); // Retrieve the paginated products
@@ -77,11 +76,6 @@ exports.getAllProducts = asyncWrapper(async (req, res) => {
   });
 });
 
-
-
-
-// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get all product admin route>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
 exports.getAllProductsAdmin = asyncWrapper(async (req, res) => {
   const products = await models.products.find();
 
@@ -91,15 +85,12 @@ exports.getAllProductsAdmin = asyncWrapper(async (req, res) => {
   });
 });
 
-  
-
-
 //>>>>>>>>>>>>>>>>>> Update Admin Route >>>>>>>>>>>>>>>>>>>>>>>
 exports.updateProduct = asyncWrapper(async (req, res, next) => {
   let product = await ProductModel.findById(req.params.id);
 
   if (!product) {
-    return next(new ErrorHandler("Product not found", 404));
+    return next(new AppError("Product not found", 404));
   }
 
   let images = [];
