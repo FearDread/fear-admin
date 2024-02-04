@@ -1,7 +1,7 @@
 
 const models = require("../models");
 const jwt = require("jsonwebtoken");
-const AppError = require("../utils/app.error");
+const app_error = require("../middleware");
 
 
 
@@ -10,7 +10,7 @@ exports.isAuthenticatedUser = async ( req, res, next ) => {
   const authCookie = req.cookies;
 
   if ( !authHeader || !authCookie ) {
-    return next(new AppError(401, "Unauthorized") )
+    return next( app_error.error(401, "Unauthorized") )
   }
 
   const token = authHeader.split(' ')[1];
@@ -24,7 +24,7 @@ exports.isAuthenticatedUser = async ( req, res, next ) => {
   
     } catch (err) {
       console.log(err).json();
-      new AppError(401, "No Admin User Found");
+      app_error.error(401, "No Admin User Found");
     }
 };
 
@@ -32,7 +32,7 @@ exports.authorizeRoles = (...roles) => {
  
   return (req , res , next) => {
     if ( roles.includes( req.user.role ) === false) { 
-        return next(new AppError(401, "Unauthorized") );
+        return next( app_error.error(401, "Unauthorized") );
     }
    
     next();
