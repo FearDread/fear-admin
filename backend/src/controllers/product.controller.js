@@ -1,11 +1,11 @@
-const ProductModel = require("../model/ProductModel");
-const ErrorHandler = require("../utils/errorHandler");
-const asyncWrapper = require("../middleWare/asyncWrapper");
-const ApiFeatures = require("../utils/apiFeatures");
+const AppError = require("../utils/app.error");
+const models = require("../models");
+const asyncWrapper =require('express-async-handler');
+// const ApiFeatures = require("../utils/apiFeatures");
 const cloudinary = require("cloudinary");
 
 // >>>>>>>>>>>>>>>>>>>>> createProduct Admin route  >>>>>>>>>>>>>>>>>>>>>>>>
-exports.createProduct = asyncWrapper(async (req, res) => {
+exports.create = asyncWrapper(async (req, res) => {
   let images = []; 
 
   if (req.body.images) {
@@ -48,7 +48,7 @@ exports.createProduct = asyncWrapper(async (req, res) => {
     req.body.images = imagesLinks;
   }
 
-  const data = await ProductModel.create(req.body);
+  const data = await models.products.create(req.body);
 
   res.status(200).json({ success: true, data: data });
 });
@@ -87,7 +87,7 @@ exports.getAllProducts = asyncWrapper(async (req, res) => {
 // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get all product admin route>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 exports.getAllProductsAdmin = asyncWrapper(async (req, res) => {
-  const products = await ProductModel.find();
+  const products = await models.products.find();
 
   res.status(201).json({  
     success: true,
