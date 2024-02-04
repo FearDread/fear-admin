@@ -9,8 +9,8 @@ const app_error = require("./src/middleware");
 
 // routes
 const user = require("./src/routes/user");
+const product = require("./src/routes/product");
 //const order = require("./routes/order");
-const product = require("./routes/product");
 //const payment = require("./routes/payment");
 
 // for req.cookie to get token while autentication
