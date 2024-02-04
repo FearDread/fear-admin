@@ -14,17 +14,13 @@ exports.create = asyncWrapper(async (req, res) => {
     } else {
       images = req.body.images;
     }
-
-    const imagesLinks = [];
-
-    // Split images into chunks due to cloudinary upload limits only 3 images can be uploaded at a time so we are splitting into chunks and uploading them separately eg: 9 images will be split into 3 chunks and uploaded separately
     const chunkSize = 3;
     const imageChunks = [];
+    const imagesLinks = [];
+    // Split images into chunks due to cloudinary upload limit
     while (images.length > 0) {
       imageChunks.push(images.splice(0, chunkSize));
     }
-
-
     // Upload images in separate requests. for loop will run 3 times if there are 9 images to upload each time uploading 3 images at a time
     for (let chunk of imageChunks) {
       const uploadPromises = chunk.map((img) =>
@@ -32,7 +28,6 @@ exports.create = asyncWrapper(async (req, res) => {
           folder: "Products",
         })
       );
-
       
       const results = await Promise.all(uploadPromises); // wait for all the promises to resolve and store the results in results array eg: [{}, {}, {}] 3 images uploaded successfully and their details are stored in results array
 
@@ -50,15 +45,16 @@ exports.create = asyncWrapper(async (req, res) => {
 
   const data = await models.products.create(req.body);
 
-  res.status(200).json({ success: true, data: data });
+  res.status(200)
+     .json({ 
+        success: true,
+        data: data 
+      });
 });
 
-// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> get all product >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 exports.getAllProducts = asyncWrapper(async (req, res) => {
-  const resultPerPage = 6; // Number of products visible per page
-  const productsCount = await ProductModel.countDocuments(); // Get total number of products
-
-  // Create an instance of the ApiFeatures class, passing the ProductModel.find() query and req.query (queryString)
+  const resultPerPage = 6; 
+  const productsCount = await ProductModel.countDocuments(); 
   const apiFeature = new ApiFeatures(ProductModel.find(), req.query)
     .search() // Apply search filter based on the query parameters
     .filter(); // Apply additional filters based on the query parameters
