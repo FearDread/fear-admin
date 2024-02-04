@@ -2,7 +2,7 @@ const express  = require("express");
 const router  = express.Router();
 
 const { getAllProducts,
-        create,
+    createProduct,
         updateProduct,
         deleteProduct,
         getProductDetails,
@@ -13,8 +13,8 @@ const { getAllProducts,
 const { isAuthentictedUser, authorizeRoles } = require("../auth");
  
 router.route("/product").get(getAllProducts)
-router.route("/admin/product/new").post(isAuthentictedUser, authorizeRoles("admin"), create);
-router.route("/admin/products").get(isAuthentictedUser , authorizeRoles("admin") , getAllProductsAdmin)
+router.route("/admin/product/new").post(isAuthentictedUser, authorizeRoles("admin"), createProduct);
+router.route("/admin/products").get(isAuthentictedUser , authorizeRoles("admin") , getAllProductsAdmin);
 router.route("/admin/product/:id") 
 .put(isAuthentictedUser, authorizeRoles("admin"), updateProduct)
 .delete(isAuthentictedUser, authorizeRoles("admin"), deleteProduct);

@@ -53,7 +53,7 @@ const productSchema = mongoose.Schema({
     {
       userId: {
         type: mongoose.Schema.ObjectId,
-        ref: "userModel",
+        ref: "users",
         required: true,
       },
       name: {
@@ -89,7 +89,7 @@ const productSchema = mongoose.Schema({
   // when two admins are there. tab ye pta chalgea kiss admin ne product add kiya hai
   user: {
     type: mongoose.Schema.ObjectId, //  this is for admin who will add the prduct to the db
-    ref: "userModel",
+    ref: "users",
     required: true,
   },
   createdAt: {
@@ -98,5 +98,5 @@ const productSchema = mongoose.Schema({
   },
 });
 
-const ProductModel  = mongoose.model("ProductModel" , productSchema);
-module.exports =ProductModel
+const ProductModel = mongoose.model("products" , productSchema);
+module.exports = ProductModel
