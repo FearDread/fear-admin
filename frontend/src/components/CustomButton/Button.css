@@ -1,0 +1,53 @@
+:root {
+    --primary: #5b86e5;
+}
+
+.bt {
+    padding: 8px 20px;
+    border-radius: 4px;
+    background-color: var(--primary);
+    outline: none;
+    border: none;
+    cursor: pointer;
+    color: #fff;
+}
+
+.bt:hover {
+    padding: 8px 20px;
+    transition: all 0.3s ease-out;
+    background: #fff;
+    color: #6568f4;
+    transition: 250ms;
+}
+
+.bt-primary {
+    background-color: var(--primary);
+}
+.bt-outline {
+    background-color: transparent;
+    color: #fff;
+    padding: 8px 20px;
+    border-radius: 4px;
+    border: 1px solid var(--primary);
+    transition: all 0.3s ease-out;
+}
+
+.bt-medium {
+    border: 8px 20px;
+    border-radius: 4px;
+    font-size: 18px;
+    color: #fff;
+}
+
+.bt-large {
+    border: 12px 26px;
+    border-radius: 4px;
+    font-size: 20px;
+    color: #fff;
+}
+
+@media screen and (max-width: 980px) {
+    .bt {
+        display: none;
+    }
+}

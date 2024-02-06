@@ -1,0 +1,48 @@
+* {
+  margin: 0;
+  box-sizing: border-box;
+  padding: 0;
+  font-family: "Montserrat", sans-serif;
+}
+
+html {
+  font-size: 63.5%;
+  box-sizing: border-box;
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+
+  margin: 0;
+  height: 100vh;
+  font-size: 1.6rem;
+  font-family: Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  height: 100%;
+}
+
+main {
+  overflow: auto;
+  padding: 1rem;
+  padding-bottom: 100px;
+  background: white;
+}
+
+.foot {
+  background-color: #000;
+  position: relative;
+  height: 100px;
+  margin-top: -100px;
+  clear: both;
+}
+
+main > footer {
+  margin-top: auto;
+}
