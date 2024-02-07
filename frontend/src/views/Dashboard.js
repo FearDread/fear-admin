@@ -1,7 +1,10 @@
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import classNames from "classnames";
 import { Line, Bar } from "react-chartjs-2";
+import { useSelector, useDispatch } from "react-redux";
+import { getAllUsers } from "../../actions/user.actions";
+import { useHistory } from "react-router-dom";
 import {
   Button,
   ButtonGroup,
@@ -38,7 +41,16 @@ function Dashboard(props) {
   };
 
 
-  
+  const classes = useStyles();
+  const history = useHistory();
+  const dispatch = useDispatch();
+  const [toggle, setToggle] = useState(false);
+
+  const { error, users, loading } = useSelector((state) => state.allUsers);
+
+  React.useEffect( () => {
+    dispatch(getAllUsers());
+  })
   return (
     <>
       <div className="content">
@@ -53,18 +65,21 @@ function Dashboard(props) {
                   <thead className="text-primary">
                     <tr>
                       <th>Name</th>
-                      <th>Country</th>
-                      <th>City</th>
+                      <th>Email</th>
+                      <th>Role</th>
                       <th className="text-center">Salary</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td>Dakota Rice</td>
-                      <td>Niger</td>
-                      <td>Oud-Turnhout</td>
-                      <td className="text-center">$36,738</td>
-                    </tr>
+                    {users.map((user) => (
+                      <tr>
+                        <td>{user.name}</td>
+                        <td>{user.email}</td>
+                        <td>{user.role}</td>
+                        <td className="text-center">$36,738</td>
+                      </tr>
+                    ))}
+
                   </tbody>
                 </Table>
               </CardBody>
