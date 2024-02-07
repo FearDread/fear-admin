@@ -1,25 +1,19 @@
 const express = require("express");
+const Router = express.Router();
+const User = require("../controllers/user.controller");
+const { isAuth, authorizeRoles } = require("../auth");
 
-const router = express.Router();
-const utils = require("../middleware");
-const controller = require("../controllers/user.controller");
+Router.route("/register").post(User.register);
+Router.route("/login").post(User.login);
+Router.route("/logout").get(User.logout);
+Router.route("/password/reset/:token").put(User.resetPassword);
+Router.route("/profile").get(isAuth, User.getUserDetails);
+Router.route("/password/forgot").post(User.forgotPassword);
+Router.route("/password/update").put(isAuth, User.pdatePassword);
+Router.route("/profile/update").put(isAuth , User.updateProfile);
+Router.route("/admin/users").get(isAuth , authorizeRoles("admin") , User.getAllUser);
+Router.route("/admin/user/:id").get(isAuth , authorizeRoles("admin") ,
+    User.getSingleUser).put(isAuth , authorizeRoles("admin"),
+    User.updateUserRole).delete(isAuth , authorizeRoles("admin") , User.deleteUser)
 
-    
-const { register, login, logout, forgotPassword, resetPassword,
-        getUserDetails, updatePassword, updateProfile, getAllUser,
-        getSingleUser, deleteUser, updateUserRole,  } = controller;
-
-const { isAuthenticatedUser, authorizeRoles } = require("../auth");
-
-router.route("/register").post(register);
-router.route("/login").post(login);
-router.route("/logout").get(logout);
-router.route("/password/reset/:token").put(resetPassword);
-router.route("/profile").get(isAuthenticatedUser, getUserDetails);
-router.route("/password/forgot").post(forgotPassword);
-router.route("/password/update").put(isAuthenticatedUser, updatePassword);
-router.route("/profile/update").put(isAuthenticatedUser ,updateProfile);
-router.route("/admin/users").get(isAuthenticatedUser , authorizeRoles("admin") ,getAllUser);
-router.route("/admin/user/:id").get(isAuthenticatedUser , authorizeRoles("admin") , getSingleUser).put(isAuthenticatedUser , authorizeRoles("admin") , updateUserRole).delete(isAuthenticatedUser , authorizeRoles("admin") , deleteUser)
-
-module.exports = router;
+module.exports = Router;

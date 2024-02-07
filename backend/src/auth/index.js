@@ -1,11 +1,12 @@
 
 const models = require("../models");
 const jwt = require("jsonwebtoken");
+const config = require('../config');
 const AppError = require("../utils/app.error");
 const asyncWrapper = require('express-async-handler');
 
 
-exports.isAuthenticatedUser = asyncWrapper(async ( req, res, next ) => {
+exports.isAuth = asyncWrapper(async ( req, res, next ) => {
   const authHeader = req.headers.authorization;
   const authCookie = req.cookies;
 
@@ -24,7 +25,7 @@ exports.isAuthenticatedUser = asyncWrapper(async ( req, res, next ) => {
   
     } catch (err) {
       console.log(err).json();
-      app_error.error(401, "No Admin User Found");
+      new AppError.("No Admin User Found", 401);
     }
 });
 
@@ -36,5 +37,5 @@ exports.authorizeRoles = (...roles) => {
     }
    
     next();
- }
+  }
 };
