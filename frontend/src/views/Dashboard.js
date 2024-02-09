@@ -41,7 +41,7 @@ function Dashboard(props) {
   };
 
 
-  const classes = useStyles();
+  //const classes = useStyles();
   const history = useHistory();
   const dispatch = useDispatch();
   const [toggle, setToggle] = useState(false);

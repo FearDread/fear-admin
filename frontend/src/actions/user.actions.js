@@ -50,7 +50,7 @@ export function login(email, password) {
       const config = { headers: { "Content-Type": "application/json" } };
 
       const { data } = await axios.post(
-        `/api/v1/login`,
+        `/fear/api/login`,
         { email, password },
         config
       );
