@@ -17,7 +17,7 @@ exports.isAuth = asyncWrapper(async ( req, res, next ) => {
   const token = authHeader.split(' ')[1];
   
   try {
-    const decodeToken = jwt.verify(token, process.env.JWT_SECRET);
+    const decodeToken = jwt.verify(token, config.JWT_SECRET);
     const user = await models.users.findById(deCodeToken.id);
 
     req.user = user;
@@ -25,7 +25,7 @@ exports.isAuth = asyncWrapper(async ( req, res, next ) => {
   
     } catch (err) {
       console.log(err).json();
-      new AppError.("No Admin User Found", 401);
+      new AppError("No Admin User Found", 401);
     }
 });
 
