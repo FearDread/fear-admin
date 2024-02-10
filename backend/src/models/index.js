@@ -6,8 +6,7 @@ mongoose.Promise = global.Promise;
 
 module.exports = {
     url: config.url,
-    mongoose: mongoose,
-    /* Database Schemas */
+    db: mongoose,
     users: require( "./user.model.js" ),
     products: require( "./product.model.js" ),
     orders: require( "./order.model.js" )

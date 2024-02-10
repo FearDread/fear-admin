@@ -5,7 +5,7 @@ const cookieParser = require("cookie-parser");
 const fileUpload = require("express-fileupload"); // used for image and other files
 const path = require("path");
 const cors = require("cors");
-const app_error = require("./src/middleware");
+const AppError = require("./src/middleware");
 
 // routes
 const user = require("./src/routes/user");
@@ -18,12 +18,13 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
-app.use(app_error.error);
+app.use(AppError.error);
 app.use(fileUpload());
 app.use(cors());
 
-//app.use("/fear/api", product);
+
 app.use("/fear/api", user);
+//app.use("/fear/api", product);
 //app.use("/fear/api", order);
 //app.use("/fear/api", payment);
 
