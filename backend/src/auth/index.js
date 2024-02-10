@@ -4,7 +4,6 @@ const jwt = require("jsonwebtoken");
 const AppError = require("../utils/app.error");
 const asyncWrapper = require('express-async-handler');
 
-
 exports.isAuthenticatedUser = asyncWrapper(async ( req, res, next ) => {
   const authHeader = req.headers.authorization;
   const authCookie = req.cookies;
