@@ -3,10 +3,12 @@
 //const bcrypt = require('bcryptjs');
 //const jwt = require('jsonwebtoken');
 //const crypto = require('crypto');
-import mongoose from 'mongoose';
-//simport validator from 'validator';
-import { isEmail } from 'validator';
 
+//simport validator from 'validator';
+import mongoose from 'mongoose';
+import pkg from 'validator';
+
+const { validator } = pkg;
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -19,7 +21,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, "Please Enter Your Email"],
     unique: true,
-    validate: [isEmail, "Please Enter a valid Email"],
+    validator: function(v) {
+      return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v);
+    },
+    message: "Please enter a valid email",
   },
   password: {
     type: String,
@@ -37,7 +42,6 @@ const userSchema = new mongoose.Schema({
       required: true,
     },
   },
-  /* admin, seller, or user */
   role: {
     type: String,
     default: "user",
