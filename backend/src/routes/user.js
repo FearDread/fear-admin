@@ -9,7 +9,9 @@ router.route("/register")
 router.route("/login")
     .post(User.login);
 router.route("/logout")
+
     .get(User.logout);
+
 router.route("/password/reset/:token")
     .put(User.resetPassword);
 router.route("/profile")

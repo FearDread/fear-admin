@@ -35,5 +35,4 @@ app.get("*", (req, res) =>
   res.sendFile(path.resolve(__dirname1, "frontend", "src", "index.js"))
 );
 
-
 module.exports = app;
