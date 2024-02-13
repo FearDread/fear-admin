@@ -14,7 +14,6 @@ const user = require("./src/routes/user");
 //const order = require("./routes/order");
 //const payment = require("./routes/payment");
 
-// for req.cookie to get token while autentication
 app.use(cookieParser());
 app.use(express.json());
 app.use(bodyParser.json({ limit: "50mb" }));
@@ -23,8 +22,8 @@ app.use(app_error.error);
 app.use(fileUpload());
 app.use(cors());
 
-//app.use("/fear/api", product);
 app.use("/fear/api", user);
+//app.use("/fear/api", product);
 //app.use("/fear/api", order);
 //app.use("/fear/api", payment);
 
