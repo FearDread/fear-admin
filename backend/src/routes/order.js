@@ -9,5 +9,4 @@ router.route("/orders/myOrders").get(isAuthentictedUser , myOrders)
 router.route("/admin/orders").get(isAuthentictedUser , authorizeRoles("admin") ,getAllOrders);
 router.route("/admin/order/:id").put(isAuthentictedUser , authorizeRoles("admin") , updateOrder).delete(deleteOrder);
 
-
 module.exports = router;

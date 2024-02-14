@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Route, Switch, Redirect, useLocation } from "react-router-dom";
+import { Route, Routes, Navigate, useLocation } from "react-router-dom";
 import PerfectScrollbar from "perfect-scrollbar";
 import AdminNavbar from "components/Navbars/AdminNavbar.js";
 import Footer from "components/Footer/Footer.js";
@@ -100,10 +100,10 @@ function Admin(props) {
                 toggleSidebar={toggleSidebar}
                 sidebarOpened={sidebarOpened}
               />
-              <Switch>
+              <Routes>
                 {getRoutes(routes)}
-                <Redirect from="*" to="/admin/dashboard" />
-              </Switch>
+                <Navigate from="*" to="/admin/dashboard" />
+              </Routes>
               {
                 // we don't want the Footer to be rendered on map page
                 location.pathname === "/admin/maps" ? null : <Footer fluid />

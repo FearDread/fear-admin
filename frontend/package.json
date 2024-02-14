@@ -5,10 +5,10 @@
   "homepage": "https://demos.creative-tim.com/black-dashboard-react/#/admin/dashboard",
   "dependencies": {
     "@fortawesome/fontawesome-free": "5.15.1",
+    "axios": "^1.6.7",
     "bootstrap": "4.5.3",
     "chart.js": "2.9.4",
     "classnames": "2.2.6",
-    "sass": "",
     "node-sass-package-importer": "5.3.2",
     "perfect-scrollbar": "1.5.0",
     "prop-types": "15.7.2",
@@ -16,9 +16,11 @@
     "react-chartjs-2": "2.11.1",
     "react-dom": "17.0.1",
     "react-notification-alert": "0.0.13",
-    "react-router-dom": "5.2.0",
+    "react-redux": "^9.1.0",
+    "react-router-dom": "^6.22.0",
     "react-scripts": "4.0.1",
-    "reactstrap": "8.7.1"
+    "reactstrap": "8.7.1",
+    "sass": "^1.70.0"
   },
   "scripts": {
     "start": "react-scripts --openssl-legacy-provider start",

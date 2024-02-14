@@ -3,8 +3,8 @@ import React, { useState, useEffect } from "react";
 import classNames from "classnames";
 import { Line, Bar } from "react-chartjs-2";
 import { useSelector, useDispatch } from "react-redux";
-import { getAllUsers } from "../../actions/user.actions";
-import { useHistory } from "react-router-dom";
+import { getAllUsers } from "../actions/user.actions.js";
+// import { useHistory } from "react-router-dom";
 import {
   Button,
   ButtonGroup,
@@ -32,8 +32,6 @@ import {
   chartExample4,
 } from "variables/charts.js";
 
-
-
 function Dashboard(props) {
   const [bigChartData, setbigChartData] = React.useState("data1");
   const setBgChartData = (name) => {
@@ -42,7 +40,7 @@ function Dashboard(props) {
 
 
   //const classes = useStyles();
-  const history = useHistory();
+  // const history = useHistory();
   const dispatch = useDispatch();
   const [toggle, setToggle] = useState(false);
 
