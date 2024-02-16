@@ -1,8 +1,8 @@
 const app = require("./app");
 const config = require("./src/config");
-const db = require("./src/config/db");
+const db = require("./src/data/db");
 const cloudinary = require("cloudinary");
-
+require("dotenv").config({ path: "./config/config.env" });
 // connect to db //
 db.run().catch(console.dir);
 

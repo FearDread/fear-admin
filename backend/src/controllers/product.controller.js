@@ -1,11 +1,12 @@
 const AppError = require("../utils/app.error");
 const models = require("../models");
+const Product = require("../models/product.model");
 const asyncWrapper = require('express-async-handler');
 // const ApiFeatures = require("../utils/apiFeatures");
 const cloudinary = require("cloudinary");
 
 // >>>>>>>>>>>>>>>>>>>>> createProduct Admin route  >>>>>>>>>>>>>>>>>>>>>>>>
-exports.createProduct = asyncWrapper(async (req, res) => {
+exports.create = asyncWrapper(async (req, res) => {
   let images = []; 
 
   if (req.body.images) {
@@ -52,6 +53,7 @@ exports.createProduct = asyncWrapper(async (req, res) => {
       });
 });
 
+/*
 exports.getAllProducts = asyncWrapper(async (req, res) => {
   const resultPerPage = 6; 
   const productsCount = await ProductModel.countDocuments(); 
@@ -75,7 +77,7 @@ exports.getAllProducts = asyncWrapper(async (req, res) => {
     filteredProductCount: filteredProductCount,
   });
 });
-
+*/
 exports.getAllProductsAdmin = asyncWrapper(async (req, res) => {
   const products = await models.products.find();
 
