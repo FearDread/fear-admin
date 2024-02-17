@@ -32,7 +32,8 @@ const __dirname1 = path.resolve();
 app.use(express.static(path.join(__dirname1, "/frontend")));
 
 app.get("*", (req, res) =>
-  res.sendFile(path.resolve(__dirname1, "frontend", "src", "index.js"))
+  res.redirect('http://fear.master.com:3000/home')
+  //res.sendFile(path.resolve(__dirname1, "frontend", "src", "index.js"))
 );
 
 module.exports = app;
