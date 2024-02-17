@@ -3,12 +3,16 @@ const crypto = require("crypto");
 const cloudinary = require("cloudinary");
 const models = require("../models");
 const config = require("../config");
+const User = require("../models/user.model");
 
 const asyncWrapper = require('express-async-handler');
-const AppError = require("../utils/app.error");
+
 const {send_jwt_token, send_email, error} = require("../middleware");
+const AppError = error;
 
 exports.register = asyncWrapper( async (req, res) => {
+  console.log('registering new user.. ' + req.body.name);
+
   const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
     folder: "Avatar",
     width: 150,
@@ -16,36 +20,39 @@ exports.register = asyncWrapper( async (req, res) => {
   });
 
   const { name, email, password } = req.body;
-  const user = await models.users.create({
+  const newUser = await User.create({
     name,
     password,
     email,
     avatar: {
-      public_id: myCloud.public_id,
-      url: myCloud.secure_url,
+      public_id:"Avatar/cmvjhgeexkwd8irybjjt",
+      url:"https://res.cloudinary.com/dgzjfaamz/image/upload/v1707015228/Avatar/c…"
+      //public_id: myCloud.public_id,
+      //url: myCloud.secure_url,
     },
   });
 
-  send_jwt_token(user, 201, res);
+  send_jwt_token(newUser, 201, res);
 });
 
 exports.login = asyncWrapper( async (req, res, next) => {
+  console.log('login called' + req.toString());
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return next(new AppError("Please Enter Email & Password", 400));
+    return next(AppError("Please Enter Email & Password", 400));
   }
 
-  const user = await models.users.findOne({ email }).select("+password");
+  const user = await User.findOne({ email }).select("+password");
 
   if (!user) {
-    return next(new AppError("Invalid email or password", 401));
+    return next(AppError("Invalid email or password", 401));
   }
 
   const isPasswordMatched = await user.comparePassword(password);
 
   if (!isPasswordMatched) {
-    return next(new AppError("Invalid email or password", 401));
+    return next(AppError("Invalid email or password", 401));
   }
 
   send_jwt_token(user, 200, res);

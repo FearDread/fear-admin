@@ -14,7 +14,7 @@ router.route("/admin/products")
 
 router.route("/admin/product/:id") 
     .put(isAuthentictedUser, authorizeRoles("admin"), Product.update)
-    .delete(isAuthentictedUser, authorizeRoles("admin"), deleteProduct);
+    .delete(isAuthentictedUser, authorizeRoles("admin"), Product.delete);
 
 router.route("/product/:id").get(Product.read);
 
@@ -22,8 +22,8 @@ router.route("/review/new")
     .put(isAuthentictedUser , Product.createProductReview);
 
 router.route("/reviews")
-    .get(ProductgetProductReviews)
-     
+    .get(Product.getProductReviews)
+
 router.route("/product/reviews/delete")
     .delete(isAuthentictedUser , authorizeRoles("admin") , Product.deleteReview);
 
