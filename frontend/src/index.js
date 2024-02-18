@@ -18,7 +18,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter, Route, Navigate, Routes } from "react-router-dom";
-
+import store from "./store";
 import AdminLayout from "layouts/Admin/Admin.js";
 //import RTLLayout from "layouts/RTL/RTL.js";
 
@@ -36,7 +36,7 @@ ReactDOM.render(
       <BrowserRouter>
         <Routes>
           <Route path="/admin" render={(props) => <AdminLayout {...props} />} />
-          <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
+          
         </Routes>
       </BrowserRouter>
     </BackgroundColorWrapper>

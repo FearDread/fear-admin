@@ -18,7 +18,7 @@ exports.isAuthenticatedUser = asyncWrapper(async ( req, res, next ) => {
   
     } catch (err) {
       console.log(err).json();
-      AppError.error(401, "No Admin User Found");
+      AppError(401, "No Admin User Found");
     }
 });
 

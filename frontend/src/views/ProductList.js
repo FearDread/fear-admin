@@ -92,7 +92,7 @@ function ProductList() {
                           <th>Name</th>
                           <th>Price</th>
                           <th>Stock</th>
-                          <th className="text-center">Description</th>
+                          <th className="text-center">Description</th> 
                       </tr>
                       </thead>
                       <tbody>
