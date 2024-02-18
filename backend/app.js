@@ -6,7 +6,8 @@ const fileUpload = require("express-fileupload"); // used for image and other fi
 const path = require("path");
 const cors = require("cors");
 const AppError = require("./src/middleware");
-require("dotenv").config({ path: "./config/config.env" });
+//require("dotenv").config({ path: "./config/config.env" });
+require("dotenv").config({ path: __dirname + "/../config/config.env" });
 
 // routes
 const user = require("./src/routes/user");
