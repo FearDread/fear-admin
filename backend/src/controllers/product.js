@@ -53,21 +53,21 @@ exports.create = asyncWrapper(async (req, res) => {
       });
 });
 
-/*
-exports.getAllProducts = asyncWrapper(async (req, res) => {
+exports.list = asyncWrapper(async (req, res) => {
   const resultPerPage = 6; 
   const productsCount = await ProductModel.countDocuments(); 
-  const apiFeature = new ApiFeatures(ProductModel.find(), req.query)
-    .search() 
-    .filter();
+  //const apiFeature = new ApiFeatures(ProductModel.find(), req.query)
+   // .search() 
+   // .filter();
 
-  let products = await apiFeature.query; 
+  //let products = await apiFeature.query; 
+  let products = await models.products.find();
   let filteredProductCount = products.length;
 
-  apiFeature.Pagination(resultPerPage);
+  //apiFeature.Pagination(resultPerPage);
 
   // Mongoose no longer allows executing the same query object twice, so use .clone() to retrieve the products again
-  products = await apiFeature.query.clone(); // Retrieve the paginated products
+ //  products = await apiFeature.query.clone(); // Retrieve the paginated products
 
   res.status(201).json({
     success: true,
@@ -77,8 +77,8 @@ exports.getAllProducts = asyncWrapper(async (req, res) => {
     filteredProductCount: filteredProductCount,
   });
 });
-*/
-exports.getAllProductsAdmin = asyncWrapper(async (req, res) => {
+
+exports.list = asyncWrapper(async (req, res) => {
   const products = await models.products.find();
 
   res.status(201).json({  
@@ -88,7 +88,7 @@ exports.getAllProductsAdmin = asyncWrapper(async (req, res) => {
 });
 
 //>>>>>>>>>>>>>>>>>> Update Admin Route >>>>>>>>>>>>>>>>>>>>>>>
-exports.updateProduct = asyncWrapper(async (req, res, next) => {
+exports.update = asyncWrapper(async (req, res, next) => {
   let product = await ProductModel.findById(req.params.id);
 
   if (!product) {
@@ -138,7 +138,7 @@ exports.updateProduct = asyncWrapper(async (req, res, next) => {
 
 
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  delete product --admin  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-exports.deleteProduct = asyncWrapper(async (req, res, next) => {
+exports.delete = asyncWrapper(async (req, res, next) => {
   let product = await ProductModel.findById(req.params.id);
 
   if (!product) {
@@ -159,7 +159,7 @@ exports.deleteProduct = asyncWrapper(async (req, res, next) => {
 });
 
 //>>>>>>>>>>>>>>>>>>>>>>> Detils of product >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-exports.getProductDetails = asyncWrapper(async (req, res, next) => {
+exports.read = asyncWrapper(async (req, res, next) => {
   const id = req.params.id;
   const Product = await ProductModel.findById(id);
   if (!Product) {
