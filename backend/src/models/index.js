@@ -8,7 +8,7 @@ module.exports = {
     url: config.url,
     mongoose: mongoose,
     /* Database Schemas */
-    users: require( "./user.model.js" ),
-    products: require( "./product.model.js" ),
+    users: require( "./user.js" ),
+    products: require( "./product.js" ),
     orders: require( "./order.model.js" )
 };

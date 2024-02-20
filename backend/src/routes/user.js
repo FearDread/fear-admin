@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const utils = require("../middleware");
-const User = require("../controllers/user.controller");
+const utils = require("../handlers/mailHandler");
+const User = require("../controllers/user");
 const { isAuthenticatedUser, authorizeRoles } = require("../auth");
 
 router.route("/register")
@@ -9,7 +9,6 @@ router.route("/register")
 router.route("/login")
     .post(User.login);
 router.route("/logout")
-
     .get(User.logout);
 
 router.route("/password/reset/:token")

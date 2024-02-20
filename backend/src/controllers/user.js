@@ -1,12 +1,14 @@
 
 const crypto = require("crypto");
 const cloudinary = require("cloudinary");
-const models = require("../models");
-const config = require("../config");
-
 const asyncWrapper = require('express-async-handler');
+const asyncHandler = require("handlers/asyncHandler");
 const AppError = require("../utils/app.error");
-const {send_jwt_token, send_email, error} = require("../middleware");
+const { sendJWTToken, sendEmail } = require("../handlers/mailHandler");
+
+const User = require('../models/user');
+
+
 
 exports.register = asyncWrapper( async (req, res) => {
   const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
@@ -16,7 +18,7 @@ exports.register = asyncWrapper( async (req, res) => {
   });
 
   const { name, email, password } = req.body;
-  const user = await models.users.create({
+  const user = await User.create({
     name,
     password,
     email,
