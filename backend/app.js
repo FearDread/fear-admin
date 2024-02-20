@@ -6,8 +6,10 @@ const fileUpload = require("express-fileupload"); // used for image and other fi
 const path = require("path");
 const dotenv = require("dotenv");
 const cors = require("cors");
+//const AppError = require("/handlers/errorHandlers");
+const errors = require("./src/handlers/errorHandlers");
 
-dotenv.config({ path: ".env" });
+dotenv.config({ path: "./config/config.env" });
 
 // routes
 const user = require("./src/routes/user");
@@ -19,7 +21,7 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
-app.use(AppError.error);
+app.use(errors.developmentErrors);
 app.use(fileUpload());
 app.use(cors());
 

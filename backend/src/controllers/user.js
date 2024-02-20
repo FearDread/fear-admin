@@ -1,14 +1,10 @@
-
 const crypto = require("crypto");
 const cloudinary = require("cloudinary");
 const asyncWrapper = require('express-async-handler');
-const asyncHandler = require("handlers/asyncHandler");
-const AppError = require("../utils/app.error");
+const { catchErrors, authError } = require("../handlers/errorHandlers");
 const { sendJWTToken, sendEmail } = require("../handlers/mailHandler");
 
 const User = require('../models/user');
-
-
 
 exports.register = asyncWrapper( async (req, res) => {
   const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
@@ -28,29 +24,29 @@ exports.register = asyncWrapper( async (req, res) => {
     },
   });
 
-  send_jwt_token(user, 201, res);
+  sendJWTToken(user, 201, res);
 });
 
 exports.login = asyncWrapper( async (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return next(new AppError("Please Enter Email & Password", 400));
+    return next(catchErrors("Please Enter Email & Password", 400));
   }
 
-  const user = await models.users.findOne({ email }).select("+password");
+  const user = await User.findOne({ email }).select("+password");
 
   if (!user) {
-    return next(new AppError("Invalid email or password", 401));
+    return next(catchErrors("Invalid email or password", 401));
   }
 
   const isPasswordMatched = await user.comparePassword(password);
 
   if (!isPasswordMatched) {
-    return next(new AppError("Invalid email or password", 401));
+    return next(catchErrors("Invalid email or password", 401));
   }
 
-  send_jwt_token(user, 200, res);
+  sendJWTToken(user, 200, res);
 });
 
 // logOut
@@ -70,11 +66,11 @@ exports.logout = async (req, res) => {
 
 //// Forgot Password
 exports.forgotPassword = asyncWrapper(async (req, res, next) => {
-  const user = await models.users.findOne({ email: req.body.email });
+  const user = await User.findOne({ email: req.body.email });
 
   // when user with this email not found
   if (!user) {
-    return next(new AppError("User not found", 404));
+    return next(catchErrors("User not found", 404));
   }
 
   // Get ResetPassword Token
@@ -86,7 +82,7 @@ exports.forgotPassword = asyncWrapper(async (req, res, next) => {
 
   const isLocal = req.hostname === "localhost" || req.hostname === "127.0.0.1";
   if (isLocal) {
-    resetPasswordUrl = `${config.FRONTEND_URL}/password/reset/${resetToken}`;
+    resetPasswordUrl = `${process.env.FRONTEND_URL}/password/reset/${resetToken}`;
   } else {
     resetPasswordUrl = `${req.protocol}://${req.get(
       "host"
@@ -114,7 +110,7 @@ exports.forgotPassword = asyncWrapper(async (req, res, next) => {
 
     await user.save({ validateBeforeSave: false });
 
-    return next(new AppError(error.message, 500));
+    return next(catchErrors(error.message, 500));
   }
 });
 
@@ -137,7 +133,7 @@ exports.resetPassword = async (req, res, next) => {
   // if user not with that token or expire token
   if (!user) {
     return next(
-      new AppError(
+      catchErrors(
         "Reset Password Token is invalid or has been expired",
         400
       )
@@ -222,7 +218,7 @@ exports.updateProfile = async (req, res, next) => {
   }
 
   // set new value of user
-  const user = await models.users.findByIdAndUpdate(req.user.id, newUserData, {
+  const user = await User.findByIdAndUpdate(req.user.id, newUserData, {
     new: true,
     runValidators: true,
     useFindAndModify: false,
@@ -237,7 +233,7 @@ exports.updateProfile = async (req, res, next) => {
 
 //>> Get single user (admin) Access only>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 exports.getSingleUser = async (req, res, next) => {
-  const user = await models.users.findById(req.params.id);
+  const user = await User.findById(req.params.id);
   // if user not found with that id
   if (!user) {
     return next(
@@ -273,7 +269,7 @@ exports.updateUserRole = async (req, res, next) => {
 // delete user --Admin(only admin can delete user)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 exports.deleteUser = async (req, res, next) => {
-  const user = await models.users.findById(req.params.id);
+  const user = await User.findById(req.params.id);
   // when no user found with that id
   if (!user) {
     return next(
@@ -296,7 +292,7 @@ exports.deleteUser = async (req, res, next) => {
 
 // getAll user Admin>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 exports.getAllUser = asyncWrapper(async (req, res, next) => {
-  const users = await models.users.find();
+  const users = await User.find();
 
   res.status(201).json({
     success: true,

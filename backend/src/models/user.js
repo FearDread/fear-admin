@@ -67,8 +67,8 @@ module.exports = mongoose => {
     
       return jwt.sign(
         { id: this._id },
-        { expiresIn: config.JWT_EXPIRE },
-        config.JWT_SECRET
+        { expiresIn: process.env.JWT_EXPIRE },
+        process.env.JWT_SECRET
       );
     };
 

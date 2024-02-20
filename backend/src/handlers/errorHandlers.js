@@ -7,7 +7,7 @@ class AppError extends Error {
   }
 
 }
-exports.AppError;
+exports.AppError = AppError;
 
 /*
   Catch Errors Handler
