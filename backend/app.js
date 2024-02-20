@@ -4,9 +4,10 @@ const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const fileUpload = require("express-fileupload"); // used for image and other files
 const path = require("path");
+const dotenv = require("dotenv");
 const cors = require("cors");
-const app_error = require("./src/middleware");
-require("dotenv").config({ path: "./config/config.env" });
+
+dotenv.config({ path: ".env" });
 
 // routes
 const user = require("./src/routes/user");
@@ -18,7 +19,7 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
-app.use(app_error.error);
+app.use(AppError.error);
 app.use(fileUpload());
 app.use(cors());
 
