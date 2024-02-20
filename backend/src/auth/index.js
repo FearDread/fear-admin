@@ -1,24 +1,22 @@
-
-const models = require("../models");
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
-const errorHandler = require("../handlers/errorHandler");
+const { authError, notFound, errors } = require("../handlers/errorHandlers");
 const asyncWrapper = require('express-async-handler');
 
 exports.isAuthenticatedUser = asyncWrapper(async ( req, res, next ) => {
   const authHeader = req.headers.authorization;
-  const token = authHeader.split(' ')[1];
+  const token = req.header("x-auth-token");
   
   try {
     const decodeToken = jwt.verify(token, process.env.JWT_SECRET);
-    const userDetails = await User.findById(deCodeToken.id);
+    const userDetails = await User.findById(decodeToken.id);
 
     req.user = userDetails;
     next();
   
     } catch (err) {
       console.log(err).json();
-      errorHandler.AppError("No Admin User Found", 401);
+      notFound();
     }
 });
 
@@ -26,7 +24,7 @@ exports.authorizeRoles = (...roles) => {
  
   return (req , res , next) => {
     if ( roles.includes( req.user.role ) === false) { 
-        return next( errorHandler.AppError("Unauthorized", 401) );
+        return next( authError("Unauthorized", 401) );
     }
    
     next();
@@ -41,7 +39,7 @@ exports.isValidToken = async (req, res, next) => {
     if (!token)
       msg = "No authentication token, authorization denied.";
       return (      
-        errorHandler.authError(false, null, msg, true)
+        authError(false, null, msg, true)
         )
 
 

@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const utils = require("../handlers/mailHandler");
 const User = require("../controllers/user");
-const { isAuthenticatedUser, authorizeRoles } = require("../auth");
+const { isAuthenticatedUser, authorizeRoles, isValidToken } = require("../auth");
 
 router.route("/register")
     .post(User.register);
@@ -22,7 +22,7 @@ router.route("/password/update")
 router.route("/profile/update")
     .put(isAuthenticatedUser, User.updateProfile);
 router.route("/admin/users")
-    .get(isAuthenticatedUser, authorizeRoles("admin"), User.getAllUser);
+    .get(isValidToken, authorizeRoles("admin"), User.getAllUser);
 
  router.route("/admin/user/:id")
     .get(isAuthenticatedUser, authorizeRoles("admin"), User.getSingleUser)

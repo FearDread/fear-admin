@@ -1,7 +1,5 @@
 const { MongoClient, ServerApiVersion } = require("mongodb");
-const dotenv = require('dotenv');
-
-dotenv.config({ path: __dirname + ".env" });
+require("dotenv").config({ path: __dirname + "/../config/config.env" });
 
 const client = new MongoClient(process.env.DB_LINK,  {
         serverApi: {

@@ -1,6 +1,5 @@
-const config = require('../config');
 const nodeMailer = require('nodemailer');
-const donenv = require('dotenv');
+require("dotenv").config({ path: "./.env" });
 
 exports.sendEmail = async (options) => {
     const transporter = nodeMailer.createTransport({
