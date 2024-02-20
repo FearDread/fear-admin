@@ -31,10 +31,10 @@ exports.authError = (success, res, msg, jwt) => {
     success: success,
     result: null,
     message: msg,
-    jwtExpired: jwt
+    jwtExpired: jwt ? jwt : true
   });
 }
-exports.errors = (staterr, resp, msg, err) => {
+exports.errors = (res, msg, err) => {
     const statusCode = res.statusCode ? res.statusCode : 500;
     const message = '';
 

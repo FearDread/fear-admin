@@ -6,7 +6,12 @@ const asyncWrapper = require('express-async-handler');
 exports.isAuthenticatedUser = asyncWrapper(async ( req, res, next ) => {
   const authHeader = req.headers.authorization;
   const token = req.header("x-auth-token");
+  const msg = '';
   
+  if (!token)
+    msg = "No authentication token, authorization denied.";
+    return (authError(false, null, msg, true));
+
   try {
     const decodeToken = jwt.verify(token, process.env.JWT_SECRET);
     const userDetails = await User.findById(decodeToken.id);
@@ -24,7 +29,7 @@ exports.authorizeRoles = (...roles) => {
  
   return (req , res , next) => {
     if ( roles.includes( req.user.role ) === false) { 
-        return next( authError("Unauthorized", 401) );
+        return next( authError(false, res, "Unauthorized", true) );
     }
    
     next();
