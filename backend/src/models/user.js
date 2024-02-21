@@ -83,12 +83,8 @@ const schema = mongoose.Schema ({
       return reset_token;
     };
     
-    schema.methods.compare_pass = async function ( password ) {
+    schema.methods.compare = async function ( password ) {
       return await bcrypt.compare(password, this.password); 
     };
 
-    
-const User = mongoose.model("users", schema);
-
-module.exports = User;
-
+module.exports = mongoose.model("users", schema);
