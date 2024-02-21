@@ -1,12 +1,12 @@
-const AppError = require("../utils/app.error");
-const models = require("../models");
-const Product = require("../models/product.model");
+
+
+const { AppError } = require("../handlers/errorHandlers");
+const Product = require("../models/product");
 const asyncWrapper = require('express-async-handler');
-// const ApiFeatures = require("../utils/apiFeatures");
 const cloudinary = require("cloudinary");
 
 // >>>>>>>>>>>>>>>>>>>>> createProduct Admin route  >>>>>>>>>>>>>>>>>>>>>>>>
-exports.create = asyncWrapper(async (req, res) => {
+exports.create = async (req, res) => {
   let images = []; 
 
   if (req.body.images) {
@@ -51,7 +51,7 @@ exports.create = asyncWrapper(async (req, res) => {
         success: true,
         data: data 
       });
-});
+};
 
 /*
 exports.getAllProducts = asyncWrapper(async (req, res) => {
@@ -78,7 +78,7 @@ exports.getAllProducts = asyncWrapper(async (req, res) => {
   });
 });
 */
-exports.getAllProductsAdmin = asyncWrapper(async (req, res) => {
+exports.list = asyncWrapper(async (req, res) => {
   const products = await models.products.find();
 
   res.status(201).json({  
@@ -88,7 +88,7 @@ exports.getAllProductsAdmin = asyncWrapper(async (req, res) => {
 });
 
 //>>>>>>>>>>>>>>>>>> Update Admin Route >>>>>>>>>>>>>>>>>>>>>>>
-exports.updateProduct = asyncWrapper(async (req, res, next) => {
+exports.update = asyncWrapper(async (req, res, next) => {
   let product = await ProductModel.findById(req.params.id);
 
   if (!product) {
@@ -138,7 +138,7 @@ exports.updateProduct = asyncWrapper(async (req, res, next) => {
 
 
 //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  delete product --admin  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-exports.deleteProduct = asyncWrapper(async (req, res, next) => {
+exports.delete = asyncWrapper(async (req, res, next) => {
   let product = await ProductModel.findById(req.params.id);
 
   if (!product) {
@@ -159,17 +159,17 @@ exports.deleteProduct = asyncWrapper(async (req, res, next) => {
 });
 
 //>>>>>>>>>>>>>>>>>>>>>>> Detils of product >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-exports.getProductDetails = asyncWrapper(async (req, res, next) => {
+exports.read = async (req, res, next) => {
   const id = req.params.id;
   const Product = await ProductModel.findById(id);
   if (!Product) {
-    return next(new ErrorHandler("Product not found", 404));
+    return next(new AppError("Product not found", 404));
   }
   res.status(201).json({
     succes: true,
     Product: Product,
   });
-});
+};
 
 //>>>>>>>>>>>>> Create New Review or Update the review >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 

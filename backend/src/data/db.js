@@ -1,24 +1,17 @@
-const { MongoClient, ServerApiVersion } = require("mongodb");
-require("dotenv").config({ path: __dirname + "/../config/config.env" });
+const mongoose = require('mongoose');
+require("dotenv").config({ path: __dirname + "/../.env" });
 
-const client = new MongoClient(process.env.DB_LINK,  {
-        serverApi: {
-            version: ServerApiVersion.v1,
-            strict: true,
-            deprecationErrors: true,
-        }
-    }
-);
-
-exports.run = async () => {
-    try {
-        await client.connect();
-        await client.db("fear_master_api").command({ ping: 1 });
-        
-        console.log("Pinged your deployment. You successfully connected to MongoDB!");
-      
-      } finally {
-
-        await client.close();
-      }
-}
+module.exports.run = () => {
+  mongoose.set("strictQuery", false); 
+  mongoose
+      .connect(process.env.DB_LINK, {
+        useNewUrlParser: true,
+        dbName: process.env.DB_NAME
+      })
+      .then(function () {
+          console.log("You successfully connected to MongoDB! Using :: " + process.env.DB_NAME);
+      })
+      .catch(function (err) {
+          console.log("Error connecting to MongoDB", err);
+      })
+};

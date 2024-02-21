@@ -4,9 +4,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 
-module.exports = mongoose => {
-
-  var schema = mongoose.Schema ({
+const schema = mongoose.Schema ({
       name: {
         type: String,
         required: [true, "Please Enter Your Name"],
@@ -89,7 +87,8 @@ module.exports = mongoose => {
       return await bcrypt.compare(password, this.password); 
     };
 
-    const User = mongoose.model("users", schema);
-    return User;
-};
+    
+const User = mongoose.model("users", schema);
+
+module.exports = User;
 
