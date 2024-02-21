@@ -13,15 +13,13 @@ exports.login = async (req, res, next) => {
   await UserModel.findOne({ email })
     .select("+password")
     .then((user) => {
-      const isPasswordMatched = user.comparePassword(password);
-
+      const isPasswordMatched = user.compare(password);
       if (!isPasswordMatched) {
         return next(new AppError("Invalid email or password", 401));
       }
 
       this.sendJWTToken(user, 200, res);
-
-    }).catch((error) {
+    }).catch((error) => {
       dbError(res, error);
     });
 };
