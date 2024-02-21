@@ -44,7 +44,7 @@ exports.create = async (req, res) => {
     req.body.images = imagesLinks;
   }
 
-  const data = await models.products.create(req.body);
+  const data = await Product.create(req.body);
 
   res.status(200)
      .json({ 
@@ -78,18 +78,18 @@ exports.getAllProducts = asyncWrapper(async (req, res) => {
   });
 });
 */
-exports.list = asyncWrapper(async (req, res) => {
-  const products = await models.products.find();
+exports.list = async (req, res) => {
+  const products = await Product.find();
 
   res.status(201).json({  
     success: true,
     products,
   });
-});
+};
 
 //>>>>>>>>>>>>>>>>>> Update Admin Route >>>>>>>>>>>>>>>>>>>>>>>
 exports.update = asyncWrapper(async (req, res, next) => {
-  let product = await ProductModel.findById(req.params.id);
+  let product = await Product.findById(req.params.id);
 
   if (!product) {
     return next(new AppError("Product not found", 404));
