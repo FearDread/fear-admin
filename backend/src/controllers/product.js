@@ -1,93 +1,71 @@
-
-
 const { AppError } = require("../handlers/errorHandlers");
 const Product = require("../models/product");
 const asyncWrapper = require('express-async-handler');
 const cloudinary = require("cloudinary");
 
-// >>>>>>>>>>>>>>>>>>>>> createProduct Admin route  >>>>>>>>>>>>>>>>>>>>>>>>
+/* Product CRUD methods */
+/* -------------------- */
 exports.create = async (req, res) => {
-  let images = []; 
+  const chunkSize = 3;
+  const imageChunks = [];
+  const imagesLinks = [];
 
+  let images = []; 
   if (req.body.images) {
     if (typeof req.body.images === "string") {
       images.push(req.body.images);
     } else {
       images = req.body.images;
     }
-    const chunkSize = 3;
-    const imageChunks = [];
-    const imagesLinks = [];
-    // Split images into chunks due to cloudinary upload limit
+
     while (images.length > 0) {
       imageChunks.push(images.splice(0, chunkSize));
     }
-    // Upload images in separate requests. for loop will run 3 times if there are 9 images to upload each time uploading 3 images at a time
+  
     for (let chunk of imageChunks) {
-      const uploadPromises = chunk.map((img) =>
-        cloudinary.v2.uploader.upload(img, {
-          folder: "Products",
-        })
-      );
-      
-      const results = await Promise.all(uploadPromises); // wait for all the promises to resolve and store the results in results array eg: [{}, {}, {}] 3 images uploaded successfully and their details are stored in results array
-
-      for (let result of results) { 
-        imagesLinks.push({
-          product_id: result.public_id,
-          url: result.secure_url,
-        });
-      }
+      const uploadPromises = chunk.map((img) => {
+        cloudinary.v2.uploader.upload(img,
+          {folder: "Products"})
+      });
     }
-
-    req.body.user = req.user.id;
-    req.body.images = imagesLinks;
+    
+    const results = await Promise.all(uploadPromises); // wait for all the promises to resolve and store the results in results array eg: [{}, {}, {}] 3 images uploaded successfully and their details are stored in results array
+    for (let result of results) { 
+      imagesLinks.push({
+        product_id: result.public_id,
+        url: result.secure_url,
+      });
+    }
   }
 
-  const data = await Product.create(req.body);
+  req.body.user = req.user.id;
+  req.body.images = imagesLinks;
 
-  res.status(200)
-     .json({ 
+  await Product.create(req.body)
+    .then((data) => {
+      res.status(200).json({ 
         success: true,
         data: data 
       });
+    })
+    .catch((error) => {
+      dbError(res, error);
+    });
 };
 
-/*
-exports.getAllProducts = asyncWrapper(async (req, res) => {
-  const resultPerPage = 6; 
-  const productsCount = await ProductModel.countDocuments(); 
-  const apiFeature = new ApiFeatures(ProductModel.find(), req.query)
-    .search() 
-    .filter();
-
-  let products = await apiFeature.query; 
-  let filteredProductCount = products.length;
-
-  apiFeature.Pagination(resultPerPage);
-
-  // Mongoose no longer allows executing the same query object twice, so use .clone() to retrieve the products again
-  products = await apiFeature.query.clone(); // Retrieve the paginated products
-
-  res.status(201).json({
-    success: true,
-    products: products,
-    productsCount: productsCount,
-    resultPerPage: resultPerPage,
-    filteredProductCount: filteredProductCount,
-  });
-});
-*/
 exports.list = async (req, res) => {
-  const products = await Product.find();
-
-  res.status(201).json({  
-    success: true,
-    products,
-  });
+  await Product.find()
+    .then((products) => {
+      res.status(201).json({  
+        success: true,
+        products: products,
+      });
+    })
+    .catch((error) => {
+      dbError(res, error);
+    });
 };
 
-//>>>>>>>>>>>>>>>>>> Update Admin Route >>>>>>>>>>>>>>>>>>>>>>>
 exports.update = asyncWrapper(async (req, res, next) => {
   let product = await Product.findById(req.params.id);
 
@@ -136,9 +114,7 @@ exports.update = asyncWrapper(async (req, res, next) => {
   });
 });
 
-
-//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  delete product --admin  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-exports.delete = asyncWrapper(async (req, res, next) => {
+exports.delete = async (req, res, next) => {
   let product = await ProductModel.findById(req.params.id);
 
   if (!product) {
@@ -156,9 +132,8 @@ exports.delete = asyncWrapper(async (req, res, next) => {
     success: true,
     message: "Product delete successfully",
   });
-});
+};
 
-//>>>>>>>>>>>>>>>>>>>>>>> Detils of product >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 exports.read = async (req, res, next) => {
   const id = req.params.id;
   const Product = await ProductModel.findById(id);
@@ -171,8 +146,8 @@ exports.read = async (req, res, next) => {
   });
 };
 
-//>>>>>>>>>>>>> Create New Review or Update the review >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
+/* Product Review methods */
+/* ---------------------- */
 exports.createProductReview = asyncWrapper(async (req, res, next) => {
   const { ratings, comment, productId, title, recommend } = req.body;
   const review = {
@@ -182,7 +157,7 @@ exports.createProductReview = asyncWrapper(async (req, res, next) => {
     title: title,
     comment: comment,
     recommend: recommend,
-    avatar: req.user.avatar.url, // Add user avatar URL to the review object
+    avatar: req.user.avatar.url
   };
 
   const product = await ProductModel.findById(productId);
@@ -225,8 +200,6 @@ exports.createProductReview = asyncWrapper(async (req, res, next) => {
   });
 });
 
-
-// >>>>>>>>>>>>>>>>>>>>>> Get All Reviews of a product>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 exports.getProductReviews = asyncWrapper(async (req, res, next) => {
   // we need product id for all reviews of the product
 
@@ -242,41 +215,30 @@ exports.getProductReviews = asyncWrapper(async (req, res, next) => {
   });
 });
 
-//>>>>>>>>>>>>>>>>>>>>>> delete review >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 exports.deleteReview = asyncWrapper(async (req, res, next) => {
-  // we have review id and product id here in req object
-  // find thr product with product id
-
   const product = await ProductModel.findById(req.query.productId);
-
   if (!product) {
     return next(new ErrorHandler("Product not found", 404)); 
   }
 
-  // check if ther any review avalible with given reviwe id. then filter the review array store inside reviews without that review
   const reviews = product.reviews.filter(
     (rev) => { return rev._id.toString() !== req.query.id.toString()}
   );
   // once review filterd then update new rating from prdoduct review
   let avg = 0;
   reviews.forEach((rev) => {
-   
     avg += rev.ratings;
   });
 
-
-  
   let ratings = 0;
   if (reviews.length === 0) {
     ratings = 0;
   } else {
     ratings = avg / reviews.length;
   }
-  // also set  numOfReviews in product
+
   const numOfReviews = reviews.length;
-  // now update the product schema with these values
-  await ProductModel.findByIdAndUpdate(
-    req.query.productId,
+  await ProductModel.findByIdAndUpdate(req.query.productId, 
     {
       reviews,
       ratings,
@@ -286,10 +248,39 @@ exports.deleteReview = asyncWrapper(async (req, res, next) => {
       new: true,
       runValidators: true,
       useFindAndModify: false,
-    }
-  );
+    })
+    .then(() => {
+      res.status(200).json({
+        success: true,
+      });
+    })
+    .catch((error) => {
+      dbError(res, error);
+    });
+});
 
-  res.status(200).json({
+/*
+exports.getAllProducts = asyncWrapper(async (req, res) => {
+  const resultPerPage = 6; 
+  const productsCount = await ProductModel.countDocuments(); 
+  const apiFeature = new ApiFeatures(ProductModel.find(), req.query)
+    .search() 
+    .filter();
+
+  let products = await apiFeature.query; 
+  let filteredProductCount = products.length;
+
+  apiFeature.Pagination(resultPerPage);
+
+  // Mongoose no longer allows executing the same query object twice, so use .clone() to retrieve the products again
+  products = await apiFeature.query.clone(); // Retrieve the paginated products
+
+  res.status(201).json({
     success: true,
+    products: products,
+    productsCount: productsCount,
+    resultPerPage: resultPerPage,
+    filteredProductCount: filteredProductCount,
   });
 });
+*/

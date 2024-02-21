@@ -24,16 +24,16 @@ exports.catchErrors = (fn) => {
   };
 };
 
-exports.authError = (success, res, msg, jwt) => {
+exports.authError = (res, token) => {
   res.status(401).json({
-    success: success,
+    success: false,
     result: res,
-    message: msg,
-    jwtExpired: jwt ? jwt : true
+    message: "Authentication Error",
+    error: token
   });
 };
 
-exports.errors = (res, msg, err) => {
+exports.dbError = (res, err) => {
     const statusCode = res.statusCode ? res.statusCode : 500;
     const message = '';
 
@@ -49,7 +49,8 @@ exports.errors = (res, msg, err) => {
     }
 
     res.status(statusCode).json({
-      message: err.message,
+      success: false,
+      message: message,
       stack: err.stack,
     });
 };

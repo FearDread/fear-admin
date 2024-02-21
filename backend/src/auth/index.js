@@ -1,10 +1,7 @@
 const jwt = require("jsonwebtoken");
 const AdminModel = require("../models/admin");
 const UserModel = require("../models/user");
-
-const { authError, notFound, AppError } = require("../handlers/errorHandlers");
-const asyncWrapper = require('express-async-handler');
-
+const { dbError, authError, notFound, AppError } = require("../handlers/errorHandlers");
 
 exports.login = async (req, res, next) => {
   const { email, password } = req.body;
@@ -12,25 +9,24 @@ exports.login = async (req, res, next) => {
   if (!email || !password) {
     return next(new AppError("Please Enter Email & Password", 400));
   }
+  
+  await UserModel.findOne({ email })
+    .select("+password")
+    .then((user) => {
+      const isPasswordMatched = user.comparePassword(password);
 
-  const user = await UserModel.findOne({ email }).select("+password");
-  if (!user) {
-    return next(new AppError("Invalid email or password", 401));
-  }
+      if (!isPasswordMatched) {
+        return next(new AppError("Invalid email or password", 401));
+      }
 
-  const isPasswordMatched = await user.comparePassword(password);
+      this.sendJWTToken(user, 200, res);
 
-  if (!isPasswordMatched) {
-    return next(new AppError("Invalid email or password", 401));
-  }
-
-  this.sendJWTToken(user, 200, res);
+    }).catch((error) {
+      dbError(res, error);
+    });
 };
 
-// logOut
-
 exports.logout = async (req, res) => {
-
   res.cookie("token", null, {
     expires: new Date(Date.now()),
     httpOnly: true,
@@ -45,96 +41,72 @@ exports.logout = async (req, res) => {
 exports.isAuthenticated = async ( req, res, next ) => {
   const authHeader = req.headers.authorization;
   const token = req.header("x-auth-token");
-  const msg = '';
-  
+
   if (!token) {
-    msg = "No authentication token, authorization denied.";
-    return (authError(false, null, msg, true));
+    return (authError(res, authHeader));
   }
+
   try {
     const decodeToken = jwt.verify(token, process.env.JWT_SECRET);
-    const userDetails = await UserModel.findById(decodeToken.id);
 
-    req.user = userDetails;
-    next();
-  
-  } catch (err) {
-    console.log(err).json();
-    notFound();
+    await UserModel.findById(decodeToken.id)
+      .then((userDetails) => {
+        req.user = userDetails;
+        next();
+      })
+      .catch((error) => {
+        dbError(res, error);
+      });
+  } catch (error) {
+    notFound(res);
   }
 };
 
 exports.authorizeRoles = (...roles) => {
   return (req , res , next) => {
     if ( roles.includes( req.user.role ) === false) { 
-        return next( authError(false, res, "Unauthorized", true) );
+        return next( authError(res, req.user) );
     }
-   
     next();
   }
 };
 
 exports.isValidToken = async (req, res, next) => {
-  const msg = '';
+  const token = req.header("x-auth-token");
+  if (!token) {
+    return ( authError(res, req) );
+  }
+
   try {
-    const token = req.header("x-auth-token");
-
-    if (!token) {
-      msg = "No authentication token, authorization denied.";
-      return ( authError(false, null, msg, true ))
-    }
-
     const verified = jwt.verify(token, process.env.JWT_SECRET);
     if (!verified) {
-      msg = "Token verification failed, authorization denied.";
-      return ( authError(false, null, msg, true ));
+      return (authError(res, verified));
     }
- 
 
-    const admin = await AdminModel.findOne({ _id: verified.id });
-    if (!admin)
-      return res.status(401).json({
-        success: false,
-        result: null,
-        message: "Admin doens't Exist, authorization denied.",
-        jwtExpired: true,
+    await UserModel.findOne({ _id: verified.id })
+      .then((admin) => {
+        req.admin = admin;
+        next();
+      })
+      .catch((error) => {
+        dbError(res, error);
       });
-
-    if (admin.isLoggedIn === false)
-      return res.status(401).json({
-        success: false,
-        result: null,
-        message: "Admin is already logout try to login, authorization denied.",
-        jwtExpired: true,
-      });
-    else {
-      req.admin = admin;
-      // console.log(req.admin);
-      next();
-    }
   } catch (err) {
-    res.status(500).json({
-      success: false,
-      result: null,
-      message: err.message,
-      jwtExpired: true,
-    });
+    authError(res, err);
   }
 }
 
-exports.sendJWTToken = (user, status, res) => {
+exports.sendJWTToken = (user, statusCode, res) => {
   const token = user.getJWTToken();
-  
   const options = {
-      expires: new Date(
-          Date.now() + config.COOKIE_EXPIRE * 24 * 60 * 60 * 1000
-      ),
-      httpOnly: true,
+    expires: new Date( Date.now() + config.COOKIE_EXPIRE * 24 * 60 * 60 * 1000),
+    httpOnly: true,
   };
 
-  res.status(statusCode).cookie("token", token, options).json({
+  res.status(statusCode).cookie("token", token, options)
+    .json({
       success: true,
       user,
       token,
-  });
+    });
 };
