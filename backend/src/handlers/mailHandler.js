@@ -22,19 +22,4 @@ exports.sendEmail = async (options) => {
     await transporter.sendMail(mailOptions);
 };
 
-exports.sendJWTToken = (user, status, res) => {
-    const token = user.getJWTToken();
-    
-    const options = {
-        expires: new Date(
-            Date.now() + config.COOKIE_EXPIRE * 24 * 60 * 60 * 1000
-        ),
-        httpOnly: true,
-    };
 
-    res.status(statusCode).cookie("token", token, options).json({
-        success: true,
-        user,
-        token,
-    });
-};

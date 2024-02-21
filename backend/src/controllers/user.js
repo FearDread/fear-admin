@@ -1,40 +1,178 @@
 const crypto = require("crypto");
 const cloudinary = require("cloudinary");
-const asyncWrapper = require('express-async-handler');
-const { catchErrors, authError } = require("../handlers/errorHandlers");
-const { sendEmail } = require("../handlers/mailHandler");
 const Auth = require("../auth");
 const UserModel = require('../models/user');
+const { dbError, AppError } = require("../handlers/errorHandlers");
+const { sendEmail } = require("../handlers/mailHandler");
 
-exports.register = asyncWrapper( async (req, res) => {
-  const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
-    folder: "Avatar",
-    width: 150,
-    crop: "scale",
-  });
-
+/* User CRUD methods */
+/* -------------------- */
+exports.register = async (req, res) => {
   const { name, email, password } = req.body;
-  const user = await User.create({
+  const myCloud = { public_id: '', secure_url: ''};
+
+  if (req.body && req.body.avatar) {
+    myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
+      folder: "Avatar",
+      width: 150,
+      crop: "scale",
+    });  
+  }
+
+  await UserModel.create({
     name,
-    password,
     email,
+    password,
     avatar: {
       public_id: myCloud.public_id,
       url: myCloud.secure_url,
-    },
+    }})
+    .then((user) => {
+      Auth.sendJWTToken(user, 201, res);
+    })
+    .catch((error) => {
+      dbError(res, error);
+    });
+};
+
+exports.read = async (req, res) => {
+  await UserModel.findById(req.user.id)
+    .then((user) => {
+      res.status(200).json({
+        success: true,
+        user: user
+      });
+    })
+    .catch((error) => {
+      dbError(res, error);
+    });
+};
+
+exports.list = async (req, res, next) => {
+  await UserModel.find()
+    .then((users) => {
+      res.status(201).json({
+        success: true,
+        users: users,
+      });
+    }).catch((error) => {
+      dbError(res, error);
+    });
+};
+
+exports.update = async (req, res, next) => {
+  // object with user new data
+  const newUser = {};
+
+  if (req.body.avatar !== "") {
+    const user = await UserModel.findById(req.user.id);
+    const imageId = user.avatar.public_id;
+
+    await cloudinary.v2.uploader.destroy(imageId);
+    const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
+      folder: "Avatar",
+      width: 150,
+      crop: "scale",
+    });
+
+    newUserData.avatar = {
+      public_id: myCloud.public_id,
+      url: myCloud.secure_url,
+    };
+  }
+  newUser.name = req.body.name;
+  newUser.email = req.body.email;
+
+  // set new value of user
+  await User.findByIdAndUpdate(req.user.id, newUserData, {
+    new: true,
+    runValidators: true,
+    useFindAndModify: false,
+  })
+  .then((user) => {
+    user.save();
+    res.status(200).json({
+      success: true,
+      user: user,
+    });
+  })
+  .catch((error) => {
+    dbError(res, error);
   });
+};
 
-  Auth.sendJWTToken(user, 201, res);
-});
+/* Admin User Methods */
+/* ------------------ */
+exports.readUser = async (req, res, next) => {
+  if (!req.params.id) {
+    return next(new AppError(`User does not exist with Id: ${req.params.id}`));
+  }
+
+  await UserModel.findById(req.params.id)
+    .then((user) => {
+      res.status(200).json({
+        success: true,
+        user: user,
+      });
+    })
+    .catch((error) => {
+      dbError(res, error);
+    });
+};
+
+exports.delete = async (req, res, next) => {
+  if (!req.params.id) {
+    return next(new AppError(`User does not exist with Id: ${req.params.id}`, 400));
+  }
+
+  await UserModel.findById(req.params.id)
+    .then((user) => {
+      const imageId = user.avatar.public_id;
+      cloudinary.v2.uploader.destroy(imageId);
+
+      user.remove();
+
+      res.status(200).json({
+        success: true,
+        message: "User Deleted Successfully",
+      });
+    })
+    .catch((error) => {
+      dbError(res, error);
+    })
+};
+
+exports.updateRole = async (req, res, next) => {
+  const newUserData = {
+    name: req.body.name,
+    email: req.body.email,
+    role: req.body.role,
+  };
+
+  await UserModel.findByIdAndUpdate(req.params.id, newUserData, {
+      new: true,
+      runValidators: true,
+      useFindAndModify: false,
+    })
+    .then((user) => {
+      res.status(200).json({
+        success: true,
+        user: user
+      });
+    })
+    .catch((error) => {
+      dbError(res, error);
+    });
+};
 
 
-//// Forgot Password
-exports.forgotPassword = asyncWrapper(async (req, res, next) => {
+/* Password Methods ( reset, forgot, update ) */
+/* ------------------------------------------ */
+exports.forgotPassword = async (req, res, next) => {
   const user = await User.findOne({ email: req.body.email });
 
-  // when user with this email not found
   if (!user) {
-    return next(catchErrors("User not found", 404));
+    return next(new AppError("User not found", 404));
   }
 
   // Get ResetPassword Token
@@ -57,7 +195,6 @@ exports.forgotPassword = asyncWrapper(async (req, res, next) => {
 
   try {
     await sendEmail({
-      // sendEmail is method writen by us in utils folder.
       email: user.email,
       subject: `Ecommerce Password Recovery`,
       message,
@@ -73,200 +210,56 @@ exports.forgotPassword = asyncWrapper(async (req, res, next) => {
     user.resetPasswordExpire = undefined;
 
     await user.save({ validateBeforeSave: false });
-
-    return next(catchErrors(error.message, 500));
+    return next(new AppError(error.message, 500));
   }
-});
+};
 
-//>>>>>>>>>>>>>>> reset and update password :
 exports.resetPassword = async (req, res, next) => {
-  // creating token hash because we save resetPasswordToken  in hash form. and we send to user resetToken in hex bytes form in url . now converting that byte form to hex form for matching does user given reset token is same or not which one save in Database
-  // we will extract reset token from req.params.token because we sended that token inside nodemailer message url when user will click on that link he will redirect on that  url
+  if (req.body.password !== req.body.confirmPassword) {
+    return next(new AppError("Password does not equal to confirmPassword", 400));
+  }
+  if (!req.params.token) {
+    return next(new AppError("Reset Password Token is invalid or has been expired", 400));
+  }
 
   const resetPasswordToken = crypto
     .createHash("sha256")
     .update(req.params.token)
     .toString("hex");
 
-  // now find that user with that hash token in db
-  const user = await models.users.findOne({
+  await UserModel.findOne({
     resetPasswordToken,
-    resetPasswordExpire: { $gt: Date.now() }, // if resetPasswordExpire {gt : => greater than} currDate  cheking is token expires or not
-  });
+    resetPasswordExpire: { $gt: Date.now() }})
+    .then((user) => {
+      user.password = req.body.password;
+      user.resetPasswordToken = undefined;
+      user.resetPasswordExpire = undefined;   
+      user.save();
 
-  // if user not with that token or expire token
-  if (!user) {
-    return next(
-      catchErrors(
-        "Reset Password Token is invalid or has been expired",
-        400
-      )
-    );
-  }
-
-  // when new pass or confirm pass are not same
-
-  if (req.body.password !== req.body.confirmPassword) {
-    return next(
-      new AppError("Password does not equal to confirmPassword", 400)
-    );
-  }
-
-  // set that new password
-  user.password = req.body.password;
-  //once pass set then no need token in data base untll user not reset the pass
-  user.resetPasswordToken = undefined;
-  user.resetPasswordExpire = undefined;
-
-  // savw change to db
-  await user.save();
-  // this will send new token to user  bcz user succesfully logged in with new pass
-  send_jwt_token(user, 200, res);
+      Auth.sendJWTToken(updated, 200, res);
+    }).catch((error) => {
+      dbError(res, error);
+    });
 };
 
-//// Get User Detail  >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-exports.getUserDetails = async (req, res) => {
-
-  const user = await models.users.findById(req.user.id); // user.id because we set that user into as user.req when user gose autentiction. becauae all data of users set into req.user. only user when logged in then access this function
-  res.status(200).json({
-    success: true,
-    user, // profile details of user
-  });
-};
-
-// update User password>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 exports.updatePassword = async (req, res, next) => {
-  const user = await models.users.findById(req.user.id).select("+password"); // + password because pass not allowed in shcema to acsess
-   
-  const isPasswordMatched = await user.compare_pass(req.body.oldPassword); // user.comparePassword this method define in user Schema  for comapre given normal pass to savde hash pass
-  // when user not found
-  if (!isPasswordMatched) {
-    return next(new AppError("Old password is incorrect", 400));
-  }
   if (req.body.newPassword !== req.body.confirmPassword) {
     return next(new AppError("password does not match", 400));
   }
-  // now set the new pass
-  user.password = req.body.newPassword;
-  await user.save();
-  // now send new token to user . becasue user loggedin with new pass
-  send_jwt_token(user, 200, res);
-};
 
-//>>>>>> Update user Profile>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-exports.updateProfile = async (req, res, next) => {
-  // object with user new data
-  const newUserData = {
-    name: req.body.name,
-    email: req.body.email,
-  };
+  await UserModel.findById(req.user.id)
+    .select("+password")
+    .then((user) => {
+      const isPasswordMatched = user.compare_pass(req.body.oldPassword);
+      if (!isPasswordMatched) {
+        return next(new AppError("Old password is incorrect", 400));
+      }
 
-  // if avatar not empty then
-  if (req.body.avatar !== "") {
-    const user = await models.users.findById(req.user.id);
-    const imageId = user.avatar.public_id;
+      user.password = req.body.newPassword;
+      user.save();
 
-    //  await cloudinary.v2.uploader.destroy(imageId); // delete old Image from cloudnairy
-    await cloudinary.v2.uploader.destroy(imageId);
-
-    const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
-      folder: "Avatar", // this folder cloudainry data base manage by us
-      width: 150,
-      crop: "scale",
-    });
-
-    newUserData.avatar = {
-      public_id: myCloud.public_id, // id for img
-      url: myCloud.secure_url, // new User data
-    };
-  }
-
-  // set new value of user
-  const user = await User.findByIdAndUpdate(req.user.id, newUserData, {
-    new: true,
-    runValidators: true,
-    useFindAndModify: false,
-  });
-
-  await user.save();
-  res.status(200).json({
-    success: true,
-    user,
-  });
-};
-
-//>> Get single user (admin) Access only>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-exports.getSingleUser = async (req, res, next) => {
-  const user = await User.findById(req.params.id);
-  // if user not found with that id
-  if (!user) {
-    return next(
-      new AppError(`User does not exist with Id: ${req.params.id}`)
-    );
-  }
-
-  res.status(200).json({
-    success: true,
-    user,
-  });
-};
-
-//>>>> update User Role -- Admin {may admin can change any user to admin}>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-exports.updateUserRole = async (req, res, next) => {
-  // add set new role of user
-  const newUserData = {
-    name: req.body.name,
-    email: req.body.email,
-    role: req.body.role,
-  };
-  await models.users.findByIdAndUpdate(req.params.id, newUserData, {
-    new: true,
-    runValidators: true,
-    useFindAndModify: false,
-  });
-
-  res.status(200).json({
-    success: true,
-  });
-};
-
-// delete user --Admin(only admin can delete user)>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-exports.deleteUser = async (req, res, next) => {
-  const user = await User.findById(req.params.id);
-  // when no user found with that id
-  if (!user) {
-    return next(
-      new ErrorHandler(`User does not exist with Id: ${req.params.id}`, 400)
-    );
-  }
-
-  // delete iamge from cloud as well
-  const imageId = user.avatar.public_id;
-  await cloudinary.v2.uploader.destroy(imageId);
-
-  // if user founded the just remove from database
-  await user.remove();
-
-  res.status(200).json({
-    success: true,
-    message: "User Deleted Successfully",
-  });
-};
-
-// getAll user Admin>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-exports.list = async (req, res, next) => {
-  UserModel.find()
-    .then((users) => {
-      res.status(201).json({
-        success: true,
-        users: users,
-      });
+      Auth.sendJWTToken(user, 200, res);
     }).catch((error) => {
-      res.status(500).json({
-        success: false,
-        url: req.url,
-        error: error
-      });
+      dbError(res, error);
     });
 };
