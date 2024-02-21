@@ -23,7 +23,7 @@ const adminSchema = new Schema({
     type: String,
     required: true,
   },
-  name: { type: String, required: rue },
+  name: { type: String, required: true },
   surname: { type: String, required: true },
   photo: {
     type: String,

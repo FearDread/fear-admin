@@ -82,8 +82,6 @@ exports.getAllOrders = asyncWrapper(async (req, res, next) => {
 exports.updateOrder = asyncWrapper(async (req, res, next) => {
    
   const order = await orderModel.findById(req.params.id);
-
-    
   if (!order) {
     return next(new ErrorHandler("Order not found with this id", 400));
   }

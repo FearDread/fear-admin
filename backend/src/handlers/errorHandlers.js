@@ -25,9 +25,9 @@ exports.catchErrors = (fn) => {
 };
 
 exports.authError = (success, res, msg, jwt) => {
-  return res.status(401).json({
+  res.status(401).json({
     success: success,
-    result: null,
+    result: res,
     message: msg,
     jwtExpired: jwt ? jwt : true
   });

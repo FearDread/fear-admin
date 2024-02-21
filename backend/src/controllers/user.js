@@ -2,9 +2,9 @@ const crypto = require("crypto");
 const cloudinary = require("cloudinary");
 const asyncWrapper = require('express-async-handler');
 const { catchErrors, authError } = require("../handlers/errorHandlers");
-const { sendJWTToken, sendEmail } = require("../handlers/mailHandler");
-
-const User = require('../models/user');
+const { sendEmail } = require("../handlers/mailHandler");
+const Auth = require("../auth");
+const UserModel = require('../models/user');
 
 exports.register = asyncWrapper( async (req, res) => {
   const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
@@ -24,45 +24,9 @@ exports.register = asyncWrapper( async (req, res) => {
     },
   });
 
-  sendJWTToken(user, 201, res);
+  Auth.sendJWTToken(user, 201, res);
 });
 
-exports.login = asyncWrapper( async (req, res, next) => {
-  const { email, password } = req.body;
-
-  if (!email || !password) {
-    return next(catchErrors("Please Enter Email & Password", 400));
-  }
-
-  const user = await User.findOne({ email }).select("+password");
-
-  if (!user) {
-    return next(catchErrors("Invalid email or password", 401));
-  }
-
-  const isPasswordMatched = await user.comparePassword(password);
-
-  if (!isPasswordMatched) {
-    return next(catchErrors("Invalid email or password", 401));
-  }
-
-  sendJWTToken(user, 200, res);
-});
-
-// logOut
-
-exports.logout = async (req, res) => {
-
-  res.cookie("token", null, {
-    expires: new Date(Date.now()),
-    httpOnly: true,
-  });
-
-  res.status(200).json({
-    success: true,
-    message: "User logged out",
-  });
-};
 
 //// Forgot Password
 exports.forgotPassword = asyncWrapper(async (req, res, next) => {
@@ -92,7 +56,7 @@ exports.forgotPassword = asyncWrapper(async (req, res, next) => {
   const message = `Your password reset token is :- \n\n ${resetPasswordUrl} \n\nIf you have not requested this email then, please ignore it.`;
 
   try {
-    await send_email({
+    await sendEmail({
       // sendEmail is method writen by us in utils folder.
       email: user.email,
       subject: `Ecommerce Password Recovery`,
@@ -291,11 +255,18 @@ exports.deleteUser = async (req, res, next) => {
 };
 
 // getAll user Admin>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-exports.getAllUser = asyncWrapper(async (req, res, next) => {
-  const users = await User.find();
-
-  res.status(201).json({
-    success: true,
-    users: users,
-  });
-});
+exports.list = async (req, res, next) => {
+  UserModel.find()
+    .then((users) => {
+      res.status(201).json({
+        success: true,
+        users: users,
+      });
+    }).catch((error) => {
+      res.status(500).json({
+        success: false,
+        url: req.url,
+        error: error
+      });
+    });
+};
