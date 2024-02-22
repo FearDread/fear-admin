@@ -1,10 +1,10 @@
 {
-  "name": "black-dashboard-pro-react",
+  "name": "fear-admin-dashboard",
   "version": "1.2.1",
   "private": true,
-  "homepage": "https://demos.creative-tim.com/black-dashboard-pro-react/#/admin/dashboard",
   "dependencies": {
     "autoprefixer": "10.4.5",
+    "axios": "^1.6.7",
     "bootstrap": "^4.5.3",
     "chart.js": "3.4.1",
     "classnames": "2.3.1",
@@ -15,6 +15,7 @@
     "postcss": "^8.4.14",
     "prop-types": "15.8.1",
     "react": "18",
+    "react-alert": "^7.0.3",
     "react-big-calendar": "0.40.2",
     "react-bootstrap-sweetalert": "5.2.0",
     "react-bootstrap-wizard": "0.0.9",
@@ -23,11 +24,15 @@
     "react-dom": "18",
     "react-jvectormap": "0.0.16",
     "react-notification-alert": "0.0.13",
+    "react-redux": "^9.1.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "5.0.1",
     "react-select": "^3.1.1",
     "react-table": "7.8.0",
     "reactstrap": "^8.7.1",
+    "redux": "^5.0.1",
+    "redux-devtools-extension": "^2.13.9",
+    "redux-thunk": "^3.1.0",
     "sass": "1.53.0"
   },
   "devDependencies": {
@@ -40,7 +45,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build && gulp licenses",
+    "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "install:clean": "rm -rf node_modules/ && rm -rf package-lock.json && npm install && npm start",
