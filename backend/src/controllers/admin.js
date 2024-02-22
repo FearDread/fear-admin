@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Admin = require('../models/admin');
-const asyncHandler = require('../handlers/asyncHandler');
-const {dbError, authError } = require("../handlers/errorHandlers");
+const asyncHandler = require('../_helpers/asyncHandler');
+const {dbError, authError } = require("../_helpers/errorHandlers");
 
 /**
  *  Get all documents of a Model

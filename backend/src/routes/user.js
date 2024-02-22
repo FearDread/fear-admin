@@ -1,11 +1,10 @@
 const express = require("express");
 const router = express.Router();
-const utils = require("../handlers/mailHandler");
 const User = require("../controllers/user");
 const { isAuthenticated,
         authorizeRoles,
         isValidToken, } = require("../auth");
-const { catchErrors, authError } = require("../handlers/errorHandlers");
+const { catchErrors, authError } = require("../_helpers/errorHandlers");
 
 router.route("/register").post(catchErrors(User.register));
 router.route("/profile").get(isAuthenticated, catchErrors(User.read));

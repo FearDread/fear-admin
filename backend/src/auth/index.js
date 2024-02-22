@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 const AdminModel = require("../models/admin");
 const UserModel = require("../models/user");
-const { dbError, authError, notFound, AppError } = require("../handlers/errorHandlers");
+const { dbError, authError, notFound, AppError } = require("../_helpers/errorHandlers");
 require("dotenv").config({ path: __dirname + "../.env" });
 
 exports.login = async (req, res, next) => {
