@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const AdminModel = require("../models/admin");
 const UserModel = require("../models/user");
 const { dbError, authError, notFound, AppError } = require("../handlers/errorHandlers");
+require("dotenv").config({ path: __dirname + "../.env" });
 
 exports.login = async (req, res, next) => {
   const { email, password } = req.body;
@@ -96,15 +97,24 @@ exports.isValidToken = async (req, res, next) => {
 
 exports.sendJWTToken = (user, statusCode, res) => {
   const token = user.getJWTToken();
+    /*
+  const token = jwt.sign(
+    {
+      exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24,
+      id: user._id,
+    },
+    process.env.JWT_SECRET
+  );
+  */
   const options = {
-    expires: new Date( Date.now() + config.COOKIE_EXPIRE * 24 * 60 * 60 * 1000),
+    expires: new Date( Date.now() + process.env.COOKIE_EXPIRE * 24 * 60 * 60 * 1000),
     httpOnly: true,
   };
 
   res.status(statusCode).cookie("token", token, options)
     .json({
       success: true,
-      user,
-      token,
+      user: user,
+      token: token,
     });
 };
