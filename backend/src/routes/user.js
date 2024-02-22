@@ -2,19 +2,12 @@ const express = require("express");
 const router = express.Router();
 const utils = require("../handlers/mailHandler");
 const User = require("../controllers/user");
-const { login, logout,
-        isAuthenticated,
+const { isAuthenticated,
         authorizeRoles,
         isValidToken, } = require("../auth");
 const { catchErrors, authError } = require("../handlers/errorHandlers");
 
-/*move to auth module */
-
-router.route("/login").post(catchErrors(login));
-router.route("/logout").get(catchErrors(logout));
-/* ------------------- */
 router.route("/register").post(catchErrors(User.register));
-
 router.route("/profile").get(isAuthenticated, catchErrors(User.read));
 router.route("/password/forgot").post(User.forgotPassword);
 router.route("/password/update").put(isAuthenticated, User.updatePassword);

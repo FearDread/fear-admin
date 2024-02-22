@@ -3,6 +3,7 @@ const validator = require("validator");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
+require("dotenv").config({ path: __dirname + "../.env" });
 
 const schema = mongoose.Schema ({
       name: {
@@ -62,12 +63,14 @@ const schema = mongoose.Schema ({
     };
 
     schema.methods.getJWTToken = function () {
-    
-      return jwt.sign(
-        { id: this._id },
-        { expiresIn: process.env.JWT_EXPIRE },
+      const token = jwt.sign(
+        {
+          exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24,
+          id: this._id,
+        },
         process.env.JWT_SECRET
       );
+      return token;
     };
 
     schema.methods.getRESETToken = function () {

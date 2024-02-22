@@ -44,7 +44,7 @@ app.use(express.static(path.join(path.resolve(), "/frontend")));
 app.get("/*", (req, res) => {
     console.log('API Route hit :: ' + req.url);
     //res.redirect('http://fear.master.com:3000/home');
-    res.sendFile(path.resolve(path.resolve(), "frontend", "src", "index.js"))
+    //res.sendFile(path.resolve(path.resolve(), "frontend", "src", "index.js"))
 });
 
 module.exports = app;

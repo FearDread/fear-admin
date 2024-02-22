@@ -66,13 +66,12 @@ exports.list = async (req, res) => {
     });
 };
 
-exports.update = asyncWrapper(async (req, res, next) => {
-  let product = await Product.findById(req.params.id);
-
-  if (!product) {
+exports.update = async (req, res, next) => {
+  if (!req.params.id) {
     return next(new AppError("Product not found", 404));
   }
 
+  let product = await Product.findById(req.params.id);
   let images = [];
 
   if (typeof req.body.images === "string") {
@@ -98,21 +97,23 @@ exports.update = asyncWrapper(async (req, res, next) => {
         url: result.secure_url,
       });
     }
-
     req.body.images = imagesLinks;
   }
 
-  product = await ProductModel.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-    useFindAndModify: false,
-  });
-
-  res.status(201).json({
-    success: true,
-    product: product,
-  });
-});
+  await ProductModel.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+      useFindAndModify: false,
+    })
+    .then((data) => {
+      res.status(201).json({
+        success: true,
+        product: product,
+      });
+    }).catch((error) => {
+      dbError(res, error);
+    });
+};
 
 exports.delete = async (req, res, next) => {
   let product = await ProductModel.findById(req.params.id);
