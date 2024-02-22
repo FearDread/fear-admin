@@ -1,20 +1,4 @@
-/*!
-
-=========================================================
-* Black Dashboard PRO React - v1.2.1
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/black-dashboard-pro-react
-* Copyright 2022 Creative Tim (https://www.creative-tim.com)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
-import React from "react";
+import React, { useState , useEffect } from "react";
 import classnames from "classnames";
 // reactstrap components
 import {
@@ -32,8 +16,12 @@ import {
   Container,
   Col
 } from "reactstrap";
+import { useDispatch, useSelector } from "react-redux";
+import { useHistory, useLocation } from "react-router-dom";
+import { login, clearErrors } from "../../_actions/userAction";
 
 const Login = () => {
+
   const [state, setState] = React.useState({});
   React.useEffect(() => {
     document.body.classList.toggle("login-page");
@@ -41,6 +29,59 @@ const Login = () => {
       document.body.classList.toggle("login-page");
     };
   });
+  const history = useHistory();
+    const loaction = useLocation();
+
+    const dispatch = useDispatch();
+    const alert = useAlert();
+
+    const { isAuthenticated } = useSelector(
+      (state) => state.userData
+    );
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isValidEmail, setIsValidEmail] = useState(true);
+
+  const handleEmailChange = (event) => {
+    const newEmail = event.target.value;
+    setEmail(newEmail);
+    setIsValidEmail(
+      newEmail !== "" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)
+    );
+  };
+
+  const handlePasswordChange = (event) => {
+    setPassword(event.target.value);
+  };
+
+  const handleShowPasswordClick = () => {
+    setShowPassword(!showPassword);
+  };
+  
+
+  const isSignInDisabled = !(email && password && isValidEmail);
+
+  
+    const redirect = loaction.search
+      ? loaction.search.split("=")[1]
+      : "/account";
+   useEffect(() => {
+     if (error) {
+       alert.error(error);
+       dispatch(clearErrors());
+     }
+
+     if (isAuthenticated) {
+       history.push(redirect);
+     }
+   }, [dispatch, isAuthenticated, history, redirect]);
+
+     function handleLoginSubmit(e) {
+       e.preventDefault();
+       dispatch(login(email, password));
+     }
   return (
     <>
       <div className="content">
@@ -68,6 +109,9 @@ const Login = () => {
                       type="text"
                       onFocus={(e) => setState({ ...state, emailFocus: true })}
                       onBlur={(e) => setState({ ...state, emailFocus: false })}
+                      value={email}
+                      onChange={handleEmailChange}
+                      error={!isValidEmail && email !== ""}
                     />
                   </InputGroup>
                   <InputGroup
@@ -85,6 +129,8 @@ const Login = () => {
                       type="text"
                       onFocus={(e) => setState({ ...state, passFocus: true })}
                       onBlur={(e) => setState({ ...state, passFocus: false })}
+                      value={password}
+                      onChange={handlePasswordChange}
                     />
                   </InputGroup>
                 </CardBody>
@@ -94,7 +140,7 @@ const Login = () => {
                     className="mb-3"
                     color="primary"
                     href="#pablo"
-                    onClick={(e) => e.preventDefault()}
+                    onClick={              onClick={handleLoginSubmit}}
                     size="lg"
                   >
                     Get Started
