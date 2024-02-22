@@ -33,7 +33,7 @@ const Login = () => {
     const loaction = useLocation();
 
     const dispatch = useDispatch();
-    const alert = useAlert();
+    //const alert = useAlert();
 
     const { isAuthenticated } = useSelector(
       (state) => state.userData
@@ -68,10 +68,10 @@ const Login = () => {
       ? loaction.search.split("=")[1]
       : "/account";
    useEffect(() => {
-     if (error) {
-       alert.error(error);
+     //if (error) {
+       //alert.error(error);
        dispatch(clearErrors());
-     }
+     //}
 
      if (isAuthenticated) {
        history.push(redirect);
@@ -140,7 +140,7 @@ const Login = () => {
                     className="mb-3"
                     color="primary"
                     href="#pablo"
-                    onClick={              onClick={handleLoginSubmit}}
+                    onClick={{handleLoginSubmit}}
                     size="lg"
                   >
                     Get Started

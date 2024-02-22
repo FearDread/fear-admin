@@ -96,16 +96,33 @@ const SortingTable = (props) => {
               key={key}
             >
               {prop.data.map((data, k) => {
-                return (
-                  <td
-                    className={classnames({
-                      [data.className]: data.className !== undefined
-                    })}
-                    key={k}
-                  >
-                    {data.text}
-                  </td>
-                );
+                if (data.img !== undefined) {
+                  return (
+                    <td
+                      key={k}
+                    >
+                      <div 
+                        className={classnames({
+                          [data.className]: data.className !== undefined
+                        })}
+                      >
+                        <img src={data.img} ></img>
+                      </div>
+                    </td>
+                  );
+                } else {
+                  return (
+                    <td
+                      className={classnames({
+                        [data.className]: data.className !== undefined
+                      })}
+                      key={k}
+                    >
+                      {data.text}
+                    </td>
+                  );
+                }
+
               })}
             </tr>
           );
@@ -128,8 +145,8 @@ SortingTable.propTypes = {
       data: PropTypes.arrayOf(
         PropTypes.shape({
           className: PropTypes.string,
-          text: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
-            .isRequired
+          text: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+          img:PropTypes.string
         })
       ).isRequired
     })

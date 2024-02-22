@@ -84,7 +84,7 @@ export function signUp(signupData) {
 
     } catch (error) {
   
-      dispatch({ type: REGISTER_USER_FAIL, payload: error.message })
+      dispatch({ type: REGISTER_USER_FAIL, payload: error.message }) 
     }
 
   }
@@ -147,7 +147,7 @@ export function updateProfile(userData) {
 
 
       const { data } = await axios.put(
-        `/api/v1/profile/update`,
+        `http://fear.master.com:4000/fear/api/profile/update`,
         userData,
         config
       );
@@ -248,13 +248,13 @@ export const resetPassword = (token, passwords) => async (dispatch) => {
 
 
 // get All user Action --> admin 
-export const getAllUsers  = () =>async (dispatch) =>{
+export const getAllUsers  = () => async (dispatch) =>{
      
   try {
 
     dispatch({type : ALL_USERS_REQUEST})
 
-    const { data } = await axios.get("/fear/api/admin/users");
+    const { data } = await axios.get("http://fear.master.com:4000/fear/api/admin/users");
 
     dispatch({ type: ALL_USERS_SUCCESS, payload: data.users});
     
@@ -269,7 +269,7 @@ export const getAllUsers  = () =>async (dispatch) =>{
 export const getUserDetails = (id) => async (dispatch) => {
   try {
      dispatch({type : USER_DETAILS_REQUEST})
-         const { data } = await axios.get(`/api/v1/admin/user/${id}`);
+         const { data } = await axios.get(`http://fear.master.com:4000/fear/api/admin/user/${id}`);
             dispatch({ type: USER_DETAILS_SUCCESS, payload: data.user });
 
   } catch (error) {

@@ -27,7 +27,7 @@ import RegularForms from "views/forms/RegularForms.js";
 import Calendar from "views/Calendar.js";
 import Widgets from "views/Widgets.js";
 import Charts from "views/Charts.js";
-import Dashboard from "views/Dashboard.js";
+
 import Buttons from "views/components/Buttons.js";
 import SweetAlert from "views/components/SweetAlert.js";
 import Notifications from "views/components/Notifications.js";
@@ -36,13 +36,74 @@ import Typography from "views/components/Typography.js";
 import Panels from "views/components/Panels.js";
 import Icons from "views/components/Icons.js";
 import Pricing from "views/pages/Pricing.js";
-import Register from "views/pages/Register.js";
+
 import Timeline from "views/pages/Timeline.js";
 import User from "views/pages/User.js";
-import Login from "views/pages/Login.js";
+
 import Rtl from "views/pages/Rtl.js";
 import Lock from "views/pages/Lock.js";
 
+
+import Dashboard from "views/Dashboard.js";
+import UserList from "_dashboard/UserList.jsx";
+import Products from "_dashboard/ProductList.jsx";
+import Login from "views/pages/Login.js";
+import Register from "views/pages/Register.js";
+
+const routes = [
+  {
+    path: "/dashboard",
+    name: "Dashboard",
+    rtlName: "لوحة القيادة",
+    icon: "tim-icons icon-chart-pie-36",
+    component: Dashboard,
+    layout: "/admin"
+  },
+  {
+    collapse: true,
+    name: "Pages",
+    rtlName: "صفحات",
+    icon: "tim-icons icon-image-02",
+    state: "pagesCollapse",
+    views: [
+      {
+        path: "/register",
+        name: "Register",
+        rtlName: "عالتسعير",
+        mini: "R",
+        rtlMini: "ع",
+        component: Register,
+        layout: "/auth"
+      },
+      {
+        path: "/login",
+        name: "Login",
+        rtlName: "عالتسعير",
+        mini: "L",
+        rtlMini: "ع",
+        component: Login,
+        layout: "/auth"
+      },
+    ]
+  },
+  {
+    path: "/users",
+    name: "Users",
+    rtlName: "لوحة القيادة",
+    icon: "tim-icons icon-molecule-40",
+    component: UserList,
+    layout: "/admin"
+  },
+  {
+    path: "/products",
+    name: "Products",
+    rtlName: "لوحة القيادة",
+    icon: "tim-icons icon-chart-bar-32",
+    component: Products,
+    layout: "/admin"
+  },
+];
+/*
 const routes = [
   {
     path: "/dashboard",
@@ -357,5 +418,5 @@ const routes = [
     layout: "/admin"
   }
 ];
-
+*/
 export default routes;
