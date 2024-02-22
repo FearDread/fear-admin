@@ -40,11 +40,12 @@ app.use("/fear/api", products);
 //app.use("/fear/api", order);
 //app.use("/fear/api", payment);
 
-app.use(express.static(path.join(path.resolve(), "/frontend")));
-app.get("/*", (req, res) => {
-    console.log('API Route hit :: ' + req.url);
-    //res.redirect('http://fear.master.com:3000/home');
-    //res.sendFile(path.resolve(path.resolve(), "frontend", "src", "index.js"))
-});
+const __dirname1 = path.resolve();
+
+app.use(express.static(path.join(__dirname1, "/dashboard/build")));
+
+app.get("*", (req, res) =>
+  res.sendFile(path.resolve(__dirname1, "dashboard", "build", "index.html"))
+);
 
 module.exports = app;
