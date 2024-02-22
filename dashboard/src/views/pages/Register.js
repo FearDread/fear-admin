@@ -20,12 +20,13 @@ import {
   Row,
   Col
 } from "reactstrap";
-
+import AnimatedBackground from "components/AnimatedBackground";
 //import { Link } from "react-router-dom";
 import { signUp, clearErrors } from "../../_actions/userAction";
 import { useDispatch, useSelector } from "react-redux";
 //import { useAlert } from "react-alert";
 import { useHistory } from "react-router-dom";
+import AnimatedBackground from "views/components/AnimatedBackground";
 
 const Register = () => {
   const dispatch = useDispatch();
@@ -105,34 +106,7 @@ const Register = () => {
   
   return (
     <>
-      <div className="background">
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-      </div>
+      <AnimatedBackground />
       <div className="content">
         <Container>
           <Row>
