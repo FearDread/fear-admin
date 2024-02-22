@@ -2,8 +2,8 @@ const crypto = require("crypto");
 const cloudinary = require("cloudinary");
 const Auth = require("../auth");
 const UserModel = require('../models/user');
-const { dbError, AppError } = require("../handlers/errorHandlers");
-const { sendEmail } = require("../handlers/mailHandler");
+const { dbError, AppError } = require("../_helpers/errorHandlers");
+const { sendEmail } = require("../_helpers/mailHandler");
 
 /* User CRUD methods */
 /* -------------------- */
