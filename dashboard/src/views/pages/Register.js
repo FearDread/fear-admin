@@ -1,20 +1,4 @@
-/*!
-
-=========================================================
-* Black Dashboard PRO React - v1.2.1
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/black-dashboard-pro-react
-* Copyright 2022 Creative Tim (https://www.creative-tim.com)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
-import React from "react";
+import React, { useState, useEffect } from "react";
 import classnames from "classnames";
 // reactstrap components
 import {
@@ -37,14 +21,88 @@ import {
   Col
 } from "reactstrap";
 
+//import { Link } from "react-router-dom";
+import { signUp, clearErrors } from "../../_actions/userAction";
+import { useDispatch, useSelector } from "react-redux";
+//import { useAlert } from "react-alert";
+import { useHistory } from "react-router-dom";
+
 const Register = () => {
+  const dispatch = useDispatch();
+  //const alert = useAlert();
+  const history = useHistory();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [state, setState] = React.useState({});
+  const [isValidEmail, setIsValidEmail] = useState(true);
+  const [isValidName, setIsValidName] = useState(true);
+  const [isValidPassword, setIsValidPassword] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
+  //const [confirmPassword, setconfirmPassword] = useState("");
+
+  const { isAuthenticated, error } = useSelector((state) => state.userData);
+
+  useEffect(() => {
+    if (error) {
+      //alert.error(error);
+      dispatch(clearErrors());
+    }
+
+    if (isAuthenticated) {
+      //alert.success("User Registered Successfully");
+      history.push("/account");
+    }
+  }, [dispatch, isAuthenticated, error , history]);
+
   React.useEffect(() => {
     document.body.classList.toggle("register-page");
     return function cleanup() {
       document.body.classList.toggle("register-page");
     };
   });
+
+
+  
+  const handleEmailChange = (event) => {
+    const newEmail = event.target.value;
+    setEmail(newEmail);
+    setIsValidEmail(
+      newEmail !== "" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)
+    );
+  };
+  
+  const handleNameChange = (event) => {
+    const newName = event.target.value;
+    setName(newName);
+    setIsValidName(newName.length >= 4 && newName.length <= 20);
+  };
+  const handlePasswordChange = (event) => {
+    setPassword(event.target.value);
+      setIsValidPassword(event.target.value.length >= 8);
+  };
+  //const handleConfirmPasswordChange = (event) => {
+  //  setconfirmPassword(event.target.value);
+  //};
+
+  const handleShowPasswordClick = () => {
+    setShowPassword(!showPassword);
+  };
+
+  function handleSignUpSubmit(e) {
+    //setLoading(true);
+  e.preventDefault();
+
+  const formData = new FormData();
+  formData.set("name", name);
+  formData.set("email", email);
+  formData.set("password", password);
+  //formData.set("avatar", avatar);
+
+  dispatch(signUp(formData));
+  //setLoading(false);
+}
+  
   return (
     <>
       <div className="content">
@@ -114,6 +172,9 @@ const Register = () => {
                         type="text"
                         onFocus={(e) => setState({ ...state, nameFocus: true })}
                         onBlur={(e) => setState({ ...state, nameFocus: false })}
+                        value={name}
+                        onChange={handleNameChange}
+                        error={!isValidName && name !== ""}
                       />
                     </InputGroup>
                     <InputGroup
@@ -135,6 +196,9 @@ const Register = () => {
                         onBlur={(e) =>
                           setState({ ...state, emailFocus: false })
                         }
+                        error={!isValidEmail && email !== ""}
+                        value={email}
+                        onChange={handleEmailChange}
                       />
                     </InputGroup>
                     <InputGroup
@@ -152,6 +216,11 @@ const Register = () => {
                         type="text"
                         onFocus={(e) => setState({ ...state, passFocus: true })}
                         onBlur={(e) => setState({ ...state, passFocus: false })}
+                        error={!isValidPassword && password !== ""}
+                        onClick={handleShowPasswordClick}
+                        value={password}
+                        onChange={handlePasswordChange}
+                        
                       />
                     </InputGroup>
                     <FormGroup check className="text-left">
@@ -171,7 +240,7 @@ const Register = () => {
                     className="btn-round"
                     color="primary"
                     href="#pablo"
-                    onClick={(e) => e.preventDefault()}
+                    onClick={handleSignUpSubmit}
                     size="lg"
                   >
                     Get Started

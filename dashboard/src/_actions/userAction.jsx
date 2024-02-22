@@ -37,7 +37,7 @@ import {
   DELETE_USER_REQUEST,
   DELETE_USER_FAIL,
   DELETE_USER_SUCCESS,
-} from "../constants/userConstanat";
+} from "../_constants/userConstanat";
 
 
 // login user
@@ -50,7 +50,7 @@ export function login(email, password) {
       const config = { headers: { "Content-Type": "application/json" } };
 
       const { data } = await axios.post(
-        `/api/v1/login`,
+        `http://fear.master.com:4000/fear/api/login`,
         { email, password },
         config
       );
@@ -73,7 +73,7 @@ export function signUp(signupData) {
       };
 
       const { data } = await axios.post(
-        `/api/v1/register`,
+        `http://fear.master.com:4000/fear/api/register`,
         signupData,
         config
       );
@@ -254,7 +254,7 @@ export const getAllUsers  = () =>async (dispatch) =>{
 
     dispatch({type : ALL_USERS_REQUEST})
 
-    const { data } = await axios.get("/api/v1/admin/users");
+    const { data } = await axios.get("/fear/api/admin/users");
 
     dispatch({ type: ALL_USERS_SUCCESS, payload: data.users});
     
