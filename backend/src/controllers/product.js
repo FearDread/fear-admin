@@ -1,4 +1,4 @@
-const { AppError } = require("../handlers/errorHandlers");
+const { AppError } = require("../_helpers/errorHandlers");
 const Product = require("../models/product");
 const asyncWrapper = require('express-async-handler');
 const cloudinary = require("cloudinary");
