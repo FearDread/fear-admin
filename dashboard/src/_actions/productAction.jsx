@@ -28,7 +28,7 @@ import {
  DELETE_REVIEW_FAIL,
   CLEAR_ERRORS,
   ALL_REVIEW_FAIL,
-} from "../constants/productsConstatns";
+} from "_constants/productsConstatns";
 
 // get ALL Products
 export const getProduct = (
