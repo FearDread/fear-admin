@@ -12,7 +12,6 @@ import {
   CardBody,
   CardFooter,
   CardTitle,
-  Select,
   Label,
   FormGroup,
   Form,
@@ -23,6 +22,7 @@ import {
 import {
   Avatar,
   Checkbox,
+  Select,
   TextField
 } from "@material-ui/core";
 import ImageUpload from "components/CustomUpload/ImageUpload.js";

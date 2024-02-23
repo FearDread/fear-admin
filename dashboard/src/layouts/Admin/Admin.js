@@ -28,16 +28,15 @@ import Sidebar from "components/Sidebar/Sidebar.js";
 import FixedPlugin from "components/FixedPlugin/FixedPlugin.js";
 
 import routes from "routes/routes.js";
-
-import logo from "assets/img/react-logo.png";
+import logo from "assets/img/FEAR/logo.png";
 
 var ps;
 
 const Admin = (props) => {
   const [activeColor, setActiveColor] = React.useState("blue");
-  const [sidebarMini, setSidebarMini] = React.useState(true);
+  const [sidebarMini, setSidebarMini] = React.useState(false);
   const [opacity, setOpacity] = React.useState(0);
-  const [sidebarOpened, setSidebarOpened] = React.useState(false);
+  const [sidebarOpened, setSidebarOpened] = React.useState(true);
   const mainPanelRef = React.useRef(null);
   const notificationAlertRef = React.useRef(null);
   const location = useLocation();
@@ -179,8 +178,8 @@ const Admin = (props) => {
         routes={routes}
         activeColor={activeColor}
         logo={{
-          outterLink: "https://www.creative-tim.com/",
-          text: "Creative Tim",
+          outterLink: "/",
+          text: "F-E-A-R",
           imgSrc: logo
         }}
         closeSidebar={closeSidebar}
