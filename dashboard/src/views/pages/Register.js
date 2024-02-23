@@ -27,6 +27,7 @@ import { useDispatch, useSelector } from "react-redux";
 //import { useAlert } from "react-alert";
 import { useHistory } from "react-router-dom";
 import AnimatedBackground from "views/components/AnimatedBackground";
+import CogWheelLoader from "components/Loading/Loading";
 
 const Register = () => {
   const dispatch = useDispatch();
@@ -40,6 +41,7 @@ const Register = () => {
   const [isValidName, setIsValidName] = useState(true);
   const [isValidPassword, setIsValidPassword] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   //const [confirmPassword, setconfirmPassword] = useState("");
 
   const { isAuthenticated, error } = useSelector((state) => state.userData);
@@ -54,7 +56,7 @@ const Register = () => {
       //alert.success("User Registered Successfully");
       history.push("/account");
     }
-  }, [dispatch, isAuthenticated, error , history]);
+  }, [dispatch, loading, isAuthenticated, error, history]);
 
   React.useEffect(() => {
     document.body.classList.toggle("register-page");
@@ -91,7 +93,7 @@ const Register = () => {
   };
 
   function handleSignUpSubmit(e) {
-    //setLoading(true);
+    setLoading(true);
   e.preventDefault();
 
   const formData = new FormData();
@@ -101,11 +103,15 @@ const Register = () => {
   //formData.set("avatar", avatar);
 
   dispatch(signUp(formData));
-  //setLoading(false);
+  setLoading(false);
 }
   
   return (
     <>
+    {loading ? (
+      <CogWheelLoader />
+      ) : (
+      <>
       <AnimatedBackground />
       <div className="content">
         <Container>
@@ -254,7 +260,9 @@ const Register = () => {
         </Container>
       </div>
     </>
-  );
-};
+    )}
+  </>
+)};
+
 
 export default Register;
