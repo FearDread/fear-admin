@@ -28,14 +28,17 @@ exports.create = async (req, res) => {
           {folder: "Products"})
       });
     }
-    
-    const results = await Promise.all(uploadPromises); // wait for all the promises to resolve and store the results in results array eg: [{}, {}, {}] 3 images uploaded successfully and their details are stored in results array
-    for (let result of results) { 
-      imagesLinks.push({
-        product_id: result.public_id,
-        url: result.secure_url,
+    await Promise.all(uploadPromises)
+      .then((results) => {
+        for (let result of results) { 
+          imagesLinks.push({
+            product_id: result.public_id,
+            url: result.secure_url,
+          });
+        }
+      }).catch((error) => {
+        dbEerror(res, error);
       });
-    }
   }
 
   req.body.user = req.user.id;
