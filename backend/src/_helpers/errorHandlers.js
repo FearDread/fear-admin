@@ -55,7 +55,7 @@ exports.dbError = (res, err) => {
     });
 };
 
-exports.notFound = (req, res, next) => {
+exports.notFound = (res) => {
   res.status(404).json({
     success: false,
     message: "Api url doesn't exist ",

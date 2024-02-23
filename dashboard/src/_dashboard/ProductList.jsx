@@ -32,7 +32,6 @@ function ProductList() {
     }
     if (isDeleted) {
       //alert.success("Product Deleted Successfully");
-    
       dispatch({ type: DELETE_PRODUCT_RESET });
     }
     dispatch(getAdminProducts());
@@ -64,7 +63,6 @@ function ProductList() {
 
   // togle handler =>
   const toggleHandler = () => {
-
     setToggle(!toggle);
   };
 
@@ -73,20 +71,20 @@ function ProductList() {
     const handleResize = () => {
       if (window.innerWidth > 999 && toggle) {
         setToggle(false);
-      
-
       }
     };
-       
-          
+        
     window.addEventListener("resize", handleResize);
-
     return () => {
       window.removeEventListener("resize", handleResize);
     };
   }, [toggle]);
 
   return (
+    <>
+    {loading ? (
+      <CogWheelLoader />
+    ) : (
     <>
       <div className="content">
           <Row>
@@ -105,8 +103,9 @@ function ProductList() {
             </Col>
           </Row>
         </div>
-      </>
-  );
-}
+    </>
+  )}
+  </>
+)};
 
 export default ProductList;
