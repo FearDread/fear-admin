@@ -5,13 +5,15 @@ import {
   getAdminProducts,
   deleteProduct,
 } from "_actions/productAction";
+import SortingTable from "components/SortingTable/SortingTable.js";
+import { Card, CardHeader, CardBody, CardTitle, Row, Col } from "reactstrap";
 import { Link, useHistory } from "react-router-dom";
 
 import { DELETE_PRODUCT_RESET } from "_constants/productsConstatns";
 
 function ProductList() {
   const dispatch = useDispatch();
-  const alert = useAlert();
+  //const alert = useAlert();
   const history = useHistory();
   const [toggle, setToggle] = useState(false);
 
@@ -21,15 +23,15 @@ function ProductList() {
   );
   useEffect(() => {
     if (error) {
-      alert.error(error);
+      //alert.error(error);
       dispatch(clearErrors());
     }
     if (deleteError) {
-      alert.error(deleteError);
+      //alert.error(deleteError);
       dispatch(clearErrors());
     }
     if (isDeleted) {
-      alert.success("Product Deleted Successfully");
+      //alert.success("Product Deleted Successfully");
     
       dispatch({ type: DELETE_PRODUCT_RESET });
     }
@@ -39,70 +41,15 @@ function ProductList() {
   const deleteProductHandler = (id) => {
     dispatch(deleteProduct(id));
   };
-
-const columns = [
-  {
-    field: "id",
-    headerName: "Product ID",
-    minWidth: 230,
-    flex: 0.5,
-    headerClassName: "column-header",
-  },
-  {
-    field: "name",
-    headerName: "Name",
-    minWidth: 150,
-    flex: 0.5,
-    magin: "0 auto",
-    headerClassName: "column-header hide-on-mobile",
-  },
-  {
-    field: "stock",
-    headerName: "Stock",
-    type: "number",
-    minWidth: 100,
-    flex: 0.5,
-    headerClassName: "column-header hide-on-mobile",
-  },
-  {
-    field: "price",
-    headerName: "Price",
-    type: "number",
-    minWidth: 200,
-    flex: 0.5,
-    headerClassName: "column-header hide-on-mobile",
-  },
-  {
-    field: "actions",
-    headerName: "Actions",
-    flex: 1,
-    sortable: false,
-    minWidth: 230,
-    headerClassName: "column-header1",
-    renderCell: (params) => {
-      return (
-        <>
-          <Link
-            to={`/admin/product/${params.getValue(params.id, "id")}`}
-            style={{ marginLeft: "1rem" }}
-          >
-            <EditIcon className="icon-" />
-          </Link>
-
-          <div
-            onClick={() =>
-              deleteProductHandler(params.getValue(params.id, "id"))
-            }
-          >
-            <DeleteIcon className="iconbtn" />
-          </div>
-        </>
-      );
-    },
-  },
-];
-
-
+  const tableHeader = [
+    { text: "ID" },
+    { text: "Name" },
+    { text: "Description" },
+    { text: "info" },
+    { text: "Stock" },
+    { text: "Price" },
+    { className: "text-center", text: "Reviews" }
+  ]
   const rows = [];
 
   products &&
@@ -141,36 +88,24 @@ const columns = [
 
   return (
     <>
-      {loading ? (
-        <Loader />
-      ) : (
-        <>
-          <MetaData title={`ALL PRODUCTS - Admin`} />
-
-          <div className="product-list" style={{ marginTop: 0 }}>
-            <div className={!toggle ? "listSidebar" : "toggleBox"}>
-              <Sidebar />
-            </div>
-
-            <div className="list-table">
-              <Navbar toggleHandler={toggleHandler} />
-              <div className="productListContainer">
-                <h4 id="productListHeading">ALL PRODUCTS</h4>
-
-                <DataGrid
-                  rows={rows}
-                  columns={columns}
-                  pageSize={10}
-                  disableSelectionOnClick
-                  className="productListTable"
-                  autoHeight
-                />
-              </div>
-            </div>
-          </div>
-        </>
-      )}
-    </>
+      <div className="content">
+          <Row>
+            <Col className="mb-5" md="12">
+              <Card>
+                <CardHeader>
+                  <CardTitle tag="h4">All Products</CardTitle>
+                </CardHeader>
+                <CardBody>
+                  <SortingTable
+                    thead={tableHeader}
+                    tbody={rows}
+                  />
+                </CardBody>
+              </Card>
+            </Col>
+          </Row>
+        </div>
+      </>
   );
 }
 

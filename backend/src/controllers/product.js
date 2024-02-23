@@ -15,7 +15,7 @@ exports.create = async (req, res) => {
     }
 
     const imagesLinks = [];
-    
+
     // Split images into chunks due to cloudinary upload limits only 3 images can be uploaded at a time so we are splitting into chunks and uploading them separately eg: 9 images will be split into 3 chunks and uploaded separately
     const chunkSize = 3;
     const imageChunks = [];
@@ -57,7 +57,7 @@ exports.create = async (req, res) => {
 };
 
 exports.list = async (req, res) => {
-  await Product.find()
+  await ProductModel.find()
     .then((products) => {
       res.status(201).json({  
         success: true,
