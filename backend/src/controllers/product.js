@@ -9,6 +9,7 @@ exports.create = async (req, res) => {
   const chunkSize = 3;
   const imageChunks = [];
   const imagesLinks = [];
+  const uploadPromises = [];
 
   let images = []; 
   if (req.body.images) {
@@ -21,24 +22,24 @@ exports.create = async (req, res) => {
     while (images.length > 0) {
       imageChunks.push(images.splice(0, chunkSize));
     }
-  
+    
     for (let chunk of imageChunks) {
-      const uploadPromises = chunk.map((img) => {
+       uploadPromises = chunk.map((img) => {
         cloudinary.v2.uploader.upload(img,
           {folder: "Products"})
       });
     }
-    await Promise.all(uploadPromises)
-      .then((results) => {
-        for (let result of results) { 
-          imagesLinks.push({
-            product_id: result.public_id,
-            url: result.secure_url,
-          });
-        }
-      }).catch((error) => {
-        dbEerror(res, error);
-      });
+
+    if (uploadPromises && uploadPromises.length > 0) {
+      let results = await Promise.all(uploadPromises);
+
+      for (let result of results) { 
+        imagesLinks.push({
+          product_id: result.public_id,
+          url: result.secure_url,
+        });
+      }
+    }
   }
 
   req.body.user = req.user.id;
