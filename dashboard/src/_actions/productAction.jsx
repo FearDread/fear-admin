@@ -74,7 +74,7 @@ export const getProductDetails = (id) => {
         type: PRODUCT_DETAILS_REQUEST,
       });
 
-      const { data } = await axios.get(`/api/v1/product/${id}`);
+      const { data } = await axios.get(`http://fear.master.com/fear/api/product/${id}`);
 
       dispatch({
         type: PRODUCT_DETAILS_SUCCESS,
