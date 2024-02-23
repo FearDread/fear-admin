@@ -16,6 +16,7 @@ import {
   Container,
   Col
 } from "reactstrap";
+import AnimatedBackground from "views/components/AnimatedBackground";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory, useLocation } from "react-router-dom";
 import { login, clearErrors } from "../../_actions/userAction";
@@ -84,34 +85,7 @@ const Login = () => {
      }
   return (
     <>
-      <div className="background">
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-      </div>
+      <AnimatedBackground />
       <div className="content">
         <Container>
           <Col className="ml-auto mr-auto" lg="4" md="6">

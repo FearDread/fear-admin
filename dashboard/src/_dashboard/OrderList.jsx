@@ -1,18 +1,13 @@
 import React, {useState , useEffect } from "react";
-import "./ProductList.css";
-import { DataGrid } from "@material-ui/data-grid";
-import { Link } from "react-router-dom";
+
+import { Link, useHistory } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { getAllOrders, clearErrors  , deleteOrder} from "../../actions/orderAction";
+import { getAllOrders, clearErrors  , deleteOrder} from "_actions/orderAction";
 import { useAlert } from "react-alert";
-import { useHistory } from "react-router-dom";
-import MetaData from "../layouts/MataData/MataData";
-import Loader from "../layouts/loader/Loader";
-import EditIcon from "@material-ui/icons/Edit";
-import DeleteIcon from "@material-ui/icons/Delete";
-import Sidebar from "./Siderbar";
-import Navbar from "./Navbar";
-import { DELETE_ORDER_RESET } from "../../constants/orderConstant";
+import { DELETE_ORDER_RESET } from "_constants/orderConstant";
+
+
+
 function OrderList() {
   const dispatch = useDispatch();
   const history = useHistory();

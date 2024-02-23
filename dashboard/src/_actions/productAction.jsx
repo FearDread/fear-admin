@@ -109,7 +109,7 @@ export const getAdminProducts = () => async (dispatch) => {
   try {
     dispatch({ type: ADMIN_PRODUCT_REQUEST });
 
-    const { data } = await axios.get("/api/v1/admin/products");
+    const { data } = await axios.get("http://fear.master.com:4000/fear/api/admin/products");
 
     dispatch({ type: ADMIN_PRODUCT_SUCCESS, payload: data.products });
   } catch (error) {
@@ -120,7 +120,6 @@ export const getAdminProducts = () => async (dispatch) => {
 // Create Product
 export function createProduct(productData) {
   return async function(dispatch) {
-    try {
       dispatch({
         type: NEW_PRODUCT_REQUEST,
       });
@@ -129,23 +128,24 @@ export function createProduct(productData) {
         headers: { "Content-Type": "multipart/form-data" },
       };
 
-      const { data } = await axios.post(
-        `/api/v1/admin/product/new`,
+      await axios.post(
+        `http://fear.master.com:4000/fear/api/admin/product/new`,
         productData,
         config
-      );
-
-      dispatch({
-        type: NEW_PRODUCT_SUCCESS,
-        payload: data,
+      )
+      .then((data) => {
+        dispatch({
+          type: NEW_PRODUCT_SUCCESS,
+          payload: data,
+        });
+      })
+      .catch((error) => {
+        dispatch({
+          type: NEW_PRODUCT_FAIL,
+          payload: error.message,
+        });
       });
-    } catch (error) {
-      dispatch({
-        type: NEW_PRODUCT_FAIL,
-        payload: error.message,
-      });
-    }
-  };
+  }
 }
 
 // Delete Product request
