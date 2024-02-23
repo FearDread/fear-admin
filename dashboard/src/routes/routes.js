@@ -49,7 +49,7 @@ import User from "views/pages/User.js";
 import Dashboard from "views/Dashboard.js";
 import UserList from "_dashboard/UserList.jsx";
 import Products from "_dashboard/ProductList.jsx";
-//import NewProduct from "_dashboard/NewProduct.jsx";
+import NewProduct from "_dashboard/NewProduct.jsx";
 //import Profile from "_dashboard/Profile.jsx";
 //import ProductReviews from "_dashboard/ProductReviews";
 import Login from "views/pages/Login.js";
@@ -101,21 +101,29 @@ const routes = [
     layout: "/admin"
   },
   {
-    path: "/products",
+    collapse: true,
     name: "Products",
     rtlName: "لوحة القيادة",
     icon: "tim-icons icon-chart-bar-32",
-    component: Products,
-    layout: "/admin",
+    state: "pagesCollapse",
     views:[
+      {
+        path: "/products",
+        name: "All Products",
+        rtlName: "عالتسعير",
+        mini: "R",
+        rtlMini: "ع",
+        component: Products,
+        layout: "/admin"
+      },
       {
         path: "/product/:id",
         name: "Add New",
         rtlName: "عالتسعير",
         mini: "R",
         rtlMini: "ع",
-        component: ExtendedForms,
-        layout: "/auth"
+        component: NewProduct,
+        layout: "/admin"
       },
       {
         path: "/product/reviews",
@@ -124,7 +132,7 @@ const routes = [
         mini: "R",
         rtlMini: "ع",
         component: Panels,
-        layout: "/auth"
+        layout: "/admin"
       }
     ]
   },
