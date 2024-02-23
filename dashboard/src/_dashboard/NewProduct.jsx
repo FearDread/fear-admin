@@ -1,35 +1,24 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useAlert } from "react-alert";
-import MetaData from "../layouts/MataData/MataData";
-import Loader from "../layouts/loader/Loader";
-import Sidebar from "./Siderbar";
-import { createProduct, clearErrors } from "../../actions/productAction";
 import { useHistory } from "react-router-dom";
-import { NEW_PRODUCT_RESET } from "../../constants/productsConstatns";
-import InputAdornment from "@material-ui/core/InputAdornment";
-import Box from "@material-ui/core/Box";
-import DescriptionIcon from "@material-ui/icons/Description";
-import StorageIcon from "@material-ui/icons/Storage";
-import CloudUploadIcon from "@material-ui/icons/CloudUpload";
-import AttachMoneyIcon from "@material-ui/icons/AttachMoney";
-import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
-import CollectionsIcon from "@mui/icons-material/Collections";
-import ShoppingCartOutlinedIcon from "@material-ui/icons/ShoppingCartOutlined";
-import Select from "@material-ui/core/Select";
-import MenuItem from "@material-ui/core/MenuItem";
-import InfoIcon from "@mui/icons-material/Info";
+import { createProduct, clearErrors } from "_actions/productAction";
+import { NEW_PRODUCT_RESET } from "_constants/productsConstatns";
 
-import Navbar from "./Navbar";
-
-import useStyles from "../User/LoginFromStyle";
 import {
-  Avatar,
-  TextField,
-  Typography,
-  FormControl,
   Button,
-} from "@material-ui/core";
+  Card,
+  CardHeader,
+  CardBody,
+  CardFooter,
+  CardTitle,
+  Label,
+  FormGroup,
+  Form,
+  Input,
+  Row,
+  Col
+} from "reactstrap";
 
 function NewProduct() {
   const dispatch = useDispatch();

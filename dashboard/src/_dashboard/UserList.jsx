@@ -16,7 +16,7 @@ function UserList() {
   const { error: deleteError, isDeleted, message } = useSelector(
     (state) => state.profileData
   );
-  //const alert = useAlert();
+ 
   const history = useHistory();
   const deleteUserHandler = (id) => {
     dispatch(deleteUser(id));
@@ -25,16 +25,13 @@ function UserList() {
   const [toggle, setToggle] = useState(false);
   useEffect(() => {
     if (error) {
-      //alert.error(error);
       dispatch(clearErrors());
     }
     if (deleteError) {
-      //alert.error(deleteError);
       dispatch(clearErrors());
     }
 
     if (isDeleted) {
-      //alert.success(message);
       history.push("/admin/users");
       dispatch({ type: DELETE_USER_RESET });
     }

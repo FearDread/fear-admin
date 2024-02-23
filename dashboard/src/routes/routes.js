@@ -38,17 +38,23 @@ import Icons from "views/components/Icons.js";
 import Pricing from "views/pages/Pricing.js";
 
 import Timeline from "views/pages/Timeline.js";
-import User from "views/pages/User.js";
+
 
 import Rtl from "views/pages/Rtl.js";
 import Lock from "views/pages/Lock.js";
 
 
+import User from "views/pages/User.js";
+
 import Dashboard from "views/Dashboard.js";
 import UserList from "_dashboard/UserList.jsx";
 import Products from "_dashboard/ProductList.jsx";
+//import NewProduct from "_dashboard/NewProduct.jsx";
+//import Profile from "_dashboard/Profile.jsx";
+//import ProductReviews from "_dashboard/ProductReviews";
 import Login from "views/pages/Login.js";
 import Register from "views/pages/Register.js";
+//import OrderList from "_dashboard/OrderList";
 
 const routes = [
   {
@@ -100,6 +106,42 @@ const routes = [
     rtlName: "لوحة القيادة",
     icon: "tim-icons icon-chart-bar-32",
     component: Products,
+    layout: "/admin",
+    views:[
+      {
+        path: "/product/:id",
+        name: "Add New",
+        rtlName: "عالتسعير",
+        mini: "R",
+        rtlMini: "ع",
+        component: ExtendedForms,
+        layout: "/auth"
+      },
+      {
+        path: "/product/reviews",
+        name: "Reviews",
+        rtlName: "عالتسعير",
+        mini: "R",
+        rtlMini: "ع",
+        component: Panels,
+        layout: "/auth"
+      }
+    ]
+  },
+  {
+    path: "/profile",
+    name: "Profile",
+    rtlName: "لوحة القيادة",
+    icon: "tim-icons icon-image-02",
+    component: User,
+    layout: "/admin"
+  },
+  {
+    path: "/orders",
+    name: "Orders",
+    rtlName: "لوحة القيادة",
+    icon: "tim-icons icon-laptop",
+    component: RegularForms,
     layout: "/admin"
   },
 ];

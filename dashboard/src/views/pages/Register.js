@@ -20,7 +20,7 @@ import {
   Row,
   Col
 } from "reactstrap";
-import AnimatedBackground from "components/AnimatedBackground";
+
 //import { Link } from "react-router-dom";
 import { signUp, clearErrors } from "../../_actions/userAction";
 import { useDispatch, useSelector } from "react-redux";

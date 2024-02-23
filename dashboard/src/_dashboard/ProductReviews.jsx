@@ -1,30 +1,25 @@
 import React, { useEffect, useState } from "react";
-import "./ProductList.css";
-import { DataGrid } from "@material-ui/data-grid";
+
 import { useSelector, useDispatch } from "react-redux";
 import { useAlert } from "react-alert";
+import { useHistory } from "react-router-dom";
 import {
   getAllreviews,
   clearErrors,
   deleteProductReview,
-} from "../../actions/productAction";
-import {useHistory } from "react-router-dom";
-import MetaData from "../layouts/MataData/MataData";
-import Loader from "../layouts/loader/Loader";
-import DeleteIcon from "@material-ui/icons/Delete";
-import Star from "@material-ui/icons/Star";
+} from "_actions/productAction";
+
+
 import {
   Avatar,
   Button,
   TextField,
   Typography,
   InputAdornment,
-} from "@material-ui/core";
-import Navbar from "./Navbar";
-import Sidebar from "./Siderbar";
-import { DELETE_REVIEW_RESET } from "../../constants/productsConstatns";
-import { makeStyles } from "@material-ui/core/styles";
-import StarRateIcon from "@mui/icons-material/StarRate";
+} from "reactstrap"
+import { DELETE_REVIEW_RESET } from "_constants/productsConstatns";
+
+
 
 const useStyles = makeStyles((theme) => ({
   updateUser1: {
