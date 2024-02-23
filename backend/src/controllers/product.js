@@ -1,10 +1,58 @@
-const { AppError } = require("../_helpers/errorHandlers");
-const Product = require("../models/product");
-const asyncWrapper = require('express-async-handler');
+const { AppError, dbError } = require("../_helpers/errorHandlers");
+const ProductModel = require("../models/product");
 const cloudinary = require("cloudinary");
 
 /* Product CRUD methods */
 /* -------------------- */
+exports.create = async (req, res) => {
+  let images = []; 
+
+  if (req.body.images) {
+    if (typeof req.body.images === "string") {
+      images.push(req.body.images);
+    } else {
+      images = req.body.images;
+    }
+
+    const imagesLinks = [];
+
+    // Split images into chunks due to cloudinary upload limits only 3 images can be uploaded at a time so we are splitting into chunks and uploading them separately eg: 9 images will be split into 3 chunks and uploaded separately
+    const chunkSize = 3;
+    const imageChunks = [];
+    while (images.length > 0) {
+      imageChunks.push(images.splice(0, chunkSize));
+    }
+
+
+    // Upload images in separate requests. for loop will run 3 times if there are 9 images to upload each time uploading 3 images at a time
+    for (let chunk of imageChunks) {
+      const uploadPromises = chunk.map((img) =>
+        cloudinary.v2.uploader.upload(img, {
+          folder: "Products",
+        })
+      );
+
+      
+      const results = await Promise.all(uploadPromises); // wait for all the promises to resolve and store the results in results array eg: [{}, {}, {}] 3 images uploaded successfully and their details are stored in results array
+
+      for (let result of results) { 
+        imagesLinks.push({
+          product_id: result.public_id,
+          url: result.secure_url,
+        });
+      }
+    }
+
+    req.body.user = req.user.id;
+    req.body.images = imagesLinks;
+  }
+
+  const data = await ProductModel.create(req.body);
+
+  res.status(200).json({ success: true, data: data });
+};
+
+/*
 exports.create = async (req, res) => {
   const chunkSize = 3;
   const imageChunks = [];
@@ -40,23 +88,14 @@ exports.create = async (req, res) => {
         });
       }
     }
+
+    req.body.user = req.user.id;
+    req.body.images = imagesLinks;
   }
 
-  req.body.user = req.user.id;
-  req.body.images = imagesLinks;
 
-  await Product.create(req.body)
-    .then((data) => {
-      res.status(200).json({ 
-        success: true,
-        data: data 
-      });
-    })
-    .catch((error) => {
-      dbError(res, error);
-    });
 };
-
+*/
 exports.list = async (req, res) => {
   await Product.find()
     .then((products) => {
@@ -141,19 +180,23 @@ exports.delete = async (req, res, next) => {
 
 exports.read = async (req, res, next) => {
   const id = req.params.id;
-  const Product = await ProductModel.findById(id);
-  if (!Product) {
-    return next(new AppError("Product not found", 404));
-  }
-  res.status(201).json({
-    succes: true,
-    Product: Product,
-  });
+  if (!id) return next(new AppError("Product not found", 404));
+  
+  await ProductModel.findById(id)
+    .then((data) => {
+      res.status(201).json({
+        succes: true,
+        Product: Product,
+      });
+    })
+    .catch((error) => {
+      dbError(res, error);
+    });
 };
 
 /* Product Review methods */
 /* ---------------------- */
-exports.createProductReview = asyncWrapper(async (req, res, next) => {
+exports.createProductReview = async (req, res, next) => {
   const { ratings, comment, productId, title, recommend } = req.body;
   const review = {
     userId: req.user._id,
@@ -203,9 +246,9 @@ exports.createProductReview = asyncWrapper(async (req, res, next) => {
   res.status(200).json({
     success: true,
   });
-});
+};
 
-exports.getProductReviews = asyncWrapper(async (req, res, next) => {
+exports.getProductReviews = async (req, res, next) => {
   // we need product id for all reviews of the product
 
   const product = await ProductModel.findById(req.query.id);
@@ -218,9 +261,9 @@ exports.getProductReviews = asyncWrapper(async (req, res, next) => {
     success: true,
     reviews: product.reviews,
   });
-});
+};
 
-exports.deleteReview = asyncWrapper(async (req, res, next) => {
+exports.deleteReview = async (req, res, next) => {
   const product = await ProductModel.findById(req.query.productId);
   if (!product) {
     return next(new ErrorHandler("Product not found", 404)); 
@@ -262,7 +305,7 @@ exports.deleteReview = asyncWrapper(async (req, res, next) => {
     .catch((error) => {
       dbError(res, error);
     });
-});
+};
 
 /*
 exports.getAllProducts = asyncWrapper(async (req, res) => {

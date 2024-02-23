@@ -1,22 +1,19 @@
 import React, { useEffect } from "react";
-
-
-import { Link } from "react-router-dom";
-
-import { useHistory } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { logout } from "_actions/userAction";
 import { useAlert } from "react-alert";
+import { logout } from "_actions/userAction";
 
 const ProfilePage = () => {
-  const alert = useAlert();
+  //const alert = useAlert();
+  
   const dispatch = useDispatch();
   const history = useHistory();
   const { user, isAuthenticated } = useSelector((state) => state.userData);
 
   const logoutHandler = () => {
     dispatch(logout());
-    alert.success("Logged out successfully");
+    //alert.success("Logged out successfully");
     history.push("/login");
   };
   useEffect(() => {
