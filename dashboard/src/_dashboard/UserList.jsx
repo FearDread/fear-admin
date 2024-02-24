@@ -6,11 +6,10 @@ import { Card, CardHeader, CardBody, CardTitle, Row, Col } from "reactstrap";
 import SortingTable from "components/SortingTable/SortingTable.js";
 import { useSelector, useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
-import ReactBSAlert from "react-bootstrap-sweetalert";
-import Loader from "../layouts/loader/Loader";
+import Loader from "components/Loader/Loading.js";
 import { getAllUsers, clearErrors, deleteUser } from "_actions/userAction";
 import { DELETE_USER_RESET } from "_constants/userConstanat";
-import NotificationAlert from "react-notification-alert";
+//import NotificationAlert from "react-notification-alert";
 
 function UserList() {
   const dispatch = useDispatch();
@@ -36,9 +35,7 @@ function UserList() {
     };
     notificationAlertRef.current.notificationAlert(options);
   }
-  const hideAlert = () => {
-    setAlert(null);
-  };
+
   const [toggle, setToggle] = useState(false);
   useEffect(() => {
     if (error) {

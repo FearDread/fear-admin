@@ -1,19 +1,3 @@
-/*!
-
-=========================================================
-* Black Dashboard PRO React - v1.2.1
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/black-dashboard-pro-react
-* Copyright 2022 Creative Tim (https://www.creative-tim.com)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
 import React from "react";
 // nodejs library that concatenates classes
 import classNames from "classnames";
@@ -21,7 +5,12 @@ import classNames from "classnames";
 import { Line, Bar } from "react-chartjs-2";
 // react plugin for creating vector maps
 import { VectorMap } from "react-jvectormap";
-
+import { useSelector, useDispatch } from "react-redux";
+import { useHistory } from "react-router-dom";
+import Loader from "componente/Loader/Loading";
+import { getAllOrders } from "_actions/orderAction";
+import { getAllUsers } from "_actions/userAction";
+import { getAdminProducts, clearErrors } from "_actions/productAction";
 // reactstrap components
 import {
   Button,
@@ -45,7 +34,6 @@ import {
   UncontrolledTooltip
 } from "reactstrap";
 
-// core components
 import {
   chartExample1,
   chartExample2,
@@ -68,11 +56,52 @@ var mapData = {
 };
 
 const Dashboard = () => {
+  const dispatch = useDispatch();
+  const [toggle, setToggle] = useState(false);
+  const { products, loading, error } = useSelector((state) => state.products);
+  const { orders, error: ordersError } = useSelector((state) => state.allOrders);
+  const { users, error: usersError } = useSelector((state) => state.allUsers);
   const [bigChartData, setbigChartData] = React.useState("data1");
+  
+  
+  
+  
   const setBgChartData = (name) => {
     setbigChartData(name);
   };
+  
+  let totalInventory = 0;
+  products && products.forEach((element) => {
+    // check how much items out of stocks in products array
+    if (element.stock > 0) {
+      totalInventory += 1;
+    }
+  });
+
+  useEffect(() => {
+    if (error) {
+      //alert.error(error);
+      dispatch(clearErrors);
+    }
+    if (usersError) {
+      //alert.error(usersError);
+      dispatch(clearErrors);
+    }
+    if (ordersError) {
+      //alert.error(ordersError);
+      dispatch(clearErrors);
+    }
+    
+    dispatch(getAllOrders());
+    dispatch(getAllUsers());
+    dispatch(getAdminProducts());
+  }, [dispatch, error, ordersError, usersError]);
+  
   return (
+    <>
+    {loading ? (
+      <Loader />
+    ) : (
     <>
       <div className="content">
         <Row>
@@ -1078,7 +1107,9 @@ const Dashboard = () => {
         </Row>
       </div>
     </>
+  )};
+  </>
   );
-};
+}
 
 export default Dashboard;
