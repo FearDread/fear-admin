@@ -36,7 +36,7 @@ const Admin = (props) => {
   const [activeColor, setActiveColor] = React.useState("blue");
   const [sidebarMini, setSidebarMini] = React.useState(false);
   const [opacity, setOpacity] = React.useState(0);
-  const [sidebarOpened, setSidebarOpened] = React.useState(true);
+  const [sidebarOpened, setSidebarOpened] = React.useState(false);
   const mainPanelRef = React.useRef(null);
   const notificationAlertRef = React.useRef(null);
   const location = useLocation();
@@ -154,8 +154,7 @@ const Admin = (props) => {
     document.body.classList.toggle("sidebar-mini");
   };
   const toggleSidebar = () => {
-    setSidebarOpened(sidebarOpened);
-    //setSidebarOpened(true);
+    setSidebarOpened(!sidebarOpened);
     document.documentElement.classList.toggle("nav-open");
   };
   const closeSidebar = () => {
@@ -185,7 +184,7 @@ const Admin = (props) => {
           text: "F-E-A-R",
           imgSrc: logo
         }}
-        closeSidebar={toggleSidebar}
+        closeSidebar={closeSidebar}
       />
       <div className="main-panel" ref={mainPanelRef} data={activeColor}>
         <AdminNavbar

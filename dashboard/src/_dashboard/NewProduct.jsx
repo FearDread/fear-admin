@@ -17,13 +17,7 @@ import {
   Row,
   Col
 } from "reactstrap";
-import {
-  Avatar,
-  FormControl,
-  Select,
-  TextField,
-  MenuItem
-} from "@material-ui/core";
+
 import ImageUpload from "components/CustomUpload/ImageUpload.js";
 import Loader from "components/Loader/Loading";
 
@@ -143,13 +137,15 @@ function NewProduct() {
                         />
                       </FormGroup>
                       <FormGroup>
-                        <label>Product Info</label>
-                        <TextField
-                          variant="outlined"
-                          label="Product info"
-                          value={info}
-                          required
-                          onChange={(e) => setInfo(e.target.value)} />
+                        <label>Product Description</label>
+                        <Input
+                          cols="80"
+                          value={description}
+                          placeholder="Here can be your description"
+                          rows="4"
+                          type="textarea"
+                          onChange={(e) => setInfo(e.target.value)}
+                        />
                       </FormGroup>
                       <FormGroup className={`has-label`}>
                         <label>Price</label>
@@ -169,41 +165,39 @@ function NewProduct() {
                           onChange={(e) => setStock(e.target.value)}
                         />
                       </FormGroup>
-                      <FormControl>
+                      <FormGroup>
                       <label>Select Category</label>
-                      <Select
+                      <Input
                         variant="outlined"
-                        fullWidth
+                        type="select"
+                        placeholder="Choose Category"
                         value={category}
                         onChange={handleCategoryChange}
                         inputProps={{
                           name: "category",
                           id: "category-select",
                         }}> 
-                        {!category && (
-                          <MenuItem value="">
-                            <em>Choose Category</em>
-                          </MenuItem>
-                        )}
                         {categories.map((cate) => (
-                          <MenuItem key={cate} value={cate}>
+                          <option key={cate} value={cate}>
                             {cate}
-                          </MenuItem>
+                          </option>
                         ))}
-                      </Select>
-                    </FormControl>
+                      </Input>
+                    </FormGroup>
 
                     <FormGroup className={`has-label`}>
-                      <label>Product Description</label>
-                      <TextField
-                          label="Product Description"
-                          multiline
-                          rows={1}
-                          value={description}
-                          onChange={(e) => setDescription(e.target.value)} />
-                      </FormGroup>
+                      <label>Product Info</label>
+                      <Input
+                          cols="80"
+                          value={info}
+                          placeholder="Here can be your extra information"
+                          rows="4"  
+                          type="textarea"
+                          onChange={(e) => setInfo(e.target.value)}
+                        />
+                    </FormGroup>
                     <FormGroup>
-                      <CardTitle tag="h4">Avatar</CardTitle>
+                      <CardTitle tag="h4">Upload Product Image</CardTitle>
                         <ImageUpload
                           avatar
                           addBtnColor="default"
@@ -214,16 +208,8 @@ function NewProduct() {
                           multiple
                           ref={fileInputRef}
                         />
-                        <label htmlFor="avatar-input">
-                        <Button
-                          variant="contained"
-                          color="default"
-                          onClick={handleImageUpload}
-                        >
-                          Upload Images
-                        </Button>
-                        </label>
-                          <Avatar>
+
+                          <CardBody>
                             {imagesPreview && imagesPreview.map((image, index) => (
                               <img
                                 key={index}
@@ -231,17 +217,17 @@ function NewProduct() {
                                 alt="Product Preview"
                               />
                           ))}
-                          </Avatar>
-                        <Button
-                          variant="contained"
-                          fullWidth
-                          type="submit"
-                          disabled={loading ? true : false}
-                        >
-                          Create
-                        </Button>
+                          </CardBody>
                       </FormGroup> 
                     </CardBody>
+                    <Button
+                          variant="contained"
+                          type="submit"
+                          onClick={handleImageUpload}
+                          disabled={loading ? true : false}
+                        >
+                          SUBMIT PRODUCT
+                    </Button>
                   </Card>
                 </Form>
               </Col>

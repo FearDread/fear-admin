@@ -56,17 +56,17 @@ function UserList() {
 
   const tableRows = [];
   const tableHeader = [
-    { text: "ID" },
+    { text: "Avatar" },
     { text: "Name" },
     { text: "Email" },
     { className: "text-center", text: "Role" }
-  ]
+  ];
 
   users && users.forEach((item) => {
       tableRows.push(
         {
           data: [
-            { text: item.id},
+            { img: item.avatar.url},
             { text: item.name },
             { text: item.email },
             { className: "text-center", text: item.role }
@@ -101,9 +101,6 @@ function UserList() {
       <Loader />
     ) : (
     <>
-      <div className="rna-container">
-        <NotificationAlert ref={notificationAlertRef} />
-      </div>
       <div className="content">
         <Row>
           <Col className="mb-5" md="12">

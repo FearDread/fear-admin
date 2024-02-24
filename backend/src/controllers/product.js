@@ -61,7 +61,7 @@ exports.list = async (req, res) => {
     .then((products) => {
       res.status(201).json({  
         success: true,
-        products: products,
+        product: products,
       });
     })
     .catch((error) => {

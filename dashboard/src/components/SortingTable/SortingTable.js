@@ -106,7 +106,7 @@ const SortingTable = (props) => {
                           [data.className]: data.className !== undefined
                         })}
                       >
-                        <img src={data.img} ></img>
+                        <img className="avatar" src={data.img} ></img>
                       </div>
                     </td>
                   );
