@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const app = require("./app");
 const db = require("./src/data/db");
 const cloudinary = require("cloudinary");

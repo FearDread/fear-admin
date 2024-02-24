@@ -15,8 +15,6 @@ function ProductList() {
   const dispatch = useDispatch();
   //const alert = useAlert();
   const history = useHistory();
-  const [toggle, setToggle] = useState(false);
-
   const { products, loading, error } = useSelector((state) => state.products);
   const { error: deleteError, isDeleted } = useSelector(
     (state) => state.deleteUpdateProduct
@@ -33,6 +31,7 @@ function ProductList() {
     }
 
     dispatch(getAdminProducts());
+    
   }, [dispatch, error, deleteError, history, isDeleted]);
 
   const deleteProductHandler = (id) => {
@@ -53,28 +52,9 @@ function ProductList() {
       {text: item.name},
       {text: item.Stock},
       {text: item.price},
-      {text: item.description},
+      {text: item.description}
       ]});
   });
-
-  // togle handler =>
-  const toggleHandler = () => {
-    setToggle(!toggle);
-  };
-
-  // to close the sidebar when the screen size is greater than 1000px
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth > 999 && toggle) {
-        setToggle(true);
-      }
-    };
-        
-    window.addEventListener("resize", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, [toggle]);
 
   return (
     <>
@@ -98,10 +78,11 @@ function ProductList() {
               </Card>
             </Col>
           </Row>
-        </div>
+      </div>
     </>
   )}
   </>
-)};
+  );
+}
 
 export default ProductList;
