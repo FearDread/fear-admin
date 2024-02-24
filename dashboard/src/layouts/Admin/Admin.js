@@ -47,6 +47,7 @@ const Admin = (props) => {
       mainPanelRef.current.scrollTop = 0;
     }
   }, [location]);
+
   React.useEffect(() => {
     let innerMainPanelRef = mainPanelRef;
     if (navigator.platform.indexOf("Win") > -1) {
@@ -75,6 +76,7 @@ const Admin = (props) => {
       window.removeEventListener("scroll", showNavbarButton);
     };
   }, []);
+
   const showNavbarButton = () => {
     if (
       document.documentElement.scrollTop > 50 ||
@@ -152,7 +154,8 @@ const Admin = (props) => {
     document.body.classList.toggle("sidebar-mini");
   };
   const toggleSidebar = () => {
-    setSidebarOpened(!sidebarOpened);
+    setSidebarOpened(sidebarOpened);
+    //setSidebarOpened(true);
     document.documentElement.classList.toggle("nav-open");
   };
   const closeSidebar = () => {
@@ -182,7 +185,7 @@ const Admin = (props) => {
           text: "F-E-A-R",
           imgSrc: logo
         }}
-        closeSidebar={closeSidebar}
+        closeSidebar={toggleSidebar}
       />
       <div className="main-panel" ref={mainPanelRef} data={activeColor}>
         <AdminNavbar

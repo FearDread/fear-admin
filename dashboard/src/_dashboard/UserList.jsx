@@ -9,7 +9,7 @@ import { useHistory } from "react-router-dom";
 import Loader from "components/Loader/Loading.js";
 import { getAllUsers, clearErrors, deleteUser } from "_actions/userAction";
 import { DELETE_USER_RESET } from "_constants/userConstanat";
-//import NotificationAlert from "react-notification-alert";
+import NotificationAlert from "react-notification-alert";
 
 function UserList() {
   const dispatch = useDispatch();
@@ -101,6 +101,9 @@ function UserList() {
       <Loader />
     ) : (
     <>
+      <div className="rna-container">
+        <NotificationAlert ref={notificationAlertRef} />
+      </div>
       <div className="content">
         <Row>
           <Col className="mb-5" md="12">
