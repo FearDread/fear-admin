@@ -10,9 +10,7 @@ import {
   Card,
   CardHeader,
   CardBody,
-  CardFooter,
   CardTitle,
-  Label,
   FormGroup,
   Form,
   Input,
@@ -21,13 +19,13 @@ import {
 } from "reactstrap";
 import {
   Avatar,
-  Checkbox,
+  FormControl,
   Select,
-  TextField
+  TextField,
+  MenuItem
 } from "@material-ui/core";
 import ImageUpload from "components/CustomUpload/ImageUpload.js";
-import TagsInput from "components/TagsInput/TagsInput.js";
-import CogWheelLoader from "components/Loading/Loading";
+import Loader from "components/Loader/Loading";
 
 function NewProduct() {
   const dispatch = useDispatch();
@@ -121,7 +119,7 @@ function NewProduct() {
   return (
     <>
       {loading ? (
-        <CogWheelLoader />
+        <Loader />
       ) : (
         <>
           <div className="content">

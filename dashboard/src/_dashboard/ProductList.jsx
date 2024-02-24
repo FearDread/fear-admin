@@ -7,8 +7,8 @@ import {
 } from "_actions/productAction";
 import SortingTable from "components/SortingTable/SortingTable.js";
 import { Card, CardHeader, CardBody, CardTitle, Row, Col } from "reactstrap";
-import { Link, useHistory } from "react-router-dom";
-
+import { useHistory } from "react-router-dom";
+import Loader from "components/Loader/Loading";
 import { DELETE_PRODUCT_RESET } from "_constants/productsConstatns";
 
 function ProductList() {
@@ -23,19 +23,16 @@ function ProductList() {
   );
   useEffect(() => {
     if (error) {
-      //alert.error(error);
       dispatch(clearErrors());
     }
     if (deleteError) {
-      //alert.error(deleteError);
       dispatch(clearErrors());
     }
     if (isDeleted) {
-      //alert.success("Product Deleted Successfully");
       dispatch({ type: DELETE_PRODUCT_RESET });
     }
     dispatch(getAdminProducts());
-  }, [dispatch, error, alert, deleteError, history, isDeleted]);
+  }, [dispatch, error, deleteError, history, isDeleted]);
 
   const deleteProductHandler = (id) => {
     dispatch(deleteProduct(id));
@@ -53,12 +50,13 @@ function ProductList() {
 
   products &&
     products.forEach((item) => {
-      rows.push({
-        id: item._id,
-        stock: item.Stock,
-        price: item.price,
-        name: item.name,
-      });
+      rows.push({data: [
+        {id: item.name},
+        {stock: item.Stock},
+        {price: item.price},
+        {info: item.info},
+        {description: item.description}
+      ]});
     });
 
   // togle handler =>
@@ -83,7 +81,7 @@ function ProductList() {
   return (
     <>
     {loading ? (
-      <CogWheelLoader />
+      <Loader />
     ) : (
     <>
       <div className="content">

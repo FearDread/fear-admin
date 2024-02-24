@@ -27,7 +27,7 @@ import { useDispatch, useSelector } from "react-redux";
 //import { useAlert } from "react-alert";
 import { useHistory } from "react-router-dom";
 import AnimatedBackground from "views/components/AnimatedBackground";
-import CogWheelLoader from "components/Loading/Loading";
+import Loader from "components/Loader/Loading";
 
 const Register = () => {
   const dispatch = useDispatch();
@@ -109,7 +109,7 @@ const Register = () => {
   return (
     <>
     {loading ? (
-      <CogWheelLoader />
+      <Loader />
       ) : (
       <>
       <AnimatedBackground />
