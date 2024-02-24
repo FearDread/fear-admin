@@ -9,49 +9,29 @@ import { useHistory } from "react-router-dom";
 import Loader from "components/Loader/Loading.js";
 import { getAllUsers, clearErrors, deleteUser } from "_actions/userAction";
 import { DELETE_USER_RESET } from "_constants/userConstanat";
-import NotificationAlert from "react-notification-alert";
 
 function UserList() {
   const dispatch = useDispatch();
-  //const [alert, setAlert] = React.useState(null);
-  const notificationAlertRef = React.useRef(null);
   const { error, users, loading } = useSelector((state) => state.allUsers);
   const { error: deleteError, isDeleted, message } = useSelector((state) => state.profileData); 
   const history = useHistory();
-  const deleteUserHandler = (id) => {
-    dispatch(deleteUser(id));
-  };
+  const deleteUserHandler = (id) => {dispatch(deleteUser(id));};
 
-  const notify = (opts) => {
-    let options = {};
-    options = {
-      place: "tr",
-      message: opts.messsage,
-      type: "primary",
-      icon: "tim-icons icon-bell-55",
-      autoDismiss: 7
-    };
-    notificationAlertRef.current.notificationAlert(options);
-  }
-
-  const [toggle, setToggle] = useState(false);
   useEffect(() => {
     if (error) {
-      notify(error);
       dispatch(clearErrors());
     }
     if (deleteError) {
-      alert(deleteError);
       dispatch(clearErrors());
     }
 
     if (isDeleted) {
-      notify(isDeleted);
       history.push("/admin/users");
       dispatch({ type: DELETE_USER_RESET });
     }
 
     dispatch(getAllUsers());
+
   }, [dispatch, error, deleteError, history, isDeleted, message]);
 
   const tableRows = [];
@@ -73,27 +53,6 @@ function UserList() {
           ]
         })
     });
-
-  // togle handler =>
-  const toggleHandler = () => {
-    console.log("toggle");
-    setToggle(!toggle);
-  };
-
-  // to close the sidebar when the screen size is greater than 1000px
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth > 999 && toggle) {
-        setToggle(false);
-      }
-    };
-
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, [toggle]);
 
   return (
     <>
