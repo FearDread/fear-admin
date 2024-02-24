@@ -55,7 +55,8 @@ function ProductList() {
         {stock: item.Stock},
         {price: item.price},
         {info: item.info},
-        {description: item.description}
+        {description: item.description},
+        {reviews: item.review.length}
       ]});
     });
 

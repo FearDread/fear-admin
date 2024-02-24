@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 // nodejs library that concatenates classes
 import classNames from "classnames";
 // react plugin used to create charts
@@ -7,10 +7,10 @@ import { Line, Bar } from "react-chartjs-2";
 import { VectorMap } from "react-jvectormap";
 import { useSelector, useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
-import Loader from "componente/Loader/Loading";
 import { getAllOrders } from "_actions/orderAction";
 import { getAllUsers } from "_actions/userAction";
 import { getAdminProducts, clearErrors } from "_actions/productAction";
+import Loader from "components/Loader/Loading.js";
 // reactstrap components
 import {
   Button,
@@ -57,15 +57,12 @@ var mapData = {
 
 const Dashboard = () => {
   const dispatch = useDispatch();
+  const history = useHistory();
   const [toggle, setToggle] = useState(false);
   const { products, loading, error } = useSelector((state) => state.products);
   const { orders, error: ordersError } = useSelector((state) => state.allOrders);
   const { users, error: usersError } = useSelector((state) => state.allUsers);
   const [bigChartData, setbigChartData] = React.useState("data1");
-  
-  
-  
-  
   const setBgChartData = (name) => {
     setbigChartData(name);
   };
@@ -644,17 +641,15 @@ const Dashboard = () => {
                     </DropdownMenu>
                   </UncontrolledDropdown>
                 </div>
-                <CardTitle tag="h5">Management Table</CardTitle>
+                <CardTitle tag="h5">Users Table</CardTitle>
               </CardHeader>
               <CardBody>
                 <Table responsive>
                   <thead className="text-primary">
                     <tr>
-                      <th className="text-center">#</th>
+                      <th className="text-center">Avatar</th>
                       <th>Name</th>
-                      <th>Job Position</th>
-                      <th>Milestone</th>
-                      <th className="text-right">Salary</th>
+                      <th>Email Address</th>
                       <th className="text-right">Actions</th>
                     </tr>
                   </thead>

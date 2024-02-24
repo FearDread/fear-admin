@@ -16,9 +16,7 @@ function UserList() {
   //const [alert, setAlert] = React.useState(null);
   const notificationAlertRef = React.useRef(null);
   const { error, users, loading } = useSelector((state) => state.allUsers);
-  const { error: deleteError, isDeleted, message } = useSelector(
-    (state) => state.profileData
-  ); 
+  const { error: deleteError, isDeleted, message } = useSelector((state) => state.profileData); 
   const history = useHistory();
   const deleteUserHandler = (id) => {
     dispatch(deleteUser(id));
