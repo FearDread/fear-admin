@@ -56,7 +56,7 @@ function ProductList() {
         {price: item.price},
         {info: item.info},
         {description: item.description},
-        {reviews: item.review.length}
+        {reviews: item.reviews}
       ]});
     });
 
