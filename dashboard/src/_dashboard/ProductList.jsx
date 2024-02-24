@@ -17,7 +17,7 @@ function ProductList() {
   const history = useHistory();
   const [toggle, setToggle] = useState(false);
 
-  const { error, products, loading } = useSelector((state) => state.products);
+  const { products, loading, error } = useSelector((state) => state.products);
   const { error: deleteError, isDeleted } = useSelector(
     (state) => state.deleteUpdateProduct
   );
@@ -31,34 +31,31 @@ function ProductList() {
     if (isDeleted) {
       dispatch({ type: DELETE_PRODUCT_RESET });
     }
+
     dispatch(getAdminProducts());
   }, [dispatch, error, deleteError, history, isDeleted]);
 
   const deleteProductHandler = (id) => {
     dispatch(deleteProduct(id));
   };
+
+  const tableRows = [];
   const tableHeader = [
-    { text: "ID" },
     { text: "Name" },
-    { text: "Description" },
-    { text: "info" },
     { text: "Stock" },
     { text: "Price" },
-    { className: "text-center", text: "Reviews" }
-  ]
-  const rows = [];
+    { text: "Description" },
+  ];
+  
 
-  products &&
-    products.forEach((item) => {
-      rows.push({data: [
-        {id: item.name},
-        {stock: item.Stock},
-        {price: item.price},
-        {info: item.info},
-        {description: item.description},
-        {reviews: item.reviews}
+  products && products.forEach((item) => {
+    tableRows.push({data: [
+      {text: item.name},
+      {text: item.Stock},
+      {text: item.price},
+      {text: item.description},
       ]});
-    });
+  });
 
   // togle handler =>
   const toggleHandler = () => {
@@ -69,7 +66,7 @@ function ProductList() {
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth > 999 && toggle) {
-        setToggle(false);
+        setToggle(true);
       }
     };
         
@@ -95,7 +92,7 @@ function ProductList() {
                 <CardBody>
                   <SortingTable
                     thead={tableHeader}
-                    tbody={rows}
+                    tbody={tableRows}
                   />
                 </CardBody>
               </Card>
