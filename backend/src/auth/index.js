@@ -38,27 +38,23 @@ exports.logout = async (req, res) => {
 };
 
 exports.isAuthenticated = async ( req, res, next ) => {
-  const authHeader = req.headers.authorization;
-  const token = req.header("x-auth-token");
+  const { token } = req.cookies;
 
   if (!token) {
-    return (authError(res, authHeader));
+    return (next(authError(res, req.cookies)));
   }
+  
+  const decodeToken = jwt.verify(token, process.env.JWT_SECRET);
 
-  try {
-    const decodeToken = jwt.verify(token, process.env.JWT_SECRET);
-
-    await UserModel.findById(decodeToken.id)
-      .then((userDetails) => {
-        req.user = userDetails;
-        next();
-      })
-      .catch((error) => {
-        dbError(res, error);
-      });
-  } catch (error) {
-    notFound(res);
-  }
+  await UserModel.findById(decodeToken.id)
+    .then((userDetails) => {
+      req.user = userDetails;
+      next();
+    })
+    .catch((error) => {
+      dbError(res, error);
+      next();
+    });
 };
 
 exports.authorizeRoles = (...roles) => {
@@ -105,7 +101,7 @@ exports.sendJWTToken = (user, statusCode, res) => {
   res.status(statusCode).cookie("token", token, options)
     .json({
       success: true,
-      userData: user,
-      token: token,
+      user,
+      token
     });
 };

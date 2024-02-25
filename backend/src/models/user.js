@@ -63,14 +63,9 @@ const schema = mongoose.Schema ({
     };
 
     schema.methods.getJWTToken = function () {
-      const token = jwt.sign(
-        {
-          exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24,
-          id: this._id,
-        },
-        process.env.JWT_SECRET
-      );
-      return token;
+      return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
+        expiresIn: process.env.JWT_EXPIRE,
+      });
     };
 
     schema.methods.getRESETToken = function () {

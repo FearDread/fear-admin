@@ -8,7 +8,7 @@ const { catchErrors, authError } = require("../_helpers/errorHandlers");
 
 
 router.route("/register").post(catchErrors(User.register));
-router.route("/profile").get(isValidToken, catchErrors(User.read));
+router.route("/profile").get(isAuthenticated, catchErrors(User.read));
 router.route("/password/forgot").post(User.forgotPassword);
 router.route("/password/update").put(isAuthenticated, User.updatePassword);
 router.route("/profile/update").put(isValidToken, User.update);

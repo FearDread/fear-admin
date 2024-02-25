@@ -36,15 +36,26 @@ exports.register = async (req, res) => {
 };
 
 exports.read = async (req, res) => {
+  /*
   await UserModel.findById(req.user.id)
-    .then((data) => {
+    .then((user) => {
       res.status(200).json({
         success: true,
-        data
+        user
       });
     })
     .catch((error) => {
       dbError(res, error);
+    });
+    */
+    if (!req.user.id) {
+      return next(dbError());
+    }
+
+    const user = await userModel.findById(req.params.id);
+    res.status(200).json({
+      success: true,
+      user,s
     });
 };
 
