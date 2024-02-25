@@ -27,7 +27,6 @@ exports.catchErrors = (fn) => {
 exports.authError = (res, token) => {
   res.status(401).json({
     success: false,
-    result: res,
     message: "Authentication Error",
     error: token
   });
