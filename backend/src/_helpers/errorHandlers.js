@@ -24,11 +24,11 @@ exports.catchErrors = (fn) => {
   };
 };
 
-exports.authError = (res, token) => {
+exports.authError = (res, error) => {
   res.status(401).json({
     success: false,
     message: "Authentication Error",
-    error: token
+    token: error
   });
 };
 

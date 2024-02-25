@@ -23,25 +23,15 @@ import { login, clearErrors } from "_actions/userAction";
 import Loader from "components/Loader/Loading";
 
 const Login = () => {
-
   const [state, setState] = React.useState({});
-  React.useEffect(() => {
-    document.body.classList.toggle("login-page");
-    return function cleanup() {
-      document.body.classList.toggle("login-page");
-    };
-  });
   const history = useHistory();
   const loaction = useLocation();
   const dispatch = useDispatch();
-  const { isAuthenticated, loading, error } = useSelector(
-      (state) => state.userData
-    );
-
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isValidEmail, setIsValidEmail] = useState(true);
+  const { isAuthenticated, loading, error } = useSelector((state) => state.userData);
 
   const handleEmailChange = (event) => {
     const newEmail = event.target.value;
@@ -54,19 +44,15 @@ const Login = () => {
   const handlePasswordChange = (event) => {
     setPassword(event.target.value);
   };
-
   const handleShowPasswordClick = () => {
     setShowPassword(!showPassword);
   };
   
 
   const isSignInDisabled = !(email && password && isValidEmail);
-
-  
-    const redirect = loaction.search
-      ? loaction.search.split("=")[1]
-      : "/account";
-   useEffect(() => {
+  const redirect = loaction.search ? loaction.search.split("=")[1] : "/admin";
+   
+  useEffect(() => {
      if (error) {
        dispatch(clearErrors());
      }
@@ -74,12 +60,14 @@ const Login = () => {
      if (isAuthenticated) {
        history.push(redirect);
      }
-   }, [dispatch, isAuthenticated, history, redirect]);
+  }, [dispatch, isAuthenticated, history, redirect]);
 
-     function handleLoginSubmit(e) {
+  function handleLoginSubmit(e) {
        e.preventDefault();
        dispatch(login(email, password));
-     }
+  }
+
+
   return (
     <>
     {loading ? (
@@ -113,8 +101,8 @@ const Login = () => {
                       onFocus={(e) => setState({ ...state, emailFocus: true })}
                       onBlur={(e) => setState({ ...state, emailFocus: false })}
                       value={email}
+                      autocomplete="email"
                       onChange={handleEmailChange}
-                      error={!isValidEmail && email !== ""}
                     />
                   </InputGroup>
                   <InputGroup
@@ -130,6 +118,7 @@ const Login = () => {
                     <Input
                       placeholder="Password"
                       type="password"
+                      autocomplete="password"
                       onFocus={(e) => setState({ ...state, passFocus: true })}
                       onBlur={(e) => setState({ ...state, passFocus: false })}
                       value={password}

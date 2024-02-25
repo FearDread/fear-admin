@@ -40,22 +40,6 @@ import {
 } from "../_constants/userConstanat";
 
 var API_URL = "http://fear.master.com:4000";
-function stringify(obj) {
-  let cache = [];
-  let str = JSON.stringify(obj, function(key, value) {
-    if (typeof value === "object" && value !== null) {
-      if (cache.indexOf(value) !== -1) {
-        // Circular reference found, discard key
-        return;
-      }
-      // Store value in our collection
-      cache.push(value);
-    }
-    return value;
-  });
-  cache = null; // reset the cache
-  return str;
-}
 
 // login user
 export function login(email, password) {
@@ -67,7 +51,7 @@ export function login(email, password) {
       const config = { headers: { "Content-Type": "application/json" } };
 
       const { data } = await axios.post(
-        API_URL + `/fear/api/login`,
+        `http://fear.master.com:4000/fear/api/login`,
         { email, password },
         config
       );
@@ -124,7 +108,7 @@ export const loadProfile = () => async (dispatch) => {
 
       dispatch({ type: LOAD_USER_SUCCESS, payload: data.user });
 
-      sessionStorage.setItem("user", stringify(data.user));
+      sessionStorage.setItem("user", JSON.stringify(data.user));
     }
   } catch (error) {
     dispatch({ type: LOAD_USER_FAIL, payload: error.message });
