@@ -59,7 +59,7 @@ exports.create = async (req, res) => {
 exports.list = async (req, res) => {
   await ProductModel.find()
     .then((products) => {
-      res.status(201).json({  
+      res.status(200).json({  
         success: true,
         product: products,
       });

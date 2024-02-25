@@ -18,8 +18,9 @@ import {
 } from "reactstrap";
 import AnimatedBackground from "views/components/AnimatedBackground";
 import { useDispatch, useSelector } from "react-redux";
-import { useHistory, useLocation } from "react-router-dom";
-import { login, clearErrors } from "../../_actions/userAction";
+import { useHistory, useLocation, Link } from "react-router-dom";
+import { login, clearErrors } from "_actions/userAction";
+import Loader from "components/Loader/Loading";
 
 const Login = () => {
 
@@ -31,12 +32,9 @@ const Login = () => {
     };
   });
   const history = useHistory();
-    const loaction = useLocation();
-
-    const dispatch = useDispatch();
-    //const alert = useAlert();
-
-    const { isAuthenticated } = useSelector(
+  const loaction = useLocation();
+  const dispatch = useDispatch();
+  const { isAuthenticated, loading, error } = useSelector(
       (state) => state.userData
     );
 
@@ -69,10 +67,9 @@ const Login = () => {
       ? loaction.search.split("=")[1]
       : "/account";
    useEffect(() => {
-     //if (error) {
-       //alert.error(error);
+     if (error) {
        dispatch(clearErrors());
-     //}
+     }
 
      if (isAuthenticated) {
        history.push(redirect);
@@ -84,6 +81,10 @@ const Login = () => {
        dispatch(login(email, password));
      }
   return (
+    <>
+    {loading ? (
+      <Loader />
+    ) : (
     <>
       <AnimatedBackground />
       <div className="content">
@@ -128,7 +129,7 @@ const Login = () => {
                     </InputGroupAddon>
                     <Input
                       placeholder="Password"
-                      type="text"
+                      type="password"
                       onFocus={(e) => setState({ ...state, passFocus: true })}
                       onBlur={(e) => setState({ ...state, passFocus: false })}
                       value={password}
@@ -141,21 +142,17 @@ const Login = () => {
                     block
                     className="mb-3"
                     color="primary"
-                    href="#pablo"
-                    onClick={{handleLoginSubmit}}
+                    disabled={isSignInDisabled}
+                    onClick={handleLoginSubmit}
                     size="lg"
                   >
                     Get Started
                   </Button>
                   <div className="pull-left">
                     <h6>
-                      <a
-                        className="link footer-link"
-                        href="#pablo"
-                        onClick={(e) => e.preventDefault()}
-                      >
-                        Create Account
-                      </a>
+                      <Link to="/register"  className="link footer-link">
+                          Create Account
+                      </Link>
                     </h6>
                   </div>
                   <div className="pull-right">
@@ -176,7 +173,9 @@ const Login = () => {
         </Container>
       </div>
     </>
-  );
+    )};
+  </>
+  )
 };
 
 export default Login;

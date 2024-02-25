@@ -15,10 +15,10 @@ function ProductList() {
   const dispatch = useDispatch();
   //const alert = useAlert();
   const history = useHistory();
-  const { products, loading, error } = useSelector((state) => state.products);
-  const { error: deleteError, isDeleted } = useSelector(
-    (state) => state.deleteUpdateProduct
-  );
+  const [toggle, setToggle] = useState(false);
+  const { error, products, loading } = useSelector((state) => state.products);
+  const { error: deleteError, isDeleted, message } = useSelector((state) => state.deleteUpdateProduct);
+  
   useEffect(() => {
     if (error) {
       dispatch(clearErrors());
@@ -32,11 +32,11 @@ function ProductList() {
 
     dispatch(getAdminProducts());
     
-  }, [dispatch, error, deleteError, history, isDeleted]);
+  }, [dispatch, error, deleteError, history, isDeleted, message]);
 
-  const deleteProductHandler = (id) => {
-    dispatch(deleteProduct(id));
-  };
+  //const deleteProductHandler = (id) => {
+  //  dispatch(deleteProduct(id));
+  //};
 
   const tableRows = [];
   const tableHeader = [
@@ -55,6 +55,18 @@ function ProductList() {
       {text: item.description}
       ]});
   });
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth > 999 && toggle) {
+        setToggle(false);
+      }};
+    
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [toggle]);
 
   return (
     <>

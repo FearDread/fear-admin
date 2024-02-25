@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { createProduct, clearErrors } from "_actions/productAction";
 import { NEW_PRODUCT_RESET } from "_constants/productsConstatns";
+import Loader from "components/Loader/Loading";
 
 import {
   Button,
@@ -19,16 +20,13 @@ import {
 } from "reactstrap";
 
 import ImageUpload from "components/CustomUpload/ImageUpload.js";
-import Loader from "components/Loader/Loading";
 
 function NewProduct() {
   const dispatch = useDispatch();
   const history = useHistory();
   //const alert = useAlert();
 
-  const { loading, error, success } = useSelector(
-    (state) => state.addNewProduct
-  );
+  const { loading, error, success } = useSelector((state) => state.addNewProduct);
   const [name, setName] = useState("");
   const [price, setPrice] = useState(0);
   const [description, setDescription] = useState("");
@@ -39,13 +37,6 @@ function NewProduct() {
   const [imagesPreview, setImagesPreview] = useState([]);
   const [isCategory, setIsCategory] = useState(false);
   const fileInputRef = useRef();
-  const [toggle, setToggle] = useState(false);
-
-  // togle handler =>
-  const toggleHandler = () => {
-    console.log("toggle");
-    setToggle(!toggle);
-  };
 
   const handleCategoryChange = (e) => {
     setCategory(e.target.value);
@@ -64,12 +55,10 @@ function NewProduct() {
  ];
   useEffect(() => {
     if (error) {
-      //alert.error(error);
       dispatch(clearErrors());
     }
 
     if (success) {
-      //alert.success("Product Created Successfully");
       history.push("/admin/dashboard");
       dispatch({ type: NEW_PRODUCT_RESET });
     }
@@ -144,7 +133,7 @@ function NewProduct() {
                           placeholder="Here can be your description"
                           rows="4"
                           type="textarea"
-                          onChange={(e) => setInfo(e.target.value)}
+                          onChange={(e) => setDescription(e.target.value)}
                         />
                       </FormGroup>
                       <FormGroup className={`has-label`}>
@@ -173,10 +162,7 @@ function NewProduct() {
                         placeholder="Choose Category"
                         value={category}
                         onChange={handleCategoryChange}
-                        inputProps={{
-                          name: "category",
-                          id: "category-select",
-                        }}> 
+                        >
                         {categories.map((cate) => (
                           <option key={cate} value={cate}>
                             {cate}
@@ -198,11 +184,10 @@ function NewProduct() {
                     </FormGroup>
                     <FormGroup>
                       <CardTitle tag="h4">Upload Product Image</CardTitle>
-                        <ImageUpload
-                          avatar
-                          addBtnColor="default"
-                          changeBtnColor="default"
-                          name="avatar"
+                        <i className="time-icons icon-upload">Add Image</i>
+                        <Input
+                          className="tim-icons icon-upload"
+                          type="file"
                           accept="image/*"
                           onChange={createProductImagesChange}
                           multiple
@@ -218,12 +203,20 @@ function NewProduct() {
                               />
                           ))}
                           </CardBody>
+                          <Button
+                        variant="contained"
+                        color="default"
+                        className=""
+                        onClick={handleImageUpload}
+                      >
+                          Upload Images
+
+                      </Button>
                       </FormGroup> 
                     </CardBody>
                     <Button
                           variant="contained"
                           type="submit"
-                          onClick={handleImageUpload}
                           disabled={loading ? true : false}
                         >
                           SUBMIT PRODUCT

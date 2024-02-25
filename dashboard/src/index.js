@@ -1,19 +1,3 @@
-/*!
-
-=========================================================
-* Black Dashboard PRO React - v1.2.1
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/black-dashboard-pro-react
-* Copyright 2022 Creative Tim (https://www.creative-tim.com)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
@@ -21,6 +5,7 @@ import { Provider } from "react-redux";
 import AuthLayout from "layouts/Auth/Auth.js";
 import AdminLayout from "layouts/Admin/Admin.js";
 import RTLLayout from "layouts/RTL/RTL.js";
+import PrivateRoute from "_helpers/PrivateRoute";
 
 import store from "./store";
 
@@ -37,9 +22,9 @@ root.render(
     <Provider store={store}>
       <Switch>
         <Route path="/auth" render={(props) => <AuthLayout {...props} />} />
-        <Route path="/admin" render={(props) => <AdminLayout {...props} />} />
+        <PrivateRoute path="/admin" render={(props) => <AdminLayout {...props} />} />
         <Route path="/rtl" render={(props) => <RTLLayout {...props} />} />
-        <Redirect from="/*" to="/admin/dashboard" />
+        <Redirect from="/*" to="/auth/login" />
       </Switch>
     </Provider>
   </BrowserRouter>

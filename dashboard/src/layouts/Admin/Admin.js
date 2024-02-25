@@ -1,19 +1,3 @@
-/*!
-
-=========================================================
-* Black Dashboard PRO React - v1.2.1
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/black-dashboard-pro-react
-* Copyright 2022 Creative Tim (https://www.creative-tim.com)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
 import React from "react";
 import { Route, Switch, Redirect, useLocation } from "react-router-dom";
 // javascript plugin used to create scrollbars on windows
@@ -26,6 +10,7 @@ import AdminNavbar from "components/Navbars/AdminNavbar.js";
 import Footer from "components/Footer/Footer.js";
 import Sidebar from "components/Sidebar/Sidebar.js";
 import FixedPlugin from "components/FixedPlugin/FixedPlugin.js";
+import PrivateRoute from "_helpers/PrivateRoute";
 
 import routes from "routes/routes.js";
 import logo from "assets/img/FEAR/logo.png";
@@ -46,6 +31,8 @@ const Admin = (props) => {
     if (mainPanelRef.current) {
       mainPanelRef.current.scrollTop = 0;
     }
+    document.body.classList.toggle("sidebar-mini")
+    setSidebarMini(false);
   }, [location]);
 
   React.useEffect(() => {
@@ -99,7 +86,7 @@ const Admin = (props) => {
       }
       if (prop.layout === "/admin") {
         return (
-          <Route
+          <PrivateRoute
             path={prop.layout + prop.path}
             component={prop.component}
             key={key}
@@ -161,6 +148,7 @@ const Admin = (props) => {
     setSidebarOpened(false);
     document.documentElement.classList.remove("nav-open");
   };
+
   return (
     <div className="wrapper">
       <div className="rna-container">
