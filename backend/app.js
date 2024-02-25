@@ -41,15 +41,6 @@ app.use("/fear/api", products);
 //app.use("/fear/api", payment);
 
 const __dirname1 = path.resolve();
-app.use(
-  session({
-    secret: process.env.SECRET,
-    key: process.env.KEY,
-    resave: false,
-    saveUninitialized: false,
-    store: MongoStore.create({ mongoUrl: process.env.DB_LINK }),
-  })
-);
 
 app.use(express.static(path.join(__dirname1, "/dashboard/build")));
 app.get("*", (req, res) =>

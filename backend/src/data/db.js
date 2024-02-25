@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const MongoStore = require("connect-mongo");
+
 require("dotenv").config({ path: __dirname + "/../.env" });
 
 module.exports.run = () => {
@@ -15,3 +17,7 @@ module.exports.run = () => {
           console.log("Error connecting to MongoDB", err);
       })
 };
+
+module.exports.store = () => {
+  MongoStore.create({ mongoUrl: process.env.DB_LINK });
+}
