@@ -40,7 +40,22 @@ import {
 } from "../_constants/userConstanat";
 
 var API_URL = "http://fear.master.com:4000";
-
+function stringify(obj) {
+  let cache = [];
+  let str = JSON.stringify(obj, function(key, value) {
+    if (typeof value === "object" && value !== null) {
+      if (cache.indexOf(value) !== -1) {
+        // Circular reference found, discard key
+        return;
+      }
+      // Store value in our collection
+      cache.push(value);
+    }
+    return value;
+  });
+  cache = null; // reset the cache
+  return str;
+}
 
 // login user
 export function login(email, password) {
@@ -93,26 +108,23 @@ export function signUp(signupData) {
 
 }
 
-// Load User (user Profile) if logged in before
-
-export const load_UserProfile = () => async (dispatch) => {
+export const loadProfile = () => async (dispatch) => {
   try {
     dispatch({ type: LOAD_USER_REQUEST });
-
     // Check if user data is available in session storage
     const userData = sessionStorage.getItem("user");
+
     if (userData !== "undefined" && userData && userData !== undefined ) {
-      // Parse the user data from JSON format stored in session storage
       const user = JSON.parse(userData);
-       dispatch({ type: LOAD_USER_SUCCESS, payload: user });
+      dispatch({ type: LOAD_USER_SUCCESS, payload: user });
+    
     } else {
-      // If user data is not available in session storage, make a backend API call
-      const { data } = await axios.get("api/v1/profile");
-   
+
+      const { data } = await axios.get("http://fear.master.com:4000/fear/api/profile");
+
       dispatch({ type: LOAD_USER_SUCCESS, payload: data.user });
 
-      // Save the user data to session storage for future use
-      sessionStorage.setItem("user", JSON.stringify(data.user));
+      sessionStorage.setItem("user", stringify(data.user));
     }
   } catch (error) {
     dispatch({ type: LOAD_USER_FAIL, payload: error.message });

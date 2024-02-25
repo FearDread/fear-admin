@@ -37,10 +37,10 @@ exports.register = async (req, res) => {
 
 exports.read = async (req, res) => {
   await UserModel.findById(req.user.id)
-    .then((user) => {
+    .then((data) => {
       res.status(200).json({
         success: true,
-        user: user
+        data
       });
     })
     .catch((error) => {

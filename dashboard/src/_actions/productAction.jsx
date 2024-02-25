@@ -111,7 +111,7 @@ export const getAdminProducts = () => async (dispatch) => {
 
     const { data } = await axios.get("http://fear.master.com:4000/fear/api/admin/products");
 
-    dispatch({ type: ADMIN_PRODUCT_SUCCESS, payload: data.products });
+    dispatch({ type: ADMIN_PRODUCT_SUCCESS, payload: data.product });
   } catch (error) {
     dispatch({ type: ADMIN_PRODUCT_FAIL, payload: error.message });
   }
