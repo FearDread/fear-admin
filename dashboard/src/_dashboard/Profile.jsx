@@ -9,7 +9,7 @@ const ProfilePage = () => {
   
   const dispatch = useDispatch();
   const history = useHistory();
-  const {  , isAuthenticated } = useSelector((state) => state.userData);
+  const { isAuthenticated } = useSelector((state) => state.userData);
 
   const logoutHandler = () => {
     dispatch(logout());

@@ -186,7 +186,6 @@ function NewProduct() {
                       <CardTitle tag="h4">Upload Product Image</CardTitle>
                         <i className="time-icons icon-upload">Add Image</i>
                         <Input
-                          className="tim-icons icon-upload"
                           type="file"
                           accept="image/*"
                           onChange={createProductImagesChange}
@@ -204,14 +203,11 @@ function NewProduct() {
                           ))}
                           </CardBody>
                           <Button
-                        variant="contained"
-                        color="default"
-                        className=""
-                        onClick={handleImageUpload}
-                      >
-                          Upload Images
-
-                      </Button>
+                            variant="contained"
+                            onClick={handleImageUpload}
+                          >
+                            Upload Images
+                          </Button>
                       </FormGroup> 
                     </CardBody>
                     <Button
