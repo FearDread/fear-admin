@@ -4,7 +4,7 @@ const User = require("../controllers/user");
 const { isAuthenticated, authorizeRoles } = require("../auth");
 const { catchErrors } = require("../_helpers/errorHandlers");
 
-
+0  
 router.route("/register").post(catchErrors(User.register));
 router.route("/profile").get(isAuthenticated, catchErrors(User.read));
 router.route("/password/forgot").post(User.forgotPassword);
@@ -13,7 +13,7 @@ router.route("/profile/update").put(isAuthenticated, User.update);
 router.route("/password/reset/:token").put(catchErrors(User.resetPassword));
 
 router.route("/admin/users")
-    .get(isAuthenticated, authorizeRoles("admin"), catchErrors(User.list));
+    .get(isAuthenticated, catchErrors(User.list));
 router.route("/admin/user/:id")
     .get(isAuthenticated, authorizeRoles("admin"), catchErrors(User.read))
     .delete(isAuthenticated , authorizeRoles("admin") , catchErrors(User.delete))

@@ -37,18 +37,33 @@ const Admin = (props) => {
 
   React.useEffect(() => {
     let innerMainPanelRef = mainPanelRef;
+    
+    window.addEventListener("scroll", showNavbarButton);
+    mainPanelRef.current &&
+    mainPanelRef.current.addEventListener("ps-scroll-y", showNavbarButton);
+    return function cleanup() {
+      window.removeEventListener("scroll", showNavbarButton);
+      innerMainPanelRef.current &&
+      innerMainPanelRef.current.removeEventListener(
+        "ps-scroll-y",
+        showNavbarButton
+      );
+    }
+    /*
+
     if (navigator.platform.indexOf("Win") > -1) {
       document.documentElement.classList.add("perfect-scrollbar-on");
       document.documentElement.classList.remove("perfect-scrollbar-off");
-      ps = new PerfectScrollbar(mainPanelRef.current);
-      mainPanelRef.current &&
-        mainPanelRef.current.addEventListener("ps-scroll-y", showNavbarButton);
+      //ps = new PerfectScrollbar(mainPanelRef.current);
+
       let tables = document.querySelectorAll(".table-responsive");
       for (let i = 0; i < tables.length; i++) {
-        ps = new PerfectScrollbar(tables[i]);
+        //ps = new PerfectScrollbar(tables[i]);
       }
     }
-    window.addEventListener("scroll", showNavbarButton);
+
+  
+
     return function cleanup() {
       if (navigator.platform.indexOf("Win") > -1) {
         ps.destroy();
@@ -60,8 +75,9 @@ const Admin = (props) => {
             showNavbarButton
           );
       }
-      window.removeEventListener("scroll", showNavbarButton);
+    
     };
+    */
   }, []);
 
   const showNavbarButton = () => {
@@ -86,8 +102,8 @@ const Admin = (props) => {
       }
       if (prop.layout === "/admin") {
         return (
-          <PrivateRoute
-            isAdmin={true}
+          <Route
+            //isAdmin={true}
             path={prop.layout + prop.path}
             component={prop.component}
             key={key}
