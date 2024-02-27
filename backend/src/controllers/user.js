@@ -36,6 +36,7 @@ exports.register = async (req, res) => {
 };
 
 exports.read = async (req, res) => {
+  console.log("READ REQUEST :: " + req);
   /*
   await UserModel.findById(req.user.id)
     .then((user) => {
@@ -55,7 +56,7 @@ exports.read = async (req, res) => {
     const user = await userModel.findById(req.params.id);
     res.status(200).json({
       success: true,
-      user,s
+      user,
     });
 };
 
@@ -115,6 +116,14 @@ exports.update = async (req, res, next) => {
 /* Admin User Methods */
 /* ------------------ */
 exports.readUser = async (req, res, next) => {
+
+  console.log("readUser :: CALLED");
+  const user = await userModel.findById(req.user.id); // user.id because we set that user into as user.req when user gose autentiction. becauae all data of users set into req.user. only user when logged in then access this function
+  res.status(200).json({
+    success: true,
+    user, // profile details of user
+  });
+  /*
   if (!req.params.id) {
     return next(new AppError(`User does not exist with Id: ${req.params.id}`));
   }
@@ -129,6 +138,7 @@ exports.readUser = async (req, res, next) => {
     .catch((error) => {
       dbError(res, error);
     });
+    */
 };
 
 exports.delete = async (req, res, next) => {

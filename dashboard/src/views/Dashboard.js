@@ -66,7 +66,20 @@ const Dashboard = () => {
   const setBgChartData = (name) => {
     setbigChartData(name);
   };
-  
+  const { user, isAuthenticated } = useSelector((state) => state.userData);
+
+  const logoutHandler = () => {
+    dispatch(logout());
+    alert.success("Logged out successfully");
+    history.push("/login");
+  };
+  useEffect(() => {
+    // if user not logged in
+    if (isAuthenticated) {
+      history.push("/admin");
+    }
+  }, [history, isAuthenticated]);
+
   let totalInventory = 0;
   products && products.forEach((element) => {
     // check how much items out of stocks in products array

@@ -40,7 +40,7 @@ exports.create = async (req, res) => {
       }
     }
 
-    req.body.user = req.user.id;
+    //req.body.user = req.user.id;
     req.body.images = imagesLinks;
   }
 
