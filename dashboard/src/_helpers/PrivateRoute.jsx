@@ -16,6 +16,7 @@ function PrivateRoute({ isAdmin, component: Component, ...rest }) {
     dispatch(loadProfile());
   }, [dispatch]);
 
+
   if (loading) {
     return <Loader />; 
   }

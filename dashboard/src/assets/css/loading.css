@@ -11,8 +11,13 @@
   
   .cog-loader {
     overflow: hidden;
+    height: 100%;
     width: fit-content;
-    margin: 10rem auto;
+    margin: 0 auto;
+    background-color: transparent;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
   
   .spinner {
@@ -32,7 +37,7 @@
   }
   
   @media (max-width: 799px) {
-    .cricket-ball-loader {
+    .cog-loader {
       margin: 12rem auto;
     }
   
