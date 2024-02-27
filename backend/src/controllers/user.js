@@ -35,8 +35,8 @@ exports.register = async (req, res) => {
     });
 };
 
-exports.read = async (req, res) => {
-  console.log("READ REQUEST :: " + req);
+exports.read = async (req, res, next) => {
+  console.log("READ REQUEST :: " + req.params);
   /*
   await UserModel.findById(req.user.id)
     .then((user) => {
@@ -49,7 +49,7 @@ exports.read = async (req, res) => {
       dbError(res, error);
     });
     */
-    if (!req.user.id) {
+    if (!req.params.id) {
       return next(dbError());
     }
 
@@ -115,7 +115,7 @@ exports.update = async (req, res, next) => {
 
 /* Admin User Methods */
 /* ------------------ */
-exports.readUser = async (req, res, next) => {
+exports.readUser = async (req, res) => {
 
   console.log("readUser :: CALLED");
   const user = await UserModel.findById(req.user.id); // user.id because we set that user into as user.req when user gose autentiction. becauae all data of users set into req.user. only user when logged in then access this function

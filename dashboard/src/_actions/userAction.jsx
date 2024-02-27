@@ -38,20 +38,21 @@ import {
   DELETE_USER_FAIL,
   DELETE_USER_SUCCESS,
 } from "../_constants/userConstanat";
+import { API_BASE_URL } from "../_constants/api.js";
 import { getCookie, setCookie, deleteCookie } from "_auth/cookie.js";
 
 var API_URL = "http://fear.master.com:4000";
 
 // login user
 export function login(email, password) {
-
+  console.log("API URL = " + API_BASE_URL);
   return async function (dispatch) {
     try {
       dispatch({ type: LOGIN_REQUEST });
 
       const config = { headers: { "Content-Type": "application/json" } };
       const { data } = await axios.post(
-        `http://localhost:4000/fear/api/login`,
+        API_BASE_URL + "/login",
         { email, password },
         config
       );
@@ -75,46 +76,45 @@ export function signUp(signupData) {
       };
 
       const { data } = await axios.post(
-        `http://fear.master.com:4000/fear/api/register`,
+        API_BASE_URL + "/register",
         signupData,
         config
       );
 
       dispatch({ type: REGISTER_USER_SUCCESS, payload: data.user });
-
-
-
     } catch (error) {
   
       dispatch({ type: REGISTER_USER_FAIL, payload: error.message }) 
     }
-
   }
-
 }
 
-export const loadProfile = () => async (dispatch) => {
-  try {
-    dispatch({ type: LOAD_USER_REQUEST });
-    // Check if user data is available in session storage
-    const userData = sessionStorage.getItem("user");
-
-    if (userData !== "undefined" && userData && userData !== undefined ) {
-      const user = JSON.parse(userData);
-      dispatch({ type: LOAD_USER_SUCCESS, payload: user });
-    
-    } else {
-
-      const { data } = await axios.get("http://localhost:4000/fear/api/profile");
-      sessionStorage.setItem("user", JSON.stringify(data.user));
-
-      dispatch({ type: LOAD_USER_SUCCESS, payload: data.user });
-
+export function loadProfile() {
+  return async function (dispatch) {
+    try {
+      dispatch({ type: LOAD_USER_REQUEST });
+      // Check if user data is available in session storage
+      const userData = sessionStorage.getItem("user");
+      console.log('SESSION STORE = ' + sessionStorage);
+      if (userData !== "undefined" && userData && userData !== undefined ) {
+        const user = JSON.parse(userData);
+        dispatch({ type: LOAD_USER_SUCCESS, payload: user });
       
+      } else {
+  
+        const { newUser } = await axios.get(API_BASE_URL + "/profile");
+        sessionStorage.setItem("user", JSON.stringify(newUser.user));
+  
+  
+        dispatch({ type: LOAD_USER_SUCCESS, payload: newUser.user });
+  
+        
+      }
+    } catch (error) {
+      dispatch({ type: LOAD_USER_FAIL, payload: error.message });
     }
-  } catch (error) {
-    dispatch({ type: LOAD_USER_FAIL, payload: error.message });
   }
+
 };
 
 
@@ -123,7 +123,7 @@ export function logout() {
   return async function (dispatch) {
     try {
       sessionStorage.removeItem("user");
-      await axios.get(`/api/v1/logout`); // token will expired from cookies and no more user data access
+      await axios.get(API_BASE_URL + `/logout`); // token will expired from cookies and no more user data access
       dispatch({ type: LOGOUT_SUCCESS });
 
     } catch (error) {
@@ -147,7 +147,7 @@ export function updateProfile(userData) {
 
 
       const { data } = await axios.put(
-        `http://fear.master.com:4000/fear/api/profile/update`,
+        API_BASE_URL + `/profile/update`,
         userData,
         config
       );
@@ -180,7 +180,7 @@ export function updatePassword(userPassWord) {
 
 
       const { data } = await axios.put(
-        `/api/v1/password/update`,
+        API_BASE_URL + `/password/update`,
         userPassWord,
         config
       );
@@ -254,7 +254,7 @@ export const getAllUsers  = () => async (dispatch) =>{
 
     dispatch({type : ALL_USERS_REQUEST})
 
-    const { data } = await axios.get(API_URL + "/fear/api/admin/users");
+    const { data } = await axios.get(API_BASE_URL + "/admin/users");
 
     dispatch({ type: ALL_USERS_SUCCESS, payload: data.users});
     
@@ -269,7 +269,7 @@ export const getAllUsers  = () => async (dispatch) =>{
 export const getUserDetails = (id) => async (dispatch) => {
   try {
      dispatch({type : USER_DETAILS_REQUEST})
-         const { data } = await axios.get(API_URL + `/fear/api/admin/user/${id}`);
+         const { data } = await axios.get(API_BASE_URL + `/admin/user/${id}`);
             dispatch({ type: USER_DETAILS_SUCCESS, payload: data.user });
 
   } catch (error) {
@@ -286,7 +286,7 @@ export const updateUser = (id, userData) => async (dispatch) => {
 
      const config  = {headers : {"Content-Type" : "application/json"}}
      const { data } = await axios.put(
-       API_URL + "/api/v1/admin/user/:id}",
+      API_BASE_URL + "/admin/user/:id}",
        userData,
        config
      );
@@ -305,7 +305,7 @@ export const deleteUser  =(id) => async (dispatch) =>{
   try {
        dispatch({ type: DELETE_USER_REQUEST });
        
-       const { data } = await axios.delete(API_URL + `/api/v1/admin/user/${id}`);
+       const { data } = await axios.delete(API_BASE_URL + `/admin/user/${id}`);
         dispatch({type : DELETE_USER_SUCCESS , payload : data})
 
   } catch (error) {

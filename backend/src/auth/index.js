@@ -1,42 +1,26 @@
 const jwt = require("jsonwebtoken");
 const AdminModel = require("../models/admin");
 const UserModel = require("../models/user");
+const asyncHandler = require("../_helpers/asyncHandler");
 const { dbError, authError, notFound, AppError } = require("../_helpers/errorHandlers");
 require("dotenv").config({ path: __dirname + "../.env" });
 
-exports.login = async (req, res, next) => {
+exports.login = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
     return next(new AppError("Please Enter Email & Password", 400));
   }
   
-  await UserModel.findOne({ email }).select("+password")
-    .then((user) => {
+  const user = await UserModel.findOne({ email }).select("+password")
+
       console.log("Found USER: " + user);
       const isPasswordMatched = user.compare(password);
       if (!isPasswordMatched) {
         return next(new AppError("Invalid email or password", 401));
       }
-      
-      const token = user.getJWTToken();
-      res.cookie("token", token, {
-        expires: new Date( Date.now() + process.env.COOKIE_EXPIRE * 24 * 60 * 60 * 1000),
-        httpOnly: true,
-      });
-      res.json({
-        success: true,
-        token,
-        user,
-        isAdmin: {
-          id: user._id,
-          name: user.name,
-          isLoggedIn: true,
-        },
-        message: "Successfully login admin"
-      });
-    }).catch(error);
-};
+      this.sendJWTToken(user, 200, res);
+});
 
 exports.logout = async (req, res) => {
   res.cookie("token", null, {
@@ -50,22 +34,23 @@ exports.logout = async (req, res) => {
   });
 };
 
-exports.isAuthenticated = async ( req, res, next ) => {
+exports.isAuthenticated = asyncHandler(async ( req, res, next ) => {
   console.log("IsAuthentecated REQUEST MADE");
+  console.log(req.cookies);
+  const { token } = req.cookies;
+  //const token = req.token;
+  //const token = req.header("token");
 
-  const { cookie } = req.cookies;
-  const token = req.header("x-auth-token");
-
-  if (!cookie) {
-    return next(new AppError("Token Not Found", 401));
-  }
+  //f (!token) {
+  //  return next(new AppError("Token Not Found", 401));
+  //}
   
-  const decodeToken = jwt.verify(cookie, process.env.JWT_SECRET);
+  const decodeToken = jwt.verify(token, process.env.JWT_SECRET);
   const userData = await UserModel.findById(decodeToken.id);
 
   req.user = userData;
   next();
-};
+});
 
 exports.authorizeRoles = (...roles) => {
   return (req , res , next) => {
@@ -109,8 +94,10 @@ exports.sendJWTToken = (user, statusCode, res) => {
     httpOnly: true,
   };
   console.log("Token: " + token);
-  res.cookie("token", token, options)
-  res.status(statusCode).json({
+
+  res.status(statusCode)
+    .cookie("token", token, options)
+    .json({
       success: true,
       user,
       token

@@ -102,10 +102,9 @@ const Admin = (props) => {
       if (prop.collapse) {
         return getRoutes(prop.views);
       }
-      if (prop.layout === "/admin") {
+      if (prop.layout === "/admin" && prop.isAdmin) {
         return (
           <Route
-            //isAdmin={true}
             path={prop.layout + prop.path}
             component={prop.component}
             key={key}
