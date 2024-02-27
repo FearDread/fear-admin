@@ -36,8 +36,10 @@ exports.logout = async (req, res) => {
 
 exports.isAuthenticated = asyncHandler(async ( req, res, next ) => {
   console.log("IsAuthentecated REQUEST MADE");
-  console.log(req.cookies);
-  const { token } = req.cookies;
+  
+  const user = sessionStorage.getItem("user");
+  console.log(JSON.parse(user));
+  const { token } = user.token;
   //const token = req.token;
   //const token = req.header("token");
 
