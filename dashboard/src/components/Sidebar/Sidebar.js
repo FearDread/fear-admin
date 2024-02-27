@@ -16,6 +16,7 @@ const Sidebar = (props) => {
     setState(getCollapseStates(props.routes));
   }, []);
   React.useEffect(() => {
+    /*
     // if you are using a Windows Machine, the scrollbars will have a Mac look
     if (navigator.platform.indexOf("Win") > -1) {
       ps = new PerfectScrollbar(sidebarRef.current, {
@@ -30,6 +31,7 @@ const Sidebar = (props) => {
         ps.destroy();
       }
     };
+    */
   });
   // this creates the intial state of this component based on the collapse routes
   // that it gets through props.routes
@@ -194,7 +196,7 @@ const Sidebar = (props) => {
   }
   return (
     <div className="sidebar" data={activeColor}>
-      <div className="sidebar-wrapper" ref={sidebarRef}>
+      <div className="sidebar-wrapper" >
         {logoImg !== null || logoText !== null ? (
           <div className="logo">
             {logoImg}
