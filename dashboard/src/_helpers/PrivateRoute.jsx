@@ -14,7 +14,7 @@ function PrivateRoute({ isAdmin, component: Component, ...rest }) {
 
   useEffect(() => {
     dispatch(loadProfile());
-  }, [dispatch]);
+  }, [dispatch, user]);
 
 
   if (loading) {
