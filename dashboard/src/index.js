@@ -27,7 +27,7 @@ root.render(
           path="/admin" 
           component={(props) => <AdminLayout {...props} />} />
         <Route path="/rtl" render={(props) => <RTLLayout {...props} />} />
-        
+        <Redirect from="/*" to="/admin/dashboard" />
       </Switch>
     </Provider>
   </BrowserRouter>

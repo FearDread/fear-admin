@@ -1,5 +1,6 @@
 import React from "react";
-import { Route, Switch, Redirect, useLocation } from "react-router-dom";
+import { Route, Switch, Redirect, useLocation, useHistory } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 // javascript plugin used to create scrollbars on windows
 import PerfectScrollbar from "perfect-scrollbar";
 // react plugin for creating notifications over the dashboard
@@ -25,7 +26,15 @@ const Admin = (props) => {
   const mainPanelRef = React.useRef(null);
   const notificationAlertRef = React.useRef(null);
   const location = useLocation();
+  const history = useHistory();
+  const { user, isAuthenticated } = useSelector((state) => state.userData);
 
+  React.useEffect(() => {
+    // if user not logged in
+    if (isAuthenticated) {
+      history.push("/admin");
+    }
+  }, [history, isAuthenticated]);
   React.useEffect(() => {
     document.documentElement.scrollTop = 0;
     document.scrollingElement.scrollTop = 0;
