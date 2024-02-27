@@ -130,6 +130,7 @@ export function createProduct(productData) {
 
       await axios.post(
         `http://fear.master.com:4000/fear/api/admin/product/new`,
+        user,
         productData,
         config
       )

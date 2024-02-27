@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Redirect, Route } from "react-router-dom";
+import AdminLayout from "layouts/Admin/Admin.js";
 import { loadProfile } from "_actions/userAction";
 import Loader from "components/Loader/Loading";
 
@@ -15,17 +16,16 @@ function PrivateRoute({ isAdmin, component: Component, ...rest }) {
     dispatch(loadProfile());
   }, [dispatch]);
 
-
   if (loading) {
     return <Loader />; 
   }
 
   if (!isAuthenticated || !user) {
-    return <Redirect to="/login" />;
+    return <Redirect to="/auth/login" />;
   }
 
   if (isAdmin && user.role !== "admin") {
-    return <Redirect to="/login" />;
+    return <Redirect to="/auth/login" />;
   }
 
   // If the user is authenticated and isAdmin check is passed, render the specified component

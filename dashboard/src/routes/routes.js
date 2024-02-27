@@ -31,7 +31,7 @@ import Products from "_dashboard/ProductList.jsx";
 import NewProduct from "_dashboard/NewProduct.jsx";
 //import Profile from "_dashboard/Profile.jsx";
 //import ProductReviews from "_dashboard/ProductReviews";
-import Login from "views/pages/Login.js";
+import Login from "views/pages/Login.jsx";
 import Register from "views/pages/Register.js";
 //import OrderList from "_dashboard/OrderList";
 

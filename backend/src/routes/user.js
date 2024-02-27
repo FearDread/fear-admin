@@ -4,9 +4,8 @@ const User = require("../controllers/user");
 const { isAuthenticated, authorizeRoles } = require("../auth");
 const { catchErrors } = require("../_helpers/errorHandlers");
 
-0  
 router.route("/register").post(catchErrors(User.register));
-router.route("/profile").get(isAuthenticated, catchErrors(User.read));
+router.route("/profile").get(catchErrors(User.readUser));
 router.route("/password/forgot").post(User.forgotPassword);
 router.route("/password/update").put(isAuthenticated, User.updatePassword);
 router.route("/profile/update").put(isAuthenticated, User.update);

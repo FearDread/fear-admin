@@ -22,9 +22,12 @@ root.render(
     <Provider store={store}>
       <Switch>
         <Route path="/auth" render={(props) => <AuthLayout {...props} />} />
-        <Route path="/admin" render={(props) => <AdminLayout {...props} />} />
+        <PrivateRoute 
+          isAdmin={true}
+          path="/admin" 
+          component={(props) => <AdminLayout {...props} />} />
         <Route path="/rtl" render={(props) => <RTLLayout {...props} />} />
-
+        
       </Switch>
     </Provider>
   </BrowserRouter>

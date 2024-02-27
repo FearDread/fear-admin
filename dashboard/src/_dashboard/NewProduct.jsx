@@ -37,6 +37,7 @@ function NewProduct() {
   const [imagesPreview, setImagesPreview] = useState([]);
   const [isCategory, setIsCategory] = useState(false);
   const fileInputRef = useRef();
+  const { user, isAuthenticated } = useSelector((state) => state.userData);
 
   const handleCategoryChange = (e) => {
     setCategory(e.target.value);
@@ -66,7 +67,7 @@ function NewProduct() {
 
   const createProductSubmitHandler = (e) => {
     e.preventDefault();
-
+    
     const myForm = new FormData();
           myForm.set("name", name);
           myForm.set("price", price);
@@ -78,7 +79,7 @@ function NewProduct() {
     images.forEach((currImg) => {
       myForm.append("images", currImg);
     });
-
+    myForm.set("user", user.id);
     dispatch(createProduct(myForm));
   };
 

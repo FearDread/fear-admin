@@ -25,6 +25,7 @@ const Admin = (props) => {
   const mainPanelRef = React.useRef(null);
   const notificationAlertRef = React.useRef(null);
   const location = useLocation();
+
   React.useEffect(() => {
     document.documentElement.scrollTop = 0;
     document.scrollingElement.scrollTop = 0;
@@ -41,6 +42,7 @@ const Admin = (props) => {
     window.addEventListener("scroll", showNavbarButton);
     mainPanelRef.current &&
     mainPanelRef.current.addEventListener("ps-scroll-y", showNavbarButton);
+    
     return function cleanup() {
       window.removeEventListener("scroll", showNavbarButton);
       innerMainPanelRef.current &&
@@ -201,7 +203,6 @@ const Admin = (props) => {
         />
         <Switch>
           {getRoutes(routes)}
-          <Redirect from="*" to="/admin/dashboard" />
         </Switch>
         {
           // we don't want the Footer to be rendered on full screen maps page

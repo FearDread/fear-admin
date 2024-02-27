@@ -38,6 +38,7 @@ import {
   DELETE_USER_FAIL,
   DELETE_USER_SUCCESS,
 } from "../_constants/userConstanat";
+import { getCookie, setCookie, deleteCookie } from "_auth/cookie.js";
 
 var API_URL = "http://fear.master.com:4000";
 
@@ -49,12 +50,12 @@ export function login(email, password) {
       dispatch({ type: LOGIN_REQUEST });
 
       const config = { headers: { "Content-Type": "application/json" } };
-
       const { data } = await axios.post(
-        `http://fear.master.com:4000/fear/api/login`,
+        `http://localhost:4000/fear/api/login`,
         { email, password },
         config
       );
+      sessionStorage.setItem("user", JSON.stringify(data.user));
 
       dispatch({ type: LOGIN_SUCCESS, payload: data.user });
     } catch (error) {
@@ -104,11 +105,12 @@ export const loadProfile = () => async (dispatch) => {
     
     } else {
 
-      const { data } = await axios.get("http://fear.master.com:4000/fear/api/profile");
+      const { data } = await axios.get("http://localhost:4000/fear/api/profile");
+      sessionStorage.setItem("user", JSON.stringify(data.user));
 
       dispatch({ type: LOAD_USER_SUCCESS, payload: data.user });
 
-      sessionStorage.setItem("user", JSON.stringify(data.user));
+      
     }
   } catch (error) {
     dispatch({ type: LOAD_USER_FAIL, payload: error.message });
@@ -316,3 +318,4 @@ export const deleteUser  =(id) => async (dispatch) =>{
 export const clearErrors = () => async (dispatch) => {
   dispatch({ type: CLEAR_ERRORS });
 };
+

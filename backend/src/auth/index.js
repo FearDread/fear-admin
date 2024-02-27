@@ -11,18 +11,31 @@ exports.login = async (req, res, next) => {
     return next(new AppError("Please Enter Email & Password", 400));
   }
   
-  await UserModel.findOne({ email })
-    .select("+password")
+  await UserModel.findOne({ email }).select("+password")
     .then((user) => {
+      console.log("Found USER: " + user);
       const isPasswordMatched = user.compare(password);
       if (!isPasswordMatched) {
         return next(new AppError("Invalid email or password", 401));
       }
-
-      this.sendJWTToken(user, 200, res);
-    }).catch((error) => {
-      dbError(res, error);
-    });
+      
+      const token = user.getJWTToken();
+      res.cookie("token", token, {
+        expires: new Date( Date.now() + process.env.COOKIE_EXPIRE * 24 * 60 * 60 * 1000),
+        httpOnly: true,
+      });
+      res.json({
+        success: true,
+        token,
+        user,
+        isAdmin: {
+          id: user._id,
+          name: user.name,
+          isLoggedIn: true,
+        },
+        message: "Successfully login admin"
+      });
+    }).catch(error);
 };
 
 exports.logout = async (req, res) => {
@@ -38,29 +51,27 @@ exports.logout = async (req, res) => {
 };
 
 exports.isAuthenticated = async ( req, res, next ) => {
-  const { token } = req.cookies;
+  console.log("IsAuthentecated REQUEST MADE");
 
-  if (!token) {
-    return (next(authError(res, req.cookies)));
+  const { cookie } = req.cookies;
+  const token = req.header("x-auth-token");
+
+  if (!cookie) {
+    return next(new AppError("Token Not Found", 401));
   }
   
-  const decodeToken = jwt.verify(token, process.env.JWT_SECRET);
+  const decodeToken = jwt.verify(cookie, process.env.JWT_SECRET);
+  const userData = await UserModel.findById(decodeToken.id);
 
-  await UserModel.findById(decodeToken.id)
-    .then((userDetails) => {
-      req.user = userDetails;
-      next();
-    })
-    .catch((error) => {
-      dbError(res, error);
-      next();
-    });
+  req.user = userData;
+  next();
 };
 
 exports.authorizeRoles = (...roles) => {
   return (req , res , next) => {
     if ( roles.includes( req.user.role ) === false) { 
-        return next( authError(res, req.user) );
+      authError(req, req);  
+      //return next( authError(res, req.user) );
     }
     next();
   }
@@ -97,9 +108,9 @@ exports.sendJWTToken = (user, statusCode, res) => {
     expires: new Date( Date.now() + process.env.COOKIE_EXPIRE * 24 * 60 * 60 * 1000),
     httpOnly: true,
   };
-
-  res.status(statusCode).cookie("token", token, options)
-    .json({
+  console.log("Token: " + token);
+  res.cookie("token", token, options)
+  res.status(statusCode).json({
       success: true,
       user,
       token
