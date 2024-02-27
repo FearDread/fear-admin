@@ -25,14 +25,14 @@ import RegularForms from "views/forms/RegularForms.js";
 import Panels from "views/components/Panels.js";
 
 import User from "views/pages/User.js";
-import Dashboard from "views/Dashboard.js";
+import Dashboard from "views/Dashboard.jsx";
 import UserList from "_dashboard/UserList.jsx";
 import Products from "_dashboard/ProductList.jsx";
 import NewProduct from "_dashboard/NewProduct.jsx";
 //import Profile from "_dashboard/Profile.jsx";
 //import ProductReviews from "_dashboard/ProductReviews";
 import Login from "views/pages/Login.jsx";
-import Register from "views/pages/Register.js";
+import Register from "views/pages/Register.jsx";
 //import OrderList from "_dashboard/OrderList";
 
 const routes = [
