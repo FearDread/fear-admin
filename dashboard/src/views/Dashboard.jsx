@@ -8,7 +8,7 @@ import { VectorMap } from "react-jvectormap";
 import { useSelector, useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { getAllOrders } from "_actions/orderAction";
-import { getAllUsers } from "_actions/userAction";
+import { logout, getAllUsers } from "_actions/userAction";
 import { getAdminProducts, clearErrors } from "_actions/productAction";
 import Loader from "components/Loader/Loading.js";
 // reactstrap components
@@ -63,6 +63,7 @@ const Dashboard = () => {
   const { orders, error: ordersError } = useSelector((state) => state.allOrders);
   const { users, error: usersError } = useSelector((state) => state.allUsers);
   const [bigChartData, setbigChartData] = React.useState("data1");
+
   const setBgChartData = (name) => {
     setbigChartData(name);
   };
