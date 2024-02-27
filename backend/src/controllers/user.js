@@ -118,7 +118,7 @@ exports.update = async (req, res, next) => {
 exports.readUser = async (req, res, next) => {
 
   console.log("readUser :: CALLED");
-  const user = await userModel.findById(req.user.id); // user.id because we set that user into as user.req when user gose autentiction. becauae all data of users set into req.user. only user when logged in then access this function
+  const user = await UserModel.findById(req.user.id); // user.id because we set that user into as user.req when user gose autentiction. becauae all data of users set into req.user. only user when logged in then access this function
   res.status(200).json({
     success: true,
     user, // profile details of user
