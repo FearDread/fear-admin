@@ -1,9 +1,9 @@
-//import { API_BASE_URL, ACCESS_TOKEN_NAME } from "@/config/serverApiConfig";
+import { API_BASE_URL, ACCESS_TOKEN_NAME } from "@/config/serverApiConfig";
 
 import axios from "axios";
 //import errorHandler from "@/request/errorHandler";
 //import successHandler from "@/request/successHandler";
-//import storePersist from "@/redux/storePersist";
+import storePersist from "@/redux/storePersist";
 
 import { getCookie, setCookie, deleteCookie } from "./cookie";
 
