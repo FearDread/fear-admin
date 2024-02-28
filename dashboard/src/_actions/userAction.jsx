@@ -38,7 +38,7 @@ import {
   DELETE_USER_FAIL,
   DELETE_USER_SUCCESS,
 } from "../_constants/userConstanat";
-import { API_BASE_URL } from "../_constants/api.js";
+import { API_BASE_URL } from "../variables/api.js";
 import { getCookie, setCookie, deleteCookie } from "_auth/cookie.js";
 
 var API_URL = "http://fear.master.com:4000";
