@@ -1,4 +1,4 @@
-const { AppError, dbError } = require("../_helpers/errorHandlers");
+const { AppError, dbError } = require("../_utils/errorHandlers");
 const ProductModel = require("../models/product");
 const cloudinary = require("cloudinary");
 

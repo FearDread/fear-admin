@@ -1,8 +1,8 @@
 import { API_BASE_URL, ACCESS_TOKEN_NAME } from "variables/api";
 
 import axios from "axios";
-import error from "_request/errorHandler";
-import success from "_request/successHandler";
+import error from "_request/error";
+import success from "_request/success";
 import storePersist from "_redux/storePersist";
 
 import { getCookie, setCookie, deleteCookie } from "./cookie";
@@ -15,7 +15,7 @@ export const login = async (email, password) => {
       { email, password },
       config
     )
-    
+    console.log("LOGIN RESPONST : " + response);
     token.set(response.data.result.token);
     return success(response);
 
@@ -35,7 +35,7 @@ export const register = async (signupData) => {
       API_BASE_URL + "/register",
       signupData,
     );
-
+    console.log("REGISTER RESPONST : " + response);
     token.set(response.data.result.token);
     return success(response);
 

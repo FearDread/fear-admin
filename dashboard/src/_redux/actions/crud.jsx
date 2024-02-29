@@ -1,4 +1,4 @@
-import * as actionTypes from "./types";
+import * as actionTypes from "../types/crud";
 import { request } from "@/request";
 
 export const crud = {

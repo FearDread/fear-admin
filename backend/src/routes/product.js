@@ -1,9 +1,8 @@
 const express  = require("express");
 const router  = express.Router();
 const Product = require("../controllers/product");
-
-const { isAuthenticted, authorizeRoles, isValidToken } = require("../auth");
-const { catchErrors } = require("../_helpers/errorHandlers");
+const { isAuthenticted, authorizeRoles, isValidToken } = require("../controllers/auth");
+const { catchErrors } = require("../_utils/errorHandlers");
  
 router.route("/product").get(catchErrors(Product.list))
 router.route("/product/:id").get(catchErrors(Product.read));

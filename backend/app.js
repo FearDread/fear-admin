@@ -6,7 +6,7 @@ const fileUpload = require("express-fileupload"); // used for image and other fi
 const path = require("path");
 const dotenv = require("dotenv");
 const cors = require("cors");
-const {developmentErrors, AppError} = require("./src/_helpers/errorHandlers");
+const {developmentErrors, AppError} = require("./src/_utils/errorHandlers");
 
 dotenv.config({ path: "./.env" });
 

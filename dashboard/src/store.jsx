@@ -9,16 +9,16 @@ import {
   deleteUpdateReducer,
    getALLReviewReducer,
    deleteReviewReducer
-} from "./_reducers/productReducers";
+} from "./_redux/reducers/product";
 import {
   profileReducer,
   userReducer,
   forgetPasswordReducer,
   userDetailsReducer,
   allUsersReducer,
-} from "./_reducers/userReducer";
+} from "./_redux/reducers/user";
 
-import { cartReducer } from "./_reducers/cartReducer";
+import { cartReducer } from "./_redux/reducers/cart";
 import {
   newOrderReducer,
   myOrderReducer,
@@ -27,7 +27,7 @@ import {
   deletUpdateOrderReducer,
   
 
-} from "./_reducers/orderReducer";
+} from "./_redux/reducers/order";
 
 const rootReducer = combineReducers({
   products: productsReducer,

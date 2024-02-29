@@ -1,4 +1,4 @@
-import * as actionTypes from "./types";
+import * as actionTypes from "../types/crud";
 
 const INITIAL_KEY_STATE = {
   result: null,

@@ -1,4 +1,4 @@
-import { notification } from "antd";
+//import { notification } from "antd";
 
 import codeMessage from "./message";
 
@@ -19,6 +19,7 @@ const success = (response, typeNotification = {}) => {
     const message = data && data.message;
     const errorText = message || codeMessage[response.status];
     const { status } = response;
+    /*
     notification.config({
       duration: 20,
     });
@@ -38,7 +39,8 @@ const success = (response, typeNotification = {}) => {
     //   description: successText,
     // });
   }
-
+  */
+  }
   return data;
 };
 

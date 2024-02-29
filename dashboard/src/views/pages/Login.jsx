@@ -19,8 +19,8 @@ import {
 import AnimatedBackground from "views/components/AnimatedBackground";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory, useLocation, Link } from "react-router-dom";
-import { selectAuth } from "_redux/auth/selectors";
-import { login } from "_redux/auth/actions";
+//import { selectAuth } from "_redux/auth/selectors";
+import { login } from "_redux/actions/auth";
 import Loader from "components/Loader/Loading";
 
 const Login = () => {
@@ -32,7 +32,7 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isValidEmail, setIsValidEmail] = useState(true);
-  const { loading: loading } = useSelector(selectAuth);
+  const { loading: loading } = useSelector((state) => state.auth);
   //const { isAuthenticated, loading, error } = useSelector((state) => state.userData);
   const handleEmailChange = (event) => {
     const newEmail = event.target.value;
@@ -49,8 +49,6 @@ const Login = () => {
     setShowPassword(!showPassword);
   };
   
-  
-
   const onFinish = (values) => {
     dispatch(login(values));
   };
@@ -70,7 +68,8 @@ const Login = () => {
 
   function handleLoginSubmit(e) {
        e.preventDefault();
-       dispatch(login(email, password));
+       var values = { email, password }; 
+       dispatch(login(values));
   }
 
 

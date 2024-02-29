@@ -21,18 +21,16 @@ import {
   Col
 } from "reactstrap";
 
-//import { Link } from "react-router-dom";
-import { signUp, clearErrors } from "../../_actions/userAction";
+import { register } from "_redux/actions/user";
 import { useDispatch, useSelector } from "react-redux";
-//import { useAlert } from "react-alert";
 import { useHistory } from "react-router-dom";
 import AnimatedBackground from "views/components/AnimatedBackground";
 import Loader from "components/Loader/Loading";
 
 const Register = () => {
   const dispatch = useDispatch();
-  //const alert = useAlert();
   const history = useHistory();
+  
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -44,29 +42,20 @@ const Register = () => {
   const [loading, setLoading] = useState(false);
   //const [confirmPassword, setconfirmPassword] = useState("");
 
-  const { isAuthenticated, error } = useSelector((state) => state.userData);
+  //const { isAuthenticated, error } = useSelector((state) => state.userData);
 
   useEffect(() => {
-    if (error) {
-      //alert.error(error);
-      dispatch(clearErrors());
-    }
 
-    if (isAuthenticated) {
-      //alert.success("User Registered Successfully");
-      history.push("/account");
-    }
-  }, [dispatch, loading, isAuthenticated, error, history]);
+  }, [dispatch, loading]);
 
   React.useEffect(() => {
     document.body.classList.toggle("register-page");
+
     return function cleanup() {
       document.body.classList.toggle("register-page");
     };
   });
 
-
-  
   const handleEmailChange = (event) => {
     const newEmail = event.target.value;
     setEmail(newEmail);
@@ -102,7 +91,7 @@ const Register = () => {
   formData.set("password", password);
   //formData.set("avatar", avatar);
 
-  dispatch(signUp(formData));
+  dispatch(register(formData));
   setLoading(false);
 }
   
@@ -110,8 +99,8 @@ const Register = () => {
     <>
     {loading ? (
       <Loader />
-      ) : (
-      <>
+    ) : (
+    <>
       <AnimatedBackground />
       <div className="content">
         <Container>

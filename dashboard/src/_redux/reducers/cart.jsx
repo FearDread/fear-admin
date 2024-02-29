@@ -1,4 +1,4 @@
-import { ADD_TO_CART, REMOVE_CART_ITEM, SAVE_SHIPPING_INFO } from "../_constants/cartConstant";
+import { ADD_TO_CART, REMOVE_CART_ITEM, SAVE_SHIPPING_INFO } from "../types/cart";
 
 
 export function cartReducer(state = { cartItems: [], shippingInfo: {} }, action) {
