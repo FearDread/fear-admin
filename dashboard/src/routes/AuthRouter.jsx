@@ -1,22 +1,21 @@
 import React, { lazy, Suspense } from "react";
 import { Redirect, Route, Switch, useLocation } from "react-router-dom";
-import { AnimatePresence } from "framer-motion";
+//import { AnimatePresence } from "framer-motion";
 import PublicRoute from "./PublicRoute";
-import PageLoader from "@/components/PageLoader";
+import Loader from "components/Loader/Loading";
 
 const Login = lazy(() =>
-  import(/*webpackChunkName:'LoginPage'*/ "@/pages/Login")
+  import(/*webpackChunkName:'LoginPage'*/ "views/pages/Login")
 );
 
 const NotFound = lazy(() =>
-  import(/*webpackChunkName:'NotFoundPage'*/ "@/pages/NotFound")
+  import(/*webpackChunkName:'NotFoundPage'*/ "views/pages/NotFound")
 );
 
 export default function AuthRouter() {
   const location = useLocation();
   return (
-    <Suspense fallback={<PageLoader />}>
-      <AnimatePresence exitBeforeEnter initial={false}>
+    <Suspense fallback={<Loader />}>
         <Switch location={location} key={location.pathname}>
           <PublicRoute
             path="/"
@@ -30,7 +29,6 @@ export default function AuthRouter() {
             render={() => <Redirect to="/notfound" />}
           />
         </Switch>
-      </AnimatePresence>
     </Suspense>
   );
 }

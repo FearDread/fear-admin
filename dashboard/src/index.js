@@ -9,6 +9,7 @@ import PrivateRoute from "_helpers/PrivateRoute";
 
 import store from "./store";
 
+import App from "App.js";
 import "assets/css/nucleo-icons.css";
 import "react-notification-alert/dist/animate.css";
 import "assets/scss/black-dashboard-pro-react.scss?v=1.2.0";
@@ -17,6 +18,8 @@ import "assets/css/animated-bg.css";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
+ReactDOM.render(<App />, document.getElementById("root"))
+/*
 root.render(
   <BrowserRouter>
     <Provider store={store}>
@@ -29,6 +32,7 @@ root.render(
     </Provider>
   </BrowserRouter>
 );
+*/
 
 
 //<Redirect from="/*" to="/admin/dashboard" />
