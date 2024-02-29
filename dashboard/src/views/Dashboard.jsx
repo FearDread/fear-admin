@@ -9,7 +9,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 //import { getAllOrders } from "_actions/orderAction";
 //import { logout, getAllUsers } from "_actions/userAction";
-//import { getAdminProducts, clearErrors } from "_actions/productAction";
+import { getAdminProducts } from "_redux/actions/product";
 import Loader from "components/Loader/Loading.js";
 // reactstrap components
 import {
@@ -85,23 +85,11 @@ const Dashboard = () => {
   });
 
   useEffect(() => {
-    if (error) {
-      //alert.error(error);
-      dispatch(clearErrors);
-    }
-    if (usersError) {
-      //alert.error(usersError);
-      dispatch(clearErrors);
-    }
-    if (ordersError) {
-      //alert.error(ordersError);
-      dispatch(clearErrors);
-    }
     
-    dispatch(getAllOrders());
+    //dispatch(getAllOrders());
     dispatch(getAllUsers());
-    dispatch(getAdminProducts());
-  }, [dispatch, error, ordersError, usersError]);
+    //dispatch(getAdminProducts());
+  }, [dispatch]);
   
   return (
     <>

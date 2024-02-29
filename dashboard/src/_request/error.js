@@ -1,8 +1,8 @@
-import { notification } from "antd";
-import history from "@/utils/history";
+//import { notification } from "antd";
+import history from "_utils/history";
 import codeMessage from "./message";
 
-const errorHandler = (error, emptyResult = null) => {
+const error = (error, emptyResult = null) => {
   const { response } = error;
 
   if (!response) {
@@ -18,6 +18,8 @@ const errorHandler = (error, emptyResult = null) => {
       result: emptyResult,
       message: "Cannot connect to the server, Check your internet network",
     };
+  }
+  /*
   } else if (response && response.status) {
     const message = response.data && response.data.message;
     const errorText = message || codeMessage[response.status];
@@ -47,6 +49,7 @@ const errorHandler = (error, emptyResult = null) => {
       message: "An unknown error occurred in the app, please try again. ",
     };
   }
+  */
 };
 
-export default errorHandler;
+export default error;

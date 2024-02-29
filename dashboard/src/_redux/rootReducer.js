@@ -1,10 +1,10 @@
 import { combineReducers } from "redux";
 
-import { reducer as authReducer } from "./auth";
-import { reducer as crudReducer } from "./crud";
-import { reducer as searchReducer } from "./search";
+import authReducer from "./reducers/auth";
+import crudReducer  from "./reducers/crud";
+import searchReducer from "./reducers/search";
 
-import * as actionTypes from "./auth/types";
+import * as actionTypes from "./types/auth";
 
 // Combine all reducers.
 

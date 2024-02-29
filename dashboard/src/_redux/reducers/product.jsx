@@ -33,7 +33,7 @@ import {
   DELETE_REVIEW_SUCCESS,
   DELETE_REVIEW_FAIL,
   DELETE_REVIEW_RESET,
-} from "../_constants/productsConstatns";
+} from "../types/products";
 
 export const productsReducer = (state = { products: [] }, action) => {
   switch (action.type) {

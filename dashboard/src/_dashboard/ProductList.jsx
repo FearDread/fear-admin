@@ -4,12 +4,12 @@ import {
   clearErrors,
   getAdminProducts,
   deleteProduct,
-} from "_actions/productAction";
+} from "_redux/actions/product";
 import SortingTable from "components/SortingTable/SortingTable.js";
 import { Card, CardHeader, CardBody, CardTitle, Row, Col } from "reactstrap";
 import { useHistory } from "react-router-dom";
 import Loader from "components/Loader/Loading";
-import { DELETE_PRODUCT_RESET } from "_constants/productsConstatns";
+import { DELETE_PRODUCT_RESET } from "_redux/types/product";
 
 function ProductList() {
   const dispatch = useDispatch();
@@ -17,22 +17,17 @@ function ProductList() {
   const history = useHistory();
   const [toggle, setToggle] = useState(false);
   const { error, products, loading } = useSelector((state) => state.products);
-  const { error: deleteError, isDeleted, message } = useSelector((state) => state.deleteUpdateProduct);
+  //const { error: deleteError, isDeleted, message } = useSelector((state) => state.deleteUpdateProduct);
   
   useEffect(() => {
-    if (error) {
-      dispatch(clearErrors());
-    }
-    if (deleteError) {
-      dispatch(clearErrors());
-    }
-    if (isDeleted) {
-      dispatch({ type: DELETE_PRODUCT_RESET });
-    }
+
+    //if (isDeleted) {
+    //  dispatch({ type: DELETE_PRODUCT_RESET });
+   // }
 
     dispatch(getAdminProducts());
     
-  }, [dispatch, error, deleteError, history, isDeleted, message]);
+  }, [dispatch]);
 
   //const deleteProductHandler = (id) => {
   //  dispatch(deleteProduct(id));

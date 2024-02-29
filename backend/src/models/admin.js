@@ -48,4 +48,4 @@ adminSchema.methods.validPassword = function (password) {
   return bcrypt.compareSync(password, this.password);
 };
 
-module.exports = mongoose.model("Admin", adminSchema);
+module.exports = mongoose.model("Administrators", adminSchema);

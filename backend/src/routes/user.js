@@ -1,9 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../controllers/user");
-const { isAuthenticated, authorizeRoles } = require("../auth");
-const { catchErrors } = require("../_helpers/errorHandlers");
-const asyncHandler = require("../_helpers/asyncHandler");
+const { isAuthenticated, authorizedRoles } = require("../controllers/auth");
+const { catchErrors } = require("../_utils/errorHandlers");
+const asyncHandler = require("../_utils/asyncHandler");
 
 router.route("/register").post(catchErrors(User.register));
 router.route("/profile").get(isAuthenticated, catchErrors(User.readUser));
@@ -15,8 +15,8 @@ router.route("/password/reset/:token").put(catchErrors(User.resetPassword));
 router.route("/admin/users")
     .get(catchErrors(User.list));
 router.route("/admin/user/:id")
-    .get(isAuthenticated, authorizeRoles("admin"), catchErrors(User.read))
-    .delete(isAuthenticated , authorizeRoles("admin") , catchErrors(User.delete))
-    .put(isAuthenticated , authorizeRoles("admin") , catchErrors(User.updateRole));
+    .get(isAuthenticated, authorizedRoles("admin"), catchErrors(User.read))
+    .delete(isAuthenticated , authorizedRoles("admin") , catchErrors(User.delete))
+    .put(isAuthenticated , authorizedRoles("admin") , catchErrors(User.updateRole));
 
 module.exports = router;
