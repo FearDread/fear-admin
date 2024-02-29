@@ -19,7 +19,8 @@ import {
 import AnimatedBackground from "views/components/AnimatedBackground";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory, useLocation, Link } from "react-router-dom";
-import { login, clearErrors } from "_actions/userAction";
+import { selectAuth } from "_redux/auth/selectors";
+import { login } from "_redux/auth/actions";
 import Loader from "components/Loader/Loading";
 
 const Login = () => {
@@ -31,8 +32,8 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isValidEmail, setIsValidEmail] = useState(true);
-  const { isAuthenticated, loading, error } = useSelector((state) => state.userData);
-
+  const { loading: loading } = useSelector(selectAuth);
+  //const { isAuthenticated, loading, error } = useSelector((state) => state.userData);
   const handleEmailChange = (event) => {
     const newEmail = event.target.value;
     setEmail(newEmail);
@@ -48,19 +49,24 @@ const Login = () => {
     setShowPassword(!showPassword);
   };
   
+  
+
+  const onFinish = (values) => {
+    dispatch(login(values));
+  };
 
   const isSignInDisabled = !(email && password && isValidEmail);
   const redirect = loaction.search ? loaction.search.split("=")[1] : "/admin/dashboard";
    
-  useEffect(() => {
-     if (error) {
-       dispatch(clearErrors());
-     }
+  //useEffect(() => {
+     //if (error) {
+     //  dispatch(clearErrors());
+    // }
 
-     if (isAuthenticated) {
-       history.push(redirect);
-     }
-  }, [dispatch, isAuthenticated, error, history, redirect]);
+    // if (isAuthenticated) {
+     ///  history.push(redirect);
+     ///}
+  //}, [dispatch, error, history, redirect]);
 
   function handleLoginSubmit(e) {
        e.preventDefault();

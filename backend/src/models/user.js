@@ -9,12 +9,10 @@ const schema = mongoose.Schema ({
       name: {
         type: String,
         required: [true, "Please Enter Your Name"],
-        maxLength: [30, "Name cannot exceed 30 characters"],
         minLength: [4, "Name should have more than 4 characters"],
       },
       email: {
         type: String,
-        required: [true, "Please Enter Your Email"],
         unique: true,
         validate: [validator.isEmail, "Please Enter a valid Email"],
       },
@@ -38,6 +36,9 @@ const schema = mongoose.Schema ({
         type: String,
         default: "user",
       },
+      cart: {
+        type: Object
+      },
       createdAt: {
         type: Date,
         default: Date.now,
@@ -47,19 +48,27 @@ const schema = mongoose.Schema ({
     });
 
     schema.pre("save", async function( next ) {
- 
       if ( this.isModified( "password" ) === false ) {
         next();
       }
 
-      this.password = await bcrypt.hash(this.password, 10);
+      bcrypt.genSalt(10, function (err, salt) { 
+          this.password = bcrypt.hash(this.password, salt, function (err, hash) {
+            next();
+          });
+      });
     });
 
-    schema.methods.toJSON = function () {
-      const { __v, _id, ...object } = this.toObject();
-      object.id = _id;
+    schema.methods.read = function(id, cb) {
+        this.findOne({_id: id}, cb);
+    }
 
-      return object;
+    schema.methods.list = function(cb) {
+        this.find(cb)
+    }
+        
+    schema.methods.compare = async function ( password ) {
+      return await bcrypt.compare(password, this.password); 
     };
 
     schema.methods.getJWTToken = function () {
@@ -80,9 +89,5 @@ const schema = mongoose.Schema ({
     
       return reset_token;
     };
-    
-    schema.methods.compare = async function ( password ) {
-      return await bcrypt.compare(password, this.password); 
-    };
 
-module.exports = mongoose.model("users", schema);
+module.exports = mongoose.model("Users", schema);

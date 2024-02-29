@@ -3,8 +3,8 @@ import { Route, Switch, Redirect } from "react-router-dom";
 
 import AuthNavbar from "components/Navbars/AuthNavbar.js";
 import Footer from "components/Footer/Footer.js";
-
-import routes from "routes/routes.js";
+import PublicRoute from "router/PublicRoute";
+import routes from "router/routes.js";
 
 const Pages = (props) => {
   React.useEffect(() => {

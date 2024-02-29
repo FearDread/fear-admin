@@ -1,13 +1,13 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
-import { Provider } from "react-redux";
-import AuthLayout from "layouts/Auth/Auth.js";
-import AdminLayout from "layouts/Admin/Admin.js";
-import RTLLayout from "layouts/RTL/RTL.js";
-import PrivateRoute from "_helpers/PrivateRoute";
+//import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
+//import { Provider } from "react-redux";
+//import AuthLayout from "layouts/Auth/Auth.js";
+//import AdminLayout from "layouts/Admin/Admin.js";
+//import RTLLayout from "layouts/RTL/RTL.js";
+//import PrivateRoute from "_helpers/PrivateRoute";
 
-import store from "./store";
+//import store from "./store";
 
 import App from "App.js";
 import "assets/css/nucleo-icons.css";
@@ -18,7 +18,7 @@ import "assets/css/animated-bg.css";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
-ReactDOM.render(<App />, document.getElementById("root"))
+root.render(<App />)
 /*
 root.render(
   <BrowserRouter>

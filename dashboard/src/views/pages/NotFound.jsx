@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Button, Result } from "reactstrap";
+import { Button, Container } from "reactstrap";
 
 const NotFound = () => {
   useEffect(() => {
@@ -8,7 +8,7 @@ const NotFound = () => {
 
   return (
     <>
-      <Result
+      <Container
         status="404"
         title="404"
         subTitle="Sorry, the page you visited does not exist."

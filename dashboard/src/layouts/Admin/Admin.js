@@ -11,9 +11,9 @@ import AdminNavbar from "components/Navbars/AdminNavbar.js";
 import Footer from "components/Footer/Footer.js";
 import Sidebar from "components/Sidebar/Sidebar.js";
 import FixedPlugin from "components/FixedPlugin/FixedPlugin.js";
-import PrivateRoute from "_helpers/PrivateRoute";
+import PrivateRoute from "router/PrivateRoute";
 
-import routes from "routes/routes.js";
+import routes from "router/routes.js";
 import logo from "assets/img/FEAR/logo.png";
 
 var ps;
@@ -27,17 +27,17 @@ const Admin = (props) => {
   const notificationAlertRef = React.useRef(null);
   const location = useLocation();
   const history = useHistory();
-  const { user, isAuthenticated } = useSelector((state) => state.userData);
+  //const { user, isAuthenticated } = useSelector((state) => state.userData);
 
   React.useEffect(() => {
     //setSidebarMini(false);
     handleMiniClick();
     // if user not logged in
-    if (isAuthenticated) {
+   // if (isAuthenticated) {
       //history.push("/admin");
-    }
+   // }
 
-  }, [history, isAuthenticated]);
+  }, [history]);
 
 
   React.useEffect(() => {

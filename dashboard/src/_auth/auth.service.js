@@ -1,35 +1,47 @@
-import { API_BASE_URL, ACCESS_TOKEN_NAME } from "@/config/serverApiConfig";
+import { API_BASE_URL, ACCESS_TOKEN_NAME } from "variables/api";
 
 import axios from "axios";
-//import errorHandler from "@/request/errorHandler";
-//import successHandler from "@/request/successHandler";
-import storePersist from "@/redux/storePersist";
+import error from "_request/errorHandler";
+import success from "_request/successHandler";
+import storePersist from "_redux/storePersist";
 
 import { getCookie, setCookie, deleteCookie } from "./cookie";
 
 export const login = async (email, password) => {
   try {
     const config = { headers: { "Content-Type": "application/json" } };
-    const { data } = await axios.post(
-      `http://localhost:4000/fear/api/login`,
+    const response = await axios.post(
+      API_BASE_URL + "/login",
       { email, password },
       config
     )
-    /*
-    const response = await axios.post(
-      API_BASE_URL + `login?timestamp=${new Date().getTime()}`,
-      loginAdminData
-    );*/
+    
     token.set(response.data.result.token);
-    //return successHandler(response);
+    return success(response);
+
   } catch (error) {
-   // return errorHandler(error);
+    return error(error);
   }
 };
 
 export const logout = () => {
   token.remove();
-  //storePersist.clear();
+  storePersist.clear();
+};
+
+export const register = async (signupData) => {
+  try {
+    const response  = await axios.post(
+      API_BASE_URL + "/register",
+      signupData,
+    );
+
+    token.set(response.data.result.token);
+    return success(response);
+
+  } catch (err) {
+    return error(err);
+  }
 };
 
 export const token = {
