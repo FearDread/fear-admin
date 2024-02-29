@@ -55,7 +55,7 @@ exports.isAuthenticated = asyncHandler(async ( req, res, next ) => {
 exports.authorizeRoles = (...roles) => {
   return (req , res , next) => {
     if ( roles.includes( req.user.role ) === false) { 
-      authError(req, req);  
+      authError(req, req);
       //return next( authError(res, req.user) );
     }
     next();

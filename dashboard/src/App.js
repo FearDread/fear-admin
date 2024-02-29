@@ -1,4 +1,12 @@
+import React, { useEffect, useState, Suspense } from "react";
+import { BrowserRouter } from "react-router-dom";
+import Router from "@/router";
+import history from "@/utils/history";
+import store from "@/redux/store";
+
 function App() {
+
+    /*
     const [stripeApiKey, setStripeApiKey] = useState("");
   
     const dispatch = useDispatch();
@@ -35,11 +43,12 @@ function App() {
     }, []);
   
     useEffect(() => {
-      dispatch(load_UserProfile());
+      //dispatch(load_UserProfile());
   
       // eslint-disable-next-line
     }, []);
 
+    /*
     return (
         <Switch>
         <Route path="/auth" render={(props) => <AuthLayout {...props} />} />
@@ -50,6 +59,14 @@ function App() {
         <Route path="/rtl" render={(props) => <RTLLayout {...props} />} />
         <Redirect from="/*" to="/admin/dashboard" />
       </Switch>
+    );
+    */
+    return (
+      <BrowserRouter history={history}>
+        <Provider store={store}>
+          <Router />
+        </Provider>
+      </BrowserRouter>
     );
 }
     
