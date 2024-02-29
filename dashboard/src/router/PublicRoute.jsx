@@ -1,7 +1,7 @@
 import React from "react";
-import { motion } from "framer-motion";
+
 import { Route, Redirect } from "react-router-dom";
-import * as authService from "@/auth";
+import * as authService from "_auth";
 
 const PublicRoute = ({ component: Component, ...rest }) => {
   return (
@@ -11,15 +11,10 @@ const PublicRoute = ({ component: Component, ...rest }) => {
       {...rest}
       render={(props) =>
         authService.token.get() ? (
-          <Redirect to="/" />
+          <Redirect to="/admin/dashboard" />
         ) : (
-          <motion.div
-            initial={{ x: 200 }}
-            animate={{ x: 0 }}
-            exit={{ scale: 0 }}
-          >
             <Component {...props} />
-          </motion.div>
+
         )
       }
     />

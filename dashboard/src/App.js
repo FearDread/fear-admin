@@ -1,8 +1,10 @@
 import React, { useEffect, useState, Suspense } from "react";
-import { BrowserRouter } from "react-router-dom";
-import Router from "@/router";
-import history from "@/utils/history";
-import store from "@/redux/store";
+import { Redirect } from "react-router-dom";
+import { Router as RouterHistory } from "react-router-dom";
+import Router from "router";
+import history from "_utils/history";
+import store from "_redux/store";
+import { Provider } from "react-redux";
 
 function App() {
 
@@ -62,11 +64,12 @@ function App() {
     );
     */
     return (
-      <BrowserRouter history={history}>
+      <RouterHistory history={history}>
         <Provider store={store}>
           <Router />
+
         </Provider>
-      </BrowserRouter>
+      </RouterHistory>
     );
 }
     

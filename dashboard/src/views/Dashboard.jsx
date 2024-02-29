@@ -7,9 +7,9 @@ import { Line, Bar } from "react-chartjs-2";
 import { VectorMap } from "react-jvectormap";
 import { useSelector, useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
-import { getAllOrders } from "_actions/orderAction";
-import { logout, getAllUsers } from "_actions/userAction";
-import { getAdminProducts, clearErrors } from "_actions/productAction";
+//import { getAllOrders } from "_actions/orderAction";
+//import { logout, getAllUsers } from "_actions/userAction";
+//import { getAdminProducts, clearErrors } from "_actions/productAction";
 import Loader from "components/Loader/Loading.js";
 // reactstrap components
 import {

@@ -18,10 +18,15 @@ const productSchema = mongoose.Schema({
     type: String,
     required: [true, "Please Enter product info"],
   },
-
+  color: {
+    type: String
+  },
   ratings: {
     type: Number,
     default: 0,
+  },
+  department: {
+    type: String
   },
   images: [
     {
@@ -53,7 +58,7 @@ const productSchema = mongoose.Schema({
     {
       userId: {
         type: mongoose.Schema.ObjectId,
-        ref: "user",
+        ref: "Users",
         required: false,
       },
       name: {
@@ -86,10 +91,9 @@ const productSchema = mongoose.Schema({
       },
     },
   ],
-  // when two admins are there. tab ye pta chalgea kiss admin ne product add kiya hai
   user: {
     type: mongoose.Schema.ObjectId, //  this is for admin who will add the prduct to the db
-    ref: "users",
+    ref: "Users",
     required: false,
   },
   createdAt: {
@@ -98,5 +102,5 @@ const productSchema = mongoose.Schema({
   },
 });
 
-const ProductModel = mongoose.model("products" , productSchema);
+const ProductModel = mongoose.model("Products" , productSchema);
 module.exports = ProductModel

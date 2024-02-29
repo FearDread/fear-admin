@@ -34,29 +34,40 @@ exports.logout = async (req, res) => {
   });
 };
 
-exports.isAuthenticated = asyncHandler(async ( req, res, next ) => {
-  console.log("IsAuthentecated REQUEST MADE");
-  
-  const { token } = req.token;
-  //const token = req.token;
-  //const token = req.header("token");
+exports.isAuthenticated = (req, res, next) => {
+  let token = ''
+  if (req.headers['x-access-token'] || req.headers['authorization']) {
+    token = req.headers['x-access-token'] || req.headers['authorization']
+  }
+  //OAuth 2.0 framework 'bearer' token type
+  if (token.startsWith('Bearer ')) {
+    token = token.slice(7, token.length)
+  }
+  if (token) {
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+      if (err) {
+        let err = new TypedError('token', 401, 'invalid_field', {
+          message: "Token is not valid"
+        })
+        return next(err)
+      } else {
+        //bind on request
+        next()
+      }
+    })
+  } else {
+    let err = new TypedError('token', 401, 'invalid_field',
+     {message: "Token is not supplied"})
+     
+    return next(err)
+  }
+};
 
-  //f (!token) {
-  //  return next(new AppError("Token Not Found", 401));
-  //}
-  
-  const decodeToken = jwt.verify(token, process.env.JWT_SECRET);
-  const userData = await UserModel.findById(decodeToken.id);
-
-  req.user = userData;
-  next();
-});
-
-exports.authorizeRoles = (...roles) => {
+exports.authorizedRoles = (...roles) => {
   return (req , res , next) => {
     if ( roles.includes( req.user.role ) === false) { 
-      authError(req, req);
-      //return next( authError(res, req.user) );
+      let err = new TypedError('Role', 401, 'Not an Admin');
+      return next( err );
     }
     next();
   }

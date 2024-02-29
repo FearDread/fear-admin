@@ -1,7 +1,7 @@
 import * as actionTypes from "./types";
-import * as authService from "@/auth";
-import storePersist from "@/redux/storePersist";
-import history from "@/utils/history";
+import * as authService from "_auth";
+import storePersist from "_redux/storePersist";
+import history from "_utils/history";
 
 export const login = (loginAdminData) => async (dispatch) => {
   dispatch({
