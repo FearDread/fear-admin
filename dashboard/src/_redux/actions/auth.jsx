@@ -1,5 +1,5 @@
 import * as actionTypes from "../types/auth";
-import * as authService from "_auth";
+
 import storePersist from "_redux/storePersist";
 import history from "_utils/history";
 import axios from "axios";
@@ -57,7 +57,7 @@ export function login(email, password) {
 }
 
 export const logout = () => async (dispatch) => {
-  authService.logout();
+ //logout
   dispatch({
     type: actionTypes.LOGOUT_SUCCESS,
   });
