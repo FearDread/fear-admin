@@ -5,7 +5,7 @@ const asyncHandler = require("../../_utils/asyncHandler");
 const { dbError, authError, notFound, AppError } = require("../../_utils/errorHandlers");
 const TypedError = require("../../_utils/ErrorHandler");
 require("dotenv").config({ path: __dirname + "../.env" });
-
+/*
 exports.login = async (req, res, next) => {
   const { email, password } = req.body;
 
@@ -16,12 +16,12 @@ exports.login = async (req, res, next) => {
     .then((user) => { 
       console.log("Found USER: " + user);
       
-      const isPasswordMatched = user.compare(password);
+      const isPasswordMatched = UserModel.compare(password);
       if (!isPasswordMatched) {
         return res.status(400).json({ msg: "password does not match." });
       }
 
-      const token = user.getJWTToken();
+      const token = UserModel.getJWTToken();
       
       res.status(200)
       .cookie("token", token, options)
@@ -40,53 +40,68 @@ exports.login = async (req, res, next) => {
     })
 };
 
+*/
 
-/*
 exports.login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
+
+    // validate
     if (!email || !password)
       return res.status(400).json({ msg: "Not all fields have been entered." });
 
-    await UserModel.findOne({ email: email }).select("+password")
-      .then((User) => {
-        let isMatch = User.compate(password, User.password);
-        if (!isMatch)
-        return res.status(400).json({
-          success: false,
-          result: null,
-          message: "Invalid credentials.",
-        });
-        
-        let result = User.findOneAndUpdate(
-          { _id: admin._id },
-          { isLoggedIn: true },
-          { new: true }
-        ).exec();
-    
-        res.json({
-          success: true,
-          result: { 
-            token,
-            user,
-            isLoggedIn: result.isLoggedIn
-          },
-          message: "Successfully login admin",
-        });
-      }).catch((err) => {
-        return res.status(400).json({
-          success: false,
-          result: err,
-          message: "No account with this email has been registered.",
-        });
+    const admin = await UserModel.findOne({ email: email }).select("+password");
+
+    console.log("Found USER: " + admin);
+    return res.status(200).json({
+      success: true,
+      result: {
+        token,
+        user: admin,
+        isLoggedIn: true
+      },
+      message: "Successfully login admin",
+    });
+    return admin;
+    if (!admin)
+      return res.status(400).json({
+        success: false,
+        result: null,
+        message: "No account with this email has been registered.",
       });
-  } catch (e) {
+
+    const isMatch = await bcrypt.compare(password, admin.password);
+    if (!isMatch)
+      return res.status(400).json({
+        success: false,
+        result: null,
+        message: "Invalid credentials.",
+      });
+
+    const token = UserModel.getJWTToken()
+      console.log("Token " + token);
+    const result = await UserModel.findOneAndUpdate(
+      { _id: admin._id },
+      { isLoggedIn: true },
+      {new: true}
+    ).exec();
+
+    res.json({
+      success: true,
+      result: {
+        token,
+        admin,
+        isLoggedIn: result.isLoggedIn
+      },
+      message: "Successfully login admin",
+    });
+  } catch (err) {
     res
     .status(500)
     .json({ success: false, result: null, message: err.message });
   }
 };
-*/
+
 
 exports.register = async (req, res) => {
   try {

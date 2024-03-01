@@ -1,9 +1,7 @@
-//import { notification } from "antd";
-
 import codeMessage from "./message";
 
-const success = (response, typeNotification = {}) => {
-  if (!response.data) {
+const success = (response) => {
+  if (!response.data.result) {
     response = {
       ...response,
       status: 404,
@@ -14,8 +12,13 @@ const success = (response, typeNotification = {}) => {
       },
     };
   }
+  const { data } = response;
 
-  return response;
+  const message = data && data.message;
+  const successText = message || codeMessage[response.status];
+
+  console.log('SUCCESS DATA :: ', data);
+  return data;
 };
 
 export default success;
