@@ -5,7 +5,7 @@ import history from "_utils/history";
 import axios from "axios";
 import { API_BASE_URL, ACCESS_TOKEN_NAME } from "../../variables/api.js";
 
-
+/*
 export const login = (loginAdminData) => async (dispatch) => {
   dispatch({
     type: actionTypes.LOADING_REQUEST,
@@ -34,6 +34,27 @@ export const login = (loginAdminData) => async (dispatch) => {
     });
   });
 };
+*/
+export function login(email, password) {
+  console.log("API URL = " + API_BASE_URL);
+  return async function (dispatch) {
+    try {
+      dispatch({ type: actionTypes.LOGIN_REQUEST });
+
+      const config = { headers: { "Content-Type": "application/json" } };
+      const { data } = await axios.post(
+        API_BASE_URL + "/login",
+        { email, password },
+        config
+      );
+
+      dispatch({ type: actionTypes.LOGIN_SUCCESS, payload: data.user });
+    } catch (error) {
+
+      dispatch({ type: actionTypes.LOGIN_FAIL, payload: error.message });
+    }
+  };
+}
 
 export const logout = () => async (dispatch) => {
   authService.logout();

@@ -5,43 +5,47 @@ const asyncHandler = require("../../_utils/asyncHandler");
 const { dbError, authError, notFound, AppError } = require("../../_utils/errorHandlers");
 const TypedError = require("../../_utils/ErrorHandler");
 require("dotenv").config({ path: __dirname + "../.env" });
-/*
+
+
+
 exports.login = async (req, res, next) => {
-  const { email, password } = req.body;
-
-  if (!email || !password) 
-    return res.status(400).json({ msg: "Not all fields have been entered." });
-  
-  await UserModel.findOne({ email }).select("+password")
-    .then((user) => { 
-      console.log("Found USER: " + user);
-      
-      const isPasswordMatched = UserModel.compare(password);
-      if (!isPasswordMatched) {
-        return res.status(400).json({ msg: "password does not match." });
+    const { email, password } = req.body;
+    if (!email || !password) {
+      //let err = new TypedError('login error', 400, 'missing_field', { message: "missing username or password" })
+      return next(new TypedError('login err',400, 'Missing field'))
+    }
+    UserModel.getUserByEmail(email, function (err, user) {
+      if (err) return next(err)
+      if (!user) {
+        let err = new TypedError('login error', 403, 'invalid_field', { message: "Incorrect email or password" })
+        return next(err)
       }
-
-      const token = UserModel.getJWTToken();
-      
-      res.status(200)
-      .cookie("token", token, options)
-      .json({
-        data: {
-          success: true,
-          result: user,
-          token
+      UserModel.compare(password, user.password, function (err, isMatch) {
+        if (err) return next(err)
+        if (isMatch) {
+          let token = jwt.sign(
+            { email: email },
+            config.secret,
+            { expiresIn: '7d' }
+          )
+          res.status(201).json({
+            success: true,
+            result: {
+              token,
+              user,
+              isLoggedIn: true
+            },
+            message: "Successfully login admin",
+          });
+        } else {
+          let err = new TypedError('login error', 403, 'invalid_field', { message: "Incorrect email or password" })
+          return next(err)
         }
-      });
-    })
-    .catch((err) => {
-      res
-      .status(500)
-      .json({ success: false, result: null, message: err.message });
-    })
-};
+      })
+    });
+}
 
-*/
-
+/*
 exports.login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -102,7 +106,7 @@ exports.login = async (req, res, next) => {
   }
 };
 
-
+*/
 exports.register = async (req, res) => {
   try {
     let { email, password, passwordCheck, name } = req.body;
