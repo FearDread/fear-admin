@@ -50,24 +50,22 @@ const Login = () => {
   };
   
   const onFinish = (values) => {
-    dispatch(login(values));
+    dispatch(login(email, password));
   };
 
   const isSignInDisabled = !(email && password && isValidEmail);
-  const redirect = loaction.search ? loaction.search.split("=")[1] : "/admin/dashboard";
+  const redirect = "/admin/dashboard";
    
   useEffect(() => {
     if (isLoggedIn) {
-      history.push("/admin/dashboard");
+      history.push(redirect);
      }
   }, [dispatch, history]);
 
   function handleLoginSubmit(e) {
        e.preventDefault();
-       var values = { email, password }; 
-       dispatch(login(values));
+       dispatch(login(email, password));
   }
-
 
   return (
     <>
