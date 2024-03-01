@@ -1,7 +1,7 @@
 import React from "react";
 
 import { Route, Redirect } from "react-router-dom";
-import * as authService from "_auth";
+import Auth from "_auth";
 
 const PublicRoute = ({ component: Component, ...rest }) => {
   return (
@@ -10,7 +10,7 @@ const PublicRoute = ({ component: Component, ...rest }) => {
     <Route
       {...rest}
       render={(props) =>
-        authService.token.get() ? (
+        Auth.token.get() ? (
           <Redirect to="/admin/dashboard" />
         ) : (
             <Component {...props} />
