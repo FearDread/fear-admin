@@ -21,7 +21,7 @@ import {
   Col
 } from "reactstrap";
 
-import { register } from "_redux/actions/user";
+import { register } from "_redux/actions/auth";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import AnimatedBackground from "views/components/AnimatedBackground";
@@ -30,7 +30,7 @@ import Loader from "components/Loader/Loading";
 const Register = () => {
   const dispatch = useDispatch();
   const history = useHistory();
-  
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -40,7 +40,7 @@ const Register = () => {
   const [isValidPassword, setIsValidPassword] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  //const [confirmPassword, setconfirmPassword] = useState("");
+  const [confirmPassword, setconfirmPassword] = useState("");
 
   //const { isAuthenticated, error } = useSelector((state) => state.userData);
 
@@ -73,9 +73,9 @@ const Register = () => {
     setPassword(event.target.value);
       setIsValidPassword(event.target.value.length >= 8);
   };
-  //const handleConfirmPasswordChange = (event) => {
-  //  setconfirmPassword(event.target.value);
-  //};
+  const handleConfirmPasswordChange = (event) => {
+    setconfirmPassword(event.target.value);
+  };
 
   const handleShowPasswordClick = () => {
     setShowPassword(!showPassword);
@@ -88,6 +88,7 @@ const Register = () => {
   const formData = new FormData();
   formData.set("name", name);
   formData.set("email", email);
+  formData.set("passwordCheck", confirmPassword);
   formData.set("password", password);
   //formData.set("avatar", avatar);
 
@@ -210,13 +211,35 @@ const Register = () => {
                       </InputGroupAddon>
                       <Input
                         placeholder="Password"
-                        type="text"
+                        type="password"
                         onFocus={(e) => setState({ ...state, passFocus: true })}
                         onBlur={(e) => setState({ ...state, passFocus: false })}
                         error={!isValidPassword && password !== ""}
                         onClick={handleShowPasswordClick}
                         value={password}
                         onChange={handlePasswordChange}
+                        
+                      />
+                    </InputGroup>
+                    <InputGroup
+                      className={classnames({
+                        "input-group-focus": state.passFocus
+                      })}
+                    >
+                      <InputGroupAddon addonType="prepend">
+                        <InputGroupText>
+                          <i className="tim-icons icon-lock-circle" />
+                        </InputGroupText>
+                      </InputGroupAddon>
+                      <Input
+                        placeholder="Confirm Password"
+                        type="password"
+                        onFocus={(e) => setState({ ...state, passFocus: true })}
+                        onBlur={(e) => setState({ ...state, passFocus: false })}
+                        error={!isValidPassword && password !== ""}
+                        onClick={handleConfirmPasswordChange}
+                        value={password}
+                        onChange={handleConfirmPasswordChange}
                         
                       />
                     </InputGroup>

@@ -3,7 +3,7 @@
 import codeMessage from "./message";
 
 const success = (response, typeNotification = {}) => {
-  if (!response.data.result) {
+  if (!response.data) {
     response = {
       ...response,
       status: 404,
@@ -14,34 +14,8 @@ const success = (response, typeNotification = {}) => {
       },
     };
   }
-  const { data } = response;
-  if (data.success === false) {
-    const message = data && data.message;
-    const errorText = message || codeMessage[response.status];
-    const { status } = response;
-    /*
-    notification.config({
-      duration: 20,
-    });
-    notification.error({
-      message: `Request error ${status}`,
-      description: errorText,
-    });
-  } else {
-    const message = data && data.message;
-    const successText = message || codeMessage[response.status];
-    const { status } = response;
-    // notification.config({
-    //   duration: 20,
-    // });
-    // notification.success({
-    //   message: `Request success`,
-    //   description: successText,
-    // });
-  }
-  */
-  }
-  return data;
+
+  return response;
 };
 
 export default success;

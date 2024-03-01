@@ -32,7 +32,7 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isValidEmail, setIsValidEmail] = useState(true);
-  const { loading: loading } = useSelector((state) => state.auth);
+  const { loading: loading, isLoggedIn } = useSelector((state) => state.auth);
   //const { isAuthenticated, loading, error } = useSelector((state) => state.userData);
   const handleEmailChange = (event) => {
     const newEmail = event.target.value;
@@ -56,15 +56,11 @@ const Login = () => {
   const isSignInDisabled = !(email && password && isValidEmail);
   const redirect = loaction.search ? loaction.search.split("=")[1] : "/admin/dashboard";
    
-  //useEffect(() => {
-     //if (error) {
-     //  dispatch(clearErrors());
-    // }
-
-    // if (isAuthenticated) {
-     ///  history.push(redirect);
-     ///}
-  //}, [dispatch, error, history, redirect]);
+  useEffect(() => {
+    if (isLoggedIn) {
+      history.push("/admin/dashboard");
+     }
+  }, [dispatch, history]);
 
   function handleLoginSubmit(e) {
        e.preventDefault();
