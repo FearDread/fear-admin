@@ -3,35 +3,36 @@ import * as authService from "_auth";
 import storePersist from "_redux/storePersist";
 import history from "_utils/history";
 import axios from "axios";
-import { API_BASE_URL } from "../../variables/api.js";
+import { API_BASE_URL, ACCESS_TOKEN_NAME } from "../../variables/api.js";
 
-export const login = (loginData) => async (dispatch) => {
+
+export const login = (loginAdminData) => async (dispatch) => {
   dispatch({
-    type: actionTypes.LOGIN_REQUEST,
+    type: actionTypes.LOADING_REQUEST,
     payload: { loading: true },
   });
+  const data = authService.login(loginAdminData);
 
-  await authService.login(loginData.email, loginData.password)
-    .then((data) => {
-        const authValue = {
-        current: data.user,
-        loading: false, 
-        isLoggedIn: true,
-      };
-      storePersist.set("auth", authValue);
-      dispatch({
-        type: actionTypes.LOGIN_SUCCESS,          
-        payload: data.user,
-       });
-    
-        history.push("/");
-    })
-    .catch((err) => {
-      dispatch({
-        type: actionTypes.FAILED_REQUEST,
-        payload: err,
-      });
+  data.then((apiData) => {
+    console.log("LOGIN DATA :: ", apiData);
+    const authValue = {
+      current: apiData.result.user,
+      loading: false,
+      isLoggedIn: true,
+    };
+    storePersist.set("auth", authValue);
+    dispatch({
+      type: actionTypes.LOGIN_SUCCESS,
+      payload: data.result.user,
     });
+    history.push("/admin/dashboard");
+  })
+  .catch((err) => {
+    dispatch({
+      type: actionTypes.FAILED_REQUEST,
+      payload: err,
+    });
+  });
 };
 
 export const logout = () => async (dispatch) => {
