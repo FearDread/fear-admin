@@ -6,23 +6,16 @@ import { Redirect, Route, Switch, useLocation } from "react-router-dom";
 import Loader from "components/Loader/Loading";
 import AdminLayout from "layouts/Admin/Admin.js"
 //
-//const Dashboard = lazy(() =>
-  //import(/*webpackChunkName:'DashboardPage'*/ "views/Dashboard")
-//);
-
-//const Admin = lazy(() =>
-  //import(/*webpackChunkName:'AdminPage'*/ "@/pages/Admin")
-//);
-
-//const Customer = lazy(() =>
-  //import(/*webpackChunkName:'CustomerPage'*/ "@/pages/Customer")
-//);
-
-//const SelectCustomer = lazy(() =>
-  //import(/*webpackChunkName:'SelectCustomerPage'*/ "@/pages/SelectCustomer")
-//);
-
-//const Lead = lazy(() => import(/*webpackChunkName:'LeadPage'*/ "@/pages/Lead"));
+const Dashboard = lazy(() =>
+  import(/*webpackChunkName:'DashboardPage'*/ "views/Dashboard")
+);
+const Customer = lazy(() =>
+  import(/*webpackChunkName:'CustomerPage'*/ "_dashboard/ProductList")
+);
+const SelectCustomer = lazy(() =>
+  import(/*webpackChunkName:'SelectCustomerPage'*/ "_dashboard/UserList")
+);
+const Lead = lazy(() => import(/*webpackChunkName:'LeadPage'*/ "views/pages/User"));
 
 //const Product = lazy(() =>
   //import(/*webpackChunkName:'ProductPage'*/ "@/pages/Product")
@@ -39,10 +32,8 @@ export default function AppRouter() {
   const location = useLocation();
   return (
     <Suspense fallback={<Loader />}>
-
         <Switch location={location} key={location.pathname}>
-         <Route path="/admin" render={(props) => <AdminLayout {...props} />} />
-
+          <Route path="/admin" render={(props) => <AdminLayout {...props} />} />
         </Switch>
     </Suspense>
   );

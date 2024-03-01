@@ -19,8 +19,8 @@ export const login = async (email, password) => {
     token.set(response.data.result.token);
     return success(response);
 
-  } catch (error) {
-    return error(error);
+  } catch (err) {
+    return error(err);
   }
 };
 
