@@ -59,13 +59,17 @@ const schema = mongoose.Schema ({
       });
     });
 
-    schema.methods.read = function(id, cb) {
+    schema.methods.read = function (id, cb) {
         this.findOne({_id: id}, cb);
-    }
+    };
 
-    schema.methods.list = function(cb) {
-        this.find(cb)
-    }
+    schema.methods.readByEmail = function (email, cb) {
+      this.findOne({email: email}, cb);
+    };
+
+    schema.methods.list = function (cb) {
+        this.find(cb);
+    };
         
     schema.methods.compare = async function ( password ) {
       return await bcrypt.compare(password, this.password); 
