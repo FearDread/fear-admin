@@ -1,40 +1,10 @@
 import * as actionTypes from "../types/auth";
-
 import storePersist from "_redux/storePersist";
 import history from "_utils/history";
 import axios from "axios";
+
 import { API_BASE_URL, ACCESS_TOKEN_NAME } from "../../variables/api.js";
 
-/*
-export const login = (loginAdminData) => async (dispatch) => {
-  dispatch({
-    type: actionTypes.LOADING_REQUEST,
-    payload: { loading: true },
-  });
-  const data = authService.login(loginAdminData);
-
-  data.then((apiData) => {
-    console.log("LOGIN DATA :: ", apiData);
-    const authValue = {
-      current: apiData.result.user,
-      loading: false,
-      isLoggedIn: true,
-    };
-    storePersist.set("auth", authValue);
-    dispatch({
-      type: actionTypes.LOGIN_SUCCESS,
-      payload: data.result.user,
-    });
-    history.push("/admin/dashboard");
-  })
-  .catch((err) => {
-    dispatch({
-      type: actionTypes.FAILED_REQUEST,
-      payload: err,
-    });
-  });
-};
-*/
 export function login(email, password) {
   console.log("API URL = " + API_BASE_URL);
   return async function (dispatch) {

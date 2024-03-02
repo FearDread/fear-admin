@@ -37,18 +37,7 @@ exports.register = async (req, res) => {
 
 exports.read = async (req, res, next) => {
   console.log("READ REQUEST :: " + req.params);
-  /*
-  await UserModel.findById(req.user.id)
-    .then((user) => {
-      res.status(200).json({
-        success: true,
-        user
-      });
-    })
-    .catch((error) => {
-      dbError(res, error);
-    });
-    */
+
     if (!req.params.id) {
       return next(dbError());
     }
@@ -118,12 +107,7 @@ exports.update = async (req, res, next) => {
 exports.readUser = async (req, res) => {
 
   console.log("readUser :: CALLED");
-  const user = await UserModel.findById(req.user.id); // user.id because we set that user into as user.req when user gose autentiction. becauae all data of users set into req.user. only user when logged in then access this function
-  res.status(200).json({
-    success: true,
-    user, // profile details of user
-  });
-  /*
+
   if (!req.params.id) {
     return next(new AppError(`User does not exist with Id: ${req.params.id}`));
   }
@@ -132,13 +116,12 @@ exports.readUser = async (req, res) => {
     .then((user) => {
       res.status(200).json({
         success: true,
-        user: user,
+        user,
       });
     })
     .catch((error) => {
       dbError(res, error);
     });
-    */
 };
 
 exports.delete = async (req, res, next) => {
@@ -197,9 +180,8 @@ exports.forgotPassword = async (req, res, next) => {
   }
 
   // Get ResetPassword Token
-  const resetToken = user.getResetPasswordToken(); // we made this method into userModel for hash resetToken
-  //when we call this metod  getResetPasswordToken  . so in userModel resetPasswordToken has reset token added and resetPasswordExprie also exprie value added but not saved to data base
-  await user.save({ validateBeforeSave: false }); // now save
+  const resetToken = user.getResetPasswordToken();
+  await user.save({ validateBeforeSave: false });
 
   let resetPasswordUrl = "";
 
@@ -271,7 +253,7 @@ exports.updatePassword = async (req, res, next) => {
   await UserModel.findById(req.user.id)
     .select("+password")
     .then((user) => {
-      const isPasswordMatched = user.compare_pass(req.body.oldPassword);
+      const isPasswordMatched = user.compare(req.body.oldPassword);
       if (!isPasswordMatched) {
         return next(new AppError("Old password is incorrect", 400));
       }

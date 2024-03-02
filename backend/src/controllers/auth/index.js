@@ -6,21 +6,19 @@ const { dbError, authError, notFound, AppError } = require("../../_utils/errorHa
 const TypedError = require("../../_utils/ErrorHandler");
 require("dotenv").config({ path: __dirname + "../.env" });
 
-
-
 exports.login = async (req, res, next) => {
     const { email, password } = req.body;
     if (!email || !password) {
       //let err = new TypedError('login error', 400, 'missing_field', { message: "missing username or password" })
       return next(new TypedError('login err',400, 'Missing field'))
     }
-    UserModel.getUserByEmail(email, function (err, user) {
+    UserModel.readByEmail(email, function (err, user) {
       if (err) return next(err)
       if (!user) {
         let err = new TypedError('login error', 403, 'invalid_field', { message: "Incorrect email or password" })
         return next(err)
       }
-      UserModel.compare(password, user.password, function (err, isMatch) {
+      user.compare(password, user.password, function (err, isMatch) {
         if (err) return next(err)
         if (isMatch) {
           let token = jwt.sign(
