@@ -11,7 +11,6 @@ import AdminNavbar from "components/Navbars/AdminNavbar.js";
 import Footer from "components/Footer/Footer.js";
 import Sidebar from "components/Sidebar/Sidebar.js";
 import FixedPlugin from "components/FixedPlugin/FixedPlugin.js";
-import PrivateRoute from "router/PrivateRoute";
 
 import routes from "router/routes.js";
 import logo from "assets/img/FEAR/logo.png";
@@ -27,74 +26,20 @@ const Admin = (props) => {
   const notificationAlertRef = React.useRef(null);
   const location = useLocation();
   const history = useHistory();
-  //const { user, isAuthenticated } = useSelector((state) => state.userData);
+  const { isLoggedIn } = useSelector((state) => state.auth);
 
   React.useEffect(() => {
-    //setSidebarMini(false);
+    console.log("isLoggedIn : ", isLoggedIn);
     handleMiniClick();
-    // if user not logged in
-   // if (isAuthenticated) {
-      //history.push("/admin");
-   // }
 
-  }, [history]);
+   if (isLoggedIn) {
+      history.push("/admin");
+   }
 
-
-  React.useEffect(() => {
-    /*
-    document.documentElement.scrollTop = 0;
-    document.scrollingElement.scrollTop = 0;
-    if (mainPanelRef.current) {
-      mainPanelRef.current.scrollTop = 0;
-    }
-    document.body.classList.toggle("sidebar-mini")
-    setSidebarMini(false);
-  }, [location]);
+  }, [history, isLoggedIn]);
 
   React.useEffect(() => {
-    let innerMainPanelRef = mainPanelRef;
-    
-    window.addEventListener("scroll", showNavbarButton);
-    mainPanelRef.current &&
-    mainPanelRef.current.addEventListener("ps-scroll-y", showNavbarButton);
-    
-    return function cleanup() {
-      window.removeEventListener("scroll", showNavbarButton);
-      innerMainPanelRef.current &&
-      innerMainPanelRef.current.removeEventListener(
-        "ps-scroll-y",
-        showNavbarButton
-      );
-    }
-    /*
 
-    if (navigator.platform.indexOf("Win") > -1) {
-      document.documentElement.classList.add("perfect-scrollbar-on");
-      document.documentElement.classList.remove("perfect-scrollbar-off");
-      //ps = new PerfectScrollbar(mainPanelRef.current);
-
-      let tables = document.querySelectorAll(".table-responsive");
-      for (let i = 0; i < tables.length; i++) {
-        //ps = new PerfectScrollbar(tables[i]);
-      }
-    }
-
-  
-
-    return function cleanup() {
-      if (navigator.platform.indexOf("Win") > -1) {
-        ps.destroy();
-        document.documentElement.classList.add("perfect-scrollbar-off");
-        document.documentElement.classList.remove("perfect-scrollbar-on");
-        innerMainPanelRef.current &&
-          innerMainPanelRef.current.removeEventListener(
-            "ps-scroll-y",
-            showNavbarButton
-          );
-      }
-    
-    };
-    */
   }, []);
 
   const showNavbarButton = () => {

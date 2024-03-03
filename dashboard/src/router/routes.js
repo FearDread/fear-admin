@@ -40,7 +40,6 @@ const routes = [
     path: "/dashboard",
     name: "Dashboard",
     isAdmin: true,
-    rtlName: "لوحة القيادة",
     icon: "tim-icons icon-chart-pie-36",
     component: Dashboard,
     layout: "/admin"
@@ -48,25 +47,20 @@ const routes = [
   {
     collapse: true,
     name: "Pages",
-    rtlName: "صفحات",
     icon: "tim-icons icon-image-02",
     state: "pagesCollapse",
     views: [
       {
         path: "/register",
         name: "Register",
-        rtlName: "عالتسعير",
         mini: "R",
-        rtlMini: "ع",
         component: Register,
         layout: "/auth"
       },
       {
         path: "/login",
         name: "Login",
-        rtlName: "عالتسعير",
         mini: "L",
-        rtlMini: "ع",
         component: Login,
         layout: "/auth"
       },
@@ -75,7 +69,6 @@ const routes = [
   {
     path: "/users",
     name: "Users",
-    rtlName: "لوحة القيادة",
     icon: "tim-icons icon-molecule-40",
     component: UserList,
     layout: "/admin"
@@ -83,34 +76,27 @@ const routes = [
   {
     collapse: true,
     name: "Products",
-    rtlName: "لوحة القيادة",
     icon: "tim-icons icon-chart-bar-32",
     state: "productsCollapse",
     views:[
       {
         path: "/products",
         name: "All Products",
-        rtlName: "عالتسعير",
         mini: "R",
-        rtlMini: "ع",
         component: Products,
         layout: "/admin"
       },
       {
         path: "/product/:id",
         name: "Add New",
-        rtlName: "عالتسعير",
         mini: "R",
-        rtlMini: "ع",
         component: NewProduct,
         layout: "/admin"
       },
       {
         path: "/product/reviews",
         name: "Reviews",
-        rtlName: "عالتسعير",
         mini: "R",
-        rtlMini: "ع",
         component: Panels,
         layout: "/admin"
       }
@@ -119,7 +105,6 @@ const routes = [
   {
     path: "/profile",
     name: "Profile",
-    rtlName: "لوحة القيادة",
     icon: "tim-icons icon-image-02",
     component: User,
     layout: "/admin"
@@ -127,7 +112,6 @@ const routes = [
   {
     path: "/orders",
     name: "Orders",
-    rtlName: "لوحة القيادة",
     icon: "tim-icons icon-laptop",
     component: RegularForms,
     layout: "/admin"

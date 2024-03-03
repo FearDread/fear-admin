@@ -1,34 +1,35 @@
-// export { default as AuthRouter } from "./AuthRouter";
-// export { default as AppRouter } from "./AppRouter";
-import React, { useEffect } from "react";
-//import { Route } from "react-router-dom";
-import AuthRouter from "./AuthRouter";
-import AppRouter from "./AppRouter";
-
-//import { Layout } from "antd";
-//import Navigation from "@/layout/Navigation";
+import React, { useEffect, Suspense } from "react";
+import { Redirect, Route, Switch, useLocation } from "react-router-dom";
 import AuthLayout from "layouts/Auth/Auth.js";
 import AdminLayout from "layouts/Admin/Admin.js";
-
 import { useSelector } from "react-redux";
-//import { selectAuth } from "_redux/auth/selectors";
+import Loader from "components/Loader/Loading";
 
 export default function Router() {
   const { isLoggedIn } = useSelector((state) => state.auth);
- // const { isLoggedIn } = useSelector(selectAuth);
+  const location = useLocation();
 
   useEffect(() => {
     console.log("isLoggedIn : ", isLoggedIn);
-    
   }, [isLoggedIn]);
 
   if (isLoggedIn === false)
     return (
-      <AuthRouter />
-    );
+    <Suspense fallback={<Loader />}>
+        <Switch location={location} key={location.pathname}>
+          <Route path="/auth" render={(props) => <AuthLayout {...props} />} />
+          <Redirect path="/" to="/auth/login" />
+        </Switch>
+    </Suspense>
+  )
   else
     return (
-      <AppRouter />
-    );
+    <Suspense fallback={<Loader />}>
+        <Switch location={location}>
+          <Route path="/admin" render={(props) => <AdminLayout {...props} />} />
+          <Redirect path="/*" to="/admin/dashboard" />
+        </Switch>
+    </Suspense>
+  )
 }
 // export default App;
