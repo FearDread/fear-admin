@@ -7,9 +7,9 @@ import { Line, Bar } from "react-chartjs-2";
 import { VectorMap } from "react-jvectormap";
 import { useSelector, useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
-//import { getAllOrders } from "_actions/orderAction";
-//import { logout, getAllUsers } from "_actions/userAction";
-import { getAdminProducts } from "_redux/actions/product";
+//import { getAllOrders } from "_redux/actions/order";
+import { logout, getAllUsers } from "_redux/actions/user";
+//import { getAdminProducts } from "_redux/actions/product";
 import Loader from "components/Loader/Loading.js";
 // reactstrap components
 import {
@@ -59,10 +59,11 @@ const Dashboard = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const [toggle, setToggle] = useState(false);
-  const { products, loading, error } = useSelector((state) => state.products);
-  const { orders, error: ordersError } = useSelector((state) => state.allOrders);
-  const { users, error: usersError } = useSelector((state) => state.allUsers);
+  //const { products, loading, error } = useSelector((state) => state.products);
+  //const { orders, error: ordersError } = useSelector((state) => state.allOrders);
+  //const { users, error: usersError } = useSelector((state) => state.allUsers);
   const [bigChartData, setbigChartData] = React.useState("data1");
+  const {current, loading, isLoggedIn } = useSelector((state) => state.auth);
 
   const setBgChartData = (name) => {
     setbigChartData(name);
@@ -77,19 +78,20 @@ const Dashboard = () => {
 
 
   let totalInventory = 0;
-  products && products.forEach((element) => {
+  //products && products.forEach((element) => {
     // check how much items out of stocks in products array
-    if (element.stock > 0) {
-      totalInventory += 1;
-    }
-  });
+ //   if (element.stock > 0) {
+//      totalInventory += 1;
+//    }
+//  });
 
   useEffect(() => {
-    
+    console.log("logged in = " + isLoggedIn);
+    console.log("Logged in USer = ", current);
     //dispatch(getAllOrders());
-    dispatch(getAllUsers());
+    //dispatch(getAllUsers());
     //dispatch(getAdminProducts());
-  }, [dispatch]);
+  }, [dispatch, isLoggedIn, current]);
   
   return (
     <>
