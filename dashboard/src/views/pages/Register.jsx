@@ -88,8 +88,9 @@ const Register = () => {
   const formData = new FormData();
   formData.set("name", name);
   formData.set("email", email);
-  formData.set("passwordCheck", confirmPassword);
   formData.set("password", password);
+  //formData.set("passwordCheck", confirmPassword);
+
   //formData.set("avatar", avatar);
 
   dispatch(register(formData));
@@ -168,11 +169,12 @@ const Register = () => {
                       <Input
                         placeholder="Full Name"
                         type="text"
+                        autoComplete="name"
                         onFocus={(e) => setState({ ...state, nameFocus: true })}
                         onBlur={(e) => setState({ ...state, nameFocus: false })}
                         value={name}
                         onChange={handleNameChange}
-                        error={!isValidName && name !== ""}
+                        //error={!isValidName && name !== ""}
                       />
                     </InputGroup>
                     <InputGroup
@@ -188,13 +190,14 @@ const Register = () => {
                       <Input
                         placeholder="Email"
                         type="text"
+                        autoComplete="email"
                         onFocus={(e) =>
                           setState({ ...state, emailFocus: true })
                         }
                         onBlur={(e) =>
                           setState({ ...state, emailFocus: false })
                         }
-                        error={!isValidEmail && email !== ""}
+                        //error={!isValidEmail && email !== ""}
                         value={email}
                         onChange={handleEmailChange}
                       />
@@ -212,9 +215,10 @@ const Register = () => {
                       <Input
                         placeholder="Password"
                         type="password"
+                        autoComplete="new-password"
                         onFocus={(e) => setState({ ...state, passFocus: true })}
                         onBlur={(e) => setState({ ...state, passFocus: false })}
-                        error={!isValidPassword && password !== ""}
+                        //error={!isValidPassword && password !== ""}
                         onClick={handleShowPasswordClick}
                         value={password}
                         onChange={handlePasswordChange}
@@ -236,9 +240,9 @@ const Register = () => {
                         type="password"
                         onFocus={(e) => setState({ ...state, passFocus: true })}
                         onBlur={(e) => setState({ ...state, passFocus: false })}
-                        error={!isValidPassword && password !== ""}
+                        //error={(!isValidPassword ? password : undefined)}
                         onClick={handleConfirmPasswordChange}
-                        value={password}
+                        value={confirmPassword}
                         onChange={handleConfirmPasswordChange}
                         
                       />

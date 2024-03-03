@@ -29,19 +29,49 @@ const Admin = (props) => {
   const { isLoggedIn } = useSelector((state) => state.auth);
 
   React.useEffect(() => {
-    console.log("isLoggedIn : ", isLoggedIn);
+    console.log("Admin Layout : ", isLoggedIn);
     handleMiniClick();
 
    if (isLoggedIn) {
-      history.push("/admin");
+      history.push("/admin/dashboard");
    }
 
   }, [history, isLoggedIn]);
-
   React.useEffect(() => {
-
+    document.documentElement.scrollTop = 0;
+    document.scrollingElement.scrollTop = 0;
+    if (mainPanelRef.current) {
+      mainPanelRef.current.scrollTop = 0;
+    }
+  }, [location]);
+  React.useEffect(() => {
+    let innerMainPanelRef = mainPanelRef;
+    if (navigator.platform.indexOf("Win") > -1) {
+      document.documentElement.classList.add("perfect-scrollbar-on");
+      document.documentElement.classList.remove("perfect-scrollbar-off");
+     // ps = new PerfectScrollbar(mainPanelRef.current);
+      mainPanelRef.current &&
+        mainPanelRef.current.addEventListener("ps-scroll-y", showNavbarButton);
+      let tables = document.querySelectorAll(".table-responsive");
+      for (let i = 0; i < tables.length; i++) {
+       // ps = new PerfectScrollbar(tables[i]);
+      }
+    }
+    window.addEventListener("scroll", showNavbarButton);
+    return function cleanup() {
+      if (navigator.platform.indexOf("Win") > -1) {
+        //ps.destroy();
+        document.documentElement.classList.add("perfect-scrollbar-off");
+        document.documentElement.classList.remove("perfect-scrollbar-on");
+        innerMainPanelRef.current &&
+          innerMainPanelRef.current.removeEventListener(
+            "ps-scroll-y",
+            showNavbarButton
+          );
+      }
+      window.removeEventListener("scroll", showNavbarButton);
+    };
   }, []);
-
   const showNavbarButton = () => {
     if (
       document.documentElement.scrollTop > 50 ||
@@ -128,6 +158,8 @@ const Admin = (props) => {
   };
 
   return (
+    <>
+    <Outlet />
     <div className="wrapper">
       <div className="rna-container">
         <NotificationAlert ref={notificationAlertRef} />
@@ -177,6 +209,7 @@ const Admin = (props) => {
         handleMiniClick={handleMiniClick}
       />
     </div>
+    </>
   );
 };
 
