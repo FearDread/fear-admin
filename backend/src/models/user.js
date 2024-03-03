@@ -63,10 +63,6 @@ const schema = mongoose.Schema ({
         this.findOne({_id: id}, cb);
     };
 
-    schema.methods.readByEmail = function (email, cb) {
-      this.findOne({email: email}, cb);
-    };
-
     schema.methods.list = function (cb) {
         this.find(cb);
     };
@@ -94,4 +90,4 @@ const schema = mongoose.Schema ({
       return reset_token;
     };
 
-module.exports = mongoose.model("Users", schema);
+module.exports = mongoose.model("users", schema);

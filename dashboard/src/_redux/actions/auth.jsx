@@ -1,24 +1,26 @@
 import * as actionTypes from "../types/auth";
-import storePersist from "_redux/storePersist";
+import Auth from "../../_auth";
 import history from "_utils/history";
 import axios from "axios";
 
-import { API_BASE_URL, ACCESS_TOKEN_NAME } from "../../variables/api.js";
+import { API_BASE_URL } from "../../variables/api.js";
 
 export function login(email, password) {
-  console.log("API URL = " + API_BASE_URL);
+
   return async function (dispatch) {
     try {
       dispatch({ type: actionTypes.LOGIN_REQUEST });
 
       const config = { headers: { "Content-Type": "application/json" } };
-      const { data } = await axios.post(
+      const response = await axios.post(
         API_BASE_URL + "/login",
         { email, password },
         config
       );
 
-      dispatch({ type: actionTypes.LOGIN_SUCCESS, payload: data.user });
+      console.log("API RESULT :: ", response);
+      Auth.token.set(response.data.token);
+      dispatch({ type: actionTypes.LOGIN_SUCCESS, payload: response });
     } catch (error) {
 
       dispatch({ type: actionTypes.LOGIN_FAIL, payload: error.message });
