@@ -11,21 +11,24 @@ export default function Router() {
 
   useEffect(() => {
     console.log("isLoggedIn : ", isLoggedIn);
+    console.log("Location : ", location);
   }, [isLoggedIn]);
 
   if (isLoggedIn === false)
     return (
     <Suspense fallback={<Loader />}>
-        <Switch location={location} key={location.pathname}>
+        <Switch>
           <Route path="/auth" render={(props) => <AuthLayout {...props} />} />
           <Redirect path="/" to="/auth/login" />
+
+
         </Switch>
     </Suspense>
   )
   else
     return (
     <Suspense fallback={<Loader />}>
-        <Switch location={location}>
+        <Switch>
           <Route path="/admin" render={(props) => <AdminLayout {...props} />} />
           <Redirect path="/*" to="/admin/dashboard" />
         </Switch>

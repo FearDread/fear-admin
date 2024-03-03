@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-//import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
+import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
 //import { Provider } from "react-redux";
 //import AuthLayout from "layouts/Auth/Auth.js";
 //import AdminLayout from "layouts/Admin/Admin.js";
@@ -18,7 +18,15 @@ import "assets/css/animated-bg.css";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
-root.render(<App />)
+root.render(
+    <BrowserRouter>
+      <Provider store={store}>
+        
+        <App />
+
+      </Provider>
+    </BrowserRouter>
+)
 /*
 root.render(
   <BrowserRouter>

@@ -49,6 +49,7 @@ function App() {
   
       // eslint-disable-next-line
     }, []);
+    */
 
     /*
     return (
@@ -63,14 +64,28 @@ function App() {
       </Switch>
     );
     */
+   
     return (
       <RouterHistory history={history}>
         <Provider store={store}>
+          
           <Router />
 
         </Provider>
       </RouterHistory>
     );
+   
+  /*
+const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
+root.render(
+  <React.StrictMode>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  </React.StrictMode>
+);
+ */
 }
+
     
 export default App;
