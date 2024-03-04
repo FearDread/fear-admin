@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const Admin = require('../models/admin');
+const Admin = require('../../models/admin');
 const asyncHandler = require('../_helpers/asyncHandler');
 const {dbError, authError } = require("../_helpers/errorHandlers");
 

@@ -7,7 +7,7 @@ const { sendEmail } = require("../_utils/mailHandler");
 
 /* User CRUD methods */
 /* -------------------- */
-exports.register = async (req, res) => {
+exports.create = async (req, res) => {
   const { name, email, password } = req.body;
   const myCloud = { public_id: '', secure_url: ''};
 

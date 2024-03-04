@@ -1,5 +1,5 @@
 import * as actionTypes from "../types/auth";
-import Auth from "../../_auth";
+import storePersist from "../storePersist";
 import history from "_utils/history";
 import axios from "axios";
 
@@ -18,9 +18,8 @@ export function login(email, password) {
         config
       );
 
-      console.log("API RESULT :: ", response);
-      Auth.token.set(response.data.token);
-      dispatch({ type: actionTypes.LOGIN_SUCCESS, payload: response });
+      storePersist.set("user", response.data.token);
+      dispatch({ type: actionTypes.LOGIN_SUCCESS, payload: response.result });
     } catch (error) {
 
       dispatch({ type: actionTypes.LOGIN_FAIL, payload: error.message });
@@ -28,13 +27,21 @@ export function login(email, password) {
   };
 }
 
-export const logout = () => async (dispatch) => {
- //logout
-  dispatch({
-    type: actionTypes.LOGOUT_SUCCESS,
-  });
-  history.push("/login");
-};
+export function logout() {
+  return async function (dispatch) {
+    try {
+      storePersist.remove("user");
+
+      await axios.get(API_BASE_URL + `/logout`); // token will expired from cookies and no more user data access
+      
+      dispatch({ type: actionTypes.LOGOUT_SUCCESS });
+
+    } catch (error) {
+      storePersist.remove("user");
+      dispatch({ type: actionTypes.LOGOUT_FAIL, payload: error.message });
+    }
+  }
+}
 
 export const register = (signupData) => async (dispatch) => {
   try {
@@ -42,14 +49,14 @@ export const register = (signupData) => async (dispatch) => {
     const config = {
       headers: { "Content-Type": "multipart/form-data" }};
 
-    const { data } = await axios.post(
+    const response = await axios.post(
       API_BASE_URL + "/register",
       signupData,
       config
     );
 
-    dispatch({ type: actionTypes.REGISTER_USER_SUCCESS, payload: data.user });
+    dispatch({ type: actionTypes.REGISTER_USER_SUCCESS, payload: response.result });
   } catch (error) {
-    dispatch({ type: actionTypes.REGISTER_USER_FAIL, payload: error.message });
+    dispatch({ type: actionTypes.REGISTER_USER_FAIL, payload: error });
   }
 }

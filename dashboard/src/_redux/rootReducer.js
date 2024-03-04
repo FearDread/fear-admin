@@ -4,12 +4,14 @@ import authReducer from "./reducers/auth";
 import crudReducer  from "./reducers/crud";
 import searchReducer from "./reducers/search";
 
+import * as userReducer from "./reducers/user";
 import * as actionTypes from "./types/auth";
 
 // Combine all reducers.
 
 const appReducer = combineReducers({
   auth: authReducer,
+  user: userReducer,
   crud: crudReducer,
   search: searchReducer,
 });

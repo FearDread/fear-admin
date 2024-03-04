@@ -5,7 +5,7 @@ const { isAuthenticated, authorizedRoles } = require("../controllers/auth");
 const { catchErrors } = require("../_utils/errorHandlers");
 const asyncHandler = require("../_utils/asyncHandler");
 
-router.route("/register").post(catchErrors(User.register));
+router.route("/register").post(catchErrors(User.create));
 router.route("/profile").get(isAuthenticated, catchErrors(User.readUser));
 router.route("/password/forgot").post(User.forgotPassword);
 router.route("/password/update").put(isAuthenticated, User.updatePassword);

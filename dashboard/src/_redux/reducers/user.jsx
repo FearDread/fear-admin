@@ -1,70 +1,23 @@
-import {
-  LOGIN_REQUEST,
-  LOGIN_FAIL,
-  LOGIN_SUCCESS,
-  CLEAR_ERRORS,
-  REGISTER_USER_FAIL,
-  REGISTER_USER_SUCCESS,
-  REGISTER_USER_REQUEST,
-  LOAD_USER_FAIL,
-  LOAD_USER_SUCCESS,
-  LOAD_USER_REQUEST,
-  LOGOUT_FAIL,
-  LOGOUT_SUCCESS,
-  UPDATE_PROFILE_REQUEST,
-  UPDATE_PROFILE_SUCCESS,
-  UPDATE_PROFILE_FAIL,
-  UPDATE_PROFILE_RESET,
-  UPDATE_PASSWORD_FAIL,
-  UPDATE_PASSWORD_RESET,
-  UPDATE_PASSWORD_SUCCESS,
-  UPDATE_PASSWORD_REQUEST,
-  FORGOT_PASSWORD_REQUEST,
-  FORGOT_PASSWORD_SUCCESS,
-  FORGOT_PASSWORD_FAIL,
-  RESET_PASSWORD_REQUEST,
-  RESET_PASSWORD_SUCCESS,
-  RESET_PASSWORD_FAIL,
-  ALL_USERS_REQUEST,
-  ALL_USERS_SUCCESS,
-  ALL_USERS_FAIL,
-  DELETE_USER_REQUEST,
-  DELETE_USER_SUCCESS,
-  DELETE_USER_FAIL,
-  DELETE_USER_RESET,
-  UPDATE_USER_REQUEST,
-  UPDATE_USER_SUCCESS,
-  UPDATE_USER_FAIL,
-  UPDATE_USER_RESET,
-  USER_DETAILS_REQUEST,
-  USER_DETAILS_SUCCESS,
-  USER_DETAILS_FAIL,
-} from "../types/user";
-
+import * as actionTypes from "../types/user";
+import * as authTypes from "../types/auth";
 
 const initialState = {
   loading: false,
-  isAuthenticated: false,
+  isAuthenticated: true,
   user: {},
   error: null,
 };
 
 export const userReducer = (state = initialState, action) => {
   switch (action.type) {
-    case LOGIN_REQUEST:
-    case REGISTER_USER_REQUEST:
-    case LOAD_USER_REQUEST:
+    case actionTypes.LOAD_USER_REQUEST:
       return {
         ...state,
         loading: true,
-        isAuthenticated: false,
+        isAuthenticated: true,
         error: null,
       };
-
-    case LOGIN_SUCCESS:
-    case REGISTER_USER_SUCCESS:
-    case LOAD_USER_SUCCESS:
- 
+    case actionTypes.LOAD_USER_SUCCESS:
       return {
         ...state,
         loading: false,
@@ -72,20 +25,7 @@ export const userReducer = (state = initialState, action) => {
         user: action.payload,
         error: null,
       };
-
-    case LOGOUT_SUCCESS:
-      
-      return {
-        ...state,
-        loading: false,
-        user: {},
-        isAuthenticated: false,
-        error: null,
-      };
-
-    case LOGIN_FAIL:
-    case REGISTER_USER_FAIL:
-    case LOAD_USER_FAIL:
+    case actionTypes.LOAD_USER_FAIL:
       return {
         ...state,
         loading: false,
@@ -93,28 +33,17 @@ export const userReducer = (state = initialState, action) => {
         user: {},
         error: action.payload,
       };
-
-    case LOGOUT_FAIL:
-      return {
-        ...state,
-        loading: false,
-        error: action.payload,
-      };
-
-    case CLEAR_ERRORS:
+    case actionTypes.CLEAR_ERRORS:
       return {
         ...state,
         error: null,
       };
-
-    // This case will handle the scenario where loading the user profile fails, and you need to reset the user state
-   
-
     default:
       return state;
   }
 };
 
+/*
 export const profileReducer = (state = {}, action) => {
   switch (action.type) {
     case UPDATE_PROFILE_REQUEST:
@@ -217,29 +146,29 @@ export const forgetPasswordReducer = (state = {}, action) => {
       return state;
   }
 };
-
+*/
 // get all users
 export const allUsersReducer = (state = { users: [] }, action) => {
   switch (action.type) {
-    case ALL_USERS_REQUEST:
+    case actionTypes.ALL_USERS_REQUEST:
       return {
         ...state,
         loading: true,
       };
-    case ALL_USERS_SUCCESS:
+    case actionTypes.ALL_USERS_SUCCESS:
       return {
         ...state,
         loading: false,
         users: action.payload,
       };
 
-    case ALL_USERS_FAIL:
+    case actionTypes.ALL_USERS_FAIL:
       return {
         ...state,
         loading: false,
         error: action.payload,
       };
-    case CLEAR_ERRORS:
+    case actionTypes.CLEAR_ERRORS:
       return {
         ...state,
         error: null,
@@ -251,7 +180,7 @@ export const allUsersReducer = (state = { users: [] }, action) => {
 };
 
 // get user Details --> admin
-
+/*
 export const userDetailsReducer =  (state = { user: {} }, action) => {
   switch (action.type) {
     case USER_DETAILS_REQUEST:
@@ -283,3 +212,4 @@ export const userDetailsReducer =  (state = { user: {} }, action) => {
       return state;
   }
 };
+*/

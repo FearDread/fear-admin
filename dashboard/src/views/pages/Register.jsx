@@ -146,7 +146,7 @@ const Register = () => {
               </div>
             </Col>
             <Col className="mr-auto" md="7">
-              <Card className="card-register card-white">
+              <Card className="card-register card-dark">
                 <CardHeader>
                   <CardImg
                     alt="..."

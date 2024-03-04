@@ -19,7 +19,6 @@ import {
 import AnimatedBackground from "views/components/AnimatedBackground";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory, useLocation, Link } from "react-router-dom";
-//import { selectAuth } from "_redux/auth/selectors";
 import { login } from "_redux/actions/auth";
 import Loader from "components/Loader/Loading";
 
@@ -32,8 +31,8 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isValidEmail, setIsValidEmail] = useState(true);
-  const { loading: loading, isLoggedIn } = useSelector((state) => state.auth);
-  //const { isAuthenticated, loading, error } = useSelector((state) => state.userData);
+  const { loading, isLoggedIn } = useSelector((state) => state.auth);
+
   const handleEmailChange = (event) => {
     const newEmail = event.target.value;
     setEmail(newEmail);
@@ -60,7 +59,7 @@ const Login = () => {
     if (isLoggedIn) {
       history.push(redirect);
      }
-  }, [dispatch, history]);
+  }, [dispatch, history, isLoggedIn]);
 
   function handleLoginSubmit(e) {
        e.preventDefault();
@@ -78,7 +77,7 @@ const Login = () => {
         <Container>
           <Col className="ml-auto mr-auto" lg="4" md="6">
             <Form className="form">
-              <Card className="card-login card-white">
+              <Card className="card-login card-dark">
                 <CardHeader>
                   <img alt="..." src={require("assets/img/card-primary.png")} />
                   <CardTitle tag="h1">Log in</CardTitle>
