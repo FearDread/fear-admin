@@ -18,7 +18,7 @@ var ps;
 
 const Admin = (props) => {
   const [activeColor, setActiveColor] = React.useState("blue");
-  const [sidebarMini, setSidebarMini] = React.useState(true);
+  const [sidebarMini, setSidebarMini] = React.useState(false);
   const [opacity, setOpacity] = React.useState(0);
   const [sidebarOpened, setSidebarOpened] = React.useState(false);
   const mainPanelRef = React.useRef(null);
@@ -26,8 +26,7 @@ const Admin = (props) => {
   const location = useLocation();
 
   React.useEffect(() => {
-    handleMiniClick();
-
+    document.body.classList.remove("sidebar-mini");
     document.documentElement.scrollTop = 0;
     document.scrollingElement.scrollTop = 0;
 
@@ -46,6 +45,8 @@ const Admin = (props) => {
         mainPanelRef.current.addEventListener("ps-scroll-y", showNavbarButton);
     }
     window.addEventListener("scroll", showNavbarButton);
+
+    /*
     return function cleanup() {
       if (navigator.platform.indexOf("Win") > -1) {
 
@@ -57,6 +58,7 @@ const Admin = (props) => {
       }
       window.removeEventListener("scroll", showNavbarButton);
     };
+    */
   }, []);
 
   const showNavbarButton = () => {

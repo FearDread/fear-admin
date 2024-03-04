@@ -16,7 +16,7 @@ function ProductList() {
   //const alert = useAlert();
   const history = useHistory();
   const [toggle, setToggle] = useState(false);
-  const { error, products, loading } = useSelector((state) => state.products);
+  const { error, products, loading } = useSelector((state) => state.product);
   //const { error: deleteError, isDeleted, message } = useSelector((state) => state.deleteUpdateProduct);
   
   useEffect(() => {

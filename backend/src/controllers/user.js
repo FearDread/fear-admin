@@ -28,6 +28,7 @@ exports.create = async (req, res) => {
       url: myCloud.secure_url,
     }})
     .then((user) => {
+      console.log("User Created  ::", user);
       Auth.sendJWTToken(user, 201, res);
     })
     .catch((error) => {
@@ -54,7 +55,7 @@ exports.list = async (req, res, next) => {
     .then((users) => {
       res.status(201).json({
         success: true,
-        users: users,
+        users
       });
     }).catch((error) => {
       dbError(res, error);

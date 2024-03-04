@@ -55,7 +55,7 @@ export const register = (signupData) => async (dispatch) => {
       config
     );
 
-    dispatch({ type: actionTypes.REGISTER_USER_SUCCESS, payload: response.result });
+    dispatch({ type: actionTypes.REGISTER_USER_SUCCESS, payload: response });
   } catch (error) {
     dispatch({ type: actionTypes.REGISTER_USER_FAIL, payload: error });
   }

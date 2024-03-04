@@ -19,7 +19,7 @@ import { DELETE_USER_RESET } from "_redux/types/user";
 
 function UserList() {
   const dispatch = useDispatch();
-  const { error, users, loading } = useSelector((state) => state.allUsers);
+  const { error, users, loading } = useSelector((state) => state.user);
   //const { error: deleteError, isDeleted, message } = useSelector((state) => state.profileData); 
   const history = useHistory();
 
@@ -48,10 +48,10 @@ function UserList() {
       tableRows.push(
         {
           data: [
-            { img: item.avatar.url},
+            { img: (item.avatar.url) ? item.avatar.url : ""},
             { text: item.name },
             { text: item.email },
-            { className: "text-center", text: item.role }
+            { text: item.role }
           ]
         })
     });
