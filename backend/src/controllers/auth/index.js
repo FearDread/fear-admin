@@ -1,5 +1,4 @@
 const jwt = require("jsonwebtoken");
-//const AdminModel = require("./src/models/admin");
 const UserModel = require("../../models/user");
 const asyncHandler = require("../../_utils/asyncHandler");
 const { dbError, authError, notFound, AppError } = require("../../_utils/errorHandlers");
@@ -9,19 +8,25 @@ require("dotenv").config({ path: __dirname + "../.env" });
 exports.login = async (req, res, next) => {
   const { email, password } = req.body;
   if (!email || !password) {
-    //let err = new TypedError('login error', 400, 'missing_field', { message: "missing username or password" })
     return next(new TypedError('login err',400, 'Missing field'))
   }
+
   var user = await UserModel.findOne({email: email});
   console.log('User Found :: ', user);
+  
   if (!user) {
     let err = new TypedError('login error', 403, 'invalid_field', { message: "Incorrect email or password" })
     return next(err)
   }
   const token = user.getJWTToken()
+  const opts = {
+    expires: new Date( Date.now() + process.env.COOKIE_EXPIRE * 24 * 60 * 60 * 1000),
+    httpOnly: true,
+  };
   console.log("Token " + token);
 
-  res.status(200).json({
+  res.cookie("x-access-token", token, opts)
+    .status(200).json({
     success: true,
     result: {
       token,
@@ -53,116 +58,6 @@ exports.login = async (req, res, next) => {
     });
     */
 }
-
-/*
-exports.login = async (req, res, next) => {
-  try {
-    const { email, password } = req.body;
-
-    // validate
-    if (!email || !password)
-      return res.status(400).json({ msg: "Not all fields have been entered." });
-
-    const admin = await UserModel.findOne({ email: email }).select("+password");
-
-    console.log("Found USER: " + admin);
-    return res.status(200).json({
-      success: true,
-      result: {
-        token,
-        user: admin,
-        isLoggedIn: true
-      },
-      message: "Successfully login admin",
-    });
-    return admin;
-    if (!admin)
-      return res.status(400).json({
-        success: false,
-        result: null,
-        message: "No account with this email has been registered.",
-      });
-
-    const isMatch = await bcrypt.compare(password, admin.password);
-    if (!isMatch)
-      return res.status(400).json({
-        success: false,
-        result: null,
-        message: "Invalid credentials.",
-      });
-
-    const token = UserModel.getJWTToken()
-
-    const result = await UserModel.findOneAndUpdate(
-      { _id: admin._id },
-      { isLoggedIn: true },
-      {new: true}
-    ).exec();
-
-    res.json({
-      success: true,
-      result: {
-        token,
-        admin,
-        isLoggedIn: result.isLoggedIn
-      },
-      message: "Successfully login admin",
-    });
-  } catch (err) {
-    res
-    .status(500)
-    .json({ success: false, result: null, message: err.message });
-  }
-};
-
-*/
-exports.register = async (req, res) => {
-  try {
-    let { email, password, passwordCheck, name } = req.body;
-
-    if (!email || !password || !passwordCheck)
-      return res.status(400).json({ msg: "Not all fields have been entered." });
-    if (password.length < 5)
-      return res
-        .status(400)
-        .json({ msg: "The password needs to be at least 5 characters long." });
-    if (password !== passwordCheck)
-      return res
-        .status(400)
-        .json({ msg: "Enter the same password twice for verification." });
-
-    const existingAdmin = await Admin.findOne({ email: email });
-    if (existingAdmin)
-      return res
-        .status(400)
-        .json({ msg: "An account with this email already exists." });
-
-    if (!name) name = email;
-
-    const salt = await bcrypt.genSalt();
-    const passwordHash = await bcrypt.hash(password, salt);
-
-    const newAdmin = new Admin({
-      name,
-      email,
-      password: passwordHash
-    });
-    const savedAdmin = await newAdmin.save();
-    res.status(200).send({
-      success: true,
-      admin: {
-        id: savedAdmin._id,
-        name: savedAdmin.name
-      },
-    });
-  } catch (err) {
-    res.status(500).json({
-      success: false,
-      result: null,
-      message: err.message,
-    });
-  }
-};
 
 exports.logout = async (req, res) => {
   res.cookie("token", null, {
@@ -249,7 +144,7 @@ exports.sendJWTToken = (user, statusCode, res) => {
   console.log("Token: " + token);
 
   res.status(statusCode)
-    .cookie("token", token, options)
+    .cookie("x-access-token", token, options)
     .json({
       data: {
         success: true,

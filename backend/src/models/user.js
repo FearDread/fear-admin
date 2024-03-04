@@ -20,7 +20,7 @@ const schema = mongoose.Schema ({
         type: String,
         required: [true, "Please Enter Your Password"],
         minLength: [8, "Password should have more than 8 characters"],
-        select: false, 
+        select: true, 
       },
       avatar: {
         public_id: {

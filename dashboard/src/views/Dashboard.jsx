@@ -8,7 +8,8 @@ import { VectorMap } from "react-jvectormap";
 import { useSelector, useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 //import { getAllOrders } from "_redux/actions/order";
-import { logout, getAllUsers } from "_redux/actions/user";
+import { getAllUsers } from "_redux/actions/user";
+import { logout } from "_redux/actions/auth";
 //import { getAdminProducts } from "_redux/actions/product";
 import Loader from "components/Loader/Loading.js";
 // reactstrap components
@@ -61,7 +62,7 @@ const Dashboard = () => {
   const [toggle, setToggle] = useState(false);
   //const { products, loading, error } = useSelector((state) => state.products);
   //const { orders, error: ordersError } = useSelector((state) => state.allOrders);
-  //const { users, error: usersError } = useSelector((state) => state.allUsers);
+  const { users, error: usersError } = useSelector((state) => state.allUsers);
   const [bigChartData, setbigChartData] = React.useState("data1");
   const {current, loading, isLoggedIn } = useSelector((state) => state.auth);
 
