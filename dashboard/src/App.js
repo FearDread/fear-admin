@@ -1,12 +1,14 @@
 import React, { useEffect, useState, Suspense } from "react";
-import { Route, Routes as ReactRoutes } from 'react-router-dom';
+import { useNavigate, useLocation, Route, Routes as ReactRoutes } from 'react-router-dom';
 import AuthLayout from "layouts/Auth/Auth.js";
 import AdminLayout from "layouts/Admin/Admin.js";
 import ProtectedRoute from "_routes/ProtectedRoute";
+import Loader from "components/Loader/Loading";
+import { useSelector, useDispatch } from "react-redux";
 
-function App() {
+function App(props) {
   const location = useLocation();
-  const history = useHistory();
+  const history = useNavigate();
   const { isLoggedIn } = useSelector((state) => state.auth);
 
 

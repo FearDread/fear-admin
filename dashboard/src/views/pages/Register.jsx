@@ -23,13 +23,13 @@ import {
 
 import { register } from "_redux/actions/auth";
 import { useDispatch, useSelector } from "react-redux";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import AnimatedBackground from "views/components/AnimatedBackground";
 import Loader from "components/Loader/Loading";
 
 const Register = () => {
   const dispatch = useDispatch();
-  const history = useHistory();
+  const history = useNavigate();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");

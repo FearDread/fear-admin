@@ -18,15 +18,15 @@ import {
 } from "reactstrap";
 import AnimatedBackground from "views/components/AnimatedBackground";
 import { useDispatch, useSelector } from "react-redux";
-import { useHistory, useLocation, Link } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 //import { selectAuth } from "_redux/auth/selectors";
 import { login } from "_redux/actions/auth";
 import Loader from "components/Loader/Loading";
 
 const Login = () => {
   const [state, setState] = React.useState({});
-  const history = useHistory();
-  const loaction = useLocation();
+  const history = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
