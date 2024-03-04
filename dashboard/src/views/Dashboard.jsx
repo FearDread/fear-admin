@@ -62,14 +62,13 @@ const Dashboard = () => {
   const [toggle, setToggle] = useState(false);
   //const { products, loading, error } = useSelector((state) => state.products);
   //const { orders, error: ordersError } = useSelector((state) => state.allOrders);
-  const { users, error: usersError } = useSelector((state) => state.allUsers);
+  const { users, error: usersError } = useSelector((state) => state.user);
   const [bigChartData, setbigChartData] = React.useState("data1");
   const {current, loading, isLoggedIn } = useSelector((state) => state.auth);
 
   const setBgChartData = (name) => {
     setbigChartData(name);
   };
-
 
   const logoutHandler = () => {
     dispatch(logout());

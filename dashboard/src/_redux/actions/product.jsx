@@ -29,6 +29,7 @@ import {
   CLEAR_ERRORS,
   ALL_REVIEW_FAIL,
 } from "../types/product";
+import { API_BASE_URL } from "variables/api";
 
 // get ALL Products
 export const getProduct = (
@@ -51,11 +52,11 @@ export const getProduct = (
       if (category) {
         link = `/api/v1/product?keyword=${keyword}&page=${currentPage}&price[gte]=${price[0]}&price[lte]=${price[1]}&ratings[gte]=${ratings}&category=${category}`;
       }
-      const { data } = await axios.get(link);
+      const response = await axios.get(link);
 
       dispatch({
         type: ALL_PRODUCT_SUCCESS,
-        payload: data,
+        payload: response,
       });
     } catch (error) {
       dispatch({
@@ -74,7 +75,7 @@ export const getProductDetails = (id) => {
         type: PRODUCT_DETAILS_REQUEST,
       });
 
-      const { data } = await axios.get(`http://fear.master.com/fear/api/product/${id}`);
+      const { data } = await axios.get(API_BASE_URL + `/product/${id}`);
 
       dispatch({
         type: PRODUCT_DETAILS_SUCCESS,
@@ -109,11 +110,11 @@ export const getAdminProducts = () => async (dispatch) => {
   try {
     dispatch({ type: ADMIN_PRODUCT_REQUEST });
 
-    const { data } = await axios.get("http://fear.master.com:4000/fear/api/admin/products");
+    const response = await axios.get(API_BASE_URL + "/admin/products");
 
-    dispatch({ type: ADMIN_PRODUCT_SUCCESS, payload: data.product });
+    dispatch({ type: ADMIN_PRODUCT_SUCCESS, payload: response.data });
   } catch (error) {
-    dispatch({ type: ADMIN_PRODUCT_FAIL, payload: error.message });
+    dispatch({ type: ADMIN_PRODUCT_FAIL, payload: error });
   }
 };
 
@@ -129,7 +130,7 @@ export function createProduct(productData) {
       };
 
       await axios.post(
-        `http://fear.master.com:4000/fear/api/admin/product/new`,
+        API_BASE_URL + `/admin/product/new`,
         productData,
         config
       )

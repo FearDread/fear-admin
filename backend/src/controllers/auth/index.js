@@ -143,13 +143,14 @@ exports.sendJWTToken = (user, statusCode, res) => {
   };
   console.log("Token: " + token);
 
-  res.status(statusCode)
-    .cookie("x-access-token", token, options)
-    .json({
-      data: {
-        success: true,
-        result: user,
-        token
-      }
-    });
+  res.cookie("x-access-token", token, opts)
+    .status(statusCode).json({
+    success: true,
+    result: {
+      token,
+      user,
+      isLoggedIn: true
+    },
+    message: "Successfully login admin",
+  });
 };

@@ -2,13 +2,14 @@ import * as actionTypes from "../types/user";
 import * as authTypes from "../types/auth";
 
 const initialState = {
-  loading: false,
-  isAuthenticated: true,
   user: {},
+  users: [],
+  isAuthenticated: true,
+  loading: false,
   error: null,
 };
 
-export const userReducer = (state = initialState, action) => {
+const userReducer = (state = initialState, action) => {
   switch (action.type) {
     case actionTypes.LOAD_USER_REQUEST:
       return {
@@ -38,11 +39,29 @@ export const userReducer = (state = initialState, action) => {
         ...state,
         error: null,
       };
+      case actionTypes.ALL_USERS_REQUEST:
+        return {
+          ...state,
+          loading: true,
+        };
+      case actionTypes.ALL_USERS_SUCCESS:
+        return {
+          ...state,
+          loading: false,
+          users: action.payload,
+        };
+        case actionTypes.ALL_USERS_FAIL:
+          return {
+            ...state,
+            loading: false,
+            error: action.payload,
+          };
     default:
       return state;
   }
 };
 
+export default userReducer;
 /*
 export const profileReducer = (state = {}, action) => {
   switch (action.type) {
@@ -148,36 +167,6 @@ export const forgetPasswordReducer = (state = {}, action) => {
 };
 */
 // get all users
-export const allUsersReducer = (state = { users: [] }, action) => {
-  switch (action.type) {
-    case actionTypes.ALL_USERS_REQUEST:
-      return {
-        ...state,
-        loading: true,
-      };
-    case actionTypes.ALL_USERS_SUCCESS:
-      return {
-        ...state,
-        loading: false,
-        users: action.payload,
-      };
-
-    case actionTypes.ALL_USERS_FAIL:
-      return {
-        ...state,
-        loading: false,
-        error: action.payload,
-      };
-    case actionTypes.CLEAR_ERRORS:
-      return {
-        ...state,
-        error: null,
-      };
-
-    default:
-      return state;
-  }
-};
 
 // get user Details --> admin
 /*

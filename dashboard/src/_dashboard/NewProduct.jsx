@@ -26,7 +26,7 @@ function NewProduct() {
   const history = useHistory();
   //const alert = useAlert();
 
-  const { loading, error, success } = useSelector((state) => state.addNewProduct);
+  //const { loading, error, success } = useSelector((state) => state.addNewProduct);
   const [name, setName] = useState("");
   const [price, setPrice] = useState(0);
   const [description, setDescription] = useState("");
@@ -37,7 +37,7 @@ function NewProduct() {
   const [imagesPreview, setImagesPreview] = useState([]);
   const [isCategory, setIsCategory] = useState(false);
   const fileInputRef = useRef();
-  const { user, isAuthenticated } = useSelector((state) => state.userData);
+  const { loading, user } = useSelector((state) => state.user);
 
   const handleCategoryChange = (e) => {
     setCategory(e.target.value);
@@ -54,6 +54,7 @@ function NewProduct() {
    "Toys",
    "Misc..",
  ];
+ /*
   useEffect(() => {
     if (error) {
       dispatch(clearErrors());
@@ -64,7 +65,7 @@ function NewProduct() {
       dispatch({ type: NEW_PRODUCT_RESET });
     }
   }, [dispatch, error, history, success]);
-
+*/
   const createProductSubmitHandler = (e) => {
     e.preventDefault();
     
