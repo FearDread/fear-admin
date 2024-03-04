@@ -12,9 +12,7 @@ import FixedPlugin from "components/FixedPlugin/FixedPlugin.js";
 import * as Router from "_router";
 import routes from "_router/routes.js";
 
-import logo from "assets/img/react-logo.png";
-
-var ps;
+import logo from "assets/img/FEAR/logo.png";
 
 const Admin = (props) => {
   const [activeColor, setActiveColor] = React.useState("blue");
@@ -38,15 +36,11 @@ const Admin = (props) => {
   React.useEffect(() => {
     let innerMainPanelRef = mainPanelRef;
     if (navigator.platform.indexOf("Win") > -1) {
-      //document.documentElement.classList.add("perfect-scrollbar-on");
-      document.documentElement.classList.remove("perfect-scrollbar-off");
-
       mainPanelRef.current &&
         mainPanelRef.current.addEventListener("ps-scroll-y", showNavbarButton);
     }
     window.addEventListener("scroll", showNavbarButton);
 
-    /*
     return function cleanup() {
       if (navigator.platform.indexOf("Win") > -1) {
 
@@ -58,7 +52,7 @@ const Admin = (props) => {
       }
       window.removeEventListener("scroll", showNavbarButton);
     };
-    */
+
   }, []);
 
   const showNavbarButton = () => {
