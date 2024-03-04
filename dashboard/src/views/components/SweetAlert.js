@@ -1,3 +1,19 @@
+/*!
+
+=========================================================
+* Black Dashboard PRO React - v1.2.1
+=========================================================
+
+* Product Page: https://www.creative-tim.com/product/black-dashboard-pro-react
+* Copyright 2022 Creative Tim (https://www.creative-tim.com)
+
+* Coded by Creative Tim
+
+=========================================================
+
+* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+*/
 import React from "react";
 // react component used to create sweet alerts
 import ReactBSAlert from "react-bootstrap-sweetalert";
@@ -5,11 +21,7 @@ import ReactBSAlert from "react-bootstrap-sweetalert";
 // reactstrap components
 import { Button, Card, CardBody, CardText, Row, Col } from "reactstrap";
 
-const SweetAlert = ({
-  type,
-  status,
-  message
-}) => {
+const SweetAlert = () => {
   const [alert, setAlert] = React.useState(null);
   // to stop the warning of calling setState of unmounted component
   React.useEffect(() => {
@@ -24,10 +36,10 @@ const SweetAlert = ({
     setAlert(
       <ReactBSAlert
         style={{ display: "block", marginTop: "-100px" }}
-        title={message}
+        title="Here's a message!"
         onConfirm={() => hideAlert()}
         onCancel={() => hideAlert()}
-        confirmBtnBsStyle={status}
+        confirmBtnBsStyle="success"
         btnSize=""
       />
     );

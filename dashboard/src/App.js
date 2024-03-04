@@ -1,5 +1,5 @@
 import React, { useEffect, useState, Suspense } from "react";
-import { useNavigate, useLocation, Route, Routes as ReactRoutes } from 'react-router-dom';
+import { useHistory, useLocation, Route, Switch as ReactRoutes } from 'react-router-dom';
 import AuthLayout from "layouts/Auth/Auth.js";
 import AdminLayout from "layouts/Admin/Admin.js";
 import ProtectedRoute from "_routes/ProtectedRoute";
@@ -9,13 +9,14 @@ import { useSelector, useDispatch } from "react-redux";
 function App(props) {
   const location = useLocation();
   const history = useNavigate();
-  const { isLoggedIn } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+  
 
 
     /*
     const [stripeApiKey, setStripeApiKey] = useState("");
   
-    const dispatch = useDispatch();
+
   
     // get STRIPE_API_KEY for payment from backend for connection to stripe payment gateway
     async function getStripeApiKey() {
@@ -47,9 +48,8 @@ function App(props) {
       }
       // eslint-disable-next-line
     }, []);
-    */
 
-    React.useEffect(() => {
+    useEffect(() => {
       console.log("is Authorized = " , isLoggedIn);
   
      if (isLoggedIn) {
@@ -57,19 +57,17 @@ function App(props) {
      }
   
     }, [history, isLoggedIn]);
-  
+      */
+
     return (
-      <Suspense fallback={<Loader />}>
-        <ReactRoutes>
-          <Route path="/auth" element={(props) => <AuthLayout {...props} />} />
-          <ProtectedRoute path="/admin"
-            isPublic={false} 
-            isAuthorized={isLoggedIn}   
-            element={<AdminLayout {...props} />} />
-        </ReactRoutes>
-      </Suspense>
+  <Suspense fallback={<Loader />}>
+    <ReactRoutes>
+       <Route path="/auth/*" Component={(props) => <AuthLayout {...props} />} />
+      <Route path="/admin/*" Component={(props) => <AdminLayout {...props} />} />
+    </ReactRoutes>
+  </Suspense>
+
     );
 }   
- 
 
 export default App;

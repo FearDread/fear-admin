@@ -1,9 +1,26 @@
+/*!
+
+=========================================================
+* Black Dashboard PRO React - v1.2.1
+=========================================================
+
+* Product Page: https://www.creative-tim.com/product/black-dashboard-pro-react
+* Copyright 2022 Creative Tim (https://www.creative-tim.com)
+
+* Coded by Creative Tim
+
+=========================================================
+
+* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+*/
 import React from "react";
-import { Route, Routes } from "react-router-dom";
+import { Route, Switch, Redirect } from "react-router-dom";
 
 import AuthNavbar from "components/Navbars/AuthNavbar.js";
 import Footer from "components/Footer/Footer.js";
-import routes from "router/routes.js";
+
+import routes from "routes.js";
 
 const Pages = (props) => {
   React.useEffect(() => {
@@ -67,9 +84,10 @@ const Pages = (props) => {
       <AuthNavbar brandText={getActiveRoute(routes) + " Page"} />
       <div className="wrapper wrapper-full-page">
         <div className={"full-page " + getFullPageName(routes)}>
-          <Routes>
+          <Switch>
             {getRoutes(routes)}
-          </Routes>
+            <Redirect from="*" to="/auth/login" />
+          </Switch>
           <Footer fluid />
         </div>
       </div>

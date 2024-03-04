@@ -7,14 +7,14 @@ import {
 } from "_redux/actions/product";
 import SortingTable from "components/SortingTable/SortingTable.js";
 import { Card, CardHeader, CardBody, CardTitle, Row, Col } from "reactstrap";
-import { useNavigate } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import Loader from "components/Loader/Loading";
 import { DELETE_PRODUCT_RESET } from "_redux/types/product";
 
 function ProductList() {
   const dispatch = useDispatch();
   //const alert = useAlert();
-  const history = useNavigate();
+  const history = useHistory();
   const [toggle, setToggle] = useState(false);
   const { error, products, loading } = useSelector((state) => state.products);
   //const { error: deleteError, isDeleted, message } = useSelector((state) => state.deleteUpdateProduct);
