@@ -1,6 +1,7 @@
 import { createStore, applyMiddleware, compose } from "redux";
 import { thunk } from "redux-thunk";
 import { createLogger } from "redux-logger";
+import { ACCESS_TOKEN_NAME } from "../variables/api.js";
 
 import rootReducer from "./rootReducer";
 import storePersist from "./storePersist";
@@ -18,7 +19,7 @@ if (process.env.NODE_ENV === "development") {
 }
 
 const initialState = storePersist.get("auth")
-  ? { auth: storePersist.get("auth") }
+  ? { auth: storePersist.get(ACCESS_TOKEN_NAME) }
   : {};
 
 const store = createStore(rootReducer, initialState, configStore);
