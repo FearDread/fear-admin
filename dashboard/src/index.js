@@ -4,7 +4,6 @@ import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
 
 import AuthLayout from "layouts/Auth/Auth.js";
 import AdminLayout from "layouts/Admin/Admin.js";
-import RTLLayout from "layouts/RTL/RTL.js";
 
 import App from "./App";
 import {Provider } from "react-redux";
