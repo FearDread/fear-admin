@@ -94,7 +94,7 @@ const Admin = (props) => {
       }
       if (prop.layout === "/admin") {
         return (
-          <Route
+          <ProtectedRoute
             path={prop.layout + prop.path}
             component={prop.component}
             key={key}
