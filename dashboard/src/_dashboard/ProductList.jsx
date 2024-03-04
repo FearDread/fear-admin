@@ -35,18 +35,24 @@ function ProductList() {
 
   const tableRows = [];
   const tableHeader = [
+    { text: "Preview" },
     { text: "Name" },
+    { text: "Category" },
     { text: "Stock" },
     { text: "Price" },
+    { text: "Info" },
     { text: "Description" },
   ];
   
-
+  console.log("Product data :: ", products);
   products && products.forEach((item) => {
     tableRows.push({data: [
+      {img: (item.images.length > 0 ) ? item.images[0].url : ""},
       {text: item.name},
+      {text: item.category},
       {text: item.Stock},
       {text: item.price},
+      {text: item.info},
       {text: item.description}
       ]});
   });
