@@ -1,12 +1,14 @@
 import React, { useEffect, useState, Suspense } from "react";
-import { Redirect } from "react-router-dom";
-import { Router as RouterHistory } from "react-router-dom";
-import Router from "router";
-import history from "_utils/history";
-import store from "_redux/store";
-import { Provider } from "react-redux";
+import { Route, Routes as ReactRoutes } from 'react-router-dom';
+import AuthLayout from "layouts/Auth/Auth.js";
+import AdminLayout from "layouts/Admin/Admin.js";
+import ProtectedRoute from "_routes/ProtectedRoute";
 
 function App() {
+  const location = useLocation();
+  const history = useHistory();
+  const { isLoggedIn } = useSelector((state) => state.auth);
+
 
     /*
     const [stripeApiKey, setStripeApiKey] = useState("");
@@ -43,49 +45,29 @@ function App() {
       }
       // eslint-disable-next-line
     }, []);
-  
-    useEffect(() => {
-      //dispatch(load_UserProfile());
-  
-      // eslint-disable-next-line
-    }, []);
     */
 
-    /*
+    React.useEffect(() => {
+      console.log("is Authorized = " , isLoggedIn);
+  
+     if (isLoggedIn) {
+        history.push("/admin/dashboard");
+     }
+  
+    }, [history, isLoggedIn]);
+  
     return (
-        <Switch>
-        <Route path="/auth" render={(props) => <AuthLayout {...props} />} />
-        <PrivateRoute 
-          isAdmin={true}
-          path="/admin" 
-          component={(props) => <AdminLayout {...props} />} />
-        <Route path="/rtl" render={(props) => <RTLLayout {...props} />} />
-        <Redirect from="/*" to="/admin/dashboard" />
-      </Switch>
+      <Suspense fallback={<Loader />}>
+        <ReactRoutes>
+          <Route path="/auth" element={(props) => <AuthLayout {...props} />} />
+          <ProtectedRoute path="/admin"
+            isPublic={false} 
+            isAuthorized={isLoggedIn}   
+            element={<AdminLayout {...props} />} />
+        </ReactRoutes>
+      </Suspense>
     );
-    */
-   
-    return (
-      <RouterHistory history={history}>
-        <Provider store={store}>
-          
-          <Router />
+}   
+ 
 
-        </Provider>
-      </RouterHistory>
-    );
-   
-  /*
-const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
-root.render(
-  <React.StrictMode>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
-  </React.StrictMode>
-);
- */
-}
-
-    
 export default App;
