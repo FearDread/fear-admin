@@ -1,8 +1,26 @@
+/*!
+
+=========================================================
+* Black Dashboard PRO React - v1.2.1
+=========================================================
+
+* Product Page: https://www.creative-tim.com/product/black-dashboard-pro-react
+* Copyright 2022 Creative Tim (https://www.creative-tim.com)
+
+* Coded by Creative Tim
+
+=========================================================
+
+* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+*/
+/*eslint-disable*/
 import React from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import PropTypes from "prop-types";
 // javascript plugin used to create scrollbars on windows
 import PerfectScrollbar from "perfect-scrollbar";
+
 // reactstrap components
 import { Nav, Collapse } from "reactstrap";
 
@@ -16,7 +34,6 @@ const Sidebar = (props) => {
     setState(getCollapseStates(props.routes));
   }, []);
   React.useEffect(() => {
-    /*
     // if you are using a Windows Machine, the scrollbars will have a Mac look
     if (navigator.platform.indexOf("Win") > -1) {
       ps = new PerfectScrollbar(sidebarRef.current, {
@@ -31,7 +48,6 @@ const Sidebar = (props) => {
         ps.destroy();
       }
     };
-    */
   });
   // this creates the intial state of this component based on the collapse routes
   // that it gets through props.routes
@@ -196,7 +212,7 @@ const Sidebar = (props) => {
   }
   return (
     <div className="sidebar" data={activeColor}>
-      <div className="sidebar-wrapper" >
+      <div className="sidebar-wrapper" ref={sidebarRef}>
         {logoImg !== null || logoText !== null ? (
           <div className="logo">
             {logoImg}

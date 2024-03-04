@@ -1,8 +1,23 @@
+/*!
+
+=========================================================
+* Black Dashboard PRO React - v1.2.1
+=========================================================
+
+* Product Page: https://www.creative-tim.com/product/black-dashboard-pro-react
+* Copyright 2022 Creative Tim (https://www.creative-tim.com)
+
+* Coded by Creative Tim
+
+=========================================================
+
+* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+*/
 import React from "react";
-import { Route, Routes, Navigate, useLocation, useNavigate, Outlet } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
+import { Route, Switch, Redirect, useLocation } from "react-router-dom";
 // javascript plugin used to create scrollbars on windows
-//import PerfectScrollbar from "perfect-scrollbar";
+import PerfectScrollbar from "perfect-scrollbar";
 // react plugin for creating notifications over the dashboard
 import NotificationAlert from "react-notification-alert";
 
@@ -12,31 +27,20 @@ import Footer from "components/Footer/Footer.js";
 import Sidebar from "components/Sidebar/Sidebar.js";
 import FixedPlugin from "components/FixedPlugin/FixedPlugin.js";
 
-import routes from "router/routes.js";
-import logo from "assets/img/FEAR/logo.png";
+import routes from "routes.js";
+
+import logo from "assets/img/react-logo.png";
 
 var ps;
 
 const Admin = (props) => {
   const [activeColor, setActiveColor] = React.useState("blue");
-  const [sidebarMini, setSidebarMini] = React.useState(false);
+  const [sidebarMini, setSidebarMini] = React.useState(true);
   const [opacity, setOpacity] = React.useState(0);
   const [sidebarOpened, setSidebarOpened] = React.useState(false);
   const mainPanelRef = React.useRef(null);
   const notificationAlertRef = React.useRef(null);
   const location = useLocation();
-  const history = useNavigate();
-  const { isLoggedIn } = useSelector((state) => state.auth);
-
-  React.useEffect(() => {
-    console.log("Admin Layout : ", isLoggedIn);
-    handleMiniClick();
-
-   if (isLoggedIn) {
-      history.push("/admin/dashboard");
-   }
-
-  }, [history, isLoggedIn]);
   React.useEffect(() => {
     document.documentElement.scrollTop = 0;
     document.scrollingElement.scrollTop = 0;
@@ -49,18 +53,18 @@ const Admin = (props) => {
     if (navigator.platform.indexOf("Win") > -1) {
       document.documentElement.classList.add("perfect-scrollbar-on");
       document.documentElement.classList.remove("perfect-scrollbar-off");
-     // ps = new PerfectScrollbar(mainPanelRef.current);
+      ps = new PerfectScrollbar(mainPanelRef.current);
       mainPanelRef.current &&
         mainPanelRef.current.addEventListener("ps-scroll-y", showNavbarButton);
       let tables = document.querySelectorAll(".table-responsive");
       for (let i = 0; i < tables.length; i++) {
-       // ps = new PerfectScrollbar(tables[i]);
+        ps = new PerfectScrollbar(tables[i]);
       }
     }
     window.addEventListener("scroll", showNavbarButton);
     return function cleanup() {
       if (navigator.platform.indexOf("Win") > -1) {
-        //ps.destroy();
+        ps.destroy();
         document.documentElement.classList.add("perfect-scrollbar-off");
         document.documentElement.classList.remove("perfect-scrollbar-on");
         innerMainPanelRef.current &&
@@ -156,10 +160,7 @@ const Admin = (props) => {
     setSidebarOpened(false);
     document.documentElement.classList.remove("nav-open");
   };
-
   return (
-    <>
-    <Outlet />
     <div className="wrapper">
       <div className="rna-container">
         <NotificationAlert ref={notificationAlertRef} />
@@ -178,8 +179,8 @@ const Admin = (props) => {
         routes={routes}
         activeColor={activeColor}
         logo={{
-          outterLink: "/",
-          text: "F-E-A-R",
+          outterLink: "https://www.creative-tim.com/",
+          text: "Creative Tim",
           imgSrc: logo
         }}
         closeSidebar={closeSidebar}
@@ -192,9 +193,10 @@ const Admin = (props) => {
           sidebarOpened={sidebarOpened}
           toggleSidebar={toggleSidebar}
         />
-        <Routes>
+        <Switch>
           {getRoutes(routes)}
-        </Routes>
+          <Redirect from="*" to="/admin/dashboard" />
+        </Switch>
         {
           // we don't want the Footer to be rendered on full screen maps page
           props.location.pathname.indexOf("full-screen-map") !== -1 ? null : (
@@ -209,7 +211,6 @@ const Admin = (props) => {
         handleMiniClick={handleMiniClick}
       />
     </div>
-    </>
   );
 };
 
