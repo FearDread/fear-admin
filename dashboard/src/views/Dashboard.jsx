@@ -6,7 +6,7 @@ import { Line, Bar } from "react-chartjs-2";
 // react plugin for creating vector maps
 import { VectorMap } from "react-jvectormap";
 import { useSelector, useDispatch } from "react-redux";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 //import { getAllOrders } from "_redux/actions/order";
 import { logout, getAllUsers } from "_redux/actions/user";
 //import { getAdminProducts } from "_redux/actions/product";
@@ -57,7 +57,7 @@ var mapData = {
 
 const Dashboard = () => {
   const dispatch = useDispatch();
-  const history = useHistory();
+  const history = useNavigate();
   const [toggle, setToggle] = useState(false);
   //const { products, loading, error } = useSelector((state) => state.products);
   //const { orders, error: ordersError } = useSelector((state) => state.allOrders);

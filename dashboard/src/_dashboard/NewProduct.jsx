@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 //import { useAlert } from "react-alert";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { createProduct, clearErrors } from "_redux/actions/product";
 import { NEW_PRODUCT_RESET } from "_redux/types/product";
 import Loader from "components/Loader/Loading";
@@ -23,7 +23,7 @@ import ImageUpload from "components/CustomUpload/ImageUpload.js";
 
 function NewProduct() {
   const dispatch = useDispatch();
-  const history = useHistory();
+  const history = useNavigate();
   //const alert = useAlert();
 
   const { loading, error, success } = useSelector((state) => state.addNewProduct);

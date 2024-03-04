@@ -1,5 +1,5 @@
 import React from "react";
-import { Route, Switch, Redirect, useLocation, useHistory } from "react-router-dom";
+import { Route, Routes, Navigate, useLocation, useNavigate, Outlet } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 // javascript plugin used to create scrollbars on windows
 //import PerfectScrollbar from "perfect-scrollbar";
@@ -25,7 +25,7 @@ const Admin = (props) => {
   const mainPanelRef = React.useRef(null);
   const notificationAlertRef = React.useRef(null);
   const location = useLocation();
-  const history = useHistory();
+  const history = useNavigate();
   const { isLoggedIn } = useSelector((state) => state.auth);
 
   React.useEffect(() => {
@@ -94,7 +94,7 @@ const Admin = (props) => {
       }
       if (prop.layout === "/admin") {
         return (
-          <ProtectedRoute
+          <Route
             path={prop.layout + prop.path}
             component={prop.component}
             key={key}
@@ -192,9 +192,9 @@ const Admin = (props) => {
           sidebarOpened={sidebarOpened}
           toggleSidebar={toggleSidebar}
         />
-        <Switch>
+        <Routes>
           {getRoutes(routes)}
-        </Switch>
+        </Routes>
         {
           // we don't want the Footer to be rendered on full screen maps page
           props.location.pathname.indexOf("full-screen-map") !== -1 ? null : (
