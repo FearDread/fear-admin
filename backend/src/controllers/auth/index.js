@@ -18,6 +18,9 @@ exports.login = async (req, res, next) => {
     let err = new TypedError('login error', 403, 'invalid_field', { message: "Incorrect email or password" })
     return next(err)
   }
+
+  this.sendJWTToken(token, 200, res);
+  /*
   const token = user.getJWTToken()
   const opts = {
     expires: new Date( Date.now() + process.env.COOKIE_EXPIRE * 24 * 60 * 60 * 1000),
@@ -137,7 +140,7 @@ exports.isValidToken = async (req, res, next) => {
 
 exports.sendJWTToken = (user, statusCode, res) => {
   const token = user.getJWTToken();
-  const options = {
+  const opts = {
     expires: new Date( Date.now() + process.env.COOKIE_EXPIRE * 24 * 60 * 60 * 1000),
     httpOnly: true,
   };

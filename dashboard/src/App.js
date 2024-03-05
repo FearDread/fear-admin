@@ -28,6 +28,7 @@ function App(props) {
           isLoggedIn ? <AdminLayout {...props} />
         : <Redirect to={{ pathname: '/auth/login', state: { from: props.location } }} />
         )} />
+        <Redirect from="/" to="/admin" />
       </Switch>
   );
 }

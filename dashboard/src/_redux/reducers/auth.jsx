@@ -1,7 +1,7 @@
 import * as actionTypes from "../types/auth";
 
 const INITIAL_STATE = {
-  current: {},
+  user: {},
   loading: false,
   isLoggedIn: false,
 };
@@ -13,12 +13,14 @@ const authReducer = (state = INITIAL_STATE, action) => {
         ...state,
         loading: true,
       };
+    case actionTypes.REGISTER_USER_FAIL:
     case actionTypes.FAILED_REQUEST:
       return INITIAL_STATE;
 
+    case actionTypes.REGISTER_USER_SUCCESS:
     case actionTypes.LOGIN_SUCCESS:
       return {
-        current: action.payload,
+        user: action.payload,
         loading: false,
         isLoggedIn: true,
       };

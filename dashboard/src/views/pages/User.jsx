@@ -1,20 +1,6 @@
-/*!
-
-=========================================================
-* Black Dashboard PRO React - v1.2.1
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/black-dashboard-pro-react
-* Copyright 2022 Creative Tim (https://www.creative-tim.com)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
-import React from "react";
+import React, { useState , useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useHistory } from "react-router-dom";
 
 // reactstrap components
 import {
@@ -30,8 +16,27 @@ import {
   Row,
   Col
 } from "reactstrap";
+import { logout } from "_redux/actions/auth";
 
 const User = () => {
+    const dispatch = useDispatch();
+    const history = useHistory();
+
+    const { user } = useSelector((state) => state.user);
+  
+    const logoutHandler = () => {
+      dispatch(logout());
+      history.push("/login");
+    };
+
+    useEffect(() => {
+
+      if (user) {
+        console.log("User Data :: ", user);
+      }
+
+
+    }, [history, user]);
   return (
     <>
       <div className="content">

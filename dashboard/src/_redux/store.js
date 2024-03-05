@@ -4,9 +4,10 @@ import { createLogger } from "redux-logger";
 import { ACCESS_TOKEN_NAME } from "../variables/api.js";
 
 import rootReducer from "./rootReducer";
-import storePersist from "./storePersist";
+import storage from "./storage";
 
 const logger = createLogger();
+
 let middleware = [thunk];
 
 let configStore = applyMiddleware(...middleware);
@@ -18,8 +19,8 @@ if (process.env.NODE_ENV === "development") {
   configStore = composeEnhancers(applyMiddleware(...middleware));
 }
 
-const initialState = storePersist.get("auth")
-  ? { auth: storePersist.get(ACCESS_TOKEN_NAME) }
+const initialState = storage.get(ACCESS_TOKEN_NAME)
+  ? { auth: storage.get(ACCESS_TOKEN_NAME) }
   : {};
 
 const store = createStore(rootReducer, initialState, configStore);

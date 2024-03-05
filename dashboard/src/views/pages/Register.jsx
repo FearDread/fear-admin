@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import classnames from "classnames";
-// reactstrap components
 import {
   Button,
   Card,
@@ -30,25 +29,20 @@ import Loader from "components/Loader/Loading";
 const Register = () => {
   const dispatch = useDispatch();
   const history = useHistory();
-
+  const [state, setState] = React.useState({});
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [state, setState] = React.useState({});
+
   const [isValidEmail, setIsValidEmail] = useState(true);
   const [isValidName, setIsValidName] = useState(true);
   const [isValidPassword, setIsValidPassword] = useState(true);
-  const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [confirmPassword, setconfirmPassword] = useState("");
 
-  //const { isAuthenticated, error } = useSelector((state) => state.userData);
+  const [showPassword, setShowPassword] = useState(false);
+  const [confirmPassword, setconfirmPassword] = useState("");
+  const { loading, isLoggedIn } = useSelector((state) => state.auth);
 
   useEffect(() => {
-
-  }, [dispatch, loading]);
-
-  React.useEffect(() => {
     document.body.classList.toggle("register-page");
 
     return function cleanup() {
@@ -82,20 +76,25 @@ const Register = () => {
   };
 
   function handleSignUpSubmit(e) {
-    setLoading(true);
-  e.preventDefault();
+    e.preventDefault();
 
-  const formData = new FormData();
-  formData.set("name", name);
-  formData.set("email", email);
-  formData.set("password", password);
-  //formData.set("passwordCheck", confirmPassword);
+    const formData = new FormData();
+          formData.set("name", name);
+          formData.set("email", email);
+          formData.set("password", password);
+          formData.set("passwordCheck", confirmPassword);
 
-  //formData.set("avatar", avatar);
+          //formData.set("avatar", avatar);
 
   dispatch(register(formData));
-  setLoading(false);
 }
+var redirect = "/admin/dashboard";
+   
+useEffect(() => {
+  if (isLoggedIn) {
+    history.push(redirect);
+   }
+}, [dispatch, history, isLoggedIn, redirect]);
   
   return (
     <>
