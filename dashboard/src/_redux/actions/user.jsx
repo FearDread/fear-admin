@@ -1,6 +1,6 @@
 import axios from "axios";
 import * as actionTypes from "../types/user";
-import storePersist from "../storePersist";
+import storage from "../storage";
 import { API_BASE_URL } from "../../variables/api.js";
 
 
@@ -9,15 +9,17 @@ export function loadProfile() {
     try {
       dispatch({ type: actionTypes.LOAD_USER_REQUEST });
       // Check if user data is available in session storage
-      const userData = storePersist.get("user");
+      const userData = storage.get("user");
       if ( userData !== undefined ) {
-        const user = JSON.parse(userData);
-        dispatch({ type: actionTypes.LOAD_USER_SUCCESS, payload: user });
+
+        console.log("STORED USER :: ", userData);
+        dispatch({ type: actionTypes.LOAD_USER_SUCCESS, payload: userData });
       
       } else {
   
         const response = await axios.get(API_BASE_URL + "/profile");
-        storePersist.set("user", response.result.user);
+        console.log("Load Profile Response :: ", response);
+        storage.set("user", response.result.user);
   
         dispatch({ type: actionTypes.LOAD_USER_SUCCESS, payload: response });
       }

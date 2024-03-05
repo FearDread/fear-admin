@@ -24,7 +24,7 @@ import Lock from "views/pages/Lock.js";
 import RegularForms from "views/forms/RegularForms.js";
 import Panels from "views/components/Panels.js";
 
-import User from "views/pages/User.js";
+import User from "views/pages/User.jsx";
 import Dashboard from "views/Dashboard.jsx";
 import UserList from "_dashboard/UserList.jsx";
 import Products from "_dashboard/ProductList.jsx";

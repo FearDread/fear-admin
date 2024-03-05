@@ -122,8 +122,8 @@ const Admin = (props) => {
         routes={routes}
         activeColor={activeColor}
         logo={{
-          outterLink: "https://www.creative-tim.com/",
-          text: "Creative Tim",
+          outterLink: "http://fear.master.com/",
+          text: "F.E.A.R Admin",
           imgSrc: logo
         }}
         closeSidebar={closeSidebar}
