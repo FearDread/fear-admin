@@ -16,54 +16,26 @@ exports.login = async (req, res, next) => {
   
   if (!user) {
     let err = new TypedError('login error', 403, 'invalid_field', { message: "Incorrect email or password" })
-    return next(err)
+    return next(err);
   }
 
-  this.sendJWTToken(token, 200, res);
-  /*
-  const token = user.getJWTToken()
-  const opts = {
-    expires: new Date( Date.now() + process.env.COOKIE_EXPIRE * 24 * 60 * 60 * 1000),
-    httpOnly: true,
-  };
-  console.log("Token " + token);
-
-  res.cookie("x-access-token", token, opts)
-    .status(200).json({
-    success: true,
-    result: {
-      token,
-      user,
-      isLoggedIn: true
-    },
-    message: "Successfully login admin",
-  });
-
-      /*
-      user.compare(password)
-      .then((isMatch) => {
-        console.log("COMPARED :: ", isMatch);
-        if (isMatch) {
-
-
-        } else {
-          let err = new TypedError('login error', 403, 'invalid_field', { message: "Incorrect email or password" })
+  await user.compare(password)
+    .then((isMatch) => {
+      console.log('Compare call', isMatch);
+      if (!isMatch) {
+        let err = new TypedError('login error', 403, 'invalid_field', { message: "Incorrect email or password" })
           return next(err)
-        }
-      }).catch((err) => {
-        return next(err);
-      });
+      }
 
-      return res.status(400).json({
-        success: false,
-        result: null,
-        message: "Invalid credentials.",
+      this.sendJWTToken(user, 200, res);
+    })
+    .catch((err) => {
+      return next(err);
     });
-    */
 }
 
 exports.logout = async (req, res) => {
-  res.cookie("token", null, {
+  res.cookie(process.env.JWT_NAME, null, {
     expires: new Date(Date.now()),
     httpOnly: true,
   });
@@ -74,37 +46,30 @@ exports.logout = async (req, res) => {
   });
 };
 
-exports.isAuthenticated = (req, res, next) => {
-  let token = ''
-  if (req.headers['x-access-token'] || req.headers['authorization']) {
-    token = req.headers['x-access-token'] || req.headers['authorization']
-  }
-  //OAuth 2.0 framework 'bearer' token type
-  if (token.startsWith('Bearer ')) {
-    token = token.slice(7, token.length)
+exports.isAuthenticated = ( req, res, next ) => {
+  let token = req.headers['x-auth-token'] || req.headers['authorization'];
+  console.log("IsAuth token ::" + token);
+
+  if ( token.startsWith('Bearer ')) {
+    token = token.slice( 7, token.length )
   }
   if (token) {
-    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-      if (err) {
-        let err = new TypedError('token', 401, 'invalid_field', {
-          message: "Token is not valid"
-        })
-        return next(err)
-      } else {
-        //bind on request
-        next()
-      }
-    })
+    jwt.verify( token, process.env.JWT_SECRET, ( error, decoded ) => {
+        if (decoded) {
+          next();
+        }
+        return next( error )
+      })
   } else {
     let err = new TypedError('token', 401, 'invalid_field',
      {message: "Token is not supplied"})
      
-    return next(err)
+    return next( err )
   }
 };
 
-exports.authorizedRoles = (...roles) => {
-  return (req , res , next) => {
+exports.authorizedRoles = ( ...roles ) => {
+  return ( req , res , next ) => {
     if ( roles.includes( req.user.role ) === false) { 
       let err = new TypedError('Role', 401, 'Not an Admin');
       return next( err );
@@ -115,7 +80,7 @@ exports.authorizedRoles = (...roles) => {
 
 exports.isValidToken = async (req, res, next) => {
   const token = req.header("x-auth-token");
-  if (!token) {
+  if ( !token ) {
     return ( authError(res, req) );
   }
 
@@ -146,14 +111,14 @@ exports.sendJWTToken = (user, statusCode, res) => {
   };
   console.log("Token: " + token);
 
-  res.cookie("x-access-token", token, opts)
-    .status(statusCode).json({
-    success: true,
-    result: {
-      token,
-      user,
-      isLoggedIn: true
-    },
-    message: "Successfully login admin",
+  res.cookie(process.env.JWT_NAME, token, opts)
+     .status(statusCode).json({
+      success: true,
+      result: {
+        token,
+        user,
+        isLoggedIn: true
+      },
+      message: "Successfully login admin"
   });
 };

@@ -16,7 +16,7 @@ exports.create = async (req, res) => {
       folder: "Avatar",
       width: 150,
       crop: "scale",
-    });  
+    });
   }
 
   await UserModel.create({

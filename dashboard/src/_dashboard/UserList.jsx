@@ -21,6 +21,7 @@ import TableCell from "components/TableCell/TableCell";
 
 import { getAllUsers, clearErrors, deleteUser } from "_redux/actions/user";
 import { DELETE_USER_RESET } from "_redux/types/user";
+import logo from "assets/img/FEAR/logo.png";
 
 function UserList() {
   const dispatch = useDispatch();
@@ -50,7 +51,7 @@ function UserList() {
   ];
   users && users.forEach((item) => {
     tableRows.push({data: [
-      { img: (item.avatar.url) ? item.avatar.url : ""},
+      { img: (item.avatar.url) ? item.avatar.url : logo},
       { text: item.name },
       { text: item.email },
       { text: item.role }
