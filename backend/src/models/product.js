@@ -93,7 +93,7 @@ const productSchema = mongoose.Schema({
   ],
   user: {
     type: mongoose.Schema.ObjectId, //  this is for admin who will add the prduct to the db
-    ref: "Users",
+    ref: "users",
     required: false,
   },
   createdAt: {
