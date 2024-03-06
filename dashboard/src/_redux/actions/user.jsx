@@ -9,7 +9,7 @@ export function loadProfile() {
     try {
       dispatch({ type: actionTypes.LOAD_USER_REQUEST });
       // Check if user data is available in session storage
-      const userData = storage.get("user");
+      const userData = storage.get("_current");
       if ( userData !== undefined ) {
 
         console.log("STORED USER :: ", userData);
@@ -19,7 +19,7 @@ export function loadProfile() {
   
         const response = await axios.get(API_BASE_URL + "/profile");
         console.log("Load Profile Response :: ", response);
-        storage.set("user", response.result.user);
+        storage.set("_current", response.result.user);
   
         dispatch({ type: actionTypes.LOAD_USER_SUCCESS, payload: response });
       }

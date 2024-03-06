@@ -24,9 +24,6 @@ import ImageUpload from "components/CustomUpload/ImageUpload.js";
 function NewProduct() {
   const dispatch = useDispatch();
   const history = useHistory();
-  //const alert = useAlert();
-
-  //const { loading, error, success } = useSelector((state) => state.addNewProduct);
   const [name, setName] = useState("");
   const [price, setPrice] = useState(0);
   const [description, setDescription] = useState("");
@@ -37,7 +34,9 @@ function NewProduct() {
   const [imagesPreview, setImagesPreview] = useState([]);
   const [isCategory, setIsCategory] = useState(false);
   const fileInputRef = useRef();
-  const { loading, user } = useSelector((state) => state.user);
+
+  const { user } = useSelector((state) => state.auth);
+  const { loading, error, success } = useSelector((state) => state.new);
 
   const handleCategoryChange = (e) => {
     setCategory(e.target.value);
@@ -47,6 +46,7 @@ function NewProduct() {
   const handleImageUpload = () => {
     fileInputRef.current.click();
   };
+
  const categories = [
    "Comics",
    "Coins",

@@ -17,12 +17,14 @@ import {
   Col
 } from "reactstrap";
 import { logout } from "_redux/actions/auth";
+import { loadProfile } from "_redux/actions/user";
 
 const User = () => {
     const dispatch = useDispatch();
     const history = useHistory();
+    const { user } = useSelector((state) => state.auth);
 
-    const { user } = useSelector((state) => state.user);
+    //dispatch(loadProfile());
   
     const logoutHandler = () => {
       dispatch(logout());
@@ -30,13 +32,13 @@ const User = () => {
     };
 
     useEffect(() => {
+      //dispatch(loadProfile());
 
       if (user) {
         console.log("User Data :: ", user);
       }
-
-
     }, [history, user]);
+
   return (
     <>
       <div className="content">
@@ -51,18 +53,19 @@ const User = () => {
                   <Row>
                     <Col className="pr-md-1" md="5">
                       <FormGroup>
-                        <label>Company (disabled)</label>
+                        <label>Email Address (disabled)</label>
                         <Input
-                          defaultValue="Creative Code Inc."
+                          defaultValue="admin@gmail.com"
                           disabled
                           type="text"
+                          value={user.email}
                         />
                       </FormGroup>
                     </Col>
                     <Col className="px-md-1" md="3">
                       <FormGroup>
                         <label>Username</label>
-                        <Input defaultValue="michael23" type="text" />
+                        <Input defaultValue="michael23" value={user.name} type="text" />
                       </FormGroup>
                     </Col>
                     <Col className="pl-md-1" md="4">
@@ -76,13 +79,13 @@ const User = () => {
                     <Col className="pr-md-1" md="6">
                       <FormGroup>
                         <label>First Name</label>
-                        <Input defaultValue="Mike" type="text" />
+                        <Input defaultValue="Mike" value={user.name} type="text" />
                       </FormGroup>
                     </Col>
                     <Col className="pl-md-1" md="6">
                       <FormGroup>
                         <label>Last Name</label>
-                        <Input defaultValue="Andrew" type="text" />
+                        <Input defaultValue="Andrew" value={user.name} type="text" />
                       </FormGroup>
                     </Col>
                   </Row>
@@ -94,6 +97,7 @@ const User = () => {
                           defaultValue="Bld Mihail Kogalniceanu, nr. 8 Bl 1, Sc 1, Ap 09"
                           placeholder="Home Address"
                           type="text"
+                          value={user.street}
                         />
                       </FormGroup>
                     </Col>
@@ -101,20 +105,20 @@ const User = () => {
                   <Row>
                     <Col className="pr-md-1" md="4">
                       <FormGroup>
-                        <label>City</label>
-                        <Input defaultValue="Mike" type="text" />
+                        <label>Role</label>
+                        <Input defaultValue="Mike" value={user.role} type="text" />
                       </FormGroup>
                     </Col>
                     <Col className="px-md-1" md="4">
                       <FormGroup>
-                        <label>Country</label>
-                        <Input defaultValue="Andrew" type="text" />
+                        <label>City</label>
+                        <Input defaultValue="Andrew" value={user.city} type="text" />
                       </FormGroup>
                     </Col>
                     <Col className="pl-md-1" md="4">
                       <FormGroup>
                         <label>Postal Code</label>
-                        <Input placeholder="ZIP Code" type="number" />
+                        <Input placeholder="ZIP Code" value={user.zip} type="number" />
                       </FormGroup>
                     </Col>
                   </Row>
@@ -129,6 +133,7 @@ const User = () => {
                           placeholder="Here can be your description"
                           rows="4"
                           type="textarea"
+                          value={user.about}
                         />
                       </FormGroup>
                     </Col>
@@ -155,16 +160,14 @@ const User = () => {
                     <img
                       alt="..."
                       className="avatar"
-                      src={require("assets/img/emilyz.jpg")}
+                      src={(user.avatar.url !== "") ? user.avatar.url : "/assets/img/FEAR/logo.png"}
                     />
-                    <h5 className="title">Mike Andrew</h5>
+                    <h5 className="title">{user.name}</h5>
                   </a>
-                  <p className="description">Ceo/Co-Founder</p>
+                  <p className="description">{user.role}</p>
                 </div>
                 <div className="card-description">
-                  Do not be scared of the truth because we need to restart the
-                  human foundation in truth And I love you like Kanye loves
-                  Kanye I love Rick Owens’ bed design but the back is...
+                  {user.about}
                 </div>
               </CardBody>
               <CardFooter>

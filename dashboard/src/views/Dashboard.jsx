@@ -10,7 +10,7 @@ import { useHistory } from "react-router-dom";
 //import { getAllOrders } from "_redux/actions/order";
 import { getAllUsers } from "_redux/actions/user";
 import { logout } from "_redux/actions/auth";
-//import { getAdminProducts } from "_redux/actions/product";
+import { getAdminProducts } from "_redux/actions/product";
 import Loader from "components/Loader/Loading.js";
 // reactstrap components
 import {
@@ -64,7 +64,7 @@ const Dashboard = () => {
   //const { orders, error: ordersError } = useSelector((state) => state.allOrders);
   const { users, error: usersError } = useSelector((state) => state.user);
   const [bigChartData, setbigChartData] = React.useState("data1");
-  const {current, loading, isLoggedIn } = useSelector((state) => state.auth);
+  const {user, loading, isLoggedIn } = useSelector((state) => state.auth);
 
   const setBgChartData = (name) => {
     setbigChartData(name);
@@ -87,11 +87,12 @@ const Dashboard = () => {
 
   useEffect(() => {
     console.log("logged in = " + isLoggedIn);
-    console.log("Logged in USer = ", current);
+    console.log("Current User = ", user);
+    console.log("User Count = ", users.length);
     //dispatch(getAllOrders());
     //dispatch(getAllUsers());
     //dispatch(getAdminProducts());
-  }, [dispatch, isLoggedIn, current]);
+  }, [dispatch, isLoggedIn, user]);
   
   return (
     <>
