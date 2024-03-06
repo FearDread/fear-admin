@@ -21,7 +21,6 @@ exports.login = async (req, res, next) => {
 
   await user.compare(password)
     .then((isMatch) => {
-      console.log('Compare call', isMatch);
       if (!isMatch) {
         let err = new TypedError('login error', 403, 'invalid_field', { message: "Incorrect email or password" })
           return next(err)
@@ -109,7 +108,7 @@ exports.sendJWTToken = (user, statusCode, res) => {
     expires: new Date( Date.now() + process.env.COOKIE_EXPIRE * 24 * 60 * 60 * 1000),
     httpOnly: true,
   };
-  console.log("Token: " + token);
+  console.log("Sent Token to Cookies: " + token);
 
   res.cookie(process.env.JWT_NAME, token, opts)
      .status(statusCode).json({

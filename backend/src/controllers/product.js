@@ -6,7 +6,6 @@ const cloudinary = require("cloudinary");
 /* -------------------- */
 exports.create = async (req, res) => {
   let images = []; 
-
   if (req.body.images) {
     if (typeof req.body.images === "string") {
       images.push(req.body.images);
@@ -15,14 +14,11 @@ exports.create = async (req, res) => {
     }
 
     const imagesLinks = [];
-
-    // Split images into chunks due to cloudinary upload limits only 3 images can be uploaded at a time so we are splitting into chunks and uploading them separately eg: 9 images will be split into 3 chunks and uploaded separately
     const chunkSize = 3;
     const imageChunks = [];
     while (images.length > 0) {
       imageChunks.push(images.splice(0, chunkSize));
     }
-    // Upload images in separate requests. for loop will run 3 times if there are 9 images to upload each time uploading 3 images at a time
     for (let chunk of imageChunks) {
       const uploadPromises = chunk.map((img) =>
         cloudinary.v2.uploader.upload(img, {
@@ -40,7 +36,7 @@ exports.create = async (req, res) => {
       }
     }
 
-    //req.body.user = req.user.id;
+    req.body.id = req.body.user;
     req.body.images = imagesLinks;
   }
 

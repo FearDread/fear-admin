@@ -135,6 +135,7 @@ export function createProduct(productData) {
         config
       )
       .then((data) => {
+        console.log("Product response :: ", data);
         dispatch({
           type: NEW_PRODUCT_SUCCESS,
           payload: data,

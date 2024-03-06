@@ -36,7 +36,7 @@ function NewProduct() {
   const fileInputRef = useRef();
 
   const { user } = useSelector((state) => state.auth);
-  const { loading, error, success } = useSelector((state) => state.new);
+  const { loading, error, success } = useSelector((state) => state.product);
 
   const handleCategoryChange = (e) => {
     setCategory(e.target.value);
@@ -80,7 +80,9 @@ function NewProduct() {
     images.forEach((currImg) => {
       myForm.append("images", currImg);
     });
-    myForm.set("user", user.id);
+    
+    myForm.set("user", user._id);
+
     dispatch(createProduct(myForm));
   };
 

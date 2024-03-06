@@ -48,10 +48,6 @@ const Login = () => {
     setShowPassword(!showPassword);
   };
   
-  const onFinish = (values) => {
-    dispatch(login(email, password));
-  };
-
   const isSignInDisabled = !(email && password && isValidEmail);
   const redirect = "/admin/dashboard";
    
