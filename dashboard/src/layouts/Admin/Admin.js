@@ -1,17 +1,12 @@
 import React from "react";
 import { Route, Switch, Redirect, useLocation } from "react-router-dom";
-import PerfectScrollbar from "perfect-scrollbar";
 import NotificationAlert from "react-notification-alert";
-
-// core components
 import AdminNavbar from "components/Navbars/AdminNavbar.js";
 import Footer from "components/Footer/Footer.js";
 import Sidebar from "components/Sidebar/Sidebar.js";
-import FixedPlugin from "components/FixedPlugin/FixedPlugin.js";
 
 import * as Router from "_router";
 import routes from "_router/routes.js";
-
 import logo from "assets/img/FEAR/logo.png";
 
 const Admin = (props) => {
@@ -147,14 +142,17 @@ const Admin = (props) => {
           )
         }
       </div>
+    </div>
+  );
+};
+
+export default Admin;
+
+/*
       <FixedPlugin
         activeColor={activeColor}
         sidebarMini={sidebarMini}
         handleActiveClick={handleActiveClick}
         handleMiniClick={handleMiniClick}
       />
-    </div>
-  );
-};
-
-export default Admin;
+    */

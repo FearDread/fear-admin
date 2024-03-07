@@ -54,18 +54,14 @@ function NewProduct() {
    "Toys",
    "Misc..",
  ];
- /*
-  useEffect(() => {
-    if (error) {
-      dispatch(clearErrors());
-    }
 
+  useEffect(() => {
     if (success) {
       history.push("/admin/dashboard");
       dispatch({ type: NEW_PRODUCT_RESET });
     }
   }, [dispatch, error, history, success]);
-*/
+  
   const createProductSubmitHandler = (e) => {
     e.preventDefault();
     
@@ -159,13 +155,12 @@ function NewProduct() {
                         />
                       </FormGroup>
                       <FormGroup>
-                      <label>Select Category</label>
-                      <Input
-                        variant="outlined"
-                        type="select"
-                        placeholder="Choose Category"
-                        value={category}
-                        onChange={handleCategoryChange}
+                        <label>Select Category</label>
+                        <Input
+                          type="select"
+                          placeholder="Choose Category"
+                          value={category}
+                          onChange={handleCategoryChange}
                         >
                         {categories.map((cate) => (
                           <option key={cate} value={cate}>

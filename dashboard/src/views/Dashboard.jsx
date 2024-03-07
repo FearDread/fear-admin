@@ -206,7 +206,7 @@ const Dashboard = () => {
             </Card>
           </Col>
           <Col lg="3" md="6">
-            <Card className="card-stats">
+            <Card className="card-stats card-animation-on-hover">
               <CardBody>
                 <Row>
                   <Col xs="5">
@@ -299,7 +299,7 @@ const Dashboard = () => {
             </Card>
           </Col>
           <Col lg="4">
-            <Card className="card-chart">
+            <Card className="card-chart card-animation-on-hover" >
               <CardHeader>
                 <h5 className="card-category">Daily Sales</h5>
                 <CardTitle tag="h3">
