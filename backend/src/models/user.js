@@ -11,6 +11,7 @@ const schema = mongoose.Schema ({
         required: [true, "Please Enter Your Name"],
         minLength: [4, "Name should have more than 4 characters"],
       },
+      
       email: {
         type: String,
         unique: true,
@@ -34,7 +35,7 @@ const schema = mongoose.Schema ({
       },
       role: {
         type: String,
-        default: "user",
+        default: "admin",
       },
       cart: {
         type: Object

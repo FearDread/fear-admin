@@ -25,11 +25,17 @@ const CustomerSchema = mongoose.Schema({
       required: [true, "please enter username"],
       unique: true,
    },
-
    password: {
       type: String,
       required: [true, "please enter password"],
    },
+   avatar: {
+        public_id: String,
+            url: String
+    },
+    cart: {
+        type: Object
+    },
    address: String,
    city: String,
    postalCode: String,
@@ -37,7 +43,7 @@ const CustomerSchema = mongoose.Schema({
    hasOpenOrder: {
       type: Boolean,
       default: false,
-   },
+   }
 });
 
 //hash password before saving to the dbs
@@ -47,18 +53,17 @@ CustomerSchema.pre("save", async function () {
 });
 
 // create token
-CustomerSchema.methods.createJWT = function () {
+CustomerSchema.methods.getJWTToken = function () {
    return jwt.sign({ user_id: this._id }, process.env.JWT_SECRET, {
-      expiresIn: process.env.JWT_EXP,
+      expiresIn: process.env.JWT_EXPIRE,
    });
 };
 
 // compare password with hash in db
-CustomerSchema.methods.comparePasswords = async function (candidatePassword) {
+CustomerSchema.methods.compare = async function (candidatePassword) {
    const isMatch = await bcrypt.compare(candidatePassword, this.password);
    return isMatch;
 };
 
 const Customer = mongoose.model("customers", CustomerSchema);
-
 module.exports = Customer;
