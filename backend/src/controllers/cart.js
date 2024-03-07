@@ -339,7 +339,8 @@ const checkout = async (req, res) => {
 const checkOutCallBack = async (req, res) => {
    const { reference } = req.query;
    const url =
-      "https://api.paystack.co/transaction/verify/" +
+      "https://ap
+      i.paystack.co/transaction/verify/" +
       encodeURIComponent(reference);
    const headers = {
       authorization: mySecretKey,
