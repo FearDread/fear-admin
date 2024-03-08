@@ -12,7 +12,7 @@ import Widgets from "views/Widgets.js";
 import Charts from "views/Charts.js";
 import Buttons from "views/components/Buttons.js";
 import SweetAlert from "views/components/SweetAlert.js";
-import Notifications from "views/components/Notifications.js";
+//import Notifications from "views/components/Notifications.js";
 import Grid from "views/components/Grid.js";
 import Typography from "views/components/Typography.js";
 import Icons from "views/components/Icons.js";
@@ -28,7 +28,7 @@ import User from "views/pages/User.jsx";
 import Dashboard from "views/Dashboard.jsx";
 import UserList from "_dashboard/UserList.jsx";
 import Products from "_dashboard/ProductList.jsx";
-import NewProduct from "_dashboard/NewProduct.jsx";
+import NewProduct from "_dashboard/ProductNew.jsx";
 //import Profile from "_dashboard/Profile.jsx";
 //import ProductReviews from "_dashboard/ProductReviews";
 import Login from "views/pages/Login.jsx";
@@ -46,32 +46,34 @@ const routes = [
   },
   {
     collapse: true,
-    name: "Pages",
-    icon: "tim-icons icon-image-02",
-    state: "pagesCollapse",
-    views: [
-      {
-        path: "/register",
-        name: "Register",
-        mini: "R",
-        component: Register,
-        layout: "/auth"
-      },
-      {
-        path: "/login",
-        name: "Login",
-        mini: "L",
-        component: Login,
-        layout: "/auth"
-      },
-    ]
-  },
-  {
-    path: "/users",
     name: "Users",
-    icon: "tim-icons icon-molecule-40",
-    component: UserList,
-    layout: "/admin"
+    icon: "tim-icons icon-chart-bar-32",
+    state: "usersCollapse",
+    views:[
+      {
+        path: "/users",
+        name: "Users",
+        icon: "tim-icons icon-molecule-40",
+        component: UserList,
+        layout: "/admin"
+      },
+      {
+        path: "/profile",
+        name: "Profile",
+        icon: "tim-icons icon-image-02",
+        component: User,
+        layout: "/admin"
+      },
+      /*
+      {
+        path: "/customer/:id",
+        name: "Add Customer",
+        mini: "+",
+        component: NewCustomer,
+        layout: "/admin"
+      },
+      */
+    ]
   },
   {
     collapse: true,
@@ -89,25 +91,18 @@ const routes = [
       {
         path: "/product/:id",
         name: "Add New",
-        mini: "R",
+        mini: "+",
         component: NewProduct,
         layout: "/admin"
       },
       {
         path: "/product/reviews",
         name: "Reviews",
-        mini: "R",
+        mini: "P",
         component: Panels,
         layout: "/admin"
       }
     ]
-  },
-  {
-    path: "/profile",
-    name: "Profile",
-    icon: "tim-icons icon-image-02",
-    component: User,
-    layout: "/admin"
   },
   {
     path: "/orders",
@@ -115,6 +110,71 @@ const routes = [
     icon: "tim-icons icon-laptop",
     component: RegularForms,
     layout: "/admin"
+  },
+  {
+    collapse: true,
+    name: "Auth Pages",
+    icon: "tim-icons icon-image-02",
+    state: "pagesCollapse",
+    views: [
+      {
+        path: "/register",
+        name: "Register",
+        mini: "R",
+        component: Register,
+        layout: "/auth"
+      },
+      {
+        path: "/login",
+        name: "Login",
+        mini: "L",
+        component: Login,
+        layout: "/auth"
+      },
+      {
+        path: "/lock",
+        name: "Lock",
+        mini: "L",
+        component: Lock,
+        layout: "/auth"
+      },
+      {
+        path: "/pricing",
+        name: "Pricing",
+        mini: "R",
+        component: Pricing,
+        layout: "/auth"
+      }
+    ]
+  },
+  {
+    collapse: true,
+    name: "Examples",
+    icon: "tim-icons icon-image-02",
+    state: "pagesCollapse",
+    views: [
+      {
+        path: "/example-tables",
+        name: "Tables",
+        mini: "T",
+        component: ReactTables,
+        layout: "/admin"
+      },
+      {
+        path: "/example-charts",
+        name: "Tables",
+        mini: "T",
+        component: Charts,
+        layout: "/admin"
+      },
+      {
+        path: "/example-calendar",
+        name: "Tables",
+        mini: "T",
+        component: Calendar,
+        layout: "/admin"
+      },
+    ]
   },
 ];
 
