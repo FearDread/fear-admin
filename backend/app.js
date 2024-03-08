@@ -7,13 +7,21 @@ const path = require("path");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const {developmentErrors, AppError} = require("./src/_utils/errorHandlers");
+const helmet = require("helmet");
+
+/* Middlewares */
+const notFound = require("./src/middleware/not-found");
+const errorHandler = require("./src/middleware/error-handler");
+const isAuth = require("./src/middleware/authentication");
+
 
 dotenv.config({ path: "./.env" });
 
 // routes
 const auth = require("./src/routes/auth");
+const cart = require("./src/routes/cart");
 const users = require("./src/routes/user");
-const customer = require("./src/routes/customer");
+const customers = require("./src/routes/customer");
 const products = require("./src/routes/product");
 //const order = require("./routes/order");
 //const payment = require("./routes/payment");
@@ -24,7 +32,12 @@ app.use(bodyParser.json({ limit: "50mb" }));
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 app.use(developmentErrors);
 app.use(fileUpload());
+
 app.use(cors());
+app.use(helmet());
+
+app.use(notFound);
+app.use(errorHandler);
 
 //Allow all requests from all domains & localhost
 app.all('/*', function(req, res, next) {
@@ -38,6 +51,8 @@ app.all('/*', function(req, res, next) {
 app.use("/fear/api", auth);
 app.use("/fear/api", users);
 app.use("/fear/api", products);
+app.use("/fear/api", customers);
+app.use("/fear/api", isAuth, cart);
 //app.use("/fear/api", order);
 //app.use("/fear/api", payment);
 
