@@ -23,7 +23,7 @@ import {
 import { register } from "_redux/actions/auth";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
-import AnimatedBackground from "components/AnimatedBackground";
+import AnimatedBackground from "components/AnimatedBackground/AnimatedBackground";
 import Loader from "components/Loader/Loading";
 
 const Register = () => {
