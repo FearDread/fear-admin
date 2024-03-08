@@ -13,6 +13,7 @@ dotenv.config({ path: "./.env" });
 // routes
 const auth = require("./src/routes/auth");
 const users = require("./src/routes/user");
+const customer = require("./src/routes/customer");
 const products = require("./src/routes/product");
 //const order = require("./routes/order");
 //const payment = require("./routes/payment");

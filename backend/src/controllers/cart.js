@@ -1,5 +1,5 @@
-const Cart = require("../models/Cart");
-const User = require("../models/User");
+const Cart = require("../models/cart");
+const Customer = require("../models/customer");
 const { StatusCodes } = require("http-status-codes");
 const { BadRequestError, NotFoundError } = require("../errors");
 const mongoose = require("mongoose");
