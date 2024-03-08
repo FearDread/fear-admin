@@ -16,7 +16,7 @@ import {
   Container,
   Col
 } from "reactstrap";
-import AnimatedBackground from "views/components/AnimatedBackground";
+import AnimatedBackground from "components/AnimatedBackground";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory, useLocation, Link } from "react-router-dom";
 import { login } from "_redux/actions/auth";
