@@ -36,9 +36,6 @@ app.use(fileUpload());
 app.use(cors());
 app.use(helmet());
 
-app.use(notFound);
-app.use(errorHandler);
-
 //Allow all requests from all domains & localhost
 app.all('/*', function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
@@ -55,6 +52,9 @@ app.use("/fear/api", customers);
 app.use("/fear/api", isAuth, cart);
 //app.use("/fear/api", order);
 //app.use("/fear/api", payment);
+
+app.use(notFound);
+app.use(errorHandler);
 
 const __dirname1 = path.resolve();
 
