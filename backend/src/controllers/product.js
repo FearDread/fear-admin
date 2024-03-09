@@ -57,13 +57,28 @@ exports.list = async (req, res) => {
     .then((products) => {
       res.status(200).json({  
         success: true,
-        product: products,
+        products: products,
       });
     })
     .catch((error) => {
       dbError(res, error);
     });
 };
+
+exports.categories = async (req, res) => {
+  let categories = ["All"];
+  const products = await ProductModel.find({});
+
+  products.map((product) => {
+     const { category } = product;
+     categories.push(category);
+  });
+
+  categories = [...new Set(categories)];
+  
+  console.log("Categories found :: ", categories);
+  return res.status(200).json(categories);
+}
 
 exports.update = async (req, res, next) => {
   if (!req.params.id) {

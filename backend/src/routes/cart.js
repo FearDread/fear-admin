@@ -16,10 +16,10 @@ const {
 // define routes
 
 //  get all products in a user's cart
-router.route("/").get(getAllProductInAUserCart);
+router.route("/cart").get(getAllProductInAUserCart);
 
 //  add to cart
-router.route("/").post(addProductToAUserCart);
+router.route("/cart/add").post(addProductToAUserCart);
 
 //  remove from cart
 router.route("/delete/:product_id").delete(deleteProductFromAUserCart);
