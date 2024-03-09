@@ -21,12 +21,12 @@ const login = async (req, res) => {
       throw new UnauthenticatedError("Please register");
    }
    // compare password
-   const isPasswordCorrect = await user.comparePasswords(password);
+   const isPasswordCorrect = await user.compare(password);
    if (!isPasswordCorrect) {
       throw new UnauthenticatedError("Password Is incorrect");
    }
-   const token = user.createJWT();
-   const newUser = await User.findOne({ username }).select(
+   const token = user.getJWTToken();
+   const newUser = await Customer.findOne({ username }).select(
       "firstName lastName username email"
    );
 
