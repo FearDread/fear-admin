@@ -55,7 +55,6 @@ exports.create = async (req, res) => {
 exports.list = async (req, res) => {
   await ProductModel.find()
     .then((products) => {
-      console.log('list products called :: ', products);
       res.status(200).json({  
         success: true,
         products: products,
