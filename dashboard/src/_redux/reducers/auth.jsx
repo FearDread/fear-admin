@@ -1,12 +1,19 @@
 import * as actionTypes from "../types/auth";
+import storage from "../storage";
 
 const INITIAL_STATE = {
   user: {},
   loading: false,
   isLoggedIn: false,
 };
-
 const authReducer = (state = INITIAL_STATE, action) => {
+  const user = storage.get("user");
+  if ( user ) {
+    state.user = user;
+    state.isLoggedIn = true;
+  }
+  
+  console.log('init store state : ', state);
   switch (action.type) {
     case actionTypes.LOADING_REQUEST:
       return {
