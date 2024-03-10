@@ -17,17 +17,11 @@ const productsReducer = (state = { product: {}, products: [], new: [] }, action)
         products: [],
       };
     }
-
     case prodActions.ADMIN_PRODUCT_SUCCESS:
-      return {
-        loading: false,
-        products: action.payload.products,
-      };
-
     case prodActions.ALL_PRODUCT_SUCCESS: {
       return {
         loading: false,
-        products: action.payload.products,
+        products: action.payload,
         productsCount: action.payload.productsCount,
         resultPerPage: action.payload.resultPerPage,
         filterdProductCount: action.payload.filterdProductCount,
