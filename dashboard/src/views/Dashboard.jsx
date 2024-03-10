@@ -64,8 +64,7 @@ const Dashboard = () => {
 
   //const { products, loading, error } = useSelector((state) => state.products);
   //const { orders, error: ordersError } = useSelector((state) => state.allOrders);
-  const { users, loading, error: usersError } = useSelector((state) => state.user);
-  const {user, isLoggedIn } = useSelector((state) => state.auth);
+  const { user, users, loading, error } = useSelector((state) => state.user);
 
   const setBgChartData = (name) => {
     setbigChartData(name);
@@ -87,13 +86,13 @@ const Dashboard = () => {
 //  });
 
   useEffect(() => {
-    console.log("logged in = " + isLoggedIn);
-    console.log("Current User = ", user);
-    console.log("User Count = ", users.length);
+
     //dispatch(getAllOrders());
     //dispatch(getAllUsers());
     //dispatch(getAdminProducts());
-  }, [dispatch, isLoggedIn, user]);
+    console.log("Current User = ", user);
+    console.log("current users Count = ", users);
+  }, [dispatch, user, users]);
   
   return (
     <>

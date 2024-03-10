@@ -4,7 +4,8 @@ import NotificationAlert from "react-notification-alert";
 import AdminNavbar from "components/Navbars/AdminNavbar.js";
 import Footer from "components/Footer/Footer.js";
 import Sidebar from "components/Sidebar/Sidebar.js";
-
+import { getAllUsers } from "_redux/actions/user";
+import { useSelector, useDispatch } from "react-redux";
 
 import * as Router from "_router";
 import routes from "_router/routes.js";

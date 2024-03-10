@@ -7,7 +7,7 @@ import searchReducer from "./reducers/search";
 import userReducer from "./reducers/user";
 
 import productsReducer from "./reducers/product";
-
+import storage from "./storage";
 // Combine all reducers.
 
 const appReducer = combineReducers({
@@ -21,6 +21,11 @@ const appReducer = combineReducers({
 const rootReducer = (state, action) => {
   if (action.type === actionTypes.LOGOUT_SUCCESS) {
     state = undefined;
+  }
+  const user = storage.get("user");
+  if ( user ) {
+    state.user = user;
+    state.user.isLoggedIn = true;
   }
   return appReducer(state, action);
 };

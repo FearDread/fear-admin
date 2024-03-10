@@ -55,6 +55,7 @@ exports.create = async (req, res) => {
 exports.list = async (req, res) => {
   await ProductModel.find()
     .then((products) => {
+      console.log('list products called :: ', products);
       res.status(200).json({  
         success: true,
         products: products,
@@ -75,8 +76,6 @@ exports.categories = async (req, res) => {
   });
 
   categories = [...new Set(categories)];
-  
-  console.log("Categories found :: ", categories);
   return res.status(200).json(categories);
 }
 
@@ -120,11 +119,9 @@ exports.update = async (req, res, next) => {
       useFindAndModify: false,
     })
     .then((data) => {
-      res.status(201).json({
-        success: true,
-        product: product,
-      });
-    }).catch((error) => {
+      res.status(200).json({product: data});
+    })
+    .catch((error) => {
       dbError(res, error);
     });
 };

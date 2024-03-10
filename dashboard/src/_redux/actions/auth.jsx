@@ -17,7 +17,7 @@ export function login(email, password) {
         config
       );
 
-      storage.set("_current", response.data.result.user);
+      storage.set("user", response.data.result.user);
       dispatch({ type: actionTypes.LOGIN_SUCCESS, payload: response.data.result.user });
     } catch (error) {
 
@@ -55,7 +55,7 @@ export const register = (signupData) => async (dispatch) => {
     );
     
     console.log("setting _current user", response.data);
-    storage.set("_current", response.data.result.user);
+    storage.set("user", response.data.result.user);
     dispatch({ type: actionTypes.REGISTER_USER_SUCCESS, payload: response.data.result.user });
   } catch (error) {
     dispatch({ type: actionTypes.REGISTER_USER_FAIL, payload: error });
