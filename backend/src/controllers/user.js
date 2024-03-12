@@ -105,7 +105,7 @@ exports.update = async (req, res, next) => {
 
 /* Admin User Methods */
 /* ------------------ */
-exports.readUser = async (req, res) => {
+exports.read = async (req, res) => {
 
   console.log("readUser :: CALLED");
 

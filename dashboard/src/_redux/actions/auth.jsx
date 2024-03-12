@@ -1,6 +1,7 @@
 import * as actionTypes from "../types/auth";
 import storage from "../storage";
 import axios from "axios";
+import "../axios"
 
 import { API_BASE_URL } from "../../variables/api.js";
 
@@ -36,7 +37,7 @@ export function logout() {
       dispatch({ type: actionTypes.LOGOUT_SUCCESS });
 
     } catch (error) {
-      storage.remove("_current");
+      storage.remove("user");
       dispatch({ type: actionTypes.LOGOUT_FAIL, payload: error.message });
     }
   }
@@ -54,7 +55,6 @@ export const register = (signupData) => async (dispatch) => {
       config
     );
     
-    console.log("setting _current user", response.data);
     storage.set("user", response.data.result.user);
     dispatch({ type: actionTypes.REGISTER_USER_SUCCESS, payload: response.data.result.user });
   } catch (error) {
