@@ -7,7 +7,7 @@ const axios = require("axios");
 
 const mySecretKey = `Bearer ${process.env.PAYSTACK_SECRET}`;
 
-const getAllProductInAUserCart = async (req, res) => {
+exports.list = async (req, res) => {
    const {
       user: { user_id },
    } = req;
@@ -25,7 +25,8 @@ const getAllProductInAUserCart = async (req, res) => {
 
    return res.status(StatusCodes.OK).json(cart);
 };
-const addProductToAUserCart = async (req, res) => {
+
+exports.add = async (req, res) => {
    const {
       user: { user_id },
       body: { product_id },
@@ -116,7 +117,8 @@ const addProductToAUserCart = async (req, res) => {
 
    return res.status(StatusCodes.CREATED).json(userCart2);
 };
-const deleteProductFromAUserCart = async (req, res) => {
+
+exports.delete = async (req, res) => {
    const {
       params: { product_id },
       user: { user_id },
@@ -160,7 +162,8 @@ const deleteProductFromAUserCart = async (req, res) => {
 
    return res.status(StatusCodes.OK).json(deletedItem);
 };
-const deleteAllProductsFromAUserCart = async (req, res) => {
+
+exports.deleteAll = async (req, res) => {
    const {
       user: { user_id },
    } = req;
@@ -174,7 +177,8 @@ const deleteAllProductsFromAUserCart = async (req, res) => {
    }
    return res.status(StatusCodes.OK).json(emptyCart);
 };
-const incrementCartItem = async (req, res) => {
+
+exports.increment = async (req, res) => {
    const {
       body: { product_id },
       user: { user_id },
@@ -220,7 +224,8 @@ const incrementCartItem = async (req, res) => {
 
    return res.status(StatusCodes.OK).json(userCart);
 };
-const decrementCartItem = async (req, res) => {
+
+exports.decrement = async (req, res) => {
    const {
       body: { product_id },
       user: { user_id },
@@ -298,7 +303,8 @@ const decrementCartItem = async (req, res) => {
 
    return res.status(StatusCodes.OK).json(userCart);
 };
-const checkout = async (req, res) => {
+
+exports.checkout = async (req, res) => {
    let {
       amount,
       email,
@@ -336,7 +342,7 @@ const checkout = async (req, res) => {
    res.status(StatusCodes.OK).json({ url: authorization_url });
 };
 
-const checkOutCallBack = async (req, res) => {
+exports.callback = async (req, res) => {
    const { reference } = req.query;
    const url =
       "https://api.paystack.co/transaction/verify/" +
@@ -350,7 +356,7 @@ const checkOutCallBack = async (req, res) => {
    return res.status(StatusCodes.OK).json(data);
 };
 
-const placeOrder = async (req, res) => {
+exports.placeOrder = async (req, res) => {
    const {
       user: { user_id },
       body: { address, city, postalCode, country },
@@ -365,16 +371,4 @@ const placeOrder = async (req, res) => {
       throw new NotFoundError("User not found");
    }
    return res.status(StatusCodes.CREATED).json(openOrder);
-};
-
-module.exports = {
-   getAllProductInAUserCart,
-   addProductToAUserCart,
-   deleteProductFromAUserCart,
-   deleteAllProductsFromAUserCart,
-   incrementCartItem,
-   decrementCartItem,
-   checkout,
-   checkOutCallBack,
-   placeOrder,
 };

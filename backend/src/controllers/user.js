@@ -4,6 +4,7 @@ const Auth = require("./auth");
 const UserModel = require('../models/user');
 const { dbError, AppError } = require("../_utils/errorHandlers");
 const { sendEmail } = require("../_utils/mailHandler");
+const TypedError = require("../_utils/ErrorHandler");
 
 /* User CRUD methods */
 /* -------------------- */
@@ -33,20 +34,6 @@ exports.create = async (req, res) => {
     })
     .catch((error) => {
       dbError(res, error);
-    });
-};
-
-exports.read = async (req, res, next) => {
-  console.log("READ REQUEST :: " + req.params);
-
-    if (!req.params.id) {
-      return next(dbError());
-    }
-
-    const user = await userModel.findById(req.params.id);
-    res.status(200).json({
-      success: true,
-      user,
     });
 };
 
@@ -106,11 +93,10 @@ exports.update = async (req, res, next) => {
 /* Admin User Methods */
 /* ------------------ */
 exports.read = async (req, res) => {
-
   console.log("readUser :: CALLED");
 
   if (!req.params.id) {
-    return next(new AppError(`User does not exist with Id: ${req.params.id}`));
+    return next(new TypedError(`User does not exist with Id: ${req.params.id}`));
   }
 
   await UserModel.findById(req.params.id)
