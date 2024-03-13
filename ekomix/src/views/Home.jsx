@@ -6,6 +6,7 @@ import { clearErrors, getProduct } from "../../actions/productAction";
 import { useSelector, useDispatch } from "react-redux";
 import Loader from "../layouts/loader/Loader";
 import { useAlert } from "react-alert";
+import { Carousel } from "components/Carousel";
 import HeroSlider from "./HeroSilder";
 import FeaturedSlider from "./FeatureSlider";
 function Home() {
