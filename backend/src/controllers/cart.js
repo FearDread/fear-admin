@@ -1,7 +1,7 @@
 const Cart = require("../models/cart");
 const Customer = require("../models/customer");
 const { StatusCodes } = require("http-status-codes");
-const { BadRequestError, NotFoundError } = require("../errors");
+const { dbError, BadRequestError, NotFoundError } = require("../errors");
 const mongoose = require("mongoose");
 const axios = require("axios");
 
@@ -18,12 +18,18 @@ exports.list = async (req, res) => {
          select: "_id title price description image category",
       })
       .select("_id count products");
+
    if (!cart) {
-      cart = await Cart.create({ user_id });
-      return res.status(StatusCodes.OK).json(cart);
+      await Cart.create({ user_id })
+         .then((cart) => {
+            return res.status(200).json(cart);
+         })
+         .catch((error) => {
+            dbError(';cart add error');
+         });
    }
 
-   return res.status(StatusCodes.OK).json(cart);
+   return res.status(200).json(cart);
 };
 
 exports.add = async (req, res) => {
@@ -52,15 +58,19 @@ exports.add = async (req, res) => {
       });
 
       // find the newly created cart, populate the relevant fields
-      const returnedCart = await Cart.findOne({ _id: newCart._id })
+      await Cart.findOne({ _id: newCart._id })
          .populate({
             path: "products.product_id",
             select: "_id title price description image category",
          })
-         .select("_id count products");
-
-      // return
-      return res.status(StatusCodes.CREATED).json(returnedCart);
+         .select("_id count products")
+         .then((cart) => {
+            return res.status(201).json(cart);
+         })
+         .catch((error) => {
+            dbError('add cart error');
+         }
+      )
    }
 
    // check if the product passed in exists in the cart
