@@ -1,28 +1,34 @@
-const { StatusCodes } = require("http-status-codes");
-const errorHandlerMiddleware = (err, req, res, next) => {
-   // console.log(err.name);
-   console.log(err.message);
-   // console.log(err);
 
+
+const DataError = (req, res) => {
+   const statusCode = res.statusCode ? res.statusCode : 500;
    let customError = {
-      statusCode: err.statusCode || StatusCodes.INTERNAL_SERVER_ERROR,
-      msg: err.message || "Something went wrong, try again later",
+      statusCode,
+      message: err.message || "Something went wrong, try again later",
    };
-   if (err.name === "CastError") {
-      customError.msg = `_id ${err.value._id} is invalid`;
-      customError.statusCode = StatusCodes.BAD_REQUEST;
-   }
-   if (err.code === 11000) {
-      customError.statusCode = 400;
-      customError.msg = `${Object.keys(err.keyValue).join("")} already exists`;
-   }
-   if (err.name === "ValidationError") {
-      customError.msg = Object.values(err.errors)
-         .map((item) => item.message)
-         .join(", ");
-      customError.statusCode = StatusCodes.BAD_REQUEST;
-   }
-   return res.status(customError.statusCode).json({ error: customError.msg });
-};
 
-module.exports = errorHandlerMiddleware;
+   switch (err) {
+     case err.name === "CastError":
+      customError.message = `Resource not found. Invalid: ${err.path}`;
+
+     case err.code === 11000:
+      customError.message = `Duplicate ${Object.keys(err.keyValue)} Entered`;
+   
+     case err.name === "JsonWebTokenError":
+      customError.message = `Json Web Token is invalid, Try again `;
+
+     case err.name === "ValidationError":
+         customError.msg = Object.values(err.errors)
+            .map((item) => item.message)
+            .join(", ");
+         customError.statusCode = 504;
+   }
+
+   res.status(statusCode).json({
+     success: false,
+     error: customError,
+     stack: err.stack,
+   });
+}
+
+module.exports = DataError;
