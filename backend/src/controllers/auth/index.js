@@ -10,23 +10,22 @@ exports.login = async (req, res, next) => {
     return next(new CustomError('Missing field'))
   }
 
-  var user = await UserModel.findOne({email: email});
-  console.log('User Found :: ', user);
-  
-  if (!user) {
-    return next(new CustomError("Incorrect email or password"));
-  }
+  await UserModel.findOne({email: email})
+    .then((user) => {
+      console.log('User Found :: ', user);
 
-  await user.compare(password)
-    .then((isMatch) => {
-      if (isMatch) {
-        this.sendJWTToken(user, 200, res);
-      }
-      return next(new CustomError("Incorrect email or password"));
-    })
-    .catch((err) => {
-      return next(err);
-    });
+      user.compare(password)
+        .then((isMatch) => {
+          if (!isMatch) {
+            return next(new CustomError("Incorrect password"));
+          }
+      
+          this.sendJWTToken(user, 200, res);  
+      })
+    }).catch((error) => {
+      return next(new CustomError("Incorrect email or password"), error);
+    }
+  );
 }
 
 exports.logout = async (req, res) => {
@@ -44,7 +43,7 @@ exports.logout = async (req, res) => {
 exports.isAuthenticated = ( req, res, next ) => {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
-     return next(new AuthError("Authentication invalid"));
+     return next(new CustomError("Authentication invalid"));
   }
 
   const token = authHeader.split(" ")[1];
@@ -62,7 +61,7 @@ exports.isAuthenticated = ( req, res, next ) => {
 exports.authorizedRoles = ( ...roles ) => {
   return ( req , res , next ) => {
     if ( roles.includes( req.user.role ) === false) { 
-      let err = new TypedError('Role', 401, 'Not an Admin');
+      let err = new CustomError('Not an Admin');
       return next( err );
     }
     next();
