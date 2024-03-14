@@ -27,7 +27,7 @@ import {
 } from "reactstrap";
 
 // core components
-import { Navbar, Footer } from "components/";
+import { HomeNavbar, Footer } from "components/";
 
 const carouselItems = [
   {

@@ -39,7 +39,7 @@ import {
 } from "reactstrap";
 
 // core components
-import { Navbar, Footer } from "components/";
+import { HomeNavbar, Footer } from "components/";
 
 export default function RegisterPage() {
   const [squares1to6, setSquares1to6] = React.useState("");
@@ -76,7 +76,7 @@ export default function RegisterPage() {
   };
   return (
     <>
-      <Navbar />
+      <HomeNavbar />
       <div className="wrapper">
         <div className="page-header">
           <div className="page-header-image" />

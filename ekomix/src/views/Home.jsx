@@ -1,16 +1,14 @@
 import React from "react";
-//import "./Home.css";
-//import ProductCard from "./ProductCard";
-//mport MataData from "../layouts/MataData/MataData";
+
 // { clearErrors, getProduct } from "../../actions/productAction";
 import { useSelector, useDispatch } from "react-redux";
 //import Loader from "../layouts/loader/Loader";
 import { useAlert } from "react-alert";
 import { Carousel } from "components/Carousel";
-// HeroSlider from "./HeroSilder";
-//import FeaturedSlider from "./FeatureSlider";
+
+
 function Home() {
-  // we provided all parameter for react-ale  rt at index.js
+
   const alert = useAlert();
 
   const dispatch = useDispatch();
