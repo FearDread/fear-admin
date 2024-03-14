@@ -17,7 +17,7 @@ import {
 } from "reactstrap";
 
 // core components
-import { Navbar, Footer } from "components";
+import { HomeNavbar, Footer } from "components";
 import bigChartData from "variables/charts.js";
 
 export default function LandingPage() {
@@ -30,7 +30,7 @@ export default function LandingPage() {
   }, []);
   return (
     <>
-      <Navbar />
+      <HomeNavbar />
       <div className="wrapper">
         <div className="page-header">
           <img

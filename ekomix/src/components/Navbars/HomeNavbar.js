@@ -15,7 +15,7 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
-export default function Navbar() {
+export default function HomeNavbar() {
   const [collapseOpen, setCollapseOpen] = React.useState(false);
   const [collapseOut, setCollapseOut] = React.useState("");
   const [color, setColor] = React.useState("navbar-transparent");
