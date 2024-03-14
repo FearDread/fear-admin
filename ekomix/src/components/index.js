@@ -1,19 +1,21 @@
-import DisplayMoney from "./DisplayMoney/DisplayMoney";
+import { dispalyMoney, calculateDiscount, calculateTotal, generateDiscountedPrice } from "./DisplayMoney/DisplayMoney";
 import Footer from "./Footer/Footer";
 import FeaturedSlider from "./FeatureSlider/FeatureSlider";
-import { ExampleNavbar, indexNavbar } from "./Navbars";
+import Navbar from "./Navbars";
 import PageHeader from "./PageHeader/PageHeader";
 import Carousel from "./Carousel/Carousel";
 import Service from "./Service/Service";
 
 
 export {
-    DisplayMoney,
+    dispalyMoney,
+    calculateDiscount,
+    calculateTotal,
+    generateDiscountedPrice,
     Footer,
-    ExampleNavbar,
     PageHeader,
     Carousel,
     FeaturedSlider,
-    indexNavbar,
+    Navbar,
     Service
 }

@@ -1,16 +1,16 @@
 import React from "react";
-import "./Home.css";
-import ProductCard from "./ProductCard";
-import MataData from "../layouts/MataData/MataData";
-import { clearErrors, getProduct } from "../../actions/productAction";
+//import "./Home.css";
+//import ProductCard from "./ProductCard";
+//mport MataData from "../layouts/MataData/MataData";
+// { clearErrors, getProduct } from "../../actions/productAction";
 import { useSelector, useDispatch } from "react-redux";
-import Loader from "../layouts/loader/Loader";
+//import Loader from "../layouts/loader/Loader";
 import { useAlert } from "react-alert";
 import { Carousel } from "components/Carousel";
-import HeroSlider from "./HeroSilder";
-import FeaturedSlider from "./FeatureSlider";
+// HeroSlider from "./HeroSilder";
+//import FeaturedSlider from "./FeatureSlider";
 function Home() {
-  // we provided all parameter for react-alert at index.js
+  // we provided all parameter for react-ale  rt at index.js
   const alert = useAlert();
 
   const dispatch = useDispatch();
@@ -31,9 +31,9 @@ function Home() {
       ) : (
         <>
           <>
-            <div className="Home_Page">
-              <div className="heroSlider_Home">
-                <HeroSlider />;
+            <div className="wrapper">
+              <div >
+                <Carousel />;
               </div>
 
               <div className="feature" style={{ marginTop: "2.7rem" }}>
