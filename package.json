@@ -40,8 +40,10 @@
     "nodemailer": "^6.9.1",
     "nodemon": "^3.0.3",
     "react-chartjs-2": "^5.2.0",
+    "react-swipe": "^6.0.4",
     "session": "^0.1.0",
     "stripe": "^11.14.0",
+    "swipe": "^1.7.7",
     "validator": "^13.9.0"
   }
 }

@@ -7,25 +7,16 @@ import {
 } from "../components";
 import "../styles/Shop.css";
 import axios from "axios";
-import { useLoaderData, useNavigate, useSearchParams } from "react-router-dom";
+import { useLoaderData } from "react-router-dom";
 import { nanoid } from "nanoid";
 
 export const shopLoader = async ({ request }) => {
   const params = Object.fromEntries([
     ...new URL(request.url).searchParams.entries(),
   ]);
-  // /posts?title=json-server&author=typicode
-  // GET /posts?_sort=views&_order=asc
-  // GET /posts/1/comments?_sort=votes&_order=asc
-
-  let mydate = Date.parse(params.date);
   
-  if (mydate && !isNaN(mydate)) {
-    // The date is valid
-    mydate = new Date(mydate).toISOString();
-  } else {
-    mydate = "";
-  }
+  let mydate = Date.parse(params.date);
+  (mydate && !isNaN(mydate)) ? mydate = new Date(mydate).toISOString() : "";
 
   const filterObj = {
     brand: params.brand ?? "all",
