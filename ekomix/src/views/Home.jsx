@@ -21,7 +21,7 @@ function Home() {
       alert.error(error);
       dispatch(clearErrors);
     }
-    dispatch(getProduct());
+    //dispatch(getProduct());
   }, [dispatch, error, alert]);
 
   return (
@@ -31,7 +31,6 @@ function Home() {
       ) : (
         <>
           <>
-            <MataData title="Cricket Weapon" />
             <div className="Home_Page">
               <div className="heroSlider_Home">
                 <HeroSlider />;
