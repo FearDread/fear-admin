@@ -1,7 +1,6 @@
 const jwt = require("jsonwebtoken");
 const UserModel = require("../../models/user");
-const TypedError = require("../../_utils/ErrorHandler");
-const { dbError, AuthError, CustomError } = require("../../errors");
+const { CustomError } = require("../../errors");
 require("dotenv").config({ path: __dirname + "../.env" });
 
 exports.login = async (req, res, next) => {
@@ -87,29 +86,22 @@ exports.sendJWTToken = (user, statusCode, res) => {
   });
 };
 
-/*
-exports.isValidToken = async (req, res, next) => {
-  const token = req.header(process.env.JWT_TOKEN);
+exports.isAuthorized = (req, res, next) => {
+  const { token } = req.cookies; 
+
   if ( !token ) {
-    return ( authError(res, req) );
+      return next(new CustomError("Please Login to access this resource")); 
   }
-
-  try {
-    const verified = jwt.verify(token, process.env.JWT_SECRET);
-    if (!verified) {
-      return (authError(res, verified));
-    }
-
-    await UserModel.findOne({ _id: verified.id })
-      .then((admin) => {
-        req.admin = admin;
+  
+  const deCodeToken = jwt.verify(token, process.env.JWT_SECRET);
+  
+  UserModel.findById(deCodeToken.id)
+    .then((user) => {
+        req.user = user;
         next();
-      })
-      .catch((error) => {
-        dbError(res, error);
-      });
-  } catch (err) {
-    authError(res, err);
-  }
+    })
+    .catch((error) => {
+      return next( error );
+    }
+  ); 
 }
-*/
