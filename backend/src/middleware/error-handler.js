@@ -1,6 +1,6 @@
 
 
-const DataError = (req, res) => {
+const DataError = (req, res, err) => {
    const statusCode = res.statusCode ? res.statusCode : 500;
    let customError = {
       statusCode,

@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Redirect, Route } from "react-router-dom";
-import { load_UserProfile } from "../../actions/userAction";
+import { UserProfile } from "../../actions/userAction";
 import CricketBallLoader from "../layouts/loader/Loader";
 function PrivateRoute({ isAdmin, component: Component, ...rest }) {
   const { loading, isAuthenticated, user } = useSelector(
@@ -10,7 +10,7 @@ function PrivateRoute({ isAdmin, component: Component, ...rest }) {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(load_UserProfile());
+    dispatch(UserProfile());
   }, [dispatch]);
 
 

@@ -6,7 +6,7 @@ import Loader from "../layouts/loader/Loader";
 import Sidebar from "./Siderbar";
 import { createProduct, clearErrors } from "../../actions/productAction";
 import { useHistory } from "react-router-dom";
-import { NEW_PRODUCT_RESET } from "../../constants/productsConstatns";
+import { NEW_PRODUCT_RESET } from "../../constants/productsConstant";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import Box from "@material-ui/core/Box";
 import DescriptionIcon from "@material-ui/icons/Description";

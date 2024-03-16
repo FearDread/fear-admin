@@ -2,7 +2,7 @@ import React from "react";
 import "./Home.css";
 import ProductCard from "./ProductCard";
 import MataData from "../layouts/MataData/MataData";
-import { clearErrors, getProduct } from "../../actions/productAction";
+import { clearErrors, getAdminProducts } from "../../actions/productAction";
 import { useSelector, useDispatch } from "react-redux";
 import Loader from "../layouts/loader/Loader";
 import { useAlert } from "react-alert";
@@ -20,7 +20,7 @@ function Home() {
       alert.error(error);
       dispatch(clearErrors);
     }
-    dispatch(getProduct());
+    dispatch(getAdminProducts());
   }, [dispatch, error, alert]);
 
   return (

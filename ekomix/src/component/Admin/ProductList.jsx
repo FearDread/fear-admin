@@ -16,7 +16,7 @@ import MetaData from "../layouts/MataData/MataData";
 import Loader from "../layouts/loader/Loader";
 import Sidebar from "./Siderbar";
 import Navbar from "./Navbar";
-import { DELETE_PRODUCT_RESET } from "../../constants/productsConstatns";
+import { DELETE_PRODUCT_RESET } from "../../constants/productsConstant";
 
 function ProductList() {
   const dispatch = useDispatch();

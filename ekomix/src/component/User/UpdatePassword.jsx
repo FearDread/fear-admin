@@ -9,7 +9,7 @@ import CricketBallLoader from "../layouts/loader/Loader";
 import { useDispatch, useSelector } from "react-redux";
 import { updatePassword, clearErrors } from "../../actions/userAction";
 import { useAlert } from "react-alert";
-import { UPDATE_PASSWORD_RESET } from "../../constants/userConstanat";
+import { UPDATE_PASSWORD_RESET } from "../../constants/userConstant";
 import MetaData from "../layouts/MataData/MataData";
 import { useHistory } from "react-router-dom"; 
 

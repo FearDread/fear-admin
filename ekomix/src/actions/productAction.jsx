@@ -28,7 +28,8 @@ import {
  DELETE_REVIEW_FAIL,
   CLEAR_ERRORS,
   ALL_REVIEW_FAIL,
-} from "../constants/productsConstatns";
+} from "../constants/productsConstant";
+import { API_BASE_URL } from "../constants/api";
 
 // get ALL Products
 export const getProduct = (
@@ -45,11 +46,11 @@ export const getProduct = (
         type: ALL_PRODUCT_REQUEST,
       });
 
-      let link = `/api/v1/product?keyword=${keyword}&page=${currentPage}&price[gte]=${price[0]}&price[lte]=${price[1]}&ratings[gte]=${ratings}`;
+      let link = API_BASE_URL + `/product?keyword=${keyword}&page=${currentPage}&price[gte]=${price[0]}&price[lte]=${price[1]}&ratings[gte]=${ratings}`;
 
       // when category selected by user then using another link
       if (category) {
-        link = `/api/v1/product?keyword=${keyword}&page=${currentPage}&price[gte]=${price[0]}&price[lte]=${price[1]}&ratings[gte]=${ratings}&category=${category}`;
+        link = API_BASE_URL + `/product?keyword=${keyword}&page=${currentPage}&price[gte]=${price[0]}&price[lte]=${price[1]}&ratings[gte]=${ratings}&category=${category}`;
       }
       const { data } = await axios.get(link);
 
@@ -74,7 +75,7 @@ export const getProductDetails = (id) => {
         type: PRODUCT_DETAILS_REQUEST,
       });
 
-      const { data } = await axios.get(`/api/v1/product/${id}`);
+      const { data } = await axios.get(API_BASE_URL + `/product/${id}`);
 
       dispatch({
         type: PRODUCT_DETAILS_SUCCESS,
@@ -109,7 +110,7 @@ export const getAdminProducts = () => async (dispatch) => {
   try {
     dispatch({ type: ADMIN_PRODUCT_REQUEST });
 
-    const { data } = await axios.get("http://localhost:4000/admin/products");
+    const { data } = await axios.get(API_BASE_URL + "/products");
 
     dispatch({ type: ADMIN_PRODUCT_SUCCESS, payload: data.products });
   } catch (error) {

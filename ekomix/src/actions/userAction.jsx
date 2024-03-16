@@ -37,7 +37,7 @@ import {
   DELETE_USER_REQUEST,
   DELETE_USER_FAIL,
   DELETE_USER_SUCCESS,
-} from "../constants/userConstanat";
+} from "../constants/userConstant";
 import { API_BASE_URL } from "../constants/api";
 
 // login user
@@ -79,21 +79,16 @@ export function signUp(signupData) {
       );
 
       dispatch({ type: REGISTER_USER_SUCCESS, payload: data.user });
-
-
-
     } catch (error) {
-  
+
       dispatch({ type: REGISTER_USER_FAIL, payload: error.message })
     }
-
   }
-
 }
 
 // Load User (user Profile) if logged in before
 
-export const load_UserProfile = () => async (dispatch) => {
+export const UserProfile = () => async (dispatch) => {
   try {
     dispatch({ type: LOAD_USER_REQUEST });
 
@@ -105,7 +100,7 @@ export const load_UserProfile = () => async (dispatch) => {
        dispatch({ type: LOAD_USER_SUCCESS, payload: user });
     } else {
       // If user data is not available in session storage, make a backend API call
-      const { data } = await axios.get("api/v1/profile");
+      const { data } = await axios.get(API_BASE_URL + "/profile");
    
       dispatch({ type: LOAD_USER_SUCCESS, payload: data.user });
 

@@ -38,7 +38,7 @@ import MetaData from "../layouts/MataData/MataData";
 import { addItemToCart } from "../../actions/cartAction";
 import CricketBallLoader from "../layouts/loader/Loader";
 //import Button from "@mui/material/Button";
-import { PRODUCT_DETAILS_RESET } from "../../constants/productsConstatns";
+import { PRODUCT_DETAILS_RESET } from "../../constants/productsConstant";
 
 const ProductDetails = () => {
   const match = useRouteMatch();

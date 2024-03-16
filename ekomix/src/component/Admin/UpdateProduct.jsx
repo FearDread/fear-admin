@@ -19,7 +19,7 @@ import {
   getProductDetails,
 } from "../../actions/productAction";
 import { useHistory } from "react-router-dom";
-import { UPDATE_PRODUCT_RESET } from "../../constants/productsConstatns";
+import { UPDATE_PRODUCT_RESET } from "../../constants/productsConstant";
 import { useRouteMatch } from "react-router-dom";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import Box from "@material-ui/core/Box";
