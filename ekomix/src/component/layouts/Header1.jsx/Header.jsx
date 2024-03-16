@@ -10,6 +10,7 @@ import { Link } from "react-router-dom";
 import { useHistory } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import { useSelector } from "react-redux";
+import NavbarHome from "component/Navbars/NavbarHome";
 
 import ProfileModal from "./ProfileModel";
 
@@ -101,6 +102,8 @@ function Header() {
         </div>
 
         {/* nav */}
+        <NavbarHome />
+        {/*
         <div className="headerBottom">
           <div className="headerBottom__logo">
             <div className="header_mobile_menu">
@@ -146,7 +149,7 @@ function Header() {
             </Link>
           )}
 
-          {/* navmenu */}
+
 
           {!searchBarActive && (
             <div className="headerBottom_navMenu">
@@ -168,7 +171,6 @@ function Header() {
             </div>
           )}
 
-          {/* icons */}
 
           <div className="headerBotttom_icons">
             <div className="search_Bar">
@@ -195,6 +197,8 @@ function Header() {
           </div>
         </div>
       </div>
+          */}
+          </div>
     </>
   );
 }

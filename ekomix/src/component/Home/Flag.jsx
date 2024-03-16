@@ -8,8 +8,8 @@ import GB from "../../Image/flag/gb.svg"
 import FR from "../../Image/flag/fr.svg"
 
 const countryOptions = [
-  { code: "in", label: "India", flag: IN },
   { code: "us", label: "USA", flag:  US },
+  { code: "in", label: "India", flag: IN },
   { code: "gb", label: "UK", flag: GB },
   { code: "fr", label: "France", flag: FR },
   // ... add more countries here

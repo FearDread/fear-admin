@@ -1,20 +1,3 @@
-/*!
-
-=========================================================
-* BLK Design System React - v1.2.2
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/blk-design-system-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-* Licensed under MIT (https://github.com/creativetimofficial/blk-design-system-react/blob/main/LICENSE.md)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
 import React from "react";
 import { Link } from "react-router-dom";
 // reactstrap components
@@ -29,6 +12,103 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 
+const footMenu = [
+  {
+    id: 1,
+    title: "Help",
+    menu: [
+      {
+        id: 1,
+        link: "Track Order",
+        path: "/orders",
+      },
+      {
+        id: 2,
+        link: "FAQs",
+        path: "/terms/conditions",
+      },
+
+      {
+        id: 3,
+        link: "Cancel Order",
+        path: "/policy/return",
+      },
+      {
+        id: 4,
+        link: "Return Order",
+        path: "/policy/return",
+      },
+      {
+        id: 5,
+        link: "Warranty Info",
+        path: "/policy/Terms",
+      },
+    ],
+  },
+  {
+    id: 2,
+    title: "Policies",
+    menu: [
+      {
+        id: 1,
+        link: "Return Policy",
+        path: "/policy/return",
+      },
+      {
+        id: 2,
+        link: "Security",
+        path: "/policy/privacy",
+      },
+      {
+        id: 3,
+        link: "Sitemap",
+        path: "/policy/Terms",
+      },
+      {
+        id: 4,
+        link: "Privacy Policy",
+        path: "/policy/privacy",
+      },
+      {
+        id: 5,
+        link: "T&C",
+        path: "/terms/conditions",
+      },
+    ],
+  },
+  {
+    id: 3,
+    title: "Company",
+    menu: [
+      {
+        id: 1,
+        link: "About Us",
+        path: "/about",
+      },
+      {
+        id: 2,
+        link: "Contact Us",
+        path: "/contact",
+      },
+      {
+        id: 3,
+        link: "Service Centres",
+        path: "/",
+      },
+      {
+        id: 4,
+        link: "Careers",
+        path: "/",
+      },
+      {
+        id: 5,
+        link: "Affiliates",
+        path: "/terms/conditions",
+      },
+    ],
+  },
+];
+
 export default function Footer() {
   return (
     <footer className="footer">
@@ -37,13 +117,35 @@ export default function Footer() {
           <Col md="3">
             <h1 className="title">BLK•</h1>
           </Col>
-          <Col md="3">
-            <Nav>
-              <NavItem>
-                <NavLink to="/" tag={Link}>
-                  Home
-                </NavLink>
-              </NavItem>
+ 
+            {footMenu.map((item) => {
+
+                const { id, title, menu } = item;
+                return (
+                  <Col md="3">
+                  <Nav key={id}>
+                    <h4>{title}</h4>
+                    {menu.map((item) => {
+                        const { id, link, path } = item;
+                        return (
+                          <NavItem key={id}>
+                            <NavLink>
+                              <Link class="text-white" to={path}>{link}</Link>
+                            </NavLink>
+                          </NavItem>
+                        );
+                      })}
+                  </Nav>
+                  </Col>
+                );
+              })}
+        </Row>
+      </Container>
+      </footer>
+    )
+  }
+
+  /*
               <NavItem>
                 <NavLink to="/landing-page" tag={Link}>
                   Landing
@@ -131,3 +233,4 @@ export default function Footer() {
     </footer>
   );
 }
+*/

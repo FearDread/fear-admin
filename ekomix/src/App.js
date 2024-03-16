@@ -37,6 +37,7 @@ import ReturnPolicyPage from "./Terms&Condtions/Return";
 import TermsUse from "./Terms&Condtions/TermsAndUse";
 import TermsAndConditions from "./Terms&Condtions/TermsCondtion";
 import PrivacyPolicy from "./Terms&Condtions/Privacy";
+import NavbarMain from "./component/Navbars/NavbarMain";
 // const LazyPayment = React.lazy(() => import("./component/Cart/Payment"));
 const LazyDashboard = React.lazy(() => import("./component/Admin/Dashboard"));
 const LazyProductList = React.lazy(() =>
