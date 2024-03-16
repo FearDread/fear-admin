@@ -1025,6 +1025,11 @@
     border-radius: $border-radius-sm;
 }
 
+
+.section-dark-bg {
+    background: rgba(0,0,0,.4) !important;
+  }
+  
 //
 @import 'sections/_headers';
 // @import 'sections/_features';
