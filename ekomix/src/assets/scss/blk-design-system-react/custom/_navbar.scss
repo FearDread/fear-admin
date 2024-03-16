@@ -6,12 +6,13 @@
   //background: $primary;
   // background: black;
   .photo {
-    display: inline-block;
-    height: 30px;
-    width: 30px;
+    height: 100px;
+    width: 100px;
     border-radius: 50%;
     vertical-align: middle;
     overflow: hidden;
+    position: fixed;
+    margin-top: -52px;
       img{
         width: $full-width;
       }

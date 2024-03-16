@@ -28,7 +28,7 @@ import {
 } from "reactstrap";
 //import {login, register} from "../../actions/user";
 
-export default function IndexNavbar() {
+export default function NavbarHome() {
   const [collapseOpen, setCollapseOpen] = React.useState(false);
   const [collapseOut, setCollapseOut] = React.useState("");
   const [formModal, setFormModal] = React.useState(false);
@@ -78,11 +78,11 @@ export default function IndexNavbar() {
       <Container>
         <div className="navbar-translate">
           <NavbarBrand to="/" tag={Link} id="navbar-brand">
-            Fear Master Web & Media Server
+            <img className="photo" src={require("assets/img/ekomix/logo_transparent.png")} alt="E-KomiX" />
           </NavbarBrand>
           <UncontrolledTooltip placement="bottom" target="navbar-brand">
-            <span>BLK• </span>
-            Design System React
+            <span>E-KomiX</span>
+            Cards, Comics, Coins
           </UncontrolledTooltip>
           <button
             aria-expanded={collapseOpen}
@@ -120,43 +120,7 @@ export default function IndexNavbar() {
             </Row>
           </div>
           <Nav navbar>
-            <NavItem className="p-0">
-              <NavLink
-                data-placement="bottom"
-                href="https://twitter.com/CreativeTim"
-                rel="noopener noreferrer"
-                target="_blank"
-                title="Follow us on Twitter"
-              >
-                <i className="fab fa-twitter" />
-                <p className="d-lg-none d-xl-none">Twitter</p>
-              </NavLink>
-            </NavItem>
-            <NavItem className="p-0">
-              <NavLink
-                data-placement="bottom"
-                href="https://www.facebook.com/CreativeTim"
-                rel="noopener noreferrer"
-                target="_blank"
-                title="Like us on Facebook"
-              >
-                <i className="fab fa-facebook-square" />
-                <p className="d-lg-none d-xl-none">Facebook</p>
-              </NavLink>
-            </NavItem>
-            <NavItem className="p-0">
-              <NavLink
-                data-placement="bottom"
-                href="https://www.instagram.com/CreativeTimOfficial"
-                rel="noopener noreferrer"
-                target="_blank"
-                title="Follow us on Instagram"
-              >
-                <i className="fab fa-instagram" />
-                <p className="d-lg-none d-xl-none">Instagram</p>
-              </NavLink>
-            </NavItem>
-            <UncontrolledDropdown nav>
+          <UncontrolledDropdown nav>
               <DropdownToggle
                 caret
                 color="default"
@@ -166,7 +130,7 @@ export default function IndexNavbar() {
                 onClick={(e) => e.preventDefault()}
               >
                 <i className="fa fa-cogs d-lg-none d-xl-none" />
-                Getting started
+                Start Shopping!
               </DropdownToggle>
               <DropdownMenu className="dropdown-with-icons">
                 <DropdownItem href="https://demos.creative-tim.com/blk-design-system-react/#/documentation/overview">
@@ -187,6 +151,43 @@ export default function IndexNavbar() {
                 </DropdownItem>
               </DropdownMenu>
             </UncontrolledDropdown>
+            <NavItem className="p-0">
+              <NavLink
+                data-placement="bottom"
+                href=""
+                rel="noopener noreferrer"
+                target="_blank"
+                title="Follow us on Twitter"
+              >
+                <i className="fab fa-twitter" />
+                <p className="d-lg-none d-xl-none">Twitter</p>
+              </NavLink>
+            </NavItem>
+            <NavItem className="p-0">
+              <NavLink
+                data-placement="bottom"
+                href=""
+                rel="noopener noreferrer"
+                target="_blank"
+                title="Like us on Facebook"
+              >
+                <i className="fab fa-facebook-square" />
+                <p className="d-lg-none d-xl-none">Facebook</p>
+              </NavLink>
+            </NavItem>
+            <NavItem className="p-0">
+              <NavLink
+                data-placement="bottom"
+                href="https://www.instagram.com/CreativeTimOfficial"
+                rel="noopener noreferrer"
+                target="_blank"
+                title="Follow us on Instagram"
+              >
+                <i className="fab fa-instagram" />
+                <p className="d-lg-none d-xl-none">Instagram</p>
+              </NavLink>
+            </NavItem>
+
             <NavItem>
               <Button
                 className="nav-link d-none d-lg-block"
@@ -201,8 +202,8 @@ export default function IndexNavbar() {
             <NavItem>
               <Button
                 className="nav-link d-none d-lg-block"
-                color="default"
-                onClick={scrollToDownload}
+                color="black"
+                href="/signup"
               >
                 <i className="tim-icons icon-cloud-download-93" /> Sign Up
               </Button>

@@ -22,7 +22,7 @@ import {
 } from "@material-ui/core";
 import Navbar from "./Navbar";
 import Sidebar from "./Siderbar";
-import { DELETE_REVIEW_RESET } from "../../constants/productsConstatns";
+import { DELETE_REVIEW_RESET } from "../../constants/productsConstant";
 import { makeStyles } from "@material-ui/core/styles";
 import StarRateIcon from "@mui/icons-material/StarRate";
 

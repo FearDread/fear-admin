@@ -5,10 +5,10 @@ import CricketBallLoader from "../layouts/loader/Loader";
 import {
   clearErrors,
   updateProfile,
-  load_UserProfile,
+  UserProfile,
 } from "../../actions/userAction";
 import { useAlert } from "react-alert";
-import { UPDATE_PROFILE_RESET } from "../../constants/userConstanat";
+import { UPDATE_PROFILE_RESET } from "../../constants/userConstant";
 import MetaData from "../layouts/MataData/MataData";
 import { useHistory } from "react-router-dom";
 import UpdateIcon from "@mui/icons-material/Update";
@@ -96,7 +96,7 @@ function UpdateProfile() {
 
       history.push("/account");
 
-      dispatch(load_UserProfile());
+      dispatch(UserProfile());
     }
   }, [dispatch, error, alert, history, user, isUpdated]);
 

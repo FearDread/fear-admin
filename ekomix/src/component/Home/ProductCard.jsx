@@ -1,16 +1,14 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
-/*
+
 import {
-  Card,
   CardActionArea,
   CardMedia,
   CardContent,
   Typography,
-  Button,
   Box,
 } from "@material-ui/core";
-*/
+
 import {
   Button,
   Card,
@@ -52,20 +50,14 @@ const ProductCard = ({ product }) => {
 
   return (
     <>
-    </>
-  );
-}
-
-export default ProductCard;
-/*
-    <Card className={classes.root}>
+    <Card className="card-register card-dark">
       <Link
-        className="productCard"
+        className="product-card"
         to={`/product/${product._id}`}
         style={{ textDecoration: "none", color: "inherit" }}
       >
-        <CardActionArea>
-          <CardMedia className={classes.media} image={product.images[0].url} />
+      <CardActionArea>
+          <CardMedia className={classes.media} image={product.images[0] && product.images[0].url ? product.images[0].url : ''} />
           <CardContent>
             <Typography
               gutterBottom
@@ -103,11 +95,7 @@ export default ProductCard;
               <Typography variant="body1" className={classes.finalPrice}>
                 {discountPrice}
               </Typography>
-            </Box>
-          </CardContent>
-        </CardActionArea>
-      </Link>
-      <Box display="flex" justifyContent="center" p={2}>
+        <Box display="flex" justifyContent="center" p={2}>
         <Button
           variant="contained"
           className={classes.button}
@@ -115,7 +103,25 @@ export default ProductCard;
         >
           Add to Cart
         </Button>
+        </Box>
       </Box>
+      </CardContent>
+      </CardActionArea>
+      </Link>
+    </Card>
+    </>
+  );
+}
+
+export default ProductCard;
+/*
+    <Card className={classes.root}>
+      <Link
+        className="productCard"
+        to={`/product/${product._id}`}
+        style={{ textDecoration: "none", color: "inherit" }}
+      >
+
     </Card>
   );
 };

@@ -12,7 +12,7 @@ import Sidebar from "./Siderbar";
 import Navbar from "./Navbar";
 import Loader from "../layouts/loader/Loader";
 import { getAllUsers, clearErrors, deleteUser } from "../../actions/userAction";
-import { DELETE_USER_RESET } from "../../constants/userConstanat";
+import { DELETE_USER_RESET } from "../../constants/userConstant";
 import { useHistory } from "react-router-dom";
 
 function UserList() {

@@ -6,7 +6,7 @@ import { useSelector, useDispatch } from "react-redux";
 import MetaData from "../layouts/MataData/MataData";
 import Navbar from "./Navbar";
 import Sidebar from "./Siderbar";
-import { UPDATE_USER_RESET } from "../../constants/userConstanat";
+import { UPDATE_USER_RESET } from "../../constants/userConstant";
 import {
   getUserDetails,
   updateUser,

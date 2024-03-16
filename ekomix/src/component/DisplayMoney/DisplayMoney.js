@@ -1,6 +1,6 @@
 // dispaly Money In indian Formate
 export const dispalyMoney = function(num) {
-  const numFormate = new Intl.NumberFormat("en-IN", {
+  const numFormate = new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "INR",
   });

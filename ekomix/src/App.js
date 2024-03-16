@@ -1,7 +1,7 @@
 import React, { useState, useEffect, Suspense } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { load_UserProfile } from "./actions/userAction";
+import { UserProfile } from "./actions/userAction";
 import axios from "axios";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
@@ -94,7 +94,7 @@ function App() {
   }, []);
 
   useEffect(() => {
-    dispatch(load_UserProfile());
+    dispatch(UserProfile());
 
     // eslint-disable-next-line
   }, []);

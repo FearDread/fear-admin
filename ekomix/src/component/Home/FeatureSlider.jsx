@@ -10,6 +10,8 @@ import {
   dispalyMoney,
   generateDiscountedPrice,
 } from "../DisplayMoney/DisplayMoney";
+
+
 const FeaturedSlider = ({ products }) => {
  
   return (
@@ -59,7 +61,7 @@ const FeaturedSlider = ({ products }) => {
             >
               <div className="featured_title">{name}</div>
               <figure className="featured_img">
-                <img src={images[0].url} alt={name} />
+                <img src={images[0] && images[0].url ? images[0].url : ''} alt={name} />
               </figure>
               <h2 className="products_price">
                 <span className="final_price">{newPrice}</span> &nbsp;

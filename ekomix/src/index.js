@@ -1,5 +1,5 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import ReactDOM from "react-dom/client";
 import { Provider } from "react-redux";
 import { positions, transitions, Provider as AlertProvider } from "react-alert";
 import AlertTemplate from "react-alert-template-basic";
@@ -15,11 +15,10 @@ const options = {
   transition: transitions.SCALE,
 };
 
-ReactDOM.render(
-  <>
-    {/* Wrap the entire application with BrowserRouter */}
+const Root = ReactDOM.createRoot(document.getElementById("root"));
+
+Root.render(
     <BrowserRouter>
-    
     <ThemeProvider theme={theme}>
       <Provider store={store}>
         <AlertProvider template={AlertTemplate} {...options}>
@@ -28,6 +27,4 @@ ReactDOM.render(
       </Provider>
     </ThemeProvider>
     </BrowserRouter>
-  </>,
-  document.getElementById("root")
 );
