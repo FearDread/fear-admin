@@ -14,8 +14,7 @@
 // Sections
 
 section {
-    //==background-color: section-color("primary");
-    background:rgba(0,0,0,.4);
+    //background-color: section-color("primary");
 }
 
 @each $color, $value in $section-colors {
