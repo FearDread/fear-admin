@@ -1,9 +1,9 @@
 .footer{
     position: relative;
     padding: 50px 0;
-    border-top: 2px solid #435DB5;
-    background: radial-gradient(ellipse at bottom, #292D61 30%, $background-black 80%);
-
+    border-top: 2px solid #b63737;
+    //background: radial-gradient(ellipse at bottom, #050835 30%, $background-black 80%);
+    background: radial-gradient(ellipse at top, #000000d9 30%, #2d1313db 90%);
     [class*="container-"] {
       padding: 0;
     }
