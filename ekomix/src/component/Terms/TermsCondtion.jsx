@@ -1,7 +1,7 @@
 import React from "react";
 import "./TermsAndCondtion.css";
 import MetaData from "../layouts/MataData/MataData";
-import TermsImage from "../Image/about/tc.jpg";
+import TermsImage from "../../assets/Image/about/tc.jpg";
 const TermsAndConditionsPage = () => {
   return (
     <div className="terms-container">

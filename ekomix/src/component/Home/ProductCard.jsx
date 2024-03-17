@@ -10,6 +10,7 @@ import {
 } from "@material-ui/core";
 
 import {
+  Col,
   Button,
   Card,
   CardHeader,

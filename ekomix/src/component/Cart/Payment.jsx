@@ -37,9 +37,9 @@ import {
 import EditIcon from "@material-ui/icons/Edit";
 import { makeStyles } from "@material-ui/core/styles";
 import AssuredWorkloadOutlinedIcon from "@mui/icons-material/AssuredWorkloadOutlined";
-import { ReactComponent as MasterCard } from "../../Image/payment-svg/mastercard.svg";
-import { ReactComponent as Visa } from "../../Image/payment-svg/visa (1).svg";
-import { ReactComponent as Paytm } from "../../Image/payment-svg/paytm.svg";
+import { ReactComponent as MasterCard } from "../../assets/Image/payment-svg/mastercard.svg";
+import { ReactComponent as Visa } from "../../assets/Image/payment-svg/visa (1).svg";
+import { ReactComponent as Paytm } from "../../assets/Image/payment-svg/paytm.svg";
 import {
   dispalyMoney,
   generateDiscountedPrice,
@@ -719,7 +719,7 @@ const PaymentComponent = () => {
 
               <div className="paymentLogoImg">
                 <img
-                  src={require("../../Image/cart/cart_img.png")}
+                  src={require("../../assets/Image/cart/cart_img.png")}
                   alt="payemnt-icons"
                   className="paymentImg"
                 />
@@ -845,7 +845,6 @@ const PaymentComponent = () => {
             </div>
           </div>
         </div>
-    
     </>
   );
 };
