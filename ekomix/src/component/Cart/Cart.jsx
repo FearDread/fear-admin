@@ -233,7 +233,7 @@ const Cart = () => {
 
                 <div className="paymentLogoImg">
                   <img
-                    src={require("../../Image/cart/cart_img.png")}
+                    src={require("../../assets/Image/cart/cart_img.png")}
                     alt="payemnt-icons"
                     className="paymentImg"
                   />

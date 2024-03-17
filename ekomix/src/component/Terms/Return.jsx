@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import "./Return.css"
 import MetaData from "../layouts/MataData/MataData";
-import TermsImage from "../Image/about/tc.jpg";
+import TermsImage from "../../assets/Image/about/tc.jpg";
 const ReturnPolicyPage = () => {
   return (
     <div className="container__0">

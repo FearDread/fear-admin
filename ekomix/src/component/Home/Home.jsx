@@ -50,11 +50,10 @@ function Home() {
               <Container>
               <h2 className="trending_heading">Trending Products</h2>
               <div className="trending-products">
-              {products && <FeaturedSlider products={products} />}
-                { /* products &&
+              {products &&
                   products.map((product) => (
                     <ProductCard key={product._id} product={product} />
-                  ))*/}
+                  ))}
               </div>
               </Container>
             </div>

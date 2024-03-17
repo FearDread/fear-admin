@@ -16,9 +16,9 @@ import Sidebar from "./Siderbar";
 import { useHistory } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
 import { Typography } from "@material-ui/core";
-import ProductImg from "../../Image/admin/products.png";
-import ordersImg from "../../Image/admin/order.png";
-import usersImg from "../../Image/admin/user.png"; 
+import ProductImg from "../../assets/Image/admin/products.png";
+import ordersImg from "../../assets/Image/admin/order.png";
+import usersImg from "../../assets/Image/admin/user.png"; 
 Highcharts3D(Highcharts);
 
 const useStyles = makeStyles((theme) => ({

@@ -116,7 +116,7 @@ const Navbar = ({ toggleHandler }) => {
           style={{ textDecoration: "none", color: "none" , width: "100%" , height: "100%"}}
         >
           <img
-            src={require("../../Image/logo.png")}
+            src={require("../../assets/Image/logo.png")}
             alt="logo"
             className={classes.headerBottom__logo_main}
           />

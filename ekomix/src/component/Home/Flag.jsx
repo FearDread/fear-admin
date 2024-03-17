@@ -2,10 +2,10 @@ import React from "react";
 import { makeStyles } from "@mui/styles";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
-import IN from "../../Image/flag/in.svg"
-import US from "../../Image/flag/us.svg"
-import GB from "../../Image/flag/gb.svg"
-import FR from "../../Image/flag/fr.svg"
+import IN from "../../assets/Image/flag/in.svg"
+import US from "../../assets/Image/flag/us.svg"
+import GB from "../../assets/Image/flag/gb.svg"
+import FR from "../../assets/Image/flag/fr.svg"
 
 const countryOptions = [
   { code: "us", label: "USA", flag:  US },
