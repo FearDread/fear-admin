@@ -1,5 +1,5 @@
 import React from "react";
-import { logout } from "../../../actions/userAction";
+import { logout } from "../../../_store/actions/userAction";
 import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { useAlert } from "react-alert";

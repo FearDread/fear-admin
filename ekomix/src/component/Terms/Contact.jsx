@@ -12,7 +12,7 @@ import {
 import { useAlert } from "react-alert";
 import { useHistory } from "react-router-dom";
 import { makeStyles } from "@mui/styles";
-import MetaData from "../component/layouts/MataData/MataData";
+import MetaData from "../layouts/MataData/MataData";
 const useStyles = makeStyles((theme) => ({
   root_contactus: {
     padding: "8rem 0",

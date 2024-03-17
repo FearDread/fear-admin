@@ -28,8 +28,8 @@ import {
  DELETE_REVIEW_FAIL,
   CLEAR_ERRORS,
   ALL_REVIEW_FAIL,
-} from "../constants/productsConstant";
-import { API_BASE_URL } from "../constants/api";
+} from "../types/productsConstant";
+import { API_BASE_URL } from "../../_config/api";
 
 // get ALL Products
 export const getProduct = (

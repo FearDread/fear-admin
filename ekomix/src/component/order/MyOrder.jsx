@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { makeStyles } from "@mui/styles";
 import { Typography } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
-import { myOrders, clearErrors } from "../../actions/orderAction";
+import { myOrders, clearErrors } from "../../_store/actions/orderAction";
 import MetaData from "../layouts/MataData/MataData";
 import CricketBallLoader from "../layouts/loader/Loader";
 import { useAlert } from "react-alert";

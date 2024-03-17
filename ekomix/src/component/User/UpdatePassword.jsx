@@ -7,9 +7,9 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { Link } from "react-router-dom";
 import CricketBallLoader from "../layouts/loader/Loader";
 import { useDispatch, useSelector } from "react-redux";
-import { updatePassword, clearErrors } from "../../actions/userAction";
+import { updatePassword, clearErrors } from "../../_store/actions/userAction";
 import { useAlert } from "react-alert";
-import { UPDATE_PASSWORD_RESET } from "../../constants/userConstant";
+import { UPDATE_PASSWORD_RESET } from "../../_store/types/userConstant";
 import MetaData from "../layouts/MataData/MataData";
 import { useHistory } from "react-router-dom"; 
 

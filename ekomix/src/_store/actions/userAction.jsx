@@ -37,8 +37,8 @@ import {
   DELETE_USER_REQUEST,
   DELETE_USER_FAIL,
   DELETE_USER_SUCCESS,
-} from "../constants/userConstant";
-import { API_BASE_URL } from "../constants/api";
+} from "../types/userConstant";
+import { API_BASE_URL } from "../../_config/api";
 
 // login user
 export function login(email, password) {

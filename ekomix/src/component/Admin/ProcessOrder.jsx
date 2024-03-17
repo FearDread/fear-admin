@@ -4,7 +4,7 @@ import {
   updateOrder,
   clearErrors,
   getOrderDetails,
-} from "../../actions/orderAction";
+} from "../../_store/actions/orderAction";
 import Navbar from "./Navbar";
 import Sidebar from "./Siderbar";
 import MetaData from "../layouts/MataData/MataData";
@@ -14,7 +14,7 @@ import { Typography, Divider } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import AccountTreeIcon from "@material-ui/icons/AccountTree";
 import { Button } from "@material-ui/core";
-import { UPDATE_ORDER_RESET } from "../../constants/orderConstant";
+import { UPDATE_ORDER_RESET } from "../../_store/types/orderConstant";
 import { Link, useParams } from "react-router-dom";
 import OrderDetailsSection from "../Cart/OrderDetails";
 

@@ -6,9 +6,9 @@ import {
   clearErrors,
   updateProfile,
   UserProfile,
-} from "../../actions/userAction";
+} from "../../_store/actions/userAction";
 import { useAlert } from "react-alert";
-import { UPDATE_PROFILE_RESET } from "../../constants/userConstant";
+import { UPDATE_PROFILE_RESET } from "../../_store/types/userConstant";
 import MetaData from "../layouts/MataData/MataData";
 import { useHistory } from "react-router-dom";
 import UpdateIcon from "@mui/icons-material/Update";

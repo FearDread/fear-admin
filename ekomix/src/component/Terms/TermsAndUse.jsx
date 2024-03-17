@@ -1,6 +1,6 @@
 import React from "react";
 import "./Privacy.css";
-import MetaData from "../component/layouts/MataData/MataData";
+import MetaData from "../layouts/MataData/MataData";
 const TermsAndConditions = () => {
   return (
     <div className="privacy-policy-container">

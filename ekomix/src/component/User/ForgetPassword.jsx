@@ -3,7 +3,7 @@ import LockClockIcon from "@mui/icons-material/LockClock";
 import { TextField, Button, Typography, Avatar } from "@material-ui/core";
 import useStyles from "./LoginFromStyle";
 import { useDispatch, useSelector } from "react-redux";
-import { forgetPassword, clearErrors } from "../../actions/userAction";
+import { forgetPassword, clearErrors } from "../../_store/actions/userAction";
 import { useAlert } from "react-alert";
 import MetaData from "../layouts/MataData/MataData";
 import CricketBallLoader from "../layouts/loader/Loader";

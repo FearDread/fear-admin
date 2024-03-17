@@ -17,9 +17,9 @@ import {
   updateProduct,
   clearErrors,
   getProductDetails,
-} from "../../actions/productAction";
+} from "../../_store/actions/productAction";
 import { useHistory } from "react-router-dom";
-import { UPDATE_PRODUCT_RESET } from "../../constants/productsConstant";
+import { UPDATE_PRODUCT_RESET } from "../../_store/types/productsConstant";
 import { useRouteMatch } from "react-router-dom";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import Box from "@material-ui/core/Box";

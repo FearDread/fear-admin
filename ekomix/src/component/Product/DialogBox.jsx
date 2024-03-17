@@ -19,12 +19,12 @@ import {
 } from "@material-ui/core";
 import { Close } from "@material-ui/icons";
 import Rating from "@material-ui/lab/Rating";
-import { NEW_REVIEW_RESET } from "../../constants/productsConstant";
+import { NEW_REVIEW_RESET } from "../../_store/types/productsConstant";
 import { useSelector, useDispatch } from "react-redux";
 
 import { useParams } from "react-router-dom";
 import { useAlert } from "react-alert";
-import { clearErrors, newReview } from "../../actions/productAction";
+import { clearErrors, newReview } from "../../_store/actions/productAction";
 
 
 

@@ -13,7 +13,7 @@ import "./ProfileModel.css";
 import { useHistory } from "react-router-dom";
 import { useAlert } from "react-alert";
 import { useDispatch } from "react-redux";
-import { logout } from "../../../actions/userAction";
+import { logout } from "../../../_store/actions/userAction";
 
 const ProfileModal = ({ user, isAuthenticated }) => {
   const alert = useAlert();
