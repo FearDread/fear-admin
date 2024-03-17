@@ -8,10 +8,13 @@ import Loader from "../layouts/loader/Loader";
 import { useAlert } from "react-alert";
 import HeroSlider from "./HeroSilder";
 import FeaturedSlider from "./FeatureSlider";
-function Home() {
-  // we provided all parameter for react-alert at index.js
-  const alert = useAlert();
+import { 
+  Container
+ } from "reactstrap";
 
+
+function Home() {
+  const alert = useAlert();
   const dispatch = useDispatch();
   const { loading, error, products } = useSelector((state) => state.products);
 
@@ -20,6 +23,7 @@ function Home() {
       alert.error(error);
       dispatch(clearErrors);
     }
+
     dispatch(getAdminProducts());
   }, [dispatch, error, alert]);
 
@@ -28,43 +32,32 @@ function Home() {
       {loading ? (
         <Loader />
       ) : (
-        <>
           <>
-            <MataData title="Cricket Weapon" />
+            <MataData title="E-KomiX" />
             <div className="Home_Page">
               <div className="heroSlider_Home">
                 <HeroSlider />;
               </div>
-
+              <Container>
               <div className="feature" style={{ marginTop: "2.7rem" }}>
-                <h2
-                  style={{
-                    textAlign: "center",
-                    fontFamily: `"Archivo", sans-serif`,
-                    fontWeight: "800",
-                  }}
-                >
+                <h2>
                   Featured Products
                 </h2>
                 {products &&
-             
-                
-                       <FeaturedSlider   products ={products}/> }
-                  
-                 
-              
+                <FeaturedSlider products={products} /> }
               </div>
-
+              </Container>
+              <Container>
               <h2 className="trending_heading">Trending Products</h2>
-
               <div className="trending-products">
-                {products &&
+              {products && <FeaturedSlider products={products} />}
+                { /* products &&
                   products.map((product) => (
                     <ProductCard key={product._id} product={product} />
-                  ))}
+                  ))*/}
               </div>
+              </Container>
             </div>
-          </>
         </>
       )}
     </>
