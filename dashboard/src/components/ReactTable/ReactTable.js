@@ -7,13 +7,13 @@ import {
   useSortBy,
   usePagination,
 } from "react-table";
-import classnames from "classnames";
+import classNames from "classnames";
 // A great library for fuzzy filtering/sorting items
 import { matchSorter } from "match-sorter";
 // react plugin used to create DropdownMenu for selecting items
 import Select from "react-select";
 // reactstrap components
-import { FormGroup, Input, Row, Col } from "reactstrap";
+import { FormGroup, Input, Row, Col, Button } from "reactstrap";
 
 // Define a default UI for filtering
 function DefaultColumnFilter({
@@ -182,7 +182,7 @@ function Table({ columns, data }) {
                 {headerGroup.headers.map((column, key) => (
                   <th
                     {...column.getHeaderProps(column.getSortByToggleProps())}
-                    className={classnames("rt-th rt-resizable-header", {
+                    className={classNames("rt-th rt-resizable-header", {
                       "-cursor-pointer": headerGroup.headers.length - 1 !== key,
                       "-sort-asc": column.isSorted && !column.isSortedDesc,
                       "-sort-desc": column.isSorted && column.isSortedDesc,
@@ -210,7 +210,7 @@ function Table({ columns, data }) {
               return (
                 <tr
                   {...row.getRowProps()}
-                  className={classnames(
+                  className={classNames(
                     "rt-tr",
                     { " -odd": i % 2 === 0 },
                     { " -even": i % 2 === 1 }
@@ -223,6 +223,83 @@ function Table({ columns, data }) {
                       </td>
                     );
                   })}
+                  <td>
+                  <div className="actions-right">
+            {/* use this button to add a like kind of action */}
+            <Button
+              onClick={() => {
+                let obj = data.find((o) => o.id === i);
+                alert(
+                  "You've clicked LIKE button on \n{ \nName: " +
+                    obj.name +
+                    ", \nposition: " +
+                    obj.position +
+                    ", \noffice: " +
+                    obj.office +
+                    ", \nage: " +
+                    obj.age +
+                    "\n}."
+                );
+              }}
+              color="info"
+              size="sm"
+              className={classNames("btn-icon btn-link like", {
+                "btn-neutral": i < 5
+              })}
+            >
+              <i className="tim-icons icon-heart-2" />
+            </Button>{" "}
+            {/* use this button to add a edit kind of action */}
+            <Button
+              onClick={() => {
+                let obj = data.find((o) => o.id === i);
+                alert(
+                  "You've clicked EDIT button on \n{ \nName: " +
+                    obj.name +
+                    ", \nposition: " +
+                    obj.position +
+                    ", \noffice: " +
+                    obj.office +
+                    ", \nage: " +
+                    obj.age +
+                    "\n}."
+                );
+              }}
+              color="warning"
+              size="sm"
+              className={classNames("btn-icon btn-link like", {
+                "btn-neutral": i < 5
+              })}
+            >
+              <i className="tim-icons icon-pencil" />
+            </Button>{" "}
+            {/* use this button to remove the data row */}
+            <Button
+              onClick={() => {
+                var newdata = data;
+                newdata.find((o, i) => {
+                  if (o.id === i) {
+                    // here you should add some custom code so you can delete the data
+                    // from this component and from your server as well
+                    data.splice(i, 1);
+                    console.log(data);
+                    return true;
+                  }
+                  return false;
+                });
+                console.log('remove data ')
+                //setData(newdata);
+              }}
+              color="danger"
+              size="sm"
+              className={classNames("btn-icon btn-link like", {
+                "btn-neutral": i < 5
+              })}
+            >
+              <i className="tim-icons icon-simple-remove" />
+            </Button>{" "}
+          </div>
+                  </td>
                 </tr>
               );
             })}

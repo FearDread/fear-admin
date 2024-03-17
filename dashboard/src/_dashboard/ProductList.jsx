@@ -5,26 +5,34 @@ import {
   getAdminProducts,
   deleteProduct,
 } from "_redux/actions/product";
+import classNames from "classnames";
 import SortingTable from "components/SortingTable/SortingTable.js";
-import { Card, CardHeader, CardBody, CardTitle, Row, Col } from "reactstrap";
+import {
+  Card,
+  CardHeader,
+  CardBody,
+  CardTitle,
+  Row,
+  Col,
+  Button
+ } from "reactstrap";
 import { useHistory } from "react-router-dom";
 import Loader from "components/Loader/Loading";
 import { DELETE_PRODUCT_RESET } from "_redux/types/product";
+import ReactTable from "components/ReactTable/ReactTable.js";
 
 function ProductList() {
   const dispatch = useDispatch();
-  //const alert = useAlert();
   const history = useHistory();
   const [toggle, setToggle] = useState(false);
+  const [ data, setData ] = useState();
   const { error, products, loading } = useSelector((state) => state.product);
   //const { error: deleteError, isDeleted, message } = useSelector((state) => state.deleteUpdateProduct);
   
   useEffect(() => {
-
     //if (isDeleted) {
     //  dispatch({ type: DELETE_PRODUCT_RESET });
    // }
-
     dispatch(getAdminProducts());
     
   }, [dispatch]);
@@ -32,30 +40,6 @@ function ProductList() {
   //const deleteProductHandler = (id) => {
   //  dispatch(deleteProduct(id));
   //};
-
-  const tableRows = [];
-  const tableHeader = [
-    { text: "Preview" },
-    { text: "Name" },
-    { text: "Category" },
-    { text: "Stock" },
-    { text: "Price" },
-    { text: "Info" },
-    { text: "Description" },
-  ];
-  
-  console.log("Product data :: ", products);
-  products && products.forEach((item) => {
-    tableRows.push({data: [
-      {img: (item.images.length > 0 ) ? item.images[0].url : ""},
-      {text: item.name},
-      {text: item.category},
-      {text: item.Stock},
-      {text: item.price},
-      {text: item.info},
-      {text: item.description}
-      ]});
-  });
 
   useEffect(() => {
     const handleResize = () => {
@@ -76,6 +60,12 @@ function ProductList() {
     ) : (
     <>
       <div className="content">
+        <Col md={8} className="ml-auto mr-auto">
+          <h2 className="text-center">Products React Table</h2>
+          <p className="text-center">
+            Here you can add / edit / or delete products from your store.
+          </p>
+        </Col>
           <Row>
             <Col className="mb-5" md="12">
               <Card>
@@ -83,10 +73,53 @@ function ProductList() {
                   <CardTitle tag="h4">All Products</CardTitle>
                 </CardHeader>
                 <CardBody>
+                <ReactTable
+                  data={products}
+                  filterable
+                  resizable={false}
+                  columns={[
+                    {
+                      Header: "Preview",
+                      accessor: "preview"
+                    },
+                    {
+                      Header: "Name",
+                      accessor: "name"
+                    },
+                    {
+                      Header: "Category",
+                      accessor: "category"
+                    },
+                    {
+                      Header: "Price",
+                      accessor: "price"
+                    },
+                    {
+                      Header: "# in Stock",
+                      accessor: "Stock"
+                    },
+                    {
+                      Header: "Info",
+                      accessor: "info"
+                    },
+                    {
+                      Header: "Actions",
+                      accessor: "actions",
+                      sortable: false,
+                      filterable: false
+                    }
+                  ]}
+                  defaultPageSize={10}
+                  showPaginationTop
+                  showPaginationBottom={true}
+                  className="-striped -highlight"
+                />
+                {/*
                   <SortingTable
                     thead={tableHeader}
                     tbody={tableRows}
                   />
+                */}
                 </CardBody>
               </Card>
             </Col>
