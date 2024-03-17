@@ -1,7 +1,7 @@
 import React from "react";
 import "./Shipping.css";
 import { useSelector, useDispatch } from "react-redux";
-import { saveShippingInfo } from "../../actions/cartAction";
+import { saveShippingInfo } from "../../_store/actions/cartAction";
 import MetaData from "../layouts/MataData/MataData";
 import CheckoutSteps from "./CheckoutSteps ";
 import { useAlert } from "react-alert";

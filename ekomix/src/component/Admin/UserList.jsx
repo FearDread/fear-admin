@@ -11,8 +11,8 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import Sidebar from "./Siderbar";
 import Navbar from "./Navbar";
 import Loader from "../layouts/loader/Loader";
-import { getAllUsers, clearErrors, deleteUser } from "../../actions/userAction";
-import { DELETE_USER_RESET } from "../../constants/userConstant";
+import { getAllUsers, clearErrors, deleteUser } from "../../_store/actions/userAction";
+import { DELETE_USER_RESET } from "../../_store/types/userConstant";
 import { useHistory } from "react-router-dom";
 
 function UserList() {

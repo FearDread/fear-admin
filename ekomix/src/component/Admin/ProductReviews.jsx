@@ -7,7 +7,7 @@ import {
   getAllreviews,
   clearErrors,
   deleteProductReview,
-} from "../../actions/productAction";
+} from "../../_store/actions/productAction";
 import {useHistory } from "react-router-dom";
 import MetaData from "../layouts/MataData/MataData";
 import Loader from "../layouts/loader/Loader";
@@ -22,7 +22,7 @@ import {
 } from "@material-ui/core";
 import Navbar from "./Navbar";
 import Sidebar from "./Siderbar";
-import { DELETE_REVIEW_RESET } from "../../constants/productsConstant";
+import { DELETE_REVIEW_RESET } from "../../_store/types/productsConstant";
 import { makeStyles } from "@material-ui/core/styles";
 import StarRateIcon from "@mui/icons-material/StarRate";
 

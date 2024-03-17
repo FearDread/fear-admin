@@ -11,7 +11,7 @@ import {
 import CricketBallLoader from "../layouts/loader/Loader";
 import MetaData from "../layouts/MataData/MataData";
 import { Link } from "react-router-dom";
-import { signUp, clearErrors } from "../../actions/userAction";
+import { signUp, clearErrors } from "../../_store/actions/userAction";
 import { useDispatch, useSelector } from "react-redux";
 import { useAlert } from "react-alert";
 import { useHistory } from "react-router-dom";

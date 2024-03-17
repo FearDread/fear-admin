@@ -6,12 +6,12 @@ import { useSelector, useDispatch } from "react-redux";
 import MetaData from "../layouts/MataData/MataData";
 import Navbar from "./Navbar";
 import Sidebar from "./Siderbar";
-import { UPDATE_USER_RESET } from "../../constants/userConstant";
+import { UPDATE_USER_RESET } from "../../_store/types/userConstant";
 import {
   getUserDetails,
   updateUser,
   clearErrors,
-} from "../../actions/userAction";
+} from "../../_store/actions/userAction";
 import Loader from "../layouts/loader/Loader";
 import { useHistory, useRouteMatch } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";

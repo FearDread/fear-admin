@@ -14,10 +14,10 @@ import OrderSuccess from "../component/Cart/OrderSuccess";
 import MyOrder from "../component/order/MyOrder";
 import ContactForm from "../component/layouts/About/Contact";
 import AboutUsPage from "../component/layouts/About/Aboutus";
-import ReturnPolicyPage from "../Terms&Condtions/Return";
-import TermsUse from "../Terms&Condtions/TermsAndUse";
-import TermsAndConditions from "../Terms&Condtions/TermsCondtion";
-import PrivacyPolicy from "../Terms&Condtions/Privacy";
+import ReturnPolicyPage from "../component/Terms/Return";
+import TermsUse from "../component/Terms/TermsAndUse";
+import TermsAndConditions from "../component/Terms/TermsCondtion";
+import PrivacyPolicy from "../component/Terms/Privacy";
 import Signup from "../component/User/SignUp";
 import Login from "../component/User/Login";
 import Profile from "../component/User/Profile";
@@ -30,7 +30,7 @@ import { useDispatch } from "react-redux";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import axios from "axios";
-import { load_UserProfile } from "../actions/userAction"
+import { load_UserProfile } from "../_store/actions/userAction"
 function Users() {
    const location = useLocation();
    const [isAdminRoute, setIsAdminRoute] = useState(false);

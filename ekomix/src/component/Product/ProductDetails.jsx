@@ -32,13 +32,13 @@ import ReviewCard from "./ReviewCard";
 import {
   clearErrors,
   getProductDetails,
-} from "../../actions/productAction";
+} from "../../_store/actions/productAction";
 import { useAlert } from "react-alert";
 import MetaData from "../layouts/MataData/MataData";
-import { addItemToCart } from "../../actions/cartAction";
+import { addItemToCart } from "../../_store/actions/cartAction";
 import CricketBallLoader from "../layouts/loader/Loader";
 //import Button from "@mui/material/Button";
-import { PRODUCT_DETAILS_RESET } from "../../constants/productsConstant";
+import { PRODUCT_DETAILS_RESET } from "../../_store/types/productsConstant";
 
 const ProductDetails = () => {
   const match = useRouteMatch();

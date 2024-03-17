@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 import "./Profile.css";
 import { useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { logout } from "../../actions/userAction";
+import { logout } from "../../_store/actions/userAction";
 import { useAlert } from "react-alert";
 const ProfilePage = () => {
   const alert = useAlert();

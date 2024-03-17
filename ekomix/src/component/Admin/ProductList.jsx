@@ -6,7 +6,7 @@ import {
   clearErrors,
   getAdminProducts,
   deleteProduct,
-} from "../../actions/productAction";
+} from "../../_store/actions/productAction";
 import { Link, useHistory } from "react-router-dom";
 import { useAlert } from "react-alert"; 
 
@@ -16,7 +16,7 @@ import MetaData from "../layouts/MataData/MataData";
 import Loader from "../layouts/loader/Loader";
 import Sidebar from "./Siderbar";
 import Navbar from "./Navbar";
-import { DELETE_PRODUCT_RESET } from "../../constants/productsConstant";
+import { DELETE_PRODUCT_RESET } from "../../_store/types/productsConstant";
 
 function ProductList() {
   const dispatch = useDispatch();

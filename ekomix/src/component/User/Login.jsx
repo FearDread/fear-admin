@@ -14,7 +14,7 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory, useLocation } from "react-router-dom";
-import { login, clearErrors } from "../../actions/userAction";
+import { login, clearErrors } from "../../_store/actions/userAction";
 import CricketBallLoader from "../layouts/loader/Loader";
 import { useAlert } from "react-alert";
 import { Link } from "react-router-dom";

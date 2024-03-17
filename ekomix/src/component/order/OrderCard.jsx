@@ -11,7 +11,7 @@ import ReplayIcon from "@mui/icons-material/Replay";
 import EditIcon from "@mui/icons-material/Edit";
 import { useDispatch } from "react-redux";
 import {useAlert} from "react-alert";
-import { addItemToCart } from "../../actions/cartAction";
+import { addItemToCart } from "../../_store/actions/cartAction";
 import {useHistory} from "react-router-dom";
 import DialogBox from "../Product/DialogBox";
 

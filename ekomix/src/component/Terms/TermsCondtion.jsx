@@ -1,6 +1,6 @@
 import React from "react";
 import "./TermsAndCondtion.css";
-import MetaData from "../component/layouts/MataData/MataData";
+import MetaData from "../layouts/MataData/MataData";
 import TermsImage from "../Image/about/tc.jpg";
 const TermsAndConditionsPage = () => {
   return (

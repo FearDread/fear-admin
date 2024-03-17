@@ -1,7 +1,7 @@
 import React from "react";
 import {Link} from "react-router-dom";
 import "./Privacy.css";
-import MetaData from "../component/layouts/MataData/MataData";
+import MetaData from "../layouts/MataData/MataData";
 
 const PrivacyPolicy = () => {
   return (

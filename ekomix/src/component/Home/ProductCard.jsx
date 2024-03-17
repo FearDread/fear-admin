@@ -23,7 +23,7 @@ import Rating from "@material-ui/lab/Rating";
 import { FitScreen } from "@mui/icons-material";
 import { Link } from "react-router-dom";
 import {dispalyMoney  ,generateDiscountedPrice} from "../DisplayMoney/DisplayMoney"
-import { addItemToCart } from "../../actions/cartAction";
+import { addItemToCart } from "../../_store/actions/cartAction";
 import { useDispatch } from "react-redux";
 const useStyles = makeStyles((theme) => ({
 
@@ -50,7 +50,7 @@ const ProductCard = ({ product }) => {
 
   return (
     <>
-    <Card className="card-register card-dark">
+    <Col className="md-6">
       <Link
         className="product-card"
         to={`/product/${product._id}`}
@@ -108,7 +108,7 @@ const ProductCard = ({ product }) => {
       </CardContent>
       </CardActionArea>
       </Link>
-    </Card>
+      </Col>
     </>
   );
 }

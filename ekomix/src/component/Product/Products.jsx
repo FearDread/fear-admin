@@ -5,7 +5,7 @@ import Loader from "../layouts/loader/Loader";
 import { useAlert } from "react-alert";
 import { useRouteMatch } from "react-router-dom";
 import MetaData from "../layouts/MataData/MataData";
-import { clearErrors, getProduct } from "../../actions/productAction";
+import { clearErrors, getProduct } from "../../_store/actions/productAction";
 import ProductCard from "../Home/ProductCard";
 import Pagination from "react-js-pagination";
 import Slider from "@mui/material/Slider";

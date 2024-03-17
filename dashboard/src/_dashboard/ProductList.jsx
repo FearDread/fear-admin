@@ -21,6 +21,39 @@ import Loader from "components/Loader/Loading";
 import { DELETE_PRODUCT_RESET } from "_redux/types/product";
 import ReactTable from "components/ReactTable/ReactTable.js";
 
+const header = [
+  {
+    Header: "Preview",
+    accessor: "preview"
+  },
+  {
+    Header: "Name",
+    accessor: "name"
+  },
+  {
+    Header: "Category",
+    accessor: "category"
+  },
+  {
+    Header: "Price",
+    accessor: "price"
+  },
+  {
+    Header: "# in Stock",
+    accessor: "Stock"
+  },
+  {
+    Header: "Info",
+    accessor: "info"
+  },
+  {
+    Header: "Actions",
+    accessor: "actions",
+    sortable: false,
+    filterable: false
+  }
+];
+
 function ProductList() {
   const dispatch = useDispatch();
   const history = useHistory();
@@ -77,56 +110,19 @@ function ProductList() {
                   data={products}
                   filterable
                   resizable={false}
-                  columns={[
-                    {
-                      Header: "Preview",
-                      accessor: "preview"
-                    },
-                    {
-                      Header: "Name",
-                      accessor: "name"
-                    },
-                    {
-                      Header: "Category",
-                      accessor: "category"
-                    },
-                    {
-                      Header: "Price",
-                      accessor: "price"
-                    },
-                    {
-                      Header: "# in Stock",
-                      accessor: "Stock"
-                    },
-                    {
-                      Header: "Info",
-                      accessor: "info"
-                    },
-                    {
-                      Header: "Actions",
-                      accessor: "actions",
-                      sortable: false,
-                      filterable: false
-                    }
-                  ]}
+                  columns={header}
                   defaultPageSize={10}
                   showPaginationTop
                   showPaginationBottom={true}
                   className="-striped -highlight"
                 />
-                {/*
-                  <SortingTable
-                    thead={tableHeader}
-                    tbody={tableRows}
-                  />
-                */}
                 </CardBody>
               </Card>
             </Col>
           </Row>
       </div>
     </>
-  )}
+    )}
   </>
   );
 }

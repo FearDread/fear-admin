@@ -6,7 +6,7 @@ import axios from "axios";
 import { useHistory } from "react-router-dom";
 import OrderDetailsSection from "./OrderDetails";
 import DummyCard from "./DummyCard";
-import { clearErrors, createOrder } from "../../actions/orderAction";
+import { clearErrors, createOrder } from "../../_store/actions/orderAction";
 import CheckoutSteps from "./CheckoutSteps ";
 
 // for cardDetails for card detials input section and hooks for accessing strip and element from App.js route

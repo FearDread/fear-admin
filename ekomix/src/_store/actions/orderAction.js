@@ -18,7 +18,7 @@ import {
   UPDATE_ORDER_REQUEST,
   UPDATE_ORDER_SUCCESS,
   UPDATE_ORDER_FAIL,
-} from "../constants/orderConstant";
+} from "../types/orderConstant";
 import axios from "axios";
 
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { resetPassword, clearErrors } from "../../actions/userAction";
+import { resetPassword, clearErrors } from "../../_store/actions/userAction";
 import { useAlert } from "react-alert";
 import MetaData from "../layouts/MataData/MataData";
 import { useHistory, useRouteMatch } from "react-router-dom";

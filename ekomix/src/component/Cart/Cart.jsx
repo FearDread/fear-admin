@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./Cart.css";
 import TextField from "@material-ui/core/TextField";
 import { useSelector, useDispatch } from "react-redux";
-import { addItemToCart, removeItemFromCart } from "../../actions/cartAction";
+import { addItemToCart, removeItemFromCart } from "../../_store/actions/cartAction";
 import { Typography } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import RemoveShoppingCartIcon from "@material-ui/icons/RemoveShoppingCart";
