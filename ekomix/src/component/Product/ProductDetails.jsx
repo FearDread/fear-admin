@@ -27,7 +27,7 @@ import Rating from "@material-ui/lab/Rating";
 
 import { useSelector, useDispatch } from "react-redux";
 import { useRouteMatch } from "react-router-dom";
-import useActive from "../hook/useActive";
+import useActive from "../../../hooks/useActive";
 import ReviewCard from "./ReviewCard";
 import {
   clearErrors,

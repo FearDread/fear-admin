@@ -103,8 +103,6 @@ export const UserProfile = () => async (dispatch) => {
       const { data } = await axios.get(API_BASE_URL + "/profile");
    
       dispatch({ type: LOAD_USER_SUCCESS, payload: data.user });
-
-      // Save the user data to session storage for future use
       sessionStorage.setItem("user", JSON.stringify(data.user));
     }
   } catch (error) {

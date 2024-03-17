@@ -85,18 +85,19 @@ function App() {
 
   useEffect(() => {
     const stripeApiKey = sessionStorage.getItem("stripeApiKey");
+   
     if (stripeApiKey) {
-      setStripeApiKey(stripeApiKey);
+      console.log("stripe key: ", stripeApiKey);
+      //setStripeApiKey(stripeApiKey);
     } else {
-      getStripeApiKey();
+      //getStripeApiKey();
     }
-    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
+
     dispatch(UserProfile());
 
-    // eslint-disable-next-line
   }, []);
 
   return (
