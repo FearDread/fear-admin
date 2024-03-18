@@ -106,6 +106,8 @@ function NewProduct() {
       ) : (
         <>
           <div className="content">
+            <h1 className="text-center">Add New Product</h1>
+            <br />
             <Row>
               <Col md="6" className="centered-form">
                 <Form
@@ -113,7 +115,7 @@ function NewProduct() {
                   onSubmit={createProductSubmitHandler}>
                   <Card>
                     <CardHeader>
-                      <CardTitle tag="h4">Add New Product</CardTitle>
+                      <CardTitle tag="h4">Details</CardTitle>
                     </CardHeader>
                     <CardBody>
                       <FormGroup className={`has-labe`}>
@@ -181,33 +183,7 @@ function NewProduct() {
                           onChange={(e) => setInfo(e.target.value)}
                         />
                     </FormGroup>
-                    <FormGroup>
-                      <CardTitle tag="h4">Upload Product Image</CardTitle>
-                        <i className="time-icons icon-upload">Add Image</i>
-                        <Input
-                          type="file"
-                          accept="image/*"
-                          onChange={createProductImagesChange}
-                          multiple
-                          ref={fileInputRef}
-                        />
 
-                          <CardBody>
-                            {imagesPreview && imagesPreview.map((image, index) => (
-                              <img
-                                key={index}
-                                src={image}
-                                alt="Product Preview"
-                              />
-                          ))}
-                          </CardBody>
-                          <Button
-                            variant="contained"
-                            onClick={handleImageUpload}
-                          >
-                            Upload Images
-                          </Button>
-                      </FormGroup> 
                     </CardBody>
                     <Button
                           variant="contained"
@@ -219,6 +195,39 @@ function NewProduct() {
                   </Card>
                 </Form>
               </Col>
+            <Col md="6">
+            <FormGroup>
+              <Card>
+                <CardHeader>
+                  <CardTitle tag="h4">Add Image</CardTitle>
+                </CardHeader>
+                        <Input
+                          type="file"
+                          accept="image/*"
+                          onChange={createProductImagesChange}
+                          multiple
+                          ref={fileInputRef}
+                        />
+
+                        <CardBody>
+                            {imagesPreview && imagesPreview.map((image, index) => (
+                              <img
+                                key={index}
+                                src={image}
+                                className="add-product-img"
+                                alt="Product Preview"
+                              />
+                          ))}
+                        </CardBody>
+                        <Button
+                            variant="contained"
+                            onClick={handleImageUpload}
+                          >
+                            Upload Images
+                        </Button>
+                    </Card>
+                </FormGroup>   
+            </Col>
             </Row>
           </div>
         </>

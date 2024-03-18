@@ -30,7 +30,7 @@ import Shipping from "./component/Cart/Shipping";
 import Cart from "./component/Cart/Cart";
 import ConfirmOrder from "./component/Cart/ConfirmOrder";
 import OrderSuccess from "./component/Cart/OrderSuccess";
-import MyOrder from "./component/order/MyOrder";
+import MyOrder from "./component/Order/MyOrder";
 import ContactForm from "./component/Terms/Contact";
 import AboutUsPage from "./component/Terms/Aboutus";
 import ReturnPolicyPage from "./component/Terms/Return";
