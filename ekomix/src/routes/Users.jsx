@@ -11,7 +11,7 @@ import Cart from "../component/Cart/Cart";
 import ConfirmOrder from "../component/Cart/ConfirmOrder";
 import Payment from "../component/Cart/Payment";
 import OrderSuccess from "../component/Cart/OrderSuccess";
-import MyOrder from "../component/order/MyOrder";
+import MyOrder from "../component/Order/MyOrder";
 import ContactForm from "../component/layouts/About/Contact";
 import AboutUsPage from "../component/layouts/About/Aboutus";
 import ReturnPolicyPage from "../component/Terms/Return";

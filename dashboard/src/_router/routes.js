@@ -47,20 +47,20 @@ const routes = [
   {
     collapse: true,
     name: "Users",
-    icon: "tim-icons icon-chart-bar-32",
+    icon: "tim-icons icon-molecule-40",
     state: "usersCollapse",
     views:[
       {
         path: "/users",
         name: "Users",
-        icon: "tim-icons icon-molecule-40",
+        mini: "U",
         component: UserList,
         layout: "/admin"
       },
       {
         path: "/profile",
         name: "Profile",
-        icon: "tim-icons icon-image-02",
+        mini: "P",
         component: User,
         layout: "/admin"
       },
@@ -84,21 +84,21 @@ const routes = [
       {
         path: "/products",
         name: "All Products",
-        mini: "R",
+        mini: "P",
         component: Products,
         layout: "/admin"
       },
       {
         path: "/product/:id",
-        name: "Add New",
-        mini: "+",
+        name: " + Add New",
+        mini: "A",
         component: NewProduct,
         layout: "/admin"
       },
       {
         path: "/product/reviews",
-        name: "Reviews",
-        mini: "P",
+        name: "+ Reviews",
+        mini: "R",
         component: Panels,
         layout: "/admin"
       }
@@ -151,7 +151,7 @@ const routes = [
     collapse: true,
     name: "Examples",
     icon: "tim-icons icon-image-02",
-    state: "pagesCollapse",
+    state: "examplesCollapse",
     views: [
       {
         path: "/example-tables",
@@ -162,14 +162,14 @@ const routes = [
       },
       {
         path: "/example-charts",
-        name: "Tables",
+        name: "Charts",
         mini: "T",
         component: Charts,
         layout: "/admin"
       },
       {
         path: "/example-calendar",
-        name: "Tables",
+        name: "Calendar",
         mini: "T",
         component: Calendar,
         layout: "/admin"

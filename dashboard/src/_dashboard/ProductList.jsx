@@ -23,8 +23,8 @@ import ReactTable from "components/ReactTable/ReactTable.js";
 
 const header = [
   {
-    Header: "Preview",
-    accessor: "preview"
+    Header: "Cover",
+    accessor: "avatar"
   },
   {
     Header: "Name",
@@ -54,25 +54,27 @@ const header = [
   }
 ];
 
+
+
 function ProductList() {
   const dispatch = useDispatch();
   const history = useHistory();
-  const [toggle, setToggle] = useState(false);
-  const [ data, setData ] = useState();
-  const { error, products, loading } = useSelector((state) => state.product);
-  //const { error: deleteError, isDeleted, message } = useSelector((state) => state.deleteUpdateProduct);
-  
+  const [ toggle, setToggle ] = useState(false);
+  const { error, products, loading, isDeleted } = useSelector((state) => state.product);
+
+  let dataTable = [];
+
   useEffect(() => {
-    //if (isDeleted) {
-    //  dispatch({ type: DELETE_PRODUCT_RESET });
-   // }
+    if (isDeleted) {
+     dispatch({ type: DELETE_PRODUCT_RESET });
+    }
     dispatch(getAdminProducts());
-    
+
   }, [dispatch]);
 
-  //const deleteProductHandler = (id) => {
-  //  dispatch(deleteProduct(id));
-  //};
+  const deleteProductHandler = (id) => {
+    dispatch(deleteProduct(id));
+  };
 
   useEffect(() => {
     const handleResize = () => {
@@ -86,6 +88,21 @@ function ProductList() {
     };
   }, [toggle]);
 
+  products.map((item, key) => {
+    dataTable.push({
+      avatar: (
+        <img 
+          src={item.images[0] ? item.images[0].url : ''} 
+          className="avatar"
+      />),
+      name: item.name,
+      category: item.category,
+      price: item.price,
+      stock: item.Stock,
+      info: item.info
+    })
+  })
+
   return (
     <>
     {loading ? (
@@ -94,10 +111,7 @@ function ProductList() {
     <>
       <div className="content">
         <Col md={8} className="ml-auto mr-auto">
-          <h2 className="text-center">Products React Table</h2>
-          <p className="text-center">
-            Here you can add / edit / or delete products from your store.
-          </p>
+          <h1 className="text-center">Manage Inventory</h1>
         </Col>
           <Row>
             <Col className="mb-5" md="12">
@@ -107,7 +121,7 @@ function ProductList() {
                 </CardHeader>
                 <CardBody>
                 <ReactTable
-                  data={products}
+                  data={dataTable}
                   filterable
                   resizable={false}
                   columns={header}
