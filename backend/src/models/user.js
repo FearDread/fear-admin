@@ -50,7 +50,7 @@ const schema = mongoose.Schema ({
       return await bcrypt.compare(password, this.password); 
     };
 
-    schema.methods.getJWTToken = function () {
+    schema.methods.generateToken = function () {
       return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
         expiresIn: process.env.JWT_EXPIRE,
       });

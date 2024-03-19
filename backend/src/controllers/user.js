@@ -2,12 +2,24 @@ const crypto = require("crypto");
 const cloudinary = require("cloudinary");
 const Auth = require("./auth");
 const UserModel = require('../models/user');
-const { dbError, AppError } = require("../_utils/errorHandlers");
 const { sendEmail } = require("../middleware/mail-handler");
-const TypedError = require("../_utils/ErrorHandler");
+const { DataError } = require("../middleware/error-handler");
+const { generateToken } = require("../_auth");
 
 /* User CRUD methods */
 /* -------------------- */
+exports.read = async (req, res) => {
+  console.log("readUser :: CALLED");
+
+  await UserModel.findById(req.params.id)
+    .then((user) => {
+      res.status(200).send({ success: true, user });
+    })
+    .catch((error) => {
+      DataError(res, error);
+    });
+};
+
 exports.create = async (req, res) => {
   const { name, email, password } = req.body;
   const myCloud = { public_id: '', secure_url: ''};
@@ -21,32 +33,33 @@ exports.create = async (req, res) => {
   }
 
   await UserModel.create({
-    name,
-    email,
-    password,
+    name, email, password,
     avatar: {
       public_id: myCloud.public_id,
       url: myCloud.secure_url,
     }})
     .then((user) => {
       console.log("User Created  ::", user);
-      Auth.sendJWTToken(user, 201, res);
+      res.status(201).send({
+        user,
+        success: true,
+        token: user.generateToken()
+      })
     })
     .catch((error) => {
-      dbError(res, error);
+      DataError(res, error);
     });
 };
 
 exports.list = async (req, res, next) => {
   await UserModel.find()
     .then((users) => {
-      res.status(201).json({
-        success: true,
-        users
-      });
-    }).catch((error) => {
-      dbError(res, error);
-    });
+      res.status(201).send({ success: true, users });
+    })
+    .catch((error) => {
+      DataError(res, error);
+    }
+  );
 };
 
 exports.update = async (req, res, next) => {
@@ -80,56 +93,26 @@ exports.update = async (req, res, next) => {
   })
   .then((user) => {
     user.save();
-    res.status(200).json({
-      success: true,
-      user: user,
-    });
+    res.status(200).json({ success: true, user});
   })
   .catch((error) => {
-    dbError(res, error);
+    DataError(res, error);
   });
 };
 
 /* Admin User Methods */
 /* ------------------ */
-exports.read = async (req, res) => {
-  console.log("readUser :: CALLED");
-
-  if (!req.params.id) {
-    return next(new TypedError(`User does not exist with Id: ${req.params.id}`));
-  }
-
-  await UserModel.findById(req.params.id)
-    .then((user) => {
-      res.status(200).json({
-        success: true,
-        user,
-      });
-    })
-    .catch((error) => {
-      dbError(res, error);
-    });
-};
 
 exports.delete = async (req, res, next) => {
-  if (!req.params.id) {
-    return next(new AppError(`User does not exist with Id: ${req.params.id}`, 400));
-  }
-
   await UserModel.findById(req.params.id)
     .then((user) => {
       const imageId = user.avatar.public_id;
       cloudinary.v2.uploader.destroy(imageId);
 
       user.remove();
-
-      res.status(200).json({
-        success: true,
-        message: "User Deleted Successfully",
-      });
-    })
-    .catch((error) => {
-      dbError(res, error);
+      res.status(200).send({ success: true });
+    }).catch((error) => {
+      DataError(res, error);
     })
 };
 
@@ -152,7 +135,7 @@ exports.updateRole = async (req, res, next) => {
       });
     })
     .catch((error) => {
-      dbError(res, error);
+      //dbError(res, error);
     });
 };
 
@@ -163,7 +146,7 @@ exports.forgotPassword = async (req, res, next) => {
   const user = await User.findOne({ email: req.body.email });
 
   if (!user) {
-    return next(new AppError("User not found", 404));
+   // return next(new AppError("User not found", 404));
   }
 
   // Get ResetPassword Token
@@ -200,16 +183,16 @@ exports.forgotPassword = async (req, res, next) => {
     user.resetPasswordExpire = undefined;
 
     await user.save({ validateBeforeSave: false });
-    return next(new AppError(error.message, 500));
+    //return next(new AppError(error.message, 500));
   }
 };
 
 exports.resetPassword = async (req, res, next) => {
   if (req.body.password !== req.body.confirmPassword) {
-    return next(new AppError("Password does not equal to confirmPassword", 400));
+    //return next(new AppError("Password does not equal to confirmPassword", 400));
   }
   if (!req.params.token) {
-    return next(new AppError("Reset Password Token is invalid or has been expired", 400));
+    //return next(new AppError("Reset Password Token is invalid or has been expired", 400));
   }
 
   const resetPasswordToken = crypto
@@ -228,13 +211,13 @@ exports.resetPassword = async (req, res, next) => {
 
       Auth.sendJWTToken(updated, 200, res);
     }).catch((error) => {
-      dbError(res, error);
+      //dbError(res, error);
     });
 };
 
 exports.updatePassword = async (req, res, next) => {
   if (req.body.newPassword !== req.body.confirmPassword) {
-    return next(new AppError("password does not match", 400));
+    //return next(new AppError("password does not match", 400));
   }
 
   await UserModel.findById(req.user.id)
@@ -242,14 +225,14 @@ exports.updatePassword = async (req, res, next) => {
     .then((user) => {
       const isPasswordMatched = user.compare(req.body.oldPassword);
       if (!isPasswordMatched) {
-        return next(new AppError("Old password is incorrect", 400));
+       // return next(new AppError("Old password is incorrect", 400));
       }
 
       user.password = req.body.newPassword;
       user.save();
 
-      Auth.sendJWTToken(user, 200, res);
+      //Auth.sendJWTToken(user, 200, res);
     }).catch((error) => {
-      dbError(res, error);
+      //dbError(res, error);
     });
 };

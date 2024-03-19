@@ -1,22 +1,28 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../controllers/user");
-const { isAuthenticated, authorizedRoles } = require("../controllers/auth");
-const { catchErrors } = require("../_utils/errorHandlers");
-const asyncHandler = require("../_utils/asyncHandler");
+const { isAdmin, isAuth, isRole } = require("../_auth");
+const asyncHandler = require("../middleware/async-handler");
 
-router.route("/register").post(catchErrors(User.create));
-router.route("/profile").get(isAuthenticated, catchErrors(User.readUser));
-router.route("/password/forgot").post(User.forgotPassword);
-router.route("/password/update").put(isAuthenticated, User.updatePassword);
-router.route("/profile/update").put(isAuthenticated, User.update);
-router.route("/password/reset/:token").put(catchErrors(User.resetPassword));
+router.route("/register").post(asyncHandler(User.create));
 
-router.route("/admin/users")
-    .get(catchErrors(User.list));
-router.route("/admin/user/:id")
-    .get(isAuthenticated, authorizedRoles("admin"), catchErrors(User.read))
-    .delete(isAuthenticated , authorizedRoles("admin") , catchErrors(User.delete))
-    .put(isAuthenticated , authorizedRoles("admin") , catchErrors(User.updateRole));
+router.route("/profile/:id")
+        .get(asyncHandler(User.read))
+        .put(isAuth, asyncHandler(User.update));
+
+router.route("/password/:id")
+        .post(asyncHandler(User.forgotPassword))
+        .put(asyncHandler(User.updatePassword))
+
+router.route("/reset").put(asyncHandler(User.resetPassword));
+
+router.route("/admin").get(isAdmin, asyncHandler(User.list));
+
+router.route("/admin/:id")
+    .get(isAdmin, asyncHandler(User.read))
+    .delete(isAdmin, asyncHandler(User.delete))
+    .put(isAdmin, asyncHandler(User.update));
+
+router.route("/admin/role").put(isAdmin, asyncHandler(User.updateRole));
 
 module.exports = router;
