@@ -24,7 +24,7 @@ const DataError = (req, res, err) => {
          customError.statusCode = 504;
    }
 
-   res.status(statusCode).json({
+   res.status(statusCode).send({
      success: false,
      error: customError,
      stack: err.stack,

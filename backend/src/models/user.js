@@ -6,46 +6,32 @@ const crypto = require("crypto");
 require("dotenv").config({ path: __dirname + "../.env" });
 
 const schema = mongoose.Schema ({
-      name: {
-        type: String,
-        required: [true, "Please Enter Your Name"],
-        minLength: [4, "Name should have more than 4 characters"],
+      name: { type: String, required: true },
+      username: { type: String, required: true, unique: true },
+      email: { type: String, unique: true, 
+        validate: [validator.isEmail, "Please Enter a valid Email"]},
+      password: { type: String, required: true, select: true },
+      avatar: { 
+        public_id: { type: String, required: false },
+        url: { type: String, required: false }
       },
-      
-      email: {
-        type: String,
-        unique: true,
-        validate: [validator.isEmail, "Please Enter a valid Email"],
-      },
-      password: {
-        type: String,
-        required: [true, "Please Enter Your Password"],
-        minLength: [8, "Password should have more than 8 characters"],
-        select: true, 
-      },
-      avatar: {
-        public_id: {
-          type: String,
-          required: false,
-        },
-        url: {
-          type: String,
-          required: false,
-        },
-      },
-      role: {
-        type: String,
-        default: "admin",
-      },
-      cart: {
-        type: Object
-      },
-      createdAt: {
-        type: Date,
-        default: Date.now,
+      role: { type: String, default: "admin" },
+      isAdmin: { type: Boolean, default: false, required: false },
+      isSeller: { type: Boolean, default: false, required: false },
+      cart: {  type: mongoose.Schema.Types.ObjectID, ref: 'cart' },
+      createdAt: { type: Date, default: Date.now },
+      seller: {
+        name: String,
+        logo: String,
+        description: String,
+        rating: { type: Number, default: 0, required: false },
+        numReviews: { type: Number, default: 0, required: false },
       },
       resetPasswordToken: String,
       resetPasswordExpire: Date,
+    },
+    {
+      timestamps: true,
     });
 
     schema.pre("save", async function( next ) {
@@ -59,15 +45,7 @@ const schema = mongoose.Schema ({
           });
       });
     });
-
-    schema.methods.read = function (id, cb) {
-        this.findOne({_id: id}, cb);
-    };
-
-    schema.methods.list = function (cb) {
-        this.find(cb);
-    };
-        
+      
     schema.methods.compare = async function ( password ) {
       return await bcrypt.compare(password, this.password); 
     };
@@ -86,9 +64,8 @@ const schema = mongoose.Schema ({
         .update(resetPassToken)
         .toString("hex");
       
-      this.resetPasswordExpire = Date.now() + 15 * 60 * 1000;
-    
+      this.resetPasswordExpire = Date.now() + 15 * 60 * 1000; 
       return reset_token;
     };
 
-module.exports = mongoose.model("users", schema);
+module.exports = mongoose.model("user", schema);
