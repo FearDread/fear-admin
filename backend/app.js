@@ -6,13 +6,14 @@ const fileUpload = require("express-fileupload"); // used for image and other fi
 const path = require("path");
 const dotenv = require("dotenv");
 const cors = require("cors");
-const {developmentErrors, AppError} = require("./src/_utils/errorHandlers");
 const helmet = require("helmet");
+const session = require("express-session");
+const db = require("./src/data/db");
 
 /* Middlewares */
 const notFound = require("./src/middleware/not-found");
 const errorHandler = require("./src/middleware/error-handler");
-const isAuth = require("./src/middleware/authentication");
+
 
 
 dotenv.config({ path: "./.env" });
@@ -30,26 +31,50 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
-app.use(developmentErrors);
 app.use(fileUpload());
 
 app.use(cors());
 app.use(helmet());
+app.use(
+  session({
+    secret: process.env.SECRET,
+    key: process.env.KEY,
+    resave: false,
+    saveUninitialized: false,
+    store: db.store(),
+  })
+);
+
+// pass variables to our templates + all requests
+app.use((req, res, next) => {
+  res.locals.admin = req.admin || null;
+  res.locals.currentPath = req.path;
+  next();
+});
 
 //Allow all requests from all domains & localhost
-app.all('/*', function( req, res, next ) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "X-Requested-With, Content-Type, Accept");
-    res.header("Access-Control-Allow-Methods", "POST, GET");
-    res.header("Cross-Origin-Opener-Policy", "unsafe-none");
-    next();
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.header("Access-Control-Allow-Methods", "GET,PATCH,PUT,POST,DELETE");
+  res.header("Access-Control-Expose-Headers", "Content-Length");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Accept, Authorization,x-auth-token, Content-Type, X-Requested-With, Range"
+  );
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  } else {
+    return next();
+  }
 });
 
 app.use("/fear/api", auth);
 app.use("/fear/api", users);
 app.use("/fear/api", products);
-app.use("/fear/api", customers);
-app.use("/fear/api", isAuth, cart);
+app.use("/fear/api/users", users);
+app.use("/fear/api/products", products);
+//app.use("/fear/api", isAuth, cart);
 //app.use("/fear/api", order);
 //app.use("/fear/api", payment);
 
