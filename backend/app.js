@@ -19,7 +19,6 @@ const errorHandler = require("./src/middleware/error-handler");
 dotenv.config({ path: "./.env" });
 
 // routes
-const auth = require("./src/routes/auth");
 const cart = require("./src/routes/cart");
 const users = require("./src/routes/user");
 const customers = require("./src/routes/customer");
@@ -69,11 +68,8 @@ app.use(function (req, res, next) {
   }
 });
 
-app.use("/fear/api", auth);
-app.use("/fear/api", users);
-app.use("/fear/api", products);
 app.use("/fear/api/users", users);
-app.use("/fear/api/products", products);
+app.use("/fear/api/product", products);
 //app.use("/fear/api", isAuth, cart);
 //app.use("/fear/api", order);
 //app.use("/fear/api", payment);

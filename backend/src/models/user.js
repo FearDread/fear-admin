@@ -7,7 +7,7 @@ require("dotenv").config({ path: __dirname + "../.env" });
 
 const schema = mongoose.Schema ({
       name: { type: String, required: true },
-      username: { type: String, required: true, unique: true },
+      username: { type: String, required: false, unique: true },
       email: { type: String, unique: true, 
         validate: [validator.isEmail, "Please Enter a valid Email"]},
       password: { type: String, required: true, select: true },

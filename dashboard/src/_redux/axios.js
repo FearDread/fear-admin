@@ -5,7 +5,7 @@ import { API_BASE_URL } from "../variables/api";
 axios.defaults.baseURL = API_BASE_URL;
 
 axios.interceptors.request.use(function (req) {
-   const user = storage.get("user");
+   /*const user = storage.get("user");
 
    if (user) {
       const { token } = storage.get("user");
@@ -13,6 +13,6 @@ axios.interceptors.request.use(function (req) {
 
       return req;
    }
-
+*/
    return req;
 });

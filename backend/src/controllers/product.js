@@ -1,4 +1,4 @@
-const { AppError, dbError } = require("../_utils/errorHandlers");
+//const { AppError, dbError } = require("../_utils/errorHandlers");
 const ProductModel = require("../models/product");
 const cloudinary = require("cloudinary");
 
@@ -48,7 +48,7 @@ exports.create = async (req, res) => {
       });
     })
     .catch((error) => {
-      dbError(res, error);
+      //dbError(res, error);
     });
 };
 
@@ -61,7 +61,7 @@ exports.list = async (req, res) => {
       });
     })
     .catch((error) => {
-      dbError(res, error);
+     // dbError(res, error);
     });
 };
 
@@ -80,7 +80,7 @@ exports.categories = async (req, res) => {
 
 exports.update = async (req, res, next) => {
   if (!req.params.id) {
-    return next(new AppError("Product not found", 404));
+   // return next(new AppError("Product not found", 404));
   }
 
   let product = await Product.findById(req.params.id);
@@ -121,7 +121,7 @@ exports.update = async (req, res, next) => {
       res.status(200).json({product: data});
     })
     .catch((error) => {
-      dbError(res, error);
+     // dbError(res, error);
     });
 };
 
@@ -129,7 +129,7 @@ exports.delete = async (req, res, next) => {
   let product = await ProductModel.findById(req.params.id);
 
   if (!product) {
-    return next(new ErrorHandler("Product not found", 404));
+   // return next(new ErrorHandler("Product not found", 404));
   }
 
   // Deleting Images From Cloudinary
@@ -147,7 +147,7 @@ exports.delete = async (req, res, next) => {
 
 exports.read = async (req, res, next) => {
   const id = req.params.id;
-  if (!id) return next(new AppError("Product not found", 404));
+  //if (!id) return next(new AppError("Product not found", 404));
   
   await ProductModel.findById(id)
     .then((data) => {
@@ -157,6 +157,6 @@ exports.read = async (req, res, next) => {
       });
     })
     .catch((error) => {
-      dbError(res, error);
+      //dbError(res, error);
     });
 };

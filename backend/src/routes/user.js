@@ -1,9 +1,11 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../controllers/user");
-const { isAdmin, isAuth, isRole } = require("../_auth");
+const { isAdmin, isAuth, isRole } = require("../auth");
 const asyncHandler = require("../middleware/async-handler");
 
+router.route("/login").post(asyncHandler(User.login));
+router.route("/logout").post(isAuth, asyncHandler(User.logout));
 router.route("/register").post(asyncHandler(User.create));
 
 router.route("/profile/:id")
