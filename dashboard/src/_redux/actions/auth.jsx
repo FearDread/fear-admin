@@ -1,7 +1,7 @@
 import * as actionTypes from "../types/auth";
 import storage from "../storage";
 import axios from "axios";
-import "../axios"
+//import "../axios"
 
 import { API_BASE_URL } from "../../variables/api.js";
 
@@ -13,16 +13,16 @@ export function login(email, password) {
 
       const config = { headers: { "Content-Type": "application/json" } };
       const response = await axios.post(
-        API_BASE_URL + "/login",
+        API_BASE_URL + "/users/login",
         { email, password },
         config
       );
-
-      storage.set("user", response.data.result.user);
-      dispatch({ type: actionTypes.LOGIN_SUCCESS, payload: response.data.result.user });
+        console.log('res =' , response)
+      //storage.set("user", response);
+      dispatch({ type: actionTypes.LOGIN_SUCCESS, payload: response.data.user });
     } catch (error) {
-
-      dispatch({ type: actionTypes.LOGIN_FAIL, payload: error.data.message });
+      console.log('res =' , error)
+      dispatch({ type: actionTypes.LOGIN_FAIL, payload: error.message });
     }
   };
 }
@@ -50,13 +50,13 @@ export const register = (signupData) => async (dispatch) => {
       headers: { "Content-Type": "multipart/form-data" }};
 
     const response = await axios.post(
-      API_BASE_URL + "/register",
+      API_BASE_URL + "/users/register",
       signupData,
       config
     );
-    
-    storage.set("user", response.data.result.user);
-    dispatch({ type: actionTypes.REGISTER_USER_SUCCESS, payload: response.data.result.user });
+    console.log(response);
+    storage.set("user", response.data.user);
+    dispatch({ type: actionTypes.REGISTER_USER_SUCCESS, payload: response.data.user });
   } catch (error) {
     dispatch({ type: actionTypes.REGISTER_USER_FAIL, payload: error });
   }

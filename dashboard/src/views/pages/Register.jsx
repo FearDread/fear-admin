@@ -31,6 +31,7 @@ const Register = () => {
   const history = useHistory();
   const [state, setState] = React.useState({});
   const [name, setName] = useState("");
+  const [username, setUserName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -63,6 +64,12 @@ const Register = () => {
     setName(newName);
     setIsValidName(newName.length >= 4 && newName.length <= 20);
   };
+
+  const handleUserNameChange = (event) => {
+    const newName = event.target.value;
+    setUserName(newName);
+  };
+
   const handlePasswordChange = (event) => {
     setPassword(event.target.value);
       setIsValidPassword(event.target.value.length >= 8);
@@ -80,6 +87,7 @@ const Register = () => {
 
     const formData = new FormData();
           formData.set("name", name);
+          formData.set("username", username);
           formData.set("email", email);
           formData.set("password", password);
           formData.set("passwordCheck", confirmPassword);
@@ -178,6 +186,25 @@ useEffect(() => {
                     </InputGroup>
                     <InputGroup
                       className={classnames({
+                        "input-group-focus": state.nameFocus
+                      })}
+                    >
+                      <InputGroupAddon addonType="prepend">
+                        <InputGroupText>
+                          <i className="tim-icons icon-single-02" />
+                        </InputGroupText>
+                      </InputGroupAddon>
+                      <Input
+                        placeholder="Username (must be unique)"
+                        type="text"
+                        autoComplete="username"
+                        value={username}
+                        onChange={handleUserNameChange}
+                        //error={!isValidName && name !== ""}
+                      />
+                    </InputGroup>
+                    <InputGroup
+                      className={classnames({
                         "input-group-focus": state.emailFocus
                       })}
                     >
@@ -215,8 +242,6 @@ useEffect(() => {
                         placeholder="Password"
                         type="password"
                         autoComplete="new-password"
-                        onFocus={(e) => setState({ ...state, passFocus: true })}
-                        onBlur={(e) => setState({ ...state, passFocus: false })}
                         //error={!isValidPassword && password !== ""}
                         onClick={handleShowPasswordClick}
                         value={password}
@@ -237,8 +262,6 @@ useEffect(() => {
                       <Input
                         placeholder="Confirm Password"
                         type="password"
-                        onFocus={(e) => setState({ ...state, passFocus: true })}
-                        onBlur={(e) => setState({ ...state, passFocus: false })}
                         //error={(!isValidPassword ? password : undefined)}
                         onClick={handleConfirmPasswordChange}
                         value={confirmPassword}

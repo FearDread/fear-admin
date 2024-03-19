@@ -1,10 +1,10 @@
 
 
-const DataError = (req, res, err) => {
+const DataError = (res, err) => {
    const statusCode = res.statusCode ? res.statusCode : 500;
    let customError = {
       statusCode,
-      message: err.message || "Something went wrong, try again later",
+      message: err && err.message || "Something went wrong, try again later",
    };
 
    switch (err) {

@@ -1,10 +1,46 @@
 const crypto = require("crypto");
 const cloudinary = require("cloudinary");
-const Auth = require("./auth");
 const UserModel = require('../models/user');
 const { sendEmail } = require("../middleware/mail-handler");
-const { DataError } = require("../middleware/error-handler");
-const { generateToken } = require("../_auth");
+const DataError = require("../middleware/error-handler");
+
+exports.login = async (req, res, next) => {
+  const { email, password } = req.body;
+  
+  await UserModel.findOne({email: email})
+    .then((user) => {
+      console.log('User Found :: ', user);                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+      user.compare(password)
+        .then((isMatch) => {
+          if (isMatch) {
+            res.status(200).send({ 
+              user, 
+              success: true, 
+              token: user.generateToken()
+            })
+          }
+          return;
+        })
+        .catch((err) => {
+            DataError(res, err);
+        })
+      })
+      .catch((error) => {
+        return next(error);
+      });
+}
+
+exports.logout = async (req, res) => {
+  res.cookie(process.env.JWT_NAME, null, {
+    expires: new Date(Date.now()),
+    httpOnly: true,
+  });
+
+  res.status(200).json({
+    success: true,
+    message: "User logged out",
+  });
+};
 
 /* User CRUD methods */
 /* -------------------- */
@@ -47,7 +83,7 @@ exports.create = async (req, res) => {
       })
     })
     .catch((error) => {
-      DataError(res, error);
+       DataError(res, error);
     });
 };
 
