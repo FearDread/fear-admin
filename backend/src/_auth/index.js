@@ -1,4 +1,4 @@
-const jwt = require('jasonwebtoken');
+const jwt = require("jsonwebtoken");
 require("dotenv").config({ path: __dirname + "../.env" });
 
 exports.generateToken = (user) => {
