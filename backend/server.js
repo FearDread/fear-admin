@@ -8,16 +8,6 @@ require("dotenv").config({ path: "./.env" });
 // connect to db //
 db.run();
 
-app.use(
-  session({
-    secret: process.env.SECRET,
-    key: process.env.KEY,
-    resave: false,
-    saveUninitialized: false,
-    store: db.store()
-  })
-)
-
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_NAME,
   api_key: process.env.API_KEY,

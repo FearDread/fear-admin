@@ -3,7 +3,7 @@ const cloudinary = require("cloudinary");
 const Auth = require("./auth");
 const UserModel = require('../models/user');
 const { dbError, AppError } = require("../_utils/errorHandlers");
-const { sendEmail } = require("../_utils/mailHandler");
+const { sendEmail } = require("../middleware/mail-handler");
 const TypedError = require("../_utils/ErrorHandler");
 
 /* User CRUD methods */

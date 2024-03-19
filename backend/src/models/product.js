@@ -18,7 +18,7 @@ const productSchema = mongoose.Schema({
   reviews: [ reviewSchema ],
   user: { type: mongoose.Schema.ObjectId, ref: "user", required: false },
   createdAt: { type: Date, default: Date.now },
-}
+},
 {
   timestamps: true
 });
