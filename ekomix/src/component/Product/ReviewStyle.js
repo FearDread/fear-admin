@@ -8,6 +8,8 @@ export const useStyles = makeStyles((theme) => ({
     backgroundColor: "white",
     width: "100%",
     overflow: "hidden",
+    position: "relative",
+    zindex: 1
   },
   reviewHeader: {
     margin: "1rem auto",
