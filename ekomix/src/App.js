@@ -12,7 +12,7 @@ import "./assets/css/nucleo-icons.css";
 import "./assets/scss/blk-design-system-react.scss";
 import "./assets/demo/demo.css";
 
-import Header from "./component/layouts/Header1.jsx/Header";
+import Header from "./component/layouts/Header.jsx/Header";
 import Payment from "./component/Cart/Payment";
 import Home from "./component/Home/Home";
 import Services from "./component/Terms/Service";

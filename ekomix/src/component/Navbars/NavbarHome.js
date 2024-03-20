@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 // reactstrap components
 import {
   Button,
@@ -27,6 +28,9 @@ import {
   UncontrolledTooltip,
 } from "reactstrap";
 //import {login, register} from "../../actions/user";
+import CartIcon from "./CartIcon";
+//import Sidebar from "../../layouts/Header/Sidebar";
+//import ProfileModal from "../layouts/Header/ProfileModal.jsx";
 
 export default function NavbarHome() {
   const [collapseOpen, setCollapseOpen] = React.useState(false);
@@ -36,6 +40,9 @@ export default function NavbarHome() {
   const [emailFocus, setEmailFocus] = React.useState(false);
   const [passwordFocus, setPasswordFocus] = React.useState(false);
   const [color, setColor] = React.useState("navbar-transparent");
+  const [user, isAuthenticated] = useSelector((state) => state.user);
+
+
   React.useEffect(() => {
     window.addEventListener("scroll", changeColor);
     return function cleanup() {
@@ -162,7 +169,7 @@ export default function NavbarHome() {
               </Link>
             </span>
             <span>
-              <ProfileModal user={user} isAuthenticated={isAuthenticated} />
+              {/* <ProfileModal user={user} isAuthenticated={isAuthenticated} /> */}
             </span>
           </div>
             {/* 

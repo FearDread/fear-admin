@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Switch ,Route , useLocation } from "react-router-dom";
-import Header from "../component/layouts/Header1.jsx/Header";
+import Header from "../component/layouts/Header.jsx/Header";
 import Footer from "../component/layouts/Footer/Footer";
 import Services from "../component/layouts/Footer/Service";
 import Home from "../component/Home/Home";
