@@ -2,7 +2,6 @@
 const app = require("./app");
 const db = require("./src/data/db");
 const cloudinary = require("cloudinary");
-const session = require("express-session");
 require("dotenv").config({ path: "./.env" });
 
 // connect to db //

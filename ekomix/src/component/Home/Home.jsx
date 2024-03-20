@@ -12,6 +12,7 @@ import {
   Container
  } from "reactstrap";
 
+import AnimatedBackground from "../AnimatedBackground/AnimatedBackground";
 
 function Home() {
   const alert = useAlert();
@@ -33,6 +34,7 @@ function Home() {
         <Loader />
       ) : (
           <>
+          <AnimatedBackground />
             <MataData title="E-KomiX" />
             <div className="Home_Page">
               <div className="heroSlider_Home">
@@ -48,9 +50,9 @@ function Home() {
               </div>
               </Container>
               <Container>
-              <h2 className="trending_heading">Trending Products</h2>
+              <h2>Trending Products</h2>
               <div className="trending-products">
-              {products &&
+                  {products &&
                   products.map((product) => (
                     <ProductCard key={product._id} product={product} />
                   ))}

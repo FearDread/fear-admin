@@ -1,6 +1,7 @@
 //const { AppError, dbError } = require("../_utils/errorHandlers");
 const ProductModel = require("../models/product");
 const cloudinary = require("cloudinary");
+const DataError = require("../middleware/error-handler");
 
 /* Product CRUD methods */
 /* -------------------- */
@@ -61,7 +62,7 @@ exports.list = async (req, res) => {
       });
     })
     .catch((error) => {
-     // dbError(res, error);
+     DataError(res, error);
     });
 };
 
@@ -150,13 +151,15 @@ exports.read = async (req, res, next) => {
   //if (!id) return next(new AppError("Product not found", 404));
   
   await ProductModel.findById(id)
-    .then((data) => {
-      res.status(201).json({
+    .then((product) => {
+      console.log('product ', product);
+      res.status(201).send({
         succes: true,
-        Product: Product,
+        product
       });
+      return;
     })
     .catch((error) => {
-      //dbError(res, error);
+      DataError(res, error);
     });
 };

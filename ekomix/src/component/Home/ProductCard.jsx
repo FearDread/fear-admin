@@ -51,7 +51,7 @@ const ProductCard = ({ product }) => {
 
   return (
     <>
-    <Col className="md-6">
+      <Card>
       <Link
         className="product-card"
         to={`/product/${product._id}`}
@@ -109,7 +109,7 @@ const ProductCard = ({ product }) => {
       </CardContent>
       </CardActionArea>
       </Link>
-      </Col>
+      </Card>
     </>
   );
 }
