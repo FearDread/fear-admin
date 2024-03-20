@@ -120,6 +120,52 @@ export default function NavbarHome() {
             </Row>
           </div>
           <Nav navbar>
+          <div className="headerBottom_navMenu">
+              <ul>
+                <li>
+                  <Link to="/">Home</Link>
+                </li>
+
+                <li>
+                  <Link to="/products">Product</Link>
+                </li>
+                <li>
+                  <Link to="/contact">Contact</Link>
+                </li>
+                <li>
+                  <Link to="/about_us">About</Link>
+                </li>
+              </ul>
+            </div>
+          )}
+
+
+          <div className="headerBotttom_icons">
+            <div className="search_Bar">
+              {/*
+              <SearchBar
+                searchBarActive={searchBarActive}
+                searchValue={searchValue}
+                handleCrossButtonClick={handleCrossButtonClick}
+                handleSearchButtonClick={handleSearchButtonClick}
+                handleSearchInputChange={handleSearchInputChange}
+                handleSearchFormSubmit={handleSearchFormSubmit}
+              />
+  */}
+            </div>
+            <span>
+              <Link
+                to="/cart"
+                style={{ color: "none", textDecoration: "none" }}
+              >
+                <CartIcon />
+              </Link>
+            </span>
+            <span>
+              <ProfileModal user={user} isAuthenticated={isAuthenticated} />
+            </span>
+          </div>
+            {/* 
           <UncontrolledDropdown nav>
               <DropdownToggle
                 caret
@@ -207,8 +253,11 @@ export default function NavbarHome() {
               >
                 <i className="tim-icons icon-cloud-download-93" /> Sign Up
               </Button>
-            </NavItem>
-          </Nav>
+          
+              </NavItem>
+  */}
+              </Nav>
+
         </Collapse>
         <Modal
             modalClassName="modal-black"
