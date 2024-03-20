@@ -31,7 +31,6 @@ import {
 
 const rootReducer = combineReducers({
   products: productsReducer,
-  productDetails: productDetailsReducer,
   userData: userReducer,
   profileData: profileReducer,
   forgetPassword: forgetPasswordReducer,

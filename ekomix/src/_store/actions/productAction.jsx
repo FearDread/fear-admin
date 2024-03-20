@@ -29,6 +29,7 @@ import {
   CLEAR_ERRORS,
   ALL_REVIEW_FAIL,
 } from "../types/productsConstant";
+import * as types from "../types/productsConstant";
 import { API_BASE_URL } from "../../_config/api";
 
 // get ALL Products
@@ -43,7 +44,7 @@ export const getProduct = (
     try {
       // initial state :
       dispatch({
-        type: ALL_PRODUCT_REQUEST,
+        type: types.ALL_PRODUCT_REQUEST,
       });
 
       let link = API_BASE_URL + `/product?keyword=${keyword}&page=${currentPage}&price[gte]=${price[0]}&price[lte]=${price[1]}&ratings[gte]=${ratings}`;
@@ -55,12 +56,12 @@ export const getProduct = (
       const { data } = await axios.get(link);
 
       dispatch({
-        type: ALL_PRODUCT_SUCCESS,
+        type: types.ALL_PRODUCT_SUCCESS,
         payload: data,
       });
     } catch (error) {
       dispatch({
-        type: ALL_PRODUCT_FAIL,
+        type: types.ALL_PRODUCT_FAIL,
         payload: error.message,
       });
     }
@@ -68,53 +69,51 @@ export const getProduct = (
 };
 
 // Get Products Details
-export const getProductDetails = (id) => {
-  return async (dispatch) => {
+export const getProductDetails = (_id) => async (dispatch) => {
     try {
       dispatch({
-        type: PRODUCT_DETAILS_REQUEST,
+        type: types.PRODUCT_DETAILS_REQUEST,
       });
 
-      const { data } = await axios.get(API_BASE_URL + `/product/${id}`);
-
+      const { data } = await axios.get(API_BASE_URL + "/product/" + _id);
+      console.log('prod = ', data);
       dispatch({
-        type: PRODUCT_DETAILS_SUCCESS,
-        payload: data.Product,
+        type: types.PRODUCT_DETAILS_SUCCESS,
+        payload: data.product,
       });
     } catch (error) {
       dispatch({
-        type: PRODUCT_DETAILS_FAIL,
+        type: types.PRODUCT_DETAILS_FAIL,
         payload: error.message,
       });
     }
   };
-};
 
 //Add new Review
 export const newReview = (reviewData) => async (dispatch) => {
   try {
-    dispatch({ type: NEW_REVIEW_REQUEST });
+    dispatch({ type: types.NEW_REVIEW_REQUEST });
 
     const config = { headers: { "Content-Type": "application/json" } };
 
-    const { data } = await axios.put(`/api/v1/review/new`, reviewData, config);
+    const { data } = await axios.put(`/review/new`, reviewData, config);
 
-    dispatch({ type: NEW_REVIEW_SUCCESS, payload: data.success });
+    dispatch({ type: types.NEW_REVIEW_SUCCESS, payload: data.success });
   } catch (error) {
-    dispatch({ type: NEW_REVIEW_FAIL, payload: error.message });
+    dispatch({ type: types.NEW_REVIEW_FAIL, payload: error.message });
   }
 };
 
 // admin product request :
 export const getAdminProducts = () => async (dispatch) => {
   try {
-    dispatch({ type: ADMIN_PRODUCT_REQUEST });
+    dispatch({ type: types.ADMIN_PRODUCT_REQUEST });
 
-    const { data } = await axios.get(API_BASE_URL + "/products");
-
-    dispatch({ type: ADMIN_PRODUCT_SUCCESS, payload: data.products });
+    const { data } = await axios.get(API_BASE_URL + "/product");
+    console.log('prod = ', data);
+    dispatch({ type: types.ADMIN_PRODUCT_SUCCESS, payload: data.products });
   } catch (error) {
-    dispatch({ type: ADMIN_PRODUCT_FAIL, payload: error.message });
+    dispatch({ type: types.ADMIN_PRODUCT_FAIL, payload: error.message });
   }
 };
 
@@ -123,7 +122,7 @@ export function createProduct(productData) {
   return async function(dispatch) {
     try {
       dispatch({
-        type: NEW_PRODUCT_REQUEST,
+        type: types.NEW_PRODUCT_REQUEST,
       });
          
       const config = {
@@ -131,18 +130,18 @@ export function createProduct(productData) {
       };
 
       const { data } = await axios.post(
-        `/api/v1/admin/product/new`,
+        `/admin/product/new`,
         productData,
         config
       );
 
       dispatch({
-        type: NEW_PRODUCT_SUCCESS,
+        type: types.NEW_PRODUCT_SUCCESS,
         payload: data,
       });
     } catch (error) {
       dispatch({
-        type: NEW_PRODUCT_FAIL,
+        type: types.NEW_PRODUCT_FAIL,
         payload: error.message,
       });
     }
@@ -154,13 +153,13 @@ export function createProduct(productData) {
 export function deleteProduct(id) {
   return async function(dispatch) {
     try {
-      dispatch({ type: DELETE_PRODUCT_REQUEST });
+      dispatch({ type: types.DELETE_PRODUCT_REQUEST });
 
       const { data } = await axios.delete(`/api/v1/admin/product/${id}`);
     
-      dispatch({ type: DELETE_PRODUCT_SUCCESS, payload: data.success });
+      dispatch({ type: types.DELETE_PRODUCT_SUCCESS, payload: data.success });
     } catch (error) {
-      dispatch({ type: DELETE_PRODUCT_FAIL, payload: error.message });
+      dispatch({ type: types.DELETE_PRODUCT_FAIL, payload: error.message });
     }
   };
 }
@@ -168,7 +167,7 @@ export function deleteProduct(id) {
 // updateProduct;
 export const updateProduct = (id, productData) => async (dispatch) => {
          try {
-           dispatch({ type: UPDATE_PRODUCT_REQUEST });
+           dispatch({ type: types.UPDATE_PRODUCT_REQUEST });
 
            const config = {
               headers: { "Content-Type": "multipart/form-data" },
@@ -181,12 +180,12 @@ export const updateProduct = (id, productData) => async (dispatch) => {
            );
 
            dispatch({
-             type: UPDATE_PRODUCT_SUCCESS,
+             type: types.UPDATE_PRODUCT_SUCCESS,
              payload: data.success,
            });
          } catch (error) {
            dispatch({
-             type: UPDATE_PRODUCT_FAIL,
+             type: types.UPDATE_PRODUCT_FAIL,
              payload: error.message,
            });
          }
@@ -196,12 +195,12 @@ export const updateProduct = (id, productData) => async (dispatch) => {
  export const getAllreviews  = (productId) => async (dispatch) =>{
 
      try {
-        dispatch({type : ALL_REVIEW_REQUEST})
+        dispatch({type : types.ALL_REVIEW_REQUEST})
 
         const { data } = await axios.get(`/api/v1/reviews?id=${productId}`);
-        dispatch({type : ALL_REVIEW_SUCCESS , payload : data.reviews})
+        dispatch({type : types.ALL_REVIEW_SUCCESS , payload : data.reviews})
      } catch (error) {
-        dispatch({type : ALL_REVIEW_FAIL , payload : error.message})
+        dispatch({type : types.ALL_REVIEW_FAIL , payload : error.message})
      }
  }
 

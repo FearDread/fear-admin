@@ -12,7 +12,7 @@ const db = require("./src/data/db");
 
 /* Middlewares */
 const notFound = require("./src/middleware/not-found");
-const errorHandler = require("./src/middleware/error-handler");
+const DataError = require("./src/middleware/error-handler");
 
 
 
@@ -75,7 +75,7 @@ app.use("/fear/api/product", products);
 //app.use("/fear/api", payment);
 
 //app.use(notFound);
-app.use(errorHandler);
+//app.use(DataError);
 
 const __dirname1 = path.resolve();
 

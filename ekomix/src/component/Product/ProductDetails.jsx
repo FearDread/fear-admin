@@ -27,7 +27,7 @@ import Rating from "@material-ui/lab/Rating";
 
 import { useSelector, useDispatch } from "react-redux";
 import { useRouteMatch } from "react-router-dom";
-import useActive from "../../hooks/useActive";
+//import useActive from "../../hooks/useActive";
 import ReviewCard from "./ReviewCard";
 import {
   clearErrors,
@@ -38,46 +38,25 @@ import MetaData from "../layouts/MataData/MataData";
 import { addItemToCart } from "../../_store/actions/cartAction";
 import CricketBallLoader from "../layouts/loader/Loader";
 //import Button from "@mui/material/Button";
+import "./ProductDetails.css";
 import { PRODUCT_DETAILS_RESET } from "../../_store/types/productsConstant";
 
 const ProductDetails = () => {
   const match = useRouteMatch();
+  const _id = match.params.id;
   const dispatch = useDispatch();
   const alert = useAlert();
 
-  const [quantity, setQuantity] = useState(1);
+  const [quantity, setQuantity] = useState(null);
 
 
-
+ 
   const [previewImg, setPreviewImg] = useState("");
-  const { handleActive, activeClass } = useActive(0);
+  //const { handleActive, activeClass } = useActive(0);
 
-  const { product, loading, error , success  } = useSelector(
-    (state) => state.productDetails
-  );
+  const { product, loading, error , success  } = useSelector((state) => state.products);
 
-
-useEffect(() => {
-  if (error) {
-    alert.error(error);
-    dispatch(clearErrors);
-  }
-  if (success) {
-    setPreviewImg(product.images[0].url);
-
-    handleActive(0);
-    dispatch({ type: PRODUCT_DETAILS_RESET });
-  }
-  dispatch(getProductDetails(match.params.id));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-}, [
-  dispatch,
-  error,
-  alert,
-  success,
-  match.params.id,
-
-]);
+ 
 
 
   // handling Add-to-cart
@@ -95,7 +74,7 @@ useEffect(() => {
   const handlePreviewImg = (images, i) => {
    
     setPreviewImg(images[i].url);
-    handleActive(i);
+    //handleActive(i);
   };
 
   function increaseQuantityHandler() {
@@ -113,21 +92,47 @@ useEffect(() => {
     setQuantity((prv) => prv - 1);
   }
 
+  useEffect(() => {
   // calculating Prices
-  const finalPrice = generateDiscountedPrice(product.price);
-  const discountedPrice = product.price - finalPrice;
-  const newPrice = dispalyMoney(finalPrice);
-  const oldPrice = dispalyMoney(product.price);
-  const savedPrice = dispalyMoney(discountedPrice);
-  const savedDiscount = calculateDiscount(discountedPrice, product.price);
 
+  }, [product]);
+
+  useEffect(() => {
+
+    if (error) {
+      alert.error(error);
+      dispatch(clearErrors);
+    }
+    if (success) {
+      setPreviewImg(product.images[0].url);
+  
+      //handleActive(0);
+      //dispatch({ type: PRODUCT_DETAILS_RESET });
+    }
+  
+    dispatch(getProductDetails(match.params.id));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    dispatch,
+    error,
+    alert,
+    success,
+    match.params.id
+  ]);
+  
+  const finalPrice = product.price; //generateDiscountedPrice(product.price);
+  const discountedPrice = product.price; //product.price - finalPrice;
+  const newPrice = product.price; //dispalyMoney(finalPrice);
+  const oldPrice = product.price; //dispalyMoney(product.price);
+  const savedPrice = product.price;//dispalyMoney(discountedPrice);
+  const savedDiscount = product.price;//calculateDiscount(discountedPrice, product.price);
   return (
     <>
       {loading ? (
         <CricketBallLoader />
       ) : (
         <>
-
+          <div className="container">
           <div className="prodcutDetialsContainer">
             <section id="product_details" className="section">
               <div className="product_container">
@@ -139,7 +144,7 @@ useEffect(() => {
                         product.images.map((img, i) => (
                           <div
                             key={i}
-                            className={`tabs_item ${activeClass(i)}`}
+                            //className={`tabs_item ${activeClass(i)}`}
                             onClick={() => handlePreviewImg(product.images, i)}
                           >
                             <img src={img.url} alt="product-img" />
@@ -264,6 +269,7 @@ useEffect(() => {
             <div className="reviewCard">
               <ReviewCard product={product} />
             </div>
+          </div>
           </div>
         </>
       )}

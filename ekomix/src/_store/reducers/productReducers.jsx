@@ -35,14 +35,16 @@ import {
   DELETE_REVIEW_RESET,
 } from "../types/productsConstant";
 
-export const productsReducer = (state = { products: [] }, action) => {
+export const productsReducer = (state = { products: [], product: {} }, action) => {
   switch (action.type) {
+    case PRODUCT_DETAILS_REQUEST:
     case ALL_PRODUCT_REQUEST:
     case ADMIN_PRODUCT_REQUEST: {
       return {
         ...state,
         loading: true,
         products: [],
+        product: {}
       };
     }
 
@@ -61,6 +63,15 @@ export const productsReducer = (state = { products: [] }, action) => {
         filterdProductCount: action.payload.filterdProductCount,
       };
     }
+
+    case PRODUCT_DETAILS_SUCCESS:
+      return {
+        loading: false,
+        product: action.payload, // product details from backend
+        success: true,
+      }
+
+    case PRODUCT_DETAILS_FAIL:
     case ALL_PRODUCT_FAIL:
     case ADMIN_PRODUCT_FAIL: {
       return {
@@ -78,46 +89,6 @@ export const productsReducer = (state = { products: [] }, action) => {
       return state;
   }
 };
-
-// product detalis  :
-export const productDetailsReducer = (state = { product: {} }, action) => {
-  switch (action.type) {
-    case PRODUCT_DETAILS_REQUEST: {
-      return {
-        ...state,
-        loading: true,
-      };
-    }
-    case PRODUCT_DETAILS_SUCCESS:
-      return {
-        loading: false,
-        product: action.payload, // product details from backend
-        success: true,
-      };
-    case PRODUCT_DETAILS_FAIL:
-      return {
-        loading: false,
-        error: action.payload,
-
-      };
-      case PRODUCT_DETAILS_RESET:
-        return {
-         success: false,
-        ...state,
-        };
-
-    // error msg clear
-    case CLEAR_ERRORS:
-      return {
-        ...state,
-        error: null,
-      };
-
-    default:
-      return state;
-  }
-};
-
 // new Review Reducer
 export const newReviewReducer = (state = {}, action) => {
   switch (action.type) {
