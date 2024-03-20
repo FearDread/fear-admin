@@ -40,6 +40,7 @@ import CricketBallLoader from "../layouts/loader/Loader";
 //import Button from "@mui/material/Button";
 import "./ProductDetails.css";
 import { PRODUCT_DETAILS_RESET } from "../../_store/types/productsConstant";
+import AnimatedBackground from "../AnimatedBackground/AnimatedBackground";
 
 const ProductDetails = () => {
   const match = useRouteMatch();
@@ -132,6 +133,7 @@ const ProductDetails = () => {
         <CricketBallLoader />
       ) : (
         <>
+        <AnimatedBackground />
           <div className="container">
           <div className="prodcutDetialsContainer">
             <section id="product_details" className="section">

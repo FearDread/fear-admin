@@ -12,6 +12,7 @@ import {
   Container
  } from "reactstrap";
 
+ // import AnimatedHero from "../AnimatedHero/AnimatedHero";
 import AnimatedBackground from "../AnimatedBackground/AnimatedBackground";
 
 function Home() {

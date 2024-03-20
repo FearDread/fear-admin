@@ -11,8 +11,8 @@ import { useHistory } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import { useSelector } from "react-redux";
 import NavbarHome from "component/Navbars/NavbarHome";
-
 import ProfileModal from "./ProfileModel";
+import { Nav, Navbar } from "reactstrap";
 
 function Header() {
   const history = useHistory();
@@ -62,7 +62,9 @@ function Header() {
 
   return (
     <>
+    <Navbar className={"fixed-top "} color-on-scroll="100" expand="lg">
       <div className="header">
+            {/*
         <div className="headerTop">
           <div className="headerTopLeft">
             <p>We Offer's Free Shipping </p>
@@ -102,8 +104,8 @@ function Header() {
         </div>
 
         {/* nav */}
-        <NavbarHome />
-        {/*
+
+     
         <div className="headerBottom">
           <div className="headerBottom__logo">
             <div className="header_mobile_menu">
@@ -142,7 +144,7 @@ function Header() {
           {!searchBarActive && (
             <Link to="/">
               <img
-                src={require("../../../Image/logo.png")}
+                src={require("../../../assets/img/ekomix/logo_transparent.png")}
                 alt="logo"
                 className="headerBottom__logo_main"
               />
@@ -197,8 +199,7 @@ function Header() {
           </div>
         </div>
       </div>
-          */}
-          </div>
+      </Navbar>
     </>
   );
 }

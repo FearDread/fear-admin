@@ -19,9 +19,8 @@ import InventoryIcon from "@mui/icons-material/Inventory";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
-
-
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import AnimatedBackground from "../AnimatedBackground/AnimatedBackground";
 
 const categories = [
   "Cricket Kits",
@@ -99,6 +98,7 @@ const handleRatingChange = (event) => {
       ) : (
         <>
           <MetaData title="PRODUCTS --Ecart" />
+          <AnimatedBackground />
           {products === undefined || products.length === 0 ? (
             <>
               <div

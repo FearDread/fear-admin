@@ -10,7 +10,7 @@
 width: auto;
 gap: 1rem;
   justify-content: space-around;
-
+  z-index: 1;
   margin-bottom: 1rem;
 
 }

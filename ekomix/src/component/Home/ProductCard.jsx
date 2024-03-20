@@ -58,8 +58,8 @@ const ProductCard = ({ product }) => {
         style={{ textDecoration: "none", color: "inherit" }}
       >
       <CardActionArea>
-          <CardContent>
-          <CardMedia className={classes.media} image={product.images[0] && product.images[0].url ? product.images[0].url : ''} />
+         
+          <CardContent className={classes.media} image={product.images[0] && product.images[0].url ? product.images[0].url : ''} />
             <Typography
               gutterBottom
               color="black"
@@ -106,7 +106,6 @@ const ProductCard = ({ product }) => {
         </Button>
         </Box>
       </Box>
-      </CardContent>
       </CardActionArea>
       </Link>
       </Card>
