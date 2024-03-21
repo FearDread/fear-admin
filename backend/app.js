@@ -9,7 +9,13 @@ const cors = require("cors");
 const helmet = require("helmet");
 const session = require("express-session");
 const db = require("./src/data/db");
-
+// routes
+const cart = require("./src/routes/cart");
+const users = require("./src/routes/user");
+const customers = require("./src/routes/customer");
+const products = require("./src/routes/product");
+//const order = require("./routes/order");
+//const payment = require("./routes/payment");
 /* Middlewares */
 const notFound = require("./src/middleware/not-found");
 const DataError = require("./src/middleware/error-handler");
@@ -18,13 +24,7 @@ const DataError = require("./src/middleware/error-handler");
 
 dotenv.config({ path: "./.env" });
 
-// routes
-const cart = require("./src/routes/cart");
-const users = require("./src/routes/user");
-const customers = require("./src/routes/customer");
-const products = require("./src/routes/product");
-//const order = require("./routes/order");
-//const payment = require("./routes/payment");
+
 
 app.use(cookieParser());
 app.use(express.json());
@@ -34,6 +34,7 @@ app.use(fileUpload());
 
 app.use(cors());
 app.use(helmet());
+app.options("*", cors());
 app.use(
   session({
     secret: process.env.SECRET,
@@ -50,9 +51,8 @@ app.use((req, res, next) => {
   res.locals.currentPath = req.path;
   next();
 });
-
 //Allow all requests from all domains & localhost
-app.use(function (req, res, next) {
+app.all("*", function (req, res) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Credentials", "true");
   res.header("Access-Control-Allow-Methods", "GET,PATCH,PUT,POST,DELETE");
@@ -61,11 +61,6 @@ app.use(function (req, res, next) {
     "Access-Control-Allow-Headers",
     "Accept, Authorization,x-auth-token, Content-Type, X-Requested-With, Range"
   );
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(200);
-  } else {
-    return next();
-  }
 });
 
 app.use("/fear/api/users", users);
