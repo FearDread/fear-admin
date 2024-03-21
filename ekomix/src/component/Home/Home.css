@@ -1,3 +1,8 @@
+.card-home .card-image {
+  height: 200px;
+  overflow: hidden;
+}
+
 .trending_heading {
   background: white;
   text-align: center;

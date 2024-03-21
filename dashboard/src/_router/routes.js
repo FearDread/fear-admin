@@ -155,9 +155,9 @@ const routes = [
     views: [
       {
         path: "/example-tables",
-        name: "Tables",
+        name: "Grid Layout",
         mini: "T",
-        component: ReactTables,
+        component: Grid,
         layout: "/admin"
       },
       {

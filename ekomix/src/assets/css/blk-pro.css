@@ -1761,14 +1761,6 @@ body.bd-docs .bd-example .navbar {
     color: #cdbfe3
 }
 
-@font-face {
-    font-family: nucleo;
-    src: url(../media/nucleo.bd5cce8b.eot);
-    src: url(../media/nucleo.bd5cce8b.eot) format("embedded-opentype"),url(../media/nucleo.6dfb4833.woff2) format("woff2"),url(../media/nucleo.5c65ef4d.woff) format("woff"),url(../media/nucleo.35b08447.ttf) format("truetype");
-    font-weight: 400;
-    font-style: normal
-}
-
 .tim-icons {
     display: inline-block;
     font: normal normal normal 1em/1 "Nucleo";
@@ -18931,11 +18923,6 @@ html {
     margin-top: 100px
 }
 
-.header-6 {
-    background-image: url(../media/dots.e29a7d7d.png);
-    background-size: contain
-}
-
 .header-6 .path {
     right: 3%;
     top: 15%
@@ -20778,41 +20765,6 @@ html {
     border-radius: 20%
 }
 
-.register-page .square-1 {
-    height: 300px;
-    width: 300px;
-    background-image: url(../media/square1.e7549dcf.png);
-    top: 175px;
-    right: 150px;
-    opacity: .8
-}
-
-.register-page .square-2 {
-    height: 120px;
-    width: 120px;
-    background-image: url(../media/square2.644afe5e.png);
-    opacity: .9;
-    top: 310px;
-    right: 390px
-}
-
-.register-page .square-3 {
-    width: 200px;
-    height: 200px;
-    background-image: url(../media/square3.036d69b8.png);
-    opacity: .3;
-    top: -50px;
-    right: 400px
-}
-
-.register-page .square-4 {
-    height: 200px;
-    width: 200px;
-    background-image: url(../media/square4.a3f639df.png);
-    right: -50px;
-    top: 525px
-}
-
 .register-page .square-5 {
     height: 150px;
     width: 150px;
@@ -20821,34 +20773,12 @@ html {
     right: 470px
 }
 
-.register-page .square-5,.register-page .square-6 {
-    background-image: url(../media/square5.6d2ad2cb.png)
-}
-
 .register-page .square-6 {
     height: 70px;
     width: 70px;
     opacity: .9;
     top: 105px;
     right: 20px
-}
-
-.register-page .square-7 {
-    height: 200px;
-    width: 200px;
-    background-image: url(../media/square5.6d2ad2cb.png);
-    left: -100px;
-    top: 100px;
-    opacity: .4
-}
-
-.register-page .square-8 {
-    height: 100px;
-    width: 100px;
-    background-image: url(../media/square1.e7549dcf.png);
-    left: 300px;
-    top: 400px;
-    opacity: .4
 }
 
 .product-page .stars i {
@@ -21091,11 +21021,6 @@ html {
     40% {
         transform: scale(1)
     }
-}
-
-.about-us,.account-settings,.chat-page,.checkout-page,.index-page,.invoice-page,.landing-page,.login-page,.presentation-page,.product-page,.profile-page,.register-page,.reset-page {
-    background-image: url(../media/dots.e29a7d7d.png);
-    background-size: contain
 }
 
 .login-page .footer {
@@ -22115,52 +22040,6 @@ html {
 
 .section-signup .square {
     background-size: cover
-}
-
-.section-signup .square-1 {
-    height: 300px;
-    width: 300px;
-    background-image: url(../media/square1.e7549dcf.png);
-    top: 80px;
-    left: 100px;
-    opacity: .3;
-    -webkit-animation-duration: 5s;
-    animation-duration: 5s
-}
-
-.section-signup .square-2 {
-    height: 200px;
-    width: 200px;
-    background: url(../media/square3.036d69b8.png);
-    background-size: cover;
-    bottom: 40px;
-    left: 600px;
-    opacity: .1;
-    -webkit-animation-duration: 8s;
-    animation-duration: 8s
-}
-
-.section-signup .square-3 {
-    height: 100px;
-    width: 100px;
-    background: url(../media/square2.644afe5e.png);
-    background-size: cover;
-    top: 300px;
-    left: 700px;
-    -webkit-animation-duration: 5s;
-    animation-duration: 5s
-}
-
-.section-signup .square-4 {
-    height: 250px;
-    width: 250px;
-    background: url(../media/square3.036d69b8.png);
-    background-size: cover;
-    top: 0;
-    right: 100px;
-    opacity: .8;
-    -webkit-animation-duration: 9s;
-    animation-duration: 9s
 }
 
 .parallax-s {
@@ -23303,32 +23182,6 @@ Copyright (c) 2015 Daniel Eden*/
 .fadeOutUp {
     -webkit-animation-name: fadeOutUp;
     animation-name: fadeOutUp
-}
-
-.bootstrap-switch {
-    display: inline-block;
-    direction: ltr;
-    cursor: pointer;
-    border-radius: 30px;
-    border: 0;
-    position: relative;
-    text-align: left;
-    overflow: hidden;
-    box-shadow: 0 0 10px rgba(0,0,0,.13);
-    margin-bottom: 10px;
-    line-height: 8px;
-    width: 59px!important;
-    height: 22px;
-    outline: none;
-    z-index: 0;
-    -webkit-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    vertical-align: middle;
-    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
-    background: url(../../../../d2v9y0dukr6mq2.cloudfront.net/video/thumbnail/J9H9WF0/night-sky-full-of-stars-fantasy-animation-made-of-magical-sparkly-light-particles-flickering-on-a-purple-blue-gradient-background_bajacpz7x_thumbn);
-    background-position: 50%;
-    background-size: cover
 }
 
 .bootstrap-switch .bootstrap-switch-container {
@@ -28036,24 +27889,11 @@ a.react-tagsinput .react-tagsinput-tag.bg-neutral.focus,a.react-tagsinput .react
     vertical-align: middle
 }
 
-.custom-switch .custom-control-label:before {
-    height: 22px;
-    width: 45px;
-    border: none;
-    background-image: url(/blk-design-system-pro-react/static/media/darken-night-sky-full-of-stars-fantasy-animation-made-of-magical-sparkly-light-particles-flickering-on-a-purple-blue-gradient-background_bajacpz7x_thumbnail-full01.049a2cd2.png);
-    background-position: 50%;
-    background-size: cover
-}
-
 .custom-switch .custom-control-label:after {
     height: 18px;
     width: 18px;
     background-color: hsla(0,0%,61.2%,.9);
     transition: all .25s ease-out
-}
-
-.custom-switch .custom-control-input:checked~.custom-control-label:before {
-    background-image: url(/blk-design-system-pro-react/static/media/night-sky-full-of-stars-fantasy-animation-made-of-magical-sparkly-light-particles-flickering-on-a-purple-blue-gradient-background_bajacpz7x_thumbnail-full01.e6a30d27.png)
 }
 
 .custom-switch .custom-control-input:checked~.custom-control-label:after {
