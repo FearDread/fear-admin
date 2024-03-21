@@ -2,12 +2,12 @@ import React, { useState, useEffect, Suspense } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { UserProfile } from "./_store/actions/userAction";
-import axios from "axios";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import CricketBallLoader from "./component/layouts/loader/Loader";
 import PrivateRoute from "./component/Route/PrivateRoute";
 
+import axios from "axios";
 import "./assets/css/nucleo-icons.css";
 import "./assets/scss/blk-design-system-react.scss";
 import "./assets/demo/demo.css";
@@ -38,33 +38,22 @@ import TermsUse from "./component/Terms/TermsAndUse";
 import TermsAndConditions from "./component/Terms/TermsCondtion";
 import PrivacyPolicy from "./component/Terms/Privacy";
 import NavbarMain from "./component/Navbars/NavbarMain";
-import NavbarHome from "component/Navbars/NavbarHome";
-import AuthNavbar from "component/Navbars/AuthNavbar";
+
 // const LazyPayment = React.lazy(() => import("./component/Cart/Payment"));
 const LazyDashboard = React.lazy(() => import("./component/Admin/Dashboard"));
-const LazyProductList = React.lazy(() =>
-  import("./component/Admin/ProductList")
-);
+const LazyProductList = React.lazy(() => import("./component/Admin/ProductList"));
 const LazyOrderList = React.lazy(() => import("./component/Admin/OrderList"));
 const LazyUserList = React.lazy(() => import("./component/Admin/UserList"));
-const LazyUpdateProduct = React.lazy(() =>
-  import("./component/Admin/UpdateProduct")
-);
-const LazyProcessOrder = React.lazy(() =>
-  import("./component/Admin/ProcessOrder")
-);
+const LazyUpdateProduct = React.lazy(() => import("./component/Admin/UpdateProduct"));
+const LazyProcessOrder = React.lazy(() => import("./component/Admin/ProcessOrder"));
 const LazyUpdateUser = React.lazy(() => import("./component/Admin/UpdateUser"));
 const LazyNewProduct = React.lazy(() => import("./component/Admin/NewProduct"));
-const LazyProductReviews = React.lazy(() =>
-  import("./component/Admin/ProductReviews")
-);
+const LazyProductReviews = React.lazy(() => import("./component/Admin/ProductReviews"));
 
 function App() {
+  const dispatch = useDispatch();
   const [stripeApiKey, setStripeApiKey] = useState("");
 
-  const dispatch = useDispatch();
-
-  // get STRIPE_API_KEY for payment from backend for connection to stripe payment gateway
   async function getStripeApiKey() {
     try {
       const { data } = await axios.get("/api/v1/stripeapikey");
@@ -80,14 +69,12 @@ function App() {
       }
       setStripeApiKey(data.stripeApiKey);
     } catch (error) {
-      // Handle error if the API call fails
       console.error("Error fetching Stripe API key:", error);
     }
   }
 
   useEffect(() => {
     const stripeApiKey = sessionStorage.getItem("stripeApiKey");
-   
     if (stripeApiKey) {
       console.log("stripe key: ", stripeApiKey);
       //setStripeApiKey(stripeApiKey);
@@ -99,7 +86,6 @@ function App() {
   useEffect(() => {
 
     dispatch(UserProfile());
-
   }, []);
 
   return (
@@ -111,7 +97,7 @@ function App() {
             path="/"
             render={() => (
               <>
-                {<NavbarMain />}
+                {<Header />}
                 <Home />
                 <Services />
                 {<Footer />}

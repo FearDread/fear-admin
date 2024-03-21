@@ -8,43 +8,34 @@ import FlagSelect from "../../Home/Flag";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import { Link } from "react-router-dom";
 import { useHistory } from "react-router-dom";
-import Sidebar from "./Sidebar";
 import { useSelector } from "react-redux";
-import NavbarHome from "component/Navbars/NavbarHome";
+import Sidebar from "./Sidebar";
 import ProfileModal from "./ProfileModel";
-import { Nav, Navbar } from "reactstrap";
 
 function Header() {
   const history = useHistory();
   const { isAuthenticated, user } = useSelector((state) => state.userData);
-
   const [searchBarActive, setSearchBarActive] = useState(false);
-
-  const [country, setCountry] = useState("in"); // this is for flag
+  const [country, setCountry] = useState("in");
   const [sideMenu, setSideMenu] = useState(false);
   const [searchValue, setSearchValue] = useState("");
 
-  // this is for handle sideBar
   const handleSideBarMenu = () => {
     setSideMenu(!sideMenu);
   };
 
-  // this is for country selection
   const handleCountryChange = (event) => {
     setCountry(event.target.value);
   };
 
-  // this is for Search Button toggle
   const handleSearchButtonClick = () => {
     setSearchBarActive(!searchBarActive);
   };
 
-  // this is for input value of Search bar.
   const handleSearchInputChange = (event) => {
     setSearchValue(event.target.value);
   };
 
-  // this is for handle searching ...
   const handleSearchFormSubmit = (event) => {
     event.preventDefault();
     if (searchValue.trim()) {
@@ -54,7 +45,6 @@ function Header() {
     }
   };
 
-  // this is for sideBar Toggle Button
   const handleCrossButtonClick = () => {
     setSearchValue("");
     setSearchBarActive(!searchBarActive);
@@ -62,9 +52,7 @@ function Header() {
 
   return (
     <>
-    <Navbar className={"fixed-top "} color-on-scroll="100" expand="lg">
       <div className="header">
-            {/*
         <div className="headerTop">
           <div className="headerTopLeft">
             <p>We Offer's Free Shipping </p>
@@ -104,8 +92,6 @@ function Header() {
         </div>
 
         {/* nav */}
-
-     
         <div className="headerBottom">
           <div className="headerBottom__logo">
             <div className="header_mobile_menu">
@@ -151,7 +137,7 @@ function Header() {
             </Link>
           )}
 
-
+          {/* navmenu */}
 
           {!searchBarActive && (
             <div className="headerBottom_navMenu">
@@ -159,21 +145,18 @@ function Header() {
                 <li>
                   <Link to="/">Home</Link>
                 </li>
-
                 <li>
-                  <Link to="/products">Product</Link>
+                  <Link to="/products">Shop</Link>
                 </li>
                 <li>
                   <Link to="/contact">Contact</Link>
                 </li>
                 <li>
-                  <Link to="/about_us">About</Link>
+                  <Link to="/aboutus">About</Link>
                 </li>
               </ul>
             </div>
           )}
-
-
           <div className="headerBotttom_icons">
             <div className="search_Bar">
               <SearchBar
@@ -199,7 +182,6 @@ function Header() {
           </div>
         </div>
       </div>
-      </Navbar>
     </>
   );
 }
