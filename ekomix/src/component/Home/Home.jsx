@@ -9,7 +9,9 @@ import { useAlert } from "react-alert";
 import HeroSlider from "./HeroSilder";
 import FeaturedSlider from "./FeatureSlider";
 import { 
-  Container
+  Container,
+  Col,
+  Row
  } from "reactstrap";
 
  // import AnimatedHero from "../AnimatedHero/AnimatedHero";
@@ -37,12 +39,12 @@ function Home() {
           <>
           <AnimatedBackground />
             <MataData title="E-KomiX" />
-            <div className="Home_Page">
+            <div className="home-page">
               <div className="heroSlider_Home">
                 <HeroSlider />;
               </div>
               <Container>
-              <div className="feature" style={{ marginTop: "2.7rem" }}>
+              <div className="featured">
                 <h2>
                   Featured Products
                 </h2>
@@ -52,12 +54,19 @@ function Home() {
               </Container>
               <Container>
               <h2>Trending Products</h2>
-              <div className="trending-products">
+              <Row className="trending-products">
+
+
+
                   {products &&
                   products.map((product) => (
+                    <Col md="3">
                     <ProductCard key={product._id} product={product} />
+                    </Col>
                   ))}
-              </div>
+
+
+              </Row>
               </Container>
             </div>
         </>

@@ -11,6 +11,7 @@ import axios from "axios";
 import "./assets/css/nucleo-icons.css";
 import "./assets/scss/blk-design-system-react.scss";
 import "./assets/demo/demo.css";
+import "./assets/css/blk-design-custom.css";
 
 import Header from "./component/layouts/Header.jsx/Header";
 import Payment from "./component/Cart/Payment";
