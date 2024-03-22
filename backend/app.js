@@ -20,11 +20,7 @@ const products = require("./src/routes/product");
 const notFound = require("./src/middleware/not-found");
 const DataError = require("./src/middleware/error-handler");
 
-
-
 dotenv.config({ path: "./.env" });
-
-
 
 app.use(cookieParser());
 app.use(express.json());
@@ -34,7 +30,7 @@ app.use(fileUpload());
 
 app.use(cors());
 app.use(helmet());
-app.options("*", cors());
+//app.options("*", cors());
 app.use(
   session({
     secret: process.env.SECRET,
@@ -52,15 +48,17 @@ app.use((req, res, next) => {
   next();
 });
 //Allow all requests from all domains & localhost
-app.all("*", function (req, res) {
+
+app.use(function (req, res, next) {
+  console.log('wtf')
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Credentials", "true");
   res.header("Access-Control-Allow-Methods", "GET,PATCH,PUT,POST,DELETE");
-  res.header("Access-Control-Expose-Headers", "Content-Length");
   res.header(
     "Access-Control-Allow-Headers",
     "Accept, Authorization,x-auth-token, Content-Type, X-Requested-With, Range"
   );
+  next();
 });
 
 app.use("/fear/api/users", users);

@@ -45,7 +45,7 @@ exports.create = async (req, res) => {
     .then((data) => {
       res.status(200).json({ 
         success: true,
-        data: data 
+        data 
       });
     })
     .catch((error) => {
@@ -54,11 +54,13 @@ exports.create = async (req, res) => {
 };
 
 exports.list = async (req, res) => {
+  console.log('list hit');
   await ProductModel.find()
     .then((products) => {
-      res.status(200).json({  
+      console.log('prod list = ', products);
+      res.status(200).send({  
         success: true,
-        products: products,
+        products,
       });
     })
     .catch((error) => {

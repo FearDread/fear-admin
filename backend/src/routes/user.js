@@ -17,8 +17,8 @@ router.route("/password/:id")
         .put(asyncHandler(User.updatePassword))
 
 router.route("/reset").put(asyncHandler(User.resetPassword));
-
-router.route("/admin").get(isAdmin, asyncHandler(User.list));
+router.route("/").get(asyncHandler(User.list));
+router.route("/admin").get(asyncHandler(User.list));
 
 router.route("/admin/:id")
     .get(isAdmin, asyncHandler(User.read))

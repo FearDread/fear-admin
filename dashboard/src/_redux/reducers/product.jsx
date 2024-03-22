@@ -24,9 +24,6 @@ const productsReducer = (state = { product: {}, products: [], new: [] }, action)
       return {
         loading: false,
         products: action.payload,
-        productsCount: action.payload.productsCount,
-        resultPerPage: action.payload.resultPerPage,
-        filterdProductCount: action.payload.filterdProductCount,
       };
     }
     case types.ALL_PRODUCT_FAIL:
