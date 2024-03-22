@@ -1,20 +1,19 @@
 import React from "react";
-import "./Home.css";
-import ProductCard from "./ProductCard";
 import MataData from "../layouts/MataData/MataData";
 import { clearErrors, getAdminProducts } from "../../_store/actions/productAction";
 import { useSelector, useDispatch } from "react-redux";
 import Loader from "../layouts/loader/Loader";
 import { useAlert } from "react-alert";
 import HeroSlider from "./HeroSilder";
-import FeaturedSlider from "./FeatureSlider";
+import FeaturedSlider from "../_Product/Featured";
+import ProductCard from "../_Product/Card";
 import { 
   Container,
   Col,
   Row
  } from "reactstrap";
 
- // import AnimatedHero from "../AnimatedHero/AnimatedHero";
+import AnimatedHero from "../AnimatedHero/AnimatedHero";
 import AnimatedBackground from "../AnimatedBackground/AnimatedBackground";
 
 function Home() {
@@ -37,11 +36,12 @@ function Home() {
         <Loader />
       ) : (
           <>
+          <MataData title="E-KomiX" />
           <AnimatedBackground />
-            <MataData title="E-KomiX" />
             <div className="home-page">
               <div className="heroSlider_Home">
-                <HeroSlider />;
+               {/*  <HeroSlider />; */}
+                <AnimatedHero />
               </div>
               <Container>
               <div className="featured">
@@ -55,9 +55,6 @@ function Home() {
               <Container>
               <h2>Trending Products</h2>
               <Row className="trending-products">
-
-
-
                   {products &&
                   products.map((product) => (
                     <Col md="3">

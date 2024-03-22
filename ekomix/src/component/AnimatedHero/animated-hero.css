@@ -14,7 +14,7 @@
     animation: fadeIn 1 1s ease-out;
 }
 
-button{
+button.hero-button{
   position: absolute;
   border: 2px solid white;
   background: transparent;
@@ -33,7 +33,7 @@ button{
   transition: .3s;
 }
 
-button:hover{
+button.hero-button:hover{
   border: 2px solid #104F55;
   background-color: rgba(365,365,365,0.5);
   cursor: pointer;

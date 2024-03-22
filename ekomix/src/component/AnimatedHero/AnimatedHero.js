@@ -11,7 +11,7 @@ const AnimatedHero = () => {
             <p id='head4' className='animated-header'>simple and awesome all the time</p>
             <p id='head5' className='animated-header'>Welcome to BA designs</p>
                 
-                <button>Continue</button>
+                <button className="hero-button">Continue</button>
             
             <div className='light x1'></div>
             <div className='light x2'></div>

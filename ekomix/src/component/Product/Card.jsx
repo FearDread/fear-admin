@@ -16,13 +16,8 @@ import {
   CardTitle,
   Label
 } from "reactstrap";
-const useStyles = makeStyles((theme) => ({
-
-}));
 
 const MyCard = ({ review }) => {
-  const classes = useStyles();
-
   const [helpful, setHelpful] = useState(10);
   const [unhelpful, setUnHelpful] = useState(5);
   const [helpfulClicked, setHelpfulClicked] = useState(false);
@@ -59,22 +54,41 @@ const MyCard = ({ review }) => {
     return formattedDate;
   }
 
-  return (
-    <Col className="mr-auto" md="7">
-    <Card className="card-product card-dark">
-      <CardHeader>
-
-        <CardTitle tag="h4">Example</CardTitle>
-      </CardHeader>
-    <CardBody>
-      <CardImg
-          alt="..."
-          className="product-img"
-        />
-
-      </CardBody>
-      </Card>
-      </Col>
+return (
+  <>
+      <Link to={`/product/${product._id}`}>
+        <Card className="card-product card-home">
+          <div className="card-image">
+            <img alt="..." class="img rounded" src={product.images[0] && product.images[0].url ? product.images[0].url : ''} />
+          </div>
+          <div class="card-body">
+            <h6 class="category text-warning">Popular</h6>
+            <h4 class="card-title">{nameTruncated}</h4>
+            <div class="card-description"><span>{truncated}</span></div>
+            <div class="card-footer">
+              <div class="price-container">
+                <span class="price">${product.price}</span>
+              </div>
+              <Rating
+                name="rating"
+                value={product.ratings}
+                precision={0.1}
+                readOnly
+                size="small"
+                style={{ color: "#ed1c24", marginRight: 8, fontWeight: "400" }}
+              />
+                <button id="tooltip449471879" class="btn-simple btn-icon btn-round pull-right btn btn-warning">
+                  <i class="tim-icons icon-heart-2"></i>
+                </button>
+                <Button
+                  onClick={() => addTocartHandler(product._id, 1)} >
+                  Add to Cart
+                </Button>
+            </div>
+          </div>
+        </Card>
+      </Link>
+    </>
   );
 }
 export default MyCard;
