@@ -11,6 +11,7 @@ import { useHistory } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Sidebar from "./Sidebar";
 import ProfileModal from "./ProfileModel";
+import { UserProfile } from "../../_store/actions/userAction";
 
 function Header() {
   const history = useHistory();
@@ -49,6 +50,13 @@ function Header() {
     setSearchValue("");
     setSearchBarActive(!searchBarActive);
   };
+
+  useEffect(() => {
+    console.log('user data = ', user);
+    console.log('is auth = ', isAuthenticated);
+    UserProfile();
+
+  }, []);
 
   return (
     <>
