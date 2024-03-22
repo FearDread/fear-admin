@@ -6,6 +6,7 @@ import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import CricketBallLoader from "./component/layouts/loader/Loader";
 import PrivateRoute from "./component/Route/PrivateRoute";
+import { useSelector } from "react-redux";
 
 import axios from "axios";
 import "./assets/css/nucleo-icons.css";
@@ -54,7 +55,7 @@ const LazyProductReviews = React.lazy(() => import("./component/Admin/ProductRev
 function App() {
   const dispatch = useDispatch();
   const [stripeApiKey, setStripeApiKey] = useState("");
-
+  const { isAuthenticated, user } = useSelector((state) => state.userData);
   async function getStripeApiKey() {
     try {
       const { data } = await axios.get("/api/v1/stripeapikey");
@@ -82,9 +83,6 @@ function App() {
     } else {
       //getStripeApiKey();
     }
-  }, []);
-
-  useEffect(() => {
 
     dispatch(UserProfile());
   }, []);
