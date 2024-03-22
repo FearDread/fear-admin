@@ -31,15 +31,7 @@ app.use(fileUpload());
 app.use(cors());
 app.use(helmet());
 //app.options("*", cors());
-app.use(
-  session({
-    secret: process.env.SECRET,
-    key: process.env.KEY,
-    resave: false,
-    saveUninitialized: false,
-    store: db.store(),
-  })
-);
+
 
 // pass variables to our templates + all requests
 app.use((req, res, next) => {

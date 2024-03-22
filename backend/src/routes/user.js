@@ -16,11 +16,11 @@ router.route("/password/:id")
         .post(asyncHandler(User.forgotPassword))
         .put(asyncHandler(User.updatePassword))
 
-router.route("/reset").put(asyncHandler(User.resetPassword));
 router.route("/").get(asyncHandler(User.list));
-router.route("/admin").get(asyncHandler(User.list));
+router.route("/reset").put(asyncHandler(User.resetPassword));
+router.route("/all").get(asyncHandler(User.list));
 
-router.route("/admin/:id")
+router.route("/:id")
     .get(isAdmin, asyncHandler(User.read))
     .delete(isAdmin, asyncHandler(User.delete))
     .put(isAdmin, asyncHandler(User.update));

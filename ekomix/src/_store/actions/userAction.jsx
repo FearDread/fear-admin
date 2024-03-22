@@ -97,10 +97,12 @@ export const UserProfile = () => async (dispatch) => {
     if (userData !== "undefined" && userData && userData !== undefined ) {
       // Parse the user data from JSON format stored in session storage
       const user = JSON.parse(userData);
-       dispatch({ type: LOAD_USER_SUCCESS, payload: user });
+
+      console.log('local user data = ', user);
+      dispatch({ type: LOAD_USER_SUCCESS, payload: user });
     } else {
       // If user data is not available in session storage, make a backend API call
-      const { data } = await axios.get(API_BASE_URL + "/profile");
+      const { data } = await axios.get(API_BASE_URL + "/users/profile");
    
       dispatch({ type: LOAD_USER_SUCCESS, payload: data.user });
       sessionStorage.setItem("user", JSON.stringify(data.user));

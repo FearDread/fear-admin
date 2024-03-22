@@ -54,10 +54,9 @@ exports.create = async (req, res) => {
 };
 
 exports.list = async (req, res) => {
-  console.log('list hit');
+
   await ProductModel.find()
     .then((products) => {
-      console.log('prod list = ', products);
       res.status(200).send({  
         success: true,
         products,
@@ -154,7 +153,6 @@ exports.read = async (req, res, next) => {
   
   await ProductModel.findById(id)
     .then((product) => {
-      console.log('product ', product);
       res.status(201).send({
         succes: true,
         product
