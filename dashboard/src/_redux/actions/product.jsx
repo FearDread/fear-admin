@@ -110,8 +110,8 @@ export const getAdminProducts = () => async (dispatch) => {
   try {
     dispatch({ type: ADMIN_PRODUCT_REQUEST });
 
-    const response = await axios.get(API_BASE_URL + "/admin/products");
-
+    const response = await axios.get(API_BASE_URL + "/product");
+    console.log('prod res =- ', response);
     dispatch({ type: ADMIN_PRODUCT_SUCCESS, payload: response.data.products });
   } catch (error) {
     dispatch({ type: ADMIN_PRODUCT_FAIL, payload: error });
@@ -130,7 +130,7 @@ export function createProduct(productData) {
       };
 
       await axios.post(
-        API_BASE_URL + `/admin/product/new`,
+        API_BASE_URL + `/product/new`,
         productData,
         config
       )

@@ -138,7 +138,7 @@ export const getAllUsers  = () => async (dispatch) =>{
 
     dispatch({type : actionTypes.ALL_USERS_REQUEST})
 
-    const response = await axios.get(API_BASE_URL + "/admin/users");
+    const response = await axios.get(API_BASE_URL + "/users");
     console.log("user request + ", response);
 
     dispatch({ type: actionTypes.ALL_USERS_SUCCESS, payload: response.data.users});
