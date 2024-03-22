@@ -37,7 +37,7 @@ function Home() {
       ) : (
           <>
           <MataData title="E-KomiX" />
-          <AnimatedBackground />
+          {/* <AnimatedBackground /> */}
             <div className="home-page">
               <div className="heroSlider_Home">
                {/*  <HeroSlider />; */}
@@ -61,8 +61,6 @@ function Home() {
                     <ProductCard key={product._id} product={product} />
                     </Col>
                   ))}
-
-
               </Row>
               </Container>
             </div>
