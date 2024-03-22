@@ -5,13 +5,12 @@ const AnimatedHero = () => {
 
     return (
         <div className="hero-container">
-            <p id='head1' className='animated-header'>Awesome designs</p>
-            <p id='head2' className='animated-header'>Just</p>
-            <p id='head3' className='animated-header'>For you</p>
-            <p id='head4' className='animated-header'>simple and awesome all the time</p>
-            <p id='head5' className='animated-header'>Welcome to BA designs</p>
-                
-                <button className="hero-button">Continue</button>
+            <p id='head1' className='animated-header'>Welcom to E-KomiX!</p>
+            <p id='head2' className='animated-header'>We got ... </p>
+            <p id='head3' className='animated-header'>Cards, Comics, Coins, and Collectibles</p>
+            <p id='head4' className='animated-header'>Browse our Collection!</p>
+
+                <button className="hero-button" onClick={(e) => {window.location.href="/products" }}>Shop Now!</button>
             
             <div className='light x1'></div>
             <div className='light x2'></div>

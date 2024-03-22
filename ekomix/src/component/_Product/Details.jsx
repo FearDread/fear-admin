@@ -5,9 +5,8 @@ const Product = () => {
 
 
     return (
-<>
-
-<div class="wrapper">
+    <>
+    <div class="wrapper">
     <PageHeader page="product" />
     <div class="section">
         <div class="container">

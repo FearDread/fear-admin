@@ -84,16 +84,12 @@ function Products() {
 
 
 
-const [selectedRating, setSelectedRating] = React.useState("all");
+  const [selectedRating, setSelectedRating] = React.useState("all");
 
-const handleRatingChange = (event) => {
-  setRatings(event.target.value);
-  setSelectedRating(event.target.value);
-  // Trigger filtering with the selected rating value or perform any other action
-  
-};
-
- 
+  const handleRatingChange = (event) => {
+    setRatings(event.target.value);
+    setSelectedRating(event.target.value);
+  };
 
   return (
     <>
@@ -134,7 +130,6 @@ const handleRatingChange = (event) => {
             <div className="productPage">
               <div className="prodcutPageTop">
                 <div className="filterBox">
-                  {/* Price */}
                   <div className="priceFilter">
                     <Typography
                       style={{
@@ -168,7 +163,7 @@ const handleRatingChange = (event) => {
                           IconComponent={ArrowDropDownIcon}
                           renderValue={(selected) =>
                             selected !== "" ? selected : "min"
-                          } // Display "min" as default label
+                          }
                         >
                           <MenuItem value={5000} className="menu_item">
                             5000
@@ -176,7 +171,6 @@ const handleRatingChange = (event) => {
                           <MenuItem value={10000} className="menu_item">
                             10000
                           </MenuItem>
-                          {/* Add more options as per your requirement */}
                         </Select>
                         <span className="toText">to</span>
                         <Select
@@ -203,8 +197,6 @@ const handleRatingChange = (event) => {
                   </div>
 
                   <div className="filter_divider"></div>
-
-                  {/* Categories */}
                   <div className="categoriesFilter">
                     <Typography
                       style={{
@@ -275,7 +267,6 @@ const handleRatingChange = (event) => {
                     </RadioGroup>
                   </div>
                   <div className="filter_divider"></div>
-                  {/* Clear Filters */}
                 </div>
               <Container>
                 <Row className="product-container">
@@ -288,9 +279,6 @@ const handleRatingChange = (event) => {
                 </Row>
                 </Container>
               </div>
-
-              {/* Pagination */}
-       
                 <div className="paginationBox">
                   <Pagination
                     activePage={currentPage}
@@ -307,7 +295,6 @@ const handleRatingChange = (event) => {
                     activeLinkClass="pageLinkActive"
                   />
                 </div>
-             
             </div>
           )}
         </>
