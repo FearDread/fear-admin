@@ -8,7 +8,7 @@ const AnimatedHero = () => {
             <p id='head1' className='animated-header'>Welcom to E-KomiX!</p>
             <p id='head2' className='animated-header'>Browse our RARE Collections </p>
             <p id='head3' className='animated-header'>Cards, Comics, Coins, and Collectibles</p>
-            <p id='head4' className='animated-header'>Browse our Collection!</p>
+            <p id='head4' className='animated-header'>Sign up and Shop!</p>
             <p id='head5' className='animated-header'>Face Everything and Rise</p>
 
                 <button className="hero-button" onClick={(e) => {window.location.href="/products" }}>Shop Now!</button>
