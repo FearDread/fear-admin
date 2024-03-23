@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ReorderIcon from "@mui/icons-material/Reorder";
 import SearchBar from "./Searchbar";
 import "./Header.css";
@@ -8,13 +8,14 @@ import FlagSelect from "../../Home/Flag";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import { Link } from "react-router-dom";
 import { useHistory } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import Sidebar from "./Sidebar";
 import ProfileModal from "./ProfileModel";
-import { UserProfile } from "../../_store/actions/userAction";
+import { UserProfile } from "../../../_store/actions/userAction";
 
 function Header() {
   const history = useHistory();
+  const dispatch = useDispatch();
   const { isAuthenticated, user } = useSelector((state) => state.userData);
   const [searchBarActive, setSearchBarActive] = useState(false);
   const [country, setCountry] = useState("in");
@@ -54,8 +55,8 @@ function Header() {
   useEffect(() => {
     console.log('user data = ', user);
     console.log('is auth = ', isAuthenticated);
-    UserProfile();
 
+    dispatch(UserProfile());
   }, []);
 
   return (
