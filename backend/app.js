@@ -42,14 +42,14 @@ app.use((req, res, next) => {
 //Allow all requests from all domains & localhost
 
 app.use(function (req, res, next) {
-  console.log('wtf')
-  res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Credentials", "true");
+  res.header("Access-Control-Allow-Origin", "http://fear.ekomix.com", "/");
   res.header("Access-Control-Allow-Methods", "GET,PATCH,PUT,POST,DELETE");
   res.header(
     "Access-Control-Allow-Headers",
-    "Accept, Authorization,x-auth-token, Content-Type, X-Requested-With, Range"
+    "Accept, Authorization, x-auth-token, Content-Type, X-Requested-With, Range"
   );
+  
   next();
 });
 

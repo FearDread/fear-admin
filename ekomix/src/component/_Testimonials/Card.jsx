@@ -9,7 +9,9 @@ const TestimonialCard = (data) => {
         <Col md="4">
             <Card className="card-testimonial">
             <div class="card-avatar">
-                <a href="#pablo"><img alt="..." class="img img-raised" src="index.htmlstatic/media/michael.660d3e04.jpg" /></a>
+                <a href="">
+                    <img alt="..." class="img img-raised" src="index.htmlstatic/media/michael.660d3e04.jpg" />
+                </a>
             </div>
             <div class="card-body">
                 <p class="card-description">The networking at Web Summit is like no other European tech conference.</p>
