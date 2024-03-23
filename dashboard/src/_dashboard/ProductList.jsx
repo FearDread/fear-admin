@@ -97,7 +97,7 @@ function ProductList() {
       />),
       name: item.name,
       category: item.category,
-      price: item.price,
+      price: "$" + item.price,
       stock: item.Stock,
       info: item.info
     })

@@ -1,4 +1,4 @@
-\import VectorMap from "views/maps/VectorMap.js";
+import VectorMap from "views/maps/VectorMap.js";
 import GoogleMaps from "views/maps/GoogleMaps.js";
 import FullScreenMap from "views/maps/FullScreenMap.js";
 import ReactTables from "views/tables/ReactTables.js";
