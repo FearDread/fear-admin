@@ -97,8 +97,8 @@ export const newReview = (reviewData) => async (dispatch) => {
 
     const config = { headers: { "Content-Type": "application/json" } };
 
-    const { data } = await axios.put(`/api/v1/review/new`, reviewData, config);
-
+    const { data } = await axios.put("/review/new", reviewData, config);
+    console.log("review data =", reviewData);
     dispatch({ type: NEW_REVIEW_SUCCESS, payload: data.success });
   } catch (error) {
     dispatch({ type: NEW_REVIEW_FAIL, payload: error.message });
@@ -157,7 +157,7 @@ export function deleteProduct(id) {
     try {
       dispatch({ type: DELETE_PRODUCT_REQUEST });
 
-      const { data } = await axios.delete(`/api/v1/admin/product/${id}`);
+      const { data } = await axios.delete(API_BASE_URL + "/product/${id}");
     
       dispatch({ type: DELETE_PRODUCT_SUCCESS, payload: data.success });
     } catch (error) {
@@ -176,7 +176,7 @@ export const updateProduct = (id, productData) => async (dispatch) => {
            };
 
            const { data } = await axios.put(
-             `/api/v1/admin/product/${id}`,
+             API_BASE_URL + "/product/${id}",
              productData,
              config
            );
@@ -199,7 +199,8 @@ export const updateProduct = (id, productData) => async (dispatch) => {
      try {
         dispatch({type : ALL_REVIEW_REQUEST})
 
-        const { data } = await axios.get(`/api/v1/reviews?id=${productId}`);
+        const { data } = await axios.get(API_BASE_URL + "/product/reviews?id=${productId}");
+        console.log('review data = ', data);
         dispatch({type : ALL_REVIEW_SUCCESS , payload : data.reviews})
      } catch (error) {
         dispatch({type : ALL_REVIEW_FAIL , payload : error.message})

@@ -22,13 +22,9 @@ function Home() {
   const { loading, error, products } = useSelector((state) => state.products);
 
   React.useEffect(() => {
-    if (error) {
-      alert.error(error);
-      dispatch(clearErrors);
-    }
 
     dispatch(getAdminProducts());
-  }, [dispatch, error, alert]);
+  }, [ dispatch ]);
 
   return (
     <>

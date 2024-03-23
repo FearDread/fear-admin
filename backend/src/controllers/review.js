@@ -1,11 +1,10 @@
-
-const { AppError, dbError } = require("../_utils/errorHandlers");
 const ProductModel = require("../models/product");
 const cloudinary = require("cloudinary");
+const DataError = require("")
 
 /* Product Review methods */
 /* ---------------------- */
-exports.createProductReview = async (req, res, next) => {
+exports.create = async (req, res, next) => {
     const { ratings, comment, productId, title, recommend } = req.body;
     const review = {
       userId: req.user._id,
@@ -57,61 +56,44 @@ exports.createProductReview = async (req, res, next) => {
     });
   };
   
-  exports.getProductReviews = async (req, res, next) => {
-    // we need product id for all reviews of the product
+  exports.read = async (req, res, next) => {
+
+    await ProductModel.findById(req.query.id)
+      .then((product) => {
   
-    const product = await ProductModel.findById(req.query.id);
-  
-    if (!product) {
-      return next(new ErrorHandler("Product not found", 404));
-    }
-  
-    res.status(200).json({
-      success: true,
-      reviews: product.reviews,
-    });
+        res.status(200).send({ success: true, reviews: product.reviews });
+      })
+      .catch((error) => {
+        DataError(res, error);
+      });
   };
   
-  exports.deleteReview = async (req, res, next) => {
-    const product = await ProductModel.findById(req.query.productId);
-    if (!product) {
-      return next(new ErrorHandler("Product not found", 404)); 
-    }
-  
-    const reviews = product.reviews.filter(
-      (rev) => { return rev._id.toString() !== req.query.id.toString()}
-    );
-    // once review filterd then update new rating from prdoduct review
-    let avg = 0;
-    reviews.forEach((rev) => {
-      avg += rev.ratings;
-    });
-  
-    let ratings = 0;
-    if (reviews.length === 0) {
-      ratings = 0;
-    } else {
-      ratings = avg / reviews.length;
-    }
-  
-    const numOfReviews = reviews.length;
-    await ProductModel.findByIdAndUpdate(req.query.productId, 
-      {
-        reviews,
-        ratings,
-        numOfReviews,
-      },
-      {
-        new: true,
-        runValidators: true,
-        useFindAndModify: false,
-      })
-      .then(() => {
-        res.status(200).json({
-          success: true,
+  exports.delete = async (req, res, next) => {
+    await ProductModel.findById(req.query.productId)
+      .then((product) => {
+        const reviews = product.reviews.filter(
+          (rev) => { return rev._id.toString() !== req.query.id.toString()}
+        );
+
+        let avg = 0;
+        reviews.forEach((rev) => {
+          avg += rev.ratings;
+        });
+        let ratings = (reviews.length === 0) ? 0 : avg / reviews.length;
+        const numOfReviews = reviews.length;
+
+        ProductModel.findByIdAndUpdate(req.query.productId, 
+          { reviews, ratings, numOfReviews,},
+          { new: true, runValidators: true, useFindAndModify: false,
+        })
+        .then(() => {
+          res.status(200).send({ success: true, numOfReviews });
+        })
+        .catch((error) => {
+          DataError(res, error);
         });
       })
       .catch((error) => {
-        dbError(res, error);
+        DataError(res, error);
       });
   };
