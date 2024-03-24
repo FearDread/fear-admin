@@ -1,36 +1,19 @@
-import VectorMap from "views/maps/VectorMap.js";
-import GoogleMaps from "views/maps/GoogleMaps.js";
-import FullScreenMap from "views/maps/FullScreenMap.js";
-import ReactTables from "views/tables/ReactTables.js";
-import RegularTables from "views/tables/RegularTables.js";
-import ExtendedTables from "views/tables/ExtendedTables.js";
-import Wizard from "views/forms/Wizard.js";
-import ValidationForms from "views/forms/ValidationForms.js";
-import ExtendedForms from "views/forms/ExtendedForms.js";
 import Calendar from "views/Calendar.js";
-import Widgets from "views/Widgets.js";
 import Charts from "views/Charts.js";
-import Buttons from "views/components/Buttons.js";
 import SweetAlert from "views/components/SweetAlert.js";
-//import Notifications from "views/components/Notifications.js";
+import Notifications from "views/Notification.js";
 import Grid from "views/components/Grid.js";
-import Typography from "views/components/Typography.js";
-import Icons from "views/components/Icons.js";
 import Pricing from "views/pages/Pricing.js";
-import Timeline from "views/pages/Timeline.js";
-import Rtl from "views/pages/Rtl.js";
 import Lock from "views/pages/Lock.js";
-
 import RegularForms from "views/forms/RegularForms.js";
 import Panels from "views/components/Panels.js";
-
 import User from "views/pages/User.jsx";
 import Dashboard from "views/Dashboard.jsx";
 import UserList from "_dashboard/UserList.jsx";
 import Products from "_dashboard/ProductList.jsx";
 import NewProduct from "_dashboard/ProductNew.jsx";
 //import Profile from "_dashboard/Profile.jsx";
-//import ProductReviews from "_dashboard/ProductReviews";
+import ProductReviews from "_dashboard/ProductReviews";
 import Login from "views/pages/Login.jsx";
 import Register from "views/pages/Register.jsx";
 //import OrderList from "_dashboard/OrderList";
@@ -99,7 +82,7 @@ const routes = [
         path: "/product/reviews",
         name: "+ Reviews",
         mini: "R",
-        component: Panels,
+        component: ProductReviews,
         layout: "/admin"
       }
     ]
@@ -113,7 +96,7 @@ const routes = [
   },
   {
     collapse: true,
-    name: "Auth Pages",
+    name: "Pages",
     icon: "tim-icons icon-image-02",
     state: "pagesCollapse",
     views: [
@@ -153,6 +136,20 @@ const routes = [
     icon: "tim-icons icon-image-02",
     state: "examplesCollapse",
     views: [
+      {
+        path: "/notifications",
+        name: "Notifications",
+        mini: "T",
+        component: Notifications,
+        layout: "/admin"
+      },
+      {
+        path: "/sweet-alert",
+        name: "Sweet Altert",
+        mini: "T",
+        component: SweetAlert,
+        layout: "/admin"
+      },
       {
         path: "/example-tables",
         name: "Grid Layout",

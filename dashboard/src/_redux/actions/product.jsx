@@ -29,6 +29,7 @@ import {
   CLEAR_ERRORS,
   ALL_REVIEW_FAIL,
 } from "../types/product";
+import * as Types from "../types/product";
 import { API_BASE_URL } from "variables/api";
 
 // get ALL Products

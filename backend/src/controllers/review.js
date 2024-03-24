@@ -60,7 +60,7 @@ exports.create = async (req, res, next) => {
 
     await ProductModel.findById(req.query.id)
       .then((product) => {
-  
+
         res.status(200).send({ success: true, reviews: product.reviews });
       })
       .catch((error) => {

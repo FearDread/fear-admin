@@ -62,7 +62,7 @@ function ProductEdit() {
     }
   }, [dispatch, error, history, success]);
   
-  const createProductSubmitHandler = (e) => {
+  const updateProductSubmitHandler = (e) => {
     e.preventDefault();
     
     const myForm = new FormData();
@@ -82,7 +82,7 @@ function ProductEdit() {
     dispatch(createProduct(myForm));
   };
 
-  const createProductImagesChange = (e) => {
+  const updateProductImagesChange = (e) => {
     const files = Array.from(e.target.files);
     setImages([]);
     setImagesPreview([]);
@@ -110,7 +110,7 @@ function ProductEdit() {
               <Col md="6" className="centered-form">
                 <Form
                   encType="multipart/form-data"
-                  onSubmit={createProductSubmitHandler}>
+                  onSubmit={updateProductSubmitHandler}>
                   <Card>
                     <CardHeader>
                       <CardTitle tag="h4">Add New Product</CardTitle>
@@ -187,7 +187,7 @@ function ProductEdit() {
                         <Input
                           type="file"
                           accept="image/*"
-                          onChange={createProductImagesChange}
+                          onChange={updateProductImagesChange}
                           multiple
                           ref={fileInputRef}
                         />

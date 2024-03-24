@@ -39,7 +39,7 @@ const header = [
     accessor: "price"
   },
   {
-    Header: "# in Stock",
+    Header: "Stock",
     accessor: "Stock"
   },
   {
@@ -113,7 +113,7 @@ function ProductList() {
         <Col md={8} className="ml-auto mr-auto">
           <h1 className="text-center">Manage Inventory</h1>
         </Col>
-          <Row>
+          <Row> 
             <Col className="mb-5" md="12">
               <Card>
                 <CardHeader>
