@@ -64,7 +64,7 @@ const Dashboard = () => {
 
   //const { products, loading, error } = useSelector((state) => state.products);
   //const { orders, error: ordersError } = useSelector((state) => state.allOrders);
-  const { user, users, loading, error } = useSelector((state) => state.user);
+  const { loading, user, } = useSelector((state) => state.user);
 
   const setBgChartData = (name) => {
     setbigChartData(name);
@@ -91,8 +91,7 @@ const Dashboard = () => {
     //dispatch(getAllUsers());
     //dispatch(getAdminProducts());
     console.log("Current User = ", user);
-    console.log("current users Count = ", users);
-  }, [dispatch, user, users]);
+  }, [dispatch]);
   
   return (
     <>
