@@ -142,7 +142,13 @@ const Notifications = () => {
                           <Button
                             block
                             color="info"
-                            onClick={() => notify("tc")}
+                            onClick={() => Notify(NotificationAlert
+                            , {
+                            type: "erro",
+                            place: "tm",
+                            message: "test message",
+                            delay: 5 }
+                            )}
                           >
                             Top Center
                           </Button>
