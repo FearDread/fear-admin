@@ -7,13 +7,14 @@ import Pricing from "views/pages/Pricing.js";
 import Lock from "views/pages/Lock.js";
 import RegularForms from "views/forms/RegularForms.js";
 import Panels from "views/components/Panels.js";
+import Wizard from "views/forms/Wizard.js";
 import User from "views/pages/User.jsx";
 import Dashboard from "views/Dashboard.jsx";
 import UserList from "_dashboard/UserList.jsx";
 import Products from "_dashboard/ProductList.jsx";
 import NewProduct from "_dashboard/ProductNew.jsx";
 //import Profile from "_dashboard/Profile.jsx";
-import ProductReviews from "_dashboard/ProductReviews";
+//import ProductReviews from "_dashboard/ProductReviews";
 import Login from "views/pages/Login.jsx";
 import Register from "views/pages/Register.jsx";
 //import OrderList from "_dashboard/OrderList";
@@ -82,7 +83,7 @@ const routes = [
         path: "/product/reviews",
         name: "+ Reviews",
         mini: "R",
-        component: ProductReviews,
+        component: Wizard,
         layout: "/admin"
       }
     ]
