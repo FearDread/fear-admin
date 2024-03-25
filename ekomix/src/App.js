@@ -39,7 +39,7 @@ import TermsUse from "./component/Terms/TermsAndUse";
 import TermsAndConditions from "./component/Terms/TermsCondtion";
 import PrivacyPolicy from "./component/Terms/Privacy";
 import NavbarMain from "./component/Navbars/NavbarMain";
-
+//import PixleStars from "./component/PixleStars/PixleStars";
 // const LazyPayment = React.lazy(() => import("./component/Cart/Payment"));
 const LazyDashboard = React.lazy(() => import("./component/Admin/Dashboard"));
 const LazyProductList = React.lazy(() => import("./component/Admin/ProductList"));
