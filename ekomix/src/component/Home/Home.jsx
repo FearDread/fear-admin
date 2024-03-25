@@ -15,6 +15,7 @@ import {
 
 import AnimatedHero from "../AnimatedHero/AnimatedHero";
 import AnimatedBackground from "../AnimatedBackground/AnimatedBackground";
+import PixleStars from "../PixleStars/PixleStars";
 
 function Home() {
   const alert = useAlert();
@@ -32,6 +33,7 @@ function Home() {
         <Loader />
       ) : (
           <>
+
           <MataData title="E-KomiX" />
           {/* <AnimatedBackground /> */}
             <div className="home-page">
