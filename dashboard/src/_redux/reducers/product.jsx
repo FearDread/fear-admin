@@ -3,20 +3,20 @@ import * as types from "../types/product";
 const initialState = {
     product:{},
     products:[],
-    new:[],
+    newProductData:[],
     loading: false,
+    success: false,
     isDeleted: false,
     isUpdated: false
 }
 
-const productsReducer = (state = { product: {}, products: [], new: [] }, action) => {
+const productsReducer = (state = initialState, action) => {
   switch (action.type) {
     case types.ALL_PRODUCT_REQUEST:
     case types.ADMIN_PRODUCT_REQUEST: {
       return {
         ...state,
         loading: true,
-        products: [],
       };
     }
     case types.ADMIN_PRODUCT_SUCCESS:
@@ -30,6 +30,7 @@ const productsReducer = (state = { product: {}, products: [], new: [] }, action)
     case types.ADMIN_PRODUCT_FAIL: {
       return {
         loading: false,
+        success: false,
         error: action.payload,
       };
     }
@@ -41,7 +42,7 @@ const productsReducer = (state = { product: {}, products: [], new: [] }, action)
       return {
         ...state,
         loading: false,
-        success: action.payload.success,
+        success: true,
         newProductData: action.payload.data,
       };
 
@@ -55,7 +56,8 @@ const productsReducer = (state = { product: {}, products: [], new: [] }, action)
     case types.NEW_PRODUCT_RESET:
       return {
         ...state,
-        success: false,
+        loading: false,
+        newProductData: []
       };
     // Clear error
     case types.CLEAR_ERRORS:

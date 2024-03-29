@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-//import { useAlert } from "react-alert";
 import { useHistory } from "react-router-dom";
 import { createProduct, clearErrors } from "_redux/actions/product";
 import { NEW_PRODUCT_RESET } from "_redux/types/product";
 import Loader from "components/Loader/Loading";
+import ReactBSAlert from "react-bootstrap-sweetalert";
 
 import {
   Button,
@@ -33,10 +33,10 @@ function NewProduct() {
   const [images, setImages] = useState([]);
   const [imagesPreview, setImagesPreview] = useState([]);
   const [isCategory, setIsCategory] = useState(false);
+  const [alert, setAlert] = React.useState(null);
   const fileInputRef = useRef();
-
   const { user } = useSelector((state) => state.auth);
-  const { loading, error, success } = useSelector((state) => state.product);
+  const { loading, categries, error, success } = useSelector((state) => state.product);
 
   const handleCategoryChange = (e) => {
     setCategory(e.target.value);
@@ -47,6 +47,9 @@ function NewProduct() {
     fileInputRef.current.click();
   };
 
+  useEffect(() => {
+
+  }, []);
  const categories = [
    "Comics",
    "Coins",
@@ -57,11 +60,34 @@ function NewProduct() {
 
   useEffect(() => {
     if (success) {
+      console.log("success ::");
       history.push("/admin/dashboard");
+
+      successAlert();
       dispatch({ type: NEW_PRODUCT_RESET });
     }
   }, [dispatch, error, history, success]);
-  
+
+  const successAlert = () => {
+    setAlert(
+      <ReactBSAlert
+        success
+        style={{ display: "block", marginTop: "-100px" }}
+        title="Success!"
+        onConfirm={() => hideAlert()}
+        onCancel={() => hideAlert()}
+        confirmBtnBsStyle="success"
+        btnSize=""
+      >
+        Product Added to Store!
+      </ReactBSAlert>
+    );
+  };
+
+  const hideAlert = () => {
+    setAlert(null);
+  };
+
   const createProductSubmitHandler = (e) => {
     e.preventDefault();
     

@@ -13,13 +13,14 @@ import {
   Row,
   Col
 } from "reactstrap";
-import Notify from "components/Notify/Notify";
+
 
 const Notifications = () => {
   const [modalMini, setModalMini] = React.useState(false);
   const [modalClassic, setModalClassic] = React.useState(false);
   const [modalNotice, setModalNotice] = React.useState(false);
   const notificationAlertRef = React.useRef(null);
+
   const toggleModalClassic = () => {
     setModalClassic(!modalClassic);
   };
@@ -29,6 +30,23 @@ const Notifications = () => {
   const toggleModalMini = () => {
     setModalMini(!modalMini);
   };
+
+  const notify = (props) => {
+    console.log("notify props", props);
+    let options = {};
+    const { place, message, color } = props;
+
+    options = {
+      place: place,
+      message: message,
+      type: color,
+      icon: "tim-icons icon-bell-55",
+      autoDismiss: props.delay
+    };
+
+    
+    notificationAlertRef.current.notificationAlert(options);
+  }
   
   return (
     <>
@@ -142,13 +160,7 @@ const Notifications = () => {
                           <Button
                             block
                             color="info"
-                            onClick={() => Notify(NotificationAlert
-                            , {
-                            type: "erro",
-                            place: "tm",
-                            message: "test message",
-                            delay: 5 }
-                            )}
+                            onClick={() => notify("tm", "bla", "error") }
                           >
                             Top Center
                           </Button>

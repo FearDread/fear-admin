@@ -1,24 +1,6 @@
-/*!
-
-=========================================================
-* Black Dashboard PRO React - v1.2.1
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/black-dashboard-pro-react
-* Copyright 2022 Creative Tim (https://www.creative-tim.com)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
 import React from "react";
 import classnames from "classnames";
 import { NavLink } from "react-router-dom";
-
-// reactstrap components
 import {
   Collapse,
   NavbarBrand,
@@ -31,9 +13,6 @@ import {
 const AuthNavbar = (props) => {
   const [collapseOpen, setCollapseOpen] = React.useState(false);
   const [color, setColor] = React.useState("navbar-transparent");
-  // this function opens and closes the collapse on small devices
-  // it also adds navbar-transparent class to the navbar when closed
-  // ad bg-white when opened
   const toggleCollapse = () => {
     if (collapseOpen) {
       setColor("navbar-transparent");
