@@ -122,27 +122,21 @@ export const getAdminProducts = () => async (dispatch) => {
 // Create Product
 export function createProduct(productData) {
   return async function(dispatch) {
-      dispatch({
-        type: NEW_PRODUCT_REQUEST,
-      });
+      dispatch({type: NEW_PRODUCT_REQUEST});
          
       const config = {
         headers: { "Content-Type": "multipart/form-data" },
       };
-
-      await axios.post(
-        API_BASE_URL + `/product/new`,
+      await axios.post(API_BASE_URL + `/product/new`,
         productData,
         config
-      )
-      .then((data) => {
-        console.log("Product response :: ", data);
+      ).then((data) => {
+        console.log("Product response :: ", {data});
         dispatch({
           type: NEW_PRODUCT_SUCCESS,
-          payload: data,
+          payload: { data },
         });
-      })
-      .catch((error) => {
+      }).catch((error) => {
         dispatch({
           type: NEW_PRODUCT_FAIL,
           payload: error.message,

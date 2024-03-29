@@ -64,7 +64,7 @@ const Dashboard = () => {
 
   //const { products, loading, error } = useSelector((state) => state.products);
   //const { orders, error: ordersError } = useSelector((state) => state.allOrders);
-  const { loading, user, } = useSelector((state) => state.user);
+  const { loading, user, } = useSelector((state) => state.auth);
 
   const setBgChartData = (name) => {
     setbigChartData(name);

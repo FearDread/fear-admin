@@ -4,9 +4,6 @@ import NotificationAlert from "react-notification-alert";
 import AdminNavbar from "components/Navbars/AdminNavbar.js";
 import Footer from "components/Footer/Footer.js";
 import Sidebar from "components/Sidebar/Sidebar.js";
-import { getAllUsers } from "_redux/actions/user";
-import { useSelector, useDispatch } from "react-redux";
-
 import * as Router from "_router";
 import routes from "_router/routes.js";
 import logo from "assets/img/FEAR/logo.png";
@@ -15,7 +12,7 @@ const Admin = (props) => {
   const [activeColor, setActiveColor] = React.useState("blue");
   const [sidebarMini, setSidebarMini] = React.useState(false);
   const [opacity, setOpacity] = React.useState(0);
-  const [sidebarOpened, setSidebarOpened] = React.useState(false);
+  const [sidebarOpened, setSidebarOpened] = React.useState(true);
   const mainPanelRef = React.useRef(null);
   const notificationAlertRef = React.useRef(null);
   const location = useLocation();
@@ -68,10 +65,6 @@ const Admin = (props) => {
     }
   };
 
-
-  const handleActiveClick = (color) => {
-    setActiveColor(color);
-  };
   const handleMiniClick = () => {
     let notifyMessage = "Sidebar mini ";
     if (document.body.classList.contains("sidebar-mini")) {
@@ -137,24 +130,10 @@ const Admin = (props) => {
           {Router.getRoutes(routes)}
           <Redirect from="*" to="/admin/dashboard" />
         </Switch>
-        {
-          // we don't want the Footer to be rendered on full screen maps page
-          props.location.pathname.indexOf("full-screen-map") !== -1 ? null : (
-            <Footer fluid />
-          )
-        }
+        <Footer />
       </div>
     </div>
   );
 };
 
 export default Admin;
-
-/*
-      <FixedPlugin
-        activeColor={activeColor}
-        sidebarMini={sidebarMini}
-        handleActiveClick={handleActiveClick}
-        handleMiniClick={handleMiniClick}
-      />
-    */

@@ -45,7 +45,7 @@ exports.create = async (req, res) => {
     .then((data) => {
       res.status(200).json({ 
         success: true,
-        data 
+        product: data 
       });
     })
     .catch((error) => {
