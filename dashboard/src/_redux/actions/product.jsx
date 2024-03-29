@@ -120,31 +120,20 @@ export const getAdminProducts = () => async (dispatch) => {
 };
 
 // Create Product
-export function createProduct(productData) {
-  return async function(dispatch) {
-      dispatch({type: NEW_PRODUCT_REQUEST});
-         
-      const config = {
-        headers: { "Content-Type": "multipart/form-data" },
-      };
-      await axios.post(API_BASE_URL + `/product/new`,
-        productData,
-        config
-      ).then((data) => {
-        console.log("Product response :: ", {data});
-        dispatch({
-          type: NEW_PRODUCT_SUCCESS,
-          payload: { data },
-        });
-      }).catch((error) => {
-        dispatch({
-          type: NEW_PRODUCT_FAIL,
-          payload: error.message,
-        });
-      });
-  }
-}
+export const createProduct = (productData) => async (dispatch) => {
+  dispatch({type: NEW_PRODUCT_REQUEST});
 
+  await axios.post(API_BASE_URL + `/product/new`,
+    productData,
+    {headers: { "Content-Type": "multipart/form-data" }}
+
+  ).then((data) => {
+    console.log("Product response :: ", {data});
+    dispatch({ type: NEW_PRODUCT_SUCCESS, payload: data.product });
+  }).catch((error) => {
+    dispatch({ type: NEW_PRODUCT_FAIL, payload: error.message });
+  });
+}
 // Delete Product request
 
 export function deleteProduct(id) {
