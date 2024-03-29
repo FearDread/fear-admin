@@ -18,7 +18,7 @@ export function login(email, password) {
         config
       );
         console.log('res =' , response)
-      //storage.set("user", response);
+      storage.set("user", response.data.user);
       dispatch({ type: actionTypes.LOGIN_SUCCESS, payload: response.data.user });
     } catch (error) {
       console.log('res =' , error)
