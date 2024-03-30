@@ -30,17 +30,17 @@ const footMenu = [
       {
         id: 3,
         link: "Cancel Order",
-        path: "/policy/return",
+        path: "/terms/return",
       },
       {
         id: 4,
         link: "Return Order",
-        path: "/policy/return",
+        path: "/terms/return",
       },
       {
         id: 5,
         link: "Warranty Info",
-        path: "/policy/Terms",
+        path: "/terms/Terms",
       },
     ],
   },
@@ -51,22 +51,22 @@ const footMenu = [
       {
         id: 1,
         link: "Return Policy",
-        path: "/policy/return",
+        path: "/terms/return",
       },
       {
         id: 2,
         link: "Security",
-        path: "/policy/privacy",
+        path: "/terms/privacy",
       },
       {
         id: 3,
         link: "Sitemap",
-        path: "/policy/Terms",
+        path: "/terms",
       },
       {
         id: 4,
         link: "Privacy Policy",
-        path: "/policy/privacy",
+        path: "/terms/privacy",
       },
       {
         id: 5,

@@ -39,6 +39,7 @@ import TermsUse from "./component/Terms/TermsAndUse";
 import TermsAndConditions from "./component/Terms/TermsCondtion";
 import PrivacyPolicy from "./component/Terms/Privacy";
 import NavbarMain from "./component/Navbars/NavbarMain";
+import TestimonialCard from "component/_Testimonials/Card";
 //import PixleStars from "./component/PixleStars/PixleStars";
 // const LazyPayment = React.lazy(() => import("./component/Cart/Payment"));
 const LazyDashboard = React.lazy(() => import("./component/Admin/Dashboard"));
@@ -208,7 +209,7 @@ function App() {
 
           <Route
             exact
-            path="/policy/return"
+            path="/terms/return"
             render={() => (
               <>
                 {<Header />}
@@ -221,7 +222,7 @@ function App() {
 
           <Route
             exact
-            path="/policy/Terms"
+            path="/terms"
             render={() => (
               <>
                 {<Header />}
@@ -234,7 +235,7 @@ function App() {
 
           <Route
             exact
-            path="/policy/privacy"
+            path="/terms/privacy"
             render={() => (
               <>
                 {<Header />}
@@ -265,7 +266,8 @@ function App() {
               <>
                 {<Header />}
                 <ContactForm />
-
+                <TestimonialCard />
+                <TestimonialCard />
                 {<Footer />}
               </>
             )}
@@ -273,12 +275,12 @@ function App() {
 
           <Route
             exact
-            path="/about_us"
+            path="/about"
             render={() => (
               <>
                 {<Header />}
                 <AboutUsPage />
-
+                
                 {<Footer />}
               </>
             )}
