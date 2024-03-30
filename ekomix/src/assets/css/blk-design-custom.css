@@ -1216,6 +1216,10 @@
     }
 }
 
+.testimonial-col {
+    display:inline-block !important;
+}
+
 .card-testimonial .card-body {
     padding-top: 25px
 }

@@ -6,7 +6,7 @@ import {
 
 const TestimonialCard = (data) => {
     return (
-        <Col md="3" style="display:inline-block">
+        <Col md="3" className="testimonial-col">
             <Card className="card-testimonial">
             <div class="card-avatar">
                 <a href="">
