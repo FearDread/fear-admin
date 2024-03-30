@@ -7,6 +7,7 @@ import { useAlert } from "react-alert";
 import HeroSlider from "./HeroSilder";
 import FeaturedSlider from "../_Product/Featured";
 import ProductCard from "../_Product/Card";
+import Services from "../Terms/Service";
 import { 
   Container,
   Col,
@@ -16,6 +17,7 @@ import {
 import AnimatedHero from "../AnimatedHero/AnimatedHero";
 import AnimatedBackground from "../AnimatedBackground/AnimatedBackground";
 import PixleStars from "../PixleStars/PixleStars";
+import TestimonialCard from "../_Testimonials/Card.jsx";
 
 function Home() {
   const alert = useAlert();
@@ -41,7 +43,7 @@ function Home() {
                {/*  <HeroSlider />; */}
                 <AnimatedHero />
               </div>
-              <Container>
+              <Container className="section featured-parallax image">
               <div className="featured">
                 <h2>
                   Featured Products
@@ -50,17 +52,26 @@ function Home() {
                 <FeaturedSlider products={products} /> }
               </div>
               </Container>
+              <Services />
               <Container>
               <h2>Trending Products</h2>
               <Row className="trending-products">
                   {products &&
-                  products.map((product) => (
-                    <Col md="3">
-                    <ProductCard key={product._id} product={product} />
-                    </Col>
+                  products.map((product, idx) => (
+                    idx < 6 && (
+                      <Col md="3">
+                      <ProductCard key={product._id} product={product} />
+                      </Col>
+                    )
                   ))}
               </Row>
               </Container>
+              <Container>
+                <TestimonialCard />
+                <TestimonialCard />
+                <TestimonialCard />
+              </Container>
+
             </div>
         </>
       )}
