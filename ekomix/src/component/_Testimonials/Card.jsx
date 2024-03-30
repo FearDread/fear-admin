@@ -6,7 +6,7 @@ import {
 
 const TestimonialCard = (data) => {
     return (
-        <Col md="4">
+        <Col md="3" style="display:inline-block">
             <Card className="card-testimonial">
             <div class="card-avatar">
                 <a href="">
@@ -25,3 +25,5 @@ const TestimonialCard = (data) => {
         </Col>
     )
 }
+
+export default TestimonialCard;

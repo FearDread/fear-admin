@@ -96,7 +96,7 @@ function App() {
             render={() => (
               <>
                 {<Header />}
-                <Services />
+
                 <Home />
                 {<Footer />}
               </>

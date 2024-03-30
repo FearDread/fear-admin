@@ -1,4 +1,19 @@
+.featured-parallax {
+    padding-top: 50px; 
+    padding-bottom: 50px;
+    overflow: hidden; 
+    position: relative; 
+    width: 100% !important;
+    min-width:100%;
+    max-width:100%;
+    background-image: url(../img/DC_Banner_1.png); 
+    background-attachment: fixed;
+     background-size: cover; -moz-background-size: cover;
+      -webkit-background-size: cover;
+       background-repeat: no-repeat;
+        background-position: top center;
 
+}
 .card-home .card-image {
     height: 200px;
     overflow: hidden;
@@ -1393,7 +1408,7 @@ position: relative;
 overflow: hidden;
 width: calc((100% - 100px) / 3);
 height: 370px;
-background-color: rgba(0,0,0,.4) !important;
+background-color: rgba(0, 0, 0, 0.8) !important;
 border-radius: 10px;
 transition: all 0.3s ease;
 border: 1px solid transparent;
