@@ -3,23 +3,24 @@ import {
     Col,
     Card,
 } from "reactstrap";
+import defaultImg from "../../assets/img/james.jpg";
 
-const TestimonialCard = (data) => {
+const TestimonialCard = (...props) => {
     return (
-        <Col md="3" className="testimonial-col">
+        <Col md="3" className="testimonial-col" style={{ display: "inline-block" }}>
             <Card className="card-testimonial">
-            <div class="card-avatar">
-                <a href="">
-                    <img alt="..." class="img img-raised" src="index.htmlstatic/media/michael.660d3e04.jpg" />
+            <div className="card-avatar">
+                <a href={props.href || "/about"}>
+                    <img alt="..." className="img img-raised" src={props.img || defaultImg} />
                 </a>
             </div>
-            <div class="card-body">
-                <p class="card-description">The networking at Web Summit is like no other European tech conference.</p>
+            <div className="card-body">
+                <p className="card-description">The networking at Web Summit is like no other European tech conference.</p>
             </div>
-            <div class="icon icon-primary"><i class="fa fa-quote-right"></i></div>
-            <div class="card-footer">
-                <h4 class="card-title">Michael Elijah</h4>
-                <p class="category">@michaelelijah</p>
+            <div className="icon icon-primary"><i className="fa fa-quote-right"></i></div>
+            <div className="card-footer">
+                <h4 className="card-title">Michael Elijah</h4>
+                <p className="category">@michaelelijah</p>
             </div>
             </Card>
         </Col>
