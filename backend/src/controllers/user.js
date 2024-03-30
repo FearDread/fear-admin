@@ -57,8 +57,9 @@ exports.read = async (req, res) => {
 };
 
 exports.create = async (req, res) => {
+  console.log('Creating New User :: ', req.body);
   const { name, email, password } = req.body;
-  const myCloud = { public_id: '', secure_url: ''};
+  let myCloud = { public_id: '', secure_url: ''};
 
   if (req.body && req.body.avatar) {
     myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
@@ -83,6 +84,7 @@ exports.create = async (req, res) => {
       })
     })
     .catch((error) => {
+        console.log('db error ? ', error);
        DataError(res, error);
     });
 };

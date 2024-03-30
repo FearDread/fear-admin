@@ -157,6 +157,19 @@ function App() {
 
           <Route
             exact
+            path="/register"
+            render={() => (
+              <>
+                {<Header />}
+                <Signup />
+                <Services />
+                {<Footer />}
+              </>
+            )}
+          />
+
+          <Route
+            exact
             path="/login"
             render={() => (
               <>

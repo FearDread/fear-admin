@@ -74,7 +74,7 @@ export function signUp(signupData) {
       };
 
       const { data } = await axios.post(
-        API_BASE_URL + "/user/register",
+        API_BASE_URL + "/users/register",
         signupData,
         config
       );
