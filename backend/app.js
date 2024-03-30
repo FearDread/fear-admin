@@ -56,7 +56,7 @@ app.use(function (req, res, next) {
 
 app.use("/fear/api/users", users);
 app.use("/fear/api/product", products);
-app.use("/fear/api", isAuth, cart);
+//app.use("/fear/api", isAuth, cart);
 //app.use("/fear/api", order);
 //app.use("/fear/api", payment);
 
