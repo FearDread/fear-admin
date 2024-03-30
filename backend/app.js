@@ -19,6 +19,7 @@ const products = require("./src/routes/product");
 /* Middlewares */
 const notFound = require("./src/middleware/not-found");
 const DataError = require("./src/middleware/error-handler");
+const { isAuth } = require("./src/auth");
 
 dotenv.config({ path: "./.env" });
 
@@ -55,7 +56,7 @@ app.use(function (req, res, next) {
 
 app.use("/fear/api/users", users);
 app.use("/fear/api/product", products);
-//app.use("/fear/api", isAuth, cart);
+app.use("/fear/api", isAuth, cart);
 //app.use("/fear/api", order);
 //app.use("/fear/api", payment);
 

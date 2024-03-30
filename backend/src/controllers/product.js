@@ -2,9 +2,12 @@
 const ProductModel = require("../models/product");
 const cloudinary = require("cloudinary");
 const DataError = require("../middleware/error-handler");
+const Review = require("./review");
 
 /* Product CRUD methods */
 /* -------------------- */
+exports.Review = Review;
+
 exports.create = async (req, res) => {
   let images = []; 
   if (req.body.images) {
@@ -42,14 +45,11 @@ exports.create = async (req, res) => {
   }
 
   await ProductModel.create(req.body)
-    .then((data) => {
-      res.status(200).json({ 
-        success: true,
-        product: data 
-      });
+    .then((product) => {
+      res.status(200).json({ success: true, product });
     })
     .catch((error) => {
-      //dbError(res, error);
+      DataError(res, error);
     });
 };
 
@@ -57,13 +57,10 @@ exports.list = async (req, res) => {
 
   await ProductModel.find()
     .then((products) => {
-      res.status(200).send({  
-        success: true,
-        products,
-      });
+      res.status(200).send({  success: true, products });
     })
     .catch((error) => {
-     DataError(res, error);
+      DataError(res, error);
     });
 };
 
@@ -77,6 +74,7 @@ exports.categories = async (req, res) => {
   });
 
   categories = [...new Set(categories)];
+
   return res.status(200).json(categories);
 }
 

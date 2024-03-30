@@ -12,13 +12,8 @@ router.route("/:id")
     .delete(asyncHandler(Product.delete));
 router.route("/new").post(asyncHandler(Product.create));
 
-/*
-router.route("/review/new").put(Product.createProductReview);
-router.route("/reviews")
-    .get(ProductgetProductReviews)
-     
-router.route("/product/reviews/delete")
-    .delete(isAuthenticted , authorizeRoles("admin") , Product.deleteReview);
-*/
+router.route("/review/new").put(Product.Review.create);
+router.route("/reviews").get(Product.Review.list);
+router.route("/reviews/delete").delete(Product.Review.delete);
 
 module.exports = router  

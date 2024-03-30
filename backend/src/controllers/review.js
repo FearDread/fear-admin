@@ -1,6 +1,6 @@
 const ProductModel = require("../models/product");
 const cloudinary = require("cloudinary");
-const DataError = require("")
+const DataError = require("../middleware/error-handler");
 
 /* Product Review methods */
 /* ---------------------- */
@@ -97,3 +97,10 @@ exports.create = async (req, res, next) => {
         DataError(res, error);
       });
   };
+
+  exports.list = async () => {
+    const allReviews = [];
+
+    await ProductModel.find()
+
+  }

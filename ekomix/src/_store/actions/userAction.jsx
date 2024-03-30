@@ -38,6 +38,7 @@ import {
   DELETE_USER_FAIL,
   DELETE_USER_SUCCESS,
 } from "../types/userConstant";
+import * as Types from "../types/userConstant";
 import { API_BASE_URL } from "../../_config/api";
 
 // login user
@@ -45,20 +46,20 @@ export function login(email, password) {
 
   return async function (dispatch) {
     try {
-      dispatch({ type: LOGIN_REQUEST });
+      dispatch({ type: Types.LOGIN_REQUEST });
 
       const config = { headers: { "Content-Type": "application/json" } };
 
       const { data } = await axios.post(
-        API_BASE_URL + `/login`,
+        API_BASE_URL + "/user/login",
         { email, password },
         config
       );
 
-      dispatch({ type: LOGIN_SUCCESS, payload: data.user });
+      dispatch({ type: Types.LOGIN_SUCCESS, payload: data.user });
     } catch (error) {
 
-      dispatch({ type: LOGIN_FAIL, payload: error.message });
+      dispatch({ type: Types.LOGIN_FAIL, payload: error.message });
     }
   };
 }
@@ -67,21 +68,21 @@ export function signUp(signupData) {
 
   return async function (dispatch) {
     try {
-      dispatch({ type: REGISTER_USER_REQUEST });
+      dispatch({ type: Types.REGISTER_USER_REQUEST });
       const config = {
         headers: { "Content-Type": "multipart/form-data" },
       };
 
       const { data } = await axios.post(
-        API_BASE_URL + `/register`,
+        API_BASE_URL + "/user/register",
         signupData,
         config
       );
 
-      dispatch({ type: REGISTER_USER_SUCCESS, payload: data.user });
+      dispatch({ type: Types.REGISTER_USER_SUCCESS, payload: data.user });
     } catch (error) {
 
-      dispatch({ type: REGISTER_USER_FAIL, payload: error.message })
+      dispatch({ type: Types.REGISTER_USER_FAIL, payload: error.message })
     }
   }
 }
@@ -90,7 +91,7 @@ export function signUp(signupData) {
 
 export const UserProfile = () => async (dispatch) => {
   try {
-    dispatch({ type: LOAD_USER_REQUEST });
+    dispatch({ type: Types.LOAD_USER_REQUEST });
 
     // Check if user data is available in session storage
     const userData = sessionStorage.getItem("user");
@@ -99,16 +100,16 @@ export const UserProfile = () => async (dispatch) => {
       const user = JSON.parse(userData);
 
       console.log('local user data = ', user);
-      dispatch({ type: LOAD_USER_SUCCESS, payload: user });
+      dispatch({ type: Types.LOAD_USER_SUCCESS, payload: user });
     } else {
       // If user data is not available in session storage, make a backend API call
       const { data } = await axios.get(API_BASE_URL + "/users/profile");
    
-      dispatch({ type: LOAD_USER_SUCCESS, payload: data.user });
+      dispatch({ type: Types.LOAD_USER_SUCCESS, payload: data.user });
       sessionStorage.setItem("user", JSON.stringify(data.user));
     }
   } catch (error) {
-    dispatch({ type: LOAD_USER_FAIL, payload: error.message });
+    dispatch({ type: Types.LOAD_USER_FAIL, payload: error.message });
   }
 };
 
@@ -119,11 +120,11 @@ export function logout() {
     try {
       sessionStorage.removeItem("user");
       await axios.get(`/api/v1/logout`); // token will expired from cookies and no more user data access
-      dispatch({ type: LOGOUT_SUCCESS });
+      dispatch({ type: Types.LOGOUT_SUCCESS });
 
     } catch (error) {
       sessionStorage.removeItem("user");
-      dispatch({ type: LOGOUT_FAIL, payload: error.message });
+      dispatch({ type: Types.LOGOUT_FAIL, payload: error.message });
     }
   }
 }
