@@ -16,9 +16,7 @@ exports.login = async (req, res, next) => {
             console.log('password dont match');
           }
           res.status(200).send({ 
-            user, 
-            success: true, 
-            token: user.generateToken()
+            user, success: true, token: user.generateToken()
           })
         })
         .catch((err) => {
@@ -57,7 +55,6 @@ exports.read = async (req, res) => {
 };
 
 exports.create = async (req, res) => {
-  console.log('Creating New User :: ', req.body);
   const { name, email, password } = req.body;
   let myCloud = { public_id: '', secure_url: ''};
 
@@ -77,14 +74,9 @@ exports.create = async (req, res) => {
     }})
     .then((user) => {
       console.log("User Created  ::", user);
-      res.status(201).send({
-        user,
-        success: true,
-        token: user.generateToken()
-      })
+      res.status(201).send({ user, success: true, token: user.generateToken() })
     })
     .catch((error) => {
-        console.log('db error ? ', error);
        DataError(res, error);
     });
 };
