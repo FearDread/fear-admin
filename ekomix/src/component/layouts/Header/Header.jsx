@@ -150,7 +150,7 @@ function Header() {
 
           {!searchBarActive && (
             <div className="headerBottom_navMenu">
-              <ul>
+              <ul className="nav-menu">
                 <li>
                   <Link to="/">Home</Link>
                 </li>
@@ -161,7 +161,7 @@ function Header() {
                   <Link to="/contact">Contact</Link>
                 </li>
                 <li>
-                  <Link to="/aboutus">About</Link>
+                  <Link to="/about">About</Link>
                 </li>
               </ul>
             </div>
