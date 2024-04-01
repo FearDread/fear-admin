@@ -15,7 +15,7 @@ const users = require("./src/routes/user");
 const customers = require("./src/routes/customer");
 const products = require("./src/routes/product");
 //const order = require("./routes/order");
-//const payment = require("./routes/payment");
+const payment = require("./routes/payment");
 /* Middlewares */
 const notFound = require("./src/middleware/not-found");
 const DataError = require("./src/middleware/error-handler");
@@ -54,11 +54,12 @@ app.use(function (req, res, next) {
   next();
 });
 
-app.use("/fear/api/users", users);
+app.use("/fear/api/user", users);
 app.use("/fear/api/product", products);
-app.use("/fear/api", cart);
+app.use("/fear/api/cart", cart);
+app.use("/fear/api", payment);
 //app.use("/fear/api", order);
-//app.use("/fear/api", payment);
+
 
 //app.use(notFound);
 //app.use(DataError);

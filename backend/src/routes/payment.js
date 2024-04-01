@@ -1,12 +1,11 @@
 const express = require("express");
-const { processPayment, sendStripeApiKey } = require("../controller/paymentController");
-const { isAuthentictedUser } = require("../middleWare/auth");
+const Payment = require("../controllers/payment");
+const asyncHandler = require("../middleware/async-handler");
+const { isAuth } = require("../auth");
 const router  = express.Router();
 
+router.route("/payment/process").post(isAuth, asyncHandler(Payment.process));
 
-
-router.route("/payment/process").post(isAuthentictedUser , processPayment);
-
-router.route("/stripeapikey").get(sendStripeApiKey);
+router.route("/stripe/key").get(asyncHandler(Payment.stripeKey));
 
 module.exports = router

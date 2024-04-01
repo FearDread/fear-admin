@@ -1,24 +1,20 @@
-const asyncWrapper = require("../middleWare/asyncWrapper");
+const stripe = require("stripe");
 
 // process the payment
-exports.processPayment = asyncWrapper(async (req, res, next) => {
-  const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY); // asigning key as well
+exports.process = async (req, res, next) => {
+  const client = stripe(process.env.STRIPE_SECRET_KEY);
 
-  const myPayment = await stripe.paymentIntents.create({
+  const myPayment = await client.paymentIntents.create({
     amount: req.body.amount,
     currency: "inr",
     metadata: {
-      company: "Ecommerce", // not mandatory
+      company: "Ecommerce",
     },
   });
 
-  res
-    .status(200)
-    .json({ sucess: true, client_secret: myPayment.client_secret });
+  res.status(200).send({ sucess: true, client_secret: myPayment.client_secret });
 });
 
-// send STRIPE_API_KEY to user =>
-
-exports.sendStripeApiKey = asyncWrapper(async (req, res, next) => {
-  res.status(200).json({ stripeApiKey: process.env.STRIPE_API_KEY });
+exports.stripeKey = async (req, res, next) => {
+  res.status(200).send({ stripeApiKey: process.env.STRIPE_API_KEY });
 });

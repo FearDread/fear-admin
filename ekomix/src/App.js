@@ -13,7 +13,7 @@ import "./assets/css/nucleo-icons.css";
 import "./assets/scss/blk-design-system-react.scss";
 import "./assets/css/blk-design-custom.css";
 
-import Header from "./component/layouts/Header.jsx/Header";
+import Header from "./component/layouts/Header/Header";
 import Payment from "./component/Cart/Payment";
 import Home from "./component/Home/Home";
 import Services from "./component/Terms/Service";
@@ -56,32 +56,31 @@ function App() {
   const dispatch = useDispatch();
   const [stripeApiKey, setStripeApiKey] = useState("");
   const { isAuthenticated, user } = useSelector((state) => state.userData);
-  async function getStripeApiKey() {
-    try {
-      const { data } = await axios.get("/api/v1/stripeapikey");
-      if (
-        data.stripeApiKey !== undefined &&
-        data.stripeApiKey !== null &&
-        data.stripeApiKey !== ""
-      ) {
-        sessionStorage.setItem(
-          "stripeApiKey",
-          JSON.stringify(data.stripeApiKey)
-        );
-      }
-      setStripeApiKey(data.stripeApiKey);
-    } catch (error) {
-      console.error("Error fetching Stripe API key:", error);
-    }
+  
+  const getStripeApiKey = async () => {
+
+    await axios.get("/stripe/key")
+      .then((data) => {
+        console.log('stripe key = ', data);
+        if (data && data.stripeApiKey) {
+          sessionStorage.setItem("stripeApiKey",
+            JSON.stringify(data.stripeApiKey)
+          );
+          setStripeApiKey(data.stripeApiKey);
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching Stripe API key:", error);
+      });
   }
 
   useEffect(() => {
     const stripeApiKey = sessionStorage.getItem("stripeApiKey");
     if (stripeApiKey) {
-      console.log("stripe key: ", stripeApiKey);
-      //setStripeApiKey(stripeApiKey);
+      console.log('stripe key fount');
+      setStripeApiKey(stripeApiKey);
     } else {
-      //getStripeApiKey();
+      getStripeApiKey();
     }
 
     dispatch(UserProfile());
