@@ -13,7 +13,7 @@ export function login(email, password) {
       console.log('url = ' + API_BASE_URL);
       const config = { headers: { "Content-Type": "application/json" } };
       const response = await axios.post(
-        API_BASE_URL + "/users/login",
+        API_BASE_URL + "/user/login",
         { email, password },
         config
       );
@@ -50,7 +50,7 @@ export const register = (signupData) => async (dispatch) => {
       headers: { "Content-Type": "multipart/form-data" }};
 
     const response = await axios.post(
-      API_BASE_URL + "/users/register",
+      API_BASE_URL + "/user/register",
       signupData,
       config
     );

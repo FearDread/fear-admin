@@ -14,8 +14,8 @@ const cart = require("./src/routes/cart");
 const users = require("./src/routes/user");
 const customers = require("./src/routes/customer");
 const products = require("./src/routes/product");
+const payment = require("./src/routes/payment");
 //const order = require("./routes/order");
-const payment = require("./routes/payment");
 /* Middlewares */
 const notFound = require("./src/middleware/not-found");
 const DataError = require("./src/middleware/error-handler");

@@ -13,8 +13,8 @@ exports.process = async (req, res, next) => {
   });
 
   res.status(200).send({ sucess: true, client_secret: myPayment.client_secret });
-});
+};
 
 exports.stripeKey = async (req, res, next) => {
   res.status(200).send({ stripeApiKey: process.env.STRIPE_API_KEY });
-});
+};
