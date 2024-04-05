@@ -5,7 +5,7 @@ const DataError = require("../middleware/error-handler");
 /* Product Review methods */
 /* ---------------------- */
 exports.create = async (req, res, next) => {
-    const { ratings, comment, productId, title, recommend } = req.body;
+    const { ratings, comment, productId, title, recommend } = req.body;x 
     const review = {
       userId: req.user._id,
       name: req.user.name,
@@ -21,13 +21,13 @@ exports.create = async (req, res, next) => {
     // check if user already reviewed
     const isReviewed = product.reviews.find((rev) => {
       return rev.userId.toString() === req.user._id.toString();
-    });
+    });  
   
-    if (isReviewed) {
+    if (isReviewed) { 
       // Update the existing review
       product.reviews.forEach((rev) => {
         if (rev.userId.toString() === req.user._id.toString()) {
-          rev.ratings = ratings;
+          rev.ratings = ratings; 
           rev.comment = comment;
           rev.recommend = recommend;
           
