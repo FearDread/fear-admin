@@ -23,14 +23,7 @@ function UserList() {
   const { error, users, loading } = useSelector((state) => state.user);
   const history = useHistory();
 
-
   useEffect(() => {
-
-
-    //if (isDeleted) {
-      //history.push("/admin/users");
-      //dispatch({ type: DELETE_USER_RESET });
-    //}
 
     dispatch(getAllUsers());
 
