@@ -1,12 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  clearErrors,
   getAdminProducts,
   deleteProduct,
 } from "_redux/actions/product";
-import classNames from "classnames";
-import SortingTable from "components/SortingTable/SortingTable.js";
 import {
   Card,
   CardHeader,
@@ -22,39 +19,14 @@ import { DELETE_PRODUCT_RESET } from "_redux/types/product";
 import ReactTable from "components/ReactTable/ReactTable.js";
 
 const header = [
-  {
-    Header: "Cover",
-    accessor: "avatar"
-  },
-  {
-    Header: "Name",
-    accessor: "name"
-  },
-  {
-    Header: "Category",
-    accessor: "category"
-  },
-  {
-    Header: "Price",
-    accessor: "price"
-  },
-  {
-    Header: "Stock",
-    accessor: "Stock"
-  },
-  {
-    Header: "Info",
-    accessor: "info"
-  },
-  {
-    Header: "Actions",
-    accessor: "actions",
-    sortable: false,
-    filterable: false
-  }
+  { Header: "Cover", accessor: "avatar" },
+  { Header: "Name", accessor: "name" },
+  { Header: "Category", accessor: "category" },
+  { Header: "Price", accessor: "price" },
+  { Header: "Stock", accessor: "Stock" },
+  { Header: "Info", accessor: "info" },
+  { Header: "Actions", accessor: "actions", sortable: false, filterable: false }
 ];
-
-
 
 function ProductList() {
   const dispatch = useDispatch();

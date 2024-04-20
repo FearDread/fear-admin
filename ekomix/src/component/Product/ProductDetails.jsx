@@ -45,13 +45,6 @@ const ProductDetails = () => {
   const [previewImg, setPreviewImg] = useState("");
   const { product, loading, error , success  } = useSelector((state) => state.products);
     
-  const finalPrice = product.price; //generateDiscountedPrice(product.price);
-  const discountedPrice = product.price; //product.price - finalPrice;
-  const newPrice = product.price; //dispalyMoney(finalPrice);
-  const oldPrice = product.price; //dispalyMoney(product.price);
-  const savedPrice = product.price;//dispalyMoney(discountedPrice);
-  const savedDiscount = product.price;//calculateDiscount(discountedPrice, product.price);
-
   // handling Add-to-cart
   const handleAddItem = () => {
     dispatch(addItemToCart(match.params.id, quantity));
@@ -81,7 +74,14 @@ const ProductDetails = () => {
   }
 
   useEffect(() => {
-
+    
+    const finalPrice = product.price; //generateDiscountedPrice(product.price);
+    const discountedPrice = product.price; //product.price - finalPrice;
+    const newPrice = product.price; //dispalyMoney(finalPrice);
+    const oldPrice = product.price; //dispalyMoney(product.price);
+    const savedPrice = product.price;//dispalyMoney(discountedPrice);
+    const savedDiscount = product.price;//calculateDiscount(discountedPrice, product.price);
+  
   }, [product]);
 
   useEffect(() => {
