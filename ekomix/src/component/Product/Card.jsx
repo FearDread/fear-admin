@@ -43,7 +43,7 @@ const MyCard = ({ review }) => {
     }
   };
 
-  function formateDate(dateString) {
+  function formateDate(dateString){
     const date = new Date(dateString);
 
     const formattedDate = new Intl.DateTimeFormat("en-US", {
