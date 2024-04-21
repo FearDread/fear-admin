@@ -33,9 +33,8 @@ import ConfirmOrder from "./component/Cart/ConfirmOrder";
 import OrderSuccess from "./component/Cart/OrderSuccess";
 import MyOrder from "./component/Order/MyOrder";
 import ContactForm from "./component/Terms/Contact";
-
-//import AboutUsPage from "./component/Terms/Aboutus";
-import AboutUsPage from "./pages/about-us";
+import AboutUsPage from "./component/Terms/Aboutus";
+//import AboutUsPage from "./pages/about-us";
 import ReturnPolicyPage from "./component/Terms/Return";
 import TermsUse from "./component/Terms/TermsAndUse";
 import TermsAndConditions from "./component/Terms/TermsCondtion";
