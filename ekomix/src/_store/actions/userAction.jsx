@@ -130,8 +130,7 @@ export function logout() {
 }
 
 
-// Update Profile => 
-
+// Update Profile =>
 export function updateProfile(userData) {
   return async function (dispatch) {
     try {
@@ -140,8 +139,6 @@ export function updateProfile(userData) {
       const config = {
         headers: { "Content-Type": "multipart/form-data" },
       };
-
-
       const { data } = await axios.put(
         `/api/v1/profile/update`,
         userData,
