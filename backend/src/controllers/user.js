@@ -15,9 +15,7 @@ exports.login = async (req, res, next) => {
           if (!isMatch) {
             console.log('password dont match');
           }
-          res.status(200).send({ 
-            user, success: true, token: user.generateToken()
-          })
+          res.status(200).send({ user, success: true, token: user.generateToken() })
         })
         .catch((err) => {
             DataError(res, err);
@@ -84,7 +82,7 @@ exports.create = async (req, res) => {
 exports.list = async (req, res, next) => {
   await UserModel.find({})
     .then((users) => {
-      res.status(201).json({ success: true, users });
+      res.status(201).send({ success: true, users });
     })
     .catch((error) => {
       DataError(res, error);

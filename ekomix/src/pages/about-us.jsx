@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
 import Slider from 'react-slick';
 
-import Breadcrumb from "../common/breadcrumb";
-import {Slider2, Team4} from "../../services/script"
+import Breadcrumb from "../component/Common/breadcrumb";
+import {Slider2, Team4} from "../services/script"
 
 class aboutUs extends Component {
 
