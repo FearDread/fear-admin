@@ -9,7 +9,7 @@ exports.login = async (req, res, next) => {
   
   await UserModel.findOne({email: email})
     .then((user) => {
-      console.log('User Found :: ', user);                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+      console.log('User Found :: ', user);                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
       user.compare(password)
         .then((isMatch) => {
           if (!isMatch) {

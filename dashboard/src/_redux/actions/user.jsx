@@ -40,7 +40,7 @@ export function updateProfile(userData) {
 
 
       const { data } = await axios.put(
-        API_BASE_URL + `/profile/update`,
+        API_BASE_URL + `/user/profile/update`,
         userData,
         config
       );
@@ -138,7 +138,7 @@ export const getAllUsers  = () => async (dispatch) =>{
 
     dispatch({type : actionTypes.ALL_USERS_REQUEST})
 
-    const response = await axios.get(API_BASE_URL + "/users");
+    const response = await axios.get(API_BASE_URL + "/user/all");
     console.log("user request + ", response);
 
     dispatch({ type: actionTypes.ALL_USERS_SUCCESS, payload: response.data.users});
