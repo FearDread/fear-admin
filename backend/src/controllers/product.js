@@ -146,11 +146,13 @@ exports.delete = async (req, res, next) => {
 };
 
 exports.read = async (req, res, next) => {
+  console.log('Product Details request ::', req.params);
   const id = req.params.id;
-  //if (!id) return next(new AppError("Product not found", 404));
+  if (!id) return next(DataError(res, {status:404, message:"No Product ID"}));
   
   await ProductModel.findById(id)
     .then((product) => {
+      console.log("Product found ::", product);
       res.status(201).send({
         succes: true,
         product
