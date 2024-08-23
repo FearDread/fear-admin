@@ -6,7 +6,7 @@ const ImapClient = require("emailjs-imap-client");
 import { simpleParser } from "mailparser";
 
 // App imports.
-import { IServerInfo } from "./ServerInfo";
+import { IServerInfo } from "../data/ServerInfo";
 
 // Define interface to describe a mailbox and optionally a specific message
 // all functions require the mailbox name, but only retrieving and deleting a message requires the ID.

@@ -3,7 +3,7 @@
       "target": "ES6",
       "module": "CommonJS",
       "outDir": "./dist",
-      "rootDir": "./src",
+      "rootDir": "./backend/src",
       "strict": true
     }
   }

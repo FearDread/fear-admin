@@ -1,8 +1,9 @@
-const express = require("express");
-const router = express.Router();
-const User = require("../controllers/user");
-const { isAdmin, isAuth, isRole } = require("../auth");
-const asyncHandler = require("../middleware/async-handler");
+import express, { Router, Request, Response, NextFunction } from 'express';
+import User from '../controllers/user';
+import { isAdmin, isAuth, isRole } from '../auth';
+import asyncHandler from '../middleware/async-handler';
+
+const router: Router = express.Router();
 
 router.route("/login").post(asyncHandler(User.login));
 router.route("/logout").post(isAuth, asyncHandler(User.logout));
@@ -14,7 +15,7 @@ router.route("/profile/:id")
 
 router.route("/password/:id")
         .post(asyncHandler(User.forgotPassword))
-        .put(asyncHandler(User.updatePassword))
+        .put(asyncHandler(User.updatePassword));
 
 router.route("/").get(asyncHandler(User.list));
 router.route("/reset").put(asyncHandler(User.resetPassword));
@@ -23,8 +24,4 @@ router.route("/all").get(asyncHandler(User.list));
 router.route("/:id")
     .get(isAdmin, asyncHandler(User.read))
     .delete(isAdmin, asyncHandler(User.delete))
-    .put(isAdmin, asyncHandler(User.update));
-
-router.route("/admin/role").put(isAdmin, asyncHandler(User.updateRole));
-
-module.exports = router;
+    .put(isAdmin, asyncHandle

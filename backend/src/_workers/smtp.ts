@@ -5,7 +5,7 @@ import Mail from "nodemailer/lib/mailer";
 import * as nodemailer from "nodemailer";
 import { SendMailOptions, SentMessageInfo } from "nodemailer";
 // App imports.
-import { IServerInfo } from "./ServerInfo";
+import { IServerInfo } from "../data/ServerInfo";
 
 // The worker class that will perform SMTP operations.
 export class Worker {
