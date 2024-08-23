@@ -1,0 +1,16 @@
+{
+  "compilerOptions" : {
+    "esModuleInterop" : true,
+    "sourceMap" : true,
+    "noImplicitAny" : false,
+    "module" : "commonjs",
+    "target" : "es6",
+    "lib" : [ "es2015", "es2017", "dom" ],
+    "removeComments" : true,
+    "jsx" : "react",
+    "baseUrl" : "./",
+    "outDir": "dist",
+    "paths" : { "components/*" : [ "src/components/*" ] }
+  }
+}
+

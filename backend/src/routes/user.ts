@@ -24,4 +24,8 @@ router.route("/all").get(asyncHandler(User.list));
 router.route("/:id")
     .get(isAdmin, asyncHandler(User.read))
     .delete(isAdmin, asyncHandler(User.delete))
-    .put(isAdmin, asyncHandle
+    .put(isAdmin, asyncHandler(User.update));
+
+router.route("/admin/role").put(isAdmin, asyncHandler(User.updateRole));
+
+export default router;

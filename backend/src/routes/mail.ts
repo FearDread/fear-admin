@@ -122,3 +122,5 @@ app.delete("/contacts/:id", async (inRequest: Request, inResponse: Response): Pr
         inResponse.send("error");
     }
 });
+
+export default app;

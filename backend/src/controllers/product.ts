@@ -1,15 +1,14 @@
-//const { AppError, dbError } = require("../_utils/errorHandlers");
-const ProductModel = require("../models/product");
-const cloudinary = require("cloudinary");
-const DataError = require("../middleware/error-handler");
-const Review = require("./review");
+import { Request, Response, NextFunction } from 'express';
+const cloudinary = require('cloudinary');
 
-/* Product CRUD methods */
-/* -------------------- */
-exports.Review = Review;
+import ProductModel from '../models/product';
+import DataError from '../middleware/error-handler';
+//import Review from './review';
 
-exports.create = async (req, res) => {
-  let images = []; 
+//export const Review = Review;
+
+export const create = async (req: Request, res: Response): Promise<void> => {
+  let images: string[] = []; 
   if (req.body.images) {
     if (typeof req.body.images === "string") {
       images.push(req.body.images);
@@ -17,20 +16,20 @@ exports.create = async (req, res) => {
       images = req.body.images;
     }
 
-    const imagesLinks = [];
-    const chunkSize = 3;
-    const imageChunks = [];
+    const imagesLinks: { product_id: string; url: string; }[] = [];
+    const chunkSize: number = 3;
+    const imageChunks: string[][] = [];
     while (images.length > 0) {
       imageChunks.push(images.splice(0, chunkSize));
     }
     for (let chunk of imageChunks) {
-      const uploadPromises = chunk.map((img) =>
+      const uploadPromises: Promise<any>[] = chunk.map((img: string) =>
         cloudinary.v2.uploader.upload(img, {
           folder: "Products",
         })
       );
 
-      const results = await Promise.all(uploadPromises); // wait for all the promises to resolve and store the results in results array eg: [{}, {}, {}] 3 images uploaded successfully and their details are stored in results array
+      const results: any[] = await Promise.all(uploadPromises);
 
       for (let result of results) { 
         imagesLinks.push({
@@ -45,30 +44,29 @@ exports.create = async (req, res) => {
   }
 
   await ProductModel.create(req.body)
-    .then((product) => {
+    .then((product: any) => {
       res.status(200).json({ success: true, product });
     })
-    .catch((error) => {
+    .catch((error: any) => {
       DataError(res, error);
     });
 };
 
-exports.list = async (req, res) => {
-
+export const list = async (req: Request, res: Response): Promise<void> => {
   await ProductModel.find()
-    .then((products) => {
-      res.status(200).send({  success: true, products });
+    .then((products: any[]) => {
+      res.status(200).send({ success: true, products });
     })
-    .catch((error) => {
+    .catch((error: any) => {
       DataError(res, error);
     });
 };
 
-exports.categories = async (req, res) => {
-  let categories = ["All"];
-  const products = await ProductModel.find({});
+export const categories = async (req: Request, res: Response): Promise<void> => {
+  let categories: string[] = ["All"];
+  const products: any[] = await ProductModel.find({});
 
-  products.map((product) => {
+  products.map((product: any) => {
      const { category } = product;
      categories.push(category);
   });
@@ -78,13 +76,13 @@ exports.categories = async (req, res) => {
   return res.status(200).json(categories);
 }
 
-exports.update = async (req, res, next) => {
+export const update = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   if (!req.params.id) {
-   // return next(new AppError("Product not found", 404));
+    return next(new Error("Product not found"));
   }
 
-  let product = await Product.findById(req.params.id);
-  let images = [];
+  let product: any = await ProductModel.findById(req.params.id);
+  let images: string[] = [];
 
   if (typeof req.body.images === "string") {
     images.push(req.body.images);
@@ -93,14 +91,13 @@ exports.update = async (req, res, next) => {
   }
 
   if (images !== undefined) {
-    // Deleting Images From Cloudinary
     for (let i = 0; i < product.images.length; i++) {
       await cloudinary.v2.uploader.destroy(product.images[i].product_id);
     }
 
-    const imagesLinks = [];
+    const imagesLinks: { product_id: string; url: string; }[] = [];
     for (let img of images) {
-      const result = await cloudinary.v2.uploader.upload(img, {
+      const result: any = await cloudinary.v2.uploader.upload(img, {
         folder: "Products",
       });
 
@@ -117,22 +114,21 @@ exports.update = async (req, res, next) => {
       runValidators: true,
       useFindAndModify: false,
     })
-    .then((data) => {
-      res.status(200).json({product: data});
+    .then((data: any) => {
+      res.status(200).json({ product: data });
     })
-    .catch((error) => {
-     // dbError(res, error);
+    .catch((error: any) => {
+      DataError(res, error);
     });
 };
 
-exports.delete = async (req, res, next) => {
-  let product = await ProductModel.findById(req.params.id);
+export const deleteProduct = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  let product: any = await ProductModel.findById(req.params.id);
 
   if (!product) {
-   // return next(new ErrorHandler("Product not found", 404));
+    return next(new Error("Product not found"));
   }
 
-  // Deleting Images From Cloudinary
   for (let i = 0; i < product.images.length; i++) {
     await cloudinary.v2.uploader.destroy(product.images[i].product_id);
   }
@@ -145,21 +141,21 @@ exports.delete = async (req, res, next) => {
   });
 };
 
-exports.read = async (req, res, next) => {
+export const read = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   console.log('Product Details request ::', req.params);
-  const id = req.params.id;
-  if (!id) return next(DataError(res, {status:404, message:"No Product ID"}));
+  const id: string = req.params.id;
+  if (!id) return next(DataError(res, { status: 404, message: "No Product ID" }));
   
   await ProductModel.findById(id)
-    .then((product) => {
+    .then((product: any) => {
       console.log("Product found ::", product);
       res.status(201).send({
-        succes: true,
+        success: true,
         product
       });
       return;
     })
-    .catch((error) => {
+    .catch((error: any) => {
       DataError(res, error);
     });
 };

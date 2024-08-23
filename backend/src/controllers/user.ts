@@ -5,7 +5,10 @@ import UserModel from '../models/user';
 import { sendEmail } from "../middleware/mail-handler";
 import DataError from "../middleware/error-handler";
 
-export const login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export class Worker {
+
+}
+export async function login(req: Request, res: Response, next: NextFunction): Promise<void> => {
   const { email, password }: { email: string; password: string } = req.body;
 
   await UserModel.findOne({ email: email })
