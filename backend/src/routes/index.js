@@ -1,14 +1,16 @@
-const cart = require("./src/routes/cart");
-const users = require("./src/routes/user");
-const customers = require("./src/routes/customer");
-const products = require("./src/routes/product");
-const payment = require("./src/routes/payment");
+const cart = require("./cart");
+const users = require("./user");
+const customers = require("./customer");
+const products = require("./product");
+const payment = require("./payment");
 //const order = require("./routes/order");
+//const mailbag = require("./routes/mail");
 module.exports = {
     cart:cart,
     users:users,
     customers:customers,
     products:products,
     payment:payment,
-    order:order
+
+    //order:order
 };

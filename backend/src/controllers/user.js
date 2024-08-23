@@ -4,7 +4,7 @@ const UserModel = require('../models/user');
 const { sendEmail } = require("../middleware/mail-handler");
 const DataError = require("../middleware/error-handler");
 
-exports = {
+module.exports = {
   user: {},
   token: '',
   isAuth: false
