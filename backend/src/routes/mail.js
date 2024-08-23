@@ -1,15 +1,19 @@
-const app = require('../app');
+const app = require('../../app');
+const IMAP = require("../_workers/imap");
 
+/*
 import { serverInfo } from "../data/ServerInfo";
 import * as IMAP from "../_workers/imap";
 import * as SMTP from "../_workers/smtp";
 import * as Contacts from "../_workers/Contacts";
 import { IContact } from "../_workers/Contacts";
+*/
+//const IMAP = require("../_workers/imap");
 
 app.get("/mailboxes", async (req, res) => {
         try {
-            const imapWorker: IMAP.Worker = new IMAP.Worker(serverInfo);
-            const mailboxes: IMAP.IMailbox[] = await imapWorker.listMailboxes();
+            const imapWorker = new IMAP.Worker(serverInfo);
+            const mailboxes = await imapWorker.listMailboxes();
             
             res.status(200).json(mailboxes); 
 
@@ -21,8 +25,8 @@ app.get("/mailboxes", async (req, res) => {
 
 app.get("/mailboxes/:mailbox", async (req, res, next) => {
         try {
-            const imapWorker: IMAP.Worker = new IMAP.Worker(serverInfo);
-            const messages: IMAP.IMessage[] = await imapWorker.listMessages({
+            const imapWorker = new IMAP.Worker(serverInfo);
+            const messages = await imapWorker.listMessages({
                 mailbox: req.params.mailbox // access dynamic value after /mailboxes/
             });
 
@@ -35,38 +39,37 @@ app.get("/mailboxes/:mailbox", async (req, res, next) => {
 );
 
 // REST Endpoint: Get a Message
-app.get("/messages/:mailbox/:id",
-    async (inRequest: Request, inResponse: Response) => {
+/*
+app.get("/messages/:mailbox/:id", async (req, res) => {
         try {
             const imapWorker: IMAP.Worker = new IMAP.Worker(serverInfo);
             const messageBody: string = await imapWorker.getMessageBody({
-                mailbox: inRequest.params.mailbox, //  the name of the mailbox 
-                id: parseInt(inRequest.params.id, 10) // the ID of the message (str -> int)
+                mailbox: req.params.mailbox, //  the name of the mailbox 
+                id: parseInt(req.params.id, 10) // the ID of the message (str -> int)
             });
-            inResponse.status(200);
-            inResponse.send(messageBody); // returned as plain text 
-        } catch (inError) {
-            inResponse.status(400);
-            inResponse.send("error");
+
+            res.status(200).send(messageBody);
+
+        } catch (err) {
+            res.status(400).send("error", err);
         }
     }
 );
 
 // REST Endpoint: Delete a Message
 // the app.delete() method is used to register this endpoint.
-app.delete("/messages/:mailbox/:id",
-    async (inRequest: Request, inResponse: Response) => {
+app.delete("/messages/:mailbox/:id", async (req, res) => {
         try {
             const imapWorker: IMAP.Worker = new IMAP.Worker(serverInfo);
             await imapWorker.deleteMessage({
-                mailbox: inRequest.params.mailbox,
-                id: parseInt(inRequest.params.id, 10)
+                mailbox: req.params.mailbox,
+                id: parseInt(req.params.id, 10)
             });
-            inResponse.status(200);
-            inResponse.send("ok");
-        } catch (inError) {
-            inResponse.status(400);
-            inResponse.send("error");
+
+            res.status(200).send("ok");
+
+        } catch (err) {
+            res.status(400).send("error", err);
         }
     }
 );
@@ -148,3 +151,5 @@ app.delete("/contacts/:id",
         }
     }
 );
+*/
+module.exports = app;

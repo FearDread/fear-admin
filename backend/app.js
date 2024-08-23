@@ -8,8 +8,8 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const helmet = require("helmet");
 // routes
-const routes = require("./routes");
-const mailbag = require('./mail');
+const routes = require("./src/routes");
+//const mailbag = require('./src/routes/mail');
 dotenv.config({ path: "./.env" });
 
 app.use(cookieParser());
@@ -26,7 +26,7 @@ app.use("/fear/api/cart", routes.cart);
 app.use("/fear/api", routes.payment);
 //app.use("/fear/api", routes.order);
 
-app.use("/fear/api/mail", mailbag);
+//app.use("/fear/api/mail", routes.mailbag);
 
 // pass variables to our templates + all requests
 app.use((req, res, next) => {
