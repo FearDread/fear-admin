@@ -27,4 +27,5 @@ cloudinary.config({
 const PORT = process.env.PORT || 5000;
 const server = app.listen(PORT, () => {
   console.log(`FEAR API Server is listening on PORT ${PORT}`);
+  console.log("MailBag server open for requests");
 });
