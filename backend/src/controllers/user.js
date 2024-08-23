@@ -4,6 +4,12 @@ const UserModel = require('../models/user');
 const { sendEmail } = require("../middleware/mail-handler");
 const DataError = require("../middleware/error-handler");
 
+exports = {
+  user: {},
+  token: '',
+  isAuth: false
+};
+
 exports.login = async (req, res, next) => {
   const { email, password } = req.body;
   

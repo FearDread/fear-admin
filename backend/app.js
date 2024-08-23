@@ -9,7 +9,7 @@ const cors = require("cors");
 const helmet = require("helmet");
 // routes
 const routes = require("./routes");
-const mailbag = require('./mail');
+//const mailbag = require('./mail');
 dotenv.config({ path: "./.env" });
 
 app.use(cookieParser());
