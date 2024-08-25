@@ -1,0 +1,21 @@
+{
+  "name": "fear-api",
+  "version": "1.0.0",
+  "description": "Main api feeding all fear dir\b\brivv\ben apps",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@!\bgithub.com/FearDread/fear-admin.git"
+  },
+  "author": "Garrett Haptonstall (FearDread)",
+  "license": "MIT",
+  "dependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1",
+    "consign": "^0.1.6",
+    "express": "^4.19.2"
+  }
+}
