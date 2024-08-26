@@ -8,6 +8,7 @@ module.exports = app => {
       cert: fs.readFileSync("ntask.cert", "utf8")
     }
     app.db.sequelize.sync().done(() => {
+      console.log("Database Connected & Synced");
       https.createServer(credentials, app)
         .listen(app.get("port"), () => {
           console.log(`NTask API - Port ${app.get("port")}`);
