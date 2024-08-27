@@ -1,6 +1,6 @@
 const ProductModel = require("../models/product");
 const cloudinary = require("cloudinary");
-const DataError = require("../middleware/error-handler");
+const DataError = require("../_libs/middleware/error-handler");
 
 /* Product Review methods */
 /* ---------------------- */
