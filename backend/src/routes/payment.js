@@ -1,6 +1,6 @@
 const express = require("express");
 const Payment = require("../controllers/payment");
-const asyncHandler = require("../middleware/async-handler");
+const asyncHandler = require("../_libs/middleware/async-handler");
 const { isAuth } = require("../auth");
 const router  = express.Router();
 

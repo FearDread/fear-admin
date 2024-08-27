@@ -1,7 +1,7 @@
 const express  = require("express");
 const router  = express.Router();
 const Product = require("../controllers/product");
-const asyncHandler = require("../middleware/async-handler"); 
+const asyncHandler = require("../_libs/middleware/async-handler"); 
 
 router.route("/").get(asyncHandler(Product.list))
 router.route("/categories").get(asyncHandler(Product.categories));

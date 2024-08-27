@@ -1,8 +1,8 @@
 const crypto = require("crypto");
 const cloudinary = require("cloudinary");
 const UserModel = require('../models/user');
-const { sendEmail } = require("../middleware/mail-handler");
-const DataError = require("../middleware/error-handler");
+const { sendEmail } = require("../_libs/middleware/mail-handler");
+const DataError = require("../_libs/middleware/error-handler");
 
 module.exports = {
   user: {},

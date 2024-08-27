@@ -1,7 +1,7 @@
 //const { AppError, dbError } = require("../_utils/errorHandlers");
 const ProductModel = require("../models/product");
 const cloudinary = require("cloudinary");
-const DataError = require("../middleware/error-handler");
+const DataError = require("../_libs/middleware/error-handler");
 const Review = require("./review");
 
 /* Product CRUD methods */
