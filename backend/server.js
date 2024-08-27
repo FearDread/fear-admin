@@ -6,6 +6,7 @@ const app = express();
 consign({verbose: false})
   .include("src/_libs/db")
   .then("src/_libs/auth")
+  .then("src/app.js")
   .then("src/routes")
   .then("boot.js")
   .into(app);
