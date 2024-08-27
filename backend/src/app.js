@@ -4,7 +4,7 @@ import morgan from "morgan";
 import cors from "cors";
 import compression from "compression";
 import helmet from "helmet";
-import logger from "./logger.js";
+import logger from "./_libs/logger.js";
 
 module.exports = app => {
   app.set("port", 4000);

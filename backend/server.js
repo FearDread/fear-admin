@@ -1,13 +1,21 @@
 import express from "express";
 import consign from "consign";
+require("dotenv").config({path: "./.env"});
 
 const app = express();
 
-consign({verbose: false})
-  .include("src/_libs/db")
-  .then("src/_libs/auth")
-  .then("src/app.js")
-  .then("src/routes")
+consign({
+  cwd: process.cwd() + "/backend/src/",
+  locale: 'en-us',
+  logger: console,
+  verbose: true,
+  extensions: [ '.js', '.json', '.node' ]
+  })
+  .include("_libs/db")
+  //.then("_libs/config")
+  .then("_libs/auth")
+  .then("app.js")
+  .then("routes")
   .then("boot.js")
   .into(app);
 

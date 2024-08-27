@@ -1,12 +1,12 @@
 import passport from "passport";
 import {Strategy, ExtractJwt} from "passport-jwt";
+import { Users } from "../../models/user";
 
 module.exports = app => {
-  const Users = app.db.models.Users;
-  const cfg = app.libs.config;
+
   const params = {
-    secretOrKey: cfg.jwtSecret,
-    jwtFromRequest: ExtractJwt.fromAuthHeader()
+    secretOrKey: "somesecret",
+    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken()
   };
   const strategy = new Strategy(params, (payload, done) => {
       Users.findById(payload.id)
@@ -22,12 +22,13 @@ module.exports = app => {
         .catch(error => done(error, null));
     });
   passport.use(strategy);
+  
   return {
     initialize: () => {
       return passport.initialize();
     },
     authenticate: () => {
-      return passport.authenticate("jwt", cfg.jwtSession);
+      return passport.authenticate("jwt", process.env.JWT_SECRET);
     }
   };
 };
