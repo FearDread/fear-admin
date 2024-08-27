@@ -1,4 +1,20 @@
-#!/usr/bin/env node
+import express from "express";
+import consign from "consign";
+
+const app = express();
+
+consign({verbose: false})
+  .include("src/_libs/db")
+  .then("src/_libs/auth")
+  .then("src/routes")
+  .then("boot.js")
+  .into(app);
+
+
+module.exports = app;
+
+
+/*
 const app = require("./app");
 const db = require("./src/data/db");
 const cloudinary = require("cloudinary");
@@ -29,3 +45,5 @@ const server = app.listen(PORT, () => {
   console.log(`FEAR API Server is listening on PORT ${PORT}`);
   console.log("MailBag server open for requests");
 });
+*/
+

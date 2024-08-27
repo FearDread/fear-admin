@@ -1,3 +1,44 @@
+import bodyParser from "body-parser";
+import express from "express";
+import morgan from "morgan";
+import cors from "cors";
+import compression from "compression";
+import helmet from "helmet";
+import logger from "./logger.js";
+
+module.exports = app => {
+  app.set("port", 4000);
+  app.set("json spaces", 4);
+  app.use(morgan("common", {
+    stream: {
+      write: (message) => {
+        logger.info(message);
+      }
+    }
+  }));
+  app.use(helmet());
+  app.use(cors({
+    origin: ["http://localhost:4000"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"]
+  }));
+  app.use(compression());
+  app.use(bodyParser.json());
+  app.use(app.auth.initialize());
+  app.use((req, res, next) => {
+    delete req.body.id;
+    next();
+  });
+  //app.use(express.static("public"));
+  const __dirname1 = path.resolve();
+
+  app.use(express.static(path.join(__dirname1, "/dashboard/build")));
+  app.get("*", (req, res) =>
+    res.sendFile(path.resolve(__dirname1, "dashboard", "build", "index.html"))
+  );
+};
+
+/*
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
@@ -34,20 +75,15 @@ app.use((req, res, next) => {
   res.locals.currentPath = req.path;
   next();
 });
-
-const __dirname1 = path.resolve();
-
-app.use(express.static(path.join(__dirname1, "/dashboard/build")));
-app.get("*", (req, res) =>
-  res.sendFile(path.resolve(__dirname1, "dashboard", "build", "index.html"))
-);
+module.exports = app;
+*/
 
 // Serve the client to a requested browser.
 // The static middleware is a built-in middleware for serving static resources. 
 // __dirname is the directory the current script is in
 //app.use("/mailbag", express.static(path.join(__dirname, "../mailbag/dist")));
 
-module.exports = app;
+
 
 /*=================================================
 //Allow all requests from all domains & localhost
