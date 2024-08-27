@@ -1,10 +1,15 @@
 import mongoose from "mongoose";
-require("dotenv").config({ path: __dirname + "/../.env" });
+import dotenv from "dotenv";
+import fs from "fs";
+
 
 let db = null;
+dotenv.config({ path: __dirname + "/../.env" });
 
 module.exports = app => {
-    return db = {
+    db = {
+        mongo: mongoose,
+        models: {},
         run: () => {
             mongoose.set("strictQuery", false); 
             mongoose
@@ -20,4 +25,6 @@ module.exports = app => {
                 })
         }
     }
+
+    return db;
 }
