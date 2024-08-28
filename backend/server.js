@@ -6,14 +6,11 @@ const app = express();
 
 consign({
   cwd: process.cwd() + "/backend/src/",
-  locale: 'en-us',
-  logger: console,
-  verbose: true,
-  extensions: [ '.js', '.json', '.node' ]
+  verbose: true
   })
   .include("_libs/db")
   //.then("_libs/config")
-  .then("_libs/auth")
+  //.then("_libs/auth")
   .then("app.js")
   .then("routes")
   .then("boot.js")
