@@ -5,6 +5,8 @@ import cors from "cors";
 import compression from "compression";
 import helmet from "helmet";
 import logger from "./_libs/logger.js";
+import passport from "passport";
+import path from "path";
 
 module.exports = app => {
   app.set("port", 4000);
@@ -24,7 +26,7 @@ module.exports = app => {
   }));
   app.use(compression());
   app.use(bodyParser.json());
-  app.use(app.auth.initialize());
+  app.use(passport.initialize());
   app.use((req, res, next) => {
     delete req.body.id;
     next();

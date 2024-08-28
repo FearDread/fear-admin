@@ -5,7 +5,7 @@ const AuthError = require("./unauthenticated");
 
 const dbError = () => {
    const statusCode = res.statusCode ? res.statusCode : 500;
-   const message = '';
+   let message = "";
 
    switch (err) {
      case err.name === "CastError":
@@ -20,7 +20,7 @@ const dbError = () => {
 
    res.status(statusCode).json({
      success: false,
-     message: message,
+     message,
      stack: err.stack,
    });
 }
