@@ -8,16 +8,19 @@ consign({
   cwd: process.cwd() + "/backend/src/",
   verbose: true
   })
-  .include("_libs")
-  .then("models")
-  .then("app.js")
-  .then("routes")
- 
+  .include("app.js")
+  //.then("models")
+  .then("libs")
   .then("controllers")
+  .then("routes")
   .then("init.js")
   .into(app);
 
-module.exports = app;
+  app.listen(app.get("port"), () => {
+    console.log(`Initializing FEAR API :: Port ${app.get("port")}`);
+  });
+
+//module.exports = app;
 
 
 /*
