@@ -12,5 +12,4 @@ const reviewSchema = new mongoose.Schema({
     avatar: { type: String, required: true }
 })
 
-const Review = mongoose.model('reviews', reviewSchema)
-module.exports = reviewSchema;
+module.exports = mongoose.model('reviews', reviewSchema);
