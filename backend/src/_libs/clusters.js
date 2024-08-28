@@ -1,5 +1,6 @@
-import cluster from "cluster";
-import os from "os";
+
+const cluster = require("cluster");
+const os = require("os");
 
 const CPUS = os.cpus();
 if (cluster.isMaster) {

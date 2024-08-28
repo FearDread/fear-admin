@@ -1,64 +1,31 @@
-const jwt = require("jsonwebtoken");
-require("dotenv").config({ path: __dirname + "../.env" });
 
-exports.generateToken = (user) => {
-    return jwt.sign(
-      {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        isAdmin: user.isAdmin,
-        isSeller: user.isSeller,
-      },
-      process.env.JWT_SECRET || 'somethingsecret',
-      {
-        expiresIn: '30d',
-      }
-    );
-};
-  
-exports.isAuth = (req, res, next) => {
-    const authorization = req.headers.authorization;
+const jwt = require("passport-jwt");
+const passport = require("passport");
 
-    if (authorization) {
-      const token = authorization.slice(7, authorization.length); // Bearer XXXXXX
-      jwt.verify(
-        token,
-        process.env.JWT_SECRET || 'somethingsecret',
-        (err, decode) => {
-          if (err) {
-            res.status(401).send({ message: 'Invalid Token' });
-          } else {
-            req.user = decode;
-            next();
+module.exports = (app) => {
+  const Users = app.models.user;
+  const params = {
+    secretOrKey: "somesecret",
+    jwtFromRequest: jwt.ExtractJwt.fromAuthHeaderAsBearerToken()
+  };
+  const strategy = new jwt.Strategy(params, (payload, done) => {
+      Users.findById(payload.id)
+        .then(user => {
+          if (user) {
+            return done(null, {id: user.id, email: user.email});
           }
-        }
-      );
-    } else {
-      res.status(401).send({ message: 'No Token' });
-    }
-};
-
-exports.isAdmin = (req, res, next) => {
-    if (req.user && req.user.isAdmin) {
-      next();
-    } else {
-      res.status(401).send({ message: 'Invalid Admin Token' });
+          return done(null, false);
+        })
+        .catch(error => done(error, null));
+    });
+  passport.use(strategy);
+  
+  return {
+    initialize: () => {
+      return passport.initialize();
+    },
+    authenticate: () => {
+      return passport.authenticate("jwt", process.env.JWT_SECRET);
     }
   };
-
-exports.isSeller = (req, res, next) => {
-    if (req.user && req.user.isSeller) {
-      next();
-    } else {
-      res.status(401).send({ message: 'Invalid Seller Token' });
-    }
-};
-
-exports.isSellerOrAdmin = (req, res, next) => {
-    if (req.user && (req.user.isSeller || req.user.isAdmin)) {
-      next();
-    } else {
-      res.status(401).send({ message: 'Invalid Admin/Seller Token' });
-    }
 };

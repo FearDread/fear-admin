@@ -2,7 +2,7 @@
 
 module.exports = DataError = (res, err) => {
    const statusCode = res.statusCode ? res.statusCode : 500;
-   const message = '';
+   let message = '';
 
    switch (err) {
      case err.name === "CastError":
