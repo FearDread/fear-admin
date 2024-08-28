@@ -1,21 +1,20 @@
 const morgan = require("morgan");
 const compression = require("compression");
-const logger = require("logger");
+const logger = require("./libs/logger.js");
 const passport = require("passport");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const fileUpload = require("express-fileupload"); // used for image and other files
 const path = require("path");
-const dotenv = require("dotenv");
 const cors = require("cors");
 const helmet = require("helmet");
 const express = require("express");
+const app = express();
 
+require("dotenv").config({path: ".env"});
 
-module.exports = ( app ) => {
-  app.set("port", 4000);
+  app.set("PORT", 4000);
   app.set("json spaces", 4);
-  app.set("config", dotenv.config({path: "./.env"}))
   app.use(morgan("common", {
     stream: {
       write: (message) => {
@@ -25,7 +24,7 @@ module.exports = ( app ) => {
   }));
   app.use(helmet());
   app.use(cors({
-    origin: ["http://localhost:4000"],
+    origin: ["http://localhost:4000", "http://fear.master.com:4000"],
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"]
   }));
@@ -39,18 +38,19 @@ module.exports = ( app ) => {
   app.use(passport.initialize());
   app.use((req, res, next) => {
     delete req.body.id;
+
+    res.locals.admin = req.admin || null;
+    res.locals.currentPath = req.path;
     next();
   });
-
-  //app.use(express.static("public"));
   const __dirname1 = path.resolve();
 
   app.use(express.static(path.join(__dirname1, "/dashboard/build")));
   app.get("*", (req, res) =>
     res.sendFile(path.resolve(__dirname1, "dashboard", "build", "index.html"))
   );
-};
 
+module.exports = app;
 /*
 const express = require("express");
 const app = express();
