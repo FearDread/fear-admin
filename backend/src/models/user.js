@@ -5,7 +5,7 @@ const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 require("dotenv").config({ path: __dirname + "../.env" });
 
-module.exports = mongoose.model("users", mongoose.Schema ({
+module.exports = mongoose.model("users", new mongoose.Schema ({
     name: { type: String, required: true },
     username: { type: String, required: false, unique: true },
     email: { type: String, unique: true, 

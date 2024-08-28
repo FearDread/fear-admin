@@ -1,16 +1,22 @@
-import bodyParser from "body-parser";
-import express from "express";
-import morgan from "morgan";
-import cors from "cors";
-import compression from "compression";
-import helmet from "helmet";
-import logger from "./_libs/logger.js";
-import passport from "passport";
-import path from "path";
+const app = express();
 
-module.exports = app => {
+const morgan = require("morgan");
+const compression = require("compression");
+const logger = require("logger");
+const passport = require("passport");
+const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
+const fileUpload = require("express-fileupload"); // used for image and other files
+const path = require("path");
+const dotenv = require("dotenv");
+const cors = require("cors");
+const helmet = require("helmet");
+
+
+module.exports = ( app ) => {
   app.set("port", 4000);
   app.set("json spaces", 4);
+  app.set("config", dotenv.config(path: "./.env"))
   app.use(morgan("common", {
     stream: {
       write: (message) => {
@@ -26,11 +32,17 @@ module.exports = app => {
   }));
   app.use(compression());
   app.use(bodyParser.json());
+  app.use(cookieParser());
+  app.use(express.json());
+  app.use(bodyParser.json({ limit: "50mb" }));
+  app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
+  app.use(fileUpload());
   app.use(passport.initialize());
   app.use((req, res, next) => {
     delete req.body.id;
     next();
   });
+
   //app.use(express.static("public"));
   const __dirname1 = path.resolve();
 

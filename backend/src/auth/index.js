@@ -3,9 +3,10 @@ const jwt = require("passport-jwt");
 const passport = require("passport");
 
 module.exports = (app) => {
+  const cfg = app.get('config');
   const Users = app.models.user;
   const params = {
-    secretOrKey: "somesecret",
+    secretOrKey: cfg.JWT_SECRET || "somesecret",
     jwtFromRequest: jwt.ExtractJwt.fromAuthHeaderAsBearerToken()
   };
   const strategy = new jwt.Strategy(params, (payload, done) => {
