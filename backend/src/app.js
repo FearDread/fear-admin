@@ -1,5 +1,3 @@
-const app = express();
-
 const morgan = require("morgan");
 const compression = require("compression");
 const logger = require("logger");
@@ -11,12 +9,13 @@ const path = require("path");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const helmet = require("helmet");
+const express = require("express");
 
 
 module.exports = ( app ) => {
   app.set("port", 4000);
   app.set("json spaces", 4);
-  app.set("config", dotenv.config(path: "./.env"))
+  app.set("config", dotenv.config({path: "./.env"}))
   app.use(morgan("common", {
     stream: {
       write: (message) => {

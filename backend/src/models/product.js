@@ -1,7 +1,7 @@
 const mongoose  = require("mongoose");
 const reviewSchema = require("./review");
 
-const productSchema = mongoose.Schema({
+module.exports = mongoose.model("product", new mongoose.Schema({
   name: { type: String, required: true, trim: true },
   description: { type: String, required: true },
   price: { type: Number, required: true, maxLength: 8 },
@@ -15,13 +15,10 @@ const productSchema = mongoose.Schema({
   category: { type: String, required: true },
   Stock: { type: Number, required: true, maxLength: 4, default: 1 },
   numOfReviews: { type: Number, default: 0 },
-  reviews: [ reviewSchema ],
+  reviews: [],
   user: { type: mongoose.Schema.ObjectId, ref: "user", required: false },
   createdAt: { type: Date, default: Date.now },
 },
 {
   timestamps: true
-});
-
-const ProductModel = mongoose.model("product" , productSchema);
-module.exports = ProductModel
+}))
