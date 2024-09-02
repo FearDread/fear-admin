@@ -9,10 +9,10 @@ const path = require("path");
 const cors = require("cors");
 const helmet = require("helmet");
 const express = require("express");
-const routes = require("routs");
 const app = express();
 
 require("dotenv").config({path: ".env"});
+require("./routes")(app);
 
   app.set("PORT", 4000);
   app.set("json spaces", 4);
@@ -53,6 +53,16 @@ app.use(passport.initialize());
 
 module.exports = app;
 /*
+// dynamic loading for models / controllers / routes
+onst fs = require('fs');
+const folderPath = '/home/jim/Desktop/';
+
+fs.readdir(folderPath, (err, files) => {
+  files.forEach(file => {
+    console.log(file);
+  });
+});
+
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");

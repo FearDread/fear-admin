@@ -62,6 +62,7 @@ exports.list = async (req, res) => {
     .catch((error) => {
       DataError(res, error);
     });
+    //CRUD.list(ProductModel);
 };
 
 exports.categories = async (req, res) => {
