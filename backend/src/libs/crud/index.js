@@ -1,14 +1,16 @@
 const crud = require("./crud");
 const mongoose = require("mongoose");
 
-module.exports = (app) => {
-  //const Model = mongoose.Model[modelName];
-  //const Model = app.models[modelName];
-  const Model = {};
-  let methods = {};
+module.exports = ( Model, func ) => {
+    let methods = {};
 
-  methods.create = async (name, req, res) => {
-    Model = app.models[name];
+    methods[func] = async (req, res) => {
+        crud[func](Model, req, res);
+    }
+
+    return methods;
+
+  methods.create = async (req, res) => {
     crud.create(Model, req, res);
   };
 
@@ -32,5 +34,4 @@ module.exports = (app) => {
     crud.search(Model, req, res);
   };
 
-  return methods;
 };
