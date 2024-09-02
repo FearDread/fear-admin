@@ -54,9 +54,9 @@
     "validator": "^13.9.0"
   },
   "devDependencies": {
-    "apidoc": "^0.15.1",
+    "apidoc": "^0.29.0",
     "chai": "^3.5.0",
-    "mocha": "^2.4.5",
-    "supertest": "^1.2.0"
+    "mocha": "^10.7.3",
+    "supertest": "^7.0.0"
   }
 }

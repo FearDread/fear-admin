@@ -9,6 +9,7 @@ const path = require("path");
 const cors = require("cors");
 const helmet = require("helmet");
 const express = require("express");
+const routes = require("routs");
 const app = express();
 
 require("dotenv").config({path: ".env"});
@@ -35,7 +36,7 @@ require("dotenv").config({path: ".env"});
   app.use(bodyParser.json({ limit: "50mb" }));
   app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
   app.use(fileUpload());
-  app.use(passport.initialize());
+app.use(passport.initialize());
   app.use((req, res, next) => {
     delete req.body.id;
 
