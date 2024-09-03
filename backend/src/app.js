@@ -9,34 +9,42 @@ const path = require("path");
 const cors = require("cors");
 const helmet = require("helmet");
 const express = require("express");
+const fs = require('fs')
+const files = fs.readdirSync('./routes')
 const app = express();
 
-require("dotenv").config({path: ".env"});
-require("./routes")(app);
+dotenv.config();
 
-  app.set("PORT", 4000);
-  app.set("json spaces", 4);
-  app.use(morgan("common", {
+app.set("PORT", 4000);
+app.use(morgan("common", {
     stream: {
       write: (message) => {
         logger.info(message);
       }
     }
-  }));
-  app.use(helmet());
-  app.use(cors({
+}));
+app.use(helmet());
+app.use(cors({
     origin: ["http://localhost:4000", "http://fear.master.com:4000"],
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"]
-  }));
-  app.use(compression());
-  app.use(bodyParser.json());
-  app.use(cookieParser());
-  app.use(express.json());
-  app.use(bodyParser.json({ limit: "50mb" }));
-  app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
-  app.use(fileUpload());
+}));
+app.use(compression());
+app.use(fileUpload());
+app.use(cookieParser());
+
+app.use(express.json());
+app.use(bodyParser.json({ limit: "50mb" }));
+app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
+
 app.use(passport.initialize());
+
+
+for (const file of files) {
+    console.log(` -----------for ${file}");
+    app.use("/fear/api/" + file, require("./" + file));
+}
+
   app.use((req, res, next) => {
     delete req.body.id;
 
