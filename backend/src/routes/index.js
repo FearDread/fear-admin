@@ -21,7 +21,7 @@ module.exports = ( app ) => {
 const fs = require('fs')    
 const files = fs.readdirSync('./routes')
 for (const file of files) {
-  require('./'+file)
+  app.use("/fear/api/" + file, require("./" + file));
 }
 // Load `*.js` under current directory as properties
 //  i.e., `User.js` will become `exports['User']` or `exports.User`
