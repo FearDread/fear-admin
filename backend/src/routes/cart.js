@@ -1,5 +1,6 @@
+const FEAR = require("../FEAR");
 const router = require("express").Router();
-const Cart = require("../controllers/cart");
+const Cart = FEAR.controllers.cart;
 
 router.route("/cart").get(Cart.list);
 router.route("/cart/add").post(Cart.add);
