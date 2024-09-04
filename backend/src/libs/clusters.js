@@ -17,5 +17,5 @@ if (cluster.isMaster) {
     // Ensure to starts a new cluster if an old one dies
   });
 } else {
-  require("../../server.js");
+  require("../../FEAR.js");
 }
