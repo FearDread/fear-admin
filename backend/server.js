@@ -1,5 +1,5 @@
 const cloudinary = require("cloudinary");
-const FEAR = require("./src/app");
+const FEAR = require("./src/FEAR");
 require("dotenv").config();
 
 cloudinary.config({
@@ -8,6 +8,7 @@ cloudinary.config({
     api_secret: process.env.API_SECRET,
 });
 
+console.log("FEAR :: ", FEAR);
 FEAR.db.run();
 FEAR.app.listen( FEAR.app.get("PORT"), () => {
     console.log(`FEAR API Initialized :: Port ${FEAR.app.get("PORT")}`);

@@ -4,7 +4,7 @@
   "description": "",
   "main": "backend/FEAR.js",
   "scripts": {
-    "dev": "node backend/FEAR.js",
+    "dev": "node backend/server.js",
     "start": "npm run clusters",
     "clusters": "node backend/src/libs/clusters.js",
     "test": "NODE_ENV=test mocha test/**/*.js",

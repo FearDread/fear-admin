@@ -1,30 +1,31 @@
 
+const glob = require("glob");
+const path = require("path");
 const express = require("express")
 const app = express();
 
 const _load = ( dir ) => {
-  let mods = {}.;
-  const glob = require("glob");
-  const path = require("path");
   console.log('Loading into FEAR :: ' + dir);
+  let obj = {};
+  const modPath = require('path').join( __dirname, dir );
 
-  glob.sync("./" + dir + "/*.js").forEach(( file ) => {
-    console.log("Require module :: " + file);
-    mods[require(path.resolve( file ))];
+  require('fs').readdirSync(modPath).forEach(( file ) => {
+    const name = file.replace(/\.js$/, '');
+    obj[name] = require(`./${dir}/${file}`);
   });
-  console.log("loaded mods ::", mods);
-  return mods;
+
+  console.log("loaded mods ::", obj);
+  return obj;
 }
 
 const FEAR = ( app ) => {
   require("dotenv").config();
 
-  const db = require("./libs/db");
   const compression = require("compression"),
         passport = require("passport"),
         bodyParser = require("body-parser"),
         cookieParser = require("cookie-parser"),
-        fileUpload = require("express-fileupload"), // used for image and other files
+        fileUpload = require("express-fileupload"),
         cors = require("cors"),
         helmet = require("helmet");
 
@@ -35,6 +36,7 @@ const FEAR = ( app ) => {
       methods: ["GET", "POST", "PUT", "DELETE"],
       allowedHeaders: ["Content-Type", "Authorization"]
   }));
+
   app.use(helmet());
   app.use(compression());
   app.use(fileUpload());
@@ -43,13 +45,6 @@ const FEAR = ( app ) => {
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(passport.initialize());
-
-  const fs = require("fs");
-  const routes = fs.readFileSync("./routes");
-  
-  for (const route of routes) {
-    app.use("/fear/api/" + route, require("./" + route));
-  }
 
   app.use((req, res, next) => {
     delete req.body.id;
@@ -61,19 +56,26 @@ const FEAR = ( app ) => {
 
   const _this = this;
   const __dirname1 = path.resolve();
-
+  //const routes = fs.readFileSync("./backend/src/routes");
+  /*
+  glob.sync("./routes/*.js").forEach(( file ) => {
+    console.log("route = ", file);
+    app.use("/fear/api/" + file, require("./" + file));
+  })
+*/
   app.use(express.static(path.join(__dirname1, "/dashboard/build")));
   app.get("*", (req, res) =>
     res.sendFile(path.resolve(__dirname1, "dashboard", "build", "index.html"))
   );
-
+  console.log('FEAR.init() Called ::', this);
   return {
-    db,
     app,
+    db: require("./libs/db"),
+    models: _load("models"),
     crud: require("./libs/crud"),
-    auth: require( "./libs/auth")( _this ),
-    models: _load("./models"),
-    controllers: _load("./controllers"),
+    handler: require("./libs/handler"),
+    controllers: _load("controllers"),
+   //auth: require( "./libs/auth")( _this ),
 
     init: () => {
        console.log('FEAR.init() Called ::', _this);
@@ -81,4 +83,5 @@ const FEAR = ( app ) => {
   };
 };
 
+console.log("module exports ::", FEAR(app));
 module.exports = FEAR( app );

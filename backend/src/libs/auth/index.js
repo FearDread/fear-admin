@@ -2,8 +2,9 @@
 const jwt = require("passport-jwt");
 const passport = require("passport");
 
-module.exports = (app) => {
-  const cfg = app.get('config');
+module.exports = ( app ) => {
+  console.log("passed fear obj ::", app);
+  const cfg = process.env;
   const Users = app.models.user;
   const params = {
     secretOrKey: cfg.JWT_SECRET || "somesecret",
