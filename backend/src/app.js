@@ -1,43 +1,68 @@
-const morgan = require("morgan");
-const compression = require("compression");
-const logger = require("./libs/logger.js");
-const passport = require("passport");
-const bodyParser = require("body-parser");
-const cookieParser = require("cookie-parser");
-const fileUpload = require("express-fileupload"); // used for image and other files
-const path = require("path");
-const cors = require("cors");
-const helmet = require("helmet");
-const express = require("express");
-const fs = require('fs')
-const files = fs.readdirSync('./routes')
+
+const express = require("express")
 const app = express();
 
-dotenv.config();
+const _load = ( dir ) => {
+  const obj = {};
+  const glob = require("glob");
+  const path = require("path");
+  console.log('Loading into FEAR :: ' + dir);
 
-app.set("PORT", 4000);
-app.use(morgan("common", {
-    stream: {
-      write: (message) => {
-        logger.info(message);
-      }
+  glob.sync("./" + dir + "/*.js").forEach(( file ) => {
+    console.log("Require module :: " + file); 
+    obj[ file ] = require(path.resolve( file ));
+  });
+
+  return obj;
+}
+
+const FEAR = ( app ) => {
+  require("dotenv").config();
+
+  const db = require("./libs/db");
+  const compression = require("compression"),
+        passport = require("passport"),
+        bodyParser = require("body-parser"),
+        cookieParser = require("cookie-parser"),
+        fileUpload = require("express-fileupload"), // used for image and other files
+        cors = require("cors"),
+        helmet = require("helmet");
+
+  app.set("PORT", 4000);
+
+  app.use(cors({
+      origin: ["http://localhost:4000", "http://fear.master.com:4000"],
+      methods: ["GET", "POST", "PUT", "DELETE"],
+      allowedHeaders: ["Content-Type", "Authorization"]
+  }));
+  app.use(helmet());
+  app.use(compression());
+  app.use(fileUpload());
+  app.use(cookieParser());
+
+  app.use(bodyParser.json());
+  app.use(bodyParser.urlencoded({ extended: true }));
+
+  
+  app.use(passport.initialize());
+
+  return {
+    db,
+    app,
+    crud: require("./libs/crud"),
+    auth: require( "./libs/auth")( app ),
+    controllers: _load("controllers"),
+    models: _load("models"),
+    load: ( dir ) => {
+ 
     }
-}));
-app.use(helmet());
-app.use(cors({
-    origin: ["http://localhost:4000", "http://fear.master.com:4000"],
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"]
-}));
-app.use(compression());
-app.use(fileUpload());
-app.use(cookieParser());
+  };
+};
 
-app.use(express.json());
-app.use(bodyParser.json({ limit: "50mb" }));
-app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
+module.exports = FEAR( app );
 
-app.use(passport.initialize());
+
+
 
 
 for (const file of files) {
