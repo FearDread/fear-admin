@@ -5,13 +5,13 @@
   "main": "backend/server.js",
   "scripts": {
     "dev": "node backend/server.js",
-    "start": "npm run apidoc && npm run clusters",
-    "clusters": "node src/_libs/clusters.js",
+    "start": "npm run clusters",
+    "clusters": "node backend/src/libs/clusters.js",
     "test": "NODE_ENV=test mocha test/**/*.js",
     "apidoc": "apidoc -i routes/ -o public/apidoc"
   },
   "author": "Garrett Haptonstall (FearDread)",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "@strapi/provider-upload-cloudinary": "^4.6.2",
     "axios": "^1.6.7",
