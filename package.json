@@ -2,9 +2,9 @@
   "name": "fear-admin",
   "version": "1.0.0",
   "description": "",
-  "main": "backend/server.js",
+  "main": "backend/FEAR.js",
   "scripts": {
-    "dev": "node backend/server.js",
+    "dev": "node backend/FEAR.js",
     "start": "npm run clusters",
     "clusters": "node backend/src/libs/clusters.js",
     "test": "NODE_ENV=test mocha test/**/*.js",
