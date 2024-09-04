@@ -3,18 +3,17 @@ const express = require("express")
 const app = express();
 
 const _load = ( dir ) => {
-  const obj = {};
+  let mods = {}.;
   const glob = require("glob");
   const path = require("path");
-  let methods = {};
   console.log('Loading into FEAR :: ' + dir);
 
   glob.sync("./" + dir + "/*.js").forEach(( file ) => {
-    console.log("Require module :: " + file); 
-    require(path.resolve( file ));
+    console.log("Require module :: " + file);
+    mods[require(path.resolve( file ))];
   });
-
-  return obj;
+  console.log("loaded mods ::", mods);
+  return mods;
 }
 
 const FEAR = ( app ) => {
@@ -60,6 +59,7 @@ const FEAR = ( app ) => {
     next();
   });
 
+  const _this = this;
   const __dirname1 = path.resolve();
 
   app.use(express.static(path.join(__dirname1, "/dashboard/build")));
@@ -71,11 +71,12 @@ const FEAR = ( app ) => {
     db,
     app,
     crud: require("./libs/crud"),
-    auth: require( "./libs/auth")( this ),
-    controllers: _load("./controllers"),
+    auth: require( "./libs/auth")( _this ),
     models: _load("./models"),
+    controllers: _load("./controllers"),
+
     init: () => {
-       this.
+       console.log('FEAR.init() Called ::', _this);
     }
   };
 };
