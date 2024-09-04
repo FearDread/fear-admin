@@ -10,7 +10,7 @@ const _load = ( dir ) => {
 
   glob.sync("./" + dir + "/*.js").forEach(( file ) => {
     console.log("Require module :: " + file); 
-    obj[ file ] = require(path.resolve( file ));
+    require(path.resolve( file ));
   });
 
   return obj;
@@ -46,13 +46,20 @@ const FEAR = ( app ) => {
   
   app.use(passport.initialize());
 
+  const fs = require("fs");
+  const routes = fs.readFileSync("./routes");
+  
+  for (const file of routes) {
+    app.use("/fear/api/" + file, require("./" + file));
+  }
+
   return {
     db,
     app,
     crud: require("./libs/crud"),
-    auth: require( "./libs/auth")( app ),
-    controllers: _load("controllers"),
-    models: _load("models"),
+    auth: require( "./libs/auth")( this ),
+    controllers: _load("./controllers"),
+    models: _load("./models"),
     load: ( dir ) => {
  
     }
@@ -65,10 +72,6 @@ module.exports = FEAR( app );
 
 
 
-for (const file of files) {
-    console.log(` -----------for ${file}");
-    app.use("/fear/api/" + file, require("./" + file));
-}
 
   app.use((req, res, next) => {
     delete req.body.id;
