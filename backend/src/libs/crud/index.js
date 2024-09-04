@@ -1,15 +1,7 @@
-const crud = require("./crud");
-const mongoose = require("mongoose");
+const FEAR = require("../../FEAR");
 
-module.exports = ( Model, func ) => {
-    let methods = {};
-
-    methods[func] = async (req, res) => {
-        crud[func](Model, req, res);
-    }
-
-    return methods;
-
+module.exports = ( Model ) => {
+  let methods = {};
   methods.create = async (req, res) => {
     crud.create(Model, req, res);
   };
@@ -34,4 +26,5 @@ module.exports = ( Model, func ) => {
     crud.search(Model, req, res);
   };
 
+  return methods;
 };
