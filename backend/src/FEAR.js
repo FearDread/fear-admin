@@ -73,39 +73,12 @@ const FEAR = ( app ) => {
     crud: require("./libs/crud"),
     handler: require("./libs/handler"),
     //controllers: _load("controllers"),
-    auth: require( "./libs/auth"),
-
-    config: {
-        db_link: process.env.DB_LINK,
-        cloudinary_name:'',
-        api_key:'',
-        api_secret:'',
-        jwt_name:'',
-        jwt_secret:'',
-    },
+    auth: require( "./libs/auth")( FEAR ),
+    config: require("./libs/config"),
+    load: _load,
     init: () => {},
-    cluster: () => {   
-        const cluster = require("cluster");
-        const CPUS = os.cpus();
-        
-        if (cluster.isMaster) {
-            CPUS.forEach(() => cluster.fork());
-            
-            cluster.on("listening", worker => {
-                console.log("Cluster %d connected", worker.process.pid);
-            });
-  
-            cluster.on("disconnect", worker => {
-              console.log("Cluster %d disconnected", worker.process.pid);
-            });
-  
-            cluster.on("exit", worker => {
-              console.log("Cluster %d is dead", worker.process.pid);
-              cluster.fork();
-            });
-        }
-    },
-
+    cluster: () => {}
+  }
 };
 
 module.exports = FEAR( app );
