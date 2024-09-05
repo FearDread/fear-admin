@@ -1,6 +1,7 @@
+const FEAR = require("../../FEAR");
 const mongoose = require("mongoose");
-const dotenv = require("dotenv");
-dotenv.config({path: __dirname + "../../.env"})
+
+const cfg = FEAR.config || {};
 
 module.exports = {
     run: () => {
