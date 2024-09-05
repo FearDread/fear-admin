@@ -1,4 +1,4 @@
-const FEAR = require("../../FEAR");
+const crud = require("./crud");
 
 module.exports = ( Model ) => {
   let methods = {};

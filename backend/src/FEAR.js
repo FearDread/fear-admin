@@ -65,7 +65,7 @@ const FEAR = ( app ) => {
   app.get("*", (req, res) =>
     res.sendFile(path.resolve(__dirname1, "dashboard", "build", "index.html"))
   );
-  console.log('FEAR.init() Called ::', this);
+
   return {
     app,
     db: require("./libs/db"),
@@ -73,13 +73,17 @@ const FEAR = ( app ) => {
     crud: require("./libs/crud"),
     handler: require("./libs/handler"),
     //controllers: _load("controllers"),
-   //auth: require( "./libs/auth")( _this ),
+    auth: require( "./libs/auth"),
 
-    init: () => {
-       console.log('FEAR.init() Called ::', _this);
+    config: {
+        db_link: process.env.DB_LINK,
+        cloudinary_name:'',
+        api_key:'',
+        api_secret:'',
+        jwt_name:'',
+        jwt_secret:'',
     }
   };
 };
 
-console.log("module exports ::", FEAR(app));
 module.exports = FEAR( app );
