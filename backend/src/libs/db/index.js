@@ -1,4 +1,3 @@
-const FEAR = require("../../FEAR");
 const mongoose = require("mongoose");
 
 module.exports = {
