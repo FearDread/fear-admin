@@ -17,8 +17,10 @@ const _load = ( dir ) => {
 }
 
 const FEAR = ( app ) => {
-  require("dotenv").config();
-  const os = require("os");
+  const env = require("dotenv").config({ path:"backend/.env"});
+  if ( !env || env.error ) throw env.error;
+  const {parsed: config} = env;
+
   const compression = require("compression"),
         passport = require("passport"),
         bodyParser = require("body-parser"),
@@ -73,8 +75,8 @@ const FEAR = ( app ) => {
     crud: require("./libs/crud"),
     handler: require("./libs/handler"),
     //controllers: _load("controllers"),
-    auth: require( "./libs/auth")( FEAR ),
-    config: require("./libs/config"),
+    auth: require( "./libs/auth"),
+    config: config,
     load: _load,
     init: () => {},
     cluster: () => {}

@@ -1,5 +1,7 @@
+const FEAR = require("../FEAR");
 const express = require("express");
 const router = express.Router();
+
 const User = require("../controllers/user");
 const { isAdmin, isAuth, isRole } = require("../auth");
 const asyncHandler = require("../middleware/async-handler");

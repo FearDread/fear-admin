@@ -7,21 +7,19 @@ require("dotenv").config();
         console.log("FEAR :: ", FEAR);
         const _this = this;
         const port = FEAR.app.get("PORT");
+        const cfg = FEAR.config;
 
         cloudinary.config({
-            cloud_name: process.env.CLOUDINARY_NAME,
-            api_key: process.env.API_KEY,
-            api_secret: process.env.API_SECRET,
+            cloud_name: cfg.CLOUDINARY_NAME,
+            api_key: cfg.API_KEY,
+            api_secret: cfg.API_SECRET,
         });
 
         FEAR.db.run();
-        const server = FEAR.app.listen( port, (err) => {
+        FEAR.app.listen( port, (err) => {
             if ( err ) return;
             console.log(`FEAR API Initialized :: Port ${port}`);
         });
-
-        server.emit("start")
-        server.catch(( err ) => {return})
     }
 
     await start();
