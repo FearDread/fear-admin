@@ -69,7 +69,7 @@ const FEAR = (( app ) => {
 
   return {
     app,
-    config: _config,
+    env: _config,
     db: require("./libs/db"),
     models: _load("models"),
     crud: require("./libs/crud"),

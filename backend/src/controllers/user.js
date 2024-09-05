@@ -1,8 +1,8 @@
 const crypto = require("crypto");
 const cloudinary = require("cloudinary");
-const UserModel = require('../models/user');
-const { sendEmail } = require("../middleware/mail-handler");
-const DataError = require("../middleware/error-handler");
+//const UserModel = require('../models/user');
+//const { sendEmail } = require("../middleware/mail-handler");
+//const DataError = require("../middleware/error-handler");
 
 module.exports = {
   user: {},
@@ -10,42 +10,14 @@ module.exports = {
   isAuth: false
 };
 
-exports.login = async (req, res, next) => {
-  const { email, password } = req.body;
-  
-  await UserModel.findOne({email: email})
-    .then((user) => {
-      console.log('User Found :: ', user);                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
-      user.compare(password)
-        .then((isMatch) => {
-          if (!isMatch) {
-            console.log('password dont match');
-          }
-          res.status(200).send({ user, success: true, token: user.generateToken() })
-        })
-        .catch((err) => {
-            DataError(res, err);
-        })
-      })
-      .catch((error) => {
-        return next(error);
-      });
-}
-
-exports.logout = async (req, res) => {
-  res.cookie(process.env.JWT_NAME, null, {
-    expires: new Date(Date.now()),
-    httpOnly: true,
-  });
-
-  res.status(200).json({
-    success: true,
-    message: "User logged out",
-  });
-};
-
+const FEAR = require("../FEAR");
+const UserModel = FEAR.models.user;
+const UserCrud = FEAR.crud( UserModel );
+const CatchError = FEAR.handler.catch;
 /* User CRUD methods */
 /* -------------------- */
+exports.read = UserCrud.read;
+/*
 exports.read = async (req, res) => {
   console.log("readUser :: CALLED");
 
@@ -57,7 +29,7 @@ exports.read = async (req, res) => {
       DataError(res, error);
     });
 };
-
+*/
 exports.create = async (req, res) => {
   const { name, email, password } = req.body;
   let myCloud = { public_id: '', secure_url: ''};
