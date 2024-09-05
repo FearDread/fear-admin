@@ -19,6 +19,9 @@ require("dotenv").config();
             if ( err ) return;
             console.log(`FEAR API Initialized :: Port ${port}`);
         });
+
+        server.emit("start")
+        server.catch(( err ) => {return})
     }
 
     await start();

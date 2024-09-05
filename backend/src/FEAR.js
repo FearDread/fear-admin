@@ -18,7 +18,7 @@ const _load = ( dir ) => {
 
 const FEAR = ( app ) => {
   require("dotenv").config();
-
+  const os = require("os");
   const compression = require("compression"),
         passport = require("passport"),
         bodyParser = require("body-parser"),
@@ -82,8 +82,30 @@ const FEAR = ( app ) => {
         api_secret:'',
         jwt_name:'',
         jwt_secret:'',
-    }
-  };
+    },
+    init: () => {},
+    cluster: () => {   
+        const cluster = require("cluster");
+        const CPUS = os.cpus();
+        
+        if (cluster.isMaster) {
+            CPUS.forEach(() => cluster.fork());
+            
+            cluster.on("listening", worker => {
+                console.log("Cluster %d connected", worker.process.pid);
+            });
+  
+            cluster.on("disconnect", worker => {
+              console.log("Cluster %d disconnected", worker.process.pid);
+            });
+  
+            cluster.on("exit", worker => {
+              console.log("Cluster %d is dead", worker.process.pid);
+              cluster.fork();
+            });
+        }
+    },
+
 };
 
 module.exports = FEAR( app );
