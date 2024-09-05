@@ -2,12 +2,11 @@
   "name": "fear-admin",
   "version": "1.0.0",
   "description": "",
-  "main": "backend/FEAR.js",
+  "main": "backend/src/FEAR.js",
   "scripts": {
     "dev": "node backend/server.js",
-    "start": "npm run clusters",
-    "clusters": "node backend/src/libs/clusters.js",
-    "test": "NODE_ENV=test mocha test/**/*.js",
+    "start": "node backend/server.js",
+    "test": "mocha test/**/*.js",
     "apidoc": "apidoc -i routes/ -o public/apidoc"
   },
   "author": "Garrett Haptonstall (FearDread)",
