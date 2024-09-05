@@ -1,4 +1,4 @@
-
+const FEAR = require("../../FEAR");
 const jwt = require("passport-jwt");
 const passport = require("passport");
 

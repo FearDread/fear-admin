@@ -1,5 +1,3 @@
-
-const glob = require("glob");
 const path = require("path");
 const express = require("express")
 const app = express();
@@ -74,7 +72,7 @@ const FEAR = ( app ) => {
     models: _load("models"),
     crud: require("./libs/crud"),
     handler: require("./libs/handler"),
-    controllers: _load("controllers"),
+    //controllers: _load("controllers"),
    //auth: require( "./libs/auth")( _this ),
 
     init: () => {

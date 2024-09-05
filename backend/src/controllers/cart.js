@@ -1,13 +1,13 @@
-const Cart = require("../models/cart");
-const Customer = require("../models/customer");
-const { StatusCodes } = require("http-status-codes");
-const { dbError, BadRequestError, NotFoundError } = require("../errors");
-const mongoose = require("mongoose");
+const FEAR = require("../FEAR.js");
+
+const cart = Fear.models.cart;
+const Customer = FEAR.models.Customer;
 const axios = require("axios");
 
 const mySecretKey = `Bearer ${process.env.PAYSTACK_SECRET}`;
 
-exports.list = async (req, res) => {
+exports.list = FEAR.crud( cart ).list();
+ async (req, res) => {
    const {
       user: { user_id },
    } = req;
