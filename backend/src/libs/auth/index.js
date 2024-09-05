@@ -2,7 +2,7 @@ const FEAR = require("../../FEAR");
 const jwt = require("passport-jwt");
 const passport = require("passport");
 
-module.exports = ( FEAR ) => {
+module.exports = () => {
   const cfg = FEAR.config;
   const Users = FEAR.models.user;
   const params = {
