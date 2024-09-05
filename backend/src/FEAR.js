@@ -1,6 +1,5 @@
 const path = require("path");
 const express = require("express")
-const app = express();
 
 const _load = ( dir ) => {
   console.log('Loading into FEAR :: ' + dir);
@@ -16,10 +15,10 @@ const _load = ( dir ) => {
   return obj;
 }
 
-const FEAR = ( app ) => {
+const FEAR = (( app ) => {
   const env = require("dotenv").config({ path:"backend/.env"});
   if ( !env || env.error ) throw env.error;
-  const {parsed: config} = env;
+  const {parsed: _config} = env;
 
   const compression = require("compression"),
         passport = require("passport"),
@@ -27,7 +26,9 @@ const FEAR = ( app ) => {
         cookieParser = require("cookie-parser"),
         fileUpload = require("express-fileupload"),
         cors = require("cors"),
-        helmet = require("helmet");
+        helmet = require("helmet"),
+        __dirname1 = path.resolve();
+
 
   app.set("PORT", 4000);
 
@@ -54,8 +55,6 @@ const FEAR = ( app ) => {
     next();
   });
 
-  const _this = this;
-  const __dirname1 = path.resolve();
   //const routes = fs.readFileSync("./backend/src/routes");
   /*
   glob.sync("./routes/*.js").forEach(( file ) => {
@@ -70,17 +69,17 @@ const FEAR = ( app ) => {
 
   return {
     app,
+    config: _config,
     db: require("./libs/db"),
     models: _load("models"),
     crud: require("./libs/crud"),
     handler: require("./libs/handler"),
     //controllers: _load("controllers"),
     auth: require( "./libs/auth"),
-    config: config,
     load: _load,
     init: () => {},
     cluster: () => {}
   }
-};
+})( express() );
 
-module.exports = FEAR( app );
+module.exports = FEAR;

@@ -4,8 +4,7 @@ require("dotenv").config();
 
 (async () => {
     async function start() {
-        console.log("FEAR :: ", FEAR);
-        const _this = this;
+        console.log("Starting FEAR :: ", FEAR);
         const port = FEAR.app.get("PORT");
         const cfg = FEAR.config;
 
