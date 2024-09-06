@@ -1,6 +1,6 @@
 const Customer = require("../models/customer");
 const { StatusCodes } = require("http-status-codes");
-const { BadRequestError, AuthError } = require("../errors");
+//const { BadRequestError, AuthError } = require("../errors");
 
 const register = async (req, res) => {
    const newUser = await Customer.create({ ...req.body });
@@ -14,16 +14,16 @@ const register = async (req, res) => {
 const login = async (req, res) => {
    const { username, password } = req.body;
    if (!username || !password) {
-      throw new BadRequestError("Please provide username and password");
+      throw Error;
    }
    const user = await Customer.findOne({ username });
    if (!user) {
-      return(new AuthError("Please register"));
+      return;
    }
    // compare password
    const isPasswordCorrect = await user.compare(password);
    if (!isPasswordCorrect) {
-      throw new AuthError("Password Is incorrect");
+      throw Error
    }
    const token = user.getJWTToken();
    const newUser = await Customer.findOne({ username }).select(

@@ -1,10 +1,9 @@
-const FEAR = require("../FEAR");
 const express = require("express");
 const router = express.Router();
+const { sync } = require("../libs/handler");
+const { login, logout } = require("../controllers/auth");
 
-const sync = FEAR.handler.sync;
-
-router.route("/login").post( sync(FEAR.auth.login) );
-router.route("/logout").post( sync(FEAR.auth.logout) );
+router.route("/login").post( sync(login) );
+router.route("/logout").post( sync(logout) );
 
 module.exports = router;
