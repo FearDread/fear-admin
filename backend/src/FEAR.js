@@ -29,9 +29,7 @@ const FEAR = (( app ) => {
         helmet = require("helmet"),
         __dirname1 = path.resolve();
 
-
   app.set("PORT", 4000);
-
   app.use(cors({
       origin: ["http://localhost:4000", "http://fear.master.com:4000"],
       methods: ["GET", "POST", "PUT", "DELETE"],
@@ -55,6 +53,9 @@ const FEAR = (( app ) => {
     next();
   });
 
+  const routes = _load( "routes" );
+  app.use("/fear/api", routes);
+
   //const routes = fs.readFileSync("./backend/src/routes");
   /*
   glob.sync("./routes/*.js").forEach(( file ) => {
@@ -70,13 +71,8 @@ const FEAR = (( app ) => {
   return {
     app,
     env: _config,
-    db: require("./libs/db"),
-    models: _load("models"),
-    crud: require("./libs/crud"),
-    handler: require("./libs/handler"),
-    //controllers: _load("controllers"),
-    auth: require( "./libs/auth"),
     load: _load,
+    db: require("./libs/db"),
     init: () => {},
     cluster: () => {}
   }
