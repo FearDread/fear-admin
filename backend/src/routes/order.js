@@ -1,5 +1,6 @@
-const express = require("express");
-const { newOrder, getSingleOrder, myOrders, getAllOrders, updateOrder, deleteOrder } = require("../controller/orderController");
+const router = require("express").Router();
+/*
+const { newOrder, getSingleOrder, myOrders, getAllOrders, updateOrder, deleteOrder } = require("../controllers/order");
 const { isAuthentictedUser, authorizeRoles } = require("../middleWare/auth");
 const router = express.Router();
  
@@ -9,5 +10,5 @@ router.route("/orders/myOrders").get(isAuthentictedUser , myOrders)
 router.route("/admin/orders").get(isAuthentictedUser , authorizeRoles("admin") ,getAllOrders);
 router.route("/admin/order/:id").put(isAuthentictedUser , authorizeRoles("admin") , updateOrder).delete(deleteOrder);
 
-
+*/
 module.exports = router;

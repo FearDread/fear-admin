@@ -6,6 +6,14 @@ const FEAR = (( app ) => {
   const env = require("dotenv").config({ path:"backend/.env"});
   if ( !env || env.error ) throw env.error;
   const {parsed: _config} = env;
+  const compression = require("compression"),
+        passport = require("passport"),
+        bodyParser = require("body-parser"),
+        cookieParser = require("cookie-parser"),
+        fileUpload = require("express-fileupload"),
+        cors = require("cors"),
+        helmet = require("helmet"),
+        __dirname1 = path.resolve();
 
   const _load = ( dir ) => {
     console.log('Loading into FEAR :: ' + dir);
@@ -20,15 +28,6 @@ const FEAR = (( app ) => {
     console.log("loaded mods ::", obj);
     return obj;
   }
-  
-  const compression = require("compression"),
-        passport = require("passport"),
-        bodyParser = require("body-parser"),
-        cookieParser = require("cookie-parser"),
-        fileUpload = require("express-fileupload"),
-        cors = require("cors"),
-        helmet = require("helmet"),
-        __dirname1 = path.resolve();
 
   app.set("PORT", 4000);
   app.use(cors({
@@ -55,7 +54,7 @@ const FEAR = (( app ) => {
   });
 
   const routes = _load( "routes" );
-  app.use("/fear/api", routes);
+  app.use("/fear/api", () => routes);
 
   app.use(express.static(path.join(__dirname1, "/dashboard/build")));
   app.get("*", (req, res) =>

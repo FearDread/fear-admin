@@ -1,7 +1,7 @@
 const Users = require('../models/user');
 
-exports.isAdmin = null;
-exports.isAuth = null;
+exports.isAdmin = () => { return null };
+exports.isAuth = () => { return null };
 
 exports.login = async (req, res, next) => {
     const { email, password } = req.body;
