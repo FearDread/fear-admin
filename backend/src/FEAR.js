@@ -1,25 +1,26 @@
 const path = require("path");
 const express = require("express")
 
-const _load = ( dir ) => {
-  console.log('Loading into FEAR :: ' + dir);
-  let obj = {};
-  const modPath = require('path').join( __dirname, dir );
-
-  require('fs').readdirSync(modPath).forEach(( file ) => {
-    const name = file.replace(/\.js$/, '');
-    obj[name] = require(`./${dir}/${file}`);
-  });
-
-  console.log("loaded mods ::", obj);
-  return obj;
-}
 
 const FEAR = (( app ) => {
   const env = require("dotenv").config({ path:"backend/.env"});
   if ( !env || env.error ) throw env.error;
   const {parsed: _config} = env;
 
+  const _load = ( dir ) => {
+    console.log('Loading into FEAR :: ' + dir);
+    let obj = {};
+    const modPath = require('path').join( __dirname, dir );
+  
+    require('fs').readdirSync(modPath).forEach(( file ) => {
+      const name = file.replace(/\.js$/, '');
+      obj[name] = require(`./${dir}/${file}`);
+    });
+  
+    console.log("loaded mods ::", obj);
+    return obj;
+  }
+  
   const compression = require("compression"),
         passport = require("passport"),
         bodyParser = require("body-parser"),
@@ -56,13 +57,6 @@ const FEAR = (( app ) => {
   const routes = _load( "routes" );
   app.use("/fear/api", routes);
 
-  //const routes = fs.readFileSync("./backend/src/routes");
-  /*
-  glob.sync("./routes/*.js").forEach(( file ) => {
-    console.log("route = ", file);
-    app.use("/fear/api/" + file, require("./" + file));
-  })
-*/
   app.use(express.static(path.join(__dirname1, "/dashboard/build")));
   app.get("*", (req, res) =>
     res.sendFile(path.resolve(__dirname1, "dashboard", "build", "index.html"))

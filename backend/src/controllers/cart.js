@@ -1,16 +1,11 @@
-const FEAR = require("../FEAR.js");
 
-const cart = Fear.models.cart;
-const Customer = FEAR.models.Customer;
 const axios = require("axios");
-
+const Cart = require("../models/cart");
+const Customer = require("../models/customer");
 const mySecretKey = `Bearer ${process.env.PAYSTACK_SECRET}`;
 
-exports.list = FEAR.crud( cart ).list();
- async (req, res) => {
-   const {
-      user: { user_id },
-   } = req;
+exports.list = async (req, res) => {
+   const { user: { user_id } } = req;
 
    let cart = await Cart.findOne({ user_id })
       .populate({

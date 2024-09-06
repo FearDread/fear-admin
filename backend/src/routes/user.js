@@ -1,32 +1,30 @@
-const FEAR = require("../FEAR");
 const express = require("express");
 const router = express.Router();
 
 const User = require("../controllers/user");
-const { isAdmin, isAuth, isRole } = require("../auth");
-const asyncHandler = require("../middleware/async-handler");
+const { isAdmin, isAuth } = require("../controllers/auth");
+const { sync } = require("../libs/handler");
 
-router.route("/login").post(asyncHandler(User.login));
-router.route("/logout").post(isAuth, asyncHandler(User.logout));
-router.route("/register").post(asyncHandler(User.create));
-
+//router.route("/login").post(asyncHandler(User.login));
+//router.route("/logout").post(isAuth, asyncHandler(User.logout));
+router.route("/register").post(sync(User.create));
 router.route("/profile/:id")
-        .get(asyncHandler(User.read))
-        .put(isAuth, asyncHandler(User.update));
+        .get(sync(User.read))
+        .put(isAuth, sync(User.update));
 
 router.route("/password/:id")
-        .post(asyncHandler(User.forgotPassword))
-        .put(asyncHandler(User.updatePassword))
+        .post(sync(User.forgotPassword))
+        .put(sync(User.updatePassword))
 
-router.route("/").get(asyncHandler(User.list));
-router.route("/reset").put(asyncHandler(User.resetPassword));
-router.route("/all").get(asyncHandler(User.list));
+router.route("/").get(sync(User.list));
+router.route("/reset").put(sync(User.resetPassword));
+router.route("/all").get(sync(User.list));
 
 router.route("/:id")
-    .get(isAdmin, asyncHandler(User.read))
-    .delete(isAdmin, asyncHandler(User.delete))
-    .put(isAdmin, asyncHandler(User.update));
+    .get(isAdmin, sync(User.read))
+    .delete(isAdmin, sync(User.delete))
+    .put(isAdmin, sync(User.update));
 
-router.route("/admin/role").put(isAdmin, asyncHandler(User.updateRole));
+router.route("/admin/role").put(isAdmin, sync(User.updateRole));
 
 module.exports = router;
