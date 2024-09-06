@@ -4,7 +4,7 @@ require("dotenv").config();
 
 (async () => {
     async function start() {
-        console.log("Starting FEAR :: ", FEAR);
+        console.log("Starting FEAR");
         const port = FEAR.app.get("PORT");
         const env = FEAR.env;
 

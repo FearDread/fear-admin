@@ -1,7 +1,6 @@
 const path = require("path");
 const express = require("express")
 
-
 const FEAR = (( app ) => {
   const env = require("dotenv").config({ path:"backend/.env"});
   if ( !env || env.error ) throw env.error;
@@ -16,7 +15,6 @@ const FEAR = (( app ) => {
         __dirname1 = path.resolve();
 
   const _load = ( dir ) => {
-    console.log('Loading into FEAR :: ' + dir);
     let obj = {};
     const modPath = require('path').join( __dirname, dir );
   
@@ -24,8 +22,7 @@ const FEAR = (( app ) => {
       const name = file.replace(/\.js$/, '');
       obj[name] = require(`./${dir}/${file}`);
     });
-  
-    console.log("loaded mods ::", obj);
+
     return obj;
   }
 

@@ -20,7 +20,6 @@ module.exports = () => {
         })
         .catch(error => done(error, null));
   });
-
   
   return {
     init: () => {
