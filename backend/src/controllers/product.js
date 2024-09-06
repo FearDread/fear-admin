@@ -1,8 +1,7 @@
-//const { AppError, dbError } = require("../_utils/errorHandlers");
+
 
 const ProductModel = require("../models/product");
 const cloudinary = require("cloudinary");
-const DataError = require("../middleware/error-handler");
 const Review = require("./review");
 
 /* Product CRUD methods */
@@ -50,7 +49,7 @@ exports.create = async (req, res) => {
       res.status(200).json({ success: true, product });
     })
     .catch((error) => {
-      DataError(res, error);
+      throw error;
     });
 };
 
@@ -61,9 +60,8 @@ exports.list = async (req, res) => {
       res.status(200).send({  success: true, products });
     })
     .catch((error) => {
-      DataError(res, error);
+      throw error;
     });
-    //CRUD.list(ProductModel);
 };
 
 exports.categories = async (req, res) => {
@@ -150,18 +148,14 @@ exports.delete = async (req, res, next) => {
 exports.read = async (req, res, next) => {
   console.log('Product Details request ::', req.params);
   const id = req.params.id;
-  if (!id) return next(DataError(res, {status:404, message:"No Product ID"}));
+  if (!id) return next();
   
   await ProductModel.findById(id)
     .then((product) => {
       console.log("Product found ::", product);
-      res.status(201).send({
-        succes: true,
-        product
-      });
-      return;
+      res.status(201).send( {succes: true, product} );
     })
     .catch((error) => {
-      DataError(res, error);
+      throw error;
     });
 };

@@ -1,23 +1,9 @@
 const crypto = require("crypto");
 const cloudinary = require("cloudinary");
-//const UserModel = require('../models/user');
-//const { sendEmail } = require("../middleware/mail-handler");
-//const DataError = require("../middleware/error-handler");
+const UserModel = require('../models/user');
 
-module.exports = {
-  user: {},
-  token: '',
-  isAuth: false
-};
-
-const FEAR = require("../FEAR");
-const UserModel = FEAR.models.user;
-const UserCrud = FEAR.crud( UserModel );
-const CatchError = FEAR.handler.catch;
 /* User CRUD methods */
 /* -------------------- */
-exports.read = UserCrud.read;
-/*
 exports.read = async (req, res) => {
   console.log("readUser :: CALLED");
 
@@ -26,10 +12,10 @@ exports.read = async (req, res) => {
       res.status(200).send({ success: true, user });
     })
     .catch((error) => {
-      DataError(res, error);
+      throw error;
     });
 };
-*/
+
 exports.create = async (req, res) => {
   const { name, email, password } = req.body;
   let myCloud = { public_id: '', secure_url: ''};
@@ -63,7 +49,7 @@ exports.list = async (req, res, next) => {
       res.status(201).send({ success: true, users });
     })
     .catch((error) => {
-      DataError(res, error);
+      throw error;
     }
   );
 };
@@ -171,7 +157,7 @@ exports.forgotPassword = async (req, res, next) => {
   }
 
   const message = `Your password reset token is :- \n\n ${resetPasswordUrl} \n\nIf you have not requested this email then, please ignore it.`;
-
+  /*
   try {
     await sendEmail({
       email: user.email,
@@ -191,6 +177,7 @@ exports.forgotPassword = async (req, res, next) => {
     await user.save({ validateBeforeSave: false });
     //return next(new AppError(error.message, 500));
   }
+      */
 };
 
 exports.resetPassword = async (req, res, next) => {
