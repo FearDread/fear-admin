@@ -1,5 +1,5 @@
 const path = require("path");
-const express = require("express")
+const express = require("express");
 
 const FEAR = (( app ) => {
   const env = require("dotenv").config({ path:"backend/.env"});
@@ -14,7 +14,7 @@ const FEAR = (( app ) => {
         helmet = require("helmet"),
         __dirname1 = path.resolve();
 
-  const _load = ( dir ) => {
+  const _loadObj = ( dir ) => {
     let obj = {};
     const modPath = require('path').join( __dirname, dir );
   
@@ -26,11 +26,39 @@ const FEAR = (( app ) => {
     return obj;
   }
 
+  const _loadRoutes = async ( pattern ) => {
+    let router = express.Router();
+    const dir = path.join( __dirname, '..');
+
+    await glob(pattern, { cwd: dir })
+        .then((files) => {
+
+          for (const file of files) {
+            if (fs.statSync(file).isFile() && path.extname(file).toLowerCase() === '.js') {
+              try {
+                
+                const routeModule = await require(path.resolve(file));
+                router = (routeModule.default || routeModule)(router);
+              
+              } catch (e) {
+                throw new Error(`Error when loading route file: ${file} [ ${e.toString()} ]`);
+              }
+            }
+          }
+          return router;
+        })
+        .catch((error) => {
+          console.error("Glob Error :: ", error);
+        });
+
+    return router;
+  }
+
   app.set("PORT", 4000);
   app.use(cors({
-      origin: ["http://localhost:4000", "http://fear.master.com:4000"],
+      origin: ["http://localhost:4000", "http://fear.master.com:4000", "http://localhost:4001"],
       methods: ["GET", "POST", "PUT", "DELETE"],
-      allowedHeaders: ["Content-Type", "Authorization"]
+      allowedHeaders: ["Content-Type", "Authorization", "Access-Control-Allow-Origin"]
   }));
 
   app.use(helmet());
@@ -50,9 +78,10 @@ const FEAR = (( app ) => {
     next();
   });
 
-  const routes = _load( "routes" );
-  app.use("/fear/api", () => routes);
-
+  const routes = await _loadRoutes( "routes/*.js" );
+  console.log("added routes ::", routes);
+  
+  app.use("/fear/api", routes);
   app.use(express.static(path.join(__dirname1, "/dashboard/build")));
   app.get("*", (req, res) =>
     res.sendFile(path.resolve(__dirname1, "dashboard", "build", "index.html"))

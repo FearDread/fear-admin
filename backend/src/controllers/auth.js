@@ -5,8 +5,8 @@ exports.isAuth = () => { return null };
 
 exports.login = async (req, res, next) => {
     const { email, password } = req.body;
-    
-    await Users.findOne({email: email})
+    console.log('login called!');
+    await Users.findOne( {email: email} )
       .then((user) => {
         console.log('User Found :: ', user);                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
         user.compare(password)
@@ -17,16 +17,16 @@ exports.login = async (req, res, next) => {
             res.status(200).send({ user, success: true, token: user.generateToken() })
           })
           .catch((err) => {
-              DataError(res, err);
+              throw err;
           })
-        })
-        .catch((error) => {
+      })
+      .catch((error) => {
           return next(error);
-        });
+      });
   }
   
 exports.logout = async (req, res) => {
-    res.cookie(cfg.JWT_NAME, null, {
+    res.cookie(process.env.JWT_NAME, null, {
       expires: new Date(Date.now()),
       httpOnly: true,
     })
