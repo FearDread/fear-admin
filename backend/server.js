@@ -3,7 +3,6 @@ const FEAR = require("./src/FEAR");
 require("dotenv").config();
 
 (async () => {
- console.log("FEAR = ", FEAR);
 
     async function start() {
         console.log("Starting FEAR");
@@ -15,7 +14,6 @@ require("dotenv").config();
             api_secret: FEAR.env.API_SECRET,
         });
 
-        //console.log("Routes Loaded ::", FEAR.app._router.stack);
         FEAR.db.run( FEAR.env );
         FEAR.app.listen( port, (err) => {
             if ( err ) return;
@@ -24,6 +22,7 @@ require("dotenv").config();
     }
 
     await start();
+
 })( FEAR );
 
 
