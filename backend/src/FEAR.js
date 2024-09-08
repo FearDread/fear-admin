@@ -1,6 +1,21 @@
 const path = require("path");
 const express = require("express");
+const consign = require("consign");
 
+const _loadRoutes = () => {
+  let router = express.Router();
+  const dir = "routes";
+  const modPath = require('path').join( __dirname, dir );
+
+  require('fs').readdirSync(modPath).forEach(( file ) => {
+    const name = file.replace(/\.js$/, '');
+    const routeModule = require(`./${dir}/${file}`);
+
+    router.use('/' + name, routeModule);
+  });
+
+  return router;
+}
 
 const FEAR = (( app ) => {
   const env = require("dotenv").config({ path:"backend/.env"});
@@ -13,10 +28,10 @@ const FEAR = (( app ) => {
         fileUpload = require("express-fileupload"),
         cors = require("cors"),
         helmet = require("helmet"),
+        routes = _loadRoutes(),
         __dirname1 = path.resolve();
-  
+
   const db = require("./libs/db"),
-        {_loadRoutes} = require("./libs/loader"),
         {parsed: _config} = env;
 
   app.set("PORT", 4000);
@@ -42,8 +57,6 @@ const FEAR = (( app ) => {
     res.locals.currentPath = req.path;
     next();
   });
-
-  const routes = _loadRoutes( "./routes/*.js" );
 
   app.use("/fear/api", routes);
   app.use(express.static(path.join(__dirname1, "/dashboard/build")));
