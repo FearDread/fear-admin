@@ -19,6 +19,7 @@ const FEAR = (( app ) => {
   const env = require("dotenv").config({ path:"backend/.env"});
   if ( !env || env.error ) throw env.error;
 
+  const cloudinary = require("cloudinary");
   const compression = require("compression"),
         passport = require("passport"),
         bodyParser = require("body-parser"),
@@ -26,7 +27,6 @@ const FEAR = (( app ) => {
         fileUpload = require("express-fileupload"),
         cors = require("cors"),
         helmet = require("helmet"),
-        //routes = _loadRoutes(),
         __dirname1 = path.resolve();
 
   const db = require("./libs/db"),
@@ -57,6 +57,12 @@ const FEAR = (( app ) => {
   });
 
   app = _loadRoutes(app);
+
+  cloudinary.config({
+    cloud_name: _config.CLOUDINARY_URL,
+    api_key: _config.CLOUDINARY_API_KEY,
+    api_secret: _config.CLOUDINARY_API_SECRET,
+  });
 
   app.use(express.static(path.join(__dirname1, "/dashboard/build")));
   app.get("*", (req, res) =>

@@ -100,6 +100,7 @@ var redirect = "/admin/dashboard";
    
 useEffect(() => {
   if (isLoggedIn) {
+    console.log("uncomment redirect");
     history.push(redirect);
    }
 }, [dispatch, history, isLoggedIn, redirect]);

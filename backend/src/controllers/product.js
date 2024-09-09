@@ -25,7 +25,7 @@ exports.create = async (req, res) => {
     for (let chunk of imageChunks) {
       const uploadPromises = chunk.map((img) =>
         cloudinary.v2.uploader.upload(img, {
-          folder: "Products",
+          folder: "products",
         })
       );
 

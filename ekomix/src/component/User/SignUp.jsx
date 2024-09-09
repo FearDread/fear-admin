@@ -40,7 +40,6 @@ function Signup() {
     checkbox2: false,
   });
   const history = useHistory();
-
   const dispatch = useDispatch();
   const alert = useAlert();
 

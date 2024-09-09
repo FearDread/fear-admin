@@ -1,11 +1,10 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 require("dotenv").config({ path: __dirname + "../.env" });
 
-const UserSchema = mongoose.Schema({
+const UserSchema = new mongoose.Schema({
   name: { type: String, required: true },
   username: { type: String, required: false, unique: true },
   email: { type: String, unique: true, 
@@ -16,7 +15,7 @@ const UserSchema = mongoose.Schema({
     url: { type: String, required: false }
   },
   role: { type: String, default: "admin" },
-  isAdmin: { type: Boolean, default: false, required: false },
+  isAdmin: { type: Boolean, default: true, required: false },
   isSeller: { type: Boolean, default: false, required: false },
   cart: {  type: mongoose.Schema.Types.ObjectID, ref: 'cart' },
   createdAt: { type: Date, default: Date.now },
@@ -33,10 +32,6 @@ const UserSchema = mongoose.Schema({
 {timestamps: true});
 
 UserSchema.pre("save", async (next) => {
-    if ( this.isModified( "password" ) === false ) {
-      next();
-    }
-
     bcrypt.genSalt(10, function (err, salt) { 
         this.password = bcrypt.hash(this.password, salt, function (err, hash) {
           next();
@@ -45,8 +40,9 @@ UserSchema.pre("save", async (next) => {
 });
 
 UserSchema.methods.compare = async (password, match) => {
-      return await bcrypt.compare(password, match); 
-    };
+  return await bcrypt.compare(password, match); 
+};
+
 UserSchema.methods.getRESETToken = () => {
       const reset_token = crypto.randomBytes(20).toString("hex"); 
 
