@@ -18,19 +18,20 @@ exports.read = async (req, res) => {
 };
 
 exports.create = async (req, res) => {
-  const { name, email, password } = req.body;
+  // TODO: make sure username is uniuqe and has no white spaces, only _, - , . , etc..
+  const { name, username, email, password } = req.body;
   let myCloud = { public_id: '', secure_url: ''};
-  
+
   if (req.body && req.body.avatar) {
     myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
-      folder: "Avatar",
+      folder: "avatars",
       width: 150,
       crop: "scale",
     });
   }
 
   await UserModel.create({
-    name, email, password,
+    name, username: username || name, email, password,
     avatar: {
       public_id: myCloud.public_id,
       url: myCloud.secure_url,
