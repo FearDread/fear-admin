@@ -13,13 +13,14 @@ require("dotenv").config();
             api_key: FEAR.env.CLOUDINARY_API_KEY,
             api_secret: FEAR.env.CLOUDINARY_API_SECRET,
         });
-
-        console.log(FEAR.app._router.stack);
-        FEAR.db.run( FEAR.env );
-        FEAR.app.listen( port, (err) => {
-            if ( err ) return;
-            console.log(`FEAR API Initialized :: Port ${port}`);
+        
+        FEAR.db.run( FEAR.env, () => {
+            FEAR.app.listen( port, (err) => {
+                if ( err ) return;
+                console.log(`FEAR API Initialized :: Port ${port}`);
+            });
         });
+
     }
 
     await start();
