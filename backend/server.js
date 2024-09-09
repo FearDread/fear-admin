@@ -10,8 +10,8 @@ require("dotenv").config();
 
         cloudinary.config({
             cloud_name: FEAR.env.CLOUDINARY_NAME,
-            api_key: FEAR.env.API_KEY,
-            api_secret: FEAR.env.API_SECRET,
+            api_key: FEAR.env.CLOUDINARY_API_KEY,
+            api_secret: FEAR.env.CLOUDINARY_API_SECRET,
         });
 
         console.log(FEAR.app._router.stack);

@@ -15,6 +15,7 @@ import {
   FormGroup,
   Form,
   Input,
+  Label,
   Row,
   Col
 } from "reactstrap";
@@ -132,59 +133,75 @@ function NewProduct() {
       ) : (
         <>
           <div className="content">
-            <h1 className="text-center">Add New Product</h1>
-            <br />
             <Row>
-              <Col md="6" className="centered-form">
-                <Form
+              <Col md="12">
+                <Form className="form-horizontal"
                   encType="multipart/form-data"
                   onSubmit={createProductSubmitHandler}>
                   <Card>
                     <CardHeader>
-                      <CardTitle tag="h4">Details</CardTitle>
+                      <CardTitle tag="h4">Add New Product</CardTitle>
                     </CardHeader>
                     <CardBody>
-                      <FormGroup className={`has-labe`}>
-                        <label>Product Name</label>
-                        <Input
-                          name="Product Name"
-                          required
-                          value={name}
-                          onChange={(e) => setName(e.target.value)}
-                        />
-                      </FormGroup>
-                      <FormGroup>
-                        <label>Product Description</label>
-                        <Input
-                          cols="80"
+                      <Row>
+                        <Label sm="2">Product Name</Label>
+                        <Col sm="10">
+                          <FormGroup>
+                            <Input type="name" autoComplete="off"
+                              required
+                              value={name}
+                              onChange={(e) => setName(e.target.value)}
+                            />
+                          </FormGroup>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Label sm="2">Description</Label>
+                        <Col sm="10">
+                          <FormGroup>
+                            <Input type="description" autoComplete="off"
+                          cols="100"
                           value={description}
                           placeholder="Here can be your description"
                           rows="4"
                           type="textarea"
                           onChange={(e) => setDescription(e.target.value)}
-                        />
-                      </FormGroup>
-                      <FormGroup className={`has-label`}>
-                        <label>Price</label>
-                        <Input
+                            />
+                          </FormGroup>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Label sm="2">Initial Price</Label>
+                        <Col sm="10">
+                          <FormGroup>
+                          <Input
                           name="price"
                           required
                           value={price}
                           onChange={(e) => setPrice(e.target.value)}
                         />
-                      </FormGroup>
-                      <FormGroup className={`has-label`}>
-                        <label>Stock</label>
-                        <Input
+                          </FormGroup>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Label sm="2">Stock Available</Label>
+                        <Col sm="10">
+                          <FormGroup>
+                          <Input
                           name="stock"
                           required
                           value={stock}
                           onChange={(e) => setStock(e.target.value)}
                         />
-                      </FormGroup>
-                      <FormGroup>
-                        <label>Select Category</label>
-                        <Input
+
+                          </FormGroup>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Label sm="2">Select Category</Label>
+                        <Col sm="10">
+                          <FormGroup>
+                          <Input
                           type="select"
                           placeholder="Choose Category"
                           value={category}
@@ -196,43 +213,82 @@ function NewProduct() {
                           </option>
                         ))}
                       </Input>
-                    </FormGroup>
 
-                    <FormGroup className={`has-label`}>
-                      <label>Product Info</label>
-                      <Input
-                          cols="80"
+                          </FormGroup>
+                        </Col>
+                      </Row>
+                      <Row>
+                      <Label sm="2">Publish to store?</Label>
+                    <Col className="checkbox-radios" sm="10">
+                      <FormGroup check>
+                        <Label check>
+                          <Input type="checkbox" />
+                          <span className="form-check-sign" />
+                          Publish
+                        </Label>
+                      </FormGroup>
+                      <FormGroup check>
+                        <Label check>
+                          <Input type="checkbox" />
+                          <span className="form-check-sign" />
+                          Private
+                        </Label>
+                      </FormGroup>
+                      </Col>
+                      </Row>
+                      <Row>
+                        <Label sm="2">Product Info</Label>
+                        <Col sm="10">
+                          <FormGroup>
+                          <Input
+                          cols="180"
                           value={info}
                           placeholder="Here can be your extra information"
                           rows="4"  
                           type="textarea"
                           onChange={(e) => setInfo(e.target.value)}
                         />
-                    </FormGroup>
-
+                          </FormGroup>
+                        </Col>
+                      </Row>
                     </CardBody>
-                    <Button
-                          variant="contained"
-                          type="submit"
-                          disabled={loading ? true : false}
-                        >
-                          SUBMIT PRODUCT
-                    </Button>
-                  </Card>
-                </Form>
-              </Col>
-            <Col md="6">
-            <FormGroup>
-              <Card>
+                  <FormGroup>
                 <CardHeader>
-                  <CardTitle tag="h4">Add Image</CardTitle>
+                  <CardTitle tag="h4">Drag or click here to add Images!</CardTitle>
                 </CardHeader>
-                        <Input
+                <CardBody>
+                  <Row>
+                  <Col>
+                  <div class="form-group">
+                    <label class="control-label">Upload File</label>
+                         <div class="preview-zone hidden">
+                            <div class="box box-solid">
+                                      <div class="box-header with-border">
+                    <div><b>Preview</b></div>
+                    <div class="box-tools pull-right">
+                    <button type="button" class="btn btn-danger btn-xs remove-preview">
+                      <i class="fa fa-times"></i> Reset This Form
+                      </button>
+                    </div>
+                  </div>
+                  <div class="box-body"></div>
+                </div>
+               </div>
+                <div class="dropzone-wrapper">
+                <div class="dropzone-desc">
+                  <i class="glyphicon glyphicon-download-alt"></i>
+                  <p>Choose an image file or drag it here.</p>
+                </div>
+                <Input type="file" name="img_logo" class="dropzone" />
+                </div>
+                </div>
+                  <Input
                           type="file"
                           accept="image/*"
                           onChange={createProductImagesChange}
                           multiple
                           ref={fileInputRef}
+
                         />
 
                         <CardBody>
@@ -245,15 +301,30 @@ function NewProduct() {
                               />
                           ))}
                         </CardBody>
-                        <Button
+                        <Button className="hidden"
                             variant="contained"
                             onClick={handleImageUpload}
                           >
-                            Upload Images
+                          
                         </Button>
-                    </Card>
-                </FormGroup>   
-            </Col>
+                        <br />
+
+                  </Col>
+                  </Row>
+
+                </CardBody>
+
+                </FormGroup> 
+                <Button
+                          variant="contained"
+                          type="submit"
+                          disabled={loading ? true : false}
+                        >
+                          SUBMIT PRODUCT
+                    </Button> 
+                </Card>
+                </Form>
+              </Col>
             </Row>
           </div>
         </>

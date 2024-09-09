@@ -36,8 +36,12 @@ exports.create = async (req, res) => {
       url: myCloud.secure_url,
     }})
     .then((user) => {
-      console.log("User Created  ::", user);
-      res.status(201).send({ user, success: true, token: getJWTToken(user) })
+      if (user) {
+        console.log("User Created  ::", user);
+        res.status(201).send({ user, success: true, token: getJWTToken(user) })
+      } else {
+        res.status(500).send({success: false, error:"Unable to create user..."});
+      }
     })
     .catch((error) => {
        throw error;
@@ -47,7 +51,11 @@ exports.create = async (req, res) => {
 exports.list = async (req, res, next) => {
   await UserModel.find({})
     .then((users) => {
-      res.status(201).send({ success: true, users });
+      if (users && users.length > 0) {
+        res.status(201).send({ success: true, users });
+      } else {
+        res.sttaus(500).send({success: false, users:[], error: "No Users Found"});
+      }
     })
     .catch((error) => {
       throw error;
