@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 module.exports = {
-    run: ( env, cb ) => {
+    run: ( env, callback ) => {
         mongoose.set("strictQuery", false); 
         mongoose.connect(env.DB_LINK, {
             dbName: env.DB_NAME,
