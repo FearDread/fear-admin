@@ -2,7 +2,7 @@ const path = require("path");
 const express = require("express");
 const consign = require("consign");
 
-const _loadRoutes = () => {
+const _loadRoutes = ( app ) => {
   let router = express.Router();
   const dir = "routes";
   const modPath = require('path').join( __dirname, dir );
@@ -11,10 +11,11 @@ const _loadRoutes = () => {
     const name = file.replace(/\.js$/, '');
     const routeModule = require(`./${dir}/${file}`);
 
-    router.use('/' + name, routeModule);
+    app.use('/fear/api/' + name, routeModule);
+    //router.use('/' + name, routeModule);
   });
 
-  return router;
+  return app;
 }
 
 const FEAR = (( app ) => {
@@ -28,7 +29,7 @@ const FEAR = (( app ) => {
         fileUpload = require("express-fileupload"),
         cors = require("cors"),
         helmet = require("helmet"),
-        routes = _loadRoutes(),
+        //routes = _loadRoutes(),
         __dirname1 = path.resolve();
 
   const db = require("./libs/db"),
@@ -57,8 +58,8 @@ const FEAR = (( app ) => {
     res.locals.currentPath = req.path;
     next();
   });
-
-  app.use("/fear/api", routes);
+  app = _loadRoutes(app);
+  //app.use("/fear/api", routes);
   app.use(express.static(path.join(__dirname1, "/dashboard/build")));
   app.get("*", (req, res) =>
     res.sendFile(path.resolve(__dirname1, "dashboard", "build", "index.html"))

@@ -13,7 +13,7 @@ export function login(email, password) {
       console.log('url = ' + API_BASE_URL);
       const config = { headers: { "Content-Type": "application/json" } };
       const response = await axios.post(
-        API_BASE_URL + "/login",
+        API_BASE_URL + "/auth/login",
         { email, password },
         config
       );

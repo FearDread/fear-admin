@@ -19,7 +19,7 @@ exports.read = async (req, res) => {
 exports.create = async (req, res) => {
   const { name, email, password } = req.body;
   let myCloud = { public_id: '', secure_url: ''};
-
+  
   if (req.body && req.body.avatar) {
     myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
       folder: "Avatar",
@@ -39,7 +39,7 @@ exports.create = async (req, res) => {
       res.status(201).send({ user, success: true, token: user.generateToken() })
     })
     .catch((error) => {
-       DataError(res, error);
+       throw error;
     });
 };
 
