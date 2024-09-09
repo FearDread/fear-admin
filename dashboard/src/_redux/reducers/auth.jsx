@@ -1,7 +1,7 @@
 import * as actionTypes from "../types/auth";
 import storage from "../storage";
 
-const local = storage.get("user");
+const local = storage.get("user") || {};
 const INITIAL_STATE = {
   user: local ? local : {},
   isLoggedIn: local ? true : false,

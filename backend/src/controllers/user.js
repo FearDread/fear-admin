@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const {getJWTToken} = require("./auth");
 const cloudinary = require("cloudinary");
 const UserModel = require('../models/user');
 
@@ -36,7 +37,7 @@ exports.create = async (req, res) => {
     }})
     .then((user) => {
       console.log("User Created  ::", user);
-      res.status(201).send({ user, success: true, token: user.generateToken() })
+      res.status(201).send({ user, success: true, token: getJWTToken(user) })
     })
     .catch((error) => {
        throw error;

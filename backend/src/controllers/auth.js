@@ -1,13 +1,23 @@
 const jwt = require("jsonwebtoken")
-const Users = require('../models/user');
+const UserModel = require('../models/user');
 
-exports.isAdmin = () => { return null };
-exports.isAuth = () => { return null };
+
+exports.isAdmin = (user) => { return null };
+exports.isAuth = (user) => { return null };
+
+const getJWTToken = (user) => {
+  const token = jwt.sign({
+      exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24,
+      id: user._id,
+    }, process.env.JWT_SECRET);
+
+  return token;
+}
 
 exports.login = async (req, res, next) => {
     const { email, password } = req.body;
 
-    await Users.findOne( {email: email} )
+    await UserModel.findOne( {email: email} )
       .then((user) => {
         if (user !== null) {
           console.log('User Found :: ', user);
@@ -15,18 +25,12 @@ exports.login = async (req, res, next) => {
           user.compare(password, user.password)
             .then((isMatch) => {
               if (!isMatch) {
-                res.status(201).send({success: false, error:"Password does not match"});
+                console.log('paassword no match');
+                //TODO:: handle incorrect password
+                // res.status(201).send({success: false, error:"Password does not match"});
               }
 
-              const token = jwt.sign(
-              {
-                exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24,
-                id: user._id,
-              },
-              process.env.JWT_SECRET
-              );
-
-              res.status(200).send({ user, success: true, token: token });
+              res.status(200).send({ user, success: true, token: getJWTToken(user) });
             }).catch((err) => {
               throw err;
             })
@@ -43,4 +47,6 @@ exports.logout = async (req, res) => {
     })
     .status(200).json({ success: true, message: "User logged out",});
   };
+
+  exports.getJWTToken = getJWTToken;
 

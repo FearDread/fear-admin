@@ -3,7 +3,7 @@ export const storage = {
     window.localStorage.setItem(key, JSON.stringify(state));
   },
   get: (key) => {
-    const result = window.localStorage.getItem(key);
+    const result = window.localStorage.getItem(JSON.stringify(key));
     return JSON.parse(result);
   },
   remove: (key) => {
