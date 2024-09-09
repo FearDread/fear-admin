@@ -9,11 +9,11 @@ require("dotenv").config();
         const port = FEAR.app.get("PORT");
 
         cloudinary.config({
-            cloud_name: FEAR.env.CLOUDINARY_NAME,
+            cloud_name: FEAR.env.CLOUDINARY_URL,
             api_key: FEAR.env.CLOUDINARY_API_KEY,
             api_secret: FEAR.env.CLOUDINARY_API_SECRET,
         });
-        
+
         FEAR.db.run( FEAR.env, () => {
             FEAR.app.listen( port, (err) => {
                 if ( err ) return;
