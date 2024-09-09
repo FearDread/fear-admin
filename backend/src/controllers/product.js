@@ -2,11 +2,10 @@
 
 const ProductModel = require("../models/product");
 const cloudinary = require("cloudinary");
-const Review = require("./review");
 
 /* Product CRUD methods */
 /* -------------------- */
-exports.Review = Review;
+//exports.Review = Review;
 
 exports.create = async (req, res) => {
   let images = []; 
