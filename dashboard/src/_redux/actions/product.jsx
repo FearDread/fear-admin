@@ -122,6 +122,7 @@ export const getAdminProducts = () => async (dispatch) => {
 // Create Product
 export const createProduct = (productData) => async (dispatch) => {
   dispatch({type: NEW_PRODUCT_REQUEST});
+  console.log("Create Products data :: ", productData);
 
   await axios.post(API_BASE_URL + `/product/new`,
     productData,

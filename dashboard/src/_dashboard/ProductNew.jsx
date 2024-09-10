@@ -33,11 +33,11 @@ function NewProduct() {
   const [info , setInfo] = useState("")
   const [images, setImages] = useState([]);
   const [imagesPreview, setImagesPreview] = useState([]);
-  const [isCategory, setIsCategory] = useState(false);
+  const [isCategory, setIsCategory] = useState(true);
   const [alert, setAlert] = React.useState(null);
   const fileInputRef = useRef();
   const { user } = useSelector((state) => state.auth);
-  const { loading, categries, error, success } = useSelector((state) => state.product);
+  const { loading, categories, error, success } = useSelector((state) => state.product);
 
   const handleCategoryChange = (e) => {
     setCategory(e.target.value);
@@ -48,10 +48,7 @@ function NewProduct() {
     fileInputRef.current.click();
   };
 
-  useEffect(() => {
-
-  }, []);
- const categories = [
+ const defaultCategories = [
    "Comics",
    "Coins",
    "Sports Cards",
@@ -92,20 +89,22 @@ function NewProduct() {
   const createProductSubmitHandler = (e) => {
     e.preventDefault();
     
-    const myForm = new FormData();
-          myForm.set("name", name);
-          myForm.set("price", price);
-          myForm.set("description", description);
-          myForm.set("category", category);
-          myForm.set("Stock", stock);
-          myForm.set("info", info);
+    const myForm = new FormData(e.target);
+          
+    myForm.set("name", name);
+    myForm.set("price", price);
+    myForm.set("description", description);
+    myForm.set("category", category);
+    myForm.set("Stock", stock);
+    myForm.set("info", info);
     
     images.forEach((currImg) => {
       myForm.append("images", currImg);
     });
     
     myForm.set("user", user._id);
-
+    
+    console.log('product for data ::', myForm);
     dispatch(createProduct(myForm));
   };
 
@@ -130,7 +129,7 @@ function NewProduct() {
     <>
       {loading ? (
         <Loader />
-      ) : (
+      ) : ( 
         <>
           <div className="content">
             <Row>
@@ -207,7 +206,7 @@ function NewProduct() {
                           value={category}
                           onChange={handleCategoryChange}
                         >
-                        {categories.map((cate) => (
+                        {defaultCategories.map((cate) => (
                           <option key={cate} value={cate}>
                             {cate}
                           </option>
@@ -266,9 +265,6 @@ function NewProduct() {
                                       <div class="box-header with-border">
                     <div><b>Preview</b></div>
                     <div class="box-tools pull-right">
-                    <button type="button" class="btn btn-danger btn-xs remove-preview">
-                      <i class="fa fa-times"></i> Reset This Form
-                      </button>
                     </div>
                   </div>
                   <div class="box-body"></div>
@@ -316,6 +312,7 @@ function NewProduct() {
 
                 </FormGroup> 
                 <Button
+                  onClick={createProductSubmitHandler}
                           variant="contained"
                           type="submit"
                           disabled={loading ? true : false}

@@ -1,12 +1,11 @@
 import * as actionTypes from "../types/auth";
 import storage from "../storage";
 
-const local = storage.get("user") || {};
 const INITIAL_STATE = {
-  user: local ? local : {},
-  isLoggedIn: local ? true : false,
+  user: {},
+  isLoggedIn: false,
   loading: false
-};
+}
 const authReducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case actionTypes.LOADING_REQUEST:

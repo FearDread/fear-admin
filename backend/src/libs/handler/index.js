@@ -5,7 +5,7 @@
   Instead of using try{} catch(e) {} in each controller, we wrap the function in
   catchErrors(), catch any errors they throw, and pass it along to our express middleware with next()
 */
-exports.catch = (fn) => {
+exports.asyncHandler = (fn) => {
     return function (req, res, next) {
       const resp = fn(req, res, next);
       if (resp instanceof Promise) {
@@ -22,7 +22,7 @@ exports.catch = (fn) => {
   Instead of using try{} catch(e) {} in each controller, we wrap the function in
   catchErrors(), catch any errors they throw, and pass it along to our express middleware with next()
 */
-exports.sync = ( fn ) => ( req, res, next ) => {
+exports.promiseHandler = ( fn ) => ( req, res, next ) => {
   Promise.resolve(fn(req, res, next)).catch(next);
 };
   
