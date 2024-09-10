@@ -5,8 +5,6 @@ const User = require("../controllers/user");
 const { isAdmin, isAuth } = require("../controllers/auth");
 const { sync } = require("../libs/handler");
 
-//router.route("/login").post(asyncHandler(User.login));
-//router.route("/logout").post(isAuth, asyncHandler(User.logout));
 router.route("/register").post(sync(User.create));
 router.route("/profile/:id")
         .get(sync(User.read))
