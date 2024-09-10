@@ -1,59 +1,55 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
-require("dotenv").config({ path: __dirname + "../.env" });
 
-const UserSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  username: { type: String, required: false, unique: true },
-  email: { type: String, unique: true, 
-    validate: [validator.isEmail, "Please Enter a valid Email"]},
-  password: { type: String, required: true, select: true },
-  avatar: { 
-    public_id: { type: String, required: false },
-    url: { type: String, required: false }
+const userSchema = new mongoose.Schema({
+  name: {type: String,
+    required: [true, "Please Enter Your Name"],
+    maxLength: [30, "Name cannot exceed 30 characters"],
+    minLength: [4, "Name should have more than 4 characters"],
   },
-  role: { type: String, default: "admin" },
-  isAdmin: { type: Boolean, default: true, required: false },
-  isSeller: { type: Boolean, default: false, required: false },
-  cart: {  type: mongoose.Schema.Types.ObjectID, ref: 'cart' },
-  createdAt: { type: Date, default: Date.now },
-  seller: {
-    name: String,
-    logo: String,
-    description: String,
-    rating: { type: Number, default: 0, required: false },
-    numReviews: { type: Number, default: 0, required: false },
+  email: {type: String, required: [true, "Please Enter Your Email"], unique: true,
+    validate: [validator.isEmail, "Please Enter a valid Email"], 
   },
+  password: {
+    type: String,
+    required: [true, "Please Enter Your Password"],
+    minLength: [8, "Password should have more than 4 characters"],
+    select: false
+  },
+   avatar: { public_id: {type: String, required: false},
+    url: { type: String, required: false},
+  }, 
+  role: {type: String,default: "user"},
+  createdAt: {type: Date, default: Date.now},
   resetPasswordToken: String,
   resetPasswordExpire: Date,
-},
-{timestamps: true});
-
-UserSchema.pre("save", async (next) => {
-    bcrypt.genSalt(10, function (err, salt) { 
-        this.password = bcrypt.hash(this.password, salt, function (err, hash) {
-          next();
-        });
-    });
 });
 
-UserSchema.methods.compare = async (password, match) => {
-  return await bcrypt.compare(password, match); 
+userSchema.pre("save", async (next) => {
+  if (this.isModified("password") === false) next();
+  this.password = await bcrypt.hash(this.password, 10); 
+});
+
+userSchema.methods.getJWTToken = () => {
+  return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRE});
 };
 
-UserSchema.methods.getRESETToken = () => {
-      const reset_token = crypto.randomBytes(20).toString("hex"); 
+userSchema.methods.compare = async (password) => {
+  return await bcrypt.compare(password, this.password);
+};
 
-      this.reset_token = crypto
-        .createHash("sha256")
-        .update(resetPassToken)
-        .toString("hex");
-      
-      this.resetPasswordExpire = Date.now() + 15 * 60 * 1000; 
-      return reset_token;
-    };
+userSchema.methods.getResetPasswordToken = () => {
+  const resetPassToken = crypto.randomBytes(20).toString("hex");
 
-const UserModel = mongoose.model("users", UserSchema)
-module.exports = UserModel;
+  this.resetPasswordToken = crypto.createHash("sha256").update(resetPassToken).toString("hex");
+  this.resetPasswordExpire = Date.now() + 15 * 60 * 1000; 
+
+  return resetPassToken;
+};
+
+const userModel = mongoose.model("users", userSchema);
+module.exports = userModel;

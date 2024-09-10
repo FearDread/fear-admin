@@ -34,7 +34,26 @@ function ProductList() {
   const [ toggle, setToggle ] = useState(false);
   const { error, products, loading, isDeleted } = useSelector((state) => state.product);
 
-  let dataTable = [];
+  const displayProducts = (products) => {
+    let dataTable = [];
+
+    if (products && products.length > 0) {
+      products.map((item, key) => {
+        dataTable.push({
+          avatar: (
+            <img 
+              src={item.images[0] ? item.images[0].url : ''} 
+              className="avatar"/>),
+          name: item.name,
+          category: item.category,
+          price: "$" + item.price,
+          stock: item.Stock,
+          info: item.info
+        })
+      });
+    }
+    return dataTable;
+  }
 
   useEffect(() => {
     if (isDeleted) {
@@ -43,6 +62,10 @@ function ProductList() {
     dispatch(getAdminProducts());
 
   }, [dispatch]);
+
+  useEffect(() => {
+    displayProducts(products);
+  }, [products, error]);
 
   const deleteProductHandler = (id) => {
     dispatch(deleteProduct(id));
@@ -59,21 +82,6 @@ function ProductList() {
       window.removeEventListener("resize", handleResize);
     };
   }, [toggle]);
-
-  products.map((item, key) => {
-    dataTable.push({
-      avatar: (
-        <img 
-          src={item.images[0] ? item.images[0].url : ''} 
-          className="avatar"
-      />),
-      name: item.name,
-      category: item.category,
-      price: "$" + item.price,
-      stock: item.Stock,
-      info: item.info
-    })
-  })
 
   return (
     <>
@@ -93,7 +101,7 @@ function ProductList() {
                 </CardHeader>
                 <CardBody>
                 <ReactTable
-                  data={dataTable}
+                  data={displayProducts(products)}
                   filterable
                   resizable={false}
                   columns={header}

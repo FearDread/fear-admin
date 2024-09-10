@@ -17,7 +17,7 @@ export function login(email, password) {
         { email, password },
         config
       );
-        console.log('res =' , response)
+      console.log('res =' , response)
       storage.set("user", response.data.user);
       dispatch({ type: actionTypes.LOGIN_SUCCESS, payload: response.data.user });
     } catch (error) {
@@ -49,14 +49,15 @@ export const register = (signupData) => async (dispatch) => {
     const config = {
       headers: { "Content-Type": "multipart/form-data" }};
 
-    const response = await axios.post(
+    const res = await axios.post(
       API_BASE_URL + "/user/register",
       signupData,
       config
     );
-    console.log(response);
-    storage.set("user", response.data.user);
-    dispatch({ type: actionTypes.REGISTER_USER_SUCCESS, payload: response.data.user });
+    console.log("Register USER res :: ", res);
+    storage.set("user", JSON.stringify(res.data.user));
+
+    dispatch({ type: actionTypes.REGISTER_USER_SUCCESS, payload: res.data.user });
   } catch (error) {
     dispatch({ type: actionTypes.REGISTER_USER_FAIL, payload: error });
   }

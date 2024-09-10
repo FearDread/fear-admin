@@ -1,14 +1,14 @@
 const router  = require("express").Router();
 const Product = require("../controllers/product");
-const { sync } = require("../libs/handler"); 
+const { asyncHandler } = require("../libs/handler"); 
 
-router.route("/").get( sync(Product.list) )
-router.route("/categories").get( sync(Product.categories) );
-router.route("/new").post( sync(Product.create) );
+router.route("/").get( asyncHandler(Product.list) )
+router.route("/categories").get( asyncHandler(Product.categories) );
+router.route("/new").post( asyncHandler(Product.create) );
 router.route("/:id") 
-    .get( sync(Product.read) )
-    .put( sync(Product.update) )
-    .delete( sync(Product.delete) );
+    .get( asyncHandler(Product.read) )
+    .put( asyncHandler(Product.update) )
+    .delete( asyncHandler(Product.delete) );
 
 /*
 router.route("/review").get(Product.Review.list);

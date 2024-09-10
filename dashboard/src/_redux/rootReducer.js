@@ -22,13 +22,13 @@ const rootReducer = (state, action) => {
   if (action.type === actionTypes.LOGOUT_SUCCESS) {
     state = undefined;
   }
-  /*
+  
   const user = storage.get("user");
   if ( user ) {
     state.user = user;
     state.user.isLoggedIn = true;
   }
-  */
+  
   return appReducer(state, action);
 };
 
