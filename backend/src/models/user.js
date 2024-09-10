@@ -10,13 +10,14 @@ const userSchema = new mongoose.Schema({
     maxLength: [30, "Name cannot exceed 30 characters"],
     minLength: [4, "Name should have more than 4 characters"],
   },
+  username: {type: String, required: false},
   email: {type: String, required: [true, "Please Enter Your Email"], unique: true,
     validate: [validator.isEmail, "Please Enter a valid Email"], 
   },
   password: {
     type: String,
     required: [true, "Please Enter Your Password"],
-    minLength: [8, "Password should have more than 4 characters"],
+    minLength: [8, "Password should have more than 8 characters"],
     select: false
   },
    avatar: { public_id: {type: String, required: false},
@@ -28,21 +29,21 @@ const userSchema = new mongoose.Schema({
   resetPasswordExpire: Date,
 });
 
-userSchema.pre("save", async (next) => {
+userSchema.pre("save", async function (next) {
   if (this.isModified("password") === false) next();
   this.password = await bcrypt.hash(this.password, 10); 
 });
 
-userSchema.methods.getJWTToken = () => {
+userSchema.methods.getJWTToken = function () {
   return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRE});
 };
 
-userSchema.methods.compare = async (password) => {
+userSchema.methods.compare = async function (password) {
   return await bcrypt.compare(password, this.password);
 };
 
-userSchema.methods.getResetPasswordToken = () => {
+userSchema.methods.getResetPasswordToken = function () {
   const resetPassToken = crypto.randomBytes(20).toString("hex");
 
   this.resetPasswordToken = crypto.createHash("sha256").update(resetPassToken).toString("hex");
@@ -51,5 +52,4 @@ userSchema.methods.getResetPasswordToken = () => {
   return resetPassToken;
 };
 
-const userModel = mongoose.model("users", userSchema);
-module.exports = userModel;
+module.exports = mongoose.model("users", userSchema);
