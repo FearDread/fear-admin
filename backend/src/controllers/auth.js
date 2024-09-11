@@ -18,7 +18,7 @@ const login = async (req, res, next) => {
         if (user !== null) {
           console.log('User Found :: ', user);
 
-          user.compare(password, user.password)
+          user.compare(password)
             .then((isMatch) => {
               if (!isMatch) {
                 console.log('paassword no match');

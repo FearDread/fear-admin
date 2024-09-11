@@ -52,6 +52,24 @@ exports.create = async (req, res) => {
     });
 };
 
+
+  /* Refactor to use this when cloud lib finished **
+  /*************************************************
+  cloud.upload().then((data) => {
+
+    await ProductModel.create(data.body)
+    .then((product) => {
+      res.status(200).json({ success: true, product });
+    })
+    .catch((error) => {
+      throw error;
+    });
+  })
+  .catch((err) => {
+    throw err;
+  });
+  */
+
 exports.list = async (req, res) => {
 
   await ProductModel.find()
