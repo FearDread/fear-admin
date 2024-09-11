@@ -1,6 +1,6 @@
 const cloudinary = require("cloudinary");
 
-module.exports = (req, res, next) => {
+exports.upload = async (req, res, next) => {
     let images = [];
   
     const links = [];
@@ -38,5 +38,9 @@ module.exports = (req, res, next) => {
       req.body.images = links;
     }
 
-    next(req);
+    next( req );
 }
+
+module.exports = {
+  upload, imageLinks
+};
