@@ -1,5 +1,3 @@
-
-
 const ProductModel = require("../models/product");
 const cloudinary = require("cloudinary");
 
@@ -8,31 +6,33 @@ const cloudinary = require("cloudinary");
 //exports.Review = Review;
 
 exports.create = async (req, res) => {
-  let images = []; 
-  if (req.body.images) {
+  let images = [];
+  
+  const links = [];
+  const chunks = [];
+  const chunkSize = 3;
+
+  if (req.body && req.body.images) {
     if (typeof req.body.images === "string") {
       images.push(req.body.images);
     } else {
       images = req.body.images;
     }
 
-    const imagesLinks = [];
-    const chunkSize = 3;
-    const imageChunks = [];
     while (images.length > 0) {
-      imageChunks.push(images.splice(0, chunkSize));
+      chunks.push(images.splice(0, chunkSize));
     }
-    for (let chunk of imageChunks) {
+    for (let chunk of chunks) {
       const uploadPromises = chunk.map((img) =>
         cloudinary.v2.uploader.upload(img, {
           folder: "products",
         })
       );
 
-      const results = await Promise.all(uploadPromises); // wait for all the promises to resolve and store the results in results array eg: [{}, {}, {}] 3 images uploaded successfully and their details are stored in results array
+      const results = await Promise.all(uploadPromises);
 
       for (let result of results) { 
-        imagesLinks.push({
+        links.push({
           product_id: result.public_id,
           url: result.secure_url,
         });
@@ -40,7 +40,7 @@ exports.create = async (req, res) => {
     }
 
     req.body.id = req.body.user;
-    req.body.images = imagesLinks;
+    req.body.images = links;
   }
 
   await ProductModel.create(req.body)
