@@ -1,5 +1,6 @@
 const path = require("path");
 const express = require("express");
+const cloudinary = require("cloudinary");
 
 const _loadRoutes = ( app ) => {
   const dir = "routes";
@@ -19,7 +20,7 @@ const FEAR = (( app ) => {
   const env = require("dotenv").config({ path:"backend/.env"});
   if ( !env || env.error ) throw env.error;
 
-  const cloudinary = require("cloudinary");
+  const cloud = require("./libs/cloud");
   const compression = require("compression"),
         passport = require("passport"),
         bodyParser = require("body-parser"),
@@ -31,6 +32,12 @@ const FEAR = (( app ) => {
 
   const db = require("./libs/db"),
         {parsed: _config} = env;
+        
+  cloudinary.config({
+    cloud_name: _config.CLOUDINARY_URL,
+    api_key: _config.CLOUDINARY_API_KEY,
+    api_secret: _config.CLOUDINARY_API_SECRET,
+  });
 
   app.set("PORT", 4000);
   app.use(cors({
@@ -66,6 +73,7 @@ const FEAR = (( app ) => {
   return {
     db,
     app,
+    cloud,
     env: _config,
     init: () => {},
     cluster: () => {}
