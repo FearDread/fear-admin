@@ -6,20 +6,20 @@ const cloudinary = require("cloudinary");
 //exports.Review = Review;
 
 exports.create = async (req, res) => {
-  let images = [];
+
+  const images = [];
   
   const links = [];
   const chunks = [];
   const chunkSize = 3;
 
-  if (req.body && req.body.images) {
-    if (typeof req.body.images === "string") {
+  if (typeof req.body.images === "string") {
       images.push(req.body.images);
     } else {
       images = req.body.images;
     }
 
-    while (images.length > 0) {
+    while (images && images.length > 0) {
       chunks.push(images.splice(0, chunkSize));
     }
     for (let chunk of chunks) {
@@ -31,21 +31,25 @@ exports.create = async (req, res) => {
 
       const results = await Promise.all(uploadPromises);
 
+      console.log("Cloudinary results :: ", results);
       for (let result of results) { 
         links.push({
           product_id: result.public_id,
           url: result.secure_url,
         });
       }
-    }
-
-    req.body.id = req.body.user;
-    req.body.images = links;
   }
+  
+  req.body.id = req.body.user;
+  req.body.images = links;
+
 
   await ProductModel.create(req.body)
     .then((product) => {
-      res.status(200).json({ success: true, product });
+      console.log("Product Create Response :: ", product);
+      if (product) {
+        res.status(200).json({ success: true, data:product });
+      }
     })
     .catch((error) => {
       throw error;

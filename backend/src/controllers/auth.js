@@ -20,8 +20,9 @@ const login = async (req, res, next) => {
 
           user.compare(password)
             .then((isMatch) => {
+              console.log('paassword match == ', isMatch);
               if (!isMatch) {
-                console.log('paassword no match');
+
                 //TODO:: handle incorrect password
                 // res.status(201).send({success: false, error:"Password does not match"});
               }

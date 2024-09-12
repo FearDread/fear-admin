@@ -33,7 +33,11 @@ function ProductList() {
   const history = useHistory();
   const [ toggle, setToggle ] = useState(false);
   const { error, products, loading, isDeleted } = useSelector((state) => state.product);
-
+  
+  const deleteProductHandler = (id) => {
+    dispatch(deleteProduct(id));
+  };
+  
   const displayProducts = (products) => {
     let dataTable = [];
 
@@ -62,14 +66,6 @@ function ProductList() {
     dispatch(getAdminProducts());
 
   }, [dispatch]);
-
-  useEffect(() => {
-    displayProducts(products);
-  }, [products, error]);
-
-  const deleteProductHandler = (id) => {
-    dispatch(deleteProduct(id));
-  };
 
   useEffect(() => {
     const handleResize = () => {
