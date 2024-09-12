@@ -1,83 +1,80 @@
+const fs = require("fs");
 const cloudinary = require("cloudinary");
 require("dotenv").config();
 
-module.exports = ( config ) => {
-  const props = config || {
-    CLOUDINARY_URL: process.env.CLOUDINARY_URL,
-    CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
-    CLOUDINARY_API_SECRET:process.env.CLOUDINARY_API_SERCRET
-  };w
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.API_KEY,
+  api_secret: process.env.SECRET_KEY,
+});
 
-  cloudinary.config({
-    cloud_name: props.CLOUDINARY_URL,
-    api_key: props.CLOUDINARY_API_KEY,
-    api_secret: props.CLOUDINARY_API_SECRET,
-  });
+module.exports = {
+  uploadImg: async ( fileToUploads ) => {
 
-  return {
-    avatar: async (req, res, next) => {
-      let avatar = { public_id: '', secure_url: ''};
-
-      if (req.body && req.body.avatar) {
-        
-        await cloudinary.v2.uploader.upload(req.body.avatar, {
-          folder: "avatars",
-          width: 150,
-          crop: "scale",
-        })
-        .then((myCloud) => {
-          avatar.public_id = myCloud.public_id;
-          avatar.secure_url = myCloud.secure_url;
-
-          return avatar;
-        })
-        .catch((err) => {
-          console.log("Error uploading avatar:: ", err);
-          next();
-        });
-      }
-
-      return avatar;
-    },
-    product: async (req, res, next) => {
-      let images = [];
-  
-      const links = [];
-      const chunks = [];
-      const chunkSize = 3;
-    
-      if (req.body && req.body.images) {
-        if (typeof req.body.images === "string") {
-          images.push(req.body.images);
-        } else {
-          images = req.body.images;
-        }
-    
-        while (images.length > 0) {
-          chunks.push(images.splice(0, chunkSize));
-        }
-        for (let chunk of chunks) {
-          const uploadPromises = chunk.map((img) =>
-            cloudinary.v2.uploader.upload(img, {
-              folder: "products",
-            })
-          );
-    
-          const results = await Promise.all(uploadPromises);
-    
-          for (let result of results) { 
-            links.push({
-              product_id: result.public_id,
-              url: result.secure_url,
-            });
+    return new Promise((resolve) => {
+      cloudinary.uploader.upload(fileToUploads, (result) => {
+        resolve({
+            url: result.secure_url,
+            asset_id: result.asset_id,
+            public_id: result.public_id,
+          },
+          {resource_type: "auto"}
+        );
+      });
+    });
+  },
+  deleteImg: async (file) => {
+    return new Promise((resolve) => {
+      cloudinary.uploader.destroy(fileToDelete, (result) => {
+        resolve(
+          {
+            url: result.secure_url,
+            asset_id: result.asset_id,
+            public_id: result.public_id,
+          },
+          {
+            resource_type: "auto",
           }
-        }
-    
-        req.body.id = req.body.user;
-        req.body.images = links;
+        );
+      });
+    });
+  },
+  send: async (req, res) => {
+    try {
+      const uploader = (path) => this.uploadImg(path, "images");
+
+      const urls = [];
+      const files = req.files;
+
+      for (const file of files) {
+        const { path } = file;
+        const newpath = await uploader(path);
+        
+        console.log(newpath);
+        urls.push(newpath);
+        fs.unlinkSync(path);
       }
-  
-      next();
+      const images = urls.map((file) => {
+        return file;
+      });
+
+      res.json(images);
+
+    } catch (error) {
+      console.log("Cloudinary Error :: ", error);
+      throw new Error(error);
+    }
+  },
+  remove: async (req, res) => {
+    const { id } = req.params;
+
+    try {
+      const deleted = this.deleteImg(id, "images");
+      res.json({ message: "Deleted" });
+    
+    } catch (error) {
+      console.log("Cloudinary Error :: ", error);
+      throw new Error(error);
     }
   }
 }
