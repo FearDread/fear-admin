@@ -1,6 +1,5 @@
 const path = require("path");
 const express = require("express");
-const cloudinary = require("cloudinary");
 
 const _loadRoutes = ( app ) => {
   const dir = "routes";
@@ -33,12 +32,6 @@ const FEAR = (( app ) => {
   const db = require("./libs/db"),
         {parsed: _config} = env;
         
-  cloudinary.config({
-    cloud_name: _config.CLOUDINARY_URL,
-    api_key: _config.CLOUDINARY_API_KEY,
-    api_secret: _config.CLOUDINARY_API_SECRET,
-  });
-
   app.set("PORT", 4000);
   app.use(cors({
       origin: ["http://localhost:4000", "http://fear.master.com:4000", "http://localhost:4001"],
