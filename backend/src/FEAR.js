@@ -58,12 +58,6 @@ const FEAR = (( app ) => {
 
   app = _loadRoutes(app);
 
-  cloudinary.config({
-    cloud_name: _config.CLOUDINARY_URL,
-    api_key: _config.CLOUDINARY_API_KEY,
-    api_secret: _config.CLOUDINARY_API_SECRET,
-  });
-
   app.use(express.static(path.join(__dirname1, "/dashboard/build")));
   app.get("*", (req, res) =>
     res.sendFile(path.resolve(__dirname1, "dashboard", "build", "index.html"))

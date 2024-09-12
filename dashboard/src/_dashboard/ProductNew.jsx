@@ -89,7 +89,7 @@ function NewProduct() {
   const createProductSubmitHandler = (e) => {
     e.preventDefault();
     
-    const myForm = new FormData(e.target);
+    const myForm = new FormData();
           
     myForm.set("name", name);
     myForm.set("price", price);
@@ -104,7 +104,7 @@ function NewProduct() {
     
     myForm.set("user", user._id);
     
-    console.log('product for data ::', myForm);
+    console.log('product for data ::', myForm.getAll());
     dispatch(createProduct(myForm));
   };
 
@@ -251,13 +251,16 @@ function NewProduct() {
                         </Col>
                       </Row>
                     </CardBody>
-                  <FormGroup>
+
+                
                 <CardHeader>
                   <CardTitle tag="h4">Drag or click here to add Images!</CardTitle>
                 </CardHeader>
+                
                 <CardBody>
                   <Row>
                   <Col>
+                
                   <div class="form-group">
                     <label class="control-label">Upload File</label>
                          <div class="preview-zone hidden">
@@ -278,6 +281,7 @@ function NewProduct() {
                 <Input type="file" name="img_logo" class="dropzone" />
                 </div>
                 </div>
+
                   <Input
                           type="file"
                           accept="image/*"
@@ -304,21 +308,20 @@ function NewProduct() {
                           
                         </Button>
                         <br />
-
+                                }
+                  <ImageUpload />
                   </Col>
                   </Row>
-
-                </CardBody>
-
-                </FormGroup> 
-                <Button
-                  onClick={createProductSubmitHandler}
+                  <Button
+                      onClick={createProductSubmitHandler}
                           variant="contained"
                           type="submit"
                           disabled={loading ? true : false}
                         >
                           SUBMIT PRODUCT
-                    </Button> 
+                  </Button> 
+                </CardBody>
+    
                 </Card>
                 </Form>
               </Col>
