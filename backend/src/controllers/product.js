@@ -18,32 +18,51 @@ exports.create = async (req, res) => {
   } else {
     images = req.body.images;
   }
+  console.log('Create Product data ::', req.body);
 
   while (images && images.length > 0) {
     chunks.push(images.splice(0, chunkSize));
+
   }
-  
+
+  for (let image of images) {
+    const uploadPromises = image.map((key, img) =>
+      cloudinary.v2.uploader.upload(img, {
+        folder: "products",
+      })
+    );
+    
+    await Promise.all(uploadPromises)
+      .then((results) => {
+        for (let result of results) { 
+          links.push({
+            product_id: result.public_id,
+            url: result.secure_url,
+          });
+        }
+        
+        req.body.images = links;
+        req.body.id = req.body.user;
+        
+        console.log("Updated Product Data ::", req.body);
+      })
+      .catch((err) => {
+        console.log("Cloudinary err ::", err);
+        throw err;
+      });
+    console.log("Cloudinary results :: ", results);
+
+  }
+
+  /*
   for (let chunk of chunks) {
       const uploadPromises = chunk.map((img) =>
         cloudinary.v2.uploader.upload(img, {
           folder: "products",
         })
       );
-
-    const results = await Promise.all(uploadPromises);
-
-    console.log("Cloudinary results :: ", results);
-    for (let result of results) { 
-      links.push({
-        product_id: result.public_id,
-        url: result.secure_url,
-      });
-    }
   }
-  
-  req.body.id = req.body.user;
-  req.body.images = links;
-
+  */
 
   await ProductModel.create(req.body)
     .then((product) => {
@@ -58,13 +77,13 @@ exports.create = async (req, res) => {
 };
 
 
-  /* Refactor to use this when cloud lib finished **
-  /*************************************************
+  /* Refactor t  /*************************************************
   cloud.upload().then((data) => {
 
     await ProductModel.create(data.body)
     .then((product) => {
-      res.status(200).json({ success: true, product });
+      res.sto use this when cloud lib finished **
+atus(200).json({ success: true, product });
     })
     .catch((error) => {
       throw error;
