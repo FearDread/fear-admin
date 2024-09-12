@@ -81,10 +81,3 @@ module.exports = ( config ) => {
     }
   }
 }
-exports.upload = async (req, res, next) => {
-
-}
-
-module.exports = {
-  upload, imageLinks
-};
