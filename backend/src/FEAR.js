@@ -39,6 +39,7 @@ const FEAR = (( app ) => {
       allowedHeaders: ["Content-Type", "Authorization", "Access-Control-Allow-Origin"]
   }));
 
+  app.use(express.json());
   app.use(helmet());
   app.use(compression());
   app.use(fileUpload());

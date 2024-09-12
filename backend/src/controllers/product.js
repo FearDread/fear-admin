@@ -6,64 +6,44 @@ const cloudinary = require("cloudinary");
 //exports.Review = Review;
 
 exports.create = async (req, res) => {
+  let images = []; 
 
-  let images = [];
-  
-  const links = [];
-  const chunks = [];
-  const chunkSize = 3;
+  if (req.body.images) {
+    if (typeof req.body.images === "string") {
+      images.push(req.body.images);
+    } else {
+      images = req.body.images;
+    }
 
-  if (typeof req.body.images === "string") {
-    images.push(req.body.images);
-  } else {
-    images = req.body.images;
-  }
-  console.log('Create Product data ::', req.body);
-
-  while (images && images.length > 0) {
-    chunks.push(images.splice(0, chunkSize));
-
-  }
-
-  for (let image of images) {
-    const uploadPromises = image.map((key, img) =>
-      cloudinary.v2.uploader.upload(img, {
-        folder: "products",
-      })
-    );
+    const imagesLinks = [];
+    const chunkSize = 3;
+    const imageChunks = [];
     
-    await Promise.all(uploadPromises)
-      .then((results) => {
-        for (let result of results) { 
-          links.push({
-            product_id: result.public_id,
-            url: result.secure_url,
-          });
-        }
-        
-        req.body.images = links;
-        req.body.id = req.body.user;
-        
-        console.log("Updated Product Data ::", req.body);
-      })
-      .catch((err) => {
-        console.log("Cloudinary err ::", err);
-        throw err;
-      });
-    console.log("Cloudinary results :: ", results);
-
-  }
-
-  /*
-  for (let chunk of chunks) {
+    while (images.length > 0) {
+      imageChunks.push(images.splice(0, chunkSize));
+    }
+    // Upload images in separate requests. for loop will run 3 times if there are 9 images to upload each time uploading 3 images at a time
+    for (let chunk of imageChunks) {
       const uploadPromises = chunk.map((img) =>
         cloudinary.v2.uploader.upload(img, {
-          folder: "products",
+          folder: "Products",
         })
       );
-  }
-  */
 
+      const results = await Promise.all(uploadPromises); // wait for all the promises to resolve and store the results in results array eg: [{}, {}, {}] 3 images uploaded successfully and their details are stored in results array
+
+      for (let result of results) { 
+        imagesLinks.push({
+          product_id: result.public_id,
+          url: result.secure_url,
+        });
+      }
+    }
+
+    req.body.user = req.user.id;
+    req.body.images = imagesLinks;
+  }
+    
   await ProductModel.create(req.body)
     .then((product) => {
       console.log("Product Create Response :: ", product);
