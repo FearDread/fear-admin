@@ -6,7 +6,7 @@ require("dotenv").config();
 (async () => {
 
     cloudinary.config({
-        cloud_name: FEAR.env.CLOUDINARY_URL,
+        cloud_name: FEAR.env.CLOUDINARY_NAME,
         api_key: FEAR.env.CLOUDINARY_API_KEY,
         api_secret: FEAR.env.CLOUDINARY_API_SECRET
     });

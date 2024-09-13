@@ -1,15 +1,6 @@
 const jwt = require("jsonwebtoken")
 const UserModel = require('../models/user');
 
-const getJWTToken = (user) => {
-  const token = jwt.sign({
-      exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24,
-      id: user._id,
-    }, process.env.JWT_SECRET);
-
-  return token;
-}
-
 const login = async (req, res, next) => {
     const { email, password } = req.body;
 
@@ -45,4 +36,4 @@ const logout = async (req, res) => {
     .status(200).json({ success: true, message: "User logged out",});
   };
 
-module.exports = { login, logout, getJWTToken };
+module.exports = { login, logout };
