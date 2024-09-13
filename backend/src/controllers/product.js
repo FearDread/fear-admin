@@ -1,6 +1,6 @@
 const ProductModel = require("../models/product");
 const cloudinary = require("cloudinary");
-
+const cloud = require("../libs/cloud");
 /* Product CRUD methods */
 /* -------------------- */
 //exports.Review = Review;
@@ -14,36 +14,12 @@ exports.create = async (req, res) => {
     } else {
       images = req.body.images;
     }
-
-    const imagesLinks = [];
-    const chunkSize = 3;
-    const imageChunks = [];
-    
-    while (images.length > 0) {
-      imageChunks.push(images.splice(0, chunkSize));
-    }
-    // Upload images in separate requests. for loop will run 3 times if there are 9 images to upload each time uploading 3 images at a time
-    for (let chunk of imageChunks) {
-      const uploadPromises = chunk.map((img) =>
-        cloudinary.v2.uploader.upload(img, {
-          folder: "Products",
-        })
-      );
-
-      const results = await Promise.all(uploadPromises); // wait for all the promises to resolve and store the results in results array eg: [{}, {}, {}] 3 images uploaded successfully and their details are stored in results array
-
-      for (let result of results) { 
-        imagesLinks.push({
-          product_id: result.public_id,
-          url: result.secure_url,
-        });
-      }
-    }
-
-    req.body.user = req.user.id;
-    req.body.images = imagesLinks;
+  
+    const imageLinks = cloud.upload(images);
+    req.body.images = imageLinks;
   }
-    
+  req.body.user = req.user.id;
+  console.log("product data ::", req.body);
   await ProductModel.create(req.body)
     .then((product) => {
       console.log("Product Create Response :: ", product);
