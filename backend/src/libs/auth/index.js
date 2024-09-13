@@ -1,7 +1,6 @@
-const User = require("../../models/userModel");
-const passport = require("passport");
+const User = require("../../models/user");
 const jwt = require("jsonwebtoken");
-const { asyncHandler } = require("../handler");
+
 
 exports.authenticate = async (req, res, next) => {
   let token;
@@ -43,5 +42,3 @@ exports.isAdmin = async (req, res, next) => {
     next();
   }
 }
-
-module.exports = { authenticate, getJWTToken, isAdmin };
