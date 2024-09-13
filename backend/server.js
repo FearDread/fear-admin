@@ -1,25 +1,32 @@
 
 const FEAR = require("./src/FEAR");
-const cloudinary = require("cloudinary");
 require("dotenv").config();
 
 (async () => {
-
-    cloudinary.config({
-        cloud_name: FEAR.env.CLOUDINARY_NAME,
-        api_key: FEAR.env.CLOUDINARY_API_KEY,
-        api_secret: FEAR.env.CLOUDINARY_API_SECRET
-    });
 
     async function start() {
         console.log("Starting FEAR");
         const port = FEAR.app.get("PORT");
         
         FEAR.db.run( FEAR.env, () => {
-            FEAR.app.listen( port, (err) => {
+            
+            const server = FEAR.app.listen( port, (err) => {
                 if ( err ) return;
                 console.log(`FEAR API Initialized :: Port ${port}`);
             });
+
+            process.on("uncaughtException" , (err) => {
+                console.log(`Server Error , ${err.message}`);
+                process.exit(1);
+            });
+
+            process.on("unhandledRejection" , (err) => { 
+                console.log(`Promise Error : ${err.message}`);
+                
+                server.close(() => {
+                    process.exit(1);
+                })
+            })
         });
     }
 

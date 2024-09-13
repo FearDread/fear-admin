@@ -1,5 +1,5 @@
 const crypto = require("crypto");
-const {getJWTToken} = require("./auth");
+const auth = require("../libs/auth");
 const cloudinary = require("cloudinary");
 const UserModel = require('../models/user');
 
@@ -8,18 +8,14 @@ const UserModel = require('../models/user');
 exports.read = async (req, res) => {
   console.log("readUser :: CALLED");
 
-  await UserModel.findById(req.params.id)
-    .then((user) => {
+  await UserModel.findById(req.params.id).then((user) => {
       res.status(200).send({ success: true, user });
-    })
-    .catch((error) => {
+    }).catch((error) => {
       throw error;
     });
 };
 
 exports.create = async (req, res) => {
-  // TODO: make sure username is uniuqe and has no white spaces, only _, - , . , etc..
-  const { name, username, email, password } = req.body;
   let myCloud = { public_id: '', secure_url: ''};
 
   if (req.body && req.body.avatar) {
@@ -28,37 +24,31 @@ exports.create = async (req, res) => {
       width: 150,
       crop: "scale",
     });
+    req.body.avatar = {
+      public_id: myCloud.public_id,
+      url: myCloud.secure_url
+    }
   }
 
-  await UserModel.create({
-    name, username: username || name, email, password,
-    avatar: {
-      public_id: myCloud.public_id,
-      url: myCloud.secure_url,
-    }})
-    .then((user) => {
+  await UserModel.create(req.body).then((user) => {
       if (user) {
         console.log("User Created  ::", user);
-        res.status(201).send({ user, success: true, token: getJWTToken(user) })
-      } else {
-        res.status(500).send({success: false, error:"Unable to create user..."});
+        res.status(200).send({ user, success: true, token: auth.getJWTToken(user) })
       }
-    })
-    .catch((error) => {
-       throw error;
+      res.status(500).send({success: false, error:"Unable to create user..."});
+    }).catch((error) => {
+       throw new Error;
     });
 };
 
 exports.list = async (req, res, next) => {
-  await UserModel.find({})
-    .then((users) => {
+  await UserModel.find({}).then((users) => {
       if (users && users.length > 0) {
         res.status(201).send({ success: true, users });
       } else {
         res.sttaus(500).send({success: false, users:[], error: "No Users Found"});
       }
-    })
-    .catch((error) => {
+    }).catch((error) => {
       throw error;
     }
   );
@@ -102,9 +92,6 @@ exports.update = async (req, res, next) => {
   });
 };
 
-/* Admin User Methods */
-/* ------------------ */
-
 exports.delete = async (req, res, next) => {
   await UserModel.findById(req.params.id)
     .then((user) => {
@@ -140,7 +127,6 @@ exports.updateRole = async (req, res, next) => {
       //dbError(res, error);
     });
 };
-
 
 /* Password Methods ( reset, forgot, update ) */
 /* ------------------------------------------ */
