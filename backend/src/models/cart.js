@@ -1,30 +1,33 @@
-const mongoose = require("mongoose");
-const CartSchema = mongoose.Schema({
-   user_id: {
-      type: mongoose.Types.ObjectId,
-      ref: "user",
-      required: [true, "no user id provided"],
-   },
-   products: [
-      {
-         product_id: {
-            type: mongoose.Types.ObjectId,
-            ref: "products",
-         },
-         quantity: {
-            type: Number,
-            default: 1,
-         },
-         created_at: {
-            type: Date,
-            default: Date.now,
-         },
-      },
-   ],
-   count: {
+const mongoose = require("mongoose"); // Erase if already required
+
+// Declare the Schema of the Mongo model
+var cartSchema = new mongoose.Schema(
+  {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    productId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Product",
+    },
+    quantity: {
       type: Number,
-      default: 0,
-   },
-});
-const Cart = mongoose.model("cart", CartSchema);
-module.exports = Cart;
+      required: true,
+    },
+    price: {
+      type: Number,
+      required: true,
+    },
+    color: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Color",
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+//Export the model
+module.exports = mongoose.model("Cart", cartSchema);

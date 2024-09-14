@@ -5,12 +5,10 @@ require("dotenv").config();
 (async () => {
 
     async function start() {
-        console.log("Starting FEAR");
         const port = FEAR.app.get("PORT");
         
         FEAR.db.run( FEAR.env, () => {
-            
-            const server = FEAR.app.listen( port, (err) => {
+            FEAR.app.listen( port, (err) => {
                 if ( err ) return;
                 console.log(`FEAR API Initialized :: Port ${port}`);
             });
@@ -23,7 +21,7 @@ require("dotenv").config();
             process.on("unhandledRejection" , (err) => { 
                 console.log(`Promise Error : ${err.message}`);
                 
-                server.close(() => {
+                FEAR.app.close(() => {
                     process.exit(1);
                 })
             })

@@ -2,24 +2,22 @@ const User = require("../../models/user");
 const jwt = require("jsonwebtoken");
 
 
-exports.authenticate = async (req, res, next) => {
+exports.isAuthorized = async (req, res, next) => {
   let token;
   if (req?.headers?.authorization?.startsWith("Bearer")) {
     token = req.headers.authorization.split(" ")[1];
 
-    try {
       if (token) {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        // console.log(decoded);
-        const user = await User.findById(decoded?.id);
-        req.user = user;
-        next();
+        
+        await User.findById(decoded?.id)
+          .then((user) => { req.user = user; next();})
+          .catch((error) => {
+            throw new Error("Could not verify Token");
+        });
       }
-    } catch (error) {
-      throw new Error("Not Authorized token expired,Please Login again");
-    }
   } else {
-    throw new Error("THere is no token attached to header");
+    throw new Error("There is no token attached to header");
   }
 }
 

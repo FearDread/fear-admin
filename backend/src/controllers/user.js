@@ -1,227 +1,625 @@
+const User = require("../models/userModel");
+const Product = require("../models/productModel");
+const Cart = require("../models/cartModel");
+const Coupon = require("../models/couponModel");
+const Order = require("../models/orderModel");
+const uniqid = require("uniqid");
+
+const asyncHandler = require("express-async-handler");
+const { generateToken } = require("../config/jwtToken");
+const validateMongoDbId = require("../utils/validateMongodbId");
+const { generateRefreshToken } = require("../config/refreshtoken");
 const crypto = require("crypto");
-const auth = require("../libs/auth");
-const cloudinary = require("cloudinary");
-const UserModel = require('../models/user');
+const jwt = require("jsonwebtoken");
+const sendEmail = require("./email");
+const { createPasswordResetToken } = require("../models/userModel");
 
-/* User CRUD methods */
-/* -------------------- */
-exports.read = async (req, res) => {
-  console.log("readUser :: CALLED");
+// Create a User ----------------------------------------------
 
-  await UserModel.findById(req.params.id).then((user) => {
-      res.status(200).send({ success: true, user });
-    }).catch((error) => {
-      throw error;
-    });
-};
+const createUser = asyncHandler(async (req, res) => {
+  /**
+   * TODO:Get the email from req.body
+   */
+  const email = req.body.email;
+  /**
+   * TODO:With the help of email find the user exists or not
+   */
+  const findUser = await User.findOne({ email: email });
 
-exports.create = async (req, res) => {
-  let myCloud = { public_id: '', secure_url: ''};
-
-  if (req.body && req.body.avatar) {
-    myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
-      folder: "avatars",
-      width: 150,
-      crop: "scale",
-    });
-    req.body.avatar = {
-      public_id: myCloud.public_id,
-      url: myCloud.secure_url
-    }
-  }
-
-  await UserModel.create(req.body).then((user) => {
-      if (user) {
-        console.log("User Created  ::", user);
-        res.status(200).send({ user, success: true, token: auth.getJWTToken(user) })
-      }
-      res.status(500).send({success: false, error:"Unable to create user..."});
-    }).catch((error) => {
-       throw new Error;
-    });
-};
-
-exports.list = async (req, res, next) => {
-  await UserModel.find({}).then((users) => {
-      if (users && users.length > 0) {
-        res.status(201).send({ success: true, users });
-      } else {
-        res.sttaus(500).send({success: false, users:[], error: "No Users Found"});
-      }
-    }).catch((error) => {
-      throw error;
-    }
-  );
-};
-
-exports.update = async (req, res, next) => {
-  // object with user new data
-  const newUser = {};
-
-  if (req.body.avatar !== "") {
-    const user = await UserModel.findById(req.user.id);
-    const imageId = user.avatar.public_id;
-
-    await cloudinary.v2.uploader.destroy(imageId);
-    const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
-      folder: "Avatar",
-      width: 150,
-      crop: "scale",
-    });
-
-    newUserData.avatar = {
-      public_id: myCloud.public_id,
-      url: myCloud.secure_url,
-    };
-  }
-  newUser.name = req.body.name;
-  newUser.email = req.body.email;
-
-  // set new value of user
-  await User.findByIdAndUpdate(req.user.id, newUserData, {
-    new: true,
-    runValidators: true,
-    useFindAndModify: false,
-  })
-  .then((user) => {
-    user.save();
-    res.status(200).json({ success: true, user});
-  })
-  .catch((error) => {
-    DataError(res, error);
-  });
-};
-
-exports.delete = async (req, res, next) => {
-  await UserModel.findById(req.params.id)
-    .then((user) => {
-      const imageId = user.avatar.public_id;
-      cloudinary.v2.uploader.destroy(imageId);
-
-      user.remove();
-      res.status(200).send({ success: true });
-    }).catch((error) => {
-      DataError(res, error);
-    })
-};
-
-exports.updateRole = async (req, res, next) => {
-  const newUserData = {
-    name: req.body.name,
-    email: req.body.email,
-    role: req.body.role,
-  };
-
-  await UserModel.findByIdAndUpdate(req.params.id, newUserData, {
-      new: true,
-      runValidators: true,
-      useFindAndModify: false,
-    })
-    .then((user) => {
-      res.status(200).json({
-        success: true,
-        user: user
-      });
-    })
-    .catch((error) => {
-      //dbError(res, error);
-    });
-};
-
-/* Password Methods ( reset, forgot, update ) */
-/* ------------------------------------------ */
-exports.forgotPassword = async (req, res, next) => {
-  const user = await User.findOne({ email: req.body.email });
-
-  if (!user) {
-   // return next(new AppError("User not found", 404));
-  }
-
-  // Get ResetPassword Token
-  const resetToken = user.getResetPasswordToken();
-  await user.save({ validateBeforeSave: false });
-
-  let resetPasswordUrl = "";
-
-  const isLocal = req.hostname === "localhost" || req.hostname === "127.0.0.1";
-  if (isLocal) {
-    resetPasswordUrl = `${process.env.FRONTEND_URL}/password/reset/${resetToken}`;
+  if (!findUser) {
+    /**
+     * TODO:if user not found user create a new user
+     */
+    const newUser = await User.create(req.body);
+    res.json(newUser);
   } else {
-    resetPasswordUrl = `${req.protocol}://${req.get(
-      "host"
-    )}/password/reset/${resetToken}`;
+    /**
+     * TODO:if user found then thow an error: User already exists
+     */
+    throw new Error("User Already Exists");
   }
+});
 
-  const message = `Your password reset token is :- \n\n ${resetPasswordUrl} \n\nIf you have not requested this email then, please ignore it.`;
-  /*
-  try {
-    await sendEmail({
-      email: user.email,
-      subject: `Ecommerce Password Recovery`,
-      message,
+// Login a user
+const loginUserCtrl = asyncHandler(async (req, res) => {
+  const { email, password } = req.body;
+  // check if user exists or not
+  const findUser = await User.findOne({ email });
+  if (findUser && (await findUser.isPasswordMatched(password))) {
+    const refreshToken = await generateRefreshToken(findUser?._id);
+    const updateuser = await User.findByIdAndUpdate(
+      findUser.id,
+      {
+        refreshToken: refreshToken,
+      },
+      { new: true }
+    );
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      maxAge: 72 * 60 * 60 * 1000,
     });
+    res.json({
+      _id: findUser?._id,
+      firstname: findUser?.firstname,
+      lastname: findUser?.lastname,
+      email: findUser?.email,
+      mobile: findUser?.mobile,
+      token: generateToken(findUser?._id),
+    });
+  } else {
+    throw new Error("Invalid Credentials");
+  }
+});
 
-    res.status(200).json({
-      success: true,
-      message: `Email sent to ${user.email} successfully`,
+// admin login
+
+const loginAdmin = asyncHandler(async (req, res) => {
+  const { email, password } = req.body;
+  // check if user exists or not
+  const findAdmin = await User.findOne({ email });
+  if (findAdmin.role !== "admin") throw new Error("Not Authorised");
+  if (findAdmin && (await findAdmin.isPasswordMatched(password))) {
+    const refreshToken = await generateRefreshToken(findAdmin?._id);
+    const updateuser = await User.findByIdAndUpdate(
+      findAdmin.id,
+      {
+        refreshToken: refreshToken,
+      },
+      { new: true }
+    );
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      maxAge: 72 * 60 * 60 * 1000,
+    });
+    res.json({
+      _id: findAdmin?._id,
+      firstname: findAdmin?.firstname,
+      lastname: findAdmin?.lastname,
+      email: findAdmin?.email,
+      mobile: findAdmin?.mobile,
+      token: generateToken(findAdmin?._id),
+    });
+  } else {
+    throw new Error("Invalid Credentials");
+  }
+});
+
+// handle refresh token
+
+const handleRefreshToken = asyncHandler(async (req, res) => {
+  const cookie = req.cookies;
+  if (!cookie?.refreshToken) throw new Error("No Refresh Token in Cookies");
+  const refreshToken = cookie.refreshToken;
+  const user = await User.findOne({ refreshToken });
+  if (!user) throw new Error(" No Refresh token present in db or not matched");
+  jwt.verify(refreshToken, process.env.JWT_SECRET, (err, decoded) => {
+    if (err || user.id !== decoded.id) {
+      throw new Error("There is something wrong with refresh token");
+    }
+    const accessToken = generateToken(user?._id);
+    res.json({ accessToken });
+  });
+});
+
+// logout functionality
+
+const logout = asyncHandler(async (req, res) => {
+  const cookie = req.cookies;
+  if (!cookie?.refreshToken) throw new Error("No Refresh Token in Cookies");
+  const refreshToken = cookie.refreshToken;
+  const user = await User.findOne({ refreshToken });
+  if (!user) {
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: true,
+    });
+    return res.sendStatus(204); // forbidden
+  }
+  await User.findOneAndUpdate(refreshToken, {
+    refreshToken: "",
+  });
+  res.clearCookie("refreshToken", {
+    httpOnly: true,
+    secure: true,
+  });
+  res.sendStatus(204); // forbidden
+});
+
+// Update a user
+
+const updatedUser = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  validateMongoDbId(_id);
+
+  try {
+    const updatedUser = await User.findByIdAndUpdate(
+      _id,
+      {
+        firstname: req?.body?.firstname,
+        lastname: req?.body?.lastname,
+        email: req?.body?.email,
+        mobile: req?.body?.mobile,
+      },
+      {
+        new: true,
+      }
+    );
+    res.json(updatedUser);
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
+// save user Address
+
+const saveAddress = asyncHandler(async (req, res, next) => {
+  const { _id } = req.user;
+  validateMongoDbId(_id);
+
+  try {
+    const updatedUser = await User.findByIdAndUpdate(
+      _id,
+      {
+        address: req?.body?.address,
+      },
+      {
+        new: true,
+      }
+    );
+    res.json(updatedUser);
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
+// Get all users
+
+const getallUser = asyncHandler(async (req, res) => {
+  try {
+    const getUsers = await User.find().populate("wishlist");
+    res.json(getUsers);
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
+// Get a single user
+
+const getaUser = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  validateMongoDbId(id);
+
+  try {
+    const getaUser = await User.findById(id);
+    res.json({
+      getaUser,
     });
   } catch (error) {
-    // if there any Error then  user.resetPasswordToken and user.resetPasswordExpire has value saved already then undefined both od them for fresh value if user want to try again
-    user.resetPasswordToken = undefined;
-    user.resetPasswordExpire = undefined;
-
-    await user.save({ validateBeforeSave: false });
-    //return next(new AppError(error.message, 500));
+    throw new Error(error);
   }
-      */
-};
+});
 
-exports.resetPassword = async (req, res, next) => {
-  if (req.body.password !== req.body.confirmPassword) {
-    //return next(new AppError("Password does not equal to confirmPassword", 400));
-  }
-  if (!req.params.token) {
-    //return next(new AppError("Reset Password Token is invalid or has been expired", 400));
-  }
+// Get a single user
 
-  const resetPasswordToken = crypto
-    .createHash("sha256")
-    .update(req.params.token)
-    .toString("hex");
+const deleteaUser = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  validateMongoDbId(id);
 
-  await UserModel.findOne({
-    resetPasswordToken,
-    resetPasswordExpire: { $gt: Date.now() }})
-    .then((user) => {
-      user.password = req.body.password;
-      user.resetPasswordToken = undefined;
-      user.resetPasswordExpire = undefined;   
-      user.save();
-
-      Auth.sendJWTToken(updated, 200, res);
-    }).catch((error) => {
-      //dbError(res, error);
+  try {
+    const deleteaUser = await User.findByIdAndDelete(id);
+    res.json({
+      deleteaUser,
     });
-};
-
-exports.updatePassword = async (req, res, next) => {
-  if (req.body.newPassword !== req.body.confirmPassword) {
-    //return next(new AppError("password does not match", 400));
+  } catch (error) {
+    throw new Error(error);
   }
+});
 
-  await UserModel.findById(req.user.id)
-    .select("+password")
-    .then((user) => {
-      const isPasswordMatched = user.compare(req.body.oldPassword);
-      if (!isPasswordMatched) {
-       // return next(new AppError("Old password is incorrect", 400));
+const blockUser = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  validateMongoDbId(id);
+
+  try {
+    const blockusr = await User.findByIdAndUpdate(
+      id,
+      {
+        isBlocked: true,
+      },
+      {
+        new: true,
       }
+    );
+    res.json(blockusr);
+  } catch (error) {
+    throw new Error(error);
+  }
+});
 
-      user.password = req.body.newPassword;
-      user.save();
+const unblockUser = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  validateMongoDbId(id);
 
-      //Auth.sendJWTToken(user, 200, res);
-    }).catch((error) => {
-      //dbError(res, error);
+  try {
+    const unblock = await User.findByIdAndUpdate(
+      id,
+      {
+        isBlocked: false,
+      },
+      {
+        new: true,
+      }
+    );
+    res.json({
+      message: "User UnBlocked",
     });
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
+const updatePassword = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  const { password } = req.body;
+  validateMongoDbId(_id);
+  const user = await User.findById(_id);
+  if (password) {
+    user.password = password;
+    const updatedPassword = await user.save();
+    res.json(updatedPassword);
+  } else {
+    res.json(user);
+  }
+});
+
+const forgotPasswordToken = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+  const user = await User.findOne({ email });
+  if (!user) throw new Error("User not found with this email");
+  try {
+    const token = await user.createPasswordResetToken();
+
+    await user.save();
+    console.log(token);
+    const resetURL = `Hi, Please follow this link to reset Your Password. This link is valid till 10 minutes from now. <a href='http://localhost:3000/reset-password/${token}'>Click Here</>`;
+
+    const data = {
+      to: email,
+      text: "Hey User",
+      subject: "Forgot Password Link",
+      htm: resetURL,
+    };
+    sendEmail(data);
+    res.json(token);
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
+const resetPassword = asyncHandler(async (req, res) => {
+  const { password } = req.body;
+  const { token } = req.params;
+  const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+  const user = await User.findOne({
+    passwordResetToken: hashedToken,
+    passwordResetExpires: { $gt: Date.now() },
+  });
+  if (!user) throw new Error(" Token Expired, Please try again later");
+  user.password = password;
+  user.passwordResetToken = undefined;
+  user.passwordResetExpires = undefined;
+  await user.save();
+  res.json(user);
+});
+
+const getWishlist = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  try {
+    const findUser = await User.findById(_id).populate("wishlist");
+    res.json(findUser);
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
+const userCart = asyncHandler(async (req, res) => {
+  const { productId, color, quantity, price } = req.body;
+
+  const { _id } = req.user;
+  validateMongoDbId(_id);
+  try {
+    let newCart = await new Cart({
+      userId: _id,
+      productId,
+      color,
+      price,
+      quantity,
+    }).save();
+    res.json(newCart);
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
+const getUserCart = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  validateMongoDbId(_id);
+  try {
+    const cart = await Cart.find({ userId: _id })
+      .populate("productId")
+      .populate("color");
+    res.json(cart);
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
+const removeProductFromCart = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  const { cartItemId } = req.params;
+  validateMongoDbId(_id);
+  try {
+    const deleteProductFromcart = await Cart.deleteOne({
+      userId: _id,
+      _id: cartItemId,
+    });
+
+    res.json(deleteProductFromcart);
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
+const emptyCart = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  validateMongoDbId(_id);
+  try {
+    const deleteCart = await Cart.deleteMany({
+      userId: _id,
+    });
+
+    res.json(deleteCart);
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
+const updateProductQuantityFromCart = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  const { cartItemId, newQuantity } = req.params;
+  validateMongoDbId(_id);
+  try {
+    const cartItem = await Cart.findOne({
+      userId: _id,
+      _id: cartItemId,
+    });
+    cartItem.quantity = newQuantity;
+    cartItem.save();
+    res.json(cartItem);
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
+const createOrder = asyncHandler(async (req, res) => {
+  const {
+    shippingInfo,
+    orderItems,
+    totalPrice,
+    totalPriceAfterDiscount,
+    paymentInfo,
+  } = req.body;
+  const { _id } = req.user;
+  try {
+    const order = await Order.create({
+      shippingInfo,
+      orderItems,
+      totalPrice,
+      totalPriceAfterDiscount,
+      paymentInfo,
+      user: _id,
+    });
+    res.json({
+      order,
+      success: true,
+    });
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
+const getMyOrders = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  try {
+    const orders = await Order.find({ user: _id })
+      .populate("user")
+      .populate("orderItems.product")
+      .populate("orderItems.color");
+    res.json({
+      orders,
+    });
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
+const getAllOrders = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  try {
+    const orders = await Order.find().populate("user");
+    // .populate("orderItems.product")
+    // .populate("orderItems.color");
+    res.json({
+      orders,
+    });
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
+const getsingleOrder = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  try {
+    const orders = await Order.findOne({ _id: id })
+      .populate("user")
+      .populate("orderItems.product")
+      .populate("orderItems.color");
+    res.json({
+      orders,
+    });
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
+const updateOrder = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  try {
+    const orders = await Order.findById(id);
+    orders.orderStatus = req.body.status;
+    await orders.save();
+    res.json({
+      orders,
+    });
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
+const getMonthWiseOrderIncome = asyncHandler(async (req, res) => {
+  let monthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+  let d = new Date();
+  let endDate = "";
+  d.setDate(1);
+  for (let index = 0; index < 11; index++) {
+    d.setMonth(d.getMonth() - 1);
+    endDate = monthNames[d.getMonth()] + " " + d.getFullYear();
+  }
+  const data = await Order.aggregate([
+    {
+      $match: {
+        createdAt: {
+          $lte: new Date(),
+          $gte: new Date(endDate),
+        },
+      },
+    },
+    {
+      $group: {
+        _id: {
+          month: "$month",
+        },
+        amount: { $sum: "$totalPriceAfterDiscount" },
+        count: { $sum: 1 },
+      },
+    },
+  ]);
+  res.json(data);
+});
+
+const getYearlyTotalOrder = asyncHandler(async (req, res) => {
+  let monthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+  let d = new Date();
+  let endDate = "";
+  d.setDate(1);
+  for (let index = 0; index < 11; index++) {
+    d.setMonth(d.getMonth() - 1);
+    endDate = monthNames[d.getMonth()] + " " + d.getFullYear();
+  }
+  const data = await Order.aggregate([
+    {
+      $match: {
+        createdAt: {
+          $lte: new Date(),
+          $gte: new Date(endDate),
+        },
+      },
+    },
+    {
+      $group: {
+        _id: null,
+        amount: { $sum: 1 },
+        amount: { $sum: "$totalPriceAfterDiscount" },
+        count: { $sum: 1 },
+      },
+    },
+  ]);
+  res.json(data);
+});
+
+module.exports = {
+  createUser,
+  loginUserCtrl,
+  getallUser,
+  getaUser,
+  deleteaUser,
+  updatedUser,
+  blockUser,
+  unblockUser,
+  handleRefreshToken,
+  logout,
+  updatePassword,
+  forgotPasswordToken,
+  resetPassword,
+  loginAdmin,
+  getWishlist,
+  saveAddress,
+  userCart,
+  getUserCart,
+  createOrder,
+  getMyOrders,
+  emptyCart,
+  getMonthWiseOrderIncome,
+  getAllOrders,
+  getsingleOrder,
+  updateOrder,
+  getYearlyTotalOrder,
+
+  removeProductFromCart,
+  updateProductQuantityFromCart,
 };
