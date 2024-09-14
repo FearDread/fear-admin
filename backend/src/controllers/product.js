@@ -1,11 +1,14 @@
-const Product = require("../models/productModel");
-const User = require("../models/userModel");
+const Product = require("../models/product");
+const User = require("../models/user");
 const slugify = require("slugify");
 const methods = require("../libs/crud");
 const asyncHandler = require("../libs/handler/async");
 
+const controller = methods.crudController( Product );
 
-module.exports = methods.crudController( Prodcut );
+
+
+module.exports = methods.crudController( Product );
 
 /*
 const createProduct = asyncHandler(async (req, res) => {
