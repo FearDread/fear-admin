@@ -1,20 +1,31 @@
-const stripe = require("stripe");
+const Razorpay = require("razorpay");
+const instance = new Razorpay({
+  key_id: "rzp_test_HSSeDI22muUrLR",
+  key_secret: "sRO0YkBxvgMg0PvWHJN16Uf7",
+});
 
-// process the payment
-exports.process = async (req, res, next) => {
-  const client = stripe(process.env.STRIPE_SECRET_KEY);
-
-  const myPayment = await client.paymentIntents.create({
-    amount: req.body.amount,
-    currency: "inr",
-    metadata: {
-      company: "Ecommerce",
-    },
+const checkout = async (req, res) => {
+  const { amount } = req.body;
+  const option = {
+    amount: amount * 100,
+    currency: "INR",
+  };
+  const order = await instance.orders.create(option);
+  res.json({
+    success: true,
+    order,
   });
-
-  res.status(200).send({ sucess: true, client_secret: myPayment.client_secret });
 };
 
-exports.stripeKey = async (req, res, next) => {
-  res.status(200).send({ stripeApiKey: process.env.STRIPE_API_KEY });
+const paymentVerification = async (req, res) => {
+  const { razorpayOrderId, razorpayPaymentId } = req.body;
+  res.json({
+    razorpayOrderId,
+    razorpayPaymentId,
+  });
+};
+
+module.exports = {
+  checkout,
+  paymentVerification,
 };

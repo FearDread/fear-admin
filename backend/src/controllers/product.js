@@ -1,158 +1,201 @@
-const ProductModel = require("../models/product");
-const cloudinary = require("cloudinary");
-const cloud = require("../libs/cloud");
-/* Product CRUD methods */
-/* -------------------- */
-//exports.Review = Review;
+const Product = require("../models/productModel");
+const User = require("../models/userModel");
+const asyncHandler = require("express-async-handler");
+const slugify = require("slugify");
+const validateMongoDbId = require("../utils/validateMongodbId");
 
-exports.create = async (req, res) => {
-  let images = []; 
-
-  if (req.body.images) {
-    if (typeof req.body.images === "string") {
-      images.push(req.body.images);
-    } else {
-      images = req.body.images;
+const createProduct = asyncHandler(async (req, res) => {
+  try {
+    if (req.body.title) {
+      req.body.slug = slugify(req.body.title);
     }
-  
-    const imageLinks = cloud.upload(images);
-    req.body.images = imageLinks;
+    const newProduct = await Product.create(req.body);
+    res.json(newProduct);
+  } catch (error) {
+    throw new Error(error);
   }
-  req.body.user = req.user.id;
-  console.log("product data ::", req.body);
-  await ProductModel.create(req.body)
-    .then((product) => {
-      console.log("Product Create Response :: ", product);
-      if (product) {
-        res.status(200).json({ success: true, data:product });
-      }
-    })
-    .catch((error) => {
-      throw error;
-    });
-};
+});
 
-
-  /* Refactor t  /*************************************************
-  cloud.upload().then((data) => {
-
-    await ProductModel.create(data.body)
-    .then((product) => {
-      res.sto use this when cloud lib finished **
-atus(200).json({ success: true, product });
-    })
-    .catch((error) => {
-      throw error;
-    });
-  })
-  .catch((err) => {
-    throw err;
-  });
-  */
-
-exports.list = async (req, res) => {
-
-  await ProductModel.find()
-    .then((products) => {
-      res.status(200).send({  success: true, products });
-    })
-    .catch((error) => {
-      throw error;
-    });
-};
-
-exports.categories = async (req, res) => {
-  let categories = ["All"];
-  const products = await ProductModel.find({});
-
-  products.map((product) => {
-     const { category } = product;
-     categories.push(category);
-  });
-
-  categories = [...new Set(categories)];
-
-  return res.status(200).json(categories);
-}
-
-exports.update = async (req, res, next) => {
-  if (!req.params.id) {
-   // return next(new AppError("Product not found", 404));
-  }
-
-  let product = await Product.findById(req.params.id);
-  let images = [];
-
-  if (typeof req.body.images === "string") {
-    images.push(req.body.images);
-  } else {
-    images = req.body.images;
-  }
-
-  if (images !== undefined) {
-    // Deleting Images From Cloudinary
-    for (let i = 0; i < product.images.length; i++) {
-      await cloudinary.v2.uploader.destroy(product.images[i].product_id);
+const updateProduct = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  validateMongoDbId(id);
+  try {
+    if (req.body.title) {
+      req.body.slug = slugify(req.body.title);
     }
-
-    const imagesLinks = [];
-    for (let img of images) {
-      const result = await cloudinary.v2.uploader.upload(img, {
-        folder: "Products",
-      });
-
-      imagesLinks.push({
-        product_id: result.public_id,
-        url: result.secure_url,
-      });
-    }
-    req.body.images = imagesLinks;
-  }
-
-  await ProductModel.findByIdAndUpdate(req.params.id, req.body, {
+    const updateProduct = await Product.findByIdAndUpdate(id, req.body, {
       new: true,
-      runValidators: true,
-      useFindAndModify: false,
-    })
-    .then((data) => {
-      res.status(200).json({product: data});
-    })
-    .catch((error) => {
-     // dbError(res, error);
     });
-};
-
-exports.delete = async (req, res, next) => {
-  let product = await ProductModel.findById(req.params.id);
-
-  if (!product) {
-   // return next(new ErrorHandler("Product not found", 404));
+    res.json(updateProduct);
+  } catch (error) {
+    throw new Error(error);
   }
+});
 
-  // Deleting Images From Cloudinary
-  for (let i = 0; i < product.images.length; i++) {
-    await cloudinary.v2.uploader.destroy(product.images[i].product_id);
+const deleteProduct = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  validateMongoDbId(id);
+  try {
+    const deletedProduct = await Product.findByIdAndDelete(id);
+
+    res.json(deletedProduct);
+  } catch (error) {
+    throw new Error(error);
   }
+});
 
-  await product.remove();
+const getaProduct = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  validateMongoDbId(id);
+  try {
+    const findProduct = await Product.findById(id).populate("color");
+    res.json(findProduct);
+  } catch (error) {
+    throw new Error(error);
+  }
+});
 
-  res.status(201).json({
-    success: true,
-    message: "Product delete successfully",
-  });
-};
+const getAllProduct = asyncHandler(async (req, res) => {
+  try {
+    // Filtering
+    const queryObj = { ...req.query };
+    const excludeFields = ["page", "sort", "limit", "fields"];
+    excludeFields.forEach((el) => delete queryObj[el]);
+    let queryStr = JSON.stringify(queryObj);
+    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
 
-exports.read = async (req, res, next) => {
-  console.log('Product Details request ::', req.params);
-  const id = req.params.id;
-  if (!id) return next();
-  
-  await ProductModel.findById(id)
-    .then((product) => {
-      console.log("Product found ::", product);
-      res.status(201).send( {succes: true, product} );
-    })
-    .catch((error) => {
-      throw error;
-    });
+    let query = Product.find(JSON.parse(queryStr));
+
+    // Sorting
+
+    if (req.query.sort) {
+      const sortBy = req.query.sort.split(",").join(" ");
+      query = query.sort(sortBy);
+    } else {
+      query = query.sort("-createdAt");
+    }
+
+    // limiting the fields
+
+    if (req.query.fields) {
+      const fields = req.query.fields.split(",").join(" ");
+      query = query.select(fields);
+    } else {
+      query = query.select("-__v");
+    }
+
+    // pagination
+
+    const page = req.query.page;
+    const limit = req.query.limit;
+    const skip = (page - 1) * limit;
+    query = query.skip(skip).limit(limit);
+    if (req.query.page) {
+      const productCount = await Product.countDocuments();
+      if (skip >= productCount) throw new Error("This Page does not exists");
+    }
+    const product = await query;
+    res.json(product);
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+const addToWishlist = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  const { prodId } = req.body;
+  try {
+    const user = await User.findById(_id);
+    const alreadyadded = user.wishlist.find((id) => id.toString() === prodId);
+    if (alreadyadded) {
+      let user = await User.findByIdAndUpdate(
+        _id,
+        {
+          $pull: { wishlist: prodId },
+        },
+        {
+          new: true,
+        }
+      );
+      res.json(user);
+    } else {
+      let user = await User.findByIdAndUpdate(
+        _id,
+        {
+          $push: { wishlist: prodId },
+        },
+        {
+          new: true,
+        }
+      );
+      res.json(user);
+    }
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
+const rating = asyncHandler(async (req, res) => {
+  const { _id } = req.user;
+  const { star, prodId, comment } = req.body;
+  try {
+    const product = await Product.findById(prodId);
+    let alreadyRated = product.ratings.find(
+      (userId) => userId.postedby.toString() === _id.toString()
+    );
+    if (alreadyRated) {
+      const updateRating = await Product.updateOne(
+        {
+          ratings: { $elemMatch: alreadyRated },
+        },
+        {
+          $set: { "ratings.$.star": star, "ratings.$.comment": comment },
+        },
+        {
+          new: true,
+        }
+      );
+    } else {
+      const rateProduct = await Product.findByIdAndUpdate(
+        prodId,
+        {
+          $push: {
+            ratings: {
+              star: star,
+              comment: comment,
+              postedby: _id,
+            },
+          },
+        },
+        {
+          new: true,
+        }
+      );
+    }
+    const getallratings = await Product.findById(prodId);
+    let totalRating = getallratings.ratings.length;
+    let ratingsum = getallratings.ratings
+      .map((item) => item.star)
+      .reduce((prev, curr) => prev + curr, 0);
+    let actualRating = Math.round(ratingsum / totalRating);
+    let finalproduct = await Product.findByIdAndUpdate(
+      prodId,
+      {
+        totalrating: actualRating,
+      },
+      { new: true }
+    );
+    res.json(finalproduct);
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+
+module.exports = {
+  createProduct,
+  getaProduct,
+  getAllProduct,
+  updateProduct,
+  deleteProduct,
+  addToWishlist,
+  rating,
 };

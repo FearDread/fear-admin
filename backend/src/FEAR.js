@@ -1,7 +1,17 @@
-const path = require("path");
-const express = require("express");
+const path = require("path"),
+      express = require("express"),
+      compression = require("compression"),
+      passport = require("passport"),
+      bodyParser = require("body-parser"),
+      cookieParser = require("cookie-parser"),
+      fileUpload = require("express-fileupload"),
+      cors = require("cors"),
+      morgan = require("morgan"),
+      helmet = require("helmet"),
+      __dirname1 = path.resolve();
 
-const _loadRoutes = ( app ) => {
+
+const loadRoutes = ( app ) => {
   const dir = "routes";
   const modPath = require('path').join( __dirname, dir );
 
@@ -15,20 +25,11 @@ const _loadRoutes = ( app ) => {
   return app;
 }
 
-const FEAR = (( app ) => {
+module.exports = FEAR = (( app ) => {
   const env = require("dotenv").config({ path:"backend/.env"});
   if ( !env || env.error ) throw env.error;
 
   const cloud = require("./libs/cloud");
-  const compression = require("compression"),
-        passport = require("passport"),
-        bodyParser = require("body-parser"),
-        cookieParser = require("cookie-parser"),
-        fileUpload = require("express-fileupload"),
-        cors = require("cors"),
-        helmet = require("helmet"),
-        __dirname1 = path.resolve();
-
   const db = require("./libs/db"),
         {parsed: _config} = env;
         
@@ -39,6 +40,7 @@ const FEAR = (( app ) => {
       allowedHeaders: ["Content-Type", "Authorization", "Access-Control-Allow-Origin"]
   }));
 
+  app.use(morgan("dev"));
   app.use(express.json());
   app.use(helmet());
   app.use(compression());
@@ -57,7 +59,7 @@ const FEAR = (( app ) => {
     next();
   });
 
-  app = _loadRoutes(app);
+  app = loadRoutes(app);
 
   app.use(express.static(path.join(__dirname1, "/dashboard/build")));
   app.get("*", (req, res) =>
@@ -69,9 +71,7 @@ const FEAR = (( app ) => {
     app,
     cloud,
     env: _config,
-    init: () => {},
+    load: loadRoutes,
     cluster: () => {}
   }
 })( express() );
-
-module.exports = FEAR;

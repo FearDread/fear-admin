@@ -1,18 +1,25 @@
-const router  = require("express").Router();
-const Product = require("../controllers/product");
-const { asyncHandler } = require("../libs/handler"); 
+const express = require("express");
+const {
+  createProduct,
+  getaProduct,
+  getAllProduct,
+  updateProduct,
+  deleteProduct,
+  addToWishlist,
+  rating,
+} = require("../controller/productCtrl");
+const { isAdmin, authMiddleware } = require("../middlewares/authMiddleware");
+const router = express.Router();
 
-router.route("/").get( asyncHandler(Product.list) )
-router.route("/categories").get( asyncHandler(Product.categories) );
-router.route("/new").post( asyncHandler(Product.create) );
-router.route("/:id") 
-    .get( asyncHandler(Product.read) )
-    .put( asyncHandler(Product.update) )
-    .delete( asyncHandler(Product.delete) );
+router.post("/", authMiddleware, isAdmin, createProduct);
 
-/*
-router.route("/review").get(Product.Review.list);
-router.route("/review/new").put(Product.Review.create);
-router.route("/reviews/delete").delete(Product.Review.delete);
-*/
-module.exports = router  
+router.get("/:id", getaProduct);
+router.put("/wishlist", authMiddleware, addToWishlist);
+router.put("/rating", authMiddleware, rating);
+
+router.put("/:id", authMiddleware, isAdmin, updateProduct);
+router.delete("/:id", authMiddleware, isAdmin, deleteProduct);
+
+router.get("/", getAllProduct);
+
+module.exports = router;
