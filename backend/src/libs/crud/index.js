@@ -1,6 +1,6 @@
 const crud = require("./crud");
 
-module.exports = ( Model ) => {
+exports.crudController = ( Model ) => {
   let methods = {};
   methods.create = async (req, res) => {
     crud.create(Model, req, res);

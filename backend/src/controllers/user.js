@@ -4,9 +4,16 @@ const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const uniqid = require("uniqid");
 const { isAdmin, getJWTToken } = require("../libs/auth");
-const CrudController = require("../libs/crud");
+const methods = require("../libs/crud");
 
-module.exports = CrudController( UserModel );
+exports.passwordToken = () => {
+
+}
+
+exports.passwordReset = () => {
+  
+}
+module.exports = methods.crudController( UserModel );
 
 //const asyncHandler = require("express-async-handler");
 /*

@@ -1,4 +1,7 @@
-const Brand = require("../models/brandModel");
+const Brand = require("../models/brand");
+const methods = require("../libs/crud");
+
+/*
 const asyncHandler = require("express-async-handler");
 const validateMongoDbId = require("../utils/validateMongodbId");
 
@@ -57,3 +60,6 @@ module.exports = {
   getBrand,
   getallBrand,
 };
+*/
+
+module.exports = methods.crudController( Brand );

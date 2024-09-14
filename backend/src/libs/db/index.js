@@ -13,11 +13,11 @@ module.exports = {
                 callback();
             }
         })
-        .catch((err) => {
-            console.log("Error connecting to MongoDB", err);
-        })
+        .catch((err) => { console.log("Error connecting to MongoDB", err); })
     },
-    store: () => {
-
+    store: () => {},
+    validateId: (id) => {
+        const isValid = mongoose.Types.ObjectId.isValid(id);
+        if (!isValid) throw new Error("This id is not valid or not Found");
     }
 }
