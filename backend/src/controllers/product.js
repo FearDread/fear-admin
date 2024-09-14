@@ -1,13 +1,13 @@
 const Product = require("../models/productModel");
 const User = require("../models/userModel");
-const asyncHandler = require("express-async-handler");
 const slugify = require("slugify");
-const validateMongoDbId = require("../utils/validateMongodbId");
+const methods = require("../libs/crud");
+const asyncHandler = require("../libs/handler/async");
 
-module.exports = CrudController( Prodcut );
+
+module.exports = methods.crudController( Prodcut );
 
 /*
-
 const createProduct = asyncHandler(async (req, res) => {
   try {
     if (req.body.title) {

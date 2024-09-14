@@ -1,4 +1,4 @@
 const Cart = require("../models/cart");
-const CRUD = require("../libs/crud");
+const methods = require("../libs/crud");
 
-module.exports = CRUD( Cart );
+module.exports = methods.crudController( Cart );

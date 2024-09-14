@@ -1,11 +1,12 @@
 const router = require("express").Router();
-const Order = require("../controllers/Order");
-const { isAuthorized, isAdmin } = require("../lbis/auth");
+const Order = require("../controllers/order");
+const methods = Order.crud;
+const { isAuthorized, isAdmin } = require("../libs/auth");
 
-router.get("/getmyorders", isAuthorized, Order.list);
-router.get("/getallorders", isAuthorized, isAdmin, Order.list);
-router.get("/getaOrder/:id", isAuthorized, isAdmin, Order.read);
-router.put("/updateOrder/:id", isAuthorized, isAdmin, Order.update);
+router.get("/getmyorders", isAuthorized, methods.list);
+router.get("/getallorders", isAuthorized, isAdmin, methods.list);
+router.get("/getaOrder/:id", isAuthorized, isAdmin, methods.read);
+router.put("/updateOrder/:id", isAuthorized, isAdmin, methods.update);
 
 //router.get("/getMonthWiseOrderIncome", isAuthorized, getMonthWiseOrderIncome);
 //router.get("/getyearlyorders", isAuthorized, getYearlyTotalOrder);

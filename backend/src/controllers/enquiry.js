@@ -1,7 +1,12 @@
-const Enquiry = require("../models/enqModel");
-const asyncHandler = require("express-async-handler");
-const validateMongoDbId = require("../utils/validateMongodbId");
+const Enquiry = require("../models/enquiry");
+const asyncHandler = require("../libs/handler/async");
+//const validateMongoDbId = require("../utils/validateMongodbId");
 
+const methods = require("../libs/crud");
+
+module.exports = methods.crudController( Enquiry );
+
+/*
 const createEnquiry = asyncHandler(async (req, res) => {
   try {
     const newEnquiry = await Enquiry.create(req.body);
@@ -57,3 +62,4 @@ module.exports = {
   getEnquiry,
   getallEnquiry,
 };
+*/
