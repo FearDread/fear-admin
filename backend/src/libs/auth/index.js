@@ -1,6 +1,50 @@
 const User = require("../../models/user");
 const jwt = require("jsonwebtoken");
+const CRUD = require("../crud");
 
+exports.login = async (req, res) => {
+  const { email, password } = req.body;
+  
+  await User.findOne({ email })
+    .then((user) => {
+      if (user && (user.compare(password))) {
+        res.status(200).json({ user, success: true });
+      }
+      res.status(300).json({success: false, err: 'invalid Credientials'})
+    })
+    .catch((error) => { throw new Error(error)});
+}
+
+exports.loginAdmin = async (req, res) => {
+  const { email, password } = req.body;
+  
+  await User.findOne({ email })
+    .then((user) => {
+      if (user && (user.compare(password))) {
+        res.status(200).json({ user, success: true });
+      }
+      res.status(300).json({success: false, err: 'invalid Credientials'})
+    })
+    .catch((error) => { throw new Error(error)});
+}
+
+exports.logout = async (req, res, next) => {
+
+}
+
+exports.register = async (req, res) => {
+  const email = req.body.email;
+  const newUser = await User.findOne({ email: email });
+
+  if (!newUser) {
+    await User.create(req.body).then((user) => {
+
+    });
+    res.json(newUser);
+  } else {
+    throw new Error("User Already Exists");
+  }
+};
 
 exports.isAuthorized = async (req, res, next) => {
   let token;

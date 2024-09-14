@@ -4,6 +4,10 @@ const asyncHandler = require("express-async-handler");
 const slugify = require("slugify");
 const validateMongoDbId = require("../utils/validateMongodbId");
 
+module.exports = CrudController( Prodcut );
+
+/*
+
 const createProduct = asyncHandler(async (req, res) => {
   try {
     if (req.body.title) {
@@ -199,3 +203,4 @@ module.exports = {
   addToWishlist,
   rating,
 };
+*/
