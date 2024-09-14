@@ -52,10 +52,6 @@ module.exports = FEAR = (( app ) => {
   app.use(passport.initialize());
 
   app.use((req, res, next) => {
-    delete req.body.id;
-
-    res.locals.admin = req.admin || null;
-    res.locals.currentPath = req.path;
     next();
   });
 
