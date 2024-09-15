@@ -38,7 +38,6 @@ function NewProduct() {
   const { user } = useSelector((state) => state.auth);
   const { loading, categories, error, success } = useSelector((state) => state.product);
 
-
   const handleCategoryChange = (e) => {
     setCategory(e.target.value);
   };
