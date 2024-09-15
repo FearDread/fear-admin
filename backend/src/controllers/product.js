@@ -4,7 +4,7 @@ const slugify = require("slugify");
 const methods = require("../libs/crud");
 const asyncHandler = require("../libs/handler/async");
 
-const controller = methods.crudController( Product );
+//const controller = methods.crudController( Product );
 
 
 
