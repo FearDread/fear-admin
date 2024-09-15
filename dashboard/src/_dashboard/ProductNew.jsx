@@ -30,18 +30,17 @@ function NewProduct() {
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
   const [stock, setStock] = useState(0);
-  const [info , setInfo] = useState("")
+  const [brand , setBrand] = useState("")
   const [images, setImages] = useState([]);
   const [imagesPreview, setImagesPreview] = useState([]);
-  const [isCategory, setIsCategory] = useState(true);
   const [alert, setAlert] = React.useState(null);
   const fileInputRef = useRef();
   const { user } = useSelector((state) => state.auth);
   const { loading, categories, error, success } = useSelector((state) => state.product);
 
+
   const handleCategoryChange = (e) => {
     setCategory(e.target.value);
-    setIsCategory(true);
   };
 
   const handleImageUpload = () => {
@@ -91,12 +90,12 @@ function NewProduct() {
     
     const myForm = new FormData();
           
-    myForm.set("name", name);
+    myForm.set("title", name);
+    myForm.set("slug", name);
     myForm.set("price", price);
     myForm.set("description", description);
     myForm.set("category", category);
-    myForm.set("Stock", stock);
-    myForm.set("info", info);
+    myForm.set("quantity", stock);
     
     images.forEach((currImg) => {
       myForm.append("images", currImg);
@@ -142,7 +141,7 @@ function NewProduct() {
                     </CardHeader>
                     <CardBody>
                       <Row>
-                        <Label sm="2">Product Name</Label>
+                        <Label sm="2">Title</Label>
                         <Col sm="10">
                           <FormGroup>
                             <Input 
@@ -239,16 +238,14 @@ function NewProduct() {
                         </Col>
                       </Row>
                       <Row>
-                        <Label sm="2">Product Info</Label>
+                        <Label sm="2">Brand</Label>
                         <Col sm="10">
                           <FormGroup>
                             <Input
-                              cols="180"
-                              value={info}
-                              placeholder="Here can be your extra information"
-                              rows="4"  
-                              type="textarea"
-                              onChange={(e) => setInfo(e.target.value)}
+                              name="brand"
+                              value={brand}
+                              placeholder="ex: DC Comics"
+                              onChange={(e) => setBrand(e.target.value)}
                             />
                           </FormGroup>
                         </Col>
@@ -276,11 +273,6 @@ function NewProduct() {
                               />
                           ))}
                         </CardBody>
-                        <Button 
-                            className="hidden"
-                            variant="contained"
-                            onClick={handleImageUpload} >
-                        </Button>
                         <br />
                         <ImageUpload />
                       </Col>

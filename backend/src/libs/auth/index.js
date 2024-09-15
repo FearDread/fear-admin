@@ -10,7 +10,7 @@ exports.login = async (req, res) => {
       if (user && (user.compare(password))) {
         return res.status(200).json({ user, success: true, token: this.getJWTToken(user) });
       }
-      return res.status(201).json({success: false, err: 'invalid Credientials'})
+      return res.status(201).json({success: false, err: 'Invalid Credientials'})
     })
     .catch((error) => { throw new Error("Could Not find User")});
 }
@@ -21,7 +21,8 @@ exports.loginAdmin = async (req, res) => {
   await User.findOne({ email })
     .then((user) => {
       if (user && (user.compare(password))) {
-        res.status(200).json({ user, success: true });
+        
+        res.status(200).json({ user, success: true, token: this.getJWTToken(user) });
       }
       res.status(300).json({success: false, err: 'invalid Credientials'})
     })
@@ -37,9 +38,9 @@ exports.register = async (req, res) => {
   const newUser = await User.findOne({ email: email });
 
   if (!newUser) {
+
     await User.create(req.body)
       .then((user) => { 
-        console.log("user created ::", user);
         return res.status(200).json({user, success: true, token: this.getJWTToken(user)})})
       .catch((error) => { throw new Error(error);})
 
@@ -58,9 +59,7 @@ exports.isAuthorized = async (req, res, next) => {
         
         await User.findById(decoded?.id)
           .then((user) => { req.user = user; next();})
-          .catch((error) => {
-            throw new Error("Could not verify Token");
-        });
+          .catch((error) => { throw new Error("Could not verify Token");});
       }
   } else {
     throw new Error("There is no token attached to header");

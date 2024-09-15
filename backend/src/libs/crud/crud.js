@@ -3,33 +3,21 @@
  *  @param {string} req.params.id
  *  @returns {Document} Single Document
  */
-
 exports.read = async (Model, req, res) => {
+  if (!req.params || req.params.id) throw new Error("No ID");
+  const msg = "document with id :: " + req.params.id;
+
   try {
-    // Find document by id
-    const result = await Model.findOne({ _id: req.params.id });
-    // If no results found, return document not found
-    if (!result) {
-      return res.status(404).json({
-        success: false,
-        result: null,
-        message: "No document found by this id: " + req.params.id,
-      });
-    } else {
-      // Return success resposne
-      return res.status(200).json({
-        success: true,
-        result,
-        message: "we found this document by this id: " + req.params.id,
-      });
-    }
+    await Model.findOne({ _id: req.params.id })
+      .then((result) => {
+        if (!result) return res.status(404).json({ result:null, success: false, message: "No " + msg });
+        return res.status(200).json({ result, success: true, message: "Found " + msg });
+      })
+      .catch((error) => {
+        throw new Error("Unable to find document Error");
+      })
   } catch (err) {
-    // Server Error
-    return res.status(500).json({
-      success: false,
-      result: null,
-      message: "Oops there is an Error",
-    });
+    throw new Error("Internal Server Error");
   }
 };
 
@@ -40,31 +28,17 @@ exports.read = async (Model, req, res) => {
  */
 
 exports.create = async (Model, req, res) => {
-  
+  console.log("Creating Document :: ", req.body);
   await new Model(req.body).save()
-    .then(( result ) => {
-            
+    .then(( result ) => { 
       console.log(result);
-      return res.status(200).json({
-        result,
-        success: true,
-        message: "Successfully Created the document in Model ",
-      });
-
-    }).catch(( error ) => {
-      if (err.name == "ValidationError") {
-        return res.status(400).json({
-          success: false,
-          result: null,
-          message: "Required fields are not supplied",
-        });
+      if (!result) throw new Error("Error saving document");
+      return res.status(200).json({ result, success: true, message: "Successfully Created the document in Model " });})
+    .catch(( error ) => {
+      if (error.name == "ValidationError") {
+        return res.status(400).json({ result: null, success: false, message: "Required fields are not supplied" });
       } else {
-        // Server Error
-        return res.status(500).json({
-          success: false,
-          result: null,
-          message: "Oops there is an Error",
-        });
+        throw new Error("Internal Server Error");
       }
     });
 };
@@ -156,18 +130,16 @@ exports.list = async (Model, req, res) => {
   const page = req.query.page || 1;
   const limit = parseInt(req.query.items) || 10;
   const skip = page * limit - limit;
+
   try {
-    //  Query the database for a list of all results
     const resultsPromise = Model.find()
       .skip(skip)
       .limit(limit)
       .sort({ created: "desc" })
       .populate();
-    // Counting the total documents
+
     const countPromise = Model.count();
-    // Resolving both promises
     const [result, count] = await Promise.all([resultsPromise, countPromise]);
-    // Calculating total pages
     const pages = Math.ceil(count / limit);
 
     // Getting Pagination Object
@@ -211,8 +183,8 @@ exports.search = async (Model, req, res) => {
       })
       .end();
   }
-  const fieldsArray = req.query.fields.split(",");
 
+  const fieldsArray = req.query.fields.split(",");
   const fields = { $or: [] };
 
   for (const field of fieldsArray) {
@@ -239,10 +211,6 @@ exports.search = async (Model, req, res) => {
         .end();
     }
   } catch {
-    return res.status(500).json({
-      success: false,
-      result: null,
-      message: "Oops there is an Error",
-    });
+    throw new Error("Internal Server Error");
   }
 };
