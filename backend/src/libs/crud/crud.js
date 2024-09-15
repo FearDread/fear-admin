@@ -1,8 +1,26 @@
+
+/**
+ * @api {get} /all Request Model information
+ * @apiName crud.all
+ * @apiGroup Model
+ *
+ * @apiSuccess {Object} Model document.
+ * @apiSuccess {Boolean} Success: true / false.
+ * @apiSuccess {String} Informative message.
+ */
+exports.all = async (Model, req, res) => {
+
+
+
+}
+
+
 /**
  *  Retrieves a single document by id.
  *  @param {string} req.params.id
  *  @returns {Document} Single Document
  */
+
 exports.read = async (Model, req, res) => {
   if (!req.params || req.params.id) throw new Error("No ID");
   const msg = "document with id :: " + req.params.id;
@@ -146,8 +164,8 @@ exports.list = async (Model, req, res) => {
     const pagination = { page, pages, count };
     if (count > 0) {
       return res.status(200).json({
-        success: true,
         result,
+        success: true,
         pagination,
         message: "Successfully found all documents",
       });
@@ -160,9 +178,7 @@ exports.list = async (Model, req, res) => {
       });
     }
   } catch {
-    return res
-      .status(500)
-      .json({ success: false, result: [], message: "Oops there is an Error" });
+    return res.status(500).json({ success: false, result: [], message: "Oops there is an Error" });
   }
 };
 

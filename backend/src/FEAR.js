@@ -10,7 +10,6 @@ const path = require("path"),
       helmet = require("helmet"),
       __dirname1 = path.resolve();
 
-
 const loadRoutes = ( app ) => {
   const dir = "routes";
   const modPath = require('path').join( __dirname, dir );
@@ -29,6 +28,7 @@ module.exports = FEAR = (( app ) => {
   const env = require("dotenv").config({ path:"backend/.env"});
   if ( !env || env.error ) throw env.error;
 
+  const { specs, swaggerUi } = require('./libs/swagger');
   const cloud = require("./libs/cloud");
   const db = require("./libs/db"),
         {parsed: _config} = env;
@@ -56,6 +56,7 @@ module.exports = FEAR = (( app ) => {
   });
 
   app = loadRoutes(app);
+  app.use("/fear/api/docs", swaggerUi.serve, swaggerUi.setup(specs))
 
   app.use(express.static(path.join(__dirname1, "/dashboard/build")));
   app.get("*", (req, res) =>

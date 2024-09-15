@@ -1,7 +1,13 @@
 const User = require("../../models/user");
 const jwt = require("jsonwebtoken");
 
-
+/**
+ * GET /fear/api/auth/login
+ * @summary Authorize user to reach Admin / Dashboard 
+ * @tags login
+ * @return {object} 200 - success response - application/json
+ * @return {object} 400 - Bad request response
+ */
 exports.login = async (req, res) => {
   const { email, password } = req.body;
   
@@ -10,7 +16,7 @@ exports.login = async (req, res) => {
       if (user && (user.compare(password))) {
         return res.status(200).json({ user, success: true, token: this.getJWTToken(user) });
       }
-      return res.status(201).json({success: false, err: 'Invalid Credientials'})
+      return res.status(400).json({success: false, err: 'Invalid Credientials'})
     })
     .catch((error) => { throw new Error("Could Not find User")});
 }
