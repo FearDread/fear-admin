@@ -2,7 +2,7 @@ const Enquiry = require("../models/enquiry");
 const asyncHandler = require("../libs/handler/async");
 //const validateMongoDbId = require("../utils/validateMongodbId");
 
-const methods = require("../libs/crud");
+const methods = require("./crud");
 
 module.exports = methods.crudController( Enquiry );
 

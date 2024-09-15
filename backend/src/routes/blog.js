@@ -1,7 +1,6 @@
 const express = require("express");
 const Blog = require("../controllers/blog");
-const { isAuthorized, isAdmin } = require("../libs/auth");
-const { blogImgResize, uploadPhoto } = require("../libs/middlewares/uploadImage");
+//const { blogImgResize, uploadPhoto } = require("../libs/middlewares/uploadImage");
 const router = express.Router();
 
 /*

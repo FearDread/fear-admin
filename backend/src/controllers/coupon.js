@@ -1,6 +1,6 @@
 const Coupon = require("../models/coupon");
 const asynHandler = require("../libs/handler/async");
-const methods = require("../libs/crud");
+const methods = require("./crud");
 
 module.exports = methods.crudController( Coupon );
 

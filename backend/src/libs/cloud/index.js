@@ -17,7 +17,7 @@ exports.upload = async ( files ) => {
   const promises = files.map( async (file) => {
     
     return new Promise((resolve, reject) => {
-        cloudinary.uploader.upload( base64(file), (result, error) => {
+        cloudinary.uploader.upload( this.base64(file), (result, error) => {
           if (error) return reject(error);
           
           resolve({

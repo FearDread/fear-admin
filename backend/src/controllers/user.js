@@ -1,10 +1,7 @@
 
 const UserModel = require("../models/user");
-const crypto = require("crypto");
-const jwt = require("jsonwebtoken");
-const uniqid = require("uniqid");
-const { isAdmin, getJWTToken } = require("../libs/auth");
-const methods = require("../libs/crud");
+const methods = require("./crud");
+const db = require("../libs/db");
 
 exports.passwordToken = () => {
 
@@ -13,7 +10,31 @@ exports.passwordToken = () => {
 exports.passwordReset = () => {
   
 }
-module.exports = methods.crudController( UserModel );
+
+exports.wishlist = async (req, res) => {
+  const { _id } = req.user;
+  try {
+    const findUser = await User.findById(_id).populate("wishlist");
+    res.json(findUser);
+  } catch (error) {
+    throw new Error(error);
+  }
+}
+
+exports.cart = async (req, res) => {
+  const { _id } = req.user;
+  db.validateId(_id);
+  try {
+    const cart = await Cart.find({ userId: _id })
+      .populate("productId")
+      .populate("color");
+    res.json(cart);
+  } catch (error) {
+    throw new Error(error);
+  }
+}
+
+exports.crud = methods.crudController( UserModel );
 
 //const asyncHandler = require("express-async-handler");
 /*
@@ -340,177 +361,8 @@ const updateProductQuantityFromCart = asyncHandler(async (req, res) => {
   }
 });
 
-const createOrder = asyncHandler(async (req, res) => {
-  const {
-    shippingInfo,
-    orderItems,
-    totalPrice,
-    totalPriceAfterDiscount,
-    paymentInfo,
-  } = req.body;
-  const { _id } = req.user;
-  try {
-    const order = await Order.create({
-      shippingInfo,
-      orderItems,
-      totalPrice,
-      totalPriceAfterDiscount,
-      paymentInfo,
-      user: _id,
-    });
-    res.json({
-      order,
-      success: true,
-    });
-  } catch (error) {
-    throw new Error(error);
-  }
-});
 
-const getMyOrders = asyncHandler(async (req, res) => {
-  const { _id } = req.user;
-  try {
-    const orders = await Order.find({ user: _id })
-      .populate("user")
-      .populate("orderItems.product")
-      .populate("orderItems.color");
-    res.json({
-      orders,
-    });
-  } catch (error) {
-    throw new Error(error);
-  }
-});
 
-const getAllOrders = asyncHandler(async (req, res) => {
-  const { _id } = req.user;
-  try {
-    const orders = await Order.find().populate("user");
-    // .populate("orderItems.product")
-    // .populate("orderItems.color");
-    res.json({
-      orders,
-    });
-  } catch (error) {
-    throw new Error(error);
-  }
-});
-
-const getsingleOrder = asyncHandler(async (req, res) => {
-  const { id } = req.params;
-  try {
-    const orders = await Order.findOne({ _id: id })
-      .populate("user")
-      .populate("orderItems.product")
-      .populate("orderItems.color");
-    res.json({
-      orders,
-    });
-  } catch (error) {
-    throw new Error(error);
-  }
-});
-
-const updateOrder = asyncHandler(async (req, res) => {
-  const { id } = req.params;
-  try {
-    const orders = await Order.findById(id);
-    orders.orderStatus = req.body.status;
-    await orders.save();
-    res.json({
-      orders,
-    });
-  } catch (error) {
-    throw new Error(error);
-  }
-});
-
-const getMonthWiseOrderIncome = asyncHandler(async (req, res) => {
-  let monthNames = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
-  let d = new Date();
-  let endDate = "";
-  d.setDate(1);
-  for (let index = 0; index < 11; index++) {
-    d.setMonth(d.getMonth() - 1);
-    endDate = monthNames[d.getMonth()] + " " + d.getFullYear();
-  }
-  const data = await Order.aggregate([
-    {
-      $match: {
-        createdAt: {
-          $lte: new Date(),
-          $gte: new Date(endDate),
-        },
-      },
-    },
-    {
-      $group: {
-        _id: {
-          month: "$month",
-        },
-        amount: { $sum: "$totalPriceAfterDiscount" },
-        count: { $sum: 1 },
-      },
-    },
-  ]);
-  res.json(data);
-});
-
-const getYearlyTotalOrder = asyncHandler(async (req, res) => {
-  let monthNames = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ];
-  let d = new Date();
-  let endDate = "";
-  d.setDate(1);
-  for (let index = 0; index < 11; index++) {
-    d.setMonth(d.getMonth() - 1);
-    endDate = monthNames[d.getMonth()] + " " + d.getFullYear();
-  }
-  const data = await Order.aggregate([
-    {
-      $match: {
-        createdAt: {
-          $lte: new Date(),
-          $gte: new Date(endDate),
-        },
-      },
-    },
-    {
-      $group: {
-        _id: null,
-        amount: { $sum: 1 },
-        amount: { $sum: "$totalPriceAfterDiscount" },
-        count: { $sum: 1 },
-      },
-    },
-  ]);
-  res.json(data);
-});
 
 module.exports = {
   createUser,

@@ -1,6 +1,6 @@
 const express = require("express");
 const Coupon = require("../controllers/coupon");
-const { authMiddleware, isAdmin } = require("../libs/auth");
+const { authMiddleware, isAdmin } = require("../controllers/auth");
 const router = express.Router();
 
 /*

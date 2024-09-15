@@ -1,66 +1,14 @@
 const Product = require("../models/product");
 const User = require("../models/user");
 const slugify = require("slugify");
-const methods = require("../libs/crud");
+const methods = require("./crud");
 const asyncHandler = require("../libs/handler/async");
-
-//const controller = methods.crudController( Product );
 
 
 
 module.exports = methods.crudController( Product );
 
 /*
-const createProduct = asyncHandler(async (req, res) => {
-  try {
-    if (req.body.title) {
-      req.body.slug = slugify(req.body.title);
-    }
-    const newProduct = await Product.create(req.body);
-    res.json(newProduct);
-  } catch (error) {
-    throw new Error(error);
-  }
-});
-
-const updateProduct = asyncHandler(async (req, res) => {
-  const { id } = req.params;
-  validateMongoDbId(id);
-  try {
-    if (req.body.title) {
-      req.body.slug = slugify(req.body.title);
-    }
-    const updateProduct = await Product.findByIdAndUpdate(id, req.body, {
-      new: true,
-    });
-    res.json(updateProduct);
-  } catch (error) {
-    throw new Error(error);
-  }
-});
-
-const deleteProduct = asyncHandler(async (req, res) => {
-  const { id } = req.params;
-  validateMongoDbId(id);
-  try {
-    const deletedProduct = await Product.findByIdAndDelete(id);
-
-    res.json(deletedProduct);
-  } catch (error) {
-    throw new Error(error);
-  }
-});
-
-const getaProduct = asyncHandler(async (req, res) => {
-  const { id } = req.params;
-  validateMongoDbId(id);
-  try {
-    const findProduct = await Product.findById(id).populate("color");
-    res.json(findProduct);
-  } catch (error) {
-    throw new Error(error);
-  }
-});
 
 const getAllProduct = asyncHandler(async (req, res) => {
   try {
@@ -196,14 +144,4 @@ const rating = asyncHandler(async (req, res) => {
     throw new Error(error);
   }
 });
-
-module.exports = {
-  createProduct,
-  getaProduct,
-  getAllProduct,
-  updateProduct,
-  deleteProduct,
-  addToWishlist,
-  rating,
-};
 */
