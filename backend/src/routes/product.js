@@ -1,6 +1,6 @@
 const express = require("express");
 const Product = require("../controllers/product");
-const { isAdmin, isAuthorized } = require("../libs/auth");
+const { isAdmin, isAuthorized } = require("../controllers/auth");
 const router = express.Router();
 
 router.get("/", Product.list);

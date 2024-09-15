@@ -1,6 +1,6 @@
 const express = require("express");
 const enquiry= require("../controllers/enquiry");
-const { isAuthorized, isAdmin } = require("../libs/auth");
+const { isAuthorized, isAdmin } = require("../controllers/auth");
 const router = express.Router();
 
 /*

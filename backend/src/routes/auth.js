@@ -1,18 +1,6 @@
-/**
- * @swagger
- * /auth:
- *   get:
- *     summary: Returns a sample message
- *     responses:
- *       200:
- *         description: A successful response
- */
-const express = require('express');
+const router = require('express').Router();
 const User = require("../controllers/user");
-const { loginAdmin, isAdmin, login, logout, register } = require("../libs/auth");
-const { checkout, paymentVerification } = require("../controllers/payment");
-const router = express.Router();
-
+const { loginAdmin, isAdmin, login, logout, register } = require("../controllers/auth");
 
 router.post("/login", login);
 router.post("/logout", logout);

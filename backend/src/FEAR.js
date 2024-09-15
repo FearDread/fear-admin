@@ -29,6 +29,7 @@ module.exports = FEAR = (( app ) => {
   if ( !env || env.error ) throw env.error;
 
   const { specs, swaggerUi } = require('./libs/swagger');
+  const errors = require("./libs/handler/error");
   const cloud = require("./libs/cloud");
   const db = require("./libs/db"),
         {parsed: _config} = env;
@@ -57,6 +58,9 @@ module.exports = FEAR = (( app ) => {
 
   app = loadRoutes(app);
   app.use("/fear/api/docs", swaggerUi.serve, swaggerUi.setup(specs))
+
+  app.use(errors.notFound);
+  app.use(errors.devel);
 
   app.use(express.static(path.join(__dirname1, "/dashboard/build")));
   app.get("*", (req, res) =>
