@@ -3,21 +3,20 @@ import Charts from "views/Charts.js";
 import SweetAlert from "views/components/SweetAlert.js";
 import Notifications from "views/Notification.js";
 import Grid from "views/components/Grid.js";
-import Pricing from "views/pages/Pricing.js";
-import Lock from "views/pages/Lock.js";
 import RegularForms from "views/forms/RegularForms.js";
-import Panels from "views/components/Panels.js";
 import Wizard from "views/forms/Wizard.js";
+/* ------------------------------------ */
 import User from "views/pages/User.jsx";
 import Dashboard from "views/Dashboard.jsx";
 import UserList from "_dashboard/UserList.jsx";
 import Products from "_dashboard/ProductList.jsx";
 import NewProduct from "_dashboard/ProductNew.jsx";
-//import Profile from "_dashboard/Profile.jsx";
-//import ProductReviews from "_dashboard/ProductReviews";
-import Login from "views/pages/Login.jsx";
-import Register from "views/pages/Register.jsx";
-//import OrderList from "_dashboard/OrderList";
+import CouponsList from "_dashboard/CouponsList.jsx";
+import CouponNew from "_dashboard/CouponNew.jsx";
+import BrandsList from "_dashboard/BrandsList.jsx";
+import BrandNew from "_dashboard/BrandNew.jsx";
+import CategoriesList from "_dashboard/CategoryList.jsx";
+import CategoryNew from "_dashboard/CategoryNew.jsx";
 
 const routes = [
   {
@@ -30,38 +29,36 @@ const routes = [
   },
   {
     collapse: true,
-    name: "Users",
+    name: "Customers",
     icon: "tim-icons icon-molecule-40",
     state: "usersCollapse",
     views:[
       {
         path: "/users",
-        name: "Users",
+        name: "Customer List",
+        mini: "U",
+        component: UserList,
+        layout: "/admin"
+      },
+      {
+        path: "/users/new",
+        name: "+ Add Customer",
         mini: "U",
         component: UserList,
         layout: "/admin"
       },
       {
         path: "/profile",
-        name: "Profile",
+        name: "My Profile",
         mini: "P",
         component: User,
         layout: "/admin"
-      },
-      /*
-      {
-        path: "/customer/:id",
-        name: "Add Customer",
-        mini: "+",
-        component: NewCustomer,
-        layout: "/admin"
-      },
-      */
+      }
     ]
   },
   {
     collapse: true,
-    name: "Products",
+    name: "Catelog",
     icon: "tim-icons icon-chart-bar-32",
     state: "productsCollapse",
     views:[
@@ -73,19 +70,47 @@ const routes = [
         layout: "/admin"
       },
       {
-        path: "/product/:id",
-        name: " + Add New",
-        mini: "A",
+        path: "/product/new",
+        name: " + Product",
+        mini: "P",
         component: NewProduct,
         layout: "/admin"
       },
       {
         path: "/product/reviews",
-        name: "+ Reviews",
+        name: "+ Review",
         mini: "R",
         component: Wizard,
         layout: "/admin"
-      }
+      },
+      {
+        path: "/brands",
+        name: "All Brands",
+        mini: "B",
+        component: BrandsList,
+        layout: "/admin"
+      },
+      {
+        path: "/brand/new",
+        name: " + Brand",
+        mini: "B",
+        component: BrandNew,
+        layout: "/admin"
+      },
+      {
+        path: "/category",
+        name: "All Categorys",
+        mini: "C",
+        component: CategoriesList,
+        layout: "/admin"
+      },
+      {
+        path: "/category/new",
+        name: " + Cateogry",
+        mini: "C",
+        component: CategoryNew,
+        layout: "/admin"
+      },
     ]
   },
   {
@@ -97,37 +122,23 @@ const routes = [
   },
   {
     collapse: true,
-    name: "Pages",
+    name: "Marketing",
     icon: "tim-icons icon-image-02",
-    state: "pagesCollapse",
+    state: "marketCollapse",
     views: [
       {
-        path: "/register",
-        name: "Register",
-        mini: "R",
-        component: Register,
-        layout: "/auth"
+        path: "/coupon",
+        name: "All Coupons",
+        mini: "C",
+        component: CouponsList,
+        layout: "/admin"
       },
       {
-        path: "/login",
-        name: "Login",
-        mini: "L",
-        component: Login,
-        layout: "/auth"
-      },
-      {
-        path: "/lock",
-        name: "Lock",
-        mini: "L",
-        component: Lock,
-        layout: "/auth"
-      },
-      {
-        path: "/pricing",
-        name: "Pricing",
-        mini: "R",
-        component: Pricing,
-        layout: "/auth"
+        path: "/coupon/new",
+        name: "+ Coupon",
+        mini: "C",
+        component: CouponNew,
+        layout: "/admin"
       }
     ]
   },
