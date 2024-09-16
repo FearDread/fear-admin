@@ -1,7 +1,13 @@
-const Category = require("../models/prodcategoryModel.js");
-const asyncHandler = require("express-async-handler");
-const validateMongoDbId = require("../utils/validateMongodbId");
+//const Category = require("../models/prodcategory.js");
+//const asyncHandler = require("express-async-handler");
+//const validateMongoDbId = require("../utils/validateMongodbId");
+const Category = require("../models/category");
+const crud = require("./crud");
 
+
+module.exports = crud.crudController( Category );
+
+/*
 const createCategory = asyncHandler(async (req, res) => {
   try {
     const newCategory = await Category.create(req.body);
@@ -57,3 +63,4 @@ module.exports = {
   getCategory,
   getallCategory,
 };
+*/
