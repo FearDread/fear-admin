@@ -30,7 +30,8 @@ const ImageUpload = ({
   changeBtnColor,
   changeBtnClasses,
   removeBtnColor,
-  removeBtnClasses
+  removeBtnClasses,
+  submit
 }) => {
   const [file, setFile] = React.useState(null);
   const [imagePreviewUrl, setImagePreviewUrl] = React.useState(

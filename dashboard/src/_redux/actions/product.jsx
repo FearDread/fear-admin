@@ -112,8 +112,8 @@ export const getAdminProducts = () => async (dispatch) => {
     dispatch({ type: ADMIN_PRODUCT_REQUEST });
 
     const response = await axios.get(API_BASE_URL + "/product");
-    console.log('prod res =- ', response);
-    dispatch({ type: ADMIN_PRODUCT_SUCCESS, payload: response.data.products });
+
+    dispatch({ type: ADMIN_PRODUCT_SUCCESS, payload: response.data.result });
   } catch (error) {
     dispatch({ type: ADMIN_PRODUCT_FAIL, payload: error });
   }
@@ -122,12 +122,11 @@ export const getAdminProducts = () => async (dispatch) => {
 // Create Product
 export const createProduct = (productData) => async (dispatch) => {
   dispatch({type: NEW_PRODUCT_REQUEST});
-
   await axios.post(API_BASE_URL + `/product/new`, productData,
     {headers: { "Content-Type": "multipart/form-data" }})
     .then((response) => {
       console.log("Product response :: ", response);
-      dispatch({ type: NEW_PRODUCT_SUCCESS, payload: response.data.result.product });
+      dispatch({ type: NEW_PRODUCT_SUCCESS, payload: response.data.result });
     })
     .catch((error) => {
       dispatch({ type: NEW_PRODUCT_FAIL, payload: error.message });

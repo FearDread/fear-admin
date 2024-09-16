@@ -5,7 +5,7 @@ const { isAuthorized, isAdmin } = require("../controllers/auth");
 const router = express.Router();
 
 router.post("/", 
-    isAuthorized, isAdmin,
+    isAdmin,
     uploadPhoto.array("images", 10),
     resize,
     uploadImages )

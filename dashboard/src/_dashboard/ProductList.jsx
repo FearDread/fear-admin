@@ -20,11 +20,11 @@ import ReactTable from "components/ReactTable/ReactTable.js";
 
 const header = [
   { Header: "Cover", accessor: "avatar" },
-  { Header: "Name", accessor: "name" },
+  { Header: "Title", accessor: "title" },
   { Header: "Category", accessor: "category" },
   { Header: "Price", accessor: "price" },
-  { Header: "Stock", accessor: "Stock" },
-  { Header: "Info", accessor: "info" },
+  { Header: "Stock", accessor: "quantity" },
+  { Header: "Brand", accessor: "brand" },
   { Header: "Actions", accessor: "actions", sortable: false, filterable: false }
 ];
 
@@ -48,11 +48,11 @@ function ProductList() {
             <img 
               src={item.images[0] ? item.images[0].url : ''} 
               className="avatar"/>),
-          name: item.name,
+          title: item.title,
           category: item.category,
           price: "$" + item.price,
-          stock: item.Stock,
-          info: item.info
+          stock: item.quantity,
+          brand: item.brand
         })
       });
     }

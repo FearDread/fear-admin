@@ -8,6 +8,7 @@ const path = require("path"),
       cors = require("cors"),
       morgan = require("morgan"),
       helmet = require("helmet"),
+      cloudinary = require("cloudinary"),
       __dirname1 = path.resolve();
 
 const loadRoutes = ( app ) => {
@@ -27,7 +28,7 @@ const loadRoutes = ( app ) => {
 module.exports = FEAR = (( app ) => {
   const env = require("dotenv").config({ path:"backend/.env"});
   if ( !env || env.error ) throw env.error;
-
+  
   const { specs, swaggerUi } = require('./libs/swagger');
   const errors = require("./libs/handler/error");
   const cloud = require("./libs/cloud");
