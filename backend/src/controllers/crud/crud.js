@@ -1,7 +1,7 @@
 const cloudinary = require("cloudinary");
 const cloud = require("../../libs/cloud");
 const db = require("../../libs/db");
-//const cloud = require("../../libs/cloud");
+
 /**
  * @api {get} /all Request Model information
  * @apiName crud.all
@@ -17,7 +17,6 @@ exports.all = async (Model, req, res) => {
 
 }
 
-
 /**
  *  Retrieves a single document by id.
  *  @param {string} req.params.id
@@ -25,6 +24,8 @@ exports.all = async (Model, req, res) => {
  */
 
 exports.read = async (Model, req, res) => {
+  const { id } = req.params;
+  db.validateId(id);
   if (!req.params || req.params.id) throw new Error("No ID");
   const msg = "document with id :: " + req.params.id;
 
