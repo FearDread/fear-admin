@@ -1,5 +1,6 @@
 const cloudinary = require("cloudinary");
 const cloud = require("../../libs/cloud");
+const db = require("../../libs/db");
 //const cloud = require("../../libs/cloud");
 /**
  * @api {get} /all Request Model information
@@ -79,7 +80,9 @@ exports.create = async (Model, req, res) => {
       }
     }
     //TODO:: use this instead
-    //links = cloud.uploadImages(req.body.images);
+    // let links = [];
+    //links = await cloud.uploadImages(req.body.images);
+    //console.log("img links = ", links);
     //req.body.images = links;
 
     req.body.images = imagesLinks;
@@ -231,11 +234,7 @@ exports.search = async (Model, req, res) => {
   if (req.query.q === undefined || req.query.q === "" || req.query.q === " ") {
     return res
       .status(202)
-      .json({
-        success: false,
-        result: [],
-        message: "No document found by this request",
-      })
+      .json({ result: [], success: false, message: "No document found by this request" })
       .end();
   }
 

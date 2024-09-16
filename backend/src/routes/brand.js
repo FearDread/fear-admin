@@ -3,12 +3,11 @@ const Brand = require("../controllers/brand");
 const { isAuthorized, isAdmin } = require("../controllers/auth");
 const router = express.Router();
 
-/*
-router.post("/", authMiddleware, isAdmin, createBrand);
-router.put("/:id", authMiddleware, isAdmin, updateBrand);
-router.delete("/:id", authMiddleware, isAdmin, deleteBrand);
-router.get("/:id", getBrand);
-router.get("/", getallBrand);
-*/
+router.get("/", Brand.list);
+router.post("/new", Brand.create);
+router.route("/:id")
+        .put(Brand.update)
+        .get(Brand.read)
+        .delete(Brand.delete);
 
 module.exports = router;
