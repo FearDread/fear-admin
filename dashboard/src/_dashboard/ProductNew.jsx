@@ -25,11 +25,11 @@ import ImageUpload from "components/CustomUpload/ImageUpload.js";
 function NewProduct() {
   const dispatch = useDispatch();
   const history = useHistory();
-  const [name, setName] = useState("");
+  const [title, setTitle] = useState("");
   const [price, setPrice] = useState(0);
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
-  const [stock, setStock] = useState(0);
+  const [quantity, setQuantity] = useState(0);
   const [brand , setBrand] = useState("")
   const [images, setImages] = useState([]);
   const [imagesPreview, setImagesPreview] = useState([]);
@@ -56,10 +56,9 @@ function NewProduct() {
 
   useEffect(() => {
     if (success) {
-      console.log("success ::");
-      history.push("/admin/dashboard");
-
       successAlert();
+      
+      history.push("/admin/products");
       dispatch({ type: NEW_PRODUCT_RESET });
     }
   }, [dispatch, error, history, success]);
@@ -89,12 +88,13 @@ function NewProduct() {
     
     const myForm = new FormData();
           
-    myForm.set("title", name);
-    myForm.set("slug", name);
+    myForm.set("title", title);
+    myForm.set("slug", title);
     myForm.set("price", price);
     myForm.set("description", description);
     myForm.set("category", category);
-    myForm.set("quantity", stock);
+    myForm.set("quantity", quantity);
+    myForm.set("brand", brand);
     
     images.forEach((currImg) => {
       myForm.append("images", currImg);
@@ -146,10 +146,10 @@ function NewProduct() {
                             <Input 
                               type="name"
                               autoComplete="off"
-                              name="name"
+                              name="title"
                               required
-                              value={name}
-                              onChange={(e) => setName(e.target.value)}
+                              value={title}
+                              onChange={(e) => setTitle(e.target.value)}
                             />
                           </FormGroup>
                         </Col>
@@ -190,10 +190,10 @@ function NewProduct() {
                         <Col sm="10">
                           <FormGroup>
                             <Input
-                              name="stock"
+                              name="quantity"
                               required
-                              value={stock}
-                              onChange={(e) => setStock(e.target.value)}
+                              value={quantity}
+                              onChange={(e) => setQuantity(e.target.value)}
                             />
                           </FormGroup>
                         </Col>

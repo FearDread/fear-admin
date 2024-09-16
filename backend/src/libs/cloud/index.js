@@ -5,12 +5,46 @@ require("dotenv").config();
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_NAME,
   api_key: process.env.API_KEY,
-  api_secret: process.env.SECRET_KEY,
+  api_secret: process.env.API_SECRET,
 });
 
 exports.base64 = (file) => {
   `data:${file.mimetype};base64,${file.buffer.toString("base64")}`
 };
+
+exports.uploadImages = async ( files ) => {
+  let images = [];
+
+  if (typeof files === "string") {
+    images.push(files);
+  } else {
+    images = files;
+  }
+  const imagesLinks = [];
+  const chunkSize = 3;
+  const imageChunks = [];
+  
+  while (images.length > 0) {
+    imageChunks.push(images.splice(0, chunkSize));
+  }
+  for (let chunk of imageChunks) {
+    const uploadPromises = chunk.map((img) =>
+      cloudinary.v2.uploader.upload(img, {
+        folder: "products",
+      })
+    );
+
+    const results = await Promise.all(uploadPromises);
+    for (let result of results) { 
+      imagesLinks.push({
+        product_id: result.public_id,
+        url: result.secure_url,
+      });
+    }
+  }
+
+  return imagesLinks;
+}
 
 exports.upload = async ( files ) => {
   

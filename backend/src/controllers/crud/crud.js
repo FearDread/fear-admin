@@ -1,4 +1,6 @@
-
+const cloudinary = require("cloudinary");
+const cloud = require("../../libs/cloud");
+//const cloud = require("../../libs/cloud");
 /**
  * @api {get} /all Request Model information
  * @apiName crud.all
@@ -46,12 +48,49 @@ exports.read = async (Model, req, res) => {
  */
 
 exports.create = async (Model, req, res) => {
+  let images = [];
+
+  if (req.body.images) {
+    if (typeof req.body.images === "string") {
+      images.push(req.body.images);
+    } else {
+      images = req.body.images;
+    }
+    const imagesLinks = [];
+    const chunkSize = 3;
+    const imageChunks = [];
+    
+    while (images.length > 0) {
+      imageChunks.push(images.splice(0, chunkSize));
+    }
+    for (let chunk of imageChunks) {
+      const uploadPromises = chunk.map((img) =>
+        cloudinary.v2.uploader.upload(img, {
+          folder: "products",
+        })
+      );
+
+      const results = await Promise.all(uploadPromises);
+      for (let result of results) { 
+        imagesLinks.push({
+          product_id: result.public_id,
+          url: result.secure_url,
+        });
+      }
+    }
+    //TODO:: use this instead
+    //links = cloud.uploadImages(req.body.images);
+    //req.body.images = links;
+
+    req.body.images = imagesLinks;
+  }
+
   console.log("Creating Document :: ", req.body);
   await new Model(req.body).save()
     .then(( result ) => { 
-      console.log(result);
       if (!result) throw new Error("Error saving document");
-      return res.status(200).json({ result, success: true, message: "Successfully Created the document in Model " });})
+      return res.status(200).json({ result, success: true, message: "Successfully Created the document in Model " });
+    }) 
     .catch(( error ) => {
       if (error.name == "ValidationError") {
         return res.status(400).json({ result: null, success: false, message: "Required fields are not supplied" });

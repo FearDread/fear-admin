@@ -20,8 +20,9 @@ require("dotenv").config();
 
             process.on("unhandledRejection" , (err) => { 
                 console.log(`Promise Error : ${err.message}`);
+                console.log('Error = ', err);
                 
-                FEAR.app.close(() => {
+                FEAR.app.listen().close(() => {
                     process.exit(1);
                 })
             })
