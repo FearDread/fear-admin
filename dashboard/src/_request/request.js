@@ -21,7 +21,7 @@ const request = {
     };
     console.log("jsonData", jsonData);
     try {
-      const response = await axiosInstance.post(entity + "/new", jsonData);
+      const response = await axiosInstance.post("/" + entity + "/new", jsonData);
       return successHandler(response);
     } catch (error) {
       return errorHandler(error);
@@ -32,7 +32,7 @@ const request = {
       ...headersInstance,
     };
     try {
-      const response = await axiosInstance.get(entity + "/read/" + id);
+      const response = await axiosInstance.get("/" + entity + "/read/" + id);
       return successHandler(response);
     } catch (error) {
       return errorHandler(error);
