@@ -6,6 +6,7 @@ require("dotenv").config();
 
     async function start() {
         const port = FEAR.app.get("PORT");
+        console.log(FEAR.logo);
         
         FEAR.db.run( FEAR.env, () => {
             FEAR.app.listen( port, (err) => {

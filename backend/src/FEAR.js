@@ -11,6 +11,8 @@ const path = require("path"),
       cloudinary = require("cloudinary"),
       __dirname1 = path.resolve();
 
+const logo = " ________  ________   ______   _______        \r\n|        \\|        \\ \/      \\ |       \\       \r\n| $$$$$$$$| $$$$$$$$|  $$$$$$\\| $$$$$$$\\      \r\n| $$__    | $$__    | $$__| $$| $$__| $$      \r\n| $$  \\   | $$  \\   | $$    $$| $$    $$      \r\n| $$$$$   | $$$$$   | $$$$$$$$| $$$$$$$\\      \r\n| $$      | $$_____ | $$  | $$| $$  | $$      \r\n| $$      | $$     \\| $$  | $$| $$  | $$      \r\n \\$$       \\$$$$$$$$ \\$$   \\$$ \\$$   \\$$      \r\n                                          ";
+
 const loadRoutes = ( app ) => {
   const dir = "routes";
   const modPath = require('path').join( __dirname, dir );
@@ -72,8 +74,11 @@ module.exports = FEAR = (( app ) => {
     db,
     app,
     cloud,
+    logo,
     env: _config,
     load: loadRoutes,
     cluster: () => {}
   }
 })( express() );
+
+

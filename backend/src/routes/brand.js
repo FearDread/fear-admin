@@ -3,7 +3,7 @@ const Brand = require("../controllers/brand");
 const { isAuthorized, isAdmin } = require("../controllers/auth");
 const router = express.Router();
 
-router.get("/", isAuthorized, Brand.list);
+router.get("/", Brand.list);
 router.post("/new", Brand.create);
 router.route("/:id")
         .put(Brand.update)
