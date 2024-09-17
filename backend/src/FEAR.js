@@ -39,7 +39,7 @@ module.exports = FEAR = (( app ) => {
         
   app.set("PORT", 4000);
   app.use(cors({
-      origin: ["http://localhost:4000", "http://fear.master.com:4000", "http://localhost:4001", "http://localhost:3000"],
+      origin: ["*"],
       methods: ["GET", "POST", "PUT", "DELETE"],
       allowedHeaders: ["Content-Type", "Authorization", "Access-Control-Allow-Origin"]
   }));

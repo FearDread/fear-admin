@@ -58,28 +58,35 @@ exports.register = async (req, res) => {
 };
 
 exports.isAuthorized = async (req, res, next) => {
-  let token;
-  if (req?.headers?.authorization?.startsWith("Bearer")) {
-    token = req.headers.authorization.split(" ")[1];
-
-      if (token) {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        
-        await User.findById(decoded?.id)
-          .then((user) => { req.user = user; next();})
-          .catch((error) => { throw new Error("Could not verify Token");});
- 
-      }
+  let token = req.cookies.jwt;
+  
+  if (token) {
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      req.user = await User.findById(decoded.userId).select("-password");
+      next();
+    } catch (error) {
+      res.status(401);
+      throw new Error("Not authorized, token failed.");
+    }
   } else {
-    throw new Error("There is no token attached to header");
+    res.status(401);
+    throw new Error("Not authorized, no token.");
   }
 }
 
-exports.getJWTToken = (user) => {
+exports.getJWTToken = (res, user) => {
   const token = jwt.sign({
       exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24,
       id: user._id,
     }, process.env.JWT_SECRET);
+
+    res.cookie("jwt", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV !== "development",
+      sameSite: "strict",
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+    });
 
   return token;
 }
