@@ -34,7 +34,12 @@ exports.cart = async (req, res) => {
   }
 }
 
-exports.crud = methods.crudController( UserModel );
+const crud = methods.crudController( UserModel );
+for(prop in crud) {
+  if(crud.hasOwnProperty(prop)) {
+    module.exports[prop] = crud[prop];
+  }
+}
 
 //const asyncHandler = require("express-async-handler");
 /*
