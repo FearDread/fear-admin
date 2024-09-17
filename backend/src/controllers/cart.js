@@ -3,7 +3,6 @@ const methods = require("./crud");
 const asyncHandler = require("../libs/handler/async");
 const db = require("../libs/db");
 
-exports.crud = methods.crudController( Cart );
 
 exports.userCart = asyncHandler(async (req, res) => {
     const { productId, color, quantity, price } = req.body;
@@ -86,3 +85,10 @@ exports.updateProductQuantityFromCart = asyncHandler(async (req, res) => {
       throw new Error(error);
     }
 });
+
+const crud = methods.crudController( Cart );
+for(prop in crud) {
+  if(crud.hasOwnProperty(prop)) {
+    module.exports[prop] = crud[prop];
+  }
+}

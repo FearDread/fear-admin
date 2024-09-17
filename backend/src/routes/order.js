@@ -1,15 +1,15 @@
 const router = require("express").Router();
 const Order = require("../controllers/order");
-const methods = Order.crud;
 const { isAuthorized, isAdmin } = require("../controllers/auth");
 
-router.get("/", isAuthorized, methods.list);
+router.get("/", Order.list);
+router.post("/new", Order.create);
 router.route('/:id')
-        .get(methods.read)
-        .put(methods.update);
+        .get(Order.read)
+        .put(Order.update);
 
-router.get("/myOrders", isAuthorized, isAdmin, Order.getMyOrders);
-router.get("/monthly", isAuthorized, Order.getMonthWiseOrderIncome);
-router.get("/yearly", isAuthorized, Order.getYearlyTotalOrder);
+router.get("/myOrders", Order.getMyOrders);
+router.get("/monthly", Order.getMonthWiseOrderIncome);
+router.get("/yearly", Order.getYearlyTotalOrder);
 
 module.exports = router;
