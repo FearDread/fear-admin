@@ -1,16 +1,16 @@
 const router = require("express").Router();
 const User = require("../controllers/user");
 const { isAuthorized, isAdmin } = require("../controllers/auth");
-const methods = User.crud;
+//const methods = User.crud;
 
-router.get("/", isAuthorized, methods.list);
+router.get("/", isAuthorized, User.list);
 router.get("/wishlist", isAuthorized, User.wishlist);
 router.get("/cart", isAuthorized, User.cart);
 
 router.route("/:id", isAuthorized)
-        .get(methods.read)
-        .post(methods.create)
-        .put(methods.update)
-        .delete(methods.delete);
+        .get(User.read)
+        .post(User.create)
+        .put(User.update)
+        .delete(User.delete);
 
 module.exports = router;

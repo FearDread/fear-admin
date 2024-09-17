@@ -68,6 +68,7 @@ exports.isAuthorized = async (req, res, next) => {
         await User.findById(decoded?.id)
           .then((user) => { req.user = user; next();})
           .catch((error) => { throw new Error("Could not verify Token");});
+ 
       }
   } else {
     throw new Error("There is no token attached to header");
