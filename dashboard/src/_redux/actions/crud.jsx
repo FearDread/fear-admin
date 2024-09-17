@@ -1,5 +1,5 @@
 import * as actionTypes from "../types/crud";
-import { request } from "@/request";
+import { request } from "@_request";
 
 export const crud = {
   resetState: () => async (dispatch) => {

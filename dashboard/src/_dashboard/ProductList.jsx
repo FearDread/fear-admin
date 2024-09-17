@@ -4,6 +4,7 @@ import {
   getAdminProducts,
   deleteProduct,
 } from "_redux/actions/product";
+import { crud } from "_redux/actions/crud";
 import {
   Card,
   CardHeader,
@@ -63,8 +64,8 @@ function ProductList() {
     if (isDeleted) {
      dispatch({ type: DELETE_PRODUCT_RESET });
     }
-    dispatch(getAdminProducts());
-
+    //dispatch(getAdminProducts());
+    dispatch(crud.list("products"));
   }, [dispatch]);
 
   useEffect(() => {
