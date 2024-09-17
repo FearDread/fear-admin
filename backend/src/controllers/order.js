@@ -1,68 +1,10 @@
 const Order = require("../models/order");
 const methods = require("./crud");
 
-exports.crud = methods.crudController( Order );
-
-exports.createOrder = async (req, res) => {
-    const {
-      shippingInfo,
-      orderItems,
-      totalPrice,
-      totalPriceAfterDiscount,
-      paymentInfo,
-    } = req.body;
-    const { _id } = req.user;
-    try {
-      const order = await Order.create({
-        shippingInfo,
-        orderItems,
-        totalPrice,
-        totalPriceAfterDiscount,
-        paymentInfo,
-        user: _id,
-      });
-      res.json({
-        order,
-        success: true,
-      });
-    } catch (error) {
-      throw new Error(error);
-    }
-  };
-  
 exports.getMyOrders = async (req, res) => {
     const { _id } = req.user;
     try {
       const orders = await Order.find({ user: _id })
-        .populate("user")
-        .populate("orderItems.product")
-        .populate("orderItems.color");
-      res.json({
-        orders,
-      });
-    } catch (error) {
-      throw new Error(error);
-    }
-};
-  
-exports.getAllOrders = async (req, res) => {
-    const { _id } = req.user;
-    try {
-      const orders = await Order.find().populate("user");
-      // .populate("orderItems.product")
-      // .populate("orderItems.color");
-      res.json({
-        orders,
-      });
-    } catch (error) {
-      throw new Error(error);
-    }
-};
-  
-exports.getSingleOrder = async (req, res) => {
-    const { id } = req.params;
-    try {
-      const orders = await Order.findOne({ _id: id })
         .populate("user")
         .populate("orderItems.product")
         .populate("orderItems.color");
@@ -174,3 +116,10 @@ exports.getYearlyTotalOrder = async (req, res) => {
     ]);
     res.json(data);
 };
+
+const crud = methods.crudController( Order );
+for(prop in crud) {
+  if(crud.hasOwnProperty(prop)) {
+    module.exports[prop] = crud[prop];
+  }
+}
