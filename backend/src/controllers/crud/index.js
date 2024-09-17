@@ -25,6 +25,6 @@ exports.crudController = ( Model ) => {
   methods.search = async (req, res) => {
     crud.search(Model, req, res);
   };
-
+  
   return methods;
 };

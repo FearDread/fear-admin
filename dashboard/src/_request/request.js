@@ -21,7 +21,7 @@ const request = {
     };
     console.log("jsonData", jsonData);
     try {
-      const response = await axiosInstance.post(entity + "/create", jsonData);
+      const response = await axiosInstance.post(entity + "/new", jsonData);
       return successHandler(response);
     } catch (error) {
       return errorHandler(error);
