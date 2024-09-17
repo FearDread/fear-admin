@@ -23,6 +23,7 @@ import {
   Col
 } from "reactstrap";
 
+
 import ImageUpload from "components/CustomUpload/ImageUpload.js";
 
 function NewProduct() {

@@ -16,7 +16,7 @@ require("dotenv").config();
 
             process.on("uncaughtException" , (err) => {
                 console.log(`Server Error , ${err.message}`);
-                process.exit(1);
+                process.exit(1);s
             });
 
             process.on("unhandledRejection" , (err) => { 
