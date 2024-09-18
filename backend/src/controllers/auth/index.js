@@ -25,20 +25,6 @@ exports.login = async (req, res) => {
     .catch((error) => { throw new Error("Could Not find User")});
 }
 
-exports.loginAdmin = async (req, res) => {
-  const { email, password } = req.body;
-  
-  await User.findOne({ email })
-    .then((user) => {
-      if (user && (user.compare(password))) {
-        
-        res.status(200).json({ user, success: true, token: this.getJWTToken(user) });
-      }
-      res.status(300).json({success: false, err: 'invalid Credientials'})
-    })
-    .catch((error) => { throw new Error(error)});
-}
-
 exports.logout = async (req, res, next) => {
 
 }
@@ -60,21 +46,16 @@ exports.register = async (req, res) => {
 };
 
 exports.isAuthorized = async (req, res, next) => {
-  let token = req.cookies.jwt;
-  
-  if (token) {
-    try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      req.user = await User.findById(decoded.userId).select("-password");
-      next();
-    } catch (error) {
-      res.status(401);
-      throw new Error("Not authorized, token failed.");
-    }
-  } else {
+  let { token } = req.cookies.jwt; 
+  if (!token) {
     res.status(401);
     throw new Error("Not authorized, no token.");
   }
+
+  const deCodeToken = jwt.verify(token, process.env.JWT_SECRET);
+  await userModel.findById(deCodeToken.id)
+        .then((user) => { req.user = user; next(); })
+        .catch((error) => { throw new Error(error); }); 
 }
 
 exports.getJWTToken = (res, user) => {
@@ -103,3 +84,12 @@ exports.isAdmin = async (req, res, next) => {
     next();
   }
 }
+
+exports.authorizeRoles = (...roles) => {
+  return (req , res , next) => {
+      if (roles.includes(req.user.role) === false) { 
+        throw new Error(`Role: ${req.user.role} is not allowed to access this resouce `);
+      }
+     next();
+  }
+ }  

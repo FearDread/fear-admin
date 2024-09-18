@@ -1,4 +1,5 @@
 const cloudinary = require("cloudinary");
+const { tryCatch } = require("../../libs/handler/error");
 const cloud = require("../../libs/cloud");
 const db = require("../../libs/db");
 
@@ -11,11 +12,19 @@ const db = require("../../libs/db");
  * @apiSuccess {Boolean} Success: true / false.
  * @apiSuccess {String} Informative message.
  */
-exports.all = async (Model, req, res) => {
-
-
-
-}
+exports.all = tryCatch(async (Model, req, res) => {
+  try {
+    await Model.find()
+    .then((result) => {
+      return res.status(200).json({ result, success: true, message: "All Documents found" });
+    })
+    .catch((error) => {
+      return res.status(400).json({ result: null, success: false, message: "No docs found." });
+    });
+  } catch {
+    throw new Error("Internal Server Error");
+  }
+});
 
 /**
  *  Retrieves a single document by id.
@@ -23,9 +32,9 @@ exports.all = async (Model, req, res) => {
  *  @returns {Document} Single Document
  */
 
-exports.read = async (Model, req, res) => {
+exports.read = tryCatch(async (Model, req, res) => {
   const { id } = req.params;
-  db.validateId(id);
+  //db.validateId(id);
   if (!req.params || req.params.id) throw new Error("No ID");
   const msg = "document with id :: " + req.params.id;
 
@@ -38,10 +47,10 @@ exports.read = async (Model, req, res) => {
       .catch((error) => {
         throw new Error("Unable to find document Error");
       })
-  } catch (err) {
+  } catch {
     throw new Error("Internal Server Error");
   }
-};
+});
 
 /**
  *  Creates a Single document by giving all necessary req.body fields
@@ -49,10 +58,12 @@ exports.read = async (Model, req, res) => {
  *  @returns {string} Message
  */
 
-exports.create = async (Model, req, res) => {
+exports.create = tryCatch(async (Model, req, res) => {
+
   let images = [];
 
   if (req.body.images) {
+      /*
     if (typeof req.body.images === "string") {
       images.push(req.body.images);
     } else {
@@ -80,12 +91,12 @@ exports.create = async (Model, req, res) => {
         });
       }
     }
+      */
     //TODO:: use this instead
-    // let links = [];
-    //links = await cloud.uploadImages(req.body.images);
-    //console.log("img links = ", links);
-    //req.body.images = links;
+    let links = [];
+    links = await cloud.uploadImages(req.body.images);
 
+    req.body.images = links;
     req.body.images = imagesLinks;
   }
 
@@ -102,7 +113,7 @@ exports.create = async (Model, req, res) => {
         throw new Error("Internal Server Error");
       }
     });
-};
+});
 
 /**
  *  Updates a Single document
@@ -110,7 +121,7 @@ exports.create = async (Model, req, res) => {
  *  @returns {Document} Returns updated document
  */
 
-exports.update = async (Model, req, res) => {
+exports.update = tryCatch(async (Model, req, res) => {
   try {
     // Find document by id and updates with the required fields
     const result = await Model.findOneAndUpdate(
@@ -144,7 +155,7 @@ exports.update = async (Model, req, res) => {
       });
     }
   }
-};
+});
 
 /**
  *  Delete a Single document
@@ -152,7 +163,7 @@ exports.update = async (Model, req, res) => {
  *  @returns {string} Message response
  */
 
-exports.delete = async (Model, req, res) => {
+exports.delete = tryCatch(async (Model, req, res) => {
   try {
     // Find the document by id and delete it
 
@@ -179,7 +190,7 @@ exports.delete = async (Model, req, res) => {
       message: "Oops there is an Error",
     });
   }
-};
+});
 
 /**
  *  Get all documents of a Model
@@ -187,43 +198,36 @@ exports.delete = async (Model, req, res) => {
  *  @returns {Object} Results with pagination
  */
 
-exports.list = async (Model, req, res) => {
+exports.list = tryCatch(async (Model, req, res) => {
   const page = req.query.page || 1;
   const limit = parseInt(req.query.items) || 10;
   const skip = page * limit - limit;
 
   try {
-    const resultsPromise = Model.find()
-      .skip(skip)
-      .limit(limit)
-      .sort({ created: "desc" })
+    const countPromise = Model.count();
+    const resultsPromise = Model.find().skip(skip)
+      .limit(limit).sort({ created: "desc" })
       .populate();
 
-    const countPromise = Model.count();
-    const [result, count] = await Promise.all([resultsPromise, countPromise]);
-    const pages = Math.ceil(count / limit);
+    await Promise.all([resultsPromise, countPromise])
+      .then((result, count) => {
 
-    // Getting Pagination Object
-    const pagination = { page, pages, count };
-    if (count > 0) {
-      return res.status(200).json({
-        result,
-        success: true,
-        pagination,
-        message: "Successfully found all documents",
-      });
-    } else {
-      return res.status(203).json({
-        success: false,
-        result: [],
-        pagination,
-        message: "Collection is Empty",
-      });
-    }
+        console.log("list result = ", result);
+        const pages = Math.ceil(count / limit);
+        const pagination = { page, pages, count };
+        if (count > 0) {
+          return res.status(200)
+            .json({ result, success: true, pagination, message: "Successfully found all documents" });
+        } else {
+          return res.status(203)
+            .json({ result: [], success: false, pagination, message: "Collection is Empty" });
+        }
+      })
+      .catch((error) => { return res.status(400).json({ success: false, result: [], error }); });
   } catch {
-    return res.status(500).json({ success: false, result: [], message: "Oops there is an Error" });
+    throw new Error("Oops there is an Error")
   }
-};
+});
 
 /**
  *  Searching documents with specific properties
@@ -231,7 +235,7 @@ exports.list = async (Model, req, res) => {
  *  @returns {Array} List of Documents
  */
 
-exports.search = async (Model, req, res) => {
+exports.search = tryCatch(async (Model, req, res) => {
   if (req.query.q === undefined || req.query.q === "" || req.query.q === " ") {
     return res
       .status(202)
@@ -268,4 +272,4 @@ exports.search = async (Model, req, res) => {
   } catch {
     throw new Error("Internal Server Error");
   }
-};
+});
