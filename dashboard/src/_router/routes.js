@@ -17,8 +17,23 @@ import BrandsList from "_dashboard/BrandsList.jsx";
 import BrandNew from "_dashboard/BrandNew.jsx";
 //import CategoriesList from "_dashboard/CategoryList.jsx";
 //import CategoryNew from "_dashboard/CategoryNew.jsx";
+import Login from "views/pages/Login.jsx";
+import Register from "views/pages/Register.jsx";
+import Pricing from "views/pages/Pricing.js";
 
 const routes = [
+  {
+    path: "/login",
+    name: "Login",
+    component: Login,
+    layout: "/auth"
+  },
+  {
+    path: "/register",
+    name: "Register",
+    component: Register,
+    layout: "/auth"
+  },
   {
     path: "/dashboard",
     name: "Dashboard",
