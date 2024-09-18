@@ -1,6 +1,6 @@
 import axios from "axios";
 import storage from "./storage";
-import { API_BASE_URL } from "../variables/api";
+import { API_BASE_URL } from "./api";
 
 axios.defaults.baseURL = API_BASE_URL;
 
