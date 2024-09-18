@@ -4,8 +4,8 @@ import NotificationAlert from "react-notification-alert";
 import AdminNavbar from "components/Navbars/AdminNavbar.js";
 import Footer from "components/Footer/Footer.js";
 import Sidebar from "components/Sidebar/Sidebar.js";
-import * as Router from "_router";
-import routes from "_router/routes.js";
+import * as Router from "router";
+import routes from "router/routes.js";
 import logo from "assets/img/FEAR/logo.png";
 
 const Admin = (props) => {

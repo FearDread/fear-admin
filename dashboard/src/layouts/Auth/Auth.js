@@ -1,7 +1,7 @@
 import React from "react";
 import { Route, Switch, Redirect } from "react-router-dom";
-import * as Router from "_router";
-import routes from "_router/routes.js";
+import * as Router from "router";
+import routes from "router/auth.js";
 
 import AuthNavbar from "components/Navbars/AuthNavbar.js";
 import Footer from "components/Footer/Footer.js";

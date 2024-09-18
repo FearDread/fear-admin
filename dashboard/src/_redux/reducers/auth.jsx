@@ -1,5 +1,4 @@
 import * as actionTypes from "../types/auth";
-import storage from "../storage";
 
 const INITIAL_STATE = {
   user: {},

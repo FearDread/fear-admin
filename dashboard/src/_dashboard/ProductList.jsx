@@ -65,7 +65,7 @@ function ProductList() {
      dispatch({ type: DELETE_PRODUCT_RESET });
     }
     dispatch(getAdminProducts());
-    //dispatch(crud.list("product"));
+    dispatch(crud.list("product"));
   }, [dispatch]);
 
   useEffect(() => {
