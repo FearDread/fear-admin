@@ -13,10 +13,10 @@ exports.login = async (req, res) => {
   
   await User.findOne({ email })
     .then((user) => {
-      const matching = user.compare(password);
-      console.log("password match = ", matching);
-      if (user && user.compare(password)) {
-        return res.status(200).json({ user, success: true, token: this.getJWTToken(user) });
+      let isMatch = user.compare(password);
+      console.log("password match = ", isMatch);
+      if (user && (user.compare(password)) !== false) {
+        return res.status(200).json({ user, success: true, token: this.getJWTToken(res, user) });
       }
       return res.status(400).json({success: false, err: 'Invalid Credientials'})
     })
