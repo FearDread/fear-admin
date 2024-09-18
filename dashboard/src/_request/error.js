@@ -1,7 +1,4 @@
-//import { notification } from "antd";
-import history from "_utils/history";
-import codeMessage from "./message";
-
+//import { notification } from "antd"
 const error = (error, emptyResult = null) => {
   const { response } = error;
 

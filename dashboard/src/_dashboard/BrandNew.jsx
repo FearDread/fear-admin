@@ -1,9 +1,9 @@
-import { React, useEffect } from "react";
+import { React, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { toast } from "react-toastify";
-import { createBrand, clearErrors } from "../_redux/actions/brand.jsx";
-
+//import { createBrand, clearErrors } from "../_redux/actions/brand.jsx";
+import { crud } from "../_redux/actions/crud";
 import {
   Button,
   Card,
@@ -17,34 +17,32 @@ import {
   Row,
   Col
 } from "reactstrap";
+import Loader from "components/Loader/Loading.js";
 
 const BrandNew = () => {
   const dispatch = useDispatch();
-  const location = useLocation();
-  const navigate = useNavigate();
+  const history = useHistory();
   const [title, setTitle] = useState("");
-  const getBrandId = location.pathname.split("/")[3];
-  const newBrand = useSelector((state) => state.brand);
-  const {
-    success,
-    error,
-    loading,
-    createdBrand,
-    brandName,
-    updatedBrand,
-  } = newBrand;
+  const [isActive, setIsActive] = useState(false);
+  const [success, error, loading] = useSelector((state) => state.brand);
+
   
   const handleSubmitBrand = (e) => {
     e.preventDefault();
 
     const myForm = new FormData();
-    myForm.set('title', title)
+    myForm.set('title', title);
+    myForm.set("isActive", isActive ? isActive : false);
 
-    dispatch(createBrand(myForm));
+    dispatch(crud.create('brand', myForm));
+    //dispatch(createBrand(myForm));
   }
 
   useEffect(() => {
-      dispatch(clearErrors());
+    if (success) {
+      dispatch(crud.resetAction('create'));
+    }
+      dispatch(crud.resetState());
   }, []);
 
   useEffect(() => {
@@ -89,6 +87,19 @@ const BrandNew = () => {
                         </Col>
                       </Row>
                       <Row>
+                        <Label sm="2">Is Active</Label>
+                        <Col sm="10">
+                          <FormGroup>
+                            <Input 
+                              type="checkbox"
+                              name="isActive"
+                              value={isActive}
+                              onChange={(e) => setIsActive(e.target.value)}
+                            />
+                          </FormGroup>
+                        </Col>
+                      </Row>
+                      <Row>
                         <Button
                           onClick={handleSubmitBrand}>
                           SUBMIT
@@ -101,7 +112,9 @@ const BrandNew = () => {
           </Row>
         </div>
       </>
+      )}
+    </>
       );
 };
 
-export default Addbrand;
+export default BrandNew;
