@@ -139,7 +139,7 @@ export function deleteProduct(id) {
     try {
       dispatch({ type: DELETE_PRODUCT_REQUEST });
 
-      const { data } = await axios.delete(API_BASE_URL + "/product/${id}");
+      const { data } = await axios.delete(API_BASE_URL + `/product/${id}`);
     
       dispatch({ type: DELETE_PRODUCT_SUCCESS, payload: data.success });
     } catch (error) {
@@ -158,7 +158,7 @@ export const updateProduct = (id, productData) => async (dispatch) => {
            };
 
            const { data } = await axios.put(
-             API_BASE_URL + "/product/${id}",
+             API_BASE_URL + `/product/${id}`,
              productData,
              config
            );
@@ -181,7 +181,7 @@ export const updateProduct = (id, productData) => async (dispatch) => {
      try {
         dispatch({type : ALL_REVIEW_REQUEST})
 
-        const { data } = await axios.get(API_BASE_URL + "/product/reviews?id=${productId}");
+        const { data } = await axios.get(API_BASE_URL + `/product/reviews?id=${productId}`);
         console.log('review data = ', data);
         dispatch({type : ALL_REVIEW_SUCCESS , payload : data.reviews})
      } catch (error) {

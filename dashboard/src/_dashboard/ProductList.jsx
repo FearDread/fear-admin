@@ -64,8 +64,8 @@ function ProductList() {
     if (isDeleted) {
      dispatch({ type: DELETE_PRODUCT_RESET });
     }
-    //dispatch(getAdminProducts());
-    dispatch(crud.list("product"));
+    dispatch(getAdminProducts());
+    //dispatch(crud.list("product"));
   }, [dispatch]);
 
   useEffect(() => {
