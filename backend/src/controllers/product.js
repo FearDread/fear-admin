@@ -2,7 +2,7 @@ const Product = require("../models/product");
 const methods = require("./crud");
 
 
-exports rating = async (req, res) => {
+exports.rating = async (req, res) => {
   const { _id } = req.user;
   const { star, prodId, comment } = req.body;
 
