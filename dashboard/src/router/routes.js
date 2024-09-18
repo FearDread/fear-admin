@@ -1,10 +1,10 @@
-import Calendar from "views/Calendar.js";
-import Charts from "views/Charts.js";
+import Calendar from "views/pages/Calendar.js";
+import Charts from "views/pages/Charts.js";
+import Notifications from "views/pages/Notification.js";
 import SweetAlert from "views/components/SweetAlert.js";
-import Notifications from "views/Notification.js";
 import Grid from "views/components/Grid.js";
-import RegularForms from "views/forms/RegularForms.js";
-import Wizard from "views/forms/Wizard.js";
+import RegularForms from "views/components/forms/RegularForms.js";
+import Wizard from "views/components/forms/Wizard.js";
 /* ------------------------------------ */
 import User from "views/pages/User.jsx";
 import Dashboard from "views/Dashboard.jsx";
@@ -17,23 +17,9 @@ import BrandsList from "_dashboard/BrandsList.jsx";
 import BrandNew from "_dashboard/BrandNew.jsx";
 //import CategoriesList from "_dashboard/CategoryList.jsx";
 //import CategoryNew from "_dashboard/CategoryNew.jsx";
-import Login from "views/pages/Login.jsx";
-import Register from "views/pages/Register.jsx";
-import Pricing from "views/pages/Pricing.js";
+
 
 const routes = [
-  {
-    path: "/login",
-    name: "Login",
-    component: Login,
-    layout: "/auth"
-  },
-  {
-    path: "/register",
-    name: "Register",
-    component: Register,
-    layout: "/auth"
-  },
   {
     path: "/dashboard",
     name: "Dashboard",

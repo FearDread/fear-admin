@@ -1,9 +1,9 @@
-import { API_BASE_URL, ACCESS_TOKEN_NAME } from "../variables/api";
+import { API_BASE_URL, ACCESS_TOKEN_NAME } from "../../variables/api";
 
 import axios from "axios";
 import errorHandler from "../_request/error";
 import successHandler from "../_request/success";
-import storePersist from "../redux/storePersist";
+import storePersist from "../../_redux/storePersist";
 
 import { getCookie, setCookie, deleteCookie } from "./cookie";
 

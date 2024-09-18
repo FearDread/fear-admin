@@ -1,6 +1,6 @@
 import axios from "axios";
 import * as actionTypes from "../types/user";
-import storage from "../storage";
+import storePersist from "_redux/storePersist";
 import { API_BASE_URL } from "../../variables/api.js";
 
 
@@ -9,7 +9,7 @@ export function loadProfile() {
     try {
       dispatch({ type: actionTypes.LOAD_USER_REQUEST });
       // Check if user data is available in session storage
-      const userData = storage.get("_current");
+      const userData = storePersist.get("_current");
       if ( userData !== undefined ) {
 
         console.log("STORED USER :: ", userData);
@@ -19,7 +19,7 @@ export function loadProfile() {
   
         const response = await axios.get(API_BASE_URL + "/profile");
         console.log("Load Profile Response :: ", response);
-        storage.set("_current", response.result.user);
+
   
         dispatch({ type: actionTypes.LOAD_USER_SUCCESS, payload: response });
       }
@@ -138,7 +138,7 @@ export const getAllUsers  = () => async (dispatch) =>{
 
     dispatch({type : actionTypes.ALL_USERS_REQUEST})
 
-    const response = await axios.get(API_BASE_URL + "/user/all");
+    const response = await axios.get(API_BASE_URL + "/user");
     console.log("user request + ", response);
 
     dispatch({ type: actionTypes.ALL_USERS_SUCCESS, payload: response.data.users});
