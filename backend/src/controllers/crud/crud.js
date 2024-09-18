@@ -97,7 +97,7 @@ exports.create = tryCatch(async (Model, req, res) => {
     links = await cloud.uploadImages(req.body.images);
 
     req.body.images = links;
-    req.body.images = imagesLinks;
+    //req.body.images = imagesLinks;
   }
 
   console.log("Creating Document :: ", req.body);
