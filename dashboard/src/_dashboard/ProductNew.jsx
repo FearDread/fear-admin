@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import { createProduct, clearErrors } from "_redux/actions/product"
 import { NEW_PRODUCT_RESET } from "_redux/types/product";
 
-import { crud } from "@redux/actions";
+import { create, resetState, resetAction } from "../_redux/actions/crud";
 import Loader from "components/Loader/Loading";
 import ReactBSAlert from "react-bootstrap-sweetalert";
 

@@ -9,14 +9,14 @@ import Wizard from "views/forms/Wizard.js";
 import User from "views/pages/User.jsx";
 import Dashboard from "views/Dashboard.jsx";
 import UserList from "_dashboard/UserList.jsx";
-import Products from "_dashboard/ProductList.jsx";
+import ProductList from "_dashboard/ProductList.jsx";
 import NewProduct from "_dashboard/ProductNew.jsx";
-import CouponsList from "_dashboard/CouponsList.jsx";
-import CouponNew from "_dashboard/CouponNew.jsx";
+//import CouponsList from "_dashboard/CouponsList.jsx";
+//import CouponNew from "_dashboard/CouponNew.jsx";
 import BrandsList from "_dashboard/BrandsList.jsx";
 import BrandNew from "_dashboard/BrandNew.jsx";
-import CategoriesList from "_dashboard/CategoryList.jsx";
-import CategoryNew from "_dashboard/CategoryNew.jsx";
+//import CategoriesList from "_dashboard/CategoryList.jsx";
+//import CategoryNew from "_dashboard/CategoryNew.jsx";
 
 const routes = [
   {
@@ -66,7 +66,7 @@ const routes = [
         path: "/products",
         name: "All Products",
         mini: "P",
-        component: Products,
+        component: ProductList,
         layout: "/admin"
       },
       {
@@ -97,6 +97,9 @@ const routes = [
         component: BrandNew,
         layout: "/admin"
       },
+    ],
+  },
+      /*
       {
         path: "/category",
         name: "All Categorys",
@@ -142,6 +145,7 @@ const routes = [
       }
     ]
   },
+  */
   {
     collapse: true,
     name: "Examples",

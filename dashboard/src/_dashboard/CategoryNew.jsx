@@ -1,100 +1,102 @@
-import { React, useEffect } from "react";
-import CustomInput from "../components/CustomInput";
+import { React, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { toast } from "react-toastify";
-import * as yup from "yup";
-import { useFormik } from "formik";
 import {
-  createCategory,
-  getAProductCategory,
-  resetState,
-  updateAProductCategory,
-} from "../features/pcategory/pcategorySlice";
-let schema = yup.object().shape({
-  title: yup.string().required("Category Name is Required"),
-});
-const Addcat = () => {
+  Button,
+  Card,
+  CardHeader,
+  CardBody,
+  CardTitle,
+  FormGroup,
+  Form,
+  Input,
+  Label,
+  Row,
+  Col
+} from "reactstrap";
+import { crud } from "../_redux/actions/crud";
+import Loader from "components/Loader/Loading.js";
+
+const CategoryNew = () => {
   const dispatch = useDispatch();
-  const location = useLocation();
-  const getPCatId = location.pathname.split("/")[3];
-  const navigate = useNavigate();
-  const newCategory = useSelector((state) => state.pCategory);
-  const {
-    isSuccess,
-    isError,
-    isLoading,
-    createdCategory,
-    categoryName,
-    updatedCategory,
-  } = newCategory;
+  const [title, setTitle] = useState("");
+  const [success, error, loading] = useSelector((state) => state.category);
+
+  const handleSubmitBrand = (e) => {
+    e.preventDefault();
+
+    const myForm = new FormData();
+    myForm.set('title', title);
+
+    dispatch(crud.create('category', myForm));
+    //dispatch(createBrand(myForm));
+  }
+
   useEffect(() => {
-    if (getPCatId !== undefined) {
-      dispatch(getAProductCategory(getPCatId));
-    } else {
-      dispatch(resetState());
+    if (success) {
+      dispatch(crud.resetAction('create'));
     }
-  }, [getPCatId]);
+      dispatch(crud.resetState());
+  }, [success]);
+
   useEffect(() => {
-    if (isSuccess && createdCategory) {
+    if (success) {
       toast.success("Category Added Successfullly!");
     }
-    if (isSuccess && updatedCategory) {
-      toast.success("Category Updated Successfullly!");
-      navigate("/admin/list-category");
-    }
-    if (isError) {
+    if (error) {
       toast.error("Something Went Wrong!");
     }
-  }, [isSuccess, isError, isLoading]);
-  const formik = useFormik({
-    enableReinitialize: true,
-    initialValues: {
-      title: categoryName || "",
-    },
-    validationSchema: schema,
-    onSubmit: (values) => {
-      if (getPCatId !== undefined) {
-        const data = { id: getPCatId, pCatData: values };
-        dispatch(updateAProductCategory(data));
-        dispatch(resetState());
-      } else {
-        dispatch(createCategory(values));
-        formik.resetForm();
-        setTimeout(() => {
-          dispatch(resetState());
-        }, 300);
-      }
-    },
-  });
+  }, [ success, error, loading ]);
+
   return (
-    <div>
-      <h3 className="mb-4  title">
-        {getPCatId !== undefined ? "Edit" : "Add"} Category
-      </h3>
-      <div>
-        <form action="" onSubmit={formik.handleSubmit}>
-          <CustomInput
-            type="text"
-            label="Enter Product Category"
-            onChng={formik.handleChange("title")}
-            onBlr={formik.handleBlur("title")}
-            val={formik.values.title}
-            id="brand"
-          />
-          <div className="error">
-            {formik.touched.title && formik.errors.title}
-          </div>
-          <button
-            className="btn btn-success border-0 rounded-3 my-5"
-            type="submit"
-          >
-            {getPCatId !== undefined ? "Edit" : "Add"} Category
-          </button>
-        </form>
-      </div>
-    </div>
-  );
+    <>
+      {loading ? (
+        <Loader />
+      ) : ( 
+        <>
+          <div className="content">
+            <Row>
+              <Col md="12">
+                <Form 
+                  className="form-horizontal"
+                  encType="multipart/form-data">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle tag="h4">Add Default Category</CardTitle>
+                    </CardHeader>
+                    <CardBody>
+                      <Row>
+                        <Label sm="2">Category Name</Label>
+                        <Col sm="10">
+                          <FormGroup>
+                            <Input 
+                              type="name"
+                              autoComplete="off"
+                              name="title"
+                              required
+                              value={title}
+                              onChange={(e) => setTitle(e.target.value)}
+                            />
+                          </FormGroup>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Button
+                          onClick={handleSubmitBrand}>
+                          SUBMIT
+                        </Button>
+                      </Row>
+                  </CardBody>
+                </Card>
+              </Form>
+            </Col>
+          </Row>
+        </div>
+      </>
+      )}
+    </>
+      );
 };
 
-export default Addcat;
+export default CategoryNew;

@@ -1,8 +1,8 @@
 import axios from "axios";
-import { API_BASE_URL, ACCESS_TOKEN_NAME } from "@/config/serverApiConfig";
-import { token as tokenCookies } from "@/auth";
-import errorHandler from "./errorHandler";
-import successHandler from "./successHandler";
+import { API_BASE_URL, ACCESS_TOKEN_NAME } from "../variables/api";
+import { token as tokenCookies } from "../auth";
+import errorHandler from "./error";
+import successHandler from "./success";
 
 const headersInstance = { [ACCESS_TOKEN_NAME]: tokenCookies.get() };
 

@@ -11,28 +11,30 @@ import { Card,
 import SortingTable from "components/SortingTable/SortingTable.js";
 import Loader from "components/Loader/Loading.js";
 import { crud } from "../_redux/actions/crud";
+import logo from "assets/img/FEAR/logo.png";
 
 function Brandlist () {
   const dispatch = useDispatch();
-  const { error, categories, loading } = useSelector((state) => state.categories);
+  const { error, brands, loading } = useSelector((state) => state.brand);
   const history = useHistory();
 
   useEffect(() => {
 
-    dispatch(crud.list('category'));
+    dispatch(crud.list('brand'));
 
   }, [dispatch]);
 
   const tableRows = [];
   const tableHeader = [
-    { text: "_ID" },
-    { text: "Category Name" },
-
+    { text: "Logo" },
+    { text: "Brand Name" },
+    { text: "Active" },
   ];
   brands && brands.forEach((item) => {
     tableRows.push({data: [
-      { text: item._id },
-      { text: item.name }
+      { img: (item.logo.url) ? item.logo.url : logo},
+      { text: item.title },
+      { text: item.isActive }
       ]})
     });
 
@@ -66,4 +68,4 @@ function Brandlist () {
 }
 
 
-export default CategoryList;
+export default Brandlist;
