@@ -20,7 +20,7 @@ exports.tryCatch = (fn) => {
       if (resp instanceof Promise) {
         return resp.catch(next);
       }
-      return resp;
+      return next(resp);
     };
   };
   

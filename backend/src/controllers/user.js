@@ -23,7 +23,7 @@ exports.wishlist = async (req, res) => {
 
 exports.cart = async (req, res) => {
   const { _id } = req.user;
-  db.validateId(_id);
+  //db.validateId(_id);
   try {
     const cart = await Cart.find({ userId: _id })
       .populate("productId")

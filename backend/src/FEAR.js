@@ -20,7 +20,7 @@ const loadRoutes = ( app ) => {
   require('fs').readdirSync(modPath).forEach(( file ) => {
     const name = file.replace(/\.js$/, '');
     const routeModule = require(`./${dir}/${file}`);
-
+    console.log("Route added :: ", '/fear/api/' + name);
     app.use('/fear/api/' + name, routeModule);
   });
 

@@ -2,7 +2,7 @@ const router = require("express").Router();
 const Order = require("../controllers/order");
 const { isAuthorized, isAdmin } = require("../controllers/auth");
 
-router.get("/", Order.list);
+router.get("/all", Order.list);
 router.post("/new", Order.create);
 router.route('/:id')
         .get(Order.read)

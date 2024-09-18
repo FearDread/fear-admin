@@ -111,7 +111,7 @@ export const getAdminProducts = () => async (dispatch) => {
   try {
     dispatch({ type: ADMIN_PRODUCT_REQUEST });
 
-    const response = await axios.get(API_BASE_URL + "/product");
+    const response = await axios.get(API_BASE_URL + "/product/all");
 
     dispatch({ type: ADMIN_PRODUCT_SUCCESS, payload: response.data.result });
   } catch (error) {
