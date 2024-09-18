@@ -482,15 +482,22 @@
         }
     }
 }
-
+$line-color: hsla(205,80%,40%,1);
 
 .main-panel {
     position: relative;
     float: right;
-    width: $full-width;
+    width: $full-width; 
     min-height: 100vh;
     border-top: 2px solid $primary;
-    background: linear-gradient($background-black, $background-states-black);
+    //background: linear-gradient($background-black, $background-states-black);
+    background-color: #13153b;
+    background-image: linear-gradient(45deg, #13153b 22%, #0743de 62%, #021e86 89%);
+    
+    
+    
+
+    
 
     @include transitions (0.50s, cubic-bezier(0.685, 0.0473, 0.346, 1));
 
