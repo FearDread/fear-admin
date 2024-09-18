@@ -16,13 +16,12 @@ require("dotenv").config();
 
             process.on("uncaughtException" , (err) => {
                 console.log(`Server Error , ${err.message}`);
-                process.exit(1);s
+                //process.exit(1);s
             });
 
             process.on("unhandledRejection" , (err) => { 
                 console.log(`Promise Error : ${err.message}`);
                 console.log('Error = ', err);
-                
                 FEAR.app.listen().close(() => {
                     process.exit(1);
                 })
