@@ -141,7 +141,7 @@ export const getAllUsers  = () => async (dispatch) =>{
     const response = await axios.get(API_BASE_URL + "/user");
     console.log("user request + ", response);
 
-    dispatch({ type: actionTypes.ALL_USERS_SUCCESS, payload: response.data.users});
+    dispatch({ type: actionTypes.ALL_USERS_SUCCESS, payload: response.data.result});
     
   } catch (error) {
       dispatch({type : actionTypes.ALL_USERS_FAIL , payload : error})

@@ -53,6 +53,7 @@ exports.notFound = (req, res, next) => {
     };
   
     res.status(500).json({ success: false, errorDetails });
+    next();
   };
   
   /*

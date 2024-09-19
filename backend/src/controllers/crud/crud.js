@@ -209,13 +209,13 @@ exports.list = tryCatch(async (Model, req, res) => {
       .limit(limit).sort({ created: "desc" })
       .populate();
 
-    await Promise.all([resultsPromise, countPromise])
-      .then((result, count) => {
-
+    await Promise.all(resultsPromise)
+      .then((result) => {
+        count = result.length || 1;
         console.log("list result = ", result);
         const pages = Math.ceil(count / limit);
         const pagination = { page, pages, count };
-        if (count > 0) {
+        if (result) {
           return res.status(200)
             .json({ result, success: true, pagination, message: "Successfully found all documents" });
         } else {
