@@ -13,12 +13,7 @@ export function login(email, password) {
     const config = { headers: { "Content-Type": "application/json" } };
     await axios.post( API_BASE_URL + "/auth/login", { email, password }, config )
       .then((response) => {
-        const authValue = {
-          user: response.data.user,
-          loading: false,
-          isLoggedIn: true,
-        };
-        storePersist.set("auth", authValue);
+        storePersist.set("auth", { user: response.data.user, token: response.data.token });
         dispatch({ type: actionTypes.LOGIN_SUCCESS, payload: response.data.user });
       })
       .catch((error) => {

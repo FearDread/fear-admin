@@ -46,8 +46,9 @@ exports.register = async (req, res) => {
 };
 
 exports.isAuthorized = async (req, res, next) => {
-  if ( req.cookies && req.cookies.jwt ) {
-    let token = req.cookies.jwt;
+  console.log("Cecking Authorization :: ", req.cookies);
+  if ( req.cookies && req.cookies["jwt-token"] ) {
+    let token = req.cookies["jwt-token"];
 
   if (!token) {
     throw new Error("Not authorized, no token.");

@@ -39,7 +39,6 @@ module.exports = FEAR = (( app ) => {
         
   app.set("PORT", 4000);
 
-
   app.use(morgan("dev"));
   app.use(express.json());
   app.use(helmet());
@@ -52,7 +51,6 @@ module.exports = FEAR = (( app ) => {
   app.use(logger.error);
   app.use(logger.request);
   app.use((req, res, next) => {
-    //logger.request(req);
     next();
   });
   app.use(cors({
@@ -60,19 +58,17 @@ module.exports = FEAR = (( app ) => {
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization", "Access-Control-Allow-Origin"]
 }));
-
+  //app.use("/fear/api/docs", swaggerUi.serve, swaggerUi.setup(specs))
   app = loadRoutes(app);
-  app.use("/fear/api/docs", swaggerUi.serve, swaggerUi.setup(specs))
+  app.use(express.static(path.join(__dirname1, "/dashboard/build")));
+  app.get("*", (req, res) =>
+    res.sendFile(path.resolve(__dirname1, "dashboard", "build", "index.html"))
+  );
 
   app.use(errors.notFound);
   if ( _config.NODE_ENV === "development" ) {
     app.use(errors.devel);
   }
-
-  app.use(express.static(path.join(__dirname1, "/dashboard/build")));
-  app.get("*", (req, res) =>
-    res.sendFile(path.resolve(__dirname1, "dashboard", "build", "index.html"))
-  );
 
   return {
     db,
