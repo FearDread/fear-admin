@@ -38,11 +38,7 @@ module.exports = FEAR = (( app ) => {
         {parsed: _config} = env;
         
   app.set("PORT", 4000);
-  app.use(cors({
-      origin: ["*", "http://localhost:4001", "http://localhost:4000", "http://localhost:3000"],
-      methods: ["GET", "POST", "PUT", "DELETE"],
-      allowedHeaders: ["Content-Type", "Authorization", "Access-Control-Allow-Origin"]
-  }));
+
 
   app.use(morgan("dev"));
   app.use(express.json());
@@ -50,17 +46,20 @@ module.exports = FEAR = (( app ) => {
   app.use(compression());
   app.use(fileUpload());
   app.use(cookieParser());
-
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(passport.initialize());
-
   app.use(logger.error);
   app.use(logger.request);
   app.use((req, res, next) => {
-    logger.request(req);
+    //logger.request(req);
     next();
   });
+  app.use(cors({
+    origin: ["*", "http://localhost:4001", "http://localhost:4000", "http://localhost:3000"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization", "Access-Control-Allow-Origin"]
+}));
 
   app = loadRoutes(app);
   app.use("/fear/api/docs", swaggerUi.serve, swaggerUi.setup(specs))

@@ -3,7 +3,7 @@ const User = require("../controllers/user");
 const { isAuthorized, isAdmin } = require("../controllers/auth");
 //const methods = User.crud;
 
-router.get("/", User.list);
+router.get("/", User.all);
 router.get("/wishlist", isAuthorized, User.wishlist);
 router.get("/cart", isAuthorized, User.cart);
 
