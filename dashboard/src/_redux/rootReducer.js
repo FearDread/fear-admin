@@ -10,7 +10,7 @@ import userReducer from "./reducers/user";
 import productsReducer from "./reducers/product";
 import storePersist from "./storePersist";
 // Combine all reducers.
-
+/*
 const appReducer = combineReducers({
   auth: authReducer,
   user: userReducer,
@@ -19,18 +19,25 @@ const appReducer = combineReducers({
   product: productsReducer,
   search: searchReducer,
 });
+*/
+
+const appReducer = combineReducers({
+  auth: authReducer,
+  crud: crudReducer
+})
 
 const rootReducer = (state, action) => {
   if (action.type === actionTypes.LOGOUT_SUCCESS) {
     state = undefined;
   }
   
+  /*
   const user = storePersist.get("user");
   if ( user ) {
-    state.user = user;
-    state.user.isLoggedIn = true;
+    state.auth.user = user;
+    state.auth.isLoggedIn = true;
   }
-  
+  */
   return appReducer(state, action);
 };
 

@@ -2,4 +2,9 @@ const Brand = require("../models/brand");
 const methods = require("./crud");
 
 
-module.exports = methods.crudController( Brand );
+const crud = methods.crudController( Brand );
+for(prop in crud) {
+  if(crud.hasOwnProperty(prop)) {
+    module.exports[prop] = crud[prop];
+  }
+}

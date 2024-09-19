@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { toast } from "react-toastify";
 //import { createBrand, clearErrors } from "../_redux/actions/brand.jsx";
-import { crud } from "../_redux/actions/crud";
+import { create, reset } from "../_redux/actions/crud";
 import {
   Button,
   Card,
@@ -34,25 +34,19 @@ const BrandNew = () => {
     myForm.set('title', title);
     myForm.set("isActive", isActive ? isActive : false);
 
-    dispatch(crud.create('brand', myForm));
+    dispatch(create('brand', myForm));
     //dispatch(createBrand(myForm));
   }
 
   useEffect(() => {
     if (success) {
-      dispatch(crud.resetAction('create'));
-    }
-      dispatch(crud.resetState());
-  }, []);
-
-  useEffect(() => {
-    if (success) {
       toast.success("Brand Added Successfullly!");
+      dispatch(reset());
     }
     if (error) {
       toast.error("Something Went Wrong!");
     }
-  }, [ success, error, loading ]);
+  }, [dispatch, success, error]);
 
   return (
     <>

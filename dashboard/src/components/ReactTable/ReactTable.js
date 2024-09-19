@@ -229,52 +229,7 @@ function Table({ columns, data }) {
                       </td>
                     );
                   })}
-                  {/*
-                  <td>
-                    <div className="actions-right">
-
-                      <Button
-                        onClick={() => {
-                          let obj = data[i];
-                          console.log("Clickded row :: ", obj);
-                          //let obj = data.find((o) => o.id === i);
-                          alert("edit action :: " + obj.id);
-
-                        }}
-                        color="warning"
-                        size="sm"
-                        className={classNames("btn-icon btn-link like", {
-                          "btn-neutral": i < 5
-                        })}>
-                        <i className="tim-icons icon-pencil" />
-                     </Button>{" "}
-
-                     <Button
-                      onClick={() => {
-                        var newdata = data;
-                        newdata.find((o, i) => {
-                          if (o.id === i) {
-                            // here you should add some custom code so you can delete the data
-                            // from this component and from your server as well
-                            data.splice(i, 1);
-                            console.log(data);
-                            return true;
-                          }
-                          return false;
-                        });
-                        console.log('remove data ')
-                      }}
-                      color="danger"
-                      size="sm"
-                      className={classNames("btn-icon btn-link like", {
-                      "btn-neutral": i < 5
-                      })}>
-                      <i className="tim-icons icon-simple-remove" />
-                    </Button>{" "}
-                  </div>
-                </td>
-                */}
-              </tr>
+                </tr>
               );
             })}
           </tbody>

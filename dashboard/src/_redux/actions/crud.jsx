@@ -1,6 +1,50 @@
-import * as actionTypes from "../types/crud";
+import axios from "axios";
+import * as Types from "../types/crud";
 import { request } from "../../features/_request";
+import { API_BASE_URL, AXIOS_CONFIG } from "../config";
 
+export const reset = () => async (dispatch) => {
+  dispatch({type: Types.RESET_STATE});
+}
+
+export const create = (formData, entity) => async (dispatch) => {
+  dispatch({type: Types.REQUEST_LOADING});
+  
+  await axios.post(API_BASE_URL + '/' + entity + `/new`, formData,
+    {headers: { "Content-Type": "multipart/form-data" }})
+    .then((response) => {
+      console.log("Crud response :: ", response);
+      dispatch({ type: Types.REQUEST_SUCCESS, payload: response.data.result, key: "create" });
+    })
+    .catch((error) => {
+      dispatch({ type: Types.REQUEST_FAILED, payload: error.message });
+  });
+}
+
+export const list = (entity) => async (dispatch) => {
+  await axios.get(API_BASE_URL + "/" + entity + "/all")
+    .then((resp) => {
+      console.log("Crud list :: ", resp);
+      dispatch({ type: Types.REQUEST_SUCCESS, payload: resp.data.result, keyState: "list" });
+    })
+    .catch((error) => { 
+      dispatch({type: Types.REQUEST_FAILED, payload: error, keyState: "list" });
+    });
+};
+
+export const read = () => async (dispatch) => {
+
+}
+
+export const update = () => async (dispatch) => {
+
+}
+
+export const remove = () => async (dispatch) => {
+
+}
+
+/*
 export const crud = {
   resetState: () => async (dispatch) => {
     dispatch({
@@ -192,3 +236,4 @@ export const crud = {
     }
   },
 };
+*/

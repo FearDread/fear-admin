@@ -3,25 +3,20 @@ import * as actionTypes from "../types/crud";
 const INITIAL_KEY_STATE = {
   result: null,
   current: null,
-  isLoading: false,
-  isSuccess: false,
+  loading: false,
+  success: false,
 };
 
 const INITIAL_STATE = {
-  current: {
-    result: null,
-  },
+  ...INITIAL_KEY_STATE,
   list: {
-    result: {
-      items: [],
-      pagination: {
-        current: 1,
-        pageSize: 10,
-        total: 1,
-      },
+    ...INITIAL_KEY_STATE,
+    result: [],
+    pagination: {
+      current: 1,
+      pageSize: 10,
+      total: 1,
     },
-    isLoading: false,
-    isSuccess: false,
   },
   create: INITIAL_KEY_STATE,
   update: INITIAL_KEY_STATE,
@@ -47,7 +42,7 @@ const crudReducer = (state = INITIAL_STATE, action) => {
         ...state,
         [keyState]: {
           ...state[keyState],
-          isLoading: true,
+          loading: true,
         },
       };
     case actionTypes.REQUEST_FAILED:
@@ -55,8 +50,8 @@ const crudReducer = (state = INITIAL_STATE, action) => {
         ...state,
         [keyState]: {
           ...state[keyState],
-          isLoading: false,
-          isSuccess: false,
+          loading: false,
+          success: false,
         },
       };
     case actionTypes.REQUEST_SUCCESS:
@@ -65,8 +60,8 @@ const crudReducer = (state = INITIAL_STATE, action) => {
         [keyState]: {
           ...state[keyState],
           result: payload,
-          isLoading: false,
-          isSuccess: true,
+          loading: false,
+          success: true,
         },
       };
     case actionTypes.CURRENT_ACTION:

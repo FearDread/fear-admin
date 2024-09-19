@@ -4,7 +4,7 @@ import {
   getAdminProducts,
   deleteProduct,
 } from "_redux/actions/product";
-import { crud } from "_redux/actions/crud";
+import { list, reset } from "_redux/actions/crud";
 import {
   Card,
   CardHeader,
@@ -35,7 +35,7 @@ function ProductList() {
   const dispatch = useDispatch();
   const history = useHistory();
   const [ toggle, setToggle ] = useState(false);
-  const { error, products, loading, isDeleted } = useSelector((state) => state.product);
+  const { success, result, loading } = useSelector((state) => state.crud.list);
   
   const deleteProductHandler = (id) => {
     dispatch(deleteProduct(id));
@@ -61,7 +61,7 @@ function ProductList() {
             <div className="actions-right">
               <Button
                 onClick={() => {
-                          let obj = item;
+                          let obj = item[key];
                           console.log("Clickded row :: ", obj);
                           //let obj = data.find((o) => o.id === i);
                           alert("edit action :: " + key);
@@ -93,11 +93,8 @@ function ProductList() {
   }
 
   useEffect(() => {
-    if (isDeleted) {
-     dispatch({ type: DELETE_PRODUCT_RESET });
-    }
-    dispatch(getAdminProducts());
-    //dispatch(crud.list("product"));
+    //dispatch(getAdminProducts());
+    dispatch(list("product"));
   }, [dispatch]);
 
   useEffect(() => {
@@ -130,7 +127,7 @@ function ProductList() {
                 </CardHeader>
                 <CardBody>
                 <ReactTable
-                  data={displayProducts(products)}
+                  data={displayProducts(result)}
                   filterable
                   resizable={false}
                   columns={header}
