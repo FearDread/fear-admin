@@ -38,7 +38,7 @@ function UserList() {
   ];
   users && users.forEach((item) => {
     tableRows.push({data: [
-      { img: (item.avatar) ? item.avatar.url : logo},
+      { img: (item.avatar.url) ? item.avatar.url : logo},
       { text: item.name },
       { text: item.email },
       { text: item.role }

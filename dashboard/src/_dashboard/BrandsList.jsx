@@ -15,7 +15,7 @@ import logo from "assets/img/FEAR/logo.png";
 
 function Brandlist () {
   const dispatch = useDispatch();
-  const { error, brands, loading } = useSelector((state) => state.brand);
+  const { brands, loading } = useSelector((state) => state.brand);
   const history = useHistory();
 
   useEffect(() => {
