@@ -15,6 +15,7 @@
 
 */
 import React from "react";
+import { useDispatch, useSelector } from "react-redux";
 // nodejs library that concatenates classes
 import classNames from "classnames";
 
@@ -36,8 +37,10 @@ import {
   Modal,
   UncontrolledTooltip
 } from "reactstrap";
+import { logout } from "../../_redux/actions/auth";
 
 const AdminNavbar = (props) => {
+  const dispatch = useDispatch();
   const [collapseOpen, setCollapseOpen] = React.useState(false);
   const [modalSearch, setModalSearch] = React.useState(false);
   const [color, setColor] = React.useState("navbar-transparent");
@@ -68,6 +71,12 @@ const AdminNavbar = (props) => {
   const toggleModalSearch = () => {
     setModalSearch(!modalSearch);
   };
+
+  const handleLogoutClick = (e) => {
+    e.preventDefault();
+
+    dispatch(logout());
+  }
   return (
     <>
       <Navbar
@@ -204,7 +213,12 @@ const AdminNavbar = (props) => {
                   </NavLink>
                   <DropdownItem divider tag="li" />
                   <NavLink tag="li">
-                    <DropdownItem className="nav-item">Log out</DropdownItem>
+                    <DropdownItem 
+                      className="nav-item"
+                      onClick={handleLogoutClick}
+                    >
+                      Log out
+                    </DropdownItem>
                   </NavLink>
                 </DropdownMenu>
               </UncontrolledDropdown>

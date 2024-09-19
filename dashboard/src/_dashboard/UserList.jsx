@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { Card,
    CardHeader, 
    CardBody, 
@@ -12,38 +13,48 @@ import { Card,
    Col } from "reactstrap";
 import SortingTable from "components/SortingTable/SortingTable.js";
 import Loader from "components/Loader/Loading.js";
-import { useSelector, useDispatch } from "react-redux";
+
 import { useHistory } from "react-router-dom";
 import { getAllUsers, clearErrors, deleteUser } from "_redux/actions/user";
+import { list, reset } from "_redux/actions/crud";
 //import { DELETE_USER_RESET } from "_redux/types/user";
 import logo from "assets/img/FEAR/logo.png";
 
+
+const tableHeader = [
+  { text: "Avatar" },
+  { text: "Name" },
+  { text: "Email" },
+  { className: "text-center", text: "Role" }
+];
+
 function UserList() {
   const dispatch = useDispatch();
-  const { error, users, loading } = useSelector((state) => state.user);
+  const { success, result, loading } = useSelector((state) => state.crud.list);
   const history = useHistory();
 
   useEffect(() => {
 
-    dispatch(getAllUsers());
+    dispatch(list('user'));
 
   }, [dispatch]);
+  
+  const displayUsers = (users) => {
+    let tableRows = [];
 
-  const tableRows = [];
-  const tableHeader = [
-    { text: "Avatar" },
-    { text: "Name" },
-    { text: "Email" },
-    { className: "text-center", text: "Role" }
-  ];
-  users && users.forEach((item) => {
-    tableRows.push({data: [
-      { img: (item.avatar.url) ? item.avatar.url : logo},
-      { text: item.name },
-      { text: item.email },
-      { text: item.role }
-      ]})
-    });
+    users && users.forEach((item) => {
+      tableRows.push({data: [
+        { img: (item.avatar.url) ? item.avatar.url : logo},
+        { text: item.name },
+        { text: item.email },
+        { text: item.role }
+        ]})
+      });
+
+    return tableRows;
+  }
+
+
 
   return (
     <>
@@ -103,7 +114,7 @@ function UserList() {
 
                   <SortingTable
                       thead={tableHeader}
-                      tbody={tableRows}
+                      tbody={displayUsers(result)}
                     />
                 </CardBody>
               </Card>

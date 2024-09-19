@@ -10,7 +10,8 @@ import { Card,
    Col } from "reactstrap";
 import SortingTable from "components/SortingTable/SortingTable.js";
 import Loader from "components/Loader/Loading.js";
-import { crud } from "../_redux/actions/crud";
+import { list, reset } from "../_redux/actions/crud";
+import { getBrands, clearErrors } from "../_redux/actions/brand"; 
 import logo from "assets/img/FEAR/logo.png";
 
 function Brandlist () {
@@ -20,8 +21,8 @@ function Brandlist () {
 
   useEffect(() => {
 
-    dispatch(crud.list('brand'));
-
+    //dispatch(crud.list('brand'));
+    dispatch(list('brand'));
   }, [dispatch]);
 
   const tableRows = [];
@@ -32,7 +33,7 @@ function Brandlist () {
   ];
   brands && brands.forEach((item) => {
     tableRows.push({data: [
-      { img: (item.logo.url) ? item.logo.url : logo},
+      { img: (item.logo) ? item.logo.url : logo},
       { text: item.title },
       { text: item.isActive }
       ]})

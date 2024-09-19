@@ -12,7 +12,7 @@ import SortingTable from "components/SortingTable/SortingTable.js";
 import Loader from "components/Loader/Loading.js";
 import { crud } from "../_redux/actions/crud";
 
-function Brandlist () {
+function CategoryList () {
   const dispatch = useDispatch();
   const { error, categories, loading } = useSelector((state) => state.categories);
   const history = useHistory();

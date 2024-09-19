@@ -19,9 +19,8 @@ if (process.env.NODE_ENV === "development") {
 }
 
 const initialState = storePersist.get("auth")
-  ? { auth: storePersist.get("auth") }
+  ? { auth:storePersist.get("auth") }
   : {};
-
 
 const store = createStore(rootReducer, initialState, configStore);
 
