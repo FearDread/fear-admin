@@ -3,6 +3,7 @@ import * as actionTypes from "./types/auth";
 import authReducer from "./reducers/auth";
 import crudReducer  from "./reducers/crud";
 import searchReducer from "./reducers/search";
+import brandReducer from "./reducers/brand";
 
 import userReducer from "./reducers/user";
 
@@ -14,6 +15,7 @@ const appReducer = combineReducers({
   auth: authReducer,
   user: userReducer,
   crud: crudReducer,
+  brand: brandReducer,
   product: productsReducer,
   search: searchReducer,
 });

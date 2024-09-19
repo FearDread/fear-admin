@@ -24,7 +24,7 @@ const header = [
   { Header: "Title", accessor: "title" },
   { Header: "Category", accessor: "category" },
   { Header: "Price", accessor: "price" },
-  { Header: "Stock", accessor: "quantity" },
+  { Header: "Available", accessor: "quantity" },
   { Header: "Brand", accessor: "brand" },
   { Header: "Actions", accessor: "actions", sortable: false, filterable: false }
 ];
@@ -52,7 +52,7 @@ function ProductList() {
           title: item.title,
           category: item.category,
           price: "$" + item.price,
-          stock: item.quantity,
+          quantity: item.quantity || 1,
           brand: item.brand
         })
       });

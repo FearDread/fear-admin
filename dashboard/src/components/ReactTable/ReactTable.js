@@ -21,7 +21,10 @@ function DefaultColumnFilter({
 }) {
   const count = preFilteredRows.length;
 
-  return (
+  return 
+      /*
+      (
+
     <FormGroup>
       <Input
         type="email"
@@ -32,7 +35,9 @@ function DefaultColumnFilter({
         placeholder={`Search ${count} records...`}
       />
     </FormGroup>
-  );
+    
+  )
+    */
 }
 
 function fuzzyTextFilterFn(rows, id, filterValue) {

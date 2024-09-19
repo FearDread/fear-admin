@@ -14,8 +14,8 @@ require("dotenv").config();
                 FEAR.log(`FEAR API Initialized :: Port ${port}`);
             });
 
-            process.on("unhandledRejection", (err) => { 
-                FEAR.log('Promise Error = ', err);
+            process.on("unhandledRejection", (error) => { 
+                FEAR.log("Promise Error :: ", error);
             })
             process.on("uncaughtException", (err) => {
                 FEAR.log("Server Error", err );
