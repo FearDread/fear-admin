@@ -12,6 +12,16 @@ exports.base64 = (file) => {
   `data:${file.mimetype};base64,${file.buffer.toString("base64")}`
 };
 
+exports.uploadAvatar = async ( file ) => {
+  let avatar = {};
+
+  await cloudinary.v2.uploader.upload(file, { folder: "avatar", width: 150, crop: "scale" })
+    .then((resp) => { avatar.public_id = resp.secure_url; avatar.url = resp.secure_url; })
+    .catch((error) => { throw new Error(error); });
+
+  return avatar;
+};
+
 exports.uploadImages = async ( files ) => {
   let images = [];
 
@@ -44,44 +54,6 @@ exports.uploadImages = async ( files ) => {
   }
 
   return imagesLinks;
-}
-
-exports.upload = async ( files ) => {
-  
-  const promises = files.map( async (file) => {
-    
-    return new Promise((resolve, reject) => {
-        cloudinary.uploader.upload( this.base64(file), (result, error) => {
-          if (error) return reject(error);
-          
-          resolve({
-            url: result.secure_url,
-            public_id: result.public_id
-          });
-        });
-    }); 
-  });
-  const result = await Promise.all(promises);
-
-  return result.map((img) => ({
-    public_id: img.public_id,
-    url: img.secure_url,
-  }));
-}
-
-exports.remove = async ( publicIds ) => {
-  
-  const promises = publicIds.map((id) => {
-   
-    return new Promise((resolve, reject) => {
-      cloudinary.uploader.destroy(id, (error, result) => {
-          if (error) return reject(error);
-          resolve();
-      });
-    });
-  });
-
-  await Promise.all(promises);
 }
 
 exports.storage = multer.diskStorage({

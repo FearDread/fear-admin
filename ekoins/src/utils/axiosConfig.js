@@ -1,6 +1,6 @@
-export const base_url = "http://localhost:5000/api/";
-const getTokenFromLocalStorage = localStorage.getItem("customer")
-  ? JSON.parse(localStorage.getItem("customer"))
+export const base_url = "http://localhost:4000/fear/api";
+const getTokenFromLocalStorage = localStorage.getItem("auth")
+  ? JSON.parse(localStorage.getItem("auth"))
   : null;
 
 export const config = {

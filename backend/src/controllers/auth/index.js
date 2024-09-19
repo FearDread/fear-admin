@@ -22,7 +22,7 @@ exports.login = async (req, res) => {
       })
       .catch((error) => { throw new Error(error); });
     })
-    .catch((error) => { throw new Error("Could Not find User")});
+    .catch(() => { throw new Error("Could Not find User")});
 }
 
 exports.logout = async (req, res, next) => {
@@ -46,9 +46,10 @@ exports.register = async (req, res) => {
 };
 
 exports.isAuthorized = async (req, res, next) => {
-  let { token } = req.cookies.jwt; 
+  if ( req.cookies && req.cookies.jwt ) {
+    let token = req.cookies.jwt;
+
   if (!token) {
-    res.status(401);
     throw new Error("Not authorized, no token.");
   }
 
@@ -56,6 +57,11 @@ exports.isAuthorized = async (req, res, next) => {
   await userModel.findById(deCodeToken.id)
         .then((user) => { req.user = user; next(); })
         .catch((error) => { throw new Error(error); }); 
+
+  } else {
+    res.status(401).json({success: false, message: "No Token Cookie"});
+    next();
+  }     
 }
 
 exports.getJWTToken = (res, user) => {

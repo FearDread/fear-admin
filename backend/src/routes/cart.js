@@ -9,9 +9,10 @@ router.route("/:id")
     .get(Cart.read)
     .put(Cart.update)
     .delete(Cart.delete)
-
+/*
 router.route("/product/:id")
     .put(Cart.updateProductQuantityFromCart)
     .delete(Cart.removeProductFromCart);
+*/
 
 module.exports = router;

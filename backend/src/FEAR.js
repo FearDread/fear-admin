@@ -8,7 +8,6 @@ const path = require("path"),
       cors = require("cors"),
       morgan = require("morgan"),
       helmet = require("helmet"),
-      cloudinary = require("cloudinary"),
       __dirname1 = path.resolve();
 
 const logo = " ________  ________   ______   _______        \r\n|        \\|        \\ \/      \\ |       \\       \r\n| $$$$$$$$| $$$$$$$$|  $$$$$$\\| $$$$$$$\\      \r\n| $$__    | $$__    | $$__| $$| $$__| $$      \r\n| $$  \\   | $$  \\   | $$    $$| $$    $$      \r\n| $$$$$   | $$$$$   | $$$$$$$$| $$$$$$$\\      \r\n| $$      | $$_____ | $$  | $$| $$  | $$      \r\n| $$      | $$     \\| $$  | $$| $$  | $$      \r\n \\$$       \\$$$$$$$$ \\$$   \\$$ \\$$   \\$$      \r\n                                          ";
@@ -31,6 +30,7 @@ module.exports = FEAR = (( app ) => {
   const env = require("dotenv").config({ path:"backend/.env"});
   if ( !env || env.error ) throw env.error;
   
+  const logger = require("./libs/logger");
   const { specs, swaggerUi } = require('./libs/swagger');
   const errors = require("./libs/handler/error");
   const cloud = require("./libs/cloud");
@@ -55,7 +55,10 @@ module.exports = FEAR = (( app ) => {
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(passport.initialize());
 
+  app.use(logger.error);
+  app.use(logger.request);
   app.use((req, res, next) => {
+    logger.request(req);
     next();
   });
 
@@ -63,7 +66,9 @@ module.exports = FEAR = (( app ) => {
   app.use("/fear/api/docs", swaggerUi.serve, swaggerUi.setup(specs))
 
   app.use(errors.notFound);
-  app.use(errors.devel);
+  if ( _config.NODE_ENV === "development" ) {
+    app.use(errors.devel);
+  }
 
   app.use(express.static(path.join(__dirname1, "/dashboard/build")));
   app.get("*", (req, res) =>
@@ -75,6 +80,8 @@ module.exports = FEAR = (( app ) => {
     app,
     cloud,
     logo,
+    log: console.log,
+    logger: logger,
     env: _config,
     load: loadRoutes,
     cluster: () => {}
