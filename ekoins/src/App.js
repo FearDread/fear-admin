@@ -1,5 +1,8 @@
 import React from "react";
 import "./App.css";
+import "./assets/css/nucleo-icons.css";
+import "./assets/scss/blk-design-system-react.scss";
+import "./assets/css/blk-design-custom.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout";
 import Home from "./pages/Home";

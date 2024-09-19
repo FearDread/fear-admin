@@ -1,8 +1,4 @@
 .table{
-  background: rgba(0,0,0,.3) !important;
-  > tbody > tr:hover {
-    background: rgba(3, 26, 177, 0.367);
-  }
   > tbody > tr > td {
     color: rgba(255, 255, 255, 0.7) !important;
 
@@ -37,7 +33,6 @@
   > tbody > tr.table-danger > td{
     background-color: $danger;
   }
-
 
     .img-wrapper{
       width: 40px;
@@ -158,59 +153,6 @@
       color: hsla(0,0%,100%,.7);
       text-transform: uppercase;
     }
-
-}
-
-.table-shopping{
-    > thead > tr > th{
-        text-transform: uppercase;
-    }
-    > tbody > tr > td{
-        font-size: $font-paragraph;
-
-        b{
-            display: block;
-            margin-bottom: 5px;
-        }
-    }
-    .td-name{
-        font-weight: $font-weight-normal;
-        font-size: 1.5em;
-        small{
-            color: $dark-gray;
-            font-size: 0.75em;
-            font-weight: $font-weight-light;
-        }
-    }
-    .td-number{
-       font-weight: $font-weight-light;
-
-       .btn-group {
-         padding-right: 15px;
-       }
-   }
-    .td-name{
-        min-width: 200px;
-    }
-    .td-number{
-        text-align: right;
-        min-width: 170px;
-
-        small{
-            margin-right: 3px;
-        }
-    }
-
-    .img-container{
-        width: 120px;
-        max-height: 160px;
-        overflow: hidden;
-        display: block;
-
-        img{
-            width: 100%;
-        }
-    }
 }
 
 .table-responsive{
@@ -222,23 +164,7 @@
     margin-bottom: 30px;
 }
 
-table.tablesorter thead tr .header{
-	background-image: url("../../../img/bg.gif");
-  background-repeat: no-repeat;
-  background-position: center right;
-  cursor: pointer;
-}
-
-table.tablesorter thead tr .headerSortUp {
-	background-image: url("../../../img/asc.gif");
-}
-table.tablesorter thead tr .headerSortDown {
-	background-image: url("../../../img/desc.gif");
-}
-
-
 // datatables
-
 
 .dataTables_wrapper {
   .table-striped tbody tr:nth-of-type(odd) {
