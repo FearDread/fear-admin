@@ -1,5 +1,3 @@
-module.exports = (fn) => (req, res, next) => {
-    Promise.resolve(fn(req, res, next)).catch((error) => {
-      res.status(500).json({ message: error.message });
-    });
+module.exports = (theFunc) => (req, res, next) => {
+  Promise.resolve(theFunc(req, res, next)).catch(next);
 };
