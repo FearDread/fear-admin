@@ -14,6 +14,7 @@ import {
   Col,
   Button
  } from "reactstrap";
+import classNames from "classnames";
 import { useHistory } from "react-router-dom";
 import Loader from "components/Loader/Loading";
 import { DELETE_PRODUCT_RESET } from "_redux/types/product";
@@ -26,6 +27,7 @@ const header = [
   { Header: "Price", accessor: "price" },
   { Header: "Available", accessor: "quantity" },
   { Header: "Brand", accessor: "brand" },
+  { Header: "ID", accessor: "id" },
   { Header: "Actions", accessor: "actions", sortable: false, filterable: false }
 ];
 
@@ -53,7 +55,37 @@ function ProductList() {
           category: item.category,
           price: "$" + item.price,
           quantity: item.quantity || 1,
-          brand: item.brand
+          brand: item.brand,
+          id: item._id,
+          actions: (
+            <div className="actions-right">
+              <Button
+                onClick={() => {
+                          let obj = item;
+                          console.log("Clickded row :: ", obj);
+                          //let obj = data.find((o) => o.id === i);
+                          alert("edit action :: " + key);
+                }}
+                color="warning"
+                size="sm"
+                className={classNames("btn-icon btn-link like", {
+                  "btn-neutral": key < 5
+                })}>
+                <i className="tim-icons icon-pencil" />
+              </Button>{" "}
+              <Button
+                onClick={() => {
+                  console.log('remove data ')
+                }}
+                color="danger"
+                size="sm"
+                className={classNames("btn-icon btn-link like", {
+                  "btn-neutral": key < 5
+                })}>
+                <i className="tim-icons icon-simple-remove" />
+              </Button>{" "}
+            </div>
+          )
         })
       });
     }
