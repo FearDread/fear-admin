@@ -132,26 +132,20 @@ export const resetPassword = (token, passwords) => async (dispatch) => {
 
 
 // get All user Action --> admin 
-export const getAllUsers  = () => async (dispatch) =>{
-     
-  try {
-
-    dispatch({type : actionTypes.ALL_USERS_REQUEST})
-
-    const response = await axios.get(API_BASE_URL + "/user");
-    console.log("user request + ", response);
-
-    dispatch({ type: actionTypes.ALL_USERS_SUCCESS, payload: response.data.result});
-    
-  } catch (error) {
-      dispatch({type : actionTypes.ALL_USERS_FAIL , payload : error})
-  }
-
+export const list  = () => async (dispatch) =>{
+  dispatch({type : actionTypes.ALL_USERS_REQUEST})
+    await axios.get(API_BASE_URL + "/user/all")
+      .then((response) => {
+        dispatch({ type: actionTypes.ALL_USERS_SUCCESS, payload: response.data.result });
+      })
+      .catch((error) => {
+        dispatch({ type: actionTypes.ALL_USERS_FAIL , payload: error })
+      });
 }
 
 // get User details --> admin
 
-export const getUserDetails = (id) => async (dispatch) => {
+export const read = (id) => async (dispatch) => {
   try {
      dispatch({type : actionTypes.USER_DETAILS_REQUEST})
      

@@ -1,22 +1,25 @@
 import * as actionTypes from "../types/crud";
 
 const INITIAL_KEY_STATE = {
-  result: null,
-  current: null,
+  result: [],
+  current: {},
   loading: false,
   success: false,
 };
 
 const INITIAL_STATE = {
-  ...INITIAL_KEY_STATE,
+  current: {
+    result: null,
+  },
   list: {
-    ...INITIAL_KEY_STATE,
     result: [],
     pagination: {
       current: 1,
       pageSize: 10,
       total: 1,
     },
+    loading: false,
+    success: false,
   },
   create: INITIAL_KEY_STATE,
   update: INITIAL_KEY_STATE,

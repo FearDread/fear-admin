@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { toast } from "react-toastify";
-import { createProduct, clearErrors } from "_redux/actions/product"
+import * as Product from "_redux/actions/product"
 import { NEW_PRODUCT_RESET } from "_redux/types/product";
 
 import { create, resetState, resetAction } from "../_redux/actions/crud";
@@ -106,7 +106,7 @@ function NewProduct() {
     
     myForm.set("user", user._id);
     
-    dispatch(createProduct(myForm));
+    dispatch(Product.create(myForm));
   };
 
   const createProductImagesChange = (e) => {

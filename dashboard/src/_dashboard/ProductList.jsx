@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  getAdminProducts,
-  deleteProduct,
+import * as Product from "_redux/actions/product";
+/*
+  list,
+  remove,
 } from "_redux/actions/product";
-import { list, reset } from "_redux/actions/crud";
+import { crud } from "_redux/crud/actions";
+*/
 import {
   Card,
   CardHeader,
@@ -35,13 +37,14 @@ function ProductList() {
   const dispatch = useDispatch();
   const history = useHistory();
   const [ toggle, setToggle ] = useState(false);
-  const { success, result, loading } = useSelector((state) => state.crud.list);
-  
+  const { success, products, loading } = useSelector((state) => state.product);
+
+
   const deleteProductHandler = (id) => {
-    dispatch(deleteProduct(id));
+    dispatch(Product.remove(id));
   };
   
-  const displayProducts = (products) => {
+  const displayProducts = () => {
     let dataTable = [];
 
     if (products && products.length > 0) {
@@ -93,8 +96,8 @@ function ProductList() {
   }
 
   useEffect(() => {
-    //dispatch(getAdminProducts());
-    dispatch(list("product"));
+
+    dispatch(Product.list());
   }, [dispatch]);
 
   useEffect(() => {
@@ -127,7 +130,7 @@ function ProductList() {
                 </CardHeader>
                 <CardBody>
                 <ReactTable
-                  data={displayProducts(result)}
+                  data={displayProducts()}
                   filterable
                   resizable={false}
                   columns={header}

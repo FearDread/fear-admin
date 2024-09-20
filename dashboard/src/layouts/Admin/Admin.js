@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect, useLayoutEffect } from "react";
 import { Route, Switch, Redirect, useLocation } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 import NotificationAlert from "react-notification-alert";
 import AdminNavbar from "components/Navbars/AdminNavbar.js";
 import Footer from "components/Footer/Footer.js";
@@ -9,6 +10,7 @@ import routes from "router/routes.js";
 import logo from "assets/img/FEAR/logo.png";
 
 const Admin = (props) => {
+  const dispatch = useDispatch();
   const [activeColor, setActiveColor] = React.useState("blue");
   const [sidebarMini, setSidebarMini] = React.useState(false);
   const [opacity, setOpacity] = React.useState(0);
@@ -17,7 +19,7 @@ const Admin = (props) => {
   const notificationAlertRef = React.useRef(null);
   const location = useLocation();
 
-  React.useEffect(() => {
+  useEffect(() => {
     document.body.classList.remove("sidebar-mini");
     document.documentElement.scrollTop = 0;
     document.scrollingElement.scrollTop = 0;
@@ -27,7 +29,7 @@ const Admin = (props) => {
     }
   }, [location]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     let innerMainPanelRef = mainPanelRef;
     if (navigator.platform.indexOf("Win") > -1) {
       mainPanelRef.current &&

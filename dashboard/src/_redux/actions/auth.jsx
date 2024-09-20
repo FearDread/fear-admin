@@ -11,7 +11,10 @@ export function login(email, password) {
     const config = { headers: { "Content-Type": "application/json" } };
     await axios.post( API_BASE_URL + "/auth/login", { email, password }, config )
       .then((response) => {
-        storePersist.set("auth", { user: response.data.user, token: response.data.token, isLoggedIn: true });
+        storePersist.set("auth", { user: response.data.user, 
+            token: response.data.token, 
+            isLoggedIn: true 
+          });
         dispatch({ type: actionTypes.LOGIN_SUCCESS, payload: response.data.user });
       })
       .catch((error) => {

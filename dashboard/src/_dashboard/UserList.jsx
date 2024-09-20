@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useHistory } from "react-router-dom";
 import { Card,
    CardHeader, 
    CardBody, 
@@ -9,52 +10,80 @@ import { Card,
    DropdownMenu,
    DropdownItem,
    UncontrolledDropdown,
-   Table,
+   Button,
    Col } from "reactstrap";
-import SortingTable from "components/SortingTable/SortingTable.js";
+import classNames from "classnames";
+import ReactTable from "components/ReactTable/ReactTable.js";
 import Loader from "components/Loader/Loading.js";
+import * as User from "_redux/actions/user";
+import logo from "assets/img/FEAR/logo.png";  
 
-import { useHistory } from "react-router-dom";
-import { getAllUsers, clearErrors, deleteUser } from "_redux/actions/user";
-import { list, reset } from "_redux/actions/crud";
-//import { DELETE_USER_RESET } from "_redux/types/user";
-import logo from "assets/img/FEAR/logo.png";
-
-
-const tableHeader = [
-  { text: "Avatar" },
-  { text: "Name" },
-  { text: "Email" },
-  { className: "text-center", text: "Role" }
+const header = [
+  { Header: "Avatar", accessor: "avatar" },
+  { Header: "Name", accessor: "name" },
+  { Header: "Email", accessor: "email" },
+  { Header: "Role", accessor: "role" },
+  { Header: "Actions", accessor: "actions", sortable: false, filterable: false }
 ];
 
 function UserList() {
   const dispatch = useDispatch();
-  const { success, result, loading } = useSelector((state) => state.crud.list);
+  const { success, users, loading } = useSelector((state) => state.user);
   const history = useHistory();
 
   useEffect(() => {
 
-    dispatch(list('user'));
 
+    dispatch(User.list());
+    
   }, [dispatch]);
   
-  const displayUsers = (users) => {
-    let tableRows = [];
+  const displayUsers = () => {
+    let dataTable = [];
 
-    users && users.forEach((item) => {
-      tableRows.push({data: [
-        { img: (item.avatar.url) ? item.avatar.url : logo},
-        { text: item.name },
-        { text: item.email },
-        { text: item.role }
-        ]})
+    users && users.forEach((item, key) => {
+      dataTable.push({
+        avatar: (
+          <img 
+            src={item.avatar ? item.avatar.url : logo} 
+            className="avatar"/>),
+        name: item.name,
+        email: item.email,
+        role: item.role,
+        actions: (
+          <div className="actions-right">
+            <Button
+              onClick={() => {
+                        let obj = item[key];
+                        console.log("Clickded row :: ", obj);
+                        //let obj = data.find((o) => o.id === i);
+                        alert("edit action :: " + key);
+              }}
+              color="warning"
+              size="sm"
+              className={classNames("btn-icon btn-link like", {
+                "btn-neutral": key < 5
+              })}>
+              <i className="tim-icons icon-pencil" />
+            </Button>{" "}
+            <Button
+              onClick={() => {
+                console.log('remove data ')
+              }}
+              color="danger"
+              size="sm"
+              className={classNames("btn-icon btn-link like", {
+                "btn-neutral": key < 5
+              })}>
+              <i className="tim-icons icon-simple-remove" />
+            </Button>{" "}
+          </div>
+        )
+      })
       });
 
-    return tableRows;
+    return dataTable;
   }
-
-
 
   return (
     <>
@@ -111,11 +140,16 @@ function UserList() {
                 <CardTitle tag="h5">Users Table</CardTitle>
                 </CardHeader>
                 <CardBody>
-
-                  <SortingTable
-                      thead={tableHeader}
-                      tbody={displayUsers(result)}
-                    />
+                  <ReactTable
+                  data={displayUsers()}
+                  filterable
+                  resizable={false}
+                  columns={header}
+                  defaultPageSize={10}
+                  showPaginationTop
+                  showPaginationBottom={true}
+                  className="-striped -highlight"
+                />  
                 </CardBody>
               </Card>
           </Col>
