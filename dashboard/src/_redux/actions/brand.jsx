@@ -1,6 +1,6 @@
 import axios from "axios";
 import * as Types from "../types/brand";
-import { API_BASE_URL } from "variables/api";
+import { API_BASE_URL } from "../config";
 
 export const list = () => async (dispatch) => {
     try {

@@ -1,4 +1,4 @@
-import { React, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -23,8 +23,8 @@ const BrandNew = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const [title, setTitle] = useState("");
-  const [isActive, setIsActive] = useState(false);
-  const [success, error, loading] = useSelector((state) => state.brand);
+  const [isActive, setIsActive] = useState(false);                                          
+  const { success, loading } = useSelector((state) => state.brand);
 
   
   const handleSubmitBrand = (e) => {
@@ -39,13 +39,10 @@ const BrandNew = () => {
 
   useEffect(() => {
     if (success) {
-      toast.success("Brand Added Successfullly!");
-      dispatch(Brand.reset());
+      toast("Added Brand");
     }
-    if (error) {
-      toast.error("Something Went Wrong!");
-    }
-  }, [dispatch, success, error]);
+
+  }, [dispatch, success]);
 
   return (
     <>
@@ -80,19 +77,24 @@ const BrandNew = () => {
                         </Col>
                       </Row>
                       <Row>
-                        <Label sm="2">Is Active</Label>
-                        <Col sm="10">
-                          <FormGroup>
-                            <Input 
-                              type="checkbox"
-                              name="isActive"
-                              value={isActive}
-                              onChange={(e) => setIsActive(e.target.value)}
-                            />
+                        <Label sm="2">Set Active</Label>
+                        <Col className="checkbox-radios" sm="10">
+                          <FormGroup check>
+                            <Label check>
+                            <Input type="checkbox" name="isActive" onChange={(setIsActive(true))} />
+                              <span className="form-check-sign" />
+                              Active
+                            </Label>
+                          </FormGroup>
+                          <FormGroup check>
+                            <Label check>
+                            <Input type="checkbox" name="isActive" onChange={(setIsActive(false))}/>
+                              <span className="form-check-sign" />
+                              Disabled
+                            </Label>
                           </FormGroup>
                         </Col>
-                      </Row>
-                      <Row>
+
                         <Button
                           onClick={handleSubmitBrand}>
                           SUBMIT
