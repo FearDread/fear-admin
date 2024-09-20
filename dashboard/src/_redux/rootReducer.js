@@ -18,7 +18,7 @@ const appReducer = combineReducers({
   //coupon: couponReducer,
   product: productsReducer,
   //category: categoryReducer,
-  search: searchReducer,
+  search: searchReducer
 });
 
 const rootReducer = (state, action) => {
