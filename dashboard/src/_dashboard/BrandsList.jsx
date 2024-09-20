@@ -10,7 +10,7 @@ import { Card,
    Col } from "reactstrap";
 import SortingTable from "components/SortingTable/SortingTable.js";
 import Loader from "components/Loader/Loading.js";
-import { getBrands, clearErrors } from "../_redux/actions/brand"; 
+import * as Brand from "../_redux/actions/brand"; 
 import logo from "assets/img/FEAR/logo.png";
 
 function Brandlist () {
@@ -19,9 +19,7 @@ function Brandlist () {
   const history = useHistory();
 
   useEffect(() => {
-
-    //dispatch(crud.list('brand'));
-    dispatch(list('brand'));
+    dispatch(Brand.list());
   }, [dispatch]);
 
   const tableRows = [];

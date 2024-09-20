@@ -1,7 +1,7 @@
-import { ADD_TO_CART, REMOVE_CART_ITEM, SAVE_SHIPPING_INFO } from "../types/cart";
+import { ADD_TO_CART, REMOVE_CART_ITEM, SAVE_SHIPPING_INFO } from "./types";
 
 
-export function cartReducer(state = { cartItems: [], shippingInfo: {} }, action) {
+const cartReducer = (state = { cartItems: [], shippingInfo: {} }, action) => {
 
   switch (action.type) {
     case ADD_TO_CART:
@@ -49,4 +49,4 @@ export function cartReducer(state = { cartItems: [], shippingInfo: {} }, action)
 
 }
 
-
+export default cartReducer;

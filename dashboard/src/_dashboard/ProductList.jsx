@@ -1,12 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import * as Product from "_redux/actions/product";
-/*
-  list,
-  remove,
-} from "_redux/actions/product";
-import { crud } from "_redux/crud/actions";
-*/
 import {
   Card,
   CardHeader,

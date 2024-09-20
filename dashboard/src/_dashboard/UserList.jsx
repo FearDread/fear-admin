@@ -55,8 +55,7 @@ function UserList() {
             <Button
               onClick={() => {
                         let obj = item[key];
-                        console.log("Clickded row :: ", obj);
-                        //let obj = data.find((o) => o.id === i);
+                        console.log("Edit row :: ", obj);
                         alert("edit action :: " + key);
               }}
               color="warning"
@@ -68,7 +67,7 @@ function UserList() {
             </Button>{" "}
             <Button
               onClick={() => {
-                console.log('remove data ')
+                console.log('remove row ')
               }}
               color="danger"
               size="sm"
@@ -94,52 +93,11 @@ function UserList() {
       <div className="content">
         <Row>
           <Col className="mb-5" md="12">
-
             <Card>
               <CardHeader>
-                <div className="tools float-right">
-                  <UncontrolledDropdown>
-                    <DropdownToggle
-                      caret
-                      className="btn-icon"
-                      color="link"
-                      data-toggle="dropdown"
-                      type="button"
-                    >
-                      <i className="tim-icons icon-settings-gear-63" />
-                    </DropdownToggle>
-                    <DropdownMenu right>
-                      <DropdownItem
-                        href="#pablo"
-                        onClick={(e) => e.preventDefault()}
-                      >
-                        Action
-                      </DropdownItem>
-                      <DropdownItem
-                        href="#pablo"
-                        onClick={(e) => e.preventDefault()}
-                      >
-                        Another action
-                      </DropdownItem>
-                      <DropdownItem
-                        href="#pablo"
-                        onClick={(e) => e.preventDefault()}
-                      >
-                        Something else
-                      </DropdownItem>
-                      <DropdownItem
-                        className="text-danger"
-                        href="#pablo"
-                        onClick={(e) => e.preventDefault()}
-                      >
-                        Remove Data
-                      </DropdownItem>
-                    </DropdownMenu>
-                  </UncontrolledDropdown>
-                </div>
                 <CardTitle tag="h5">Users Table</CardTitle>
-                </CardHeader>
-                <CardBody>
+              </CardHeader>
+              <CardBody>
                   <ReactTable
                   data={displayUsers()}
                   filterable
@@ -150,8 +108,8 @@ function UserList() {
                   showPaginationBottom={true}
                   className="-striped -highlight"
                 />  
-                </CardBody>
-              </Card>
+              </CardBody>
+            </Card>
           </Col>
         </Row>
       </div>
@@ -162,26 +120,3 @@ function UserList() {
 }
 
 export default UserList;
-
-/*
-<Table className="responsive">
-<thead>
-  <tr>
-    <td> Avatar </td>
-    <td> Name </td>
-    <td> Email </td>
-    <td> Rle </td>
-    <td> actions </td>
-  </tr>
-</thead>
-<tbody>
-  {users.map((prop, key) =>  {
-      <tr>
-        <TableCell cell={key} vlaue={prop} />
-      </tr>
-  }
-  )}
-</tbody>
-
-</Table>
-*/
