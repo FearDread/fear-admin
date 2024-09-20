@@ -1,6 +1,5 @@
 import axios from "axios";
 import * as Types from "../types/crud";
-import { request } from "../_request";
 import { API_BASE_URL, AXIOS_CONFIG } from "../config";
 
 export const reset = () => async (dispatch) => {

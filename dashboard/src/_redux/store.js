@@ -4,11 +4,9 @@ import { createLogger } from "redux-logger";
 import rootReducer from "./rootReducer";
 import storePersist from "./storePersist";
 
-
 const logger = createLogger();
 
 let middleware = [thunk];
-
 let configStore = applyMiddleware(...middleware);
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;

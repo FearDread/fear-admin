@@ -4,8 +4,6 @@ import { useHistory } from "react-router-dom";
 import { toast } from "react-toastify";
 import * as Product from "_redux/actions/product"
 import { NEW_PRODUCT_RESET } from "_redux/types/product";
-
-import { create, resetState, resetAction } from "../_redux/actions/crud";
 import Loader from "components/Loader/Loading";
 import ReactBSAlert from "react-bootstrap-sweetalert";
 

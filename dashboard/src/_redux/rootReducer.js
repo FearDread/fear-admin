@@ -1,19 +1,23 @@
 import { combineReducers } from "redux";
 import * as actionTypes from "./types/auth";
 import authReducer from "./reducers/auth";
-import crudReducer  from "./crud/reducer";
+//import crudReducer  from "./crud/reducer";
 import searchReducer from "./reducers/search";
 import brandReducer from "./reducers/brand";
 import userReducer from "./reducers/user";
 import productsReducer from "./reducers/product";
-import storePersist from "./storePersist";
+import cartReducer from "./cart/reducer";
+//import storePersist from "./storePersist";
 
 const appReducer = combineReducers({
   auth: authReducer,
   user: userReducer,
-  crud: crudReducer,
+  cart: cartReducer,
+  //crud: crudReducer,
   brand: brandReducer,
+  //coupon: couponReducer,
   product: productsReducer,
+  //category: categoryReducer,
   search: searchReducer,
 });
 

@@ -2,7 +2,7 @@ import axios from "axios";
 import * as Types from "../types/brand";
 import { API_BASE_URL } from "variables/api";
 
-export const getBrands = () => async (dispatch) => {
+export const list = () => async (dispatch) => {
     try {
       dispatch({ type: Types.ADMIN_BRAND_REQUEST });
   
@@ -14,7 +14,7 @@ export const getBrands = () => async (dispatch) => {
     }
   };
 
-  export const createBrand = (brandData) => async (dispatch) => {
+  export const create = (brandData) => async (dispatch) => {
     dispatch({type: Types.NEW_BRAND_REQUEST});
     await axios.post(API_BASE_URL + `/brand/new`, brandData,
       {headers: { "Content-Type": "multipart/form-data" }})
@@ -23,11 +23,11 @@ export const getBrands = () => async (dispatch) => {
         dispatch({ type: Types.NEW_BRAND_SUCCESS, payload: response.data.result });
       })
       .catch((error) => {
-        dispatch({ type: Types.NEW_BRAND_FAIL, payload: error.message });
+        dispatch({ type: Types.NEW_BRAND_FAIL, payload: error });
     });
   }
   
-  export function deleteBrand(id) {
+  export function remove (id) {
     return async function(dispatch) {
       try {
         dispatch({ type: Types.DELETE_BRAND_REQUEST });
@@ -39,4 +39,8 @@ export const getBrands = () => async (dispatch) => {
         dispatch({ type: Types.DELETE_BRAND_FAIL, payload: error.message });
       }
     };
+  }
+
+  export const reset = () => async (dispatch) => {
+    dispatch({type: Types.CLEAR_ERRORS});
   }
