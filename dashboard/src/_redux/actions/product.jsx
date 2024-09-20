@@ -30,10 +30,10 @@ import {
   ALL_REVIEW_FAIL,
 } from "../types/product";
 import * as Types from "../types/product";
-import { API_BASE_URL } from "variables/api";
+import { API_BASE_URL } from "../config";
 
 // get ALL Products
-export const getProduct = (
+export const search = (
   keyword = "",
   currentPage = 1,
   price = [0, 100000],
@@ -69,7 +69,7 @@ export const getProduct = (
 };
 
 // Get Products Details
-export const getProductDetails = (id) => {
+export const read = (id) => {
   return async (dispatch) => {
     try {
       dispatch({
@@ -107,21 +107,22 @@ export const newReview = (reviewData) => async (dispatch) => {
 };
 
 // admin product request :
-export const getAdminProducts = () => async (dispatch) => {
-  try {
+export const list = () => async (dispatch) => {
     dispatch({ type: ADMIN_PRODUCT_REQUEST });
 
-    const response = await axios.get(API_BASE_URL + "/product/all");
-
-    dispatch({ type: ADMIN_PRODUCT_SUCCESS, payload: response.data.result });
-  } catch (error) {
-    dispatch({ type: ADMIN_PRODUCT_FAIL, payload: error });
-  }
+    await axios.get(API_BASE_URL + "/product/all")
+      .then((response) => {
+        dispatch({ type: ADMIN_PRODUCT_SUCCESS, payload: response.data.result });
+      })
+      .catch((error) => {
+        dispatch({ type: ADMIN_PRODUCT_FAIL, payload: error });
+      });
 };
 
 // Create Product
-export const createProduct = (productData) => async (dispatch) => {
+export const create = (productData) => async (dispatch) => {
   dispatch({type: NEW_PRODUCT_REQUEST});
+
   await axios.post(API_BASE_URL + `/product/new`, productData,
     {headers: { "Content-Type": "multipart/form-data" }})
     .then((response) => {
@@ -129,12 +130,12 @@ export const createProduct = (productData) => async (dispatch) => {
       dispatch({ type: NEW_PRODUCT_SUCCESS, payload: response.data.result });
     })
     .catch((error) => {
-      dispatch({ type: NEW_PRODUCT_FAIL, payload: error.message });
+      dispatch({ type: NEW_PRODUCT_FAIL, payload: error });
   });
 }
 // Delete Product request
 
-export function deleteProduct(id) {
+export function remove(id) {
   return async function(dispatch) {
     try {
       dispatch({ type: DELETE_PRODUCT_REQUEST });

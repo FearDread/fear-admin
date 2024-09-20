@@ -10,7 +10,6 @@ import { Card,
    Col } from "reactstrap";
 import SortingTable from "components/SortingTable/SortingTable.js";
 import Loader from "components/Loader/Loading.js";
-import { list, reset } from "../_redux/actions/crud";
 import { getBrands, clearErrors } from "../_redux/actions/brand"; 
 import logo from "assets/img/FEAR/logo.png";
 

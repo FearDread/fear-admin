@@ -4,6 +4,7 @@ import * as authTypes from "../types/auth";
 const initialState = {
   user: {},
   users: [],
+  success: false,
   isAuthenticated: true,
   loading: false,
   error: null,
@@ -24,6 +25,7 @@ const userReducer = (state = initialState, action) => {
         loading: false,
         isAuthenticated: true,
         user: action.payload,
+        success: true,
         error: null,
       };
     case actionTypes.LOAD_USER_FAIL:
@@ -32,6 +34,7 @@ const userReducer = (state = initialState, action) => {
         loading: false,
         isAuthenticated: false,
         user: {},
+        success: false,
         error: action.payload,
       };
     case actionTypes.CLEAR_ERRORS:
@@ -48,12 +51,14 @@ const userReducer = (state = initialState, action) => {
         return {
           ...state,
           loading: false,
+          success: true,
           users: action.payload,
         };
         case actionTypes.ALL_USERS_FAIL:
           return {
             ...state,
             loading: false,
+            success: false,
             error: action.payload,
           };
     default:
