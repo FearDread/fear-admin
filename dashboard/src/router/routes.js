@@ -6,17 +6,18 @@ import Grid from "views/components/Grid.js";
 import RegularForms from "views/components/forms/RegularForms.js";
 import Wizard from "views/components/forms/Wizard.js";
 /* ------------------------------------ */
-import User from "views/pages/User.jsx";
 import Dashboard from "views/Dashboard.jsx";
+import Profile from "_dashboard/Profile.jsx";
 import UserList from "_dashboard/UserList.jsx";
 import ProductList from "_dashboard/ProductList.jsx";
 import NewProduct from "_dashboard/ProductNew.jsx";
-//import CouponsList from "_dashboard/CouponsList.jsx";
-//import CouponNew from "_dashboard/CouponNew.jsx";
 import BrandsList from "_dashboard/BrandsList.jsx";
 import BrandNew from "_dashboard/BrandNew.jsx";
-//import CategoriesList from "_dashboard/CategoryList.jsx";
-//import CategoryNew from "_dashboard/CategoryNew.jsx";
+import CategoryList from "_dashboard/CategoryList.jsx";
+import CategoryNew from "_dashboard/CategoryNew.jsx";
+
+//import CouponsList from "_dashboard/CouponsList.jsx";
+//import CouponNew from "_dashboard/CouponNew.jsx";
 
 
 const routes = [
@@ -52,7 +53,7 @@ const routes = [
         path: "/profile",
         name: "My Profile",
         mini: "P",
-        component: User,
+        component: Profile,
         layout: "/admin"
       }
     ]
@@ -72,40 +73,45 @@ const routes = [
       },
       {
         path: "/product/new",
-        name: " + Product",
-        mini: "P",
+        name: "Add Product",
+        mini: "+",
         component: NewProduct,
         layout: "/admin"
       },
       {
         path: "/product/reviews",
-        name: "+ Review",
-        mini: "R",
+        name: "Add Review",
+        mini: "+",
         component: Wizard,
         layout: "/admin"
       },
       {
-        path: "/brands",
-        name: "All Brands",
-        mini: "B",
-        component: BrandsList,
-        layout: "/admin"
+        collapse: true,
+        name: "Brands",
+        state: "brandsCollapse",
+        views:[
+          {
+            path: "/brands",
+            name: "All Brands",
+            mini: "B",
+            component: BrandsList,
+            layout: "/admin"
+          },
+          {
+            path: "/brand/new",
+            name: "Add Brand",
+            mini: "+",
+            component: BrandNew,
+            layout: "/admin"
+          },
+        ]
       },
-      {
-        path: "/brand/new",
-        name: " + Brand",
-        mini: "B",
-        component: BrandNew,
-        layout: "/admin"
-      },
-    ],
-  },
-      /*
+
       {
         path: "/category",
-        name: "All Categorys",
+        name: "All Categories",
         mini: "C",
-        component: CategoriesList,
+        component: CategoryList,
         layout: "/admin"
       },
       {
@@ -115,7 +121,7 @@ const routes = [
         component: CategoryNew,
         layout: "/admin"
       },
-    ]
+    ],
   },
   {
     path: "/orders",
@@ -134,19 +140,18 @@ const routes = [
         path: "/coupon",
         name: "All Coupons",
         mini: "C",
-        component: CouponsList,
+        component: Grid,
         layout: "/admin"
       },
       {
         path: "/coupon/new",
         name: "+ Coupon",
         mini: "C",
-        component: CouponNew,
+        component: RegularForms,
         layout: "/admin"
       }
     ]
   },
-  */
   {
     collapse: true,
     name: "Examples",

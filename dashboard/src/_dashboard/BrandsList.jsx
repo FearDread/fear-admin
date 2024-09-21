@@ -1,19 +1,17 @@
 
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useHistory } from "react-router-dom";
 import { Card,
    CardHeader, 
    CardBody, 
    CardTitle, 
    Row, 
    Col } from "reactstrap";
-import SortingTable from "components/SortingTable/SortingTable.js";
 import Loader from "components/Loader/Loading.js";
 import * as Brand from "../_redux/actions/brand"; 
 import logo from "assets/img/FEAR/logo.png";
 import ReactTable from "components/ReactTable/ReactTable.js";
-import ReactActions from "components/ReactTable/ReactActions.js";
+import ReactTableActions from "components/ReactTable/ReactTableActions.js";
 
 function Brandlist () {
   const dispatch = useDispatch();
@@ -42,7 +40,7 @@ function Brandlist () {
             className="avatar"/>),
         title: item.title,
         isActive: item.isActive,
-        actions: ( ReactActions(item, key) ) 
+        actions: ( ReactTableActions(item, key, 'brand') ) 
       })
     })
     return dataTable;

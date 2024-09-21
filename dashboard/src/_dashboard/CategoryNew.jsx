@@ -15,39 +15,32 @@ import {
   Row,
   Col
 } from "reactstrap";
-import { crud } from "../_redux/actions/crud";
+import * as Category from "../_redux/category/actions";
+import { NEW_CATEGORY_RESET } from "_redux/category/types";
 import Loader from "components/Loader/Loading.js";
 
 const CategoryNew = () => {
   const dispatch = useDispatch();
+  const history = useHistory();
   const [title, setTitle] = useState("");
-  const [success, error, loading] = useSelector((state) => state.category);
+  const [success, loading] = useSelector((state) => state.category);
 
-  const handleSubmitBrand = (e) => {
+  const handleSubmitCategory = (e) => {
     e.preventDefault();
 
     const myForm = new FormData();
     myForm.set('title', title);
 
-    dispatch(crud.create('category', myForm));
-    //dispatch(createBrand(myForm));
+    dispatch(Category.create(myForm));
   }
 
   useEffect(() => {
     if (success) {
-      dispatch(crud.resetAction('create'));
-    }
-      dispatch(crud.resetState());
-  }, [success]);
-
-  useEffect(() => {
-    if (success) {
+      dispatch({ type: NEW_CATEGORY_RESET });
       toast.success("Category Added Successfullly!");
+      history.push("/admin/categories");
     }
-    if (error) {
-      toast.error("Something Went Wrong!");
-    }
-  }, [ success, error, loading ]);
+  }, [ success, loading ]);
 
   return (
     <>
@@ -83,7 +76,7 @@ const CategoryNew = () => {
                       </Row>
                       <Row>
                         <Button
-                          onClick={handleSubmitBrand}>
+                          onClick={handleSubmitCategory}>
                           SUBMIT
                         </Button>
                       </Row>

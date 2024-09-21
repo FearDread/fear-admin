@@ -9,7 +9,7 @@ import { Card,
    Col } from "reactstrap";
 
 import ReactTable from "components/ReactTable/ReactTable.js";
-import ReactActions from "components/ReactTable/ReactActions.js";
+import ReactTableActions from "components/ReactTable/ReactTableActions.js";
 import Loader from "components/Loader/Loading.js";
 import * as User from "_redux/actions/user";
 import logo from "assets/img/FEAR/logo.png";  
@@ -43,7 +43,7 @@ function UserList() {
         name: item.name,
         email: item.email,
         role: item.role,
-        actions: ( ReactActions(item, key) ) 
+        actions: ( ReactTableActions(item, key, 'user') ) 
       })
     })
     return dataTable;
