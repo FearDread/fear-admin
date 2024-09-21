@@ -39,7 +39,7 @@ const BrandNew = () => {
 
   useEffect(() => {
     if (success) {
-      toast("Added Brand");
+      history.push("/admin/brands")
     }
 
   }, [dispatch, success]);
