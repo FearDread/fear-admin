@@ -22,7 +22,8 @@ const brandsReducer = (state = initialState, action) => {
     case types.ALL_BRAND_SUCCESS: {
       return {
         loading: false,
-        BRANDs: action.payload,
+        success: true,
+        brands: action.payload,
       };
     }
     case types.ALL_BRAND_FAIL:
@@ -30,7 +31,7 @@ const brandsReducer = (state = initialState, action) => {
       return {
         loading: false,
         success: false,
-        error: action.payload,
+        result: action.payload,
       };
     }
     case types.NEW_BRAND_REQUEST: {
@@ -42,7 +43,7 @@ const brandsReducer = (state = initialState, action) => {
         ...state,
         loading: false,
         success: true,
-        newBRANDData: action.payload.data,
+        brand: action.payload.data,
       };
 
     case types.NEW_BRAND_FAIL: {
@@ -56,7 +57,7 @@ const brandsReducer = (state = initialState, action) => {
       return {
         ...state,
         loading: false,
-        newBRANDData: []
+        brand: []
       };
     // Clear error
     case types.CLEAR_ERRORS:

@@ -6,38 +6,31 @@ import { Card,
    CardBody, 
    CardTitle, 
    Row, 
-   DropdownToggle,
-   DropdownMenu,
-   DropdownItem,
-   UncontrolledDropdown,
-   Button,
    Col } from "reactstrap";
-import classNames from "classnames";
+
 import ReactTable from "components/ReactTable/ReactTable.js";
+import ReactActions from "components/ReactTable/ReactActions.js";
 import Loader from "components/Loader/Loading.js";
 import * as User from "_redux/actions/user";
 import logo from "assets/img/FEAR/logo.png";  
 
-const header = [
-  { Header: "Avatar", accessor: "avatar" },
-  { Header: "Name", accessor: "name" },
-  { Header: "Email", accessor: "email" },
-  { Header: "Role", accessor: "role" },
-  { Header: "Actions", accessor: "actions", sortable: false, filterable: false }
-];
 
 function UserList() {
   const dispatch = useDispatch();
-  const { success, users, loading } = useSelector((state) => state.user);
-  const history = useHistory();
+  const { users, loading } = useSelector((state) => state.user);
 
   useEffect(() => {
-
-
-    dispatch(User.list());
-    
+    dispatch(User.list()); 
   }, [dispatch]);
-  
+
+  const header = [
+    { Header: "Avatar", accessor: "avatar" },
+    { Header: "Name", accessor: "name" },
+    { Header: "Email", accessor: "email" },
+    { Header: "Role", accessor: "role" },
+    { Header: "Actions", accessor: "actions", sortable: false, filterable: false }
+  ];
+
   const displayUsers = () => {
     let dataTable = [];
 
@@ -50,40 +43,12 @@ function UserList() {
         name: item.name,
         email: item.email,
         role: item.role,
-        actions: (
-          <div className="actions-right">
-            <Button
-              onClick={() => {
-                        let obj = item[key];
-                        console.log("Edit row :: ", obj);
-                        alert("edit action :: " + key);
-              }}
-              color="warning"
-              size="sm"
-              className={classNames("btn-icon btn-link like", {
-                "btn-neutral": key < 5
-              })}>
-              <i className="tim-icons icon-pencil" />
-            </Button>{" "}
-            <Button
-              onClick={() => {
-                console.log('remove row ')
-              }}
-              color="danger"
-              size="sm"
-              className={classNames("btn-icon btn-link like", {
-                "btn-neutral": key < 5
-              })}>
-              <i className="tim-icons icon-simple-remove" />
-            </Button>{" "}
-          </div>
-        )
+        actions: ( ReactActions(item, key) ) 
       })
-      });
-
+    })
     return dataTable;
   }
-
+  
   return (
     <>
     {loading ? (
@@ -98,7 +63,7 @@ function UserList() {
                 <CardTitle tag="h5">Users Table</CardTitle>
               </CardHeader>
               <CardBody>
-                  <ReactTable
+                <ReactTable
                   data={displayUsers()}
                   filterable
                   resizable={false}
