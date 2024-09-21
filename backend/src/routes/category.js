@@ -2,7 +2,7 @@ const router = require("express").Router();
 const Category = require("../controllers/category");
 const { authMiddleware, isAdmin } = require("../controllers/auth");
 
-router.get("/all", Category.list);
+router.get("/all", Category.all);
 router.post("/new", Category.create);
 router.route("/:id")
       .get(Category.read)

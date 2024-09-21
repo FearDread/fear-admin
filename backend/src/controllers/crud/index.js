@@ -2,6 +2,7 @@ const crud = require("./crud");
 
 exports.crudController = ( Model ) => {
   let methods = {};
+  
   methods.all = async (req, res) => {
     crud.all(Model, req, res);
   };

@@ -13,16 +13,16 @@ require("dotenv").config();
                 if ( err ) return;
                 FEAR.log(`FEAR API Initialized :: Port ${port}`);
             });
-
-            process.on("unhandledRejection", (error) => { 
-                FEAR.log("Promise Error :: ", error);
+        });
+        
+        process.on("unhandledRejection", (error) => { 
+            FEAR.log("Promise Error :: ", error);
+        });
+        process.on("uncaughtException", (err) => {
+            FEAR.log("Server Error", err );
+            FEAR.app.listen().close(() => {
+                process.exit(1);
             })
-            process.on("uncaughtException", (err) => {
-                FEAR.log("Server Error", err );
-                FEAR.app.listen().close(() => {
-                    process.exit(1);
-                })
-            });
         });
     }
 

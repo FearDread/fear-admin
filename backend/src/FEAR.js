@@ -40,35 +40,40 @@ module.exports = FEAR = (( app ) => {
   app.set("PORT", 4000);
 
   app.use(morgan("dev"));
-  app.use(express.json());
   app.use(helmet());
   app.use(compression());
   app.use(fileUpload());
   app.use(cookieParser());
+
+  app.use(express.json());
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(passport.initialize());
-  app.use(logger.error);
-  app.use(logger.request);
   app.use((req, res, next) => {
+    res.locals.user = req.user;
     next();
   });
   app.use(cors({
     origin: ["*", "http://localhost:4001", "http://localhost:4000", "http://localhost:3000"],
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization", "Access-Control-Allow-Origin"]
-}));
+  }));
   //app.use("/fear/api/docs", swaggerUi.serve, swaggerUi.setup(specs))
   app = loadRoutes(app);
+  app.use(errors.notFound);
+
+  if ( _config.NODE_ENV === "development" ) {
+    app.use(errors.development);
+    app.use(logger.error);
+    app.use(logger.request);
+  } else {
+    app.use(errors.production);
+  }
+
   app.use(express.static(path.join(__dirname1, "/dashboard/build")));
   app.get("*", (req, res) =>
     res.sendFile(path.resolve(__dirname1, "dashboard", "build", "index.html"))
   );
-
-  app.use(errors.notFound);
-  if ( _config.NODE_ENV === "development" ) {
-    app.use(errors.devel);
-  }
 
   return {
     db,

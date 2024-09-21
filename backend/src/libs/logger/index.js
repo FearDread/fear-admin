@@ -44,5 +44,5 @@ function getRequestLogFormatter() {
 
 module.exports = {
     request: createRequestLogger([consoleLog]),
-    error: createErrorLogger([remoteLog, consoleLog])
+    error: createErrorLogger([consoleLog])
 }

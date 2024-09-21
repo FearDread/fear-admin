@@ -22,7 +22,7 @@ exports.tryCatch = (fn) => {
       }
       return next(resp);
     };
-  };
+};
   
   /*
     Not Found Error Handler
@@ -41,7 +41,7 @@ exports.notFound = (req, res, next) => {
   
     In development we show good error messages so if we hit a syntax error or any other previously un-handled error, we can show good info on what happened
   */
-  exports.devel = (err, req, res, next) => {
+exports.development = (err, req, res, next) => {
     err.stack = err.stack || "";
     const errorDetails = {
       message: err.message,
@@ -53,7 +53,6 @@ exports.notFound = (req, res, next) => {
     };
   
     res.status(500).json({ success: false, errorDetails });
-    next();
   };
   
   /*
@@ -61,7 +60,7 @@ exports.notFound = (req, res, next) => {
   
     No stacktraces are leaked to admin
   */
-exports.prod = (err, req, res, next) => {
+exports.production = (err, req, res, next) => {
     res.status(500).json({ success: false, message: "Oops ! Error in Server" });
 };
   
