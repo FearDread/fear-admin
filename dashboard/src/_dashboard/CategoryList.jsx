@@ -8,60 +8,68 @@ import { Card,
    CardTitle, 
    Row, 
    Col } from "reactstrap";
-import SortingTable from "components/SortingTable/SortingTable.js";
+import ReactTable from "components/ReactTable/ReactTable.js";
+import ReactTableActions from "components/ReactTable/ReactTableActions.js";
 import Loader from "components/Loader/Loading.js";
-import { crud } from "../_redux/actions/crud";
+import * as Category from "_redux/category/actions";
 
 function CategoryList () {
   const dispatch = useDispatch();
-  const { error, categories, loading } = useSelector((state) => state.categories);
-  const history = useHistory();
+  const { categories, loading } = useSelector((state) => state.category);
 
   useEffect(() => {
-
-    dispatch(crud.list('category'));
-
+    dispatch(Category.list());
   }, [dispatch]);
 
-  const tableRows = [];
   const tableHeader = [
-    { text: "_ID" },
-    { text: "Category Name" },
+    { Header: "Category", accessor: "title" },
+    { Header: "Actions", accessor: "actions", sortable: false, filterable: false }
+  ]
 
-  ];
-  brands && brands.forEach((item) => {
-    tableRows.push({data: [
-      { text: item._id },
-      { text: item.name }
-      ]})
-    });
+  const displayCategroies = () => {
+    let dataTable = [];
+
+    categories && categories.forEach((item, key) => {
+      dataTable.push({
+        title: item.title,
+        actions: ( ReactTableActions(item, key, 'category') ) 
+      })
+    })
+    return dataTable;
+  }
 
   return (
-    <>
-    {loading ? (
-      <Loader />
-    ) : (
-    <>
-      <div className="content">
-        <Row>
-          <Col className="mb-5" md="12">
-            <Card>
-              <CardHeader>
-                <CardTitle tag="h5">All Brands</CardTitle>
-              </CardHeader>
+      <>
+      {loading ? (
+        <Loader />
+      ) : (
+      <>
+        <div className="content">
+          <Row>
+            <Col className="mb-5" md="12">
+              <Card>
+                <CardHeader>
+                  <CardTitle tag="h5">Product Categories</CardTitle>
+                </CardHeader>
                 <CardBody>
-                  <SortingTable
-                      thead={tableHeader}
-                      tbody={tableRows}
-                    />
+                  <ReactTable
+                    data={displayCategroies()}
+                    filterable
+                    resizable={false}
+                    columns={tableHeader}
+                    defaultPageSize={10}
+                    showPaginationTop
+                    showPaginationBottom={true}
+                    className="-striped -highlight"
+                  />  
                 </CardBody>
               </Card>
-          </Col>
-        </Row>
-      </div>
+            </Col>
+          </Row>
+        </div>
+      </>
+      )}
     </>
-    )}
-  </>
   );
 }
 

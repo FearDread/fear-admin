@@ -87,7 +87,7 @@ function NewProduct() {
     images.forEach((currImg) => {
       myForm.append("images", currImg);
     });
-    myForm.set("user", user._id);
+    myForm.set("useaaaaaar", user._id);
     
     dispatch(Product.create(myForm));
   };

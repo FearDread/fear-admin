@@ -3,16 +3,16 @@ import {
  } from "reactstrap";
 import classNames from "classnames";
 
-const ReactActions = ( item, key ) => {
-    
-    return (
+const ReactActions = ( item, key, type ) => {
+  if ( !type || type === null ) {
+    type = "No Type";
+  }
+  return (
       <div className="actions-right">
       <Button
         onClick={() => {
-                  let obj = item[key];
-                  console.log("Clickded row :: ", obj);
-                  //let obj = data.find((o) => o.id === i);
-                  alert("edit action :: " + key);
+          //let obj = item[key];
+          console.log("edit item :: " + type + " :: ", item);
         }}
         color="warning"
         size="sm"
@@ -23,7 +23,7 @@ const ReactActions = ( item, key ) => {
       </Button>{" "}
       <Button
         onClick={() => {
-          console.log('remove data ')
+          console.log("remove item :: " + type + " :: ", item);
         }}
         color="danger"
         size="sm"
