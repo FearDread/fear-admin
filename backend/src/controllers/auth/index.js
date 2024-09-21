@@ -14,19 +14,19 @@ exports.login = async (req, res) => {
   await User.findOne({ email })
     .then((user) => {
       let isMatch = user.compare(password);
+
       isMatch.then((pass) => {
-        if ( !pass ) {
-          return res.status(400).json({success: false, error: 'Invalid Credientials'})
-        }
-        return res.status(200).json({ user, success: true, token: this.getJWTToken(res, user) });
+        if ( !pass ) return res.status(400).json({success: false, error: 'Invalid Credientials'})
+
+        let token = this.getJWTToken(res, user);
+        return res.status(200).json({ user, success: true, token});
       })
-      .catch((error) => { throw new Error(error); });
-    })
+      .catch((error) => { throw new Error(error); }); })
     .catch(() => { throw new Error("Could Not find User")});
 }
 
 exports.logout = async (req, res, next) => {
-
+  res.cookie("jwt", "");
 }
 
 exports.register = async (req, res) => {
@@ -34,10 +34,10 @@ exports.register = async (req, res) => {
   const newUser = await User.findOne({ email: email });
 
   if (!newUser) {
-
     await User.create(req.body)
       .then((user) => { 
-        return res.status(200).json({user, success: true, token: this.getJWTToken(user)})})
+        let token = this.getJWTToken(res, user);
+        return res.status(200).json({user, success: true, token }); })
       .catch((error) => { throw new Error(error);})
 
   } else {
@@ -47,21 +47,16 @@ exports.register = async (req, res) => {
 
 exports.isAuthorized = async (req, res, next) => {
   console.log("Cecking Authorization :: ", req.cookies);
-  if ( req.cookies && req.cookies["jwt-token"] ) {
-    let token = req.cookies["jwt-token"];
+  if ( req.cookies && req.cookies["jwt"] ) {
+    let token = req.cookies.jwt;
 
-  if (!token) {
-    throw new Error("Not authorized, no token.");
-  }
-
-  const deCodeToken = jwt.verify(token, process.env.JWT_SECRET);
-  await userModel.findById(deCodeToken.id)
+    const deCodeToken = jwt.verify(token, process.env.JWT_SECRET);
+    await userModel.findById(deCodeToken.id)
         .then((user) => { req.user = user; next(); })
         .catch((error) => { throw new Error(error); }); 
 
   } else {
-    res.status(401).json({success: false, message: "No Token Cookie"});
-    next();
+    return res.status(401).json({success: false, message: "No Token Cookie"});
   }     
 }
 

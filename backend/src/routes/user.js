@@ -1,9 +1,9 @@
 const router = require("express").Router();
 const User = require("../controllers/user");
-const { isAuthorized, isAdmin } = require("../controllers/auth");
+const { isAuthorized, isAdmin, authorizeRoles } = require("../controllers/auth");
 //const methods = User.crud;
 
-router.get("/all", User.all);
+router.get("/all", User.all); 
 router.get("/wishlist", isAuthorized, User.wishlist);
 router.get("/cart", isAuthorized, User.cart);
 

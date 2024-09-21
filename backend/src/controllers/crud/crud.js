@@ -1,7 +1,6 @@
-const cloudinary = require("cloudinary");
 const { tryCatch } = require("../../libs/handler/error");
 const cloud = require("../../libs/cloud");
-const db = require("../../libs/db");
+
 
 /**
  * @api {get} /all Request Model information
@@ -13,17 +12,13 @@ const db = require("../../libs/db");
  * @apiSuccess {String} Informative message.
  */
 exports.all = tryCatch(async (Model, req, res) => {
-  try {
-    await Model.find()
+  await Model.find()
     .then((result) => {
       return res.status(200).json({ result, success: true, message: "All Documents found" });
     })
     .catch((error) => {
       return res.status(400).json({ result: null, success: false, message: "No docs found." });
     });
-  } catch {
-    throw new Error("Internal Server Error");
-  }
 });
 
 /**
@@ -59,45 +54,11 @@ exports.read = tryCatch(async (Model, req, res) => {
  */
 
 exports.create = tryCatch(async (Model, req, res) => {
-
-  let images = [];
-
   if (req.body.images) {
-      /*
-    if (typeof req.body.images === "string") {
-      images.push(req.body.images);
-    } else {
-      images = req.body.images;
-    }
-    const imagesLinks = [];
-    const chunkSize = 3;
-    const imageChunks = [];
-    
-    while (images.length > 0) {
-      imageChunks.push(images.splice(0, chunkSize));
-    }
-    for (let chunk of imageChunks) {
-      const uploadPromises = chunk.map((img) =>
-        cloudinary.v2.uploader.upload(img, {
-          folder: "products",
-        })
-      );
-
-      const results = await Promise.all(uploadPromises);
-      for (let result of results) { 
-        imagesLinks.push({
-          product_id: result.public_id,
-          url: result.secure_url,
-        });
-      }
-    }
-      */
-    //TODO:: use this instead
     let links = [];
     links = await cloud.uploadImages(req.body.images);
 
     req.body.images = links;
-    //req.body.images = imagesLinks;
   }
 
   console.log("Creating Document :: ", req.body);
@@ -234,7 +195,6 @@ exports.list = tryCatch(async (Model, req, res) => {
  *  @param {Object} req.query
  *  @returns {Array} List of Documents
  */
-
 exports.search = tryCatch(async (Model, req, res) => {
   if (req.query.q === undefined || req.query.q === "" || req.query.q === " ") {
     return res
