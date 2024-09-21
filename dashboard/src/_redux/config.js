@@ -1,11 +1,11 @@
-const getTokenFromLocalStorage = localStorage.getItem("auth")
-  ? JSON.parse(localStorage.getItem("auth"))
-  : null;
+import storePersist from "./storePersist";
+
+const isAuth = storePersist.get("auth") ? storePersist.get("auth") : null;
 
 export const AXIOS_CONFIG = {
   headers: {
     Authorization: `Bearer ${
-      getTokenFromLocalStorage !== null ? getTokenFromLocalStorage.token : ""
+      isAuth !== null ? isAuth.token : ""
     }`,
     Accept: "application/json",
     "Content-Type": "multipart/form-data"

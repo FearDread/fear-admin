@@ -1,12 +1,11 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
-import { toast } from "react-toastify";
 import * as Product from "_redux/actions/product"
 import { NEW_PRODUCT_RESET } from "_redux/types/product";
 import Loader from "components/Loader/Loading";
 import ReactBSAlert from "react-bootstrap-sweetalert";
-
+import ImageUpload from "components/CustomUpload/ImageUpload.js";
 import {
   Button,
   Card,
@@ -20,9 +19,6 @@ import {
   Row,
   Col
 } from "reactstrap";
-
-
-import ImageUpload from "components/CustomUpload/ImageUpload.js";
 
 function NewProduct() {
   const dispatch = useDispatch();
@@ -38,7 +34,7 @@ function NewProduct() {
   const [alert, setAlert] = React.useState(null);
   const fileInputRef = useRef();
   const { user } = useSelector((state) => state.auth);
-  const { loading, categories, error, success } = useSelector((state) => state.product);
+  const { loading, categories, success } = useSelector((state) => state.product);
 
   const handleCategoryChange = (e) => {
     setCategory(e.target.value);
@@ -56,15 +52,6 @@ function NewProduct() {
    "Misc..",
  ];
 
-  useEffect(() => {
-    if (success) {
-      successAlert();
-      
-      history.push("/admin/products");
-      dispatch({ type: NEW_PRODUCT_RESET });
-    }
-  }, [dispatch, error, history, success]);
-
   const successAlert = () => {
     setAlert(
       <ReactBSAlert
@@ -74,8 +61,7 @@ function NewProduct() {
         onConfirm={() => hideAlert()}
         onCancel={() => hideAlert()}
         confirmBtnBsStyle="success"
-        btnSize=""
-      >
+        btnSize="" >
         Product Added to Store!
       </ReactBSAlert>
     );
@@ -83,11 +69,11 @@ function NewProduct() {
 
   const hideAlert = () => {
     setAlert(null);
+    history.push("/admin/products");
   };
 
   const createProductSubmitHandler = (e) => {
     e.preventDefault();
-    
     const myForm = new FormData();
           
     myForm.set("title", title);
@@ -101,7 +87,6 @@ function NewProduct() {
     images.forEach((currImg) => {
       myForm.append("images", currImg);
     });
-    
     myForm.set("user", user._id);
     
     dispatch(Product.create(myForm));
@@ -123,6 +108,13 @@ function NewProduct() {
       reader.readAsDataURL(file);
     });
   };
+
+  useEffect(() => {
+    if (success) {
+      successAlert();
+      dispatch({ type: NEW_PRODUCT_RESET })
+    }
+  }, [dispatch, success, successAlert]);
 
   return (
     <>
