@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
-import { toast } from "react-toastify";
-//import { createBrand, clearErrors } from "../_redux/actions/brand.jsx";
-import * as Brand from "../_redux/actions/brand";
+import * as Brand from "_redux/actions/brand";
 import {
   Button,
   Card,
@@ -26,7 +24,6 @@ const BrandNew = () => {
   const [isActive, setIsActive] = useState(false);                                          
   const { success, loading } = useSelector((state) => state.brand);
 
-  
   const handleSubmitBrand = (e) => {
     e.preventDefault();
 
@@ -39,10 +36,10 @@ const BrandNew = () => {
 
   useEffect(() => {
     if (success) {
-      history.push("/admin/brands")
+      //history.push("/admin/brands")
     }
 
-  }, [dispatch, success]);
+  }, [success, history]);
 
   return (
     <>
@@ -81,25 +78,23 @@ const BrandNew = () => {
                         <Col className="checkbox-radios" sm="10">
                           <FormGroup check>
                             <Label check>
-                            <Input type="checkbox" name="isActive" onChange={(setIsActive(true))} />
+                            <Input type="checkbox" name="isActive" onChange={(e) => setIsActive(true)} />
                               <span className="form-check-sign" />
                               Active
                             </Label>
                           </FormGroup>
                           <FormGroup check>
                             <Label check>
-                            <Input type="checkbox" name="isActive" onChange={(setIsActive(false))}/>
+                            <Input type="checkbox" name="isActive" onChange={(e) => setIsActive(false)} />
                               <span className="form-check-sign" />
                               Disabled
                             </Label>
                           </FormGroup>
                         </Col>
-
-                        <Button
-                          onClick={handleSubmitBrand}>
+                      </Row>
+                      <Button onClick={handleSubmitBrand}>
                           SUBMIT
                         </Button>
-                      </Row>
                   </CardBody>
                 </Card>
               </Form>
@@ -109,7 +104,7 @@ const BrandNew = () => {
       </>
       )}
     </>
-      );
+  );
 };
 
 export default BrandNew;
