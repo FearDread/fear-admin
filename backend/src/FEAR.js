@@ -58,7 +58,7 @@ module.exports = FEAR = (( app ) => {
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization", "Access-Control-Allow-Origin"]
   }));
-  
+
   //app.use("/fear/api/docs", swaggerUi.serve, swaggerUi.setup(specs))
   app = loadRoutes(app);
 
