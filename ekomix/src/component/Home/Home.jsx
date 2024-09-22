@@ -22,7 +22,7 @@ import TestimonialCard from "../_Testimonials/Card.jsx";
 function Home() {
   const alert = useAlert();
   const dispatch = useDispatch();
-  const { loading, error, products } = useSelector((state) => state.products);
+  const { loading, products } = useSelector((state) => state.products);
 
   React.useEffect(() => {
 

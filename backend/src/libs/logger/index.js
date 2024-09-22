@@ -1,48 +1,49 @@
 const winston = require('winston');
-const consoleLog = new winston.transports.Console();
-const remoteLog = new winston.transports.Http({
-    host: "localhost",
-    port: 3001,
-    path: "/errors"
-});
-
-function createRequestLogger(transports) {
-    const requestLogger = winston.createLogger({
-        format: getRequestLogFormatter(),
-        transports: transports
-    });
-
-    return function logRequest(req, res, next) {
-        requestLogger.info({req, res})
-        next()
-    }
+const levels = {
+  error: 0,
+  warn: 1,
+  info: 2,
+  http: 3,
+  debug: 4,
+}
+const level = () => {
+  const env = process.env.NODE_ENV || 'development'
+  const isDevelopment = env === 'development'
+  return isDevelopment ? 'debug' : 'warn'
+}
+const colors = {
+  error: 'red',
+  warn: 'yellow',
+  info: 'green',
+  http: 'magenta',
+  debug: 'white',
 }
 
-function createErrorLogger(transports) {
-    const errLogger = winston.createLogger({
-        level: 'error',
-        transports: transports
-    })
+winston.addColors(colors)
 
-    return function logError(err, req, res, next) {
-        errLogger.error({err, req, res})
-        next()
-    }
-}
+const format = winston.format.combine(
+  winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss:ms' }),
+  winston.format.colorize({ all: true }),
+  winston.format.printf(
+    (info) => `${info.timestamp} ${info.level}: ${info.message}`,
+  ),
+)
 
-function getRequestLogFormatter() {
-    const {combine, timestamp, printf} = winston.format;
 
-    return combine(
-        timestamp(),
-        printf(info => {
-            const {req, res} = info.message;
-            return `${info.timestamp} ${info.level}: ${req.hostname}${req.port || ''}${req.originalUrl}`;
-        })
-    );
-}
+const transports = [
+  new winston.transports.Console(),
+ // new winston.transports.File({
+   // filename: 'logs/error.log',
+  //  level: 'error',
+ // }),
+ // new winston.transports.File({ filename: 'logs/all.log' }),
+]
 
-module.exports = {
-    request: createRequestLogger([consoleLog]),
-    error: createErrorLogger([consoleLog])
-}
+const logger = winston.createLogger({
+  level: level(),
+  levels,
+  format,
+  transports,
+})
+
+module.exports = logger
