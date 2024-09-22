@@ -86,11 +86,10 @@ export const getAdminProducts = () => async (dispatch) => {
   try {
     dispatch({ type: types.ADMIN_PRODUCT_REQUEST });
 
-    const { data } = await axios.get(API_BASE_URL + "/product");
-    console.log('prod = ', data);
-    dispatch({ type: types.ADMIN_PRODUCT_SUCCESS, payload: data.products });
+    const { data } = await axios.get(API_BASE_URL + "/product/all");
+    dispatch({ type: types.ADMIN_PRODUCT_SUCCESS, payload: data.result });
   } catch (error) {
-    dispatch({ type: types.ADMIN_PRODUCT_FAIL, payload: error.message });
+    dispatch({ type: types.ADMIN_PRODUCT_FAIL, payload: error });
   }
 };
 

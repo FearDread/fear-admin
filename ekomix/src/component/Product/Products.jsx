@@ -5,7 +5,7 @@ import Loader from "../layouts/loader/Loader";
 import { useAlert } from "react-alert";
 import { useRouteMatch } from "react-router-dom";
 import MetaData from "../layouts/MataData/MataData";
-import { clearErrors, getProduct } from "../../_store/actions/productAction";
+import { clearErrors, getProduct, getAdminProducts } from "../../_store/actions/productAction";
 import Pagination from "react-js-pagination";
 import Slider from "@mui/material/Slider";
 import { Typography } from "@mui/material";
@@ -65,6 +65,8 @@ function Products() {
       alert.error(error);
       dispatch(clearErrors());
     }
+
+    dispatch(getAdminProducts());
     dispatch(getProduct(keyword, currentPage, price, category, ratings));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, keyword, currentPage, price, ratings, category]);
