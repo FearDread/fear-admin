@@ -77,15 +77,14 @@ function App() {
 
   useEffect(() => {
     const stripeApiKey = sessionStorage.getItem("stripeApiKey");
+    console.log('stripe key ::', stripeApiKey);
     if (stripeApiKey) {
-      console.log('stripe key fount');
-      setStripeApiKey(stripeApiKey);
+      //setStripeApiKey(stripeApiKey);
     } else {
-      getStripeApiKey();
+      //getStripeApiKey();
     }
-
     dispatch(UserProfile());
-  }, []);
+  }, [dispatch]);
 
   return (
     <>
@@ -97,7 +96,6 @@ function App() {
             render={() => (
               <>
                 {<Header />}
-
                 <Home />
                 {<Footer />}
               </>
@@ -462,13 +460,14 @@ function App() {
             />
           </Switch>
         </Suspense>
-
+      {/*
         <Elements stripe={loadStripe(stripeApiKey)}>
           <Route exact path="/process/payment">
             {<Header />}
             <PrivateRoute exact path="/process/payment" component={Payment} />
           </Route>
         </Elements>
+      */}
       </Router>
     </>
   );
