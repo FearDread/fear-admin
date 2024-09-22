@@ -32,19 +32,9 @@ exports.read = tryCatch(async (Model, req, res) => {
   //db.validateId(id);
   if (!req.params || req.params.id) throw new Error("No ID");
   const msg = "document with id :: " + req.params.id;
-
-  try {
-    await Model.findOne({ _id: req.params.id })
-      .then((result) => {
-        if (!result) return res.status(404).json({ result:null, success: false, message: "No " + msg });
-        return res.status(200).json({ result, success: true, message: "Found " + msg });
-      })
-      .catch((error) => {
-        throw new Error("Unable to find document Error");
-      })
-  } catch {
-    throw new Error("Internal Server Error");
-  }
+  await Model.findOne({ _id: req.params.id })
+    .then((result) => { return res.status(200).json({ result, success: true, message: "Found " + msg }); })
+    .catch((error) => { return res.status(404).json({ result:null, success: false, message: "No " + msg }); })
 });
 
 /**
@@ -161,7 +151,7 @@ exports.delete = tryCatch(async (Model, req, res) => {
 
 exports.list = tryCatch(async (Model, req, res) => {
   const page = req.query.page || 1;
-  const limit = parseInt(req.query.items) || 10;
+  const limit = 10;
   const skip = page * limit - limit;
 
   try {

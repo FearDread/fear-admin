@@ -6,7 +6,6 @@ const path = require("path"),
       cookieParser = require("cookie-parser"),
       fileUpload = require("express-fileupload"),
       cors = require("cors"),
-      morgan = require("morgan"),
       helmet = require("helmet"),
       __dirname1 = path.resolve();
 
@@ -31,6 +30,7 @@ module.exports = FEAR = (( app ) => {
   if ( !env || env.error ) throw env.error;
   
   const logger = require("./libs/logger");
+  const morgan = require("./libs/logger/morgan");
   const { specs, swaggerUi } = require('./libs/swagger');
   const errors = require("./libs/handler/error");
   const cloud = require("./libs/cloud");
@@ -39,7 +39,7 @@ module.exports = FEAR = (( app ) => {
         
   app.set("PORT", 4000);
 
-  app.use(morgan("dev"));
+  app.use(morgan);
   app.use(helmet());
   app.use(compression());
   app.use(fileUpload());
@@ -58,18 +58,11 @@ module.exports = FEAR = (( app ) => {
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization", "Access-Control-Allow-Origin"]
   }));
+  
   //app.use("/fear/api/docs", swaggerUi.serve, swaggerUi.setup(specs))
   app = loadRoutes(app);
+
   app.use(errors.notFound);
-
-  if ( _config.NODE_ENV === "development" ) {
-    app.use(errors.development);
-    app.use(logger.error);
-    app.use(logger.request);
-  } else {
-    app.use(errors.production);
-  }
-
   app.use(express.static(path.join(__dirname1, "/dashboard/build")));
   app.get("*", (req, res) =>
     res.sendFile(path.resolve(__dirname1, "dashboard", "build", "index.html"))
@@ -80,8 +73,7 @@ module.exports = FEAR = (( app ) => {
     app,
     cloud,
     logo,
-    log: console.log,
-    logger: logger,
+    log: logger,
     env: _config,
     load: loadRoutes,
     cluster: () => {}
