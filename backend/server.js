@@ -5,6 +5,7 @@ require("dotenv").config();
 (async () => {
 
     async function start() {
+        
         const port = FEAR.app.get("PORT");
         FEAR.log.warn(FEAR.logo);
         
@@ -18,6 +19,7 @@ require("dotenv").config();
         process.on("unhandledRejection", (error) => { 
             FEAR.log.error("Promise Error :: ", error);
         });
+
         process.on("uncaughtException", (err) => {
             FEAR.log.error("Server Error", err );
             FEAR.app.listen().close(() => {
