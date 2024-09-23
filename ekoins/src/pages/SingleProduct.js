@@ -8,7 +8,7 @@ import Color from "../components/Color";
 import { TbGitCompare } from "react-icons/tb";
 import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import watch from "../images/watch.jpg";
+import watch from "../assets/images/watch.jpg";
 import Container from "../components/Container";
 import { addToWishlist } from "../features/products/productSlilce";
 import { useDispatch, useSelector } from "react-redux";

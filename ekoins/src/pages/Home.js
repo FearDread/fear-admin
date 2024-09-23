@@ -6,13 +6,13 @@ import ProductCard from "../components/ProductCard";
 import SpecialProduct from "../components/SpecialProduct";
 import Container from "../components/Container";
 import { services } from "../utils/Data";
-import prodcompare from "../images/prodcompare.svg";
-import wish from "../images/wish.svg";
-import wishlist from "../images/wishlist.svg";
-import watch from "../images/watch.jpg";
-import watch2 from "../images/watch-1.avif";
-import addcart from "../images/add-cart.svg";
-import view from "../images/view.svg";
+import prodcompare from "../assets/images/prodcompare.svg";
+import wish from "../assets/images/wish.svg";
+import wishlist from "../assets/images/wishlist.svg";
+import watch from "../assets/images/watch.jpg";
+import watch2 from "../assets/images/watch-1.avif";
+import addcart from "../assets/images/add-cart.svg";
+import view from "../assets/images/view.svg";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllBlogs } from "../features/blogs/blogSlice";
 import moment from "moment";
@@ -67,7 +67,7 @@ const Home = () => {
             <div className="d-flex flex-wrap gap-10 justify-content-between align-items-center">
               <div className="small-banner position-relative">
                 <img
-                  src="images/catbanner-01.jpg"
+                  src="assets/images/catbanner-01.jpg"
                   className="img-fluid rounded-3"
                   alt="main banner"
                 />
@@ -81,7 +81,7 @@ const Home = () => {
               </div>
               <div className="small-banner position-relative">
                 <img
-                  src="images/catbanner-02.jpg"
+                  src="assets/images/catbanner-02.jpg"
                   className="img-fluid rounded-3"
                   alt="main banner"
                 />
@@ -95,7 +95,7 @@ const Home = () => {
               </div>
               <div className="small-banner position-relative ">
                 <img
-                  src="images/catbanner-03.jpg"
+                  src="assets/images/catbanner-03.jpg"
                   className="img-fluid rounded-3"
                   alt="main banner"
                 />
@@ -109,7 +109,7 @@ const Home = () => {
               </div>
               <div className="small-banner position-relative ">
                 <img
-                  src="images/catbanner-04.jpg"
+                  src="assets/images/catbanner-04.jpg"
                   className="img-fluid rounded-3"
                   alt="main banner"
                 />
