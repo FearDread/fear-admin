@@ -1,6 +1,6 @@
 import React from "react";
 import MataData from "../layouts/MataData/MataData";
-import { clearErrors, getAdminProducts } from "../../_store/actions/productAction";
+// import { clearErrors, getAdminProducts } from "../../_store/actions/productAction";
 import { useSelector, useDispatch } from "react-redux";
 import Loader from "../layouts/loader/Loader";
 import { useAlert } from "react-alert";
@@ -18,6 +18,7 @@ import AnimatedHero from "../AnimatedHero/AnimatedHero";
 import AnimatedBackground from "../AnimatedBackground/AnimatedBackground";
 import PixleStars from "../PixleStars/PixleStars";
 import TestimonialCard from "../_Testimonials/Card.jsx";
+import { getAdminProducts } from "../../../../libs/features/src/products/slice"
 
 function Home() {
   const alert = useAlert();

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { base_url, config } from "../../utils/axiosConfig";
+import { API_BSE_URL, AXIOS_CONFIG } from "../app/config";
 
 const AuthService = {
   register: async (userData) => {
@@ -16,7 +16,7 @@ const AuthService = {
       localStorage.setItem("customer", JSON.stringify(response.data));
     }
     return response.data;
-  };
+  }
   
 }
 
