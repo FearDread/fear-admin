@@ -90,22 +90,16 @@ function App() {
     <>
       <Router>
         <Switch>
-          <Route
-            exact
-            path="/"
-            render={() => (
+          <Route exact path="/" render={() => (
               <>
                 {<Header />}
                 <Home />
                 {<Footer />}
               </>
-            )}
+            )} 
           />
 
-          <Route
-            exact
-            path="/product/:id"
-            render={() => (
+          <Route exact path="/product/:id" render={() => (
               <>
                 {<Header />}
                 <Services />
