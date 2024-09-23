@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { NavLink, Link, useNavigate } from "react-router-dom";
 import { BsSearch } from "react-icons/bs";
-import compare from "../images/compare.svg";
-import wishlist from "../images/wishlist.svg";
-import user from "../images/user.svg";
-import cart from "../images/cart.svg";
-import menu from "../images/menu.svg";
+import compare from "../assets/images/compare.svg";
+import wishlist from "../assets/images/wishlist.svg";
+import user from "../assets/images/user.svg";
+import cart from "../assets/images/cart.svg";
+import menu from "../assets/images/menu.svg";
 import { useDispatch, useSelector } from "react-redux";
 import { Typeahead } from "react-bootstrap-typeahead";
 import "react-bootstrap-typeahead/css/Typeahead.css";

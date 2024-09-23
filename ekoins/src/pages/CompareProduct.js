@@ -2,7 +2,7 @@ import React from "react";
 import BreadCrumb from "../components/BreadCrumb";
 import Color from "../components/Color";
 import Meta from "../components/Meta";
-import watch from "../images/watch.jpg";
+import watch from "../assets/images/watch.jpg";
 import Container from "../components/Container";
 
 const CompareProduct = () => {

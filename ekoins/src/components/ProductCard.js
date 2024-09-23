@@ -2,12 +2,12 @@ import React, { useEffect } from "react";
 import ReactStars from "react-rating-stars-component";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import wish from "../images/wish.svg";
+import wish from "../assets/images/wish.svg";
 // import wishlist from "../images/wishlist.svg";
 // import watch from "../images/watch.jpg";
 // import watch2 from "../images/watch-1.avif";
 // import addcart from "../images/add-cart.svg";
-import view from "../images/view.svg";
+import view from "../assets/images/view.svg";
 import { useDispatch, useSelector } from "react-redux";
 import { addToWishlist } from "../features/products/productSlilce";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";

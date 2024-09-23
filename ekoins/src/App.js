@@ -1,5 +1,5 @@
 import React from "react";
-import "./App.css";
+import "./assets/css/App.css";
 import "./assets/css/nucleo-icons.css";
 import "./assets/scss/blk-design-system-react.scss";
 import "./assets/css/blk-design-custom.css";
