@@ -6,6 +6,9 @@ import productReducer from "../products/slice";
 import blogReducer from "../blogs/slice";
 import contactReducer from "../contact/slice";
 
+export * as Product from "../products/slice";
+export * as Blog from "../blogs/slice";
+
 
 import { createDispatchHook, createSelectorHook } from "react-redux";
 
