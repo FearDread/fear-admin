@@ -1,8 +1,8 @@
 import { configureStore } from "@reduxjs/toolkit";
-import authReducer from "../../../libs/features/src/user/slice";
-import productReducer from "../../../libs/features/src/products/slice";
-import blogReducer from "../../../libs/features/src/blogs/slice";
-import contactReducer from "../../../libs/features/src/contact/slice";
+import authReducer from "features/user/slice";
+import productReducer from "features/products/slice";
+import blogReducer from "features/blogs/slice";
+import contactReducer from "features/contact/slice";
 
 export const store = configureStore({
   reducer: {
