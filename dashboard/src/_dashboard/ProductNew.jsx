@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import * as Product from "_redux/actions/product"
+import * as Category from "_redux/category/actions";
 import { NEW_PRODUCT_RESET } from "_redux/types/product";
 import Loader from "components/Loader/Loading";
 import ReactBSAlert from "react-bootstrap-sweetalert";
@@ -34,7 +35,8 @@ function NewProduct() {
   const [alert, setAlert] = React.useState(null);
   const fileInputRef = useRef();
   const { user } = useSelector((state) => state.auth);
-  const { loading, categories, success } = useSelector((state) => state.product);
+  const { loading, success } = useSelector((state) => state.product);
+  const { categories } = useSelector((state) => state.cat);
 
   const handleCategoryChange = (e) => {
     setCategory(e.target.value);
@@ -43,14 +45,6 @@ function NewProduct() {
   const handleImageUpload = () => {
     fileInputRef.current.click();
   };
-
- const defaultCategories = [
-   "Comics",
-   "Coins",
-   "Sports Cards",
-   "Toys",
-   "Misc..",
- ];
 
   const successAlert = () => {
     setAlert(
@@ -115,6 +109,12 @@ function NewProduct() {
       dispatch({ type: NEW_PRODUCT_RESET })
     }
   }, [dispatch, success, successAlert]);
+
+  useEffect(() => {
+
+    dispatch(Category.list());
+    console.log("categories = ", categories);
+  }, [dispatch]);
 
   return (
     <>
@@ -200,11 +200,10 @@ function NewProduct() {
                               type="select"
                               name="category"
                               placeholder="Choose Category"
-                              value={category}
                               onChange={handleCategoryChange} >
-                              {defaultCategories.map((cate) => (
-                                <option key={cate} value={cate}>
-                                  {cate}
+                              {categories.map((cate, key) => (
+                                <option key={cate._id} value={cate._id}>
+                                  {cate.title}
                                 </option>
                               ))}
                             </Input>

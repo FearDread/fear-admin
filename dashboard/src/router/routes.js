@@ -85,9 +85,12 @@ const routes = [
         component: Wizard,
         layout: "/admin"
       },
+    ]
+  },
       {
         collapse: true,
         name: "Brands",
+        icon: "tim-icons icon-chart-bar-32",
         state: "brandsCollapse",
         views:[
           {
@@ -106,9 +109,14 @@ const routes = [
           },
         ]
       },
-
       {
-        path: "/category",
+        collapse: true,
+        name: "Categories",
+        icon: "tim-icons icon-chart-bar-32",
+        state: "categoryCollapse",
+        views:[
+      {
+        path: "/categories",
         name: "All Categories",
         mini: "C",
         component: CategoryList,
@@ -117,12 +125,13 @@ const routes = [
       {
         path: "/category/new",
         name: " + Cateogry",
-        mini: "C",
+        mini: "+",
         component: CategoryNew,
         layout: "/admin"
       },
-    ],
+    ]
   },
+
   {
     path: "/orders",
     name: "Orders",
@@ -195,6 +204,6 @@ const routes = [
       },
     ]
   },
-];
+]
 
 export default routes;
