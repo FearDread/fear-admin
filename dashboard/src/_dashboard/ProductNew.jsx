@@ -107,6 +107,7 @@ function NewProduct() {
     if (success) {
       successAlert();
       dispatch({ type: NEW_PRODUCT_RESET })
+      history.push("/dashboard/product");
     }
   }, [dispatch, success, successAlert]);
 
