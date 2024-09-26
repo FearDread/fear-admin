@@ -1,21 +1,38 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from 'react-router-dom';
 import { BsArrowRight } from 'react-icons/bs';
 import useActive from '../../hooks/useActive';
 import productsData from '../../data/productsData';
 import ProductCard from './ProductCard';
+import { getAllProducts, addToWishlist } from "../../features/products/slice";
 
 
 const TopProducts = () => {
-
+    const productState = useSelector((state) => state?.product?.products);
+    const dispatch = useDispatch();
     const [products, setProducts] = useState(productsData);
     const { activeClass, handleActive } = useActive(0);
+    console.log("productState = ", productState);
+
+    const getProducts = () => {
+      dispatch(getAllProducts());
+    };
+  
+    const addToWish = (id) => {
+      //alert(id);
+      dispatch(addToWishlist(id));
+    };
+    
 
     // making a unique set of product's category
-    const productsCategory = [
-        'All',
-        ...new Set(productsData.map(item => item.category))
-    ];
+    const getProductCategory = ( data ) => {
+        return [
+            'All',
+            ...new Set(data.map(item => item.category))
+        ];
+    }
+    const productsCategory = getProductCategory(productState);
 
     // handling product's filtering
     const handleProducts = (category, i) => {
@@ -25,10 +42,14 @@ const TopProducts = () => {
             return;
         }
 
-        const filteredProducts = productsData.filter(item => item.category === category);
+        const filteredProducts = productState.filter(item => item.category === category);
         setProducts(filteredProducts);
         handleActive(i);
     };
+
+    useEffect(() => {
+        dispatch(getAllProducts());
+      }, [dispatch]);
 
 
     return (
@@ -49,13 +70,9 @@ const TopProducts = () => {
                 </ul>
             </div>
             <div className="wrapper products_wrapper">
-                {
-                    products.slice(0, 11).map(item => (
-                        <ProductCard
-                            key={item.id}
-                            {...item}
-                        />
-                    ))
+                {productState && productState?.map((item, index) => {
+                        <ProductCard data={item} />
+                    })
                 }
                 <div className="card products_card browse_card">
                     <Link to="/all-products">

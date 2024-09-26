@@ -5,11 +5,13 @@ import RouterRoutes from './routes/RouterRoutes';
 import Footer from './components/common/Footer';
 import BackTop from './components/common/BackTop';
 import { FiltersProvider } from './contexts/filters/filtersContext';
+import { BrowserRouter } from "react-router-dom";
 
 
 const App = () => {
   return (
     <>
+    <BrowserRouter>
       <CommonProvider>
         <FiltersProvider>
           <CartProvider>
@@ -20,6 +22,7 @@ const App = () => {
           </CartProvider>
         </FiltersProvider>
       </CommonProvider>
+    </BrowserRouter>
     </>
   );
 };
