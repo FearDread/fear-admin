@@ -7,18 +7,17 @@ import brandReducer from "./reducers/brand";
 import userReducer from "./reducers/user";
 import productsReducer from "./reducers/product";
 import cartReducer from "./cart/reducer";
-import categoryReducer from "./category/reducer";
+import categoriesReducer from "./category/reducer";
 //import storePersist from "./storePersist";
 
 const appReducer = combineReducers({
   auth: authReducer,
   user: userReducer,
   cart: cartReducer,
-  //crud: crudReducer,
   brand: brandReducer,
   //coupon: couponReducer,
   product: productsReducer,
-  category: categoryReducer,
+  cat: categoriesReducer,
   search: searchReducer
 });
 

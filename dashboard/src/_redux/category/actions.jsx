@@ -18,7 +18,7 @@ export const list = () => async (dispatch) => {
 export const create = (data) => async (dispatch) => {
     dispatch({type: Types.NEW_CATEGORY_REQUEST});
 
-    await axios.post(API_BASE_URL + `/category/new`, data,
+    await axios.post(API_BASE_URL + "/category/new", data,
       {headers: { "Content-Type": "multipart/form-data" }})
       .then((response) => {
         console.log("CATEGORY response :: ", response);

@@ -1,4 +1,4 @@
-import { React, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -16,14 +16,15 @@ import {
   Col
 } from "reactstrap";
 import * as Category from "../_redux/category/actions";
-import { NEW_CATEGORY_RESET } from "_redux/category/types";
+//import { NEW_CATEGORY_RESET } from "_redux/category/types";
 import Loader from "components/Loader/Loading.js";
 
 const CategoryNew = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const [title, setTitle] = useState("");
-  const [success, loading] = useSelector((state) => state.category);
+  //const [cat, loading] = useSelector((state) => state.categories);
+  const loading = useSelector((state) => state.categories);
 
   const handleSubmitCategory = (e) => {
     e.preventDefault();
@@ -35,12 +36,8 @@ const CategoryNew = () => {
   }
 
   useEffect(() => {
-    if (success) {
-      dispatch({ type: NEW_CATEGORY_RESET });
-      toast.success("Category Added Successfullly!");
-      history.push("/admin/categories");
-    }
-  }, [ success, loading ]);
+
+  }, [   ]);
 
   return (
     <>
@@ -73,13 +70,12 @@ const CategoryNew = () => {
                             />
                           </FormGroup>
                         </Col>
-                      </Row>
-                      <Row>
+                        </Row>
                         <Button
                           onClick={handleSubmitCategory}>
                           SUBMIT
                         </Button>
-                      </Row>
+
                   </CardBody>
                 </Card>
               </Form>

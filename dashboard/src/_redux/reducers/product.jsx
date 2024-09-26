@@ -35,7 +35,10 @@ const productsReducer = (state = initialState, action) => {
       };
     }
     case types.NEW_PRODUCT_REQUEST: {
-      return { loading: true };
+      return { 
+        ...state,
+        loading: true
+       };
     }
 
     case types.NEW_PRODUCT_SUCCESS:
@@ -43,11 +46,10 @@ const productsReducer = (state = initialState, action) => {
         ...state,
         loading: false,
         success: true,
-        newProductData: action.payload.data,
+        newProductData: action.payload,
       };
 
     case types.NEW_PRODUCT_FAIL: {
-      console.log(action.type);
       return {
         loading: false,
         error: action.payload,
@@ -55,9 +57,7 @@ const productsReducer = (state = initialState, action) => {
     }
     case types.NEW_PRODUCT_RESET:
       return {
-        ...state,
-        loading: false,
-        newProductData: []
+        initialState
       };
     // Clear error
     case types.CLEAR_ERRORS:

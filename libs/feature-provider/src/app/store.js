@@ -15,13 +15,24 @@ import { createDispatchHook, createSelectorHook } from "react-redux";
 const useDispatch = createDispatchHook<StoreState>(context);
 const useSelector = createSelectorHook<StoreState>(context);
 
-export const useCurrentUser = () => useSelector(s => s.currentUser);
-export const useSetCurrentUser = () => {
-  const dispatch = useDispatch();
-  return (User) => dispatch({ 
-    type: "SET_CURRENT_USER",
-    payload: User
-  });
+import validateAction from "./lib/validate-action";
+
+export const createStore = (reducer, initialState) => {
+  const store = {};
+
+  store.state = initialState;
+  store.listeners = [];
+  store.subscribe = listener => store.listeners.push(listener);
+  store.dispatch = action => {
+    validateAction(action);
+
+    store.state = reducer(store.state, action);
+    store.listeners.forEach(listener => listener(action));
+  };
+  store.getState = () => store.state;
+  store.dispatch({ type: "@@redux/INIT" });
+
+  return store;
 };
 
 export const store = configureStore({

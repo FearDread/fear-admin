@@ -21,6 +21,7 @@ const categoryReducer = (state = initialState, action) => {
     case types.ADMIN_CATEGORY_SUCCESS:
     case types.ALL_CATEGORY_SUCCESS: {
       return {
+        ...state,
         loading: false,
         success: true,
         categories: action.payload,
@@ -35,7 +36,10 @@ const categoryReducer = (state = initialState, action) => {
       };
     }
     case types.NEW_CATEGORY_REQUEST: {
-      return { loading: true };
+      return {
+        ...state, 
+        loading: true 
+      };
     }
 
     case types.NEW_CATEGORY_SUCCESS:
@@ -43,7 +47,7 @@ const categoryReducer = (state = initialState, action) => {
         ...state,
         loading: false,
         success: true,
-        category: action.payload.data,
+        category: action.payload,
       };
 
     case types.NEW_CATEGORY_FAIL: {
@@ -57,7 +61,7 @@ const categoryReducer = (state = initialState, action) => {
       return {
         ...state,
         loading: false,
-        category: []
+        category: {}
       };
     // Clear error
     case types.CLEAR_ERRORS:

@@ -15,7 +15,7 @@ import * as Category from "_redux/category/actions";
 
 function CategoryList () {
   const dispatch = useDispatch();
-  const { categories, loading } = useSelector((state) => state.category);
+  const { categories, loading } = useSelector((state) => state.cat);
 
   useEffect(() => {
     dispatch(Category.list());
