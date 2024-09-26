@@ -18,8 +18,18 @@ const getProducts = async (data) => {
   }
 };
 
+const getAdminProducts = async () => {
+  const resp = await axios.get(`${base_url}/product/all`);
+
+  if (resp.data && resp.data.success) {
+    return resp.data.result;
+  } else {
+    return resp.data.message;
+  }
+}
+
 const getSingleProduct = async (id) => {
-  const response = await axios.get(`${base_url}product/${id}`);
+  const response = await axios.get(`${base_url}/product/${id}`);
   if (response.data) {
     return response.data;
   }
@@ -27,7 +37,7 @@ const getSingleProduct = async (id) => {
 
 const addToWishlist = async (prodId) => {
   const response = await axios.put(
-    `${base_url}product/Wishlist`,
+    `${base_url}/product/Wishlist`,
     { prodId },
     config
   );
@@ -37,7 +47,7 @@ const addToWishlist = async (prodId) => {
 };
 
 const rateProduct = async (data) => {
-  const response = await axios.put(`${base_url}product/rating`, data, config);
+  const response = await axios.put(`${base_url}/product/rating`, data, config);
   if (response.data) {
     return response.data;
   }
@@ -45,6 +55,7 @@ const rateProduct = async (data) => {
 
 export const productSevice = {
   getProducts,
+  getAdminProducts,
   addToWishlist,
   getSingleProduct,
   rateProduct,

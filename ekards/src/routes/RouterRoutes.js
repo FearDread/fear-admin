@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route } from 'react-router';
+import { Routes, Route } from "react-router-dom";
 import useScrollRestore from '../hooks/useScrollRestore';
 import AllProducts from '../pages/AllProducts';
 import Cart from '../pages/Cart';
@@ -20,6 +20,7 @@ const RouterRoutes = () => {
                 <Route path="/product-details/:productId" element={<ProductDetails />} />
                 <Route path="*" element={<ErrorPage />} />
             </Routes>
+
         </>
     );
 };
