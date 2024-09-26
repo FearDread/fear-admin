@@ -4,7 +4,7 @@ import productReducer from "../features/products/slice";
 import blogReducer from "../features/blogs/slice";
 import contactReducer from "../features/contact/slice";
 
-export const store = configureStore({
+const store = configureStore({
   reducer: {
     auth: authReducer,
     product: productReducer,
@@ -12,3 +12,5 @@ export const store = configureStore({
     contact: contactReducer,
   },
 });
+
+export default store;

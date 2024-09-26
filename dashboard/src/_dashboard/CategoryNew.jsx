@@ -24,7 +24,7 @@ const CategoryNew = () => {
   const history = useHistory();
   const [title, setTitle] = useState("");
   //const [cat, loading] = useSelector((state) => state.categories);
-  const loading = useSelector((state) => state.categories);
+  const { success, loading } = useSelector((state) => state.cat);
 
   const handleSubmitCategory = (e) => {
     e.preventDefault();
@@ -36,7 +36,9 @@ const CategoryNew = () => {
   }
 
   useEffect(() => {
-
+    if( success ) {
+      history.push('/admin/categories');
+    }
   }, [   ]);
 
   return (
