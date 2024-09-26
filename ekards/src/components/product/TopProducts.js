@@ -9,11 +9,14 @@ import { getAllProducts, addToWishlist } from "../../features/products/slice";
 
 
 const TopProducts = () => {
-    const productState = useSelector((state) => state?.product?.products);
+    
+    
     const dispatch = useDispatch();
-    const [products, setProducts] = useState(productsData);
-    const { activeClass, handleActive } = useActive(0);
-    console.log("productState = ", productState);
+    //const [allprods, setProducts] = useState(productsData);
+    //const { activeClass, handleActive } = useActive(0);
+    const products = useSelector((state) => state?.product?.products);
+    const isLoading = useSelector((state) => state?.product?.isLoading);
+
 
     const getProducts = () => {
       dispatch(getAllProducts());
@@ -32,32 +35,41 @@ const TopProducts = () => {
             ...new Set(data.map(item => item.category))
         ];
     }
-    const productsCategory = getProductCategory(productState);
+    
 
     // handling product's filtering
     const handleProducts = (category, i) => {
         if (category === 'All') {
-            setProducts(productsData);
+            //setProducts(productsData);
             handleActive(i);
             return;
         }
 
-        const filteredProducts = productState.filter(item => item.category === category);
-        setProducts(filteredProducts);
+        const filteredProducts = products.filter(item => item.category === category);
+        //setProducts(filteredProducts);
         handleActive(i);
     };
 
     useEffect(() => {
-        dispatch(getAllProducts());
+
       }, [dispatch]);
 
 
+      //getProducts();
     return (
+        <>
+        {isLoading ? (
+                         <div className="card products_card browse_card">
+                         <Link to="/all-products">
+                             Browse All <br /> Products <BsArrowRight />
+                         </Link>
+                     </div>
+        ) : (
+
         <>
             <div className="products_filter_tabs">
                 <ul className="tabs">
-                    {
-                        productsCategory.map((item, i) => (
+                    { getProductCategory(products).map((item, i) => (
                             <li
                                 key={i}
                                 className={`tabs_item ${activeClass(i)}`}
@@ -70,7 +82,7 @@ const TopProducts = () => {
                 </ul>
             </div>
             <div className="wrapper products_wrapper">
-                {productState && productState?.map((item, index) => {
+                {products && products?.map((item) => {
                         <ProductCard data={item} />
                     })
                 }
@@ -81,7 +93,9 @@ const TopProducts = () => {
                 </div>
             </div>
         </>
+      )}
+      </>
     );
-};
+  }
 
 export default TopProducts;
