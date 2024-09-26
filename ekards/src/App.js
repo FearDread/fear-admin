@@ -12,16 +12,13 @@ const App = () => {
   return (
     <>
     <BrowserRouter>
-      <CommonProvider>
-        <FiltersProvider>
-          <CartProvider>
-            <Header />
+
+          {/*<Header />
             <RouterRoutes />
             <Footer />
             <BackTop />
-          </CartProvider>
-        </FiltersProvider>
-      </CommonProvider>
+          */}
+          <RouterRoutes />
     </BrowserRouter>
     </>
   );
