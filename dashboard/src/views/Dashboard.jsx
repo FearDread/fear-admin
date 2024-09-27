@@ -1,17 +1,13 @@
 import React, { useState, useEffect } from "react";
-// nodejs library that concatenates classes
 import classNames from "classnames";
-// react plugin used to create charts
 import { Line, Bar } from "react-chartjs-2";
-// react plugin for creating vector maps
 import { VectorMap } from "react-jvectormap";
 import { useSelector, useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
-//import { getAllOrders } from "_redux/actions/order";
-import { getAllUsers } from "_redux/actions/user";
-import { logout } from "_redux/actions/auth";
-import { getAdminProducts } from "_redux/actions/product";
 import Loader from "components/Loader/Loading.js";
+import { logout } from "_redux/actions/auth";
+import * as UserActions from "_redux/actions/user";
+import * as ProductActions from "_redux/product/actions";
 // reactstrap components
 import {
   Button,

@@ -1,9 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
-import * as Product from "_redux/actions/product"
-import * as Category from "_redux/category/actions";
-import { NEW_PRODUCT_RESET } from "_redux/types/product";
 import Loader from "components/Loader/Loading";
 import ReactBSAlert from "react-bootstrap-sweetalert";
 import ImageUpload from "components/CustomUpload/ImageUpload.js";
@@ -20,6 +17,9 @@ import {
   Row,
   Col
 } from "reactstrap";
+import * as ProductActions from "_redux/product/actions"
+import * as CatActions from "_redux/category/actions";
+import { NEW_PRODUCT_RESET } from "_redux/product/types";
 
 function NewProduct() {
   const dispatch = useDispatch();
@@ -81,9 +81,9 @@ function NewProduct() {
     images.forEach((currImg) => {
       myForm.append("images", currImg);
     });
-    myForm.set("useaaaaaar", user._id);
+    myForm.set("user", user._id);
     
-    dispatch(Product.create(myForm));
+    dispatch(ProductActions.create(myForm));
   };
 
   const createProductImagesChange = (e) => {
@@ -112,9 +112,7 @@ function NewProduct() {
   }, [dispatch, success, successAlert]);
 
   useEffect(() => {
-
-    dispatch(Category.list());
-    console.log("categories = ", categories);
+    dispatch(CatActions.list());
   }, [dispatch]);
 
   return (
