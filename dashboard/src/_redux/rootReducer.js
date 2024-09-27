@@ -5,9 +5,10 @@ import authReducer from "./reducers/auth";
 import searchReducer from "./reducers/search";
 import brandReducer from "./reducers/brand";
 import userReducer from "./reducers/user";
-import productsReducer from "./reducers/product";
+import productsReducer from "./product/reducer";
 import cartReducer from "./cart/reducer";
 import categoriesReducer from "./category/reducer";
+import reviewReducer from "./review/reducer";
 //import storePersist from "./storePersist";
 
 const appReducer = combineReducers({
@@ -15,7 +16,7 @@ const appReducer = combineReducers({
   user: userReducer,
   cart: cartReducer,
   brand: brandReducer,
-  //coupon: couponReducer,
+  review: reviewReducer,
   product: productsReducer,
   cat: categoriesReducer,
   search: searchReducer

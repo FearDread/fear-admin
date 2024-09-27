@@ -11,10 +11,12 @@ import {
  } from "reactstrap";
 import { useHistory } from "react-router-dom";
 import Loader from "components/Loader/Loading";
-import * as Product from "_redux/actions/product";
-import { DELETE_PRODUCT_RESET } from "_redux/types/product";
+//import { DELETE_PRODUCT_RESET } from "_redux/types/product";
 import ReactTable from "components/ReactTable/ReactTable.js";
 import ReactTableActions from "components/ReactTable/ReactTableActions.js";
+
+import * as ProductActions from "_redux/product/actions";
+import * as ProductTypes from "_redux/product/types";
 
 const header = [
   { Header: "Cover", accessor: "avatar" },
@@ -31,11 +33,11 @@ function ProductList() {
   const dispatch = useDispatch();
   const history = useHistory();
   const [ toggle, setToggle ] = useState(false);
-  const { success, products, loading } = useSelector((state) => state.product);
+  const { products, loading } = useSelector((state) => state.product);
 
 
   const deleteProductHandler = (id) => {
-    dispatch(Product.remove(id));
+    dispatch(ProductActions.remove(id));
   };
   
   const displayProducts = () => {
@@ -62,7 +64,7 @@ function ProductList() {
   }
 
   useEffect(() => {
-    dispatch(Product.list());
+    dispatch(ProductActions.list());
   }, [dispatch]);
 
   useEffect(() => {
