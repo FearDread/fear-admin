@@ -1,19 +1,14 @@
-import { 
-  Button
- } from "reactstrap";
+import { Button } from "reactstrap";
 import classNames from "classnames";
 
-const ReactActions = ( item, key, type ) => {
-  if ( !type || type === null ) {
-    type = "No Type";
+const ReactActions = ( key, _ecb, _dcb ) => {
+  if ( typeof _ect !== 'function' ) {
+    console.log("missing edit callback");
   }
   return (
       <div className="actions-right">
       <Button
-        onClick={() => {
-          //let obj = item[key];
-          console.log("edit item :: " + type + " :: ", item);
-        }}
+        onClick={_ecb}
         color="warning"
         size="sm"
         className={classNames("btn-icon btn-link like", {
@@ -22,9 +17,7 @@ const ReactActions = ( item, key, type ) => {
         <i className="tim-icons icon-pencil" />
       </Button>{" "}
       <Button
-        onClick={() => {
-          console.log("remove item :: " + type + " :: ", item);
-        }}
+        onClick={_dcb}
         color="danger"
         size="sm"
         className={classNames("btn-icon btn-link like", {

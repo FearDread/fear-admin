@@ -1,5 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
+import { Store } from "@feardread/crud-service";
 import { Provider } from "react-redux";
 import { positions, transitions, Provider as AlertProvider } from "react-alert";
 import AlertTemplate from "react-alert-template-basic";
@@ -20,7 +21,7 @@ const Root = ReactDOM.createRoot(document.getElementById("root"));
 Root.render(
     <BrowserRouter>
     <ThemeProvider theme={theme}>
-      <Provider store={store}>
+      <Provider store={Store}>
         <AlertProvider template={AlertTemplate} {...options}>
           <App />
         </AlertProvider>

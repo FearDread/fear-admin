@@ -8,31 +8,32 @@ import { Card,
    Row, 
    Col } from "reactstrap";
 import Loader from "components/Loader/Loading.js";
-import * as Brand from "../_redux/actions/brand"; 
+import * as BrandActions from "../_redux/actions/brand"; 
 import logo from "assets/img/FEAR/logo.png";
 import ReactTable from "components/ReactTable/ReactTable.js";
 import ReactTableActions from "components/ReactTable/ReactTableActions.js";
 
-function Brandlist () {
+const tableHeader = [
+  { Header: "Logo", accessor: "avatar" },
+  { Header: "Brand Name", accessor: "title" },
+  { Header: "Is Active", accessor: "isActive" },
+  { Header: "Actions", accessor: "actions", sortable: false, filterable: false }
+]
+
+const Brandlist = () => {
   const dispatch = useDispatch();
   const { brands, loading } = useSelector((state) => state.brand);
 
   useEffect(() => {
-    dispatch(Brand.list());
-  }, [dispatch]);
-
-  const tableHeader = [
-    { Header: "Logo", accessor: "avatar" },
-    { Header: "Brand Name", accessor: "title" },
-    { Header: "Is Active", accessor: "isActive" },
-    { Header: "Actions", accessor: "actions", sortable: false, filterable: false }
-  ]
+    dispatch(BrandActions.list());
+  }, [ dispatch ]);
 
   const displayBrands = () => {
     let dataTable = [];
 
     brands && brands.forEach((item, key) => {
       item.isActive = (item.isActive) ? "Active" : "Disabled";
+      
       dataTable.push({
         avatar: (
           <img 
@@ -40,7 +41,12 @@ function Brandlist () {
             className="avatar"/>),
         title: item.title,
         isActive: item.isActive,
-        actions: ( ReactTableActions(item, key, 'brand') ) 
+        actions: ( ReactTableActions( key, (() => {
+            console.log("edit item ::", item);
+          }), (() => {
+            dispatch(BrandActions.remove(item._id));
+          })
+        )) 
       })
     })
     return dataTable;
@@ -49,7 +55,11 @@ function Brandlist () {
   return (
       <>
       {loading ? (
-        <Loader />
+        <>
+          <div className="content">
+            <Loader />
+          </div>
+        </>
       ) : (
       <>
         <div className="content">
@@ -80,6 +90,5 @@ function Brandlist () {
     </>
   );
 }
-
 
 export default Brandlist;
