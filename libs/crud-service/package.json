@@ -1,0 +1,32 @@
+{
+  "name": "@feardread/crud-service",
+  "version": "1.0.1",
+  "description": "API Hooks for RE\b\breact-redux",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "npx rollup -c ",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "ecommerce",
+    " features"
+  ],
+  "author": "FearDread",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.7.7",
+    "redux": "^5.0.1",
+    "redux-logger": "^3.0.6",
+    "redux-thunk": "^3.1.0"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.25.4",
+    "@babel/preset-react": "^7.24.7",
+    "@rollup/plugin-babel": "^6.0.4",
+    "@rollup/plugin-commonjs": "^28.0.0",
+    "@rollup/plugin-json": "^6.1.0",
+    "@rollup/plugin-node-resolve": "^15.3.0",
+    "rollup": "^4.22.4",
+    "rollup-plugin-postcss": "^4.0.2"
+  }
+}
