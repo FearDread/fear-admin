@@ -167,6 +167,10 @@
                 line-height: $line-height-lg;
             }
 
+            &:hover {
+              background-color: rgba(90, 28, 233, 0.82)!important;
+            }
+
             &:first-child > a{
                 margin: 0 15px;
 

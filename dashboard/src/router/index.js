@@ -2,6 +2,8 @@ import React from "react";
 import { Route } from "react-router-dom";
 
 export const getRoutes = (routes) => {
+  const subclass = 'side-subnav';
+  
     return routes.map((prop, key) => {
       if (prop.collapse) {
         return getRoutes(prop.views);
@@ -12,6 +14,7 @@ export const getRoutes = (routes) => {
             path={prop.layout + prop.path}
             component={prop.component}
             key={key}
+            className={prop.collapse ? subclass : "side-nav"}
           />
         );
       } else {

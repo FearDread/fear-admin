@@ -15,8 +15,8 @@ import {
   Row,
   Col
 } from "reactstrap";
-import * as Category from "../_redux/category/actions";
-//import { NEW_CATEGORY_RESET } from "_redux/category/types";
+import * as CatActions from "../_redux/category/actions";
+import { NEW_CATEGORY_RESET } from "_redux/category/types";
 import Loader from "components/Loader/Loading.js";
 
 const CategoryNew = () => {
@@ -28,18 +28,18 @@ const CategoryNew = () => {
 
   const handleSubmitCategory = (e) => {
     e.preventDefault();
-
     const myForm = new FormData();
     myForm.set('title', title);
 
-    dispatch(Category.create(myForm));
+    dispatch(CatActions.create(myForm));
   }
 
   useEffect(() => {
     if( success ) {
+      dispatch({type: NEW_CATEGORY_RESET});
       history.push('/admin/categories');
     }
-  }, [   ]);
+  }, [dispatch]);
 
   return (
     <>

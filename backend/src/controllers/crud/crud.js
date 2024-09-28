@@ -13,12 +13,8 @@ const cloud = require("../../libs/cloud");
  */
 exports.all = tryCatch(async (Model, req, res) => {
   await Model.find()
-    .then((result) => {
-      return res.status(200).json({ result, success: true, message: "All Documents found" });
-    })
-    .catch((error) => {
-      return res.status(400).json({ result: null, success: false, message: "No docs found." });
-    });
+    .then((result) => { return res.status(200).json({ result, success: true, message: "All Documents found" }); })
+    .catch((error) => { return res.status(400).json({ result: null, success: false, message: "No docs found." }); });
 });
 
 /**
@@ -26,7 +22,6 @@ exports.all = tryCatch(async (Model, req, res) => {
  *  @param {string} req.params.id
  *  @returns {Document} Single Document
  */
-
 exports.read = tryCatch(async (Model, req, res) => {
   const { id } = req.params;
   //db.validateId(id);
@@ -42,12 +37,9 @@ exports.read = tryCatch(async (Model, req, res) => {
  *  @param {object} req.body
  *  @returns {string} Message
  */
-
 exports.create = tryCatch(async (Model, req, res) => {
   if (req.body.images) {
-    let links = [];
-    links = await cloud.uploadImages(req.body.images);
-
+    let links = await cloud.uploadImages(req.body.images);
     req.body.images = links;
   }
 
@@ -71,7 +63,6 @@ exports.create = tryCatch(async (Model, req, res) => {
  *  @param {object, string} (req.body, req.params.id)
  *  @returns {Document} Returns updated document
  */
-
 exports.update = tryCatch(async (Model, req, res) => {
   try {
     // Find document by id and updates with the required fields
@@ -113,34 +104,12 @@ exports.update = tryCatch(async (Model, req, res) => {
  *  @param {string} req.params.id
  *  @returns {string} Message response
  */
-
 exports.delete = tryCatch(async (Model, req, res) => {
-  try {
-    // Find the document by id and delete it
+  const { id } = req.params;
 
-    // Find the document by id and delete it
-    const result = await Model.findOneAndDelete({ _id: req.params.id }).exec();
-    // If no results found, return document not found
-    if (!result) {
-      return res.status(404).json({
-        success: false,
-        result: null,
-        message: "No document found by this id: " + req.params.id,
-      });
-    } else {
-      return res.status(200).json({
-        success: true,
-        result,
-        message: "Successfully Deleted the document by id: " + req.params.id,
-      });
-    }
-  } catch {
-    return res.status(500).json({
-      success: false,
-      result: null,
-      message: "Oops there is an Error",
-    });
-  }
+  await Model.findOneAndDelete({ _id: id }).exec()
+    .then((result) => { return res.status(200).json({ result, success: true, message: "Successfully Deleted the document by id: " + id}); })
+    .catch((error) => { return res.status(404).json({ success: false, result: null, message: error.message }); });
 });
 
 /**
