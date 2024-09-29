@@ -1,23 +1,24 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import "assets/_css/App.css";
-import Home from "pages/Home";
-import About from "pages/About";
-import Shop from "pages/Shop";
-import Contact from "pages/Contact";
-import Blog from "pages/Blog";
-import Header from "components/Header/Navbar";
-import Footer from "components/Footer/Footer";
-import ProductDetails from "pages/ProductDetails";
-import NotFound from "pages/NotFound";
-import ScrollToTop from "components/ScrollButton/ScrollToTop";
-import Authentication from "pages/Authentication";
-import ResetPass from "components/Authentication/Reset/ResetPass";
-import BlogDetails from "components/Blog/BlogDetails/BlogDetails";
-import TermsConditions from "pages/TermsConditions";
-import ShoppingCart from "components/ShoppingCart/ShoppingCart";
-import Popup from "components/PopupBanner/Popup";
+import "./App.css";
+
+import Home from "../src/Pages/Home";
+import About from "../src/Pages/About";
+import Shop from "../src/Pages/Shop";
+import Contact from "../src/Pages/Contact";
+import Blog from "../src/Pages/Blog";
+import Header from "../src/Components/Header/Navbar";
+import Footer from "../src/Components/Footer/Footer";
+import ProductDetails from "./Pages/ProductDetails";
+import NotFound from "./Pages/NotFound";
+import ScrollToTop from "./Components/ScrollButton/ScrollToTop";
+import Authentication from "./Pages/Authentication";
+import ResetPass from "./Components/Authentication/Reset/ResetPass";
+import BlogDetails from "./Components/Blog/BlogDetails/BlogDetails";
+import TermsConditions from "./Pages/TermsConditions";
+import ShoppingCart from "./Components/ShoppingCart/ShoppingCart";
+import Popup from "./Components/PopupBanner/Popup";
 import { Toaster } from "react-hot-toast";
 
 const App = () => {
