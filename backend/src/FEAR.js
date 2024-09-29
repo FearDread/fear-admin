@@ -9,21 +9,6 @@ const path = require("path"),
       helmet = require("helmet"),
       __dirname1 = path.resolve();
 
-const logo = " ________  ________   ______   _______        \r\n|        \\|        \\ \/      \\ |       \\       \r\n| $$$$$$$$| $$$$$$$$|  $$$$$$\\| $$$$$$$\\      \r\n| $$__    | $$__    | $$__| $$| $$__| $$      \r\n| $$  \\   | $$  \\   | $$    $$| $$    $$      \r\n| $$$$$   | $$$$$   | $$$$$$$$| $$$$$$$\\      \r\n| $$      | $$_____ | $$  | $$| $$  | $$      \r\n| $$      | $$     \\| $$  | $$| $$  | $$      \r\n \\$$       \\$$$$$$$$ \\$$   \\$$ \\$$   \\$$      \r\n                                          ";
-
-const loadRoutes = ( app ) => {
-  const dir = "routes";
-  const modPath = require('path').join( __dirname, dir );
-
-  require('fs').readdirSync(modPath).forEach(( file ) => {
-    const name = file.replace(/\.js$/, '');
-    const routeModule = require(`./${dir}/${file}`);
-    console.log("Route added :: ", '/fear/api/' + name);
-    app.use('/fear/api/' + name, routeModule);
-  });
-
-  return app;
-}
 
 module.exports = FEAR = (( app ) => {
   const env = require("dotenv").config({ path:"backend/.env"});
@@ -31,20 +16,39 @@ module.exports = FEAR = (( app ) => {
   
   const logger = require("./libs/logger");
   const morgan = require("./libs/logger/morgan");
-  const { specs, swaggerUi } = require('./libs/swagger');
   const errors = require("./libs/handler/error");
   const cloud = require("./libs/cloud");
   const db = require("./libs/db"),
         {parsed: _config} = env;
-        
-  app.set("PORT", 4000);
 
-  app.use(morgan);
+  app.set("PORT", 4000);
   app.use(helmet());
   app.use(compression());
   app.use(fileUpload());
   app.use(cookieParser());
 
+  this.db = db;
+  this.log = logger;
+  this.load = ( app ) => {
+    const dir = "routes";
+    const modPath = require('path').join( __dirname, dir );
+  
+    require('fs').readdirSync(modPath).forEach(( file ) => {
+      const name = file.replace(/\.js$/, '');
+      const module = require(`./${dir}/${file}`);
+      
+      this.log.info("Route added :: /fear/api/" + name);
+      app.use('/fear/api/' + name, module);
+    });
+  
+    return app;
+  }
+
+  this.env = _config;
+  this.cloud = cloud;
+  this.logo = " ________  ________   ______   _______        \r\n|        \\|        \\ \/      \\ |       \\       \r\n| $$$$$$$$| $$$$$$$$|  $$$$$$\\| $$$$$$$\\      \r\n| $$__    | $$__    | $$__| $$| $$__| $$      \r\n| $$  \\   | $$  \\   | $$    $$| $$    $$      \r\n| $$$$$   | $$$$$   | $$$$$$$$| $$$$$$$\\      \r\n| $$      | $$_____ | $$  | $$| $$  | $$      \r\n| $$      | $$     \\| $$  | $$| $$  | $$      \r\n \\$$       \\$$$$$$$$ \\$$   \\$$ \\$$   \\$$      \r\n                                          ";
+
+  app.use(morgan);
   app.use(express.json());
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: true }));
@@ -53,14 +57,17 @@ module.exports = FEAR = (( app ) => {
     res.locals.user = req.user;
     next();
   });
+  
   app.use(cors({
-    origin: ["*", "http://localhost:4001", "http://localhost:4000", "http://localhost:3000"],
+    origin: ["*", 
+      "http://localhost:4001", 
+      "http://localhost:4000", 
+      "http://localhost:3000",
+      "https://fear.serveo.net"
+    ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization", "Access-Control-Allow-Origin"]
   }));
-
-  //app.use("/fear/api/docs", swaggerUi.serve, swaggerUi.setup(specs))
-  app = loadRoutes(app);
 
   app.use(errors.notFound);
   app.use(express.static(path.join(__dirname1, "/dashboard/build")));
@@ -68,16 +75,10 @@ module.exports = FEAR = (( app ) => {
     res.sendFile(path.resolve(__dirname1, "dashboard", "build", "index.html"))
   );
 
-  return {
-    db,
-    app,
-    cloud,
-    logo,
-    log: logger,
-    env: _config,
-    load: loadRoutes,
-    cluster: () => {}
-  }
+  this.app = this.load(app);
+
+  return this;
+
 })( express() );
 
 
