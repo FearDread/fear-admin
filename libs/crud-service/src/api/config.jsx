@@ -1,6 +1,6 @@
-import storePersist from "../store/persist.jsx";
+import StorePersist from "../store/persist.jsx";
 
-const isAuth = storePersist.get("auth") ? storePersist.get("auth") : null;
+const isAuth = StorePersist.get("auth") ? StorePersist.get("auth") : null;
 
 export const AXIOS_CONFIG = {
   headers: {
