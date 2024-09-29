@@ -1,5 +1,5 @@
 import * as Types from "../api/types.js";
-import { API_BASE_URL } from "../api/config.jsx";
+import { API_BASE_URL } from "../api/config.js";
 import StorePersist from "../store/persist.js";
 import axios from "axios";
 
@@ -16,7 +16,7 @@ export const login = (email, password) => async (dispatch) => {
       dispatch({ type: Types.LOGIN_SUCCESS, payload: response.data.user }); })
       
     .catch((error) => { dispatch({ type: Types.LOGIN_FAIL, payload: error.message }); });
-};
+}
 
 export const logout = async () => {
   StorePersist.remove("auth");

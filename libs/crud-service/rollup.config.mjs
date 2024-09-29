@@ -4,6 +4,7 @@ import commonjs from "@rollup/plugin-commonjs";
 import json from "@rollup/plugin-json";
 import dts from "rollup-plugin-dts";
 import postcss from "rollup-plugin-postcss";
+import polyfill from "rollup-plugin-polyfill-node";
 import peerDepsExternal from 'rollup-plugin-peer-deps-external';
 
 import pkg from "./package.json" assert { type: 'json' };
@@ -15,11 +16,13 @@ export default [
 			{
 				file: 'dist/index.js',
 				format: 'cjs',
+        exports: 'named',
 				sourcemap: true,
 			},
 			{
 				file: 'dist/index.esm.js',
 				format: "esm",
+        exports: 'named',
 				sourcemap: true,
 			},
 		  {
@@ -31,20 +34,14 @@ export default [
 		],
 		plugins: [
 			peerDepsExternal(),
-			resolve(),
+      resolve({
+        browser: true,
+        preferBuiltins: false,
+      }),
 			commonjs(),
       json(),
 			postcss(),
 			terser()
 		]
-	}
-  /*
-	{
-    
-		input: "dist/esm/types/index.d.ts",
-		output: [{ file: "dist/index.d.ts", format: "esm" }],
-		plugins: [dts()],
-		external: [/\.(css|less|scss)$/],
-	},
-  */
+	},  
 ];

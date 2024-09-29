@@ -1,6 +1,6 @@
 
 
-export default storePersist = {
+export default StorePersist = {
   set: (key, state) => {
     window.localStorage.setItem(key, JSON.stringify(state));
   },
