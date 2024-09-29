@@ -1,16 +1,16 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import "./assets/_css/index.css";
+import "./index.css";
 import App from "./App";
-import reportWebVitals from "./reportWebVitals";
+//import reportWebVitals from "./reportWebVitals";
 import { Provider } from "react-redux";
-import store from "./app/store";
-import { Store } from "@feardread/crud-service";
+import store from "./App/store";
+//import { Store } from "@feardread/crud-service";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <Provider store={Store}>
+    <Provider store={store}>
       <App />
     </Provider>
   </React.StrictMode>
