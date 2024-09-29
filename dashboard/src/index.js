@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
+//import { Store } from "@feardread/crud-service";
 
 import App from "./App";
 import {Provider } from "react-redux";
