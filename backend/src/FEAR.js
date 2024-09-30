@@ -69,13 +69,14 @@ module.exports = FEAR = (( app ) => {
     allowedHeaders: ["Content-Type", "Authorization", "Access-Control-Allow-Origin"]
   }));
 
-  app.use(errors.notFound);
-  app.use(express.static(path.join(__dirname1, "/dashboard/build")));
-  app.get("*", (req, res) =>
+  this.app = this.load(app);
+
+  this.app.use(express.static(path.join(__dirname1, "/dashboard/build")));
+  this.app.get("*", (req, res) =>
     res.sendFile(path.resolve(__dirname1, "dashboard", "build", "index.html"))
   );
 
-  this.app = this.load(app);
+  this.app.use(errors.notFound);
 
   return this;
 
