@@ -2,7 +2,7 @@ import { createStore, applyMiddleware, compose } from "redux";
 import { thunk } from "redux-thunk";
 import { createLogger } from "redux-logger";
 import rootReducer from "./reducer.jsx";
-import StorePersist from "./persist.jsx";
+import StorePersist from "./StorePersist.jsx";
 
 const logger = createLogger();
 
@@ -20,6 +20,6 @@ const initialState = StorePersist.get("auth")
   ? { auth:StorePersist.get("auth") }
   : {};
 
-const store = createStore(rootReducer, initialState, configStore);
+const Store = createStore(rootReducer, initialState, configStore);
 
-export default store;
+export default Store;

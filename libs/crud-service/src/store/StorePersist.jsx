@@ -1,6 +1,6 @@
 
 
-export default StorePersist = {
+const StorePersist = {
   set: (key, state) => {
     window.localStorage.setItem(key, JSON.stringify(state));
   },
@@ -19,3 +19,4 @@ export default StorePersist = {
   },
 };
 
+export default StorePersist;

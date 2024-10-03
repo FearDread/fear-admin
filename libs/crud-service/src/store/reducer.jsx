@@ -1,6 +1,6 @@
 import { combineReducers } from "redux";
 import * as actionTypes from "../api/types";
-//import authReducer from "./auth/reducer";
+import authReducer from "../auth/reducer.jsx";
 import crudReducer  from "../api/reducer.jsx";
 
 const appReducer = combineReducers({

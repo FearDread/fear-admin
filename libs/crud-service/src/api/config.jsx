@@ -1,4 +1,4 @@
-import StorePersist from "../store/persist.jsx";
+import StorePersist from "../store/StorePersist.jsx";
 
 const isAuth = StorePersist.get("auth") ? StorePersist.get("auth") : null;
 

@@ -1,8 +1,8 @@
 
 
-export { default as CRUD_API } from "./api/actions.jsx";
+export { default as CRUD_API } from "./api/CRUD_API.jsx";
 
-export { default as StorePersist} from "./store/persist.jsx";
+export { default as StorePersist} from "./store/StorePersist.jsx";
 
 export { default as RootReducer } from "./store/reducer.jsx";
 
