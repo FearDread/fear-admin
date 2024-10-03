@@ -1,26 +1,16 @@
 const express = require("express");
 const Blog = require("../controllers/blog");
-//const { blogImgResize, uploadPhoto } = require("../libs/middlewares/uploadImage");
 const router = express.Router();
 
-/*
-router.post("/", isAuthorized, isAdmin, createBlog);
-router.put(
-  "/upload/:id",
-  isAuthorized,
-  isAdmin,
-  uploadPhoto.array("images", 2),
-  blogImgResize,
-  uploadImages
-);
-router.put("/likes", isAuthorized, liketheBlog);
-router.put("/dislikes", isAuthorized, disliketheBlog);
+router.get("/all", Blog.all);
+router.post("/new",  Blog.create);
 
-router.put("/:id", isAuthorized, isAdmin, updateBlog);
+router.put("/likes", Blog.likes);
+router.put("/dislikes", Blog.dislikes);
 
-router.get("/:id", getBlog);
-router.get("/", getAllBlogs);
+router.route("/:id")
+      .get(Blog.read)
+      .put(Blog.update)
+      .delete(Blog.delete);
 
-router.delete("/:id", isAuthorized, isAdmin, deleteBlog);
-*/
 module.exports = router;

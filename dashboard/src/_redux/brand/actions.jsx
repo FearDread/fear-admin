@@ -1,5 +1,5 @@
 import axios from "axios";
-import * as Types from "../types/brand";
+import * as Types from "./types";
 import { API_BASE_URL } from "../config";
 
 export const list = () => async (dispatch) => {

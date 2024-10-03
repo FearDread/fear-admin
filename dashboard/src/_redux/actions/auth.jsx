@@ -28,7 +28,7 @@ export function logout() {
     try {
       storePersist.remove("auth");
 
-      await axios.get(API_BASE_URL + `/auth/logout`); // token will expired from cookies and no more user data access
+      await axios.get(API_BASE_URL + `/auth/logout`);
       
       dispatch({ type: actionTypes.LOGOUT_SUCCESS });
 

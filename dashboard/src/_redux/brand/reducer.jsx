@@ -1,4 +1,4 @@
-import * as types from "../types/brand";
+import * as types from "./types";
 
 const initialState = {
     brand:{},

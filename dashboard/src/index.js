@@ -13,6 +13,7 @@ import "assets/scss/black-dashboard-pro-react.scss?v=1.2.0";
 import "assets/demo/demo.css";
 import "assets/css/animated-bg.css";
 import "assets/css/loading.css";
+import "assets/css/styles.css";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
