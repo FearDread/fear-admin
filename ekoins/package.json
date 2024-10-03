@@ -1,8 +1,8 @@
 {
   "name": "frontend",
   "version": "0.1.0",
-  "private": true,
   "dependencies": {
+    "@feardread/crud-service": "1.1.7",
     "@reduxjs/toolkit": "^1.9.5",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
@@ -26,6 +26,8 @@
     "web-vitals": "^2.1.4",
     "sass": "1.53.0",
     "yup": "^1.2.0"
+  },
+  "devDependencies": {
   },
   "scripts": {
     "start": "react-scripts start",
