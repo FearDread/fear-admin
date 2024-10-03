@@ -1,6 +1,6 @@
 {
   "name": "@feardread/crud-service",
-  "version": "1.1.7",
+  "version": "1.1.8",
   "description": "API Hooks for RE\b\breact-redux",
   "main": "dist/index.js",
   "scripts": {
@@ -14,7 +14,6 @@
   "author": "FearDread",
   "license": "ISC",
   "dependencies": {
-    "@rollup/plugin-terser": "^0.4.4",
     "assert": "^2.1.0",
     "axios": "^1.7.7",
     "buffer": "^6.0.3",
@@ -25,11 +24,9 @@
     "redux": "^5.0.1",
     "redux-logger": "^3.0.6",
     "redux-thunk": "^3.1.0",
-    "rollup-plugin-dts": "^6.1.1",
-    "rollup-plugin-peer-deps-external": "^2.2.4",
-    "rollup-plugin-polyfill-node": "^0.13.0",
     "stream-browserify": "^3.0.0",
     "stream-http": "^3.2.0",
+    "typescript": "^5.6.2",
     "url": "^0.11.4"
   },
   "devDependencies": {
@@ -39,8 +36,11 @@
     "@rollup/plugin-commonjs": "^28.0.0",
     "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-node-resolve": "^15.3.0",
+    "@rollup/plugin-terser": "^0.4.4",
     "rollup": "^4.22.4",
-    "rollup-plugin-postcss": "^4.0.2"
+    "rollup-plugin-dts": "^6.1.1",
+    "rollup-plugin-peer-deps-external": "^2.2.4",
+    "rollup-plugin-polyfill-node": "^0.13.0"
   },
   "browserslist": {
     "production": [

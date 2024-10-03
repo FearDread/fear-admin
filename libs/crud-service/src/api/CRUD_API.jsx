@@ -1,8 +1,8 @@
 import axios from "axios";
-import * as Types from "./types";
+import * as Types from "./types.js";
 import { API_BASE_URL, AXIOS_CONFIG } from "./config.jsx";
 
-export default CRUD_API = {
+const CRUD_API = {
 
   resetState: () => async (dispatch) => {
     dispatch({ type: Types.RESET_STATE });
@@ -18,6 +18,14 @@ export default CRUD_API = {
 
   currentAction: (actionType, data) => async (dispatch) => {
     dispatch({ type: Types.CURRENT_ACTION, keyState: actionType, payload: { ...data } });
+  },
+
+  all: (entity) => async (dispatch) => {
+    dispatch({ type: Types.REQUEST_LOADING, keyState: "list", payload: null });
+
+    await axios.get(API_BASE_URL + '/' + entity + '/all')
+      .then((response) => { dispatch({ type: Types.REQUEST_SUCCESS, payload: response.data.result, keyState: "list" }); })
+      .catch((error) => { dispatch({ type: Types.REQUEST_FAILED, keyState: "list", payload: error }); })
   },
 
   list: (entity, _page = 1) => async (dispatch) => {
@@ -125,3 +133,5 @@ export default CRUD_API = {
         });
     },
 };
+
+export default CRUD_API;
