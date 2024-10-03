@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
-import * as Brand from "_redux/actions/brand";
+import * as BrandActions from "_redux/brand/actions";
 import {
   Button,
   Card,
@@ -31,15 +31,15 @@ const BrandNew = () => {
     myForm.set('title', title);
     myForm.set("isActive", isActive ? isActive : false);
 
-    dispatch(Brand.create(myForm));
+    dispatch(BrandActions.create(myForm));
   }
 
   useEffect(() => {
-    if (success) {
+    //if (success) {
       //history.push("/admin/brands")
-    }
+    //}
 
-  }, [success, history]);
+  }, [ history ]);
 
   return (
     <>

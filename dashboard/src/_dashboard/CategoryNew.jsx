@@ -35,10 +35,10 @@ const CategoryNew = () => {
   }
 
   useEffect(() => {
-    if( success ) {
-      dispatch({type: NEW_CATEGORY_RESET});
-      history.push('/admin/categories');
-    }
+    //if( success ) {
+      //dispatch({type: NEW_CATEGORY_RESET});
+      //history.push('/admin/categories');
+    //}
   }, [dispatch]);
 
   return (

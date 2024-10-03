@@ -15,6 +15,8 @@ import BrandsList from "_dashboard/BrandsList.jsx";
 import BrandNew from "_dashboard/BrandNew.jsx";
 import CategoryList from "_dashboard/CategoryList.jsx";
 import CategoryNew from "_dashboard/CategoryNew.jsx";
+import BlogList from "_dashboard/BlogList.jsx";
+import BlogNew from "_dashboard/BlogNew.jsx";
 
 //import CouponsList from "_dashboard/CouponsList.jsx";
 //import CouponNew from "_dashboard/CouponNew.jsx";
@@ -157,6 +159,20 @@ const routes = [
         name: "+ Coupon",
         mini: "C",
         component: RegularForms,
+        layout: "/admin"
+      },
+      {
+        path: "/blogs",
+        name: "All Blogs",
+        mini: "B",
+        component: BlogList,
+        layout: "/admin"
+      },
+      {
+        path: "/blog/new",
+        name: "+ Blog",
+        mini: "B",
+        component: BlogNew,
         layout: "/admin"
       }
     ]
