@@ -7,11 +7,13 @@ import Trendy from "../Components/Home/Trendy/Trendy";
 import LimitedEdition from "../Components/Home/Limited/LimitedEdition";
 import DealTimer from "../Components/Home/Deal/DealTimer";
 import HeroSection from "../Components/Home/Hero/HeroSection";
+import AnimatedHero from "../Components/AnimatedHero/AnimatedHero";
 
 const Home = () => {
   return (
     <>
-      <HeroSection />
+{/*      <HeroSection /> */}
+      <AnimatedHero />
       <CollectionBox />
       <Trendy />
       <DealTimer />
