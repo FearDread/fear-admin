@@ -3,8 +3,8 @@ import { useSelector } from "react-redux";
 import { ShoppingCart } from "@material-ui/icons";
 import "./CartIcon.css"
 const CartIcon = () => {
-  const { cartItems } = useSelector((state) => state.cart);
-  const cartItemCount = cartItems.length;
+  const { cartItems } = useSelector((state) => state.crud);
+  const cartItemCount = cartItems ? cartItems.length : 0;
 
   return (
     <div className="cartIconWrapper">

@@ -18,7 +18,7 @@ import {
   Label
 } from "reactstrap";
 
-const MyCard = ({ review }) => {
+const MyCard = ({ product }) => {
   const [helpful, setHelpful] = useState(10);
   const [unhelpful, setUnHelpful] = useState(5);
   const [helpfulClicked, setHelpfulClicked] = useState(false);

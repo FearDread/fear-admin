@@ -45,7 +45,7 @@ const FeaturedSlider = ({ products }) => {
       }}
       className="featured_swiper"
     >
-      {products.map((product) => {
+      { products && products.map((product) => {
         const { _id, images, name ,price  } = product;
         let newPrice = generateDiscountedPrice(price);
         newPrice = dispalyMoney(newPrice);
