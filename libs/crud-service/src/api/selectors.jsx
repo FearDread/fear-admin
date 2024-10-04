@@ -4,7 +4,7 @@ const selectCrud = (state) => state.crud;
 
 export const currentItem = createSelector([selectCrud],(crud) => crud.current);
 export const listItems = createSelector([selectCrud],(crud) => crud.list);
-export const itemById = (itemId) => createSelector(selectListItems, 
+export const itemById = (itemId) => createSelector(listItems, 
   (list) => list.result.items.find((item) => item._id === itemId));
 
 export const createdItem = createSelector([selectCrud],(crud) => crud.create);

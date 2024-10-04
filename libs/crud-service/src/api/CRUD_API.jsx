@@ -31,9 +31,13 @@ const CRUD_API = {
   list: (entity, _page = 1) => async (dispatch) => {
     dispatch({ type: Types.REQUEST_LOADING, keyState: "list", payload: null });
 
-    await axios.get(API_BASE_URL + '/' + entity + '/all')
+    await axios.get(API_BASE_URL + '/' + entity)
       .then((request) => {
         if ( request.data.success === true ) {
+          if ( !request.data.pagination ) {
+            request.data.pagination = {page:_page, pages:null, count:0 };
+          }
+          
           const results = {
             result: request.data.result,
             pagination: {
@@ -74,7 +78,7 @@ const CRUD_API = {
       if ( response.data.success ) {
         dispatch({ type: Types.CURRENT_ITEM, payload: response.data.result });
       }
-      dispatch({ type: Types.REQUEST_SUCCESS, keyState: "read", payload: data.result });
+      dispatch({ type: Types.REQUEST_SUCCESS, keyState: "read", payload: response.data.result });
     })
     .catch((error) => {
       dispatch({ type: Types.REQUEST_FAILED, keyState: "read", payload: error });
