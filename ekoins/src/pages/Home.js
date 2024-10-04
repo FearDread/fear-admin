@@ -21,9 +21,13 @@ import ReactStars from "react-rating-stars-component";
 import { addToWishlist } from "../features/products/productSlilce";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 
+import { CRUD_API } from "@feardread/crud-service";
+
 const Home = () => {
   const blogState = useSelector((state) => state?.blog?.blog);
   const productState = useSelector((state) => state?.product?.product);
+
+  const products = useSelector((state) => state.crud.list.result);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -34,6 +38,7 @@ const Home = () => {
   }, []);
   const getblogs = () => {
     dispatch(getAllBlogs());
+    dispatch(CRUD_API.list('product'));
   };
 
   const getProducts = () => {
@@ -384,9 +389,9 @@ const Home = () => {
           </div>
         </div>
         <div className="row">
-          {productState &&
-            productState?.map((item, index) => {
-              if (item.tags === "popular") {
+          {products &&
+            products.map((item, index) => {
+              if (item) {
                 return (
                   <div key={index} className={"col-3"}>
                     <div className="product-card position-relative">
@@ -396,14 +401,14 @@ const Home = () => {
                             src={wish}
                             alt="wishlist"
                             onClick={(e) => {
-                              addToWish(item?._id);
+                              addToWish(item._id);
                             }}
                           />
                         </button>
                       </div>
                       <div className="product-image">
                         <img
-                          src={item?.images[0].url}
+                          src={item.images[0] ? item.images[0].url : null}
                           // className="img-fluid d"
                           alt="product image"
                           height={"250px"}
@@ -411,7 +416,7 @@ const Home = () => {
                           onClick={() => navigate("/product/" + item?._id)}
                         />
                         <img
-                          src={item?.images[0].url}
+                          src={item.images[0] ? item.images[0].url : null}
                           // className="img-fluid d"
                           alt="product image"
                           height={"250px"}
@@ -420,19 +425,19 @@ const Home = () => {
                         />
                       </div>
                       <div className="product-details">
-                        <h6 className="brand">{item?.brand}</h6>
+                        <h6 className="brand">{item.brand}</h6>
                         <h5 className="product-title">
                           {item?.title?.substr(0, 70) + "..."}
                         </h5>
                         <ReactStars
                           count={5}
                           size={24}
-                          value={item?.totalrating.toString()}
+                          value={item.totalrating.toString()}
                           edit={false}
                           activeColor="#ffd700"
                         />
 
-                        <p className="price">Rs. {item?.price}</p>
+                        <p className="price">Rs. {item.price}</p>
                       </div>
                       <div className="action-bar position-absolute">
                         <div className="d-flex flex-column gap-15">

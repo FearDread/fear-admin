@@ -5,7 +5,7 @@ var blogSchema = new mongoose.Schema(
   {
     title: { type: String, required: true },
     description: { type: String, required: true },
-    category: { type: String, required: true },
+    category: { type: mongoose.Schema.Types.String, ref: "Category" },
     numViews: { type: Number, default: 0 },
     isLiked: { type: Boolean, default: false },
     isDisliked: { type: Boolean, default: false },
