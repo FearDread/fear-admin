@@ -8,5 +8,6 @@ export { default as RootReducer } from "./store/reducer.jsx";
 
 export { default as Store } from "./store/store.jsx";
 
+export * from "./api/selectors.jsx";
 
 
