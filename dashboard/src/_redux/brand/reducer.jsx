@@ -57,6 +57,7 @@ const brandsReducer = (state = initialState, action) => {
       return {
         ...state,
         loading: false,
+        success: false,
         brand: []
       };
     // Clear error

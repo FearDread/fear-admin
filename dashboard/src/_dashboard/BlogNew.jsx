@@ -26,7 +26,6 @@ import { NEW_BLOG_RESET } from "_redux/blog/types";
 const BlogNew = () => {
   const dispatch = useDispatch();
   const history = useHistory();
-
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
@@ -40,13 +39,18 @@ const BlogNew = () => {
   const { success, loading } = useSelector((state) => state.blog);
 
   useEffect(() => {
+    dispatch({type: NEW_BLOG_RESET});
     dispatch(CatActions.list());
-  }, [dispatch]);
+  }, [dispatch, success]);
 
   useEffect(() => {
     console.log('success = ', success);
+    if (success !== false) {
+      dispatch({type: NEW_BLOG_RESET});
+      history.push("/admin/blogs");
+    }
 
-  }, [success, loading]);
+  }, [success, loading, history]);
 
   const handleCategoryChange = (e) => {
     setCategory(e.target.value);
@@ -159,7 +163,7 @@ const BlogNew = () => {
                               placeholder="Choose Category"
                               onChange={handleCategoryChange} >
                               {categories.map((cate, key) => (
-                                <option key={cate._id} value={cate._id}>
+                                <option key={cate._id} value={cate.title}>
                                   {cate.title}
                                 </option>
                               ))}

@@ -19,6 +19,7 @@ import {
 } from "reactstrap";
 import * as ProductActions from "_redux/product/actions"
 import * as CatActions from "_redux/category/actions";
+import * as BrandActions from "_redux/brand/actions";
 import { NEW_PRODUCT_RESET } from "_redux/product/types";
 
 function NewProduct() {
@@ -37,9 +38,14 @@ function NewProduct() {
   const { user } = useSelector((state) => state.auth);
   const { loading, success } = useSelector((state) => state.product);
   const { categories } = useSelector((state) => state.cat);
+  const { brands } = useSelector((state) => state.brand);
 
   const handleCategoryChange = (e) => {
     setCategory(e.target.value);
+  };
+
+  const handleBrandChange = (e) => {
+    setBrand(e.target.value);
   };
 
   const handleImageUpload = () => {
@@ -105,14 +111,14 @@ function NewProduct() {
 
   useEffect(() => {
     if (success) {
-      successAlert();
-      dispatch({ type: NEW_PRODUCT_RESET })
-      history.push("/dashboard/product");
+      history.push("/admin/products");
     }
-  }, [dispatch, success, successAlert]);
+  }, [dispatch, success]);
 
   useEffect(() => {
+    dispatch({ type: NEW_PRODUCT_RESET })
     dispatch(CatActions.list());
+    dispatch(BrandActions.list());
   }, [dispatch]);
 
   return (
@@ -201,7 +207,7 @@ function NewProduct() {
                               placeholder="Choose Category"
                               onChange={handleCategoryChange} >
                               {categories.map((cate, key) => (
-                                <option key={cate._id} value={cate._id}>
+                                <option key={cate._id} value={cate.title}>
                                   {cate.title}
                                 </option>
                               ))}
@@ -232,12 +238,17 @@ function NewProduct() {
                         <Label sm="2">Brand</Label>
                         <Col sm="10">
                           <FormGroup>
-                            <Input
+                          <Input
+                              type="select"
                               name="brand"
-                              value={brand}
-                              placeholder="ex: DC Comics"
-                              onChange={(e) => setBrand(e.target.value)}
-                            />
+                              placeholder="Choose Category"
+                              onChange={handleBrandChange} >
+                              {brands.map((b, key) => (
+                                <option key={b._id} value={b.title}>
+                                  {b.title}
+                                </option>
+                              ))}
+                            </Input>
                           </FormGroup>
                         </Col>
                       </Row>

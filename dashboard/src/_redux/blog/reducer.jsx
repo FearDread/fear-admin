@@ -46,7 +46,6 @@ const blogReducer = (state = initialState, action) => {
       };
 
     case types.NEW_BLOG_FAIL: {
-      console.log(action.type);
       return {
         loading: false,
         error: action.payload,
@@ -56,6 +55,7 @@ const blogReducer = (state = initialState, action) => {
       return {
         ...state,
         loading: false,
+        success: false,
         blog: []
       };
     // Clear error

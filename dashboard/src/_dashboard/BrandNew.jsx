@@ -16,6 +16,7 @@ import {
   Col
 } from "reactstrap";
 import Loader from "components/Loader/Loading.js";
+import { NEW_BRAND_RESET } from "_redux/brand/types";
 
 const BrandNew = () => {
   const dispatch = useDispatch();
@@ -35,11 +36,15 @@ const BrandNew = () => {
   }
 
   useEffect(() => {
-    //if (success) {
-      //history.push("/admin/brands")
-    //}
+    if (success) {
+      history.push("/admin/brands")
+    }
 
-  }, [ history ]);
+  }, [ success, history ]);
+
+  useEffect(() => {
+    dispatch({ type: NEW_BRAND_RESET })
+  }, [dispatch])
 
   return (
     <>
