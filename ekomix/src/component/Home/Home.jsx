@@ -25,11 +25,13 @@ import { CRUD_API } from "@feardread/crud-service";
 function Home() {
   const alert = useAlert();
   const dispatch = useDispatch();
-  const { loading, products } = useSelector((state) => state.products);
+  const { loading, result } = useSelector((state) => state.crud.list);
 
   React.useEffect(() => {
 
-    dispatch(getAdminProducts());
+    //dispatch(getAdminProducts());
+    dispatch(CRUD_API.all('product'));
+    console.log('products? ', result)
   }, [ dispatch ]);
 
   return (
@@ -51,16 +53,14 @@ function Home() {
                 <h2>
                   Featured Products
                 </h2>
-                {products &&
-                <FeaturedSlider products={products} /> }
+                <FeaturedSlider products={result} /> 
               </div>
               </Container>
               <Services />
               <Container>
               <h2>Trending Products</h2>
               <Row className="trending-products">
-                  {products &&
-                  products.map((product, idx) => (
+                  {result && result.map((product, idx) => (
                     idx < 6 && (
                       <Col md="3">
                       <ProductCard key={product._id} product={product} />

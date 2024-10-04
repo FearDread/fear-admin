@@ -40,10 +40,13 @@ const categories = [
   "Accessories",
 ];
 
+import { CRUD_API } from "@feardread/crud-service";
+
 function Products() {
   const match = useRouteMatch();
   let keyword = match.params.keyword;
   const dispatch = useDispatch();
+  /*
   const {
     products,
     loading,
@@ -52,6 +55,8 @@ function Products() {
     resultPerPage,
     // filterdProductCount,
   } = useSelector((state) => state.products);
+   */
+  const { loading, result, pagination } = useSelector((state) => state.crud.list);
   const alert = useAlert();
 
   const [currentPage, setCurrentPage] = React.useState();
@@ -61,13 +66,14 @@ function Products() {
   const [selectedCategory, setSelectedCategory] = React.useState("");
 
   useEffect(() => {
-    if (error) {
-      alert.error(error);
-      dispatch(clearErrors());
-    }
 
-    dispatch(getAdminProducts());
-    dispatch(getProduct(keyword, currentPage, price, category, ratings));
+
+      dispatch(clearErrors());
+
+
+   // dispatch(getAdminProducts());
+    dispatch(CRUD_API.all('product'));
+    //dispatch(getProduct(keyword, currentPage, price, category, ratings));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, keyword, currentPage, price, ratings, category]);
 
@@ -100,8 +106,7 @@ function Products() {
       ) : (
         <>
           <MetaData title="PRODUCTS --Ecart" />
-          <AnimatedBackground />
-          {products === undefined || products.length === 0 ? (
+          {result === undefined || result.length === 0 ? (
             <>
               <div
                 className="emptyCartContainer "
@@ -272,8 +277,7 @@ function Products() {
                 </div>
               <Container>
                 <Row className="product-container">
-                  {products &&
-                    products.map((product) => (
+                  {result && result.map((product) => (
                       <Col md="4">
                       <ProductCard key={product._id} product={product} />
                       </Col>
@@ -283,9 +287,9 @@ function Products() {
               </div>
                 <div className="paginationBox">
                   <Pagination
-                    activePage={currentPage}
-                    itemsCountPerPage={resultPerPage}
-                    totalItemsCount={productsCount}
+                    activePage={1}
+                    itemsCountPerPage={10}
+                    totalItemsCount={result.length}
                     onChange={setCurrentPageNoHandler}
                     nextPageText="Next"
                     prevPageText="Prev"

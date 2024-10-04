@@ -1,13 +1,12 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { Store } from "@feardread/crud-service";
 import { Provider } from "react-redux";
 import { positions, transitions, Provider as AlertProvider } from "react-alert";
 import AlertTemplate from "react-alert-template-basic";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import store from "_store/store";
 import App from "./App";
 import {BrowserRouter} from "react-router-dom"; 
+import { Store } from "@feardread/crud-service";
 
 const theme = createTheme();
 const options = {

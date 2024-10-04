@@ -41,6 +41,7 @@ import TermsAndConditions from "./component/Terms/TermsCondtion";
 import PrivacyPolicy from "./component/Terms/Privacy";
 import NavbarMain from "./component/Navbars/NavbarMain";
 import TestimonialCard from "component/_Testimonials/Card";
+import { CRUD_API } from "@feardread/crud-service";
 //import PixleStars from "./component/PixleStars/PixleStars";
 // const LazyPayment = React.lazy(() => import("./component/Cart/Payment"));
 const LazyDashboard = React.lazy(() => import("./component/Admin/Dashboard"));
@@ -53,11 +54,14 @@ const LazyUpdateUser = React.lazy(() => import("./component/Admin/UpdateUser"));
 const LazyNewProduct = React.lazy(() => import("./component/Admin/NewProduct"));
 const LazyProductReviews = React.lazy(() => import("./component/Admin/ProductReviews"));
 
+
+
 function App() {
   const dispatch = useDispatch();
   const [stripeApiKey, setStripeApiKey] = useState("");
-  const { isAuthenticated, user } = useSelector((state) => state.userData);
+  const { current, isLoggedIn, loading } = useSelector((state) => state.auth);
   
+  console.log('state :: ', current);
   const getStripeApiKey = async () => {
 
     await axios.get("/stripe/key")

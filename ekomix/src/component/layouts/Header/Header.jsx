@@ -16,7 +16,7 @@ import { UserProfile } from "../../../_store/actions/userAction";
 function Header() {
   const history = useHistory();
   const dispatch = useDispatch();
-  const { isAuthenticated, user } = useSelector((state) => state.userData);
+  const { isLoggedIn, current } = useSelector((state) => state.auth);
   const [searchBarActive, setSearchBarActive] = useState(false);
   const [country, setCountry] = useState("in");
   const [sideMenu, setSideMenu] = useState(false);
@@ -53,8 +53,8 @@ function Header() {
   };
 
   useEffect(() => {
-    console.log('user data = ', user);
-    console.log('is auth = ', isAuthenticated);
+    console.log('user data = ', current);
+    console.log('is auth = ', isLoggedIn);
 
     dispatch(UserProfile());
   }, []);
@@ -81,7 +81,7 @@ function Header() {
             </div>
 
             <div className="headerLogin">
-              {isAuthenticated ? (
+              {isLoggedIn ? (
                 <Link
                   to="/account"
                   style={{ color: "inherit", textDecoration: "none" }}
@@ -119,8 +119,8 @@ function Header() {
                 {sideMenu && (
                   <Sidebar
                     handleSideBarMenu={handleSideBarMenu}
-                    isAuthenticated={isAuthenticated}
-                    user={user}
+                    isAuthenticated={isLoggedIn}
+                    user={current}
                   />
                 )}
               </span>
@@ -186,7 +186,7 @@ function Header() {
               </Link>
             </span>
             <span>
-              <ProfileModal user={user} isAuthenticated={isAuthenticated} />
+              <ProfileModal user={current} isAuthenticated={isLoggedIn} />
             </span>
           </div>
         </div>
