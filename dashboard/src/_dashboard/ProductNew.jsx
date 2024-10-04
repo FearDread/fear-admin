@@ -113,7 +113,7 @@ function NewProduct() {
     if (success) {
       history.push("/admin/products");
     }
-  }, [dispatch, success]);
+  }, [history, success]);
 
   useEffect(() => {
     dispatch({ type: NEW_PRODUCT_RESET })

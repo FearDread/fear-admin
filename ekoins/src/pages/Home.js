@@ -22,6 +22,7 @@ import { addToWishlist } from "../features/products/productSlilce";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 
 import { CRUD_API } from "@feardread/crud-service";
+import { listItems } from "@feardread/crud-service";
 
 const Home = () => {
   const blogState = useSelector((state) => state?.blog?.blog);
@@ -38,7 +39,7 @@ const Home = () => {
   }, []);
   const getblogs = () => {
     dispatch(getAllBlogs());
-    dispatch(CRUD_API.list('product'));
+    dispatch(CRUD_API.all('product'));
   };
 
   const getProducts = () => {

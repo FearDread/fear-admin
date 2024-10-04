@@ -13,10 +13,11 @@ import { IoFilterSharp, IoClose } from "react-icons/io5";
 import { FaAngleRight, FaAngleLeft } from "react-icons/fa6";
 import { FaCartPlus } from "react-icons/fa";
 import toast from "react-hot-toast";
+import { CRUD_API } from "@feardread/crud-service";
 
 const ShopDetails = () => {
   const dispatch = useDispatch();
-
+  const products = useSelector((state) => state.crud.list.result);
   const [wishList, setWishList] = useState({});
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
@@ -26,6 +27,7 @@ const ShopDetails = () => {
       [productID]: !prevWishlist[productID],
     }));
   };
+
 
   const scrollToTop = () => {
     window.scrollTo({
