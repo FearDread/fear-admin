@@ -5,23 +5,22 @@ import FeaturedSlider from '../components/sliders/FeaturedSlider';
 import SectionsHead from '../components/common/SectionsHead';
 import TopProducts from '../components/product/TopProducts';
 import Services from '../components/common/Services';
-import {getAllProducts} from "../features/products/slice";
+//import {getAllProducts} from "../features/products/slice";
+import { CRUD_API } from "@feardread/crud-service";
 
 
 const Home = () => {
     
     const dispatch = useDispatch();
-    const products = useSelector((state) => state?.product?.products);
-    const isLoading = useSelector((state) => state?.product?.isLoading);
+    //const { loading, result } = useSelector((state) => state.crud.list);
+    //const isLoading = useSelector((state) => state?.product?.isLoading);
 
     useEffect(() => {
-        console.log("is loading = ", isLoading);
-        if (!isLoading) {
 
-        }
-        //dispatch(getAllProducts());
-        console.log("products = ", products);
-    }, []);
+        //dispatch(CRUD_API.all('product'));
+     
+    }, [dispatch]);
+    
     return (
         <main>
             <section id="hero">
