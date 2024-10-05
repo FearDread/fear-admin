@@ -3,9 +3,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link } from 'react-router-dom';
 import { BsArrowRight } from 'react-icons/bs';
 import useActive from '../../hooks/useActive';
-import productsData from '../../data/productsData';
+//import productsData from '../../data/productsData';
 import ProductCard from './ProductCard';
-import { getAllProducts, addToWishlist } from "../../features/products/slice";
+//import { getAllProducts, addToWishlist } from "../../features/products/slice";
+import { CRUD_API } from "@feardread/crud-service";
 
 
 const TopProducts = () => {
@@ -14,17 +15,19 @@ const TopProducts = () => {
     const dispatch = useDispatch();
     //const [allprods, setProducts] = useState(productsData);
     //const { activeClass, handleActive } = useActive(0);
-    const products = useSelector((state) => state?.product?.products);
-    const isLoading = useSelector((state) => state?.product?.isLoading);
+    const {loading, result } = useSelector((state) => state.crud.list);
+    //const isLoading = useSelector((state) => state?.product?.isLoading);
 
 
     const getProducts = () => {
-      dispatch(getAllProducts());
+      //dispatch(getAllProducts());
+      dispatch(CRUD_API.all('product'));
+      console.log("products = ", result);
     };
   
     const addToWish = (id) => {
       //alert(id);
-      dispatch(addToWishlist(id));
+      //dispatch(addToWishlist(id));
     };
     
 
@@ -41,24 +44,24 @@ const TopProducts = () => {
     const handleProducts = (category, i) => {
         if (category === 'All') {
             //setProducts(productsData);
-            handleActive(i);
+            //handleActive(i);
             return;
         }
 
-        const filteredProducts = products.filter(item => item.category === category);
+        const filteredProducts = result.filter(item => item.category === category);
         //setProducts(filteredProducts);
-        handleActive(i);
+        //handleActive(i);
     };
 
     useEffect(() => {
 
+        dispatch(CRUD_API.all('product'));
+        console.log("products = ", result);
       }, [dispatch]);
 
-
-      //getProducts();
     return (
         <>
-        {isLoading ? (
+        {loading ? (
                          <div className="card products_card browse_card">
                          <Link to="/all-products">
                              Browse All <br /> Products <BsArrowRight />
@@ -69,10 +72,10 @@ const TopProducts = () => {
         <>
             <div className="products_filter_tabs">
                 <ul className="tabs">
-                    { getProductCategory(products).map((item, i) => (
+                    { getProductCategory(result).map((item, i) => (
                             <li
                                 key={i}
-                                className={`tabs_item ${activeClass(i)}`}
+                                className={`tabs_item`}
                                 onClick={() => handleProducts(item, i)}
                             >
                                 {item}
@@ -82,8 +85,8 @@ const TopProducts = () => {
                 </ul>
             </div>
             <div className="wrapper products_wrapper">
-                {products && products?.map((item) => {
-                        <ProductCard data={item} />
+                {result && result.map((item) => {
+                    <ProductCard data={item} />
                     })
                 }
                 <div className="card products_card browse_card">

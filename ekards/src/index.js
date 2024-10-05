@@ -2,14 +2,16 @@ import React from 'react';
 import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import App from './App';
-import { store } from "./app/store";
+//import { store } from "./app/store";
 import './styles/style.scss';
+import { Store } from "@feardread/crud-service";
+
 
 const container = document.getElementById("root");
 const root = createRoot(container);
 
 root.render(
-  <Provider store={store}>
+  <Provider store={Store}>
     <App />
   </Provider>
 );
