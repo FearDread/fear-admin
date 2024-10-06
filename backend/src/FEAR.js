@@ -71,7 +71,8 @@ module.exports = FEAR = (( app ) => {
       "http://localhost:4001", 
       "http://localhost:4000", 
       "http://localhost:3000",
-      "https://fear.serveo.net"
+      "https://fear.serveo.net",
+      "https://ddd740ee6ecc22.lhr.life"
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization", "Access-Control-Allow-Origin"]
