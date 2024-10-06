@@ -2,7 +2,7 @@ import axios from "axios";
 import * as Types from "./types.js";
 import { API_BASE_URL, AXIOS_CONFIG } from "./config.jsx";
 
-const CRUD_API = {
+const CRUD = {
 
   resetState: () => async (dispatch) => {
     dispatch({ type: Types.RESET_STATE });
@@ -32,26 +32,20 @@ const CRUD_API = {
     dispatch({ type: Types.REQUEST_LOADING, keyState: "list", payload: null });
 
     await axios.get(API_BASE_URL + '/' + entity)
-      .then((request) => {
-        if ( request.data.success === true ) {
-          if ( !request.data.pagination ) {
-            request.data.pagination = {page:_page, pages:null, count:0 };
-          }
+      .then((response) => {
+        if ( response.data.success === true ) {
+         (response.data.pagination) ? response.data.pagination : { page:_page, pages:null, count:0 };
           
-          const results = {
-            result: request.data.result,
-            pagination: {
-              pageSize: 10,
-              current: parseInt(request.data.pagination.page, 10),
-              total: parseInt(request.data.pagination.count, 10)
-            },
-          }; 
+          const results = { result: response.data.result,
+            pagination: {pageSize: 10,
+              current: parseInt(response.data.result.page, 10),
+              total: parseInt(response.data.result.count, 10)
+            }}; 
           dispatch({ type: Types.REQUEST_SUCCESS, keyState: "list", payload: results });
         }
+        dispatch({ type: Types.CURRENT_ITEM, payload: response.data.result });
       })
-      .catch((error) => {
-        dispatch({ type: Types.REQUEST_FAILED, keyState: "list", payload: error });
-      });
+      .catch((error) => { dispatch({ type: Types.REQUEST_FAILED, keyState: "list", payload: error }); });
   },
 
   create: (entity, _data) => async (dispatch) => {
@@ -138,4 +132,8 @@ const CRUD_API = {
     },
 };
 
-export default CRUD_API;
+CRUD.cart = {};
+
+CRUD.wishlist = {};
+
+export default CRUD;
