@@ -22,7 +22,15 @@ module.exports = FEAR = (( app ) => {
         {parsed: _config} = env;
 
   app.set("PORT", 4000);
-  app.use(helmet());
+  app.use(helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        connectSrc: ["'self'", 'http://127.0.0.1:4000', 'ws://localhost:4000/']
+      }
+    }
+  }));
+
   app.use(compression());
   app.use(fileUpload());
   app.use(cookieParser());
