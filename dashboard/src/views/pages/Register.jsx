@@ -29,15 +29,17 @@ import Loader from "components/Loader/Loading";
 const Register = () => {
   const dispatch = useDispatch();
   const history = useHistory();
-  const [state, setState] = React.useState({});
+  const [state, setState] = useState({});
   const [name, setName] = useState("");
   const [username, setUserName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [mobile, setMobile] = useState("");
 
   const [isValidEmail, setIsValidEmail] = useState(true);
   const [isValidName, setIsValidName] = useState(true);
   const [isValidPassword, setIsValidPassword] = useState(true);
+  const [isValidMobile, setIsValidMobile] = useState(true);
 
   const [showPassword, setShowPassword] = useState(false);
   const [confirmPassword, setconfirmPassword] = useState("");
@@ -59,9 +61,14 @@ const Register = () => {
     );
   };
   
+  const handleMobileChange = (e) => {
+    setMobile(e.target.value);
+  }
+
   const handleNameChange = (event) => {
     const newName = event.target.value;
     setName(newName);
+    setUserName(newName);
     setIsValidName(newName.length >= 4 && newName.length <= 20);
   };
 
@@ -87,12 +94,11 @@ const Register = () => {
 
     const formData = new FormData();
           formData.set("name", name);
-          formData.set("username", username);
+          formData.set("username", username.toLowerCase());
+          formData.set("mobile", mobile);
           formData.set("email", email);
           formData.set("password", password);
           formData.set("passwordCheck", confirmPassword);
-
-          //formData.set("avatar", avatar);
 
   dispatch(register(formData));
 }
@@ -100,7 +106,6 @@ var redirect = "/admin/dashboard";
    
 useEffect(() => {
   if (isLoggedIn) {
-    console.log("uncomment redirect");
     history.push(redirect);
    }
 }, [dispatch, history, isLoggedIn, redirect]);
@@ -187,7 +192,7 @@ useEffect(() => {
                     </InputGroup>
                     <InputGroup
                       className={classnames({
-                        "input-group-focus": state.nameFocus
+                        "input-group-focus": state.mobileFocus
                       })}
                     >
                       <InputGroupAddon addonType="prepend">
@@ -196,12 +201,14 @@ useEffect(() => {
                         </InputGroupText>
                       </InputGroupAddon>
                       <Input
-                        placeholder="Username (must be unique)"
+                        placeholder="Mobile (must be valid)"
                         type="text"
-                        autoComplete="username"
-                        value={username}
-                        onChange={handleUserNameChange}
-                        //error={!isValidName && name !== ""}
+                        autoComplete="mobile"
+                        onFocus={(e) => setState({ ...state, mobileFocus: true })}
+                        onBlur={(e) => setState({ ...state, mobileFocus: false })}
+                        value={mobile}
+                        onChange={handleMobileChange}
+                        error={!isValidMobile}
                       />
                     </InputGroup>
                     <InputGroup
