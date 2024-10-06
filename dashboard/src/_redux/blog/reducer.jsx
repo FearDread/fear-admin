@@ -10,53 +10,40 @@ const initialState = {
 }
 
 const blogReducer = (state = initialState, action) => {
-
   switch (action.type) {
-
-    case types.ALL_BLOG_REQUEST: {
+    case types.NEW_BLOG_REQUEST:
+    case types.ALL_BLOG_REQUEST:
       return {
         ...state,
         loading: true,
       };
-    }
-    case types.ALL_BLOG_SUCCESS: {
-      return {
-        loading: false,
-        success: true,
-        blogs: action.payload,
-      };
-    }
-    case types.ALL_BLOG_FAIL: {
-      return {
-        loading: false,
-        success: false,
-        result: action.payload,
-      };
-    }
-    case types.NEW_BLOG_REQUEST: {
-      return { loading: true };
-    }
+
+    case types.ALL_BLOG_SUCCESS:
+        return {
+          loading: false,
+          blogs: action.payload,
+        };
 
     case types.NEW_BLOG_SUCCESS:
       return {
         ...state,
         loading: false,
         success: true,
-        blog: action.payload.data,
-      };
+        blog: action.payload
+      }
 
-    case types.NEW_BLOG_FAIL: {
-      return {
-        loading: false,
-        error: action.payload,
-      };
-    }
+    case types.NEW_BLOG_FAIL: 
+    case types.ALL_BLOG_FAIL:
+       return {
+          loading: false,
+          success: false,
+          error: action.payload,
+        };
+
     case types.NEW_BLOG_RESET:
       return {
         ...state,
-        loading: false,
-        success: false,
-        blog: []
+        success: false
       };
     // Clear error
     case types.CLEAR_ERRORS:

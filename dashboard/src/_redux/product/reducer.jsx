@@ -57,7 +57,8 @@ const productsReducer = (state = initialState, action) => {
     }
     case types.NEW_PRODUCT_RESET:
       return {
-        initialState
+        ...state,
+        success: false,
       };
     // Clear error
     case types.CLEAR_ERRORS:

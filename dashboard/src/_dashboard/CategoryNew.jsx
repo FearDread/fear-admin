@@ -23,7 +23,6 @@ const CategoryNew = () => {
   const dispatch = useDispatch();
   const history = useHistory();
   const [title, setTitle] = useState("");
-  //const [cat, loading] = useSelector((state) => state.categories);
   const { success, loading } = useSelector((state) => state.cat);
 
   const handleSubmitCategory = (e) => {
@@ -35,11 +34,11 @@ const CategoryNew = () => {
   }
 
   useEffect(() => {
-    //if( success ) {
-      //dispatch({type: NEW_CATEGORY_RESET});
-      //history.push('/admin/categories');
-    //}
-  }, [dispatch]);
+    if( success ) {
+      dispatch({type: NEW_CATEGORY_RESET});
+      history.push('/admin/categories');
+    }
+  }, [success, history]);
 
   return (
     <>

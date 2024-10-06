@@ -37,14 +37,10 @@ const BrandNew = () => {
 
   useEffect(() => {
     if (success) {
-      history.push("/admin/brands")
+      dispatch({ type: NEW_BRAND_RESET });
+      history.push("/admin/brands");
     }
-
-  }, [ success, history ]);
-
-  useEffect(() => {
-    dispatch({ type: NEW_BRAND_RESET })
-  }, [dispatch])
+  }, [history, success]);
 
   return (
     <>
