@@ -38,20 +38,6 @@ const BlogNew = () => {
   const { user } = useSelector((state) => state.auth);
   const { success, loading } = useSelector((state) => state.blog);
 
-  useEffect(() => {
-    dispatch({type: NEW_BLOG_RESET});
-    dispatch(CatActions.list());
-  }, [dispatch, success]);
-
-  useEffect(() => {
-    console.log('success = ', success);
-    if (success !== false) {
-      dispatch({type: NEW_BLOG_RESET});
-      history.push("/admin/blogs");
-    }
-
-  }, [success, loading, history]);
-
   const handleCategoryChange = (e) => {
     setCategory(e.target.value);
   };
@@ -93,6 +79,17 @@ const BlogNew = () => {
   const toastSuccess = () => {
     toast.success("Blog Added Successfullly!");
   }
+
+  useEffect(() => {
+    dispatch(CatActions.list());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (success) {
+      history.push("/admin/blogs");
+      dispatch({type: NEW_BLOG_RESET});
+    }
+  }, [dispatch, history, success]);
 
   return (
     <>

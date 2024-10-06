@@ -46,7 +46,7 @@ const routes = [
       },
       {
         path: "/users/new",
-        name: "+ Add Customer",
+        name: "+ Customer",
         mini: "U",
         component: UserList,
         layout: "/admin"
@@ -75,14 +75,14 @@ const routes = [
       },
       {
         path: "/product/new",
-        name: "Add Product",
+        name: "+ Product",
         mini: "+",
         component: NewProduct,
         layout: "/admin"
       },
       {
         path: "/product/reviews",
-        name: "Add Review",
+        name: "+ Review",
         mini: "+",
         component: Wizard,
         layout: "/admin"
@@ -104,7 +104,7 @@ const routes = [
           },
           {
             path: "/brand/new",
-            name: "Add Brand",
+            name: "+ Brand",
             mini: "+",
             component: BrandNew,
             layout: "/admin"

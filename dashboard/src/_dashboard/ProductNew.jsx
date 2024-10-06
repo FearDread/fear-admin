@@ -77,7 +77,7 @@ function NewProduct() {
     const myForm = new FormData();
           
     myForm.set("title", title);
-    myForm.set("slug", title);
+    myForm.set("slug", title.toLowerCase());
     myForm.set("price", price);
     myForm.set("description", description);
     myForm.set("category", category);
@@ -111,6 +111,7 @@ function NewProduct() {
 
   useEffect(() => {
     if (success) {
+      dispatch({ type: NEW_PRODUCT_RESET });
       history.push("/admin/products");
     }
   }, [history, success]);

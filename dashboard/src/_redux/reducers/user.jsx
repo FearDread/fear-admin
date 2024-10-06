@@ -47,6 +47,11 @@ const userReducer = (state = initialState, action) => {
           ...state,
           loading: true,
         };
+      case actionTypes.ALL_USERS_RESET:
+        return {
+          ...state,
+          success: false 
+        }
       case actionTypes.ALL_USERS_SUCCESS:
         return {
           ...state,
