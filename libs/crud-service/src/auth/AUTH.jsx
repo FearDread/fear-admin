@@ -1,6 +1,6 @@
-import * as Types from "../api/types.js";
+import * as Types from "./types.js";
 import { API_BASE_URL } from "../api/config.jsx";
-import StorePersist from "../store/persist.js";
+import StorePersist from "../store/StorePersist.jsx";
 import axios from "axios";
 
 const AUTH = {
@@ -28,7 +28,7 @@ const AUTH = {
   },
   
   register: (data) => async (dispatch) => {
-    dispatch({ type: Types.REGISTER_USER_REQUEST });
+    dispatch({ type: Types.REGISTER_REQUEST });
     const config = { headers: { "Content-Type": "multipart/form-data" }};
   
     await axios.post( API_BASE_URL + "/auth/register", data, config )
@@ -37,9 +37,9 @@ const AUTH = {
           token: response.data.token, 
           isLoggedIn: true 
         });
-        dispatch({ type: Types.REGISTER_USER_SUCCESS, payload: response.data.user });
+        dispatch({ type: Types.REGISTER_SUCCESS, payload: response.data.user });
       })
-      .catch((error) => { dispatch({ type: Types.REGISTER_USER_FAIL, payload: error.message }); });
+      .catch((error) => { dispatch({ type: Types.REGISTER_FAIL, payload: error.message }); });
   }
 };
 

@@ -21,6 +21,10 @@ const CRUD = {
   },
 
   all: (entity) => async (dispatch) => {
+    if (entity === undefined) {
+      console.log("Error :: Missing entity");
+      return;
+    }
     dispatch({ type: Types.REQUEST_LOADING, keyState: "list", payload: null });
 
     await axios.get(API_BASE_URL + '/' + entity + '/all')
