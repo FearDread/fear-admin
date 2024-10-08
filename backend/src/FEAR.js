@@ -20,23 +20,18 @@ module.exports = FEAR = (( app ) => {
   const cloud = require("./libs/cloud");
   const db = require("./libs/db"),
         {parsed: _config} = env;
+      
+  this.app = app;
 
-  app.set("PORT", 4000);
-  app.use(helmet({
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"],
-        connectSrc: ["'self'", 'http://127.0.0.1:4000', 'ws://localhost:4000/']
-      }
-    }
-  }));
-
-  app.use(compression());
-  app.use(fileUpload());
-  app.use(cookieParser());
+  this.app.set("PORT", 4000);
+  this.app.use(compression());
+  this.app.use(fileUpload());
+  this.app.use(cookieParser());
 
   this.db = db;
   this.log = logger;
+  this.env = _config;
+  this.cloud = cloud;
   this.load = ( app ) => {
     const dir = "routes";
     const modPath = require('path').join( __dirname, dir );
@@ -51,22 +46,9 @@ module.exports = FEAR = (( app ) => {
   
     return app;
   }
-
-  this.env = _config;
-  this.cloud = cloud;
   this.logo = " ________  ________   ______   _______        \r\n|        \\|        \\ \/      \\ |       \\       \r\n| $$$$$$$$| $$$$$$$$|  $$$$$$\\| $$$$$$$\\      \r\n| $$__    | $$__    | $$__| $$| $$__| $$      \r\n| $$  \\   | $$  \\   | $$    $$| $$    $$      \r\n| $$$$$   | $$$$$   | $$$$$$$$| $$$$$$$\\      \r\n| $$      | $$_____ | $$  | $$| $$  | $$      \r\n| $$      | $$     \\| $$  | $$| $$  | $$      \r\n \\$$       \\$$$$$$$$ \\$$   \\$$ \\$$   \\$$      \r\n                                          ";
 
-  app.use(morgan);
-  app.use(express.json());
-  app.use(bodyParser.json());
-  app.use(bodyParser.urlencoded({ extended: true }));
-  app.use(passport.initialize());
-  app.use((req, res, next) => {
-    res.locals.user = req.user;
-    next();
-  });
-  
-  app.use(cors({
+  this.app.use(cors({
     origin: ["*", 
       "http://localhost:4001", 
       "http://localhost:4000", 
@@ -77,9 +59,29 @@ module.exports = FEAR = (( app ) => {
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization", "Access-Control-Allow-Origin"]
   }));
+  this.app.use(morgan);
+  this.app.use(express.json());
+  this.app.use(bodyParser.json());
+  this.app.use(bodyParser.urlencoded({ extended: true }));
+  this.app.use(passport.initialize());
+  this.app.use((req, res, next) => {
+    res.locals.user = req.user;
+    next();
+  });
 
+  // Load Routes
   this.app = this.load(app);
 
+  /*
+  this.app.use(helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        connectSrc: ["'self'", 'https://172.128.10.101:4000', 'https://127.0.0.1:4000', 'ws://localhost:4000/', 'ws://172.128.10.101:4000']
+      }
+    }
+  }));
+  */
   this.app.use(express.static(path.join(__dirname1, "/dashboard/build")));
   this.app.get("*", (req, res) =>
     res.sendFile(path.resolve(__dirname1, "dashboard", "build", "index.html"))
