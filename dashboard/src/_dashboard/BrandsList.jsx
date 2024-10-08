@@ -24,6 +24,12 @@ const Brandlist = () => {
   const dispatch = useDispatch();
   const { brands, loading } = useSelector((state) => state.brand);
 
+  const handleRemove = (id) => {
+    const nBrands = brands.filter((brand) => brand._id !== id);
+    
+    brands = nBrands;
+  };
+  
   useEffect(() => {
     dispatch(BrandActions.list());
   }, [ dispatch ]);
@@ -44,7 +50,8 @@ const Brandlist = () => {
         actions: ( ReactTableActions( key, (() => {
             console.log("edit item ::", item);
           }), (() => {
-            dispatch(BrandActions.remove(item._id));
+            handleRemove(item._id);
+            //dispatch(BrandActions.remove(item._id));
           })
         )) 
       })

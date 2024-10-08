@@ -2,7 +2,7 @@ import { Button } from "reactstrap";
 import classNames from "classnames";
 
 const ReactActions = ( key, _ecb, _dcb ) => {
-  if ( typeof _ect !== 'function' ) {
+  if ( typeof _ecb !== 'function' ) {
     console.log("missing edit callback");
   }
   return (

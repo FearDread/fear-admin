@@ -11,12 +11,14 @@ import {
  } from "reactstrap";
 import { useHistory } from "react-router-dom";
 import Loader from "components/Loader/Loading";
-//import { DELETE_PRODUCT_RESET } from "_redux/types/product";
+
 import ReactTable from "components/ReactTable/ReactTable.js";
 import ReactTableActions from "components/ReactTable/ReactTableActions.js";
 
 import * as ProductActions from "_redux/product/actions";
 import * as ProductTypes from "_redux/product/types";
+//import SweetAlert from "react-bootstrap-sweetalert";
+import ReactBSAlert from "react-bootstrap-sweetalert";
 
 const header = [
   { Header: "Cover", accessor: "avatar" },
@@ -32,12 +34,42 @@ const header = [
 function ProductList() {
   const dispatch = useDispatch();
   const history = useHistory();
+  const [alert, setAlert] = useState(null);
   const [ toggle, setToggle ] = useState(false);
   const { products, loading } = useSelector((state) => state.product);
 
+  const editProductHandler = (id) => {
 
+  }
+  
   const deleteProductHandler = (id) => {
     dispatch(ProductActions.remove(id));
+    dispatch({type: ProductTypes.DELETE_PRODUCT_RESET});
+    hideAlert()
+  };
+
+  const confirmDelete = (_id) => {
+    setAlert( 
+      <ReactBSAlert
+        warning
+        style={{ display: "block", marginTop: "-100px" }}
+        title="Are you sure?"
+        onConfirm={() => deleteProductHandler(_id)}
+        onCancel={() => hideAlert()}
+        confirmBtnBsStyle="success"
+        cancelBtnBsStyle="danger"
+        confirmBtnText="Yes, delete it!"
+        cancelBtnText="Cancel"
+        showCancel
+        btnSize=""
+      >
+        Your sure you want to delete this product?
+      </ReactBSAlert>
+    );
+  };
+
+  const hideAlert = () => {
+    setAlert(null);
   };
   
   const displayProducts = () => {
@@ -56,15 +88,26 @@ function ProductList() {
           quantity: item.quantity || 1,
           brand: item.brand,
           id: item._id,
-          actions: ( ReactTableActions(item, key, 'product') )
-        })
-      });
+          actions: ( 
+            ReactTableActions( key, (() => {
+              console.log("edit product ::", item);
+            }),
+            (() => {
+              console.log("remove product :: ", item);
+              confirmDelete(item._id);
+            })
+          ))
+        });
+      })
     }
+
     return dataTable;
   }
 
   useEffect(() => {
+
     dispatch(ProductActions.list());
+
   }, [dispatch]);
 
   useEffect(() => {
@@ -86,6 +129,7 @@ function ProductList() {
     ) : (
     <>
       <div className="content">
+        {alert}
           <Row> 
             <Col className="mb-5" md="12">
               <Card>

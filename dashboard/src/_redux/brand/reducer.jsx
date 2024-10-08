@@ -60,6 +60,38 @@ const brandsReducer = (state = initialState, action) => {
         ...state,
         success: false,
       };
+
+    case types.UPDATE_BRAND_SUCCESS:
+        return {
+          ...state,
+          loading: false,
+          isUpdated: action.payload,
+        };
+
+      case types.DELETE_BRAND_SUCCESS:
+        return {
+          ...state,
+          loading: false,
+          isDeleted: action.payload,
+        };
+      case types.DELETE_BRAND_FAIL:
+      case types.UPDATE_BRAND_FAIL:
+        return {
+          ...state,
+          loading: false,
+          error: action.payload,
+        };
+  
+      case types.UPDATE_BRAND_RESET:
+        return {
+          ...state,
+          isUpdated: false,
+        };
+  
+      case types.DELETE_BRAND_RESET:
+        return {
+          ...state,
+        };
     // Clear error
     case types.CLEAR_ERRORS:
       return {
