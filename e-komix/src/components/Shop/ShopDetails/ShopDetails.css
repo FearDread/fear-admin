@@ -100,8 +100,33 @@
   grid-gap: 30px;
 }
 
-.sdProductContainer {
+.card {
+  background: rgba(0,0,0,.7);
+  border: 0;
   position: relative;
+  width: 100%;
+  box-shadow: 0 1px 20px 0 rgba(0,0,0,.1);
+  border-radius: 7px;
+  margin-top: 30px
+}
+
+
+
+.sdProductContainer {
+  background: rgba(0,0,0,.7);
+  border: 0;
+  position: relative;
+  width: 100%;
+  box-shadow: 0 1px 20px 0 rgba(0,0,0,.1);
+  border-radius: 7px;
+  margin-top: 30px
+}
+
+.sdProductContainer:hover {
+  background: #e14e4e;
+  box-shadow: 13px 13px 77px -24px #e14e4e;
+  transform: scale(1.07);
+  -webkit-transform: scale(1.07)
 }
 
 .sdProductImages {

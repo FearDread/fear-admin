@@ -1,6 +1,7 @@
 .footer {
+  border-top: 2px solid #3553b3;
+  background: radial-gradient(ellipse at bottom, #292D61 30%, rgba(12, 1, 44, 0.849) 80%);
   padding: 30px 160px;
-  background-color: #e4e4e4;
   margin-top: 50px;
   display: flex;
   flex-direction: column;

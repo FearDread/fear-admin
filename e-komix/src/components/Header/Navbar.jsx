@@ -24,7 +24,7 @@ import { FaPinterest } from "react-icons/fa";
 import Badge from "@mui/material/Badge";
 
 const Navbar = () => {
-  const cart = useSelector((state) => state.cart);
+  //const cart = useSelector((state) => state.cart);
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -87,7 +87,7 @@ const Navbar = () => {
           </Link>
           <Link to="/cart" onClick={scrollToTop}>
             <Badge
-              badgeContent={cart.items.length === 0 ? "0" : cart.items.length}
+              badgeContent={0/*cart.items.length === 0 ? "0" : cart.items.length*/}
               color="primary"
               anchorOrigin={{
                 vertical: "bottom",
@@ -116,8 +116,9 @@ const Navbar = () => {
             </Link>
           </div>
           <Link to="/cart">
+
             <Badge
-              badgeContent={cart.items.length === 0 ? "0" : cart.items.length}
+              badgeContent={ 0/* cart.items.length === 0 ? "0" : cart.items.length */}
               color="primary"
               anchorOrigin={{
                 vertical: "bottom",

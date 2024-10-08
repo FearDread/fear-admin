@@ -1,7 +1,7 @@
 import React, { useState  } from "react";
 
-const ProductCard = ({ data }) => {
-  const product = data;
+const ProductCard = ({ props }) => {
+  const {_id, name, description, price, category } = props;
   console.log('product = ', product);
 
     return (
