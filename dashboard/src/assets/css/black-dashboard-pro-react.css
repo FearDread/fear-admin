@@ -91,6 +91,9 @@ body {
   color: #525f7f;
   text-align: left;
   background-color: #1e1e2f;
+  background-image: url("../img/gradient_bg_main.avif");
+  background-position: center;
+  background-size: cover;
 }
 
 [tabindex="-1"]:focus:not(:focus-visible) {
