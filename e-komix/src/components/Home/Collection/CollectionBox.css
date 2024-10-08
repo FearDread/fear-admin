@@ -8,7 +8,7 @@
 }
 
 .collectionLeft {
-  background-image: url("../../../Assets/Collection/collection1.jpg");
+  background-image: url("../../../Assets/Images/home_banner_1.webp");
   background-size: cover;
   background-position: center center;
   padding: 30px;
@@ -47,7 +47,7 @@
 }
 
 .collectionTop {
-  background-image: url("../../../Assets/Collection/collection2.jpg");
+  background-image: url("../../../Assets/Images/dc_banner_1.png");
   background-size: cover;
   background-position: center;
   display: flex;
@@ -64,7 +64,7 @@
 }
 
 .box1 {
-  background-image: url("../../../Assets/Collection/collection3.jpg");
+  background-image: url("../../../Assets/Images/comic_banner_1.jpg");
   background-size: cover;
   background-position: center;
   display: flex;
