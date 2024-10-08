@@ -17,7 +17,7 @@ const CollectionBox = () => {
         <div className="collectionLeft">
           <p className="col-p">Hot List</p>
           <h3 className="col-h3">
-            <span>Women</span> Collection
+            <span>Marvel</span> Collection
           </h3>
           <div className="col-link">
             <Link to="/shop" onClick={scrollToTop}>
@@ -29,7 +29,7 @@ const CollectionBox = () => {
           <div className="collectionTop">
             <p className="col-p">Hot List</p>
             <h3 className="col-h3">
-              <span>Men</span> Collection
+              <span>DC</span> Collection
             </h3>
             <div className="col-link">
               <Link to="/shop" onClick={scrollToTop}>
@@ -39,9 +39,9 @@ const CollectionBox = () => {
           </div>
           <div className="collectionBottom">
             <div className="box1">
-              <p className="col-p">Hot List</p>
+              <p className="col-p">Hot Cards</p>
               <h3 className="col-h3">
-                <span>Kids</span> Collection
+                <span>Upper Deck</span> Collection
               </h3>
               <div className="col-link">
                 <Link to="/shop" onClick={scrollToTop}>

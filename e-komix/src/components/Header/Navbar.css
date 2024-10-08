@@ -5,9 +5,10 @@
   padding: 35px 160px;
   position: relative;
   z-index: 10;
-  background-color: white;
+  background-color: black;
   position: sticky;
   top: 0;
+  color: white !important;
 }
 
 .logoLinkContainer {
@@ -39,7 +40,7 @@
 
 .linkContainer ul li a {
   text-decoration: none;
-  color: #1b1b1b;
+  color: white;
   font-size: 14px;
   font-weight: 600;
   position: relative;

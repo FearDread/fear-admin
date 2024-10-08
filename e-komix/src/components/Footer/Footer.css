@@ -1,11 +1,13 @@
 .footer {
-  border-top: 2px solid #3553b3;
-  background: radial-gradient(ellipse at bottom, #292D61 30%, rgba(12, 1, 44, 0.849) 80%);
+  border-top: 2px solid #f70000ed;
+  background: radial-gradient(ellipse at bottom, #561e1e 30%, rgba(44, 1, 1, 0.949) 80%);
   padding: 30px 160px;
   margin-top: 50px;
   display: flex;
   flex-direction: column;
   gap: 100px;
+  color: white;
+
 }
 
 .footer__container {
@@ -77,7 +79,7 @@
 }
 
 .links_container ul li a {
-  color: black;
+  color: white;
   text-decoration: none;
   font-size: 14px;
   position: relative;
