@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./ShopDetails.css";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -13,13 +13,13 @@ import { IoFilterSharp, IoClose } from "react-icons/io5";
 import { FaAngleRight, FaAngleLeft } from "react-icons/fa6";
 import { FaCartPlus } from "react-icons/fa";
 import toast from "react-hot-toast";
-import { CRUD_API } from "@feardread/crud-service";
+import { CRUD } from "@feardread/crud-service";
 
 const ShopDetails = () => {
   const dispatch = useDispatch();
-  const products = useSelector((state) => state.crud.list.result);
   const [wishList, setWishList] = useState({});
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const { loading, result } = useSelector((state) => state.crud.list);
 
   const handleWishlistClick = (productID) => {
     setWishList((prevWishlist) => ({
@@ -44,8 +44,8 @@ const ShopDetails = () => {
     setIsDrawerOpen(false);
   };
 
-  const cartItems = useSelector((state) => state.cart.items);
-
+  //const cartItems = useSelector((state) => state.cart.items);
+  const cartItems = 0;
   const handleAddToCart = (product) => {
     const productInCart = cartItems.find(
       (item) => item.productID === product.productID
@@ -78,6 +78,12 @@ const ShopDetails = () => {
       });
     }
   };
+
+  useEffect(() => {
+    dispatch(CRUD.all('product'));
+    console.log("products = ", result);
+
+  }, [dispatch]);
 
   return (
     <>
@@ -120,17 +126,17 @@ const ShopDetails = () => {
             </div>
             <div className="shopDetailsProducts">
               <div className="shopDetailsProductsContainer">
-                {StoreData.slice(0, 6).map((product) => (
+                { result && result.slice(0, 6).map((product) => (
                   <div className="sdProductContainer">
                     <div className="sdProductImages">
                       <Link to="/Product" onClick={scrollToTop}>
                         <img
-                          src={product.frontImg}
-                          alt=""
+                          src={product.images[0] ? product.images[0].url : ""}
+                          alt="product_img"
                           className="sdProduct_front"
                         />
                         <img
-                          src={product.backImg}
+                          src={product.images[0] ? product.images[0].url : ""}
                           alt=""
                           className="sdProduct_back"
                         />
@@ -147,11 +153,11 @@ const ShopDetails = () => {
                     </div>
                     <div className="sdProductInfo">
                       <div className="sdProductCategoryWishlist">
-                        <p>Dresses</p>
+                        <p>{product.category}</p>
                         <FiHeart
-                          onClick={() => handleWishlistClick(product.productID)}
+                          onClick={() => handleWishlistClick(product._id)}
                           style={{
-                            color: wishList[product.productID]
+                            color: wishList[product._id]
                               ? "red"
                               : "#767676",
                             cursor: "pointer",
@@ -160,10 +166,10 @@ const ShopDetails = () => {
                       </div>
                       <div className="sdProductNameInfo">
                         <Link to="/product" onClick={scrollToTop}>
-                          <h5>{product.productName}</h5>
+                          <h5>{product.name}</h5>
                         </Link>
 
-                        <p>${product.productPrice}</p>
+                        <p>${product.price}</p>
                         <div className="sdProductRatingReviews">
                           <div className="sdProductRatingStar">
                             <FaStar color="#FEC78A" size={10} />
@@ -172,7 +178,7 @@ const ShopDetails = () => {
                             <FaStar color="#FEC78A" size={10} />
                             <FaStar color="#FEC78A" size={10} />
                           </div>
-                          <span>{product.productReviews}</span>
+                          <span>{product.reviews}</span>
                         </div>
                       </div>
                     </div>

@@ -8,7 +8,7 @@
 }
 
 .bannerLeft {
-  background-image: url("../../../Assets/Banner/banner_1.jpg");
+  background-image: url("../../../Assets/Images/comic_banner_1.jpg");
   background-position: center;
   background-size: cover;
   display: flex;
@@ -19,7 +19,7 @@
 }
 
 .bannerRight {
-  background-image: url("../../../Assets/Banner/banner_2.jpg");
+  background-image: url("../../../Assets/Images/hero-merch.png");
   background-position: center;
   background-size: cover;
   display: flex;
