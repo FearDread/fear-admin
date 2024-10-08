@@ -64,39 +64,20 @@ exports.create = tryCatch(async (Model, req, res) => {
  *  @returns {Document} Returns updated document
  */
 exports.update = tryCatch(async (Model, req, res) => {
-  try {
-    // Find document by id and updates with the required fields
-    const result = await Model.findOneAndUpdate(
-      { _id: req.params.id },
-      req.body,
-      {
-        new: true, // return the new result instead of the old one
-        runValidators: true,
-      }
-    ).exec();
 
-    return res.status(200).json({
-      success: true,
-      result,
-      message: "we update this document by this id: " + req.params.id,
-    });
-  } catch (err) {
-    // If err is thrown by Mongoose due to required validations
-    if (err.name == "ValidationError") {
-      return res.status(400).json({
-        success: false,
-        result: null,
-        message: "Required fields are not supplied",
-      });
-    } else {
-      // Server Error
-      return res.status(500).json({
-        success: false,
-        result: null,
-        message: "Oops there is an Error",
-      });
-    }
-  }
+  await Model.findOneAndUpdate({ _id: req.params.id }, req.body,
+      { new: true, runValidators: true })
+      .exec()
+      .then((result) => {
+        return res.status(200).json({ result, success: true, message: "we update this document by this id: " + req.params.id });
+      })
+      .catch((err) => {
+        if (err.name == "ValidationError") {
+          return res.status(400).json({ success: false, result: null, message: "Required fields are not supplied" });
+        } else {
+          throw new Error("Internal Server Error");
+        }
+      })
 });
 
 /**
@@ -122,31 +103,19 @@ exports.list = tryCatch(async (Model, req, res) => {
   const page = req.query.page || 1;
   const limit = 10;
   const skip = page * limit - limit;
+  //const countPromise = Model.count();
+  await Model.find()
+    .then((result) => {
+      console.log("list result = ", result);
+      const count = result.length || 1;
+      const pages = Math.ceil(count / limit);
+      const pagination = { page, pages, count };
 
-  try {
-    const countPromise = Model.count();
-    const resultsPromise = Model.find().skip(skip)
-      .limit(limit).sort({ created: "desc" })
-      .populate();
-
-    await Promise.all(resultsPromise)
-      .then((result) => {
-        count = result.length || 1;
-        console.log("list result = ", result);
-        const pages = Math.ceil(count / limit);
-        const pagination = { page, pages, count };
-        if (result) {
-          return res.status(200)
-            .json({ result, success: true, pagination, message: "Successfully found all documents" });
-        } else {
-          return res.status(203)
-            .json({ result: [], success: false, pagination, message: "Collection is Empty" });
-        }
-      })
-      .catch((error) => { return res.status(400).json({ success: false, result: [], error }); });
-  } catch {
-    throw new Error("Oops there is an Error")
-  }
+      if (!result) return res.status(203).json({ result: [], success: false, pagination, message: "Collection is Empty" });
+      
+      return res.status(200).json({ result, success: true, pagination, message: "Successfully found all documents" });
+    })
+    .catch((error) => { return res.status(400).json({ success: false, result: [], error }); });
 });
 
 /**

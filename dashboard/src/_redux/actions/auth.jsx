@@ -8,7 +8,7 @@ export function login(email, password) {
   return async function (dispatch) {
     dispatch({ type: actionTypes.LOGIN_REQUEST });
       
-    const config = { headers: { "Content-Type": "application/json" } };
+    const config = { headers: { "Content-Type": "application/json", "Content-Type": "Access-Control-Allow-Origin" } };
     await axios.post( API_BASE_URL + "/auth/login", { email, password }, config )
       .then((response) => {
         storePersist.set("auth", { user: response.data.user, 
