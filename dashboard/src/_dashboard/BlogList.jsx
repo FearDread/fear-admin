@@ -17,6 +17,7 @@ import ReactTableActions from "components/ReactTable/ReactTableActions.js";
 const tableHeader = [
   { Header: "Photo", accessor: "images" },
   { Header: "Title", accessor: "title" },
+  { Header: "Section", accessor: "section" },
   { Header: "Category", accessor: "category" },
   { Header: "Post", accessor: "description" },
   { Header: "# Likes", accessor: "likes" }
@@ -27,7 +28,9 @@ const BlogList = () => {
   const { blogs, loading } = useSelector((state) => state.blog);
 
   useEffect(() => {
+
     dispatch(BlogActions.list());
+
   }, [ dispatch ]);
 
   const displayBlogs = () => {

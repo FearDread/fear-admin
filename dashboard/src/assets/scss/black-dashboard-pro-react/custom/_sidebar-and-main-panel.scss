@@ -495,9 +495,12 @@ $line-color: hsla(205,80%,40%,1);
     min-height: 100vh;
     border-top: 2px solid $primary;
     //background: linear-gradient($background-black, $background-states-black);
-    background-color: #13153b;
-    background-image: linear-gradient(45deg, #13153b 22%, #0743de 62%, #021e86 89%);
-    
+    //background-color: #13153b;
+    //background-image: linear-gradient(45deg, #13153b 22%, #0743de 62%, #021e86 89%);
+    background-image: url("../../../img/dark-tech-blue-bg.avif");
+    background-position: relative;
+    background-size: 100% 100%;
+    background-attachment: fixed;
       
     
 
