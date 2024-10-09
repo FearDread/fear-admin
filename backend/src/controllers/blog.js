@@ -92,6 +92,11 @@ exports.dislikes = async (req, res) => {
   }
 };
 
+exports.sections = async (req, res) => {
+  const categories = ['Marketing', 'Nextjs', 'React', 'Nodejs', 'Tailwindcss'];
+  return res.json({ sections: categories, success:true });
+}
+
 const crud = methods.crudController( Blog );
 for(prop in crud) {
   if(crud.hasOwnProperty(prop)) {
