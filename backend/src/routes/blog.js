@@ -7,6 +7,7 @@ router.post("/new",  Blog.create);
 
 router.put("/likes", Blog.likes);
 router.put("/dislikes", Blog.dislikes);
+router.get("/sections", Blog.sections);
 
 router.route("/:id")
       .get(Blog.read)
