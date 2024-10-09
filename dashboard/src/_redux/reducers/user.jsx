@@ -1,5 +1,5 @@
 import * as actionTypes from "../types/user";
-import * as authTypes from "../types/auth";
+import * as authTypes from "../auth/types";
 
 const initialState = {
   user: {},

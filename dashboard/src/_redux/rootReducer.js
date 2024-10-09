@@ -1,6 +1,6 @@
 import { combineReducers } from "redux";
-import * as actionTypes from "./types/auth";
-import authReducer from "./reducers/auth";
+import * as actionTypes from "./auth/types";
+import authReducer from "./auth/reducer";
 //import crudReducer  from "./crud/reducer";
 import searchReducer from "./reducers/search";
 import brandReducer from "./brand/reducer";

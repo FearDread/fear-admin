@@ -20,7 +20,6 @@ const tableHeader = [
   { Header: "Section", accessor: "section" },
   { Header: "Category", accessor: "category" },
   { Header: "Post", accessor: "description" },
-  { Header: "# Likes", accessor: "likes" }
 ];
 
 const BlogList = () => {
