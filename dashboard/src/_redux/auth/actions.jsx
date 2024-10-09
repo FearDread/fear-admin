@@ -1,4 +1,4 @@
-import * as actionTypes from "../types/auth";
+import * as actionTypes from "./types";
 import storePersist from "../storePersist.js";
 import axios from "axios";
 import { API_BASE_URL, AXIOS_CONFIG } from "../config";

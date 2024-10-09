@@ -16,7 +16,7 @@ import {
   Row,
   Col
 } from "reactstrap";
-import { logout } from "_redux/actions/auth";
+import { logout } from "_redux/auth/actions";
 import logo from "assets/img/FEAR/logo.png"; 
 
 const Profile = () => {

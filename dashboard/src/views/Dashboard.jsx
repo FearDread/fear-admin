@@ -5,7 +5,7 @@ import { VectorMap } from "react-jvectormap";
 import { useSelector, useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 import Loader from "components/Loader/Loading.js";
-import { logout } from "_redux/actions/auth";
+import { logout } from "_redux/auth/actions";
 import * as UserActions from "_redux/actions/user";
 import * as ProductActions from "_redux/product/actions";
 // reactstrap components
