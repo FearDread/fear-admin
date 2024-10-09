@@ -22,6 +22,7 @@ import Loader from "components/Loader/Loading.js";
 import * as BlogActions from "../_redux/blog/actions";
 import * as CatActions from "../_redux/category/actions";
 import { NEW_BLOG_RESET } from "_redux/blog/types";
+import { suppressDeprecationWarnings } from "moment";
 
 const BlogNew = () => {
   const dispatch = useDispatch();
@@ -30,16 +31,24 @@ const BlogNew = () => {
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
   const [author, setAuthor] = useState("");
-  const [likes , setLikes] = useState("")
+  const [section, setSection] = useState("");
+  const [likes , setLikes] = useState("");
   const [images, setImages] = useState([]);
   const [imagesPreview, setImagesPreview] = useState([]);
-  const fileInputRef = useRef();
+
   const { categories } = useSelector((state) => state.cat);
   const { user } = useSelector((state) => state.auth);
+  const { sections } = useSelector((state) => state.sections);
   const { success, loading } = useSelector((state) => state.blog);
+
+  const fileInputRef = useRef();
 
   const handleCategoryChange = (e) => {
     setCategory(e.target.value);
+  };
+
+  const handleSectionChange = (e) => {
+    setSection(e.target.value);
   };
   
   const createBlog = (e) => {
@@ -48,6 +57,7 @@ const BlogNew = () => {
           
     myForm.set("title", title);
     myForm.set("author", author);
+    myForm.set("section", section);
     myForm.set("description", description);
     myForm.set("category", category);
     
@@ -133,6 +143,24 @@ const BlogNew = () => {
                               value={author}
                               onChange={(e) => setAuthor(e.target.value)}
                             />
+                          </FormGroup>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Label sm="2">Select Section</Label>
+                        <Col sm="10">
+                          <FormGroup>
+                            <Input
+                              type="select"
+                              name="category"
+                              placeholder="Choose Category"
+                              onChange={handleSectionChange} >
+                              {sections.map((sec, key) => (
+                                <option key={key} value={sec.title}>
+                                  {sec.title}
+                                </option>
+                              ))}
+                            </Input>
                           </FormGroup>
                         </Col>
                       </Row>
