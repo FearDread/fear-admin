@@ -6,17 +6,17 @@ import { CRUD } from "@feardread/crud-service";
 const Instagram = () => {
   const dispatch = useDispatch();
   const { loading, result } = useSelector((state) => state.crud.list);
-  
+  const [products, setProducts] = useState(result);
+
   const getProductImages = () => {
     dispatch(CRUD.all('product'));
+    setProducts(result);
   }
 
   useEffect(() => {
-    //dispatch(CRUD.all('product'));
+    getProductImages();
     console.log("products = ", result);
-
   }, [dispatch]);
-  
   
   return (
     <>
@@ -31,7 +31,7 @@ const Instagram = () => {
       <div className="instagram">
         <h2>@ E-Komix</h2>
         <div className="instagramTiles">
-        {result && result.map((product) => {
+        {products && products.map((product) => {
             <div className="instagramtile">
               <img 
               src={product.images[0] ? product.images[0].url : ""} 
