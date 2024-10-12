@@ -1,7 +1,7 @@
 import * as actionTypes from "./types";
 import storePersist from "../storePersist.js";
 import axios from "axios";
-import { API_BASE_URL, AXIOS_CONFIG } from "../config";
+import { API_BASE_URL } from "../config";
 
 export function login(email, password) {
 
@@ -9,6 +9,7 @@ export function login(email, password) {
     dispatch({ type: actionTypes.LOGIN_REQUEST });
       
     const config = { headers: { "Content-Type": "application/json", "Content-Type": "Access-Control-Allow-Origin" } };
+    
     await axios.post( API_BASE_URL + "/auth/login", { email, password }, config )
       .then((response) => {
         storePersist.set("auth", { user: response.data.user, 
@@ -18,7 +19,7 @@ export function login(email, password) {
         dispatch({ type: actionTypes.LOGIN_SUCCESS, payload: response.data.user });
       })
       .catch((error) => {
-        dispatch({ type: actionTypes.LOGIN_FAIL, payload: error.message });
+        dispatch({ type: actionTypes.LOGIN_FAIL, payload: error });
       });
   }
 }
