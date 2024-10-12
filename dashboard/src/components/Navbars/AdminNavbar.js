@@ -19,7 +19,7 @@ import {
   Modal,
   UncontrolledTooltip
 } from "reactstrap";
-import { logout } from "../../_redux/actions/auth";
+import { logout } from "_redux/auth/actions";
 
 const AdminNavbar = (props) => {
   const dispatch = useDispatch();

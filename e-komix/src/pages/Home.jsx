@@ -14,6 +14,7 @@ import { CRUD } from "@feardread/crud-service";
 
 const Home = () => {
   const dispatch = useDispatch();
+  
   const { loading, result } = useSelector((state) => state.crud.list);
 
   useEffect(() => {
