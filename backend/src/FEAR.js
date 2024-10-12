@@ -48,46 +48,39 @@ module.exports = FEAR = (( app ) => {
   }
   this.logo = " ________  ________   ______   _______        \r\n|        \\|        \\ \/      \\ |       \\       \r\n| $$$$$$$$| $$$$$$$$|  $$$$$$\\| $$$$$$$\\      \r\n| $$__    | $$__    | $$__| $$| $$__| $$      \r\n| $$  \\   | $$  \\   | $$    $$| $$    $$      \r\n| $$$$$   | $$$$$   | $$$$$$$$| $$$$$$$\\      \r\n| $$      | $$_____ | $$  | $$| $$  | $$      \r\n| $$      | $$     \\| $$  | $$| $$  | $$      \r\n \\$$       \\$$$$$$$$ \\$$   \\$$ \\$$   \\$$      \r\n                                          ";
 
-  this.app.use(cors({
-    origin: ["*", 
-      "http://localhost:4001", 
-      "http://localhost:4000", 
-      "http://localhost:3000",
-      "https://fear.serveo.net",
-      "https://ddd740ee6ecc22.lhr.life"
-    ],
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization", "Access-Control-Allow-Origin"]
-  }));
   this.app.use(morgan);
   this.app.use(express.json());
   this.app.use(bodyParser.json());
   this.app.use(bodyParser.urlencoded({ extended: true }));
   this.app.use(passport.initialize());
+
   this.app.use((req, res, next) => {
+    this.log.info("FEAR API REQ :: " + req.url);
+    this.user = req.user;
+
     res.locals.user = req.user;
     next();
   });
 
+  
+  this.app.use(cors({
+    origin: ["http://localhost:4001", "http://localhost:4000", "http://localhost:3000","https://fear.serveo.net","http://fear.master.com"],
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+    allowedHeaders: ["Content-Type", "Authorization", "Access-Control-Allow-Origin"]
+  }));
+
+  this.app.options("*", cors());
+
   // Load Routes
   this.app = this.load(app);
 
-  /*
-  this.app.use(helmet({
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"],
-        connectSrc: ["'self'", 'https://172.128.10.101:4000', 'https://127.0.0.1:4000', 'ws://localhost:4000/', 'ws://172.128.10.101:4000']
-      }
-    }
-  }));
-  */
   this.app.use(express.static(path.join(__dirname1, "/dashboard/build")));
   this.app.get("*", (req, res) =>
     res.sendFile(path.resolve(__dirname1, "dashboard", "build", "index.html"))
   );
 
   this.app.use(errors.notFound);
+  this.app.use(errors.development);
 
   return this;
 

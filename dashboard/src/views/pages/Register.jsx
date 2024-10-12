@@ -20,7 +20,7 @@ import {
   Col
 } from "reactstrap";
 
-import { register } from "_redux/actions/auth";
+import { register } from "_redux/auth/actions";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import AnimatedBackground from "components/AnimatedBackground/AnimatedBackground";

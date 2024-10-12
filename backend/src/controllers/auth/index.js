@@ -22,7 +22,7 @@ exports.login = async (req, res) => {
         return res.status(200).json({ user, success: true, token});
       })
       .catch((error) => { throw new Error(error); }); })
-    .catch(() => { throw new Error("Could Not find User")});
+    .catch((error) => { throw new Error("Could Not find User", error)});
 }
 
 exports.logout = async (req, res, next) => {

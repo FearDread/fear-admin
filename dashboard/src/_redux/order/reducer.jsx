@@ -20,7 +20,7 @@ import {
   UPDATE_ORDER_SUCCESS,
   UPDATE_ORDER_RESET,
   UPDATE_ORDER_FAIL,
-} from "../types/order";
+} from "./types";
 
 export const newOrderReducer = (state = {}, action) => {
   switch (action.type) {

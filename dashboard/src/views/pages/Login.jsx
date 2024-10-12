@@ -19,7 +19,7 @@ import {
 import AnimatedBackground from "components/AnimatedBackground/AnimatedBackground";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory, useLocation, Link } from "react-router-dom";
-import { login } from "_redux/actions/auth";
+import { login } from "_redux/auth/actions";
 import Loader from "components/Loader/Loading";
 
 const Login = () => {

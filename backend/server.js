@@ -1,4 +1,4 @@
-
+#!/usr/bin/env node
 const FEAR = require("./src/FEAR");
 require("dotenv").config();
 
