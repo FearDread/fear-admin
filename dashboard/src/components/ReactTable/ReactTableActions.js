@@ -8,7 +8,7 @@ const ReactActions = ( key, _ecb, _dcb ) => {
   return (
       <div className="actions-right">
       <Button
-        onClick={_ecb}
+        onClick={() => _ecb}
         color="warning"
         size="sm"
         className={classNames("btn-icon btn-link like", {
@@ -17,7 +17,7 @@ const ReactActions = ( key, _ecb, _dcb ) => {
         <i className="tim-icons icon-pencil" />
       </Button>{" "}
       <Button
-        onClick={_dcb}
+        onClick={() => _dcb}
         color="danger"
         size="sm"
         className={classNames("btn-icon btn-link like", {

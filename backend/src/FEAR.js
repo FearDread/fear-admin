@@ -62,7 +62,6 @@ module.exports = FEAR = (( app ) => {
     next();
   });
 
-  
   this.app.use(cors({
     origin: ["http://localhost:4001", "http://localhost:4000", "http://localhost:3000","https://fear.serveo.net","http://fear.master.com"],
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
