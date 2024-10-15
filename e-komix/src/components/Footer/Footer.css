@@ -1,13 +1,17 @@
 .footer {
   border-top: 2px solid #f70000ed;
-  background: radial-gradient(ellipse at bottom, #561e1e 30%, rgba(44, 1, 1, 0.949) 80%);
+  background: radial-gradient(ellipse at bottom, #5d1313 30%, rgba(44, 1, 1, 0.949) 80%);
   padding: 30px 160px;
   margin-top: 50px;
   display: flex;
   flex-direction: column;
   gap: 100px;
-  color: white;
+  color: white !important;
 
+}
+
+.footer * {
+  color:white;
 }
 
 .footer__container {
@@ -28,7 +32,9 @@
 }
 
 .footer_logo_container img {
+  width: 100px;
   background: none !important;
+
 }
 
 .footer_left p {
@@ -132,7 +138,7 @@
 .footer_right form button {
   padding: 10px 20px;
   background-color: white;
-  color: black;
+  color: white;
   border: none;
   cursor: pointer;
   text-transform: uppercase;

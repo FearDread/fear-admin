@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Trendy.css";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../../../Features/Cart/cartSlice";
@@ -8,10 +8,11 @@ import { FiHeart } from "react-icons/fi";
 import { FaStar, FaCartPlus } from "react-icons/fa";
 import toast from "react-hot-toast";
 
-const Trendy = () => {
+const Trendy = ( products ) => {
   const dispatch = useDispatch();
   const [activeTab, setActiveTab] = useState("tab1");
   const [wishList, setWishList] = useState({});
+  const { loading, result } = useSelector((state) => state.crud.list);
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
@@ -79,6 +80,10 @@ const Trendy = () => {
       });
     }
   };
+
+  useEffect(() => {
+    console.log('trendy = ', result);
+  }, [])
 
   return (
     <>

@@ -3,7 +3,7 @@ import "./Navbar.css";
 
 import { useSelector } from "react-redux";
 
-import logo from "../../Assets/logo.png";
+import logo from "../../Assets/Images/ekomix/logo.png";
 import { Link } from "react-router-dom";
 
 import { RiMenu2Line } from "react-icons/ri";

@@ -8,30 +8,40 @@ import Trendy from "../Components/Home/Trendy/Trendy";
 import LimitedEdition from "../Components/Home/Limited/LimitedEdition";
 import DealTimer from "../Components/Home/Deal/DealTimer";
 import HeroSection from "../Components/Home/Hero/HeroSection";
+import Loader from "../Components/Loader/Loader";
 import AnimatedHero from "../Components/AnimatedHero/AnimatedHero";
 
 import { CRUD } from "@feardread/crud-service";
 
-const Home = () => {
+function Home () {
   const dispatch = useDispatch();
   
   const { loading, result } = useSelector((state) => state.crud.list);
 
   useEffect(() => {
     dispatch(CRUD.all('product'));
+    console.log('res = ', result)
   }, [dispatch])
 
 
   return (
     <>
+    {loading ? (
+      <>
+        <Loader />
+      </>
+    ) : (
+      <>
       <AnimatedHero />
       <CollectionBox />
-      <Trendy />
+      <Trendy {...result} />
       <DealTimer />
       <Banner />
       <LimitedEdition />
-      <Instagram />
+      <Instagram {...result} />
       <Services />
+    </>
+    )}
     </>
   );
 };

@@ -1,13 +1,38 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import "./LoginSignUp.css";
 import { Link } from "react-router-dom";
+import { AUTH } from "@feardread/crud-service";
 
 const LoginSignUp = () => {
+  const dispatch = useDispatch();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [mobile, setMobile] = useState("");
+  const [password, setPassword] = useState("");
   const [activeTab, setActiveTab] = useState("tabButton1");
-
+  const {loading, loginSuccess, registerSuccess} = useSelector((state) => state.auth);
+ 
   const handleTab = (tab) => {
     setActiveTab(tab);
   };
+
+  const handleLoginSubmit = (e) => {
+    e.preventDefault();
+    dispatch(AUTH.login(email, password));
+  }
+
+  const handleRegisterSubmit = (e) => {
+    e.preventDefault();
+    console.log("register hit = ");
+    const myForm = new FormData();
+          myForm.set("name", name);
+          myForm.set("email", email);
+          myForm.set("mobile", mobile);
+          myForm.set("password", password);
+
+    dispatch(AUTH.register(myForm));
+  }
 
   return (
     <>
@@ -33,8 +58,18 @@ const LoginSignUp = () => {
             {activeTab === "tabButton1" && (
               <div className="loginSignUpTabsContentLogin">
                 <form>
-                  <input type="email" placeholder="Email address *" required />
-                  <input type="password" placeholder="Password *" required />
+                  <input 
+                    name="email"
+                    onChange={(e) => setEmail(e.target.value)}
+                    type="email"
+                     placeholder="Email address *" 
+                     required />
+                  <input 
+                    name="password"
+                    onChange={(e) => setPassword(e.target.value)}
+                    type="password" 
+                    placeholder="Password *" 
+                    required />
                   <div className="loginSignUpForgetPass">
                     <label>
                       <input type="checkbox" className="brandRadio" />
@@ -44,7 +79,7 @@ const LoginSignUp = () => {
                       <Link to="/resetPassword">Lost password?</Link>
                     </p>
                   </div>
-                  <button>Log In</button>
+                  <button onClick={handleLoginSubmit}>Log In</button>
                 </form>
                 <div className="loginSignUpTabsContentLoginText">
                   <p>
@@ -61,10 +96,27 @@ const LoginSignUp = () => {
 
             {activeTab === "tabButton2" && (
               <div className="loginSignUpTabsContentRegister">
-                <form>
-                  <input type="text" placeholder="Username *" required />
-                  <input type="email" placeholder="Email address *" required />
-                  <input type="password" placeholder="Password *" required />
+                <form onSubmit={handleRegisterSubmit}>
+                  <input name="name"
+                         type="text"
+                         onChange={(e) => setName(e.target.value)} 
+                         placeholder="Full Name..." 
+                         required />
+                  <input name="email"
+                         type="email"
+                         onClick={(e) => setEmail(e.target.value)}
+                         placeholder="Email address *" 
+                         required />
+                  <input name="mobile"
+                         type="text"
+                         onClick={(e) => setMobile(e.target.value)}
+                         placeholder="000 - 000 - 0000" 
+                         required />
+                  <input name="password"
+                         type="password"
+                         onClick={(e) => setPassword(e.target.value)}
+                         placeholder="Password *" 
+                         required />
                   <p>
                     Your personal data will be used to support your experience
                     throughout this website, to manage access to your account,
@@ -78,8 +130,14 @@ const LoginSignUp = () => {
                     </Link>
                     .
                   </p>
-                  <button>Register</button>
+                  <button
+                    type="submit"
+                    onClick={handleRegisterSubmit}
+                > 
+                Register
+                </button>
                 </form>
+
               </div>
             )}
           </div>
