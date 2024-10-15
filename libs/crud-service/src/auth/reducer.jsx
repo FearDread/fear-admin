@@ -1,28 +1,41 @@
-import * as actionTypes from "./types";
+import * as Types from "./types";
 
 const INITIAL_STATE = {
   current: {},
   loading: false,
   isLoggedIn: false,
+  loginSuccess: false,
+  registerSuccess: false,
 };
 
 const authReducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
-    case actionTypes.LOADING_REQUEST:
+    case Types.LOADING_REQUEST:
       return {
         ...state,
         loading: true,
       };
-    case actionTypes.FAILED_REQUEST:
+
+    case Types.FAILED_REQUEST:
       return INITIAL_STATE;
 
-    case actionTypes.LOGIN_SUCCESS:
+    case Types.LOGIN_SUCCESS:
       return {
         current: action.payload,
         loading: false,
         isLoggedIn: true,
+        loginSuccess: true
       };
-    case actionTypes.LOGOUT_SUCCESS:
+    
+    case Types.REGISTER_SUCCESS:
+      return {
+        current: action.payload,
+        loading: false,
+        isLoggedIn: true,
+        registerSuccess: true
+      }
+
+    case Types.LOGOUT_SUCCESS:
       return INITIAL_STATE;
 
     default:
