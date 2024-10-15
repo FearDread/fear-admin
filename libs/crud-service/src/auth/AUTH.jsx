@@ -28,9 +28,9 @@ const AUTH = {
   },
   
   register: (data) => async (dispatch) => {
-    dispatch({ type: Types.REGISTER_REQUEST });
+    dispatch({ type: Types.LOADING_REQUEST });
     const config = { headers: { "Content-Type": "multipart/form-data" }};
-  
+    console.log("register data = ", data);
     await axios.post( API_BASE_URL + "/auth/register", data, config )
       .then((response) => {
         StorePersist.set("auth", { user: response.data.user, 
