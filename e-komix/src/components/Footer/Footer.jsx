@@ -1,6 +1,6 @@
 import React from "react";
 import "./Footer.css";
-import logo from "../../Assets/logo.png";
+import logo from "../../Assets/Images/ekomix/logo.png";
 import paymentIcon from "../../Assets/paymentIcon.png";
 import { FaFacebookF } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
@@ -29,14 +29,14 @@ const Footer = () => {
         <div className="footer__container">
           <div className="footer_left">
             <div className="footer_logo_container">
-              <img src={logo} alt="" Z />
+              <img src={logo} alt=""/>
             </div>
 
-            <p>1418 River Drive, Suite 35 Cottonhall, CA 9622 United States</p>
+            <p>2003 E. Veterans Memorial Blvd, Killeen TX 76541 United States</p>
 
             <div className="footer_address">
-              <strong> sale@uomo.com </strong>
-              <strong> +1 246-345-0695 </strong>
+              <strong> info@inmoshyn.com </strong>
+              <strong> +1 254-435-0130 </strong>
             </div>
 
             <div className="social_links">
@@ -59,7 +59,7 @@ const Footer = () => {
                   <Link to="/about">Career</Link>
                 </li>
                 <li>
-                  <Link to="*">Affilates</Link>
+                  <Link to="/contact">Affilates</Link>
                 </li>
                 <li>
                   <Link to="/blog">Blog</Link>
@@ -78,13 +78,13 @@ const Footer = () => {
                   <Link to="/shop">New Arrivals</Link>
                 </li>
                 <li>
-                  <Link to="/shop">Accessories</Link>
+                  <Link to="/shop">Coins</Link>
                 </li>
                 <li>
-                  <Link to="/shop">Men</Link>
+                  <Link to="/shop">Comics</Link>
                 </li>
                 <li>
-                  <Link to="/shop">Women</Link>
+                  <Link to="/shop">Cards</Link>
                 </li>
                 <li>
                   <Link to="/shop">Shop All</Link>
@@ -137,14 +137,14 @@ const Footer = () => {
         </div>
         <div className="footer_bottom">
           <p>
-            © 2024 Uomo. All Rights Reserved | Made By{" "}
+            © 2024 InMoshyn. All Rights Reserved | Made By{" "}
             <a
-              href="https://github.com/shakti177"
+              href="https://github.com/FearDread"
               target="_blank"
               rel="noreferrer"
               style={{ color: "#C22928", textDecoration: "none" }}
             >
-              Shakti Tamrakar
+              FearDread
             </a>{" "}
             with ❤️
           </p>

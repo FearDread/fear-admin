@@ -25,7 +25,11 @@
 }
 
 .logoContainer img {
+  width: 100px;
   background: none !important;
+  top: -11px;
+  position: absolute;
+  left: 5%;
 }
 
 .linkContainer ul {
