@@ -6,19 +6,23 @@ import Footer from './components/common/Footer';
 import BackTop from './components/common/BackTop';
 import { FiltersProvider } from './contexts/filters/filtersContext';
 import { BrowserRouter } from "react-router-dom";
+import Cart from './pages/Cart';
 
 
 const App = () => {
   return (
     <>
     <BrowserRouter>
-
-          {/*<Header />
+    <CommonProvider>
+      <FiltersProvider>
+        <CartProvider>
+        <Header />
             <RouterRoutes />
             <Footer />
             <BackTop />
-          */}
-          <RouterRoutes />
+        </CartProvider>
+      </FiltersProvider>
+    </CommonProvider>
     </BrowserRouter>
     </>
   );

@@ -5,20 +5,21 @@ import FeaturedSlider from '../components/sliders/FeaturedSlider';
 import SectionsHead from '../components/common/SectionsHead';
 import TopProducts from '../components/product/TopProducts';
 import Services from '../components/common/Services';
-//import {getAllProducts} from "../features/products/slice";
-import { CRUD_API } from "@feardread/crud-service";
+import {getAllProducts, getAdminProducts} from "../features/products/slice";
+//import { CRUD_API } from "@feardread/crud-service";
 
 
 const Home = () => {
     
     const dispatch = useDispatch();
+    const { products } = useSelector((state) => state.product.products);
     //const { loading, result } = useSelector((state) => state.crud.list);
     //const isLoading = useSelector((state) => state?.product?.isLoading);
-
+    //dispatch(getAllProducts());
     useEffect(() => {
-
+        //dispatch(getAllProducts());
         //dispatch(CRUD_API.all('product'));
-     
+        console.log('prods = ', products);
     }, [dispatch]);
     
     return (
@@ -37,7 +38,7 @@ const Home = () => {
             <section id="products" className="section">
                 <div className="container">
                     <SectionsHead heading="Top Products" />
-                    <TopProducts />
+                    <TopProducts {...products} />
                 </div>
             </section>
 
