@@ -4,19 +4,17 @@ import "./Instagram.css";
 import { CRUD } from "@feardread/crud-service";
 
 const Instagram = ( products ) => {
-  //const dispatch = useDispatch();
-  //const { loading, result } = useSelector((state) => state.crud.list);
-  //const [products, setProducts] = useState(data);
+  const { result } = useSelector((state) => state.crud.list);
+  if ( !products.map ) {
+    products = [ products ];
+  }
 
   useEffect(() => {
-    //getProductImages();
-    //etProducts(data);
-
-
-  }, []);
+    if (result) {
+      products = result;
+    }
+  }, [products]);
   
-  console.log("products = ", products);
-
     return (
       <>
         <div className="instagram">
