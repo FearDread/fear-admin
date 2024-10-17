@@ -13,15 +13,16 @@ import AnimatedHero from "../Components/AnimatedHero/AnimatedHero";
 
 import { CRUD } from "@feardread/crud-service";
 
-function Home () {
+const Home = () => {
   const dispatch = useDispatch();
   
-  const { loading, result } = useSelector((state) => state.crud.list);
+  let { loading, result } = useSelector((state) => state.crud.list);
 
   useEffect(() => {
     dispatch(CRUD.all('product'));
-    console.log('res = ', result)
-  }, [dispatch])
+    console.log("products = ", result);
+
+  }, [dispatch]);
 
 
   return (
