@@ -1,5 +1,6 @@
 const { tryCatch } = require("../../libs/handler/error");
 const cloud = require("../../libs/cloud");
+const api = require("../../libs/features/api");
 
 
 /**
@@ -12,8 +13,15 @@ const cloud = require("../../libs/cloud");
  * @apiSuccess {String} Informative message.
  */
 exports.all = tryCatch(async (Model, req, res) => {
-  await Model.find()
-    .then((result) => { return res.status(200).json({ result, success: true, message: "All Documents found" }); })
+  const featured = api(Model.find(), req.query).paginate();
+
+  await featured.query()
+    .then((result) => { 
+       console.log("all query result = ", result);
+       return res.status(200).json(
+        { result, success: true, message: "All Documents found" }
+      );
+    })
     .catch((error) => { return res.status(400).json({ result: null, success: false, message: "No docs found." }); });
 });
 
@@ -101,21 +109,32 @@ exports.delete = tryCatch(async (Model, req, res) => {
 
 exports.list = tryCatch(async (Model, req, res) => {
   const page = req.query.page || 1;
-  const limit = 10;
+  const limit = parseInt(req.query.items) || 10;
   const skip = page * limit - limit;
-  //const countPromise = Model.count();
-  await Model.find()
-    .then((result) => {
-      console.log("list result = ", result);
-      const count = result.length || 1;
-      const pages = Math.ceil(count / limit);
-      const pagination = { page, pages, count };
 
-      if (!result) return res.status(203).json({ result: [], success: false, pagination, message: "Collection is Empty" });
-      
-      return res.status(200).json({ result, success: true, pagination, message: "Successfully found all documents" });
+  const countPromise = Model.count();
+  const resultsPromise = Model.find()
+      .skip(skip)
+      .limit(limit)
+      .sort({ created: "desc" })
+      .populate();
+
+  await Promise.all([resultsPromise, countPromise])
+    .then((result, count) => {
+      const pages = Math.ceil(count / limit);
+      const pagination = { page, pages, items: count };
+
+      if ( count > 0 ) {
+        return res.status(200).json(
+          { result, success: true, pagination, message: "Successfully found all documents" }
+        );
+      } else {
+        return res.status(203).json(
+          { result: [], success: false, pagination, message: "Collection is Empty" }
+        );
+      }
     })
-    .catch((error) => { return res.status(400).json({ success: false, result: [], error }); });
+    .catch((error) => { throw new Error(error); }); 
 });
 
 /**
@@ -124,40 +143,32 @@ exports.list = tryCatch(async (Model, req, res) => {
  *  @returns {Array} List of Documents
  */
 exports.search = tryCatch(async (Model, req, res) => {
-  if (req.query.q === undefined || req.query.q === "" || req.query.q === " ") {
-    return res
-      .status(202)
-      .json({ result: [], success: false, message: "No document found by this request" })
-      .end();
+  if (req.query.title  === undefined || req.query.title === "" || req.query.title === " ") {
+    return res.status(202).json(
+      { result: [], success: false, message: "No Doc found by this request" }
+    ).end();
   }
-
+  const limit = req.query.limit || 10;
+  const sortby = req.query.title || req.query.name;
   const fieldsArray = req.query.fields.split(",");
   const fields = { $or: [] };
 
   for (const field of fieldsArray) {
-    fields.$or.push({ [field]: { $regex: new RegExp(req.query.q, "i") } });
+    fields.$or.push({ [field]: { $regex: new RegExp(sortby, "i") } });
   }
-
-  try {
-    let results = await Model.find(fields).sort({ name: "asc" }).limit(10);
-
-    if (results.length >= 1) {
-      return res.status(200).json({
-        success: true,
-        result: results,
-        message: "Successfully found all documents",
-      });
-    } else {
-      return res
-        .status(202)
-        .json({
-          success: false,
-          result: [],
-          message: "No document found by this request",
-        })
+  
+  await Model.find(fields).sort(sortby["desc"]).limit(limit)
+    .then((result) => {
+      if (result.length >= 1) {
+        return res.status(200).json(
+          { result, success: true, message: "Successfully found all documents" }
+        );
+      } else {
+        return res.status(202).json(
+          { result: [], success: false, message: "No document found by this request" }
+        )
         .end();
-    }
-  } catch {
-    throw new Error("Internal Server Error");
-  }
+      }
+    })
+    .catch((error) => {throw new Error(error); });
 });

@@ -57,13 +57,12 @@ module.exports = FEAR = (( app ) => {
   this.app.use((req, res, next) => {
     this.log.info("FEAR API REQ :: " + req.url);
     this.user = req.user;
-
-    res.locals.user = req.user;
+    
     next();
   });
 
   this.app.use(cors({
-    origin: ["http://localhost:4001", "http://localhost:4000", "http://localhost:3000","https://fear.serveo.net","http://fear.master.com"],
+    origin: ["http://localhost:4001", "http://localhost:4000", "http://localhost:3000","http://fear.master.com:4000", "http://fear.master.com:4001"],
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     allowedHeaders: ["Content-Type", "Authorization", "Access-Control-Allow-Origin"]
   }));
