@@ -26,6 +26,7 @@ const userSchema = new mongoose.Schema({
   { timestamps: true }
 );
 
+// Hooks
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) {
     next();
@@ -35,6 +36,7 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
+// Methods
 userSchema.methods.compare = async function (entered) {
   return await bcrypt.compare(entered, this.password);
 };
@@ -48,5 +50,19 @@ userSchema.methods.token = async function () {
   return resettoken;
 };
 
+//Statics
+userSchema.statics.countUsers = function () {
+  return this.countDocuments({});
+};
+
+userSchema.statics.findByEmail = async function (email) {
+return await this.findOne({ email });
+};
+
+// Query
+userSchema.query.paginate = function ({ page, limit }) {
+  const skip = limit * (page - 1);
+  return this.skip(skip).limit(limit);
+};
 
 module.exports = mongoose.model("User", userSchema);
