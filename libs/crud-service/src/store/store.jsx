@@ -20,6 +20,6 @@ const initialState = StorePersist.get("auth")
   ? { auth:StorePersist.get("auth") }
   : {};
 
-const STORE = createStore(rootReducer, initialState, configStore);
+const store = createStore(rootReducer, initialState, configStore);
 
-export default STORE;
+export default store;

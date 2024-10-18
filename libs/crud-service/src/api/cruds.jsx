@@ -2,21 +2,25 @@ import axios from "axios";
 import * as Types from "./types.js";
 import { API_BASE_URL, AXIOS_CONFIG } from "./config.jsx";
 
-const CRUD = {
+const cruds = {
 
-  resetState: () => async (dispatch) => {
+  getCurrentState: () => async (dispatch) => {
+    dispatch({ type: Types.CURRENT_ITEM });
+  },
+
+  resetCurrentState: () => async (dispatch) => {
     dispatch({ type: Types.RESET_STATE });
   },
 
-  resetAction: (actionType) => async (dispatch) => {
+  resetCurrentAction: (actionType) => async (dispatch) => {
     dispatch({ type: Types.RESET_ACTION, keyState: actionType, payload: null });
   },
 
-  currentItem: (data) => async (dispatch) => {
+  setCurrentItem: (data) => async (dispatch) => {
     dispatch({ type: Types.CURRENT_ITEM, payload: { ...data } });
   },
 
-  currentAction: (actionType, data) => async (dispatch) => {
+  setCurrentAction: (actionType, data) => async (dispatch) => {
     dispatch({ type: Types.CURRENT_ACTION, keyState: actionType, payload: { ...data } });
   },
 
@@ -32,19 +36,35 @@ const CRUD = {
       .catch((error) => { dispatch({ type: Types.REQUEST_FAILED, keyState: "list", payload: error }); })
   },
 
-  list: (entity, _page = 1) => async (dispatch) => {
+  endpoint: (entity, endpoint) => async (dispatch) => {
+    if (entity === undefined || endpoint === undefined) {
+      console.log("Error :: Missing entity or endpoint");
+      return;
+    }
     dispatch({ type: Types.REQUEST_LOADING, keyState: "list", payload: null });
 
-    await axios.get(API_BASE_URL + '/' + entity)
+    await axios.get(API_BASE_URL + '/' + entity + '/' + endpoint)
+      .then((response) => {
+        console.log('trendy res = ', response);
+        if (response.data.success) {
+          dispatch({ type: Types.REQUEST_SUCCESS, keyState: "list", payload: response.data.result });
+        }
+        dispatch({ type: Types.CURRENT_ITEM, payload: response.data.result });
+      })
+      .catch((error) => { dispatch({ type: Types.REQUEST_FAILED, keyState: "list", payload: error }); });
+  },
+
+  list: ( entity, _page = 1, _items = 10) => async (dispatch) => {
+    dispatch({ type: Types.REQUEST_LOADING, keyState: "list", payload: null });
+
+    let page = _page ? "page=" + _page : "";
+    let items = _items ? "&items=" + _items : "";
+    let query = `?${page}${items}`;
+
+    await axios.get(API_BASE_URL + '/' + entity + query)
       .then((response) => {
         if ( response.data.success === true ) {
-         (response.data.pagination) ? response.data.pagination : { page:_page, pages:null, count:0 };
-          
-          const results = { result: response.data.result,
-            pagination: {pageSize: 10,
-              current: parseInt(response.data.result.page, 10),
-              total: parseInt(response.data.result.count, 10)
-            }}; 
+          const results = { result: response.data.result, pagination: response.data.pagination}; 
           dispatch({ type: Types.REQUEST_SUCCESS, keyState: "list", payload: results });
         }
         dispatch({ type: Types.CURRENT_ITEM, payload: response.data.result });
@@ -52,7 +72,24 @@ const CRUD = {
       .catch((error) => { dispatch({ type: Types.REQUEST_FAILED, keyState: "list", payload: error }); });
   },
 
-  create: (entity, _data) => async (dispatch) => {
+  filter : ( entity, option = {} ) => async (dispatch) => {
+    let filter = option.filter ? "filter=" + option.filter : "";
+    let equal = option.equal ? "&equal=" + option.equal : "";
+    let query = `?${filter}${equal}`;
+
+    await axios.get(API_BASE_URL + '/' + entity + query)
+      .then((response) => {
+        if ( response.data.success === true ) {
+          dispatch({ type: Types.REQUEST_SUCCESS, payload: response.data.result, keyState: "filter" });
+        }
+        dispatch({ type: Types.CURRENT_ITEM, payload: response.data.result });
+      })
+      .catch((error) => {
+
+      });
+  },
+
+  create: ( entity, _data ) => async (dispatch) => {
     dispatch({type: Types.REQUEST_LOADING});
   
     await axios.post(API_BASE_URL + '/' + entity + `/new`, _data,
@@ -136,8 +173,8 @@ const CRUD = {
     },
 };
 
-CRUD.cart = {};
+cruds.cart = {};
 
-CRUD.wishlist = {};
+cruds.wishlist = {};
 
-export default CRUD;
+export default cruds;

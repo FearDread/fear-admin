@@ -8,22 +8,21 @@ const INITIAL_KEY_STATE = {
 };
 
 const INITIAL_STATE = {
-  current: {
-    result: null,
-  },
+  current: { result: null },
   list: {
     ...INITIAL_KEY_STATE,
     pagination: {
-      current: 1,
-      total: 1,
-      pageSize: 10
+      page: 1,
+      pages: 1,
+      items: 10
     }
   },
+  filter: INITIAL_KEY_STATE,
   create: INITIAL_KEY_STATE,
   update: INITIAL_KEY_STATE,
   delete: INITIAL_KEY_STATE,
   read: INITIAL_KEY_STATE,
-  search: { ...INITIAL_KEY_STATE, result: [] },
+  search: { ...INITIAL_KEY_STATE, filter: {}, result: [] },
 };
 
 const crudReducer = (state = INITIAL_STATE, action) => {
