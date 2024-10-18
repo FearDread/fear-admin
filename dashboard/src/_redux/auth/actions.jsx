@@ -5,7 +5,7 @@ import { API_BASE_URL } from "../config";
 
 
 export const login = (email, password) => async (dispatch) => {
-  const config = {headers: { "Content-Type": "application/json" }};
+  const config = { headers: { "Content-Type": "multipart/form-data" }};
   dispatch({ type: actionTypes.LOGIN_REQUEST });
       
   await axios.post( API_BASE_URL + "/auth/login", { email, password }, config )
