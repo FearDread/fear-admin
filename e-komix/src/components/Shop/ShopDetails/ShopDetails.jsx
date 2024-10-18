@@ -13,7 +13,7 @@ import { FaAngleRight, FaAngleLeft } from "react-icons/fa6";
 import { FaCartPlus } from "react-icons/fa";
 import toast from "react-hot-toast";
 import TrendyCard from "../../Product/TrendyCard/TrendyCard"
-import { CRUD } from "@feardread/crud-service";
+import { cruds } from "@feardread/crud-service";
 
 const ShopDetails = ( products ) => {
   const dispatch = useDispatch();

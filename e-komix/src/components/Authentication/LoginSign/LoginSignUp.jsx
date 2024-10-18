@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "./LoginSignUp.css";
 import { Link } from "react-router-dom";
 import { auth } from "@feardread/crud-service";
 
 const LoginSignUp = () => {
   const dispatch = useDispatch();
-  const history = useHistory();
+  const navigate = useNavigate();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [mobile, setMobile] = useState("");
@@ -26,7 +26,7 @@ const LoginSignUp = () => {
 
   const handleRegisterSubmit = (e) => {
     e.preventDefault();
-    console.log("register hit = ");
+
     const myForm = new FormData();
           myForm.set("name", name);
           myForm.set("email", email);
@@ -38,7 +38,12 @@ const LoginSignUp = () => {
 
   useEffect(() => {
     if (loginSuccess && isLoggedIn) {
-      history.push("/cart");
+      alert('logged in')
+      navigate('/cart');
+    }
+    if (registerSuccess && isLoggedIn) {
+      alert('registered!')
+      navigate('/cart');
     }
   }, [])
 
