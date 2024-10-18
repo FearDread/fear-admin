@@ -1,18 +1,25 @@
 import React, { useState, useEffect } from "react";
 import "./Trendy.css";
+import defaultProdImg from "../../../Assets/Images/abstract_banner_1.jpg";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../../../Features/Cart/cartSlice";
 import { Link } from "react-router-dom";
 import StoreData from "../../../Data/StoreData";
+import ProductCard from "../../Product/ProductCard/ProductCard";
+import TrendyCard from "../../Product/TrendyCard/TrendyCard";
 import { FiHeart } from "react-icons/fi";
 import { FaStar, FaCartPlus } from "react-icons/fa";
 import toast from "react-hot-toast";
 
-const Trendy = ( products ) => {
+const Trendy = ( data ) => {
   const dispatch = useDispatch();
-  const [activeTab, setActiveTab] = useState("tab1");
-  const [wishList, setWishList] = useState({});
-  const { loading, result } = useSelector((state) => state.crud.list);
+  const [ activeTab, setActiveTab ] = useState("tab1");
+  const [ wishList, setWishList ] = useState({});
+  const { result } = useSelector((state) => state.crud.list);
+  //const cartItems = useSelector((state) => state.cart.items);
+  const sortByPrice = (a, b) => a.productPrice - b.productPrice;
+  const products = data.products || [];
+  const cartItems = 0;
 
   const handleTabClick = (tab) => {
     setActiveTab(tab);
@@ -32,8 +39,6 @@ const Trendy = ( products ) => {
     }));
   };
 
-  const sortByPrice = (a, b) => a.productPrice - b.productPrice;
-
   const sortByReviews = (a, b) => {
     const reviewsA = parseInt(
       a.productReviews.replace("k+ reviews", "").replace(",", "")
@@ -43,10 +48,6 @@ const Trendy = ( products ) => {
     );
     return reviewsB - reviewsA;
   };
-
-  //const cartItems = useSelector((state) => state.cart.items);
-
-  const cartItems = 0;
 
   const handleAddToCart = (product) => {
     const productInCart = cartItems.find(
@@ -82,8 +83,11 @@ const Trendy = ( products ) => {
   };
 
   useEffect(() => {
-    console.log('trendy = ', result);
-  }, [])
+
+    //console.log('trendy = ', products);
+    //console.log('trendy selector = ', result);
+
+  }, []);
 
   return (
     <>
@@ -122,17 +126,17 @@ const Trendy = ( products ) => {
             {/* Tab 1 */}
             {activeTab === "tab1" && (
               <div className="trendyMainContainer">
-                {StoreData.slice(0, 8).map((product) => (
+                {result.map && result.slice(0, 8).map((product) => (
                   <div className="trendyProductContainer" key={product.id}>
                     <div className="trendyProductImages">
                       <Link to="/Product" onClick={scrollToTop}>
                         <img
-                          src={product.frontImg}
+                          src={product.images ? product.images[0].url : defaultProdImg}
                           alt=""
                           className="trendyProduct_front"
                         />
                         <img
-                          src={product.backImg}
+                          src={product.images[1] ? product.images[1].url : defaultProdImg}
                           alt=""
                           className="trendyProduct_back"
                         />
@@ -149,11 +153,11 @@ const Trendy = ( products ) => {
                     </div>
                     <div className="trendyProductInfo">
                       <div className="trendyProductCategoryWishlist">
-                        <p>Dresses</p>
+                        <p>{product.category}</p>
                         <FiHeart
-                          onClick={() => handleWishlistClick(product.productID)}
+                          onClick={() => handleWishlistClick(product._id)}
                           style={{
-                            color: wishList[product.productID]
+                            color: wishList[product._id]
                               ? "red"
                               : "#767676",
                             cursor: "pointer",
@@ -162,10 +166,10 @@ const Trendy = ( products ) => {
                       </div>
                       <div className="trendyProductNameInfo">
                         <Link to="product" onClick={scrollToTop}>
-                          <h5>{product.productName}</h5>
+                          <h5>{product.title}</h5>
                         </Link>
 
-                        <p>${product.productPrice}</p>
+                        <p>${product.price}</p>
                         <div className="trendyProductRatingReviews">
                           <div className="trendyProductRatingStar">
                             <FaStar color="#FEC78A" size={10} />
@@ -174,7 +178,7 @@ const Trendy = ( products ) => {
                             <FaStar color="#FEC78A" size={10} />
                             <FaStar color="#FEC78A" size={10} />
                           </div>
-                          <span>{product.productReviews}</span>
+                          <span>{product.reviews}</span>
                         </div>
                       </div>
                     </div>
@@ -186,68 +190,9 @@ const Trendy = ( products ) => {
             {/* Tab 2 */}
             {activeTab === "tab2" && (
               <div className="trendyMainContainer">
-                {StoreData.slice(0, 8)
-                  .reverse()
-                  .map((product) => (
-                    <div className="trendyProductContainer" key={product.id}>
-                      <div className="trendyProductImages">
-                        <Link to="/Product" onClick={scrollToTop}>
-                          <img
-                            src={product.frontImg}
-                            alt=""
-                            className="trendyProduct_front"
-                          />
-                          <img
-                            src={product.backImg}
-                            alt=""
-                            className="trendyProduct_back"
-                          />
-                        </Link>
-                        <h4 onClick={() => handleAddToCart(product)}>
-                          Add to Cart
-                        </h4>
-                      </div>
-                      <div
-                        className="trendyProductImagesCart"
-                        onClick={() => handleAddToCart(product)}
-                      >
-                        <FaCartPlus />
-                      </div>
-                      <div className="trendyProductInfo">
-                        <div className="trendyProductCategoryWishlist">
-                          <p>Dresses</p>
-                          <FiHeart
-                            onClick={() =>
-                              handleWishlistClick(product.productID)
-                            }
-                            style={{
-                              color: wishList[product.productID]
-                                ? "red"
-                                : "#767676",
-                              cursor: "pointer",
-                            }}
-                          />
-                        </div>
-                        <div className="trendyProductNameInfo">
-                          <Link to="product" onClick={scrollToTop}>
-                            <h5>{product.productName}</h5>
-                          </Link>
-
-                          <p>${product.productPrice}</p>
-                          <div className="trendyProductRatingReviews">
-                            <div className="trendyProductRatingStar">
-                              <FaStar color="#FEC78A" size={10} />
-                              <FaStar color="#FEC78A" size={10} />
-                              <FaStar color="#FEC78A" size={10} />
-                              <FaStar color="#FEC78A" size={10} />
-                              <FaStar color="#FEC78A" size={10} />
-                            </div>
-                            <span>{product.productReviews}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+                {StoreData.slice(0, 8).reverse().map((product) => (
+                  <TrendyCard {...product} />
+                ))}
               </div>
             )}
 

@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
-import "./ShopDetails.css";
-
 import { useDispatch, useSelector } from "react-redux";
+import "./ShopDetails.css";
+import defaultProdImg from "../../../Assets/Images/abstract_banner_1.jpg";
 import { addToCart } from "../../../Features/Cart/cartSlice";
-
 import Filter from "../Filters/Filter";
 import { Link } from "react-router-dom";
 import StoreData from "../../../Data/StoreData";
@@ -13,9 +12,10 @@ import { IoFilterSharp, IoClose } from "react-icons/io5";
 import { FaAngleRight, FaAngleLeft } from "react-icons/fa6";
 import { FaCartPlus } from "react-icons/fa";
 import toast from "react-hot-toast";
+import TrendyCard from "../../Product/TrendyCard/TrendyCard"
 import { CRUD } from "@feardread/crud-service";
 
-const ShopDetails = () => {
+const ShopDetails = ( products ) => {
   const dispatch = useDispatch();
   const [wishList, setWishList] = useState({});
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -80,10 +80,9 @@ const ShopDetails = () => {
   };
 
   useEffect(() => {
-    dispatch(CRUD.all('product'));
-    console.log("products = ", result);
 
-  }, [dispatch]);
+
+  }, []);
 
   return (
     <>
@@ -126,64 +125,9 @@ const ShopDetails = () => {
             </div>
             <div className="shopDetailsProducts">
               <div className="shopDetailsProductsContainer">
-                { result && result.slice(0, 6).map((product) => (
-                  <div className="sdProductContainer">
-                    <div className="sdProductImages">
-                      <Link to="/Product" onClick={scrollToTop}>
-                        <img
-                          src={product.images[0] ? product.images[0].url : ""}
-                          alt="product_img"
-                          className="sdProduct_front"
-                        />
-                        <img
-                          src={product.images[0] ? product.images[0].url : ""}
-                          alt=""
-                          className="sdProduct_back"
-                        />
-                      </Link>
-                      <h4 onClick={() => handleAddToCart(product)}>
-                        Add to Cart
-                      </h4>
-                    </div>
-                    <div
-                      className="sdProductImagesCart"
-                      onClick={() => handleAddToCart(product)}
-                    >
-                      <FaCartPlus />
-                    </div>
-                    <div className="sdProductInfo">
-                      <div className="sdProductCategoryWishlist">
-                        <p>{product.category}</p>
-                        <FiHeart
-                          onClick={() => handleWishlistClick(product._id)}
-                          style={{
-                            color: wishList[product._id]
-                              ? "red"
-                              : "#767676",
-                            cursor: "pointer",
-                          }}
-                        />
-                      </div>
-                      <div className="sdProductNameInfo">
-                        <Link to="/product" onClick={scrollToTop}>
-                          <h5>{product.name}</h5>
-                        </Link>
-
-                        <p>${product.price}</p>
-                        <div className="sdProductRatingReviews">
-                          <div className="sdProductRatingStar">
-                            <FaStar color="#FEC78A" size={10} />
-                            <FaStar color="#FEC78A" size={10} />
-                            <FaStar color="#FEC78A" size={10} />
-                            <FaStar color="#FEC78A" size={10} />
-                            <FaStar color="#FEC78A" size={10} />
-                          </div>
-                          <span>{product.reviews}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+                { result && result.slice(6, 15).map((product) => (
+                  <TrendyCard {...product} /> 
+                )) }
               </div>
             </div>
             <div className="shopDetailsPagination">

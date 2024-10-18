@@ -1,30 +1,25 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import "./Instagram.css";
-import { CRUD } from "@feardread/crud-service";
+import defaultProdImg from "../../../Assets/Images/abstract_banner_1.jpg";
 
 const Instagram = ( products ) => {
   const { result } = useSelector((state) => state.crud.list);
-  if ( !products.map ) {
-    products = [ products ];
-  }
 
   useEffect(() => {
-    if (result) {
-      products = result;
-    }
-  }, [products]);
+    console.log('insta = ', products);
+  }, []);
   
     return (
       <>
         <div className="instagram">
           <h2>@ E-Komix</h2>
           <div className="instagramTiles">
-          {products && products.map((product) => {
+          {result && result.map((product) => {
               <div className="instagramtile">
                 <img 
-                  src={product.images ? product.images[0].url : ""} 
-                  alt=""
+                  src={product.images ? product.images[0].url : defaultProdImg} 
+                  alt="product"
                  />
               </div>
             })

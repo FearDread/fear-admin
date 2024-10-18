@@ -67,7 +67,7 @@ const DealTimer = () => {
             <div className="dealTimeContent">
               <p>Deal of the Week</p>
               <h3>
-                Spring
+                Graphic Novel
                 <span> Collection</span>
               </h3>
               <div className="dealTimeLink">

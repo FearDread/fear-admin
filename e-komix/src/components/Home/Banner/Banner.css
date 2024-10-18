@@ -5,10 +5,11 @@
   padding: 0 160px;
   margin: 100px 0px;
   grid-gap: 30px;
+  color: white !important;
 }
 
 .bannerLeft {
-  background-image: url("../../../Assets/Images/comic_banner_1.jpg");
+  background-image: url("../../../Assets/Images/comic_background_1.avif");
   background-position: center;
   background-size: cover;
   display: flex;

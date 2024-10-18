@@ -5,10 +5,11 @@
   height: 30rem;
   padding: 0 160px;
   margin: 85px 0;
+  color: white;
 }
 
 .collectionLeft {
-  background-image: url("../../../Assets/Images/home_banner_1.webp");
+  background-image: url("../../../Assets/Images/marvel_banner_1.jpg");
   background-size: cover;
   background-position: center center;
   padding: 30px;

@@ -11,19 +11,21 @@ import HeroSection from "../Components/Home/Hero/HeroSection";
 import Loader from "../Components/Loader/Loader";
 import AnimatedHero from "../Components/AnimatedHero/AnimatedHero";
 
-import { CRUD } from "@feardread/crud-service";
+import { cruds } from "@feardread/crud-service";
 
 const Home = () => {
   const dispatch = useDispatch();
-  
-  let { loading, result } = useSelector((state) => state.crud.list);
+  const { loading, result } = useSelector((state) => state.crud.list);
+
+  const getTrendyProducts = () => {
+    dispatch(cruds.endpoint('product', 'trendy'));
+  }
 
   useEffect(() => {
-    dispatch(CRUD.all('product'));
-    console.log("products = ", result);
 
-  }, [dispatch]);
+    getTrendyProducts();
 
+  }, []);
 
   return (
     <>
@@ -38,8 +40,7 @@ const Home = () => {
       <Trendy {...result} />
       <DealTimer />
       <Banner />
-      <LimitedEdition />
-      <Instagram {...result} />
+      <LimitedEdition {...result} />
       <Services />
     </>
     )}

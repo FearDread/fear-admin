@@ -83,11 +83,17 @@
 .trendyMainContainer {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  grid-gap: 30px;
+  grid-gap: 50px;
 }
 
 .trendyProductContainer {
   position: relative;
+}
+
+.trendyProductContainer:hover {
+  box-shadow: 13px 13px 77px -24px #000000b9;
+  transform: scale(1.07);
+  -webkit-transform: scale(1.07)
 }
 
 .trendyProductImages {
