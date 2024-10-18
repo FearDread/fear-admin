@@ -118,8 +118,8 @@
 }
 
 .sdProductContainer:hover {
-  background: #e14e4e;
-  box-shadow: 13px 13px 77px -24px #e14e4e;
+
+  box-shadow: 13px 13px 77px -24px #000000b9;
   transform: scale(1.07);
   -webkit-transform: scale(1.07)
 }

@@ -3,6 +3,8 @@
     height: 100vh;
     font-weight: 100;
     background: radial-gradient(#a23939,#030101);
+    background-image: url("../../Assets/Images/red_comic_bg.avif");
+  background-size: cover;
     position:relative;
     -webkit-overflow-Y: hidden;
     -moz-overflow-Y: hidden;

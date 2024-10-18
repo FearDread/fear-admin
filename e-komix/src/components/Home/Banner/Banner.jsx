@@ -24,14 +24,14 @@ const Banner = () => {
           </h5>
         </div>
         <div className="bannerRight">
-          <h6 className="bannerh6" style={{ color: "black" }}>
-            Starting At $39
+          <h6 className="bannerh6" style={{ color: "white" }}>
+            Card Collections
           </h6>
-          <h3 className="bannerh3" style={{ color: "black" }}>
-            Men's Sportswear
+          <h3 className="bannerh3" style={{ color: "white" }}>
+            NBA, NFL, MLB and More!
           </h3>
           <h5 className="bannerh5">
-            <Link to="/shop" onClick={scrollToTop} style={{ color: "black" }}>
+            <Link to="/shop" onClick={scrollToTop} style={{ color: "white" }}>
               Shop Now
             </Link>
           </h5>

@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import "./LimitedEdition.css";
-
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import "./LimitedEdition.css";
+import defaultProdImg from "../../../Assets/Images/abstract_banner_1.jpg";
 import { addToCart } from "../../../Features/Cart/cartSlice";
 
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -22,8 +22,9 @@ import { FaCartPlus } from "react-icons/fa";
 
 import toast from "react-hot-toast";
 
-const LimitedEdition = () => {
+const LimitedEdition = ( products ) => {
   const dispatch = useDispatch();
+  const { loading, result } = useSelector((state) => state.crud.list);
 
   const [wishList, setWishList] = useState({});
 
@@ -123,15 +124,15 @@ const LimitedEdition = () => {
               },
             }}
           >
-            {StoreData.slice(8, 13).map((product) => {
+            {result && result.slice(0, 13).map((product) => {
               return (
-                <SwiperSlide key={product.productID}>
+                <SwiperSlide key={product._id}>
                   <div className="lpContainer">
                     <div className="lpImageContainer">
                       <Link to="/Product" onClick={scrollToTop}>
                         <img
-                          src={product.frontImg}
-                          alt={product.productName}
+                          src={product.images ? product.images[0].url : defaultProdImg}
+                          alt={product.images ? product.images[1].url : defaultProdImg}
                           className="lpImage"
                         />
                       </Link>
@@ -147,11 +148,11 @@ const LimitedEdition = () => {
                     </div>
                     <div className="limitedProductInfo">
                       <div className="lpCategoryWishlist">
-                        <p>Dresses</p>
+                        <p>{product.category}</p>
                         <FiHeart
-                          onClick={() => handleWishlistClick(product.productID)}
+                          onClick={() => handleWishlistClick(product._id)}
                           style={{
-                            color: wishList[product.productID]
+                            color: wishList[product._id]
                               ? "red"
                               : "#767676",
                             cursor: "pointer",
@@ -160,9 +161,9 @@ const LimitedEdition = () => {
                       </div>
                       <div className="productNameInfo">
                         <Link to="/Product" onClick={scrollToTop}>
-                          <h5>{product.productName}</h5>
+                          <h5>{product.title}</h5>
                         </Link>
-                        <p>${product.productPrice}</p>
+                        <p>${product.price}</p>
                         <div className="productRatingReviews">
                           <div className="productRatingStar">
                             <FaStar color="#FEC78A" size={10} />
@@ -172,7 +173,7 @@ const LimitedEdition = () => {
                             <FaStar color="#FEC78A" size={10} />
                           </div>
 
-                          <span>{product.productReviews}</span>
+                          <span>{product.reviews}</span>
                         </div>
                       </div>
                     </div>

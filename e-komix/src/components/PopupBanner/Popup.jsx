@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./Popup.css";
 
-import popupImg from "../../Assets/newsletter-popup.jpg";
+import popupImg from "../../Assets/Images/comic_banner_1.jpg";
 
 const Popup = () => {
   const [showPopup, setShowPopup] = useState(true);
