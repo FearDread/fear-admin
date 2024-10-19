@@ -1,7 +1,11 @@
 import React, { useState } from "react";
+import "./Navbar.css";
+
 import { useSelector } from "react-redux";
+
 import logo from "../../Assets/Images/ekomix/logo_transparent.png";
 import { Link } from "react-router-dom";
+
 import { RiMenu2Line } from "react-icons/ri";
 import { FiSearch } from "react-icons/fi";
 import { FaRegUser } from "react-icons/fa6";
@@ -16,12 +20,12 @@ import { FaXTwitter } from "react-icons/fa6";
 import { FaInstagram } from "react-icons/fa";
 import { FaYoutube } from "react-icons/fa";
 import { FaPinterest } from "react-icons/fa";
+
 import Badge from "@mui/material/Badge";
-import "./Navbar.css";
 
 const Navbar = () => {
-  const { cart }= useSelector((state) => state.crud.current);
-  const { user } = useSelector((state) => state.auth.user);
+  //const cart = useSelector((state) => state.cart);
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const toggleMobileMenu = () => {
@@ -78,7 +82,7 @@ const Navbar = () => {
         </div>
         <div className="iconContainer">
           <FiSearch size={22} onClick={scrollToTop} />
-          <Link to="/authentication" onClick={scrollToTop}>
+          <Link to="/loginSignUp" onClick={scrollToTop}>
             <FaRegUser size={22} />
           </Link>
           <Link to="/cart" onClick={scrollToTop}>
@@ -168,7 +172,7 @@ const Navbar = () => {
 
           <div className="mobile-menuFooter">
             <div className="mobile-menuFooterLogin">
-              <Link to="/authentication" onClick={toggleMobileMenu}>
+              <Link to="/loginSignUp" onClick={toggleMobileMenu}>
                 <FaRegUser />
                 <p>My Account</p>
               </Link>

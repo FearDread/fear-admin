@@ -1,30 +1,33 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import "./ShopDetails.css";
+import defaultProdImg from "../../../Assets/Images/abstract_banner_1.jpg";
 import { addToCart } from "../../../Features/Cart/cartSlice";
+import Filter from "../Filters/Filter";
 import { Link } from "react-router-dom";
+import StoreData from "../../../Data/StoreData";
+import { FiHeart } from "react-icons/fi";
+import { FaStar } from "react-icons/fa";
 import { IoFilterSharp, IoClose } from "react-icons/io5";
 import { FaAngleRight, FaAngleLeft } from "react-icons/fa6";
 import { FaCartPlus } from "react-icons/fa";
-import { cruds } from "@feardread/crud-service";
 import toast from "react-hot-toast";
-import Filter from "../Filters/Filter";
 import TrendyCard from "../../Product/TrendyCard/TrendyCard"
-
-import "./ShopDetails.css";
+import { CRUD } from "@feardread/crud-service";
 
 const ShopDetails = ( products ) => {
   const dispatch = useDispatch();
-  const [ wishList, setWishList ] = useState({});
-  const [ isDrawerOpen, setIsDrawerOpen ] = useState(false);
+  const [wishList, setWishList] = useState({});
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const { loading, result } = useSelector((state) => state.crud.list);
-  //const cartItems = useSelector((state) => state.cart.items);
-  
+
   const handleWishlistClick = (productID) => {
     setWishList((prevWishlist) => ({
       ...prevWishlist,
       [productID]: !prevWishlist[productID],
     }));
   };
+
 
   const scrollToTop = () => {
     window.scrollTo({
@@ -41,6 +44,7 @@ const ShopDetails = ( products ) => {
     setIsDrawerOpen(false);
   };
 
+  //const cartItems = useSelector((state) => state.cart.items);
   const cartItems = 0;
   const handleAddToCart = (product) => {
     const productInCart = cartItems.find(
@@ -48,12 +52,37 @@ const ShopDetails = ( products ) => {
     );
 
     if (productInCart && productInCart.quantity >= 20) {
-      toast.error("Product limit reached");
+      toast.error("Product limit reached", {
+        duration: 2000,
+        style: {
+          backgroundColor: "#ff4b4b",
+          color: "white",
+        },
+        iconTheme: {
+          primary: "#fff",
+          secondary: "#ff4b4b",
+        },
+      });
     } else {
       dispatch(addToCart(product));
-      toast.success(`Added to cart!`);
+      toast.success(`Added to cart!`, {
+        duration: 2000,
+        style: {
+          backgroundColor: "#07bc0c",
+          color: "white",
+        },
+        iconTheme: {
+          primary: "#fff",
+          secondary: "#07bc0c",
+        },
+      });
     }
   };
+
+  useEffect(() => {
+
+
+  }, []);
 
   return (
     <>

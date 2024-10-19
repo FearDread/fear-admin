@@ -1,24 +1,32 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import "./LimitedEdition.css";
+import defaultProdImg from "../../../Assets/Images/abstract_banner_1.jpg";
 import { addToCart } from "../../../Features/Cart/cartSlice";
+
 import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/navigation";
+
 import { Navigation } from "swiper/modules";
 import { Autoplay } from "swiper/modules";
+
 import { Link } from "react-router-dom";
+
+import StoreData from "../../../Data/StoreData";
+
 import { FiHeart } from "react-icons/fi";
 import { FaStar } from "react-icons/fa";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import { FaCartPlus } from "react-icons/fa";
-import defaultProdImg from "../../../Assets/Images/abstract_banner_1.jpg";
+
 import toast from "react-hot-toast";
-import "swiper/css";
-import "swiper/css/navigation";
-import "./LimitedEdition.css";
 
 const LimitedEdition = ( products ) => {
   const dispatch = useDispatch();
   const { loading, result } = useSelector((state) => state.crud.list);
-  const [ wishList, setWishList ] = useState({});
+
+  const [wishList, setWishList] = useState({});
 
   const handleWishlistClick = (productID) => {
     setWishList((prevWishlist) => ({
@@ -43,10 +51,30 @@ const LimitedEdition = ( products ) => {
     );
 
     if (productInCart && productInCart.quantity >= 20) {
-      toast.error("Product limit reached");
+      toast.error("Product limit reached", {
+        duration: 2000,
+        style: {
+          backgroundColor: "#ff4b4b",
+          color: "white",
+        },
+        iconTheme: {
+          primary: "#fff",
+          secondary: "#ff4b4b",
+        },
+      });
     } else {
       dispatch(addToCart(product));
-      toast.success(`Added to cart!`);
+      toast.success(`Added to cart!`, {
+        duration: 2000,
+        style: {
+          backgroundColor: "#07bc0c",
+          color: "white",
+        },
+        iconTheme: {
+          primary: "#fff",
+          secondary: "#07bc0c",
+        },
+      });
     }
   };
 
@@ -104,7 +132,7 @@ const LimitedEdition = ( products ) => {
                       <Link to="/Product" onClick={scrollToTop}>
                         <img
                           src={product.images ? product.images[0].url : defaultProdImg}
-                          alt={product.images[1] ? product.images[1].url : defaultProdImg}
+                          alt={product.images ? product.images[1].url : defaultProdImg}
                           className="lpImage"
                         />
                       </Link>

@@ -1,6 +1,15 @@
 import React from "react";
+import "./AboutPage.css";
+
+import about1 from "../../Assets/About/about-1.jpg";
+import about2 from "../../Assets/About/about-2.jpg";
+
+import Services from "../../Components/Home/Services/Services";
+
 import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
 import { Autoplay } from "swiper/modules";
+
 import brand1 from "../../Assets/Brands/brand1.png";
 import brand2 from "../../Assets/Brands/brand2.png";
 import brand3 from "../../Assets/Brands/brand3.png";
@@ -8,22 +17,20 @@ import brand4 from "../../Assets/Brands/brand4.png";
 import brand5 from "../../Assets/Brands/brand5.png";
 import brand6 from "../../Assets/Brands/brand6.png";
 import brand7 from "../../Assets/Brands/brand7.png";
-import Services from "../../Components/Home/Services/Services";
-import comic_banner_1 from "../../Assets/Images/comic_background_1.avif";
-import fb_profile from "../../Assets/Images/ekomix/facebook_profile_image.png";
-import "./AboutPage.css";
-import "swiper/css";
 
 const AboutPage = () => {
   return (
     <>
       <div className="aboutSection">
-        <h2>About EKomix</h2>
-        <img src={comic_banner_1} alt="" />
+        <h2>About Uomo</h2>
+        <img src={about1} alt="" />
         <div className="aboutContent">
           <h3>Our Story</h3>
           <h4>
-            Ekomix is a subsidary of InMoshyn Inc. and is backed by the FEAR API
+            Duis aute irure dolor in reprehenderit in voluptate velit esse
+            cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+            cupidatat non proident, sunt in culpa qui officia deserunt mollit
+            anim id est laborum.
           </h4>
           <p>
             Saw wherein fruitful good days image them, midst, waters upon, saw.
@@ -53,7 +60,7 @@ const AboutPage = () => {
           </div>
           <div className="content2">
             <div className="imgContent">
-              <img src={fb_profile} alt="Facebook Logo" />
+              <img src={about2} alt="" />
             </div>
             <div className="textContent">
               <h5>The Company</h5>

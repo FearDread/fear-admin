@@ -16,7 +16,6 @@ import { cruds } from "@feardread/crud-service";
 const Home = () => {
   const dispatch = useDispatch();
   const { loading, result } = useSelector((state) => state.crud.list);
-  const { user, isLoggedIn } = useSelector((state) => state.auth);
 
   const getTrendyProducts = () => {
     dispatch(cruds.endpoint('product', 'trendy'));

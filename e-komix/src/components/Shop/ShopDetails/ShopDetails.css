@@ -96,7 +96,7 @@
 
 .shopDetailsProductsContainer {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   grid-gap: 30px;
 }
 
@@ -112,13 +112,13 @@
 
 .sdProductContainer {
   background: rgba(0,0,0,.7);
-  border: 1px solid #767676;
-  width: 258px;
+  border: 0;
   position: relative;
-  padding: 5px;
+
 }
 
 .sdProductContainer:hover {
+
   box-shadow: 13px 13px 77px -24px #000000b9;
   transform: scale(1.07);
   -webkit-transform: scale(1.07)
