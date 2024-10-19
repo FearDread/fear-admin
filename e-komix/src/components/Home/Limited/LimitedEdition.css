@@ -1,7 +1,7 @@
 .limitedProductSection {
-  margin: 0;
-  padding: 20px 160px;
-  background: radial-gradient(#000000, #966767);
+  margin: 40px 0;
+  padding: 50px 160px;
+  border-top: 1px solid #767676
 }
 
 .limitedProductSection h2 {

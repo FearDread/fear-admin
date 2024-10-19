@@ -1,32 +1,24 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import "./LimitedEdition.css";
-import defaultProdImg from "../../../Assets/Images/abstract_banner_1.jpg";
 import { addToCart } from "../../../Features/Cart/cartSlice";
-
 import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/css";
-import "swiper/css/navigation";
-
 import { Navigation } from "swiper/modules";
 import { Autoplay } from "swiper/modules";
-
 import { Link } from "react-router-dom";
-
-import StoreData from "../../../Data/StoreData";
-
 import { FiHeart } from "react-icons/fi";
 import { FaStar } from "react-icons/fa";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import { FaCartPlus } from "react-icons/fa";
-
+import defaultProdImg from "../../../Assets/Images/abstract_banner_1.jpg";
 import toast from "react-hot-toast";
+import "swiper/css";
+import "swiper/css/navigation";
+import "./LimitedEdition.css";
 
 const LimitedEdition = ( products ) => {
   const dispatch = useDispatch();
   const { loading, result } = useSelector((state) => state.crud.list);
-
-  const [wishList, setWishList] = useState({});
+  const [ wishList, setWishList ] = useState({});
 
   const handleWishlistClick = (productID) => {
     setWishList((prevWishlist) => ({
