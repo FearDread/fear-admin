@@ -6,8 +6,6 @@ import { addToCart } from "../../../Features/Cart/cartSlice";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import defaultProdImg from "../../../Assets/Images/abstract_banner_1.jpg";
-import "./TrendyCard.css";
-
 
 const TrendyCard = ( product ) => {
   const dispatch = useDispatch();
@@ -31,21 +29,41 @@ const TrendyCard = ( product ) => {
 
   const handleAddToCart = (product) => {
     const productInCart = cartItems.find(
-      (item) => item._id === product._id
+      (item) => item.productID === product.productID
     );
 
     if (productInCart && productInCart.quantity >= 20) {
-      toast.error("Product limit reached");
+      toast.error("Product limit reached", {
+        duration: 2000,
+        style: {
+          backgroundColor: "#ff4b4b",
+          color: "white",
+        },
+        iconTheme: {
+          primary: "#fff",
+          secondary: "#ff4b4b",
+        },
+      });
     } else {
       dispatch(addToCart(product));
-      toast.success(`Added to cart!`);
+      toast.success(`Added to cart!`, {
+        duration: 2000,
+        style: {
+          backgroundColor: "#07bc0c",
+          color: "white",
+        },
+        iconTheme: {
+          primary: "#fff",
+          secondary: "#07bc0c",
+        },
+      });
     }
   };
 
     return (
         <div className="trendyProductContainer" key={product._id}>
         <div className="trendyProductImages">
-          <Link to={"/product/" + product._id} onClick={scrollToTop}>
+          <Link to="/Product" onClick={scrollToTop}>
             <img
               src={product.images ? product.images[0].url : defaultProdImg}
               alt=""

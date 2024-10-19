@@ -25,7 +25,7 @@ export const getAllProducts = createAsyncThunk(
     "product/getAProduct",
     async (id, thunkAPI) => {
       try {
-        return await cruds.read('product', id);
+        return await productSevice.getSingleProduct(id);
       } catch (error) {
         return thunkAPI.rejectWithValue(error);
       }
@@ -36,7 +36,7 @@ export const getAllProducts = createAsyncThunk(
     "product/wishlist",
     async (prodId, thunkAPI) => {
       try {
-        return await cruds.wishlist(product);
+        return await productSevice.addToWishlist(prodId);
       } catch (error) {
         return thunkAPI.rejectWithValue(error);
       }
@@ -50,69 +50,69 @@ export const getAllProducts = createAsyncThunk(
     extraReducers: (builder) => {
       builder
         .addCase(getAllProducts.pending, (state) => {
-          state.loading = true;
+          state.isLoading = true;
         })
         .addCase(getAllProducts.fulfilled, (state, action) => {
-          state.loading = false;
-          state.error = false;
-          state.success = true;
-          state.products = action.payload;
+          state.isLoading = false;
+          state.isError = false;
+          state.isSuccess = true;
+          state.product = action.payload;
         })
         .addCase(getAllProducts.rejected, (state, action) => {
-          state.error = true;
-          state.loading = false;
-          state.success = false;
+          state.isError = true;
+          state.isLoading = false;
+          state.isSuccess = false;
           state.message = action.error;
         })
         .addCase(addToWishlist.pending, (state) => {
-          state.loading = true;
+          state.isLoading = true;
         })
         .addCase(addToWishlist.fulfilled, (state, action) => {
-          state.loading = false;
-          state.error = false;
-          state.success = true;
+          state.isLoading = false;
+          state.isError = false;
+          state.isSuccess = true;
           state.addToWishlist = action.payload;
           state.message = "Product Added to Wishlist!";
         })
         .addCase(addToWishlist.rejected, (state, action) => {
-          state.loading = false;
-          state.error = true;
-          state.success = false;
+          state.isLoading = false;
+          state.isError = true;
+          state.isSuccess = false;
           state.message = action.error;
         })
         .addCase(getAProduct.pending, (state) => {
-          state.loading = true;
+          state.isLoading = true;
         })
         .addCase(getAProduct.fulfilled, (state, action) => {
-          state.loading = false;
-          state.error = false;
-          state.success = true;
-          state.product = action.payload;
+          state.isLoading = false;
+          state.isError = false;
+          state.isSuccess = true;
+          state.singleproduct = action.payload;
           state.message = "Product Fetched Successfully";
         })
         .addCase(getAProduct.rejected, (state, action) => {
-          state.error = true;
-          state.loading = false;
-          state.success = false;
+          state.isError = true;
+          state.isLoading = false;
+          state.isSuccess = false;
           state.message = action.error;
         })
         .addCase(addRating.pending, (state) => {
-          state.loading = true;
+          state.isLoading = true;
         })
         .addCase(addRating.fulfilled, (state, action) => {
-          state.loading = false;
-          state.error = false;
-          state.success = true;
+          state.isLoading = false;
+          state.isError = false;
+          state.isSuccess = true;
           state.rating = action.payload;
           state.message = "Rating Added Successfully";
-          if (state.success) {
+          if (state.isSuccess) {
             toast.success("Rating Added Successfully");
           }
         })
         .addCase(addRating.rejected, (state, action) => {
-          state.error = true;
-          state.loading = false;
-          state.success = false;
+          state.isError = true;
+          state.isLoading = false;
+          state.isSuccess = false;
           state.message = action.error;
         });
     },
