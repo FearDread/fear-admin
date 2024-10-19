@@ -1,6 +1,7 @@
 import * as Types from "./types";
 
 const INITIAL_STATE = {
+  user: {},
   current: {},
   loading: false,
   isLoggedIn: false,
