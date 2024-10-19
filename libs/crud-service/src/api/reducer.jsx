@@ -8,7 +8,7 @@ const INITIAL_KEY_STATE = {
 };
 
 const INITIAL_STATE = {
-  current: { result: null },
+  current: { result: [] },
   list: {
     ...INITIAL_KEY_STATE,
     pagination: {
