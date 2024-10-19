@@ -1,21 +1,19 @@
 import React, { useState } from "react";
-import "./ShoppingCart.css";
 import { useSelector, useDispatch } from "react-redux";
 import {
   removeFromCart,
   updateQuantity,
   selectCartTotalAmount,
 } from "../../Features/Cart/cartSlice";
-
 import { MdOutlineClose } from "react-icons/md";
-
 import { Link } from "react-router-dom";
-
 import success from "../../Assets/success.png";
+import "./ShoppingCart.css";
 
 const ShoppingCart = () => {
-  const cartItems = useSelector((state) => state.cart.items);
   const dispatch = useDispatch();
+  const cartItems = useSelector((state) => state.crud.current);
+
 
   const [activeTab, setActiveTab] = useState("cartTab1");
   const [payments, setPayments] = useState(false);
