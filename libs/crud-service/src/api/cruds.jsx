@@ -108,16 +108,16 @@ const cruds = {
   read: (entity, _id) => async (dispatch) => {
     dispatch({ type: Types.REQUEST_LOADING, keyState: "read", payload: null });
 
-   await axios.get(API_BASE_URL + '/' + entity + '/' + _id)
-    .then((response) => {
-      if ( response.data.success ) {
+    await axios.get(API_BASE_URL + '/' + entity + '/' + _id)
+      .then((response) => {
+        if ( response.data.success ) {
+          dispatch({ type: Types.REQUEST_SUCCESS, keyState: "read", payload: response.data.result });
+        }
         dispatch({ type: Types.CURRENT_ITEM, payload: response.data.result });
-      }
-      dispatch({ type: Types.REQUEST_SUCCESS, keyState: "read", payload: response.data.result });
-    })
-    .catch((error) => {
-      dispatch({ type: Types.REQUEST_FAILED, keyState: "read", payload: error });
-    });
+      })
+      .catch((error) => {
+        dispatch({ type: Types.REQUEST_FAILED, keyState: "read", payload: error });
+      });
   },
 
   update: (entity, _id, _data) => async (dispatch) => {
@@ -173,7 +173,9 @@ const cruds = {
     },
 };
 
-cruds.cart = {};
+cruds.cart = {
+
+};
 
 cruds.wishlist = {};
 

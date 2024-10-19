@@ -1,20 +1,17 @@
 import React, { useState } from "react";
-import "./RelatedProducts.css";
-
+import { useSelector } from "react-redux";
 import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/css";
-import "swiper/css/navigation";
-
 import { Navigation } from "swiper/modules";
-
-import StoreData from "../../../Data/StoreData";
-
 import { FiHeart } from "react-icons/fi";
 import { FaStar } from "react-icons/fa";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
+import "swiper/css";
+import "swiper/css/navigation";
+import "./RelatedProducts.css";
 
-const RelatedProducts = () => {
-  const [wishList, setWishList] = useState({});
+const RelatedProducts = ( products ) => {
+  const [ wishList, setWishList] = useState({});
+  const { loading, result } = useSelector((state) => state.crud.list);
 
   const handleWishlistClick = (productID) => {
     setWishList((prevWishlist) => ({
@@ -73,7 +70,7 @@ const RelatedProducts = () => {
               },
             }}
           >
-            {StoreData.slice(0, 8).map((product) => {
+            {result && result.slice(0, 8).map((product) => {
               return (
                 <SwiperSlide key={product.productID}>
                   <div className="rpContainer">
