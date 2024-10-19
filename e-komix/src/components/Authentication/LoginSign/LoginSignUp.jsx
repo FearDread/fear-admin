@@ -14,7 +14,7 @@ const LoginSignUp = () => {
   const [password, setPassword] = useState("");
   const [activeTab, setActiveTab] = useState("tabButton1");
   const {loading, isLoggedIn, loginSuccess, registerSuccess} = useSelector((state) => state.auth);
-  const { user } = useSelector((state) => state.auth.current);
+  const { user } = useSelector((state) => state.auth);
  
   const handleTab = (tab) => {
     setActiveTab(tab);
