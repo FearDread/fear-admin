@@ -9,12 +9,13 @@ router.get("/all", Product.all);
 router.post("/new", Product.create);
 router.get("/search", Product.search);
 
-router.route("/:id")
-        .get(Product.read)
-        .put(Product.update)
-        .delete(Product.delete);
-
 router.route("/rating").put(tryCatch(Product.rating));
-router.route("/trendy").get(tryCatch(Product.trending));    
+router.route("/trendy").get(tryCatch(Product.trending));   
+
+router.route("/:id")
+        .get(tryCatch(Product.read))
+        .put(tryCatch(Product.update))
+        .delete(tryCatch(Product.delete));
+ 
 
 module.exports = router;

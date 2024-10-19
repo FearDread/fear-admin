@@ -24,8 +24,8 @@ import { FaPinterest } from "react-icons/fa";
 import Badge from "@mui/material/Badge";
 
 const Navbar = () => {
-  //const cart = useSelector((state) => state.cart);
-
+  const { cart }= useSelector((state) => state.crud.current);
+  const { user } = useSelector((state) => state.auth.current);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const toggleMobileMenu = () => {
@@ -82,7 +82,7 @@ const Navbar = () => {
         </div>
         <div className="iconContainer">
           <FiSearch size={22} onClick={scrollToTop} />
-          <Link to="/loginSignUp" onClick={scrollToTop}>
+          <Link to="/authentication" onClick={scrollToTop}>
             <FaRegUser size={22} />
           </Link>
           <Link to="/cart" onClick={scrollToTop}>
@@ -172,7 +172,7 @@ const Navbar = () => {
 
           <div className="mobile-menuFooter">
             <div className="mobile-menuFooterLogin">
-              <Link to="/loginSignUp" onClick={toggleMobileMenu}>
+              <Link to="/authentication" onClick={toggleMobileMenu}>
                 <FaRegUser />
                 <p>My Account</p>
               </Link>

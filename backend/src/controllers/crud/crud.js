@@ -13,16 +13,21 @@ const api = require("../../libs/features/api");
  * @apiSuccess {String} Informative message.
  */
 exports.all = tryCatch(async (Model, req, res) => {
-  const featured = api(Model.find(), req.query).paginate();
+  //const featured = api(Model.find(), req.query).paginate();
 
-  await featured.query()
-    .then((result) => { 
-       console.log("all query result = ", result);
+  await Model.find()
+    .sort({ category: "asc" })
+    .populate()
+    .then((result) => {
        return res.status(200).json(
         { result, success: true, message: "All Documents found" }
       );
     })
-    .catch((error) => { return res.status(400).json({ result: null, success: false, message: "No docs found." }); });
+    .catch((error) => { 
+      return res.status(400).json(
+        { result: null, success: false, message: "No docs found." }
+      ); 
+    });
 });
 
 /**

@@ -4,7 +4,9 @@ import "./animated-hero.css";
 const AnimatedHero = () => {
 
     return (
+
         <div className="hero-container">
+        <div className="hero-overlay"></div>
             <p id='head1' className='animated-header'>Welcom to E-KomiX!</p>
             <p id='head2' className='animated-header'>Browse our RARE Collections </p>
             <p id='head3' className='animated-header'>Cards, Comics, Coins, and Collectibles</p>
@@ -25,5 +27,6 @@ const AnimatedHero = () => {
         </div>
     )
 }
+
 
 export default AnimatedHero;
