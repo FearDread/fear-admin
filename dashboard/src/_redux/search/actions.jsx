@@ -1,4 +1,4 @@
-import * as actionTypes from "../types/search";
+import * as actionTypes from "./types";
 import { request } from "@/request";
 
 export const search = {

@@ -1,4 +1,4 @@
-import * as actionTypes from "../types/search";
+import * as actionTypes from "./types";
 
 const INITIAL_REF_STATE = {
   result: [],

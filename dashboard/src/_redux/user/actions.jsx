@@ -1,5 +1,5 @@
 import axios from "axios";
-import * as actionTypes from "../types/user";
+import * as actionTypes from "./types";
 import storePersist from "_redux/storePersist";
 import { API_BASE_URL } from "../../variables/api.js";
 

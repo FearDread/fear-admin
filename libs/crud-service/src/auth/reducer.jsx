@@ -5,7 +5,7 @@ const INITIAL_STATE = {
   current: {},
   loading: false,
   isLoggedIn: false,
-  loginSuccess: false,
+  loginSuccess: false, 
   registerSuccess: false,
 };
 
