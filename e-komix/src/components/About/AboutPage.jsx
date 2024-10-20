@@ -1,15 +1,9 @@
 import React from "react";
-import "./AboutPage.css";
-
-import about1 from "../../Assets/About/about-1.jpg";
-import about2 from "../../Assets/About/about-2.jpg";
-
-import Services from "../../Components/Home/Services/Services";
-
 import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/css";
 import { Autoplay } from "swiper/modules";
-
+import about_comic_banner from "../../Assets/Images/comic_background_1.avif";
+import facebook_profile from "../../Assets/Images/ekomix/facebook_profile_image.png";
+import Services from "../../Components/Home/Services/Services";
 import brand1 from "../../Assets/Brands/brand1.png";
 import brand2 from "../../Assets/Brands/brand2.png";
 import brand3 from "../../Assets/Brands/brand3.png";
@@ -17,13 +11,16 @@ import brand4 from "../../Assets/Brands/brand4.png";
 import brand5 from "../../Assets/Brands/brand5.png";
 import brand6 from "../../Assets/Brands/brand6.png";
 import brand7 from "../../Assets/Brands/brand7.png";
+import "swiper/css";
+import "./AboutPage.css";
+
 
 const AboutPage = () => {
   return (
     <>
       <div className="aboutSection">
-        <h2>About Uomo</h2>
-        <img src={about1} alt="" />
+        <h2> About E-Komix </h2>
+        <img src={about_comic_banner} alt="" />
         <div className="aboutContent">
           <h3>Our Story</h3>
           <h4>
@@ -46,21 +43,22 @@ const AboutPage = () => {
             <div className="contentBox">
               <h5>Our Mission</h5>
               <p>
-                Quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-                commodo consequat.
+                Here at E-Komix we want to offer some of the best and the widest varaity of Comics, Coins, Cards, and Collectibles. 
+                Not just offer the lowest prices but offer competitive pricing so you can trust what your buying is indeed authentic.
+                Custom orders can be made anytime for any of our lines of collectibles, simply submit contact form with your inquiry.
+              
               </p>
             </div>
             <div className="contentBox">
               <h5>Our Vision</h5>
               <p>
-                Quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-                commodo consequat.
+                We see ourselves continuing to collect various collectibles as it is one of our beloved hobbies.  
               </p>
             </div>
           </div>
           <div className="content2">
             <div className="imgContent">
-              <img src={about2} alt="" />
+              <img src={facebook_profile} alt="" />
             </div>
             <div className="textContent">
               <h5>The Company</h5>
