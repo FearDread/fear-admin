@@ -7,29 +7,16 @@ import {
   CardTitle,
   Row,
   Col,
-  Button
  } from "reactstrap";
 import { useHistory } from "react-router-dom";
 import Loader from "components/Loader/Loading";
-
 import ReactTable from "components/ReactTable/ReactTable.js";
 import ReactTableActions from "components/ReactTable/ReactTableActions.js";
-
 import * as ProductActions from "_redux/product/actions";
 import * as ProductTypes from "_redux/product/types";
 //import SweetAlert from "react-bootstrap-sweetalert";
 import ReactBSAlert from "react-bootstrap-sweetalert";
 
-const header = [
-  { Header: "Cover", accessor: "avatar" },
-  { Header: "Title", accessor: "title" },
-  { Header: "Category", accessor: "category" },
-  { Header: "Price", accessor: "price" },
-  { Header: "Available", accessor: "quantity" },
-  { Header: "Brand", accessor: "brand" },
-  { Header: "ID", accessor: "id" },
-  { Header: "Actions", accessor: "actions", sortable: false, filterable: false }
-];
 
 function ProductList() {
   const dispatch = useDispatch();
@@ -38,6 +25,17 @@ function ProductList() {
   const [ toggle, setToggle ] = useState(false);
   const { products, loading } = useSelector((state) => state.product);
 
+  const header = [
+    { Header: "Cover", accessor: "avatar" },
+    { Header: "Title", accessor: "title" },
+    { Header: "Category", accessor: "category" },
+    { Header: "Price", accessor: "price" },
+    { Header: "Available", accessor: "quantity" },
+    { Header: "Brand", accessor: "brand" },
+    { Header: "ID", accessor: "id" },
+    { Header: "Actions", accessor: "actions", sortable: false, filterable: false }
+  ];
+  
   const editProductHandler = (id) => {
 
   }

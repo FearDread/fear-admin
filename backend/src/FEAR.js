@@ -52,22 +52,12 @@ module.exports = FEAR = (( app ) => {
   this.app.use(express.json());
   this.app.use(bodyParser.json());
   this.app.use(bodyParser.urlencoded({ extended: true }));
-  this.app.use(passport.initialize());
+  //this.app.use(passport.initialize());
 
   this.app.use((req, res, next) => {
     this.log.info("FEAR API REQ :: " + req.url);
-    this.user = req.user;
-    
     next();
   });
-
-  this.app.use(cors({
-    origin: ["http://localhost:4001", "http://localhost:4000", "http://localhost:3000","http://fear.master.com:4000", "http://fear.master.com:4001", "http://fear.admin.com", "http://fear.admin.com:4000"],
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
-    allowedHeaders: ["Content-Type", "Authorization", "Access-Control-Allow-Origin"]
-  }));
-
-  this.app.options("*", cors());
 
   // Load Routes
   this.app = this.load(app);
@@ -76,6 +66,8 @@ module.exports = FEAR = (( app ) => {
   this.app.get("*", (req, res) =>
     res.sendFile(path.resolve(__dirname1, "dashboard", "build", "index.html"))
   );
+  this.app.use(cors());
+  this.app.options("*", cors());
 
   this.app.use(errors.notFound);
   this.app.use(errors.development);
