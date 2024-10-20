@@ -35,7 +35,7 @@ function ProductList() {
     { Header: "ID", accessor: "id" },
     { Header: "Actions", accessor: "actions", sortable: false, filterable: false }
   ];
-  
+
   const editProductHandler = (id) => {
 
   }
@@ -59,7 +59,7 @@ function ProductList() {
         confirmBtnText="Yes, delete it!"
         cancelBtnText="Cancel"
         showCancel
-        btnSize=""
+        btnSize=""n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
       >
         Your sure you want to delete this product?
       </ReactBSAlert>
