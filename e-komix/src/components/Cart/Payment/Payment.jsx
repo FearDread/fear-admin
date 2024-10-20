@@ -5,7 +5,7 @@ import { useAlert } from "react-alert";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
 import OrderDetailsSection from "./OrderDetails";
-import DummyCard from "../DummyCard";
+import DummyCard from "../ExampleCard/ExampleCard";
 import { clearErrors, createOrder } from "../../_store/actions/orderAction";
 import CheckoutSteps from "../Checkout/CheckoutSteps ";
 

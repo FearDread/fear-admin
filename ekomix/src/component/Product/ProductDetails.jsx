@@ -8,7 +8,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useSelector, useDispatch } from "react-redux";
 import {
   Button,
-  Card,
+  Card, 
   CardHeader,
   CardBody,
   CardFooter,
@@ -27,7 +27,7 @@ import Rating from "@material-ui/lab/Rating";
 import { useRouteMatch } from "react-router-dom";
 import {
   clearErrors,
-  getProductDetails,
+  getProductDetails,     
 } from "../../_store/actions/productAction";
 import { useAlert } from "react-alert";
 import { addItemToCart } from "../../_store/actions/cartAction";
