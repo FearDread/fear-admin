@@ -84,10 +84,14 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   grid-gap: 50px;
+
 }
 
 .trendyProductContainer {
   position: relative;
+  padding: 5px;
+  width: 258px;
+  border: 1px solid #767676
 }
 
 .trendyProductContainer:hover {
