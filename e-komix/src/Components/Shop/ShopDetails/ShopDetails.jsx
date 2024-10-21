@@ -94,7 +94,7 @@ const ShopDetails = ( products ) => {
             </div>
             <div className="shopDetailsProducts">
               <div className="shopDetailsProductsContainer">
-                { result && result.slice(6, 15).map((product) => (
+                { result && result.slice(0, 12).map((product) => (
                   <TrendyCard {...product} /> 
                 )) }
               </div>
