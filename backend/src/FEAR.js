@@ -54,6 +54,25 @@ module.exports = FEAR = (( app ) => {
   this.app.use(bodyParser.urlencoded({ extended: true }));
   //this.app.use(passport.initialize());
 
+  const allowedOrigins = ['http://localhost:3000', 'http://fear.master.com',
+    'http://localhost:4000', 'http://fear.admin.com'
+  ];
+
+  this.app.use(cors({
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.indexOf(origin) === -1) {
+        var msg = 'The CORS policy for this site does not ' +
+                  'allow access from the specified Origin.';
+                  
+        return callback(new Error(msg), false);
+      }
+      return callback(null, true);
+    }
+  }));
+  this.app.options("*", cors());
+  
   this.app.use((req, res, next) => {
     this.log.info("FEAR API REQ :: " + req.url);
     next();
@@ -66,8 +85,6 @@ module.exports = FEAR = (( app ) => {
   this.app.get("*", (req, res) =>
     res.sendFile(path.resolve(__dirname1, "dashboard", "build", "index.html"))
   );
-  this.app.use(cors());
-  this.app.options("*", cors());
 
   this.app.use(errors.notFound);
   this.app.use(errors.development);
