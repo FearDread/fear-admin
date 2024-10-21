@@ -9,7 +9,7 @@
 }
 
 .collectionLeft {
-  background-image: url("../../../Assets/Images/marvel_banner_1.jpg");
+  background-image: url("../../../Assets/Images/ekomix/_best_banner.webp");
   background-size: cover;
   background-position: center center;
   padding: 30px;
@@ -48,7 +48,7 @@
 }
 
 .collectionTop {
-  background-image: url("../../../Assets/Images/dc_banner_1.png");
+  background-image: url("../../../Assets/Images/ekomix/_comic_sale_banner_2.avif");
   background-size: cover;
   background-position: center;
   display: flex;
@@ -65,7 +65,7 @@
 }
 
 .box1 {
-  background-image: url("../../../Assets/Images/comic_banner_1.jpg");
+  background-image: url("../../../Assets/Images/ekomix/_upper_deck_banner.jpg");
   background-size: cover;
   background-position: center;
   display: flex;
@@ -76,6 +76,9 @@
 }
 
 .box2 {
+  background-image: url("../../../Assets/Images/ekomix/_trading_cards_1.jpg");
+  background-size: cover;
+  background-position: center;
   background-color: #f4e5e0;
   display: flex;
   flex-direction: column;
