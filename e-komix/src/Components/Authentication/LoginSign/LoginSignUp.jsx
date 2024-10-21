@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useHistory } from "react-router-dom";
-import "./LoginSignUp.css";
+import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { auth } from "@feardread/crud-service";
+import "./LoginSignUp.css";
 
 const LoginSignUp = () => {
   const dispatch = useDispatch();
-  const history = useHistory();
+  const navigate = useNavigate();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [mobile, setMobile] = useState("");
   const [password, setPassword] = useState("");
   const [activeTab, setActiveTab] = useState("tabButton1");
-  const {loading, isLoggedIn, loginSuccess, registerSuccess} = useSelector((state) => state.auth);
+  const { isLoggedIn, loginSuccess, registerSuccess } = useSelector((state) => state.auth);
  
   const handleTab = (tab) => {
     setActiveTab(tab);
@@ -38,7 +38,7 @@ const LoginSignUp = () => {
 
   useEffect(() => {
     if (loginSuccess && isLoggedIn) {
-      history.push("/cart");
+      navigate("/admin/account");
     }
   }, [])
 

@@ -26,6 +26,8 @@ const LimitedEdition = ( products ) => {
   const dispatch = useDispatch();
   const { loading, result } = useSelector((state) => state.crud.list);
 
+  //  const cartItems = useSelector((state) => state.cart.items);
+  const cartItems = 0;
   const [wishList, setWishList] = useState({});
 
   const handleWishlistClick = (productID) => {
@@ -36,14 +38,8 @@ const LimitedEdition = ( products ) => {
   };
 
   const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
-
-//  const cartItems = useSelector((state) => state.cart.items);
-  const cartItems = 0;
 
   const handleAddToCart = (product) => {
     const productInCart = cartItems.find(
@@ -51,30 +47,10 @@ const LimitedEdition = ( products ) => {
     );
 
     if (productInCart && productInCart.quantity >= 20) {
-      toast.error("Product limit reached", {
-        duration: 2000,
-        style: {
-          backgroundColor: "#ff4b4b",
-          color: "white",
-        },
-        iconTheme: {
-          primary: "#fff",
-          secondary: "#ff4b4b",
-        },
-      });
+      toast.error("Product limit reached");
     } else {
       dispatch(addToCart(product));
-      toast.success(`Added to cart!`, {
-        duration: 2000,
-        style: {
-          backgroundColor: "#07bc0c",
-          color: "white",
-        },
-        iconTheme: {
-          primary: "#fff",
-          secondary: "#07bc0c",
-        },
-      });
+      toast.success(`Added to cart!`);
     }
   };
 
@@ -132,7 +108,7 @@ const LimitedEdition = ( products ) => {
                       <Link to="/Product" onClick={scrollToTop}>
                         <img
                           src={product.images ? product.images[0].url : defaultProdImg}
-                          alt={product.images ? product.images[1].url : defaultProdImg}
+                          alt={product.images[1] ? product.images[1].url : defaultProdImg}
                           className="lpImage"
                         />
                       </Link>
