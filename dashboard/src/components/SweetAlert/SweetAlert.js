@@ -1,6 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import ReactBSAlert from "react-bootstrap-sweetalert";
 
+const setAlert = () => {
+  return (null);
+}
+
+const hideAlert = () => {
+  return (null);
+}
 
 export const basicAlert = () => {
     return (
@@ -13,9 +20,9 @@ export const basicAlert = () => {
         btnSize=""
       />
     );
-  };
+};
 
-  const titleAndTextAlert = () => {
+export const titleAndTextAlert = () => {
     setAlert(
       <ReactBSAlert
         style={{ display: "block", marginTop: "-100px" }}
@@ -28,26 +35,27 @@ export const basicAlert = () => {
         It's pretty, isn't it?
       </ReactBSAlert>
     );
-  };
-  const successAlert = ( props ) => {
+};
+
+export const successAlert = ( props ) => {
     if ( typeof props.success_cb )
     return (
       <ReactBSAlert
         success
         style={{ display: "block", marginTop: "-100px" }}
         title="Good job!"
-        onConfirm={() => success_cb()}
-        onCancel={() => hideAlert()}
+        onConfirm={() => props.success_cb()}
+        onCancel={() => props.hideAlert()}
         confirmBtnBsStyle="success"
         btnSize=""
       >
         You clicked the button!
       </ReactBSAlert>
     );
-  };
+};
 
 export const confirmDelete = ( props ) => {
-    const { _id, entity, deleteHandler } = props;
+    const { _id, entity, deleteHandler, hideAlert } = props;
     if ( !_id, entity ) {
         console.log('missing entity and or its _id');
         return;
@@ -71,7 +79,7 @@ export const confirmDelete = ( props ) => {
     )
 };
 
-  const htmlAlert = () => {
+export const htmlAlert = () => {
     setAlert(
       <ReactBSAlert
         style={{ display: "block", marginTop: "-100px" }}
@@ -85,8 +93,9 @@ export const confirmDelete = ( props ) => {
         <a href="https://www.creative-tim.com/">links</a> and other HTML tags
       </ReactBSAlert>
     );
-  };
-  const warningWithConfirmMessage = () => {
+};
+
+export const warningWithConfirmMessage = () => {
     setAlert(
       <ReactBSAlert
         warning
@@ -104,8 +113,9 @@ export const confirmDelete = ( props ) => {
         You will not be able to recover this imaginary file!
       </ReactBSAlert>
     );
-  };
-  const warningWithConfirmAndCancelMessage = () => {
+};
+  
+export const warningWithConfirmAndCancelMessage = () => {
     setAlert(
       <ReactBSAlert
         warning
@@ -123,8 +133,9 @@ export const confirmDelete = ( props ) => {
         You will not be able to recover this imaginary file!
       </ReactBSAlert>
     );
-  };
-  const autoCloseAlert = () => {
+};
+
+export const autoCloseAlert = () => {
     setAlert(
       <ReactBSAlert
         style={{ display: "block", marginTop: "-100px" }}
@@ -138,8 +149,9 @@ export const confirmDelete = ( props ) => {
     setTimeout(() => {
       setAlert(null);
     }, 2000);
-  };
-  const inputAlert = () => {
+};
+
+export const inputAlert = () => {
     setAlert(
       <ReactBSAlert
         input
@@ -153,9 +165,10 @@ export const confirmDelete = ( props ) => {
         btnSize=""
       />
     );
-  };
-  const inputConfirmAlert = (e) => {
-    setAlert(
+};
+
+export const inputConfirmAlert = () => {
+    return (
       <ReactBSAlert
         success
         style={{ display: "block", marginTop: "-100px" }}
@@ -165,12 +178,13 @@ export const confirmDelete = ( props ) => {
         btnSize=""
         title="You entered: "
       >
-        <b>{e}</b>
+        <b>''</b>
       </ReactBSAlert>
     );
-  };
-  const successDelete = () => {
-    setAlert(
+};
+
+export const successDelete = () => {
+    return (
       <ReactBSAlert
         success
         style={{ display: "block", marginTop: "-100px" }}
@@ -183,9 +197,10 @@ export const confirmDelete = ( props ) => {
         Your imaginary file has been deleted.
       </ReactBSAlert>
     );
-  };
-  const cancelDetele = () => {
-    setAlert(
+};
+
+export const cancelDetele = () => {
+    return (
       <ReactBSAlert
         danger
         style={{ display: "block", marginTop: "-100px" }}
@@ -198,7 +213,6 @@ export const confirmDelete = ( props ) => {
         Your imaginary file is safe :)
       </ReactBSAlert>
     );
-  };
-  const hideAlert = () => {
-    setAlert(null);
-  };
+};
+
+export default { confirmDelete }

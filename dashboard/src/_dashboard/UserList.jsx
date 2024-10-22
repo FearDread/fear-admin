@@ -11,7 +11,7 @@ import { Card,
 import ReactTable from "components/ReactTable/ReactTable.js";
 import ReactTableActions from "components/ReactTable/ReactTableActions.js";
 import Loader from "components/Loader/Loading.js";
-import * as User from "_redux/actions/user";
+import * as UserActions from "_redux/user/actions";
 import logo from "assets/img/FEAR/logo.png";  
 
 
@@ -20,7 +20,9 @@ function UserList() {
   const { users, loading } = useSelector((state) => state.user);
 
   useEffect(() => {
-    dispatch(User.list()); 
+
+    dispatch(UserActions.list());
+
   }, [dispatch]);
 
   const header = [
