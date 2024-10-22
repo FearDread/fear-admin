@@ -6,7 +6,6 @@ const path = require("path"),
       cookieParser = require("cookie-parser"),
       fileUpload = require("express-fileupload"),
       cors = require("cors"),
-      helmet = require("helmet"),
       __dirname1 = path.resolve();
 
 
@@ -52,10 +51,12 @@ module.exports = FEAR = (( app ) => {
   this.app.use(express.json());
   this.app.use(bodyParser.json());
   this.app.use(bodyParser.urlencoded({ extended: true }));
-  //this.app.use(passport.initialize());
+  this.app.use(passport.initialize());
 
   const allowedOrigins = ['http://localhost:3000', 'http://fear.master.com',
-    'http://localhost:4000', 'http://fear.admin.com', 'http://localhost:4001'
+    'http://fear.master.com:3000', 'http://fear.master.com:4000',
+    'http://localhost:4000', 'http://fear.admin.com', 'http://localhost:4001',
+    'http://fear.admin.com:4000', 'http://fear.admin.com:3000',
   ];
 
   this.app.use(cors({
