@@ -11,12 +11,7 @@ html {
 }
 
 body {
-  /*background-color:rgba(32, 1, 1, 0.7);
-  /*background-image: url("./Assets/Images/red_comic_bg.avif");
-  background-color: rgba(0,0,0,.8);
-  background-position: center;
-  background-size: cover;
-  */
+  background: white;
 }
 
 img {

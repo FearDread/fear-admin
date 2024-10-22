@@ -1,5 +1,6 @@
 .mainDeal {
-  padding: 150px;
+  padding: 0px;
+  background-color:rgba(0,0,0,.5);
 }
 
 .dealTimer {
