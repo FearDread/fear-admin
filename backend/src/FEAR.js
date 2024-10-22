@@ -55,7 +55,7 @@ module.exports = FEAR = (( app ) => {
   //this.app.use(passport.initialize());
 
   const allowedOrigins = ['http://localhost:3000', 'http://fear.master.com',
-    'http://localhost:4000', 'http://fear.admin.com'
+    'http://localhost:4000', 'http://fear.admin.com', 'http://localhost:4001'
   ];
 
   this.app.use(cors({

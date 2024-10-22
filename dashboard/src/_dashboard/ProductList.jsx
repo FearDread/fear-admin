@@ -16,13 +16,13 @@ import * as ProductActions from "_redux/product/actions";
 import * as ProductTypes from "_redux/product/types";
 //import SweetAlert from "react-bootstrap-sweetalert";
 import ReactBSAlert from "react-bootstrap-sweetalert";
-import { confirmDelete } from "components/SweetAlert/SweetAlert.js";
+import { confirmDelete } from "../components/SweetAlert/SweetAlert.js";
 
 
 function ProductList() {
   const dispatch = useDispatch();
   const history = useHistory();
-  const [alert, setAlert] = useState(null);
+  const [ alert, setAlert ] = useState(null);
   const [ toggle, setToggle ] = useState(false);
   const { products, loading } = useSelector((state) => state.product);
 
@@ -46,6 +46,8 @@ function ProductList() {
     dispatch({type: ProductTypes.DELETE_PRODUCT_RESET});
     hideAlert()
   };
+
+  //const confirmDeleteAlert = confirmDelete(_id, 'product', deleteProductHandler, hideAlert);
 /*
   const confirmDelete = (_id) => {
     setAlert( 
@@ -93,7 +95,7 @@ function ProductList() {
             }),
             (() => {
               console.log("remove product :: ", item);
-              setAlert(confirmDelete(item._id, "product", deleteProductHandler));
+              setAlert(confirmDelete(item._id, "product", deleteProductHandler, hideAlert));
               //confirmDelete(item._id);
             })
           ))
@@ -102,6 +104,10 @@ function ProductList() {
     }
 
     return dataTable;
+  }
+
+  const hideAlert = () => {
+    setAlert(null);
   }
 
   useEffect(() => {
