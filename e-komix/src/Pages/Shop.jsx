@@ -26,7 +26,7 @@ const Shop = () => {
       </>
     ) : (
       <>
-        <ShopDetails {...result} />
+        <ShopDetails products={result} />
       </>
     )}
   </>

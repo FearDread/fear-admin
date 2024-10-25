@@ -7,17 +7,14 @@ import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import defaultProdImg from "../../../Assets/Images/abstract_banner_1.jpg";
 
-const TrendyCard = ( product ) => {
+const TrendyCard = ( {product} ) => {
   const dispatch = useDispatch();
   const sortByPrice = (a, b) => a.productPrice - b.productPrice;
   const [ wishList, setWishList ] = useState({});
   const cartItems = 0;
 
   const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleWishlistClick = (productID) => {
@@ -43,7 +40,7 @@ const TrendyCard = ( product ) => {
     return (
         <div className="trendyProductContainer" key={product._id}>
         <div className="trendyProductImages">
-          <Link to="/Product" onClick={scrollToTop}>
+          <Link to={`/product/${product._id}`}>
             <img
               src={product.images ? product.images[0].url : defaultProdImg}
               alt=""

@@ -9,14 +9,14 @@ import toast from "react-hot-toast";
 import defaultProdImg from "../../../Assets/Images/abstract_banner_1.jpg";
 import "./Trendy.css";
 
-const Trendy = ( data ) => {
+const Trendy = ( {products} ) => {
   const dispatch = useDispatch();
   const [ activeTab, setActiveTab ] = useState("tab1");
   const [ wishList, setWishList ] = useState({});
   const { result } = useSelector((state) => state.crud.list);
   //const cartItems = useSelector((state) => state.cart.items);
   const sortByPrice = (a, b) => a.productPrice - b.productPrice;
-  const products = data.products || [];
+  //const products = data.products || [];
   const cartItems = 0;
 
   const handleTabClick = (tab) => {
@@ -59,13 +59,13 @@ const Trendy = ( data ) => {
 
   useEffect(() => {
     console.log('products = ', products);
-  }, []);
+  }, [products]);
 
   return (
     <>
       <div className="trendyProducts">
         <h2>
-          Our Trendy <span>Products</span>
+          Our Trending <span>Products</span>
         </h2>
         <div className="trendyTabs">
           <div className="tabs">
@@ -73,7 +73,7 @@ const Trendy = ( data ) => {
               onClick={() => handleTabClick("tab1")}
               className={activeTab === "tab1" ? "active" : ""}
             >
-              All
+              Trending
             </p>
             <p
               onClick={() => handleTabClick("tab2")}
@@ -98,91 +98,30 @@ const Trendy = ( data ) => {
             {activeTab === "tab1" && (
               <div className="trendyMainContainer">
               {result && result.slice(0, 8).map((product) => (
-                <TrendyCard {...product} />
+                <TrendyCard product={product} />
               ))}
             </div>
             )}
             {activeTab === "tab2" && (
               <div className="trendyMainContainer">
                 {result && result.slice(0, 8).reverse().map((product) => (
-                  <TrendyCard {...product} />
+                  <TrendyCard product={product} />
                 ))}
               </div>
             )}
-
-            {/* Tab 3 */}
             {activeTab === "tab3" && (
               <div className="trendyMainContainer">
                 {result && result.slice(0, 8).map((product) => (
-                  <TrendyCard {...product} />
+                  <TrendyCard product={product} />
               ))}
               </div>
             )}
-
-            {/* Tab 4 */}
             {activeTab === "tab4" && (
               <div className="trendyMainContainer">
                 {result && result.slice(0, 8)
                   .sort(sortByPrice)
                   .map((product) => (
-                    <div className="trendyProductContainer" key={product.id}>
-                      <div className="trendyProductImages">
-                        <Link to="/Product">
-                          <img
-                            src={product.frontImg}
-                            alt=""
-                            className="trendyProduct_front"
-                          />
-                          <img
-                            src={product.backImg}
-                            alt=""
-                            className="trendyProduct_back"
-                          />
-                        </Link>
-                        <h4 onClick={() => handleAddToCart(product)}>
-                          Add to Cart
-                        </h4>
-                      </div>
-                      <div
-                        className="trendyProductImagesCart"
-                        onClick={() => handleAddToCart(product)}
-                      >
-                        <FaCartPlus />
-                      </div>
-                      <div className="trendyProductInfo">
-                        <div className="trendyProductCategoryWishlist">
-                          <p>Dresses</p>
-                          <FiHeart
-                            onClick={() =>
-                              handleWishlistClick(product.productID)
-                            }
-                            style={{
-                              color: wishList[product.productID]
-                                ? "red"
-                                : "#767676",
-                              cursor: "pointer",
-                            }}
-                          />
-                        </div>
-                        <div className="trendyProductNameInfo">
-                          <Link to="/product" onClick={scrollToTop}>
-                            <h5>{product.productName}</h5>
-                          </Link>
-
-                          <p>${product.productPrice}</p>
-                          <div className="trendyProductRatingReviews">
-                            <div className="trendyProductRatingStar">
-                              <FaStar color="#FEC78A" size={10} />
-                              <FaStar color="#FEC78A" size={10} />
-                              <FaStar color="#FEC78A" size={10} />
-                              <FaStar color="#FEC78A" size={10} />
-                              <FaStar color="#FEC78A" size={10} />
-                            </div>
-                            <span>{product.productReviews}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                    <TrendyCard product={product} />
                   ))}
               </div>
             )}
