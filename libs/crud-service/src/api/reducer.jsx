@@ -8,6 +8,7 @@ const INITIAL_KEY_STATE = {
 };
 
 const INITIAL_STATE = {
+  cart: { items: [], totalAmount: 0 },
   current: { result: [] },
   list: {
     ...INITIAL_KEY_STATE,
