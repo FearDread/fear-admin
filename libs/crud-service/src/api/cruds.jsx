@@ -109,7 +109,7 @@ const cruds = {
     dispatch({ type: Types.REQUEST_LOADING, keyState: "read", payload: null });
 
     await axios.get(API_BASE_URL + '/' + entity + '/' + _id)
-      .then((response) => {
+      .then((response) => { 
         if ( response.data.success ) {
           dispatch({ type: Types.REQUEST_SUCCESS, keyState: "read", payload: response.data.result });
         }
@@ -175,6 +175,52 @@ const cruds = {
 
 cruds.cart = {
 
+  add: (product) => async (dispatch) => {
+    console.log('add to cart : ', product);
+    const product = action.payload;
+    const existingItem = state.items.find(
+      (item) => item.productID === product.productID
+    );
+    if (existingItem) {
+      if (existingItem.quantity < MAX_QUANTITY) {
+        existingItem.quantity += 1;
+        state.totalAmount += product.productPrice;
+      }
+    } else {
+      state.items.push({ ...product, quantity: 1 });
+      state.totalAmount += product.productPrice;
+    }
+  },
+
+  update: (product) => async (dispatch) => {
+    const { productID, quantity } = action.payload;
+    const itemToUpdate = state.items.find(
+      (item) => item.productID === productID
+    );
+    if (itemToUpdate) {
+      const difference = quantity - itemToUpdate.quantity;
+      if (quantity <= MAX_QUANTITY) {
+        itemToUpdate.quantity = quantity;
+        state.totalAmount += difference * itemToUpdate.productPrice;
+      } else {
+        itemToUpdate.quantity = MAX_QUANTITY;
+        state.totalAmount +=
+          (MAX_QUANTITY - itemToUpdate.quantity) * itemToUpdate.productPrice;
+      }
+    }
+  },
+  removeFromCart(state, action) {
+    const productId = action.payload;
+    const itemToRemove = state.items.find(
+      (item) => item.productID === productId
+    );
+    if (itemToRemove) {
+      state.totalAmount -= itemToRemove.productPrice * itemToRemove.quantity;
+      state.items = state.items.filter(
+        (item) => item.productID !== productId
+      );
+    }
+  },
 };
 
 cruds.wishlist = {};
