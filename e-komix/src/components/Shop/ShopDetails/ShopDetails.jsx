@@ -9,7 +9,7 @@ import toast from "react-hot-toast";
 import TrendyCard from "../../Product/TrendyCard/TrendyCard"
 import "./ShopDetails.css";
 
-const ShopDetails = ( products ) => {
+const ShopDetails = ( {products} ) => {
   const dispatch = useDispatch();
   const [wishList, setWishList] = useState({});
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -95,7 +95,7 @@ const ShopDetails = ( products ) => {
             <div className="shopDetailsProducts">
               <div className="shopDetailsProductsContainer">
                 { result && result.slice(0, 12).map((product) => (
-                  <TrendyCard {...product} /> 
+                  <TrendyCard product={product} /> 
                 )) }
               </div>
             </div>

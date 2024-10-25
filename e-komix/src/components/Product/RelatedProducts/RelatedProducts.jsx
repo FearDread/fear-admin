@@ -1,26 +1,37 @@
 import React, { useState } from "react";
-import "./RelatedProducts.css";
-
+import { useDispatch, useSelector } from "react-redux";
 import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/css";
-import "swiper/css/navigation";
-
 import { Navigation } from "swiper/modules";
-
-import StoreData from "../../../Data/StoreData";
-
+import { Autoplay } from "swiper/modules";
+import { Link } from "react-router-dom";
 import { FiHeart } from "react-icons/fi";
 import { FaStar } from "react-icons/fa";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
+import { FaCartPlus } from "react-icons/fa";
+import defaultProdImg from "../../../Assets/Images/abstract_banner_1.jpg";
+import "swiper/css";
+import "swiper/css/navigation";
+import "./RelatedProducts.css";
 
-const RelatedProducts = () => {
+const RelatedProducts = ( {products} ) => {
+  const dispatch = useDispatch();
+  const cartItems = 0;
   const [wishList, setWishList] = useState({});
 
+  const { result } = useSelector((state) => state.crud.list);
   const handleWishlistClick = (productID) => {
     setWishList((prevWishlist) => ({
       ...prevWishlist,
       [productID]: !prevWishlist[productID],
     }));
+  };
+  
+  const handleAddToCart = (product) => {
+    const productInCart = cartItems.find(
+      (item) => item.productID === product.productID
+    );
+
+
   };
 
   const scrollToTop = () => {
@@ -54,50 +65,59 @@ const RelatedProducts = () => {
               nextEl: ".image-swiper-button-next",
               prevEl: ".image-swiper-button-prev",
             }}
-            modules={[Navigation]}
+            autoplay={{
+              delay: 2500,
+              disableOnInteraction: false,
+              pauseOnMouseEnter: true,
+            }}
+            modules={[Navigation, Autoplay]}
             breakpoints={{
               320: {
                 slidesPerView: 2,
-                slidesPerGroup: 2,
+                slidesPerGroup: 1,
                 spaceBetween: 14,
               },
               768: {
                 slidesPerView: 3,
-                slidesPerGroup: 3,
+                slidesPerGroup: 1,
                 spaceBetween: 24,
               },
               1024: {
                 slidesPerView: 4,
-                slidesPerGroup: 4,
+                slidesPerGroup: 1,
                 spaceBetween: 30,
               },
             }}
           >
-            {StoreData.slice(0, 8).map((product) => {
+            {result && result.slice(0, 13).map((product) => {
               return (
-                <SwiperSlide key={product.productID}>
-                  <div className="rpContainer">
-                    <div className="rpImages" onClick={scrollToTop}>
-                      <img
-                        src={product.frontImg}
-                        alt={product.productName}
-                        className="rpFrontImg"
-                      />
-                      <img
-                        src={product.backImg}
-                        className="rpBackImg"
-                        alt={product.productName}
-                      />
-                      <h4>Add to Cart</h4>
+                <SwiperSlide key={product._id}>
+                  <div className="lpContainer">
+                    <div className="lpImageContainer">
+                      <Link to="/Product" onClick={scrollToTop}>
+                        <img
+                          src={product.images ? product.images[0].url : defaultProdImg}
+                          alt={product.images[1] ? product.images[1].url : defaultProdImg}
+                          className="lpImage"
+                        />
+                      </Link>
+                      <h4 onClick={() => handleAddToCart(product)}>
+                        Add to Cart
+                      </h4>
                     </div>
-
-                    <div className="relatedProductInfo">
-                      <div className="rpCategoryWishlist">
-                        <p>Dresses</p>
+                    <div
+                      className="lpProductImagesCart"
+                      onClick={() => handleAddToCart(product)}
+                    >
+                      <FaCartPlus />
+                    </div>
+                    <div className="limitedProductInfo">
+                      <div className="lpCategoryWishlist">
+                        <p>{product.category}</p>
                         <FiHeart
-                          onClick={() => handleWishlistClick(product.productID)}
+                          onClick={() => handleWishlistClick(product._id)}
                           style={{
-                            color: wishList[product.productID]
+                            color: wishList[product._id]
                               ? "red"
                               : "#767676",
                             cursor: "pointer",
@@ -105,8 +125,10 @@ const RelatedProducts = () => {
                         />
                       </div>
                       <div className="productNameInfo">
-                        <h5 onClick={scrollToTop}>{product.productName}</h5>
-                        <p>${product.productPrice}</p>
+                        <Link to="/Product" onClick={scrollToTop}>
+                          <h5>{product.title}</h5>
+                        </Link>
+                        <p>${product.price}</p>
                         <div className="productRatingReviews">
                           <div className="productRatingStar">
                             <FaStar color="#FEC78A" size={10} />
@@ -116,7 +138,7 @@ const RelatedProducts = () => {
                             <FaStar color="#FEC78A" size={10} />
                           </div>
 
-                          <span>{product.productReviews}</span>
+                          <span>{product.reviews}</span>
                         </div>
                       </div>
                     </div>

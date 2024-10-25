@@ -1,7 +1,7 @@
 import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay } from "swiper/modules";
-import about_comic_banner from "../../Assets/Images/comic_background_1.avif";
+import about_comic_banner from "../../Assets/slideshow-pattern.png";
 import facebook_profile from "../../Assets/Images/ekomix/facebook_profile_image.png";
 import Services from "../../Components/Home/Services/Services";
 import brand1 from "../../Assets/Brands/brand1.png";
