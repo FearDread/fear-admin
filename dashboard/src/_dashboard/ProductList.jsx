@@ -14,10 +14,7 @@ import ReactTable from "components/ReactTable/ReactTable.js";
 import ReactTableActions from "components/ReactTable/ReactTableActions.js";
 import * as ProductActions from "_redux/product/actions";
 import * as ProductTypes from "_redux/product/types";
-//import SweetAlert from "react-bootstrap-sweetalert";
 import ReactBSAlert from "react-bootstrap-sweetalert";
-import { confirmDelete } from "../components/SweetAlert/SweetAlert.js";
-
 
 function ProductList() {
   const dispatch = useDispatch();
@@ -47,8 +44,6 @@ function ProductList() {
     hideAlert()
   };
 
-  //const confirmDeleteAlert = confirmDelete(_id, 'product', deleteProductHandler, hideAlert);
-/*
   const confirmDelete = (_id) => {
     setAlert( 
       <ReactBSAlert
@@ -62,8 +57,7 @@ function ProductList() {
         confirmBtnText="Yes, delete it!"
         cancelBtnText="Cancel"
         showCancel
-        btnSize=""
-      >
+        btnSize="">
         Your sure you want to delete this product?
       </ReactBSAlert>
     );
