@@ -38,11 +38,11 @@ exports.all = tryCatch(async (Model, req, res) => {
 exports.read = tryCatch(async (Model, req, res) => {
   const { id } = req.params;
   //db.validateId(id);
-  if (!req.params || req.params.id) throw new Error("No ID");
-  const msg = "document with id :: " + req.params.id;
-  await Model.findOne({ _id: req.params.id })
+  if (!req.params || !id) throw new Error("No ID");
+  const msg = "document with id :: " + req.params.productId;
+  await Model.findOne({ _id: id })
     .then((result) => { return res.status(200).json({ result, success: true, message: "Found " + msg }); })
-    .catch((error) => { return res.status(404).json({ result:null, success: false, message: "No " + msg }); })
+    .catch((error) => { return res.status(404).json({ result: null, success: false, message: "No " + msg }); })
 });
 
 /**
