@@ -10,7 +10,7 @@
 .productGallery {
   display: flex;
   gap: 10px;
-  border-right: 1px solid grey;
+  border-right: 1px solid 767676;
   padding-right:50px;
 }
 
@@ -21,8 +21,8 @@
 }
 
 .productThumb img {
-  width:150px;
-  height: 150px;
+  width:125px;
+  height: 125px;
 }
 
 .productFullImg {
@@ -30,8 +30,8 @@
 }
 
 .productFullImg img {
-  width: 600px;
-  height: auto;
+  width: 550px;
+  height: 550px;
   pointer-events: none;
   background-color: #767676;
 }

@@ -12,19 +12,20 @@ import toast from "react-hot-toast";
 import Tooltip from "@mui/material/Tooltip";
 import Zoom from "@mui/material/Zoom";
 import { cruds } from "@feardread/crud-service";
+import { cart } from "@feardread/crud-service";
 import Loader from "../../../Components/Loader/Loader";
 import "./Product.css";
 
-const Product = () => {
+const Product = ( {product} ) => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const [currentImg, setCurrentImg] = useState(0);
   const [quantity, setQuantity] = useState(null);
   const [previewImg, setPreviewImg] = useState("");
   const [clicked, setClicked] = useState(false);
-  //const cartItems = useSelector((state) => state.cart.items || 0);
-  const cartItems = 0;
+  const { user } = useSelector((state) => state.auth);
   const { loading, result } = useSelector((state) => state.crud.read);
+  const cartItems = useSelector((state) => state.auth.user.cart);
 
   const prevImg = () => {
     setCurrentImg(currentImg === 0 ? result.images.length - 1 : currentImg - 1);
@@ -44,48 +45,27 @@ const Product = () => {
     }
   };
 
-  const sizes = ["XS", "S", "M", "L", "XL"];
-  const sizesFullName = [
-    "Extra Small",
-    "Small",
-    "Medium",
-    "Large",
-    "Extra Large",
-  ];
-  const [selectSize, setSelectSize] = useState("S");
-  const [highlightedColor, setHighlightedColor] = useState("#C8393D");
-  const colors = ["#222222", "#C8393D", "#E4E4E4"];
-  const colorsName = ["Black", "Red", "Grey"];
-
   const handleAddToCart = () => {
-    /*
-    const productDetails = {
-      productID: 14,
-      productName: "Lightweight Puffer Jacket",
-      productPrice: 90,
-      frontImg: result.images[0],
-      productReviews: "8k+ reviews",
+    const data = {
+      userId: user._id,
+      productID: product._id,
+      price: product.price,
+      quantity: product.quantity
     };
 
     const productInCart = cartItems.find(
-      (item) => item.productID === productDetails.productID
+      (item) => item.productID === data.productID
     );
 
-    if (productInCart && productInCart.quantity >= 20) {
-      toast.error("Product limit reached");
-    } else {
-      dispatch(addToCart(productDetails));
-      toast.success(`Added to cart!`);
+    if (!productInCart) {
+      dispatch(cart.create(data));
     }
-    */
-
   };
 
   useEffect(() => {
+    console.log('user cart = ', cartItems);
 
-    //dispatch(cruds.read('product', id));
-
-  }, [dispatch, id])
+  }, [cartItems])
 
   return (
     <>
