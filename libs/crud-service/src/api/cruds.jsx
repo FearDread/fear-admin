@@ -1,6 +1,6 @@
 import axios from "axios";
 import * as Types from "./types.js";
-import { API_BASE_URL, AXIOS_CONFIG } from "./config.jsx";
+import { API_BASE_URL } from "./config.jsx";
 
 const cruds = {
 
@@ -72,7 +72,7 @@ const cruds = {
       .catch((error) => { dispatch({ type: Types.REQUEST_FAILED, keyState: "list", payload: error }); });
   },
 
-  filter : ( entity, option = {} ) => async (dispatch) => {
+  filter: ( entity, option = {} ) => async (dispatch) => {
     let filter = option.filter ? "filter=" + option.filter : "";
     let equal = option.equal ? "&equal=" + option.equal : "";
     let query = `?${filter}${equal}`;
@@ -170,59 +170,7 @@ const cruds = {
         .catch((error) => {
           dispatch({ type: Types.REQUEST_FAILED, payload: error });
         });
-    },
+    }
 };
-
-cruds.cart = {
-
-  add: (product) => async (dispatch) => {
-    console.log('add to cart : ', product);
-    const product = action.payload;
-    const existingItem = state.items.find(
-      (item) => item.productID === product.productID
-    );
-    if (existingItem) {
-      if (existingItem.quantity < MAX_QUANTITY) {
-        existingItem.quantity += 1;
-        state.totalAmount += product.productPrice;
-      }
-    } else {
-      state.items.push({ ...product, quantity: 1 });
-      state.totalAmount += product.productPrice;
-    }
-  },
-
-  update: (product) => async (dispatch) => {
-    const { productID, quantity } = action.payload;
-    const itemToUpdate = state.items.find(
-      (item) => item.productID === productID
-    );
-    if (itemToUpdate) {
-      const difference = quantity - itemToUpdate.quantity;
-      if (quantity <= MAX_QUANTITY) {
-        itemToUpdate.quantity = quantity;
-        state.totalAmount += difference * itemToUpdate.productPrice;
-      } else {
-        itemToUpdate.quantity = MAX_QUANTITY;
-        state.totalAmount +=
-          (MAX_QUANTITY - itemToUpdate.quantity) * itemToUpdate.productPrice;
-      }
-    }
-  },
-  removeFromCart(state, action) {
-    const productId = action.payload;
-    const itemToRemove = state.items.find(
-      (item) => item.productID === productId
-    );
-    if (itemToRemove) {
-      state.totalAmount -= itemToRemove.productPrice * itemToRemove.quantity;
-      state.items = state.items.filter(
-        (item) => item.productID !== productId
-      );
-    }
-  },
-};
-
-cruds.wishlist = {};
 
 export default cruds;
