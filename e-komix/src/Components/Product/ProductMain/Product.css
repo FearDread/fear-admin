@@ -10,13 +10,13 @@
 .productGallery {
   display: flex;
   gap: 10px;
-  border-right: 1px solid 767676;
+  border-right: 1px solid #767676;
   padding-right:50px;
 }
 
 .productThumb {
   display: flex;
-  flex-direction: column;
+  flex-direction: column; 
   gap: 10px;
 }
 
@@ -31,7 +31,7 @@
 
 .productFullImg img {
   width: 550px;
-  height: 550px;
+  height: autox;
   pointer-events: none;
   background-color: #767676;
 }
