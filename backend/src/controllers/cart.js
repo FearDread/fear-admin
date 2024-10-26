@@ -13,7 +13,7 @@ exports.add = tryCatch(async (req, res) => {
     await new Cart({ userId, productId, price, quantity })
       .save()
       .then((result) => {
-        console.log('user cart :: ', response);
+        console.log('user cart :: ', result);
         if ( !result ) return res.status(400).json({result: null, success: false, message: "Unable to add to cart" });
         return res.status(200).json({ result, success: true, message: 'Added item to cart' })
       })
