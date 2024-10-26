@@ -1,31 +1,25 @@
 import React, { useState } from "react";
-import "./Navbar.css";
-
-import { useSelector } from "react-redux";
-
-import logo from "../../Assets/Images/ekomix/logo_transparent.png";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-
 import { RiMenu2Line } from "react-icons/ri";
 import { FiSearch } from "react-icons/fi";
 import { FaRegUser } from "react-icons/fa6";
 import { RiShoppingBagLine } from "react-icons/ri";
 import { MdOutlineClose } from "react-icons/md";
 import { FiHeart } from "react-icons/fi";
-
-// social Links imports Icons
-
 import { FaFacebookF } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { FaInstagram } from "react-icons/fa";
 import { FaYoutube } from "react-icons/fa";
 import { FaPinterest } from "react-icons/fa";
-
+import logo from "../../Assets/Images/ekomix/logo_transparent.png";
 import Badge from "@mui/material/Badge";
+import "./Navbar.css";
+
+
 
 const Navbar = () => {
-  //const cart = useSelector((state) => state.cart);
-
+  const cartItems = useSelector((state) => state.cart.items);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const toggleMobileMenu = () => {
@@ -33,12 +27,7 @@ const Navbar = () => {
     document.body.style.overflow = mobileMenuOpen ? "auto" : "hidden";
   };
 
-  const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-  };
+  const scrollToTop = () => { window.scrollTo({ top: 0, behavior: "smooth" }); };
 
   return (
     <>

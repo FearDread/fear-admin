@@ -20,6 +20,7 @@ import TermsConditions from "./Pages/TermsConditions";
 import ShoppingCart from "./Components/ShoppingCart/ShoppingCart";
 import Popup from "./Components/PopupBanner/Popup";
 import { Toaster } from "react-hot-toast";
+import { cruds, cart, auth } from "@feardread/crud-service";
 // import Cart from "./Components/Cart/Cart/Cart";
 
 const App = () => {

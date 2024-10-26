@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   removeFromCart,
@@ -32,17 +32,8 @@ const ShoppingCart = () => {
 
   const totalPrice = useSelector(selectCartTotalAmount);
 
-  const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-  };
-
-  // current Date
-
+  const scrollToTop = () => { window.scrollTo({ top: 0, behavior: "smooth" }); };
   const currentDate = new Date();
-
   const formatDate = (date) => {
     const day = String(date.getDate()).padStart(2, "0");
     const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -50,16 +41,10 @@ const ShoppingCart = () => {
     return `${day}/${month}/${year}`;
   };
 
-  // Random number
-
   const orderNumber = Math.floor(Math.random() * 100000);
-
-  // Radio Button Data
-
   const [selectedPayment, setSelectedPayment] = useState(
     "Direct Bank Transfer"
   );
-
   const handlePaymentChange = (e) => {
     setSelectedPayment(e.target.value);
   };
@@ -77,11 +62,9 @@ const ShoppingCart = () => {
           <div className={`shoppingCartTabs ${activeTab}`}>
             <button
               className={activeTab === "cartTab1" ? "active" : ""}
-              onClick={() => {
-                handleTabClick("cartTab1");
+              onClick={() => { handleTabClick("cartTab1");
                 setPayments(false);
-              }}
-            >
+              }} >
               <div className="shoppingCartTabsNumber">
                 <h3>01</h3>
                 <div className="shoppingCartTabsHeading">
@@ -92,12 +75,10 @@ const ShoppingCart = () => {
             </button>
             <button
               className={activeTab === "cartTab2" ? "active" : ""}
-              onClick={() => {
-                handleTabClick("cartTab2");
+              onClick={() => { handleTabClick("cartTab2");
                 setPayments(false);
               }}
-              disabled={cartItems.length === 0}
-            >
+              disabled={cartItems.length === 0}>
               <div className="shoppingCartTabsNumber">
                 <h3>02</h3>
                 <div className="shoppingCartTabsHeading">

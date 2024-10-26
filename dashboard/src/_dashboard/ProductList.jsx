@@ -66,7 +66,7 @@ function ProductList() {
   const hideAlert = () => {
     setAlert(null);
   };
-  */
+
   const displayProducts = () => {
     let dataTable = [];
 
