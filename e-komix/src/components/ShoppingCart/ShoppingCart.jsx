@@ -9,7 +9,7 @@ import { MdOutlineClose } from "react-icons/md";
 import { Link } from "react-router-dom";
 import { cart, cruds, auth } from "@feardread/crud-service";
 import success from "../../Assets/success.png";
-import defaultProductImg from "../../../Assets/Images/abstract_banner_1.jpg";
+import defaultProductImg from "../../Assets/Images/abstract_banner_1.jpg";
 import "./ShoppingCart.css";
 
 const ShoppingCart = () => {

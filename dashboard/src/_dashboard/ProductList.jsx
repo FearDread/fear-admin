@@ -99,11 +99,7 @@ function ProductList() {
 
     return dataTable;
   }
-
-  const hideAlert = () => {
-    setAlert(null);
-  }
-
+  
   useEffect(() => {
 
     dispatch(ProductActions.list());
