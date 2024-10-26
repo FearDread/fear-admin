@@ -7,12 +7,14 @@ import {
 } from "../../Features/Cart/cartSlice";
 import { MdOutlineClose } from "react-icons/md";
 import { Link } from "react-router-dom";
+import { cart, cruds, auth } from "@feardread/crud-service";
 import success from "../../Assets/success.png";
+import defaultProductImg from "../../../Assets/Images/abstract_banner_1.jpg";
 import "./ShoppingCart.css";
 
 const ShoppingCart = () => {
   const dispatch = useDispatch();
-  const cartItems = useSelector((state) => state.crud.current);
+  const cartItems = useSelector((state) => state.cart.items);
   const [activeTab, setActiveTab] = useState("cartTab1");
   const [payments, setPayments] = useState(false);
 
@@ -61,6 +63,10 @@ const ShoppingCart = () => {
   const handlePaymentChange = (e) => {
     setSelectedPayment(e.target.value);
   };
+
+  useEffect(() => {
+
+  }, []);
 
   return (
     <div>
@@ -140,34 +146,25 @@ const ShoppingCart = () => {
                             <td data-label="Product">
                               <div className="shoppingBagTableImg">
                                 <Link to="/product" onClick={scrollToTop}>
-                                  <img src={item.frontImg} alt="" />
+                                  <img src={defaultProductImg} alt="" />
                                 </Link>
                               </div>
                             </td>
                             <td data-label="">
                               <div className="shoppingBagTableProductDetail">
                                 <Link to="/product" onClick={scrollToTop}>
-                                  <h4>{item.productName}</h4>
+                                  <h4>{item.title}</h4>
                                 </Link>
-                                <p>{item.productReviews}</p>
+                                <p>{item.reviews}</p>
                               </div>
                             </td>
-                            <td
-                              data-label="Price"
-                              style={{ textAlign: "center" }}
-                            >
-                              ${item.productPrice}
+                            <td data-label="Price" style={{ textAlign: "center" }} >
+                              ${item.price}
                             </td>
                             <td data-label="Quantity">
                               <div className="ShoppingBagTableQuantity">
                                 <button
-                                  onClick={() =>
-                                    handleQuantityChange(
-                                      item.productID,
-                                      item.quantity - 1
-                                    )
-                                  }
-                                >
+                                  onClick={() => handleQuantityChange(item.productID, item.quantity - 1)}>
                                   -
                                 </button>
                                 <input
@@ -175,41 +172,21 @@ const ShoppingCart = () => {
                                   min="1"
                                   max="20"
                                   value={item.quantity}
-                                  onChange={(e) =>
-                                    handleQuantityChange(
-                                      item.productID,
-                                      parseInt(e.target.value)
-                                    )
-                                  }
+                                  onChange={(e) => handleQuantityChange( item.productID, parseInt(e.target.value))}
                                 />
                                 <button
-                                  onClick={() =>
-                                    handleQuantityChange(
-                                      item.productID,
-                                      item.quantity + 1
-                                    )
-                                  }
-                                >
+                                  onClick={() => handleQuantityChange(item.productID, item.quantity + 1)}>
                                   +
                                 </button>
                               </div>
                             </td>
                             <td data-label="Subtotal">
-                              <p
-                                style={{
-                                  textAlign: "center",
-                                  fontWeight: "500",
-                                }}
-                              >
-                                ${item.quantity * item.productPrice}
+                              <p style={{ textAlign: "center", fontWeight: "500" }}>
+                                ${item.quantity * item.price}
                               </p>
                             </td>
                             <td data-label="">
-                              <MdOutlineClose
-                                onClick={() =>
-                                  dispatch(removeFromCart(item.productID))
-                                }
-                              />
+                              <MdOutlineClose onClick={() => dispatch(removeFromCart(item.productID)) } />
                             </td>
                           </tr>
                         ))
@@ -230,10 +207,7 @@ const ShoppingCart = () => {
                       <th
                         colSpan="6"
                         className="shopCartFooter"
-                        style={{
-                          borderBottom: "none",
-                          padding: "20px 0px",
-                        }}
+                        style={{borderBottom: "none", padding: "20px 0px" }}
                       >
                         {cartItems.length > 0 && (
                           <div className="shopCartFooterContainer">
@@ -250,12 +224,7 @@ const ShoppingCart = () => {
                                 Apply Coupon
                               </button>
                             </form>
-                            <button
-                              onClick={(e) => {
-                                e.preventDefault();
-                              }}
-                              className="shopCartFooterbutton"
-                            >
+                            <button onClick={(e) => { e.preventDefault(); }} className="shopCartFooterbutton">
                               Update Cart
                             </button>
                           </div>

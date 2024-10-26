@@ -99,7 +99,7 @@ const LimitedEdition = ( products ) => {
                 <SwiperSlide key={product._id}>
                   <div className="lpContainer">
                     <div className="lpImageContainer">
-                      <Link to="/Product" onClick={scrollToTop}>
+                      <Link to={`/product/${product._id}`}>
                         <img
                           src={product.images ? product.images[0].url : defaultProdImg}
                           alt={product.images[1] ? product.images[1].url : defaultProdImg}

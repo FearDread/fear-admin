@@ -1,20 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { addToCart } from "../../../Features/Cart/cartSlice";
 import { GoChevronLeft } from "react-icons/go";
 import { GoChevronRight } from "react-icons/go";
 import { FaStar } from "react-icons/fa";
 import { FiHeart } from "react-icons/fi";
 import { PiShareNetworkLight } from "react-icons/pi";
 import { Link } from "react-router-dom";
+import { cruds, cart } from "@feardread/crud-service";
 import toast from "react-hot-toast";
-import Tooltip from "@mui/material/Tooltip";
-import Zoom from "@mui/material/Zoom";
-import { cruds } from "@feardread/crud-service";
-import { cart } from "@feardread/crud-service";
 import Loader from "../../../Components/Loader/Loader";
+import defaultProdImg from "../../../Assets/Images/abstract_banner_1.jpg";
 import "./Product.css";
+
 
 const Product = ( {product} ) => {
   const { id } = useParams();
@@ -25,7 +23,7 @@ const Product = ( {product} ) => {
   const [clicked, setClicked] = useState(false);
   const { user } = useSelector((state) => state.auth);
   const { loading, result } = useSelector((state) => state.crud.read);
-  const cartItems = useSelector((state) => state.auth.user.cart);
+  const cartItems = useSelector((state) => state.cart.items);
 
   const prevImg = () => {
     setCurrentImg(currentImg === 0 ? result.images.length - 1 : currentImg - 1);
@@ -48,9 +46,9 @@ const Product = ( {product} ) => {
   const handleAddToCart = () => {
     const data = {
       userId: user._id,
-      productID: product._id,
-      price: product.price,
-      quantity: product.quantity
+      productId: result._id,
+      price: result.price,
+      quantity: result.quantity
     };
 
     const productInCart = cartItems.find(
@@ -58,6 +56,7 @@ const Product = ( {product} ) => {
     );
 
     if (!productInCart) {
+      toast("Added Item to Cart.");
       dispatch(cart.create(data));
     }
   };
@@ -79,10 +78,13 @@ const Product = ( {product} ) => {
         <div className="productShowCase">
           <div className="productGallery">
             <div className="productThumb">
-              <img src={result.images ? result.images[0].url : ""} />;
+              {result.images.forEach((key, item) => {
+                <img src={item.url ? item.url : defaultProdImg} alt={key} />
+              })}
+              
             </div>
             <div className="productFullImg">
-              <img src={result.images ? result.images[0].url : ""} alt="" />
+              <img src={result.images ? result.images[currentImg].url : ""} alt="" />
               <div className="buttonsGroup">
                 <button onClick={prevImg} className="directionBtn">
                   <GoChevronLeft size={18} />
