@@ -57,12 +57,13 @@ exports.create = tryCatch(async (Model, req, res) => {
   }
 
   console.log("Creating Document :: ", req.body);
-  await new Model(req.body).save()
-    .then(( result ) => { 
+  await new Model(req.body)
+    .save()
+    .then((result) => { 
       if (!result) throw new Error("Error saving document");
       return res.status(200).json({ result, success: true, message: "Successfully Created the document in Model " });
     }) 
-    .catch(( error ) => {
+    .catch((error) => {
       if (error.name == "ValidationError") {
         return res.status(400).json({ result: null, success: false, message: "Required fields are not supplied" });
       } else {

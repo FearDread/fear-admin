@@ -5,24 +5,25 @@ const db = require("../libs/db");
 
 
 exports.add = tryCatch(async (req, res) => {
-    const { productId, quantity, price } = req.body;
-    const { userId } = req.user;
-
-    db.validate(userId);
+    const {userId, productId, quantity, price } = req.body;
+    const userCart = await this.getCart(userId);
 
     await new Cart({ userId, productId, price, quantity })
       .save()
       .then((result) => {
-        console.log('user cart :: ', result);
         if ( !result ) return res.status(400).json({result: null, success: false, message: "Unable to add to cart" });
-        return res.status(200).json({ result, success: true, message: 'Added item to cart' })
-      })
+
+        userCart.then((user) => {
+          user.cart.push(result);
+          user.save();
+
+          return res.status(200).json({ result: user, success: true, message: 'Added item to cart' })
+        })
+        .catch((error) => { throw new Error(error); }); })
       .catch((error) => { throw new Error(error); });
 });
   
-exports.getCart = tryCatch(async (req, res) => {
-    const { userId } = req.user;
-
+exports.getCart = tryCatch((userId) => async (req, res) => {
     db.validate(userId);
 
     await Cart.find({ userId })
