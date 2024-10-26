@@ -1,4 +1,4 @@
-import * as actionTypes from "./types";
+import * as Types from "./types";
 
 const INITIAL_KEY_STATE = {
   result: [],
@@ -8,8 +8,6 @@ const INITIAL_KEY_STATE = {
 };
 
 const INITIAL_STATE = {
-  cart: { items: [], totalAmount: 0 },
-  current: { result: [] },
   list: {
     ...INITIAL_KEY_STATE,
     pagination: {
@@ -30,16 +28,16 @@ const crudReducer = (state = INITIAL_STATE, action) => {
   const { payload, keyState } = action;
   
   switch (action.type) {
-    case actionTypes.RESET_STATE:
+    case Types.RESET_STATE:
       return INITIAL_STATE;
-    case actionTypes.CURRENT_ITEM:
+    case Types.CURRENT_ITEM:
       return {
         ...state,
-        current: {
-          result: payload,
+        [keyState]: {
+          current: payload,
         },
       };
-    case actionTypes.REQUEST_LOADING:
+    case Types.REQUEST_LOADING:
       return {
         ...state,
         [keyState]: {
@@ -47,7 +45,7 @@ const crudReducer = (state = INITIAL_STATE, action) => {
           loading: true,
         },
       };
-    case actionTypes.REQUEST_FAILED:
+    case Types.REQUEST_FAILED:
       return {
         ...state,
         [keyState]: {
@@ -56,7 +54,7 @@ const crudReducer = (state = INITIAL_STATE, action) => {
           success: false,
         },
       };
-    case actionTypes.REQUEST_SUCCESS:
+    case Types.REQUEST_SUCCESS:
       return {
         ...state,
         [keyState]: {
@@ -66,7 +64,7 @@ const crudReducer = (state = INITIAL_STATE, action) => {
           success: true,
         },
       };
-    case actionTypes.CURRENT_ACTION:
+    case Types.CURRENT_ACTION:
       return {
         ...state,
         [keyState]: {
@@ -74,7 +72,7 @@ const crudReducer = (state = INITIAL_STATE, action) => {
           current: payload,
         },
       };
-    case actionTypes.RESET_ACTION:
+    case Types.RESET_ACTION:
       return {
         ...state,
         [keyState]: {

@@ -67,7 +67,6 @@ const cruds = {
           const results = { result: response.data.result, pagination: response.data.pagination}; 
           dispatch({ type: Types.REQUEST_SUCCESS, keyState: "list", payload: results });
         }
-        dispatch({ type: Types.CURRENT_ITEM, payload: response.data.result });
       })
       .catch((error) => { dispatch({ type: Types.REQUEST_FAILED, keyState: "list", payload: error }); });
   },
@@ -82,11 +81,8 @@ const cruds = {
         if ( response.data.success === true ) {
           dispatch({ type: Types.REQUEST_SUCCESS, payload: response.data.result, keyState: "filter" });
         }
-        dispatch({ type: Types.CURRENT_ITEM, payload: response.data.result });
       })
-      .catch((error) => {
-
-      });
+      .catch((error) => { dispatch({ type: Types.REQUEST_FAILED, keyState: "filter", payload: error }); });
   },
 
   create: ( entity, _data ) => async (dispatch) => {

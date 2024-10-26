@@ -16,9 +16,15 @@ if (process.env.NODE_ENV === "development") {
   configStore = composeEnhancers(applyMiddleware(...middleware));
 }
 
-const initialState = StorePersist.get("auth")
+const initAuthState = StorePersist.get("auth")
   ? { auth:StorePersist.get("auth") }
   : {};
+
+const initCartState = StorePersist.get("cart")
+  ? { cart:StorePersist.get("cart") }
+  : {};
+
+const initialState = { initAuthState, initCartState };
 
 const store = createStore(rootReducer, initialState, configStore);
 
