@@ -91,7 +91,8 @@
   position: relative;
   padding: 5px;
   width: 258px;
-  border: 1px solid #767676
+  border: 1px solid #bbbbbb;
+  background: white;
 }
 
 .trendyProductContainer:hover {

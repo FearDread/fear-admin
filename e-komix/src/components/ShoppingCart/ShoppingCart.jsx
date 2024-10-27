@@ -30,7 +30,7 @@ const ShoppingCart = () => {
     }
   };
 
-  const totalPrice = useSelector(selectCartTotalAmount);
+  const totalPrice = 0;
 
   const scrollToTop = () => { window.scrollTo({ top: 0, behavior: "smooth" }); };
   const currentDate = new Date();
@@ -127,7 +127,7 @@ const ShoppingCart = () => {
                             <td data-label="Product">
                               <div className="shoppingBagTableImg">
                                 <Link to="/product" onClick={scrollToTop}>
-                                  <img src={defaultProductImg} alt="" />
+                                  <img src={item.image} alt="" />
                                 </Link>
                               </div>
                             </td>

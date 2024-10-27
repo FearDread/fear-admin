@@ -47,17 +47,23 @@ const Product = ( {product} ) => {
     const data = {
       userId: user._id,
       productId: result._id,
+      image: result.images[0].url,
+      title: result.title,
       price: result.price,
       quantity: result.quantity
     };
 
     const productInCart = cartItems.find(
-      (item) => item.productID === data.productID
+      (item) => item.productId === data.productId
     );
+    console.log('product add = ', data)
 
-    if (!productInCart) {
+    if (productInCart) {
+      toast("Product already");
+    } else {
       toast("Added Item to Cart.");
       dispatch(cart.create(data));
+
     }
   };
 
@@ -78,10 +84,10 @@ const Product = ( {product} ) => {
         <div className="productShowCase">
           <div className="productGallery">
             <div className="productThumb">
-              {result.images.forEach((key, item) => {
-                <img src={item.url ? item.url : defaultProdImg} alt={key} />
+              {result.images && result.images.map((item) => {
+                <img src={item.url ? item.url : defaultProdImg} alt="product_thumg" />
               })}
-              
+               <img src={result.images ? result.images[currentImg].url : defaultProdImg} alt="product_thumg" />
             </div>
             <div className="productFullImg">
               <img src={result.images ? result.images[currentImg].url : ""} alt="" />
