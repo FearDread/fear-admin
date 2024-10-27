@@ -30,12 +30,13 @@ const crudReducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
     case Types.RESET_STATE:
       return INITIAL_STATE;
+
     case Types.CURRENT_ITEM:
       return {
         ...state,
         [keyState]: {
-          current: payload,
-        },
+          ...state[keyState]
+        }
       };
     case Types.REQUEST_LOADING:
       return {
@@ -60,6 +61,7 @@ const crudReducer = (state = INITIAL_STATE, action) => {
         [keyState]: {
           ...state[keyState],
           result: payload,
+          current: payload,
           loading: false,
           success: true,
         },

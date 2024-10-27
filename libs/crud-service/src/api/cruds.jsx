@@ -49,7 +49,6 @@ const cruds = {
         if (response.data.success) {
           dispatch({ type: Types.REQUEST_SUCCESS, keyState: "list", payload: response.data.result });
         }
-        dispatch({ type: Types.CURRENT_ITEM, payload: response.data.result });
       })
       .catch((error) => { dispatch({ type: Types.REQUEST_FAILED, keyState: "list", payload: error }); });
   },
@@ -109,7 +108,6 @@ const cruds = {
         if ( response.data.success ) {
           dispatch({ type: Types.REQUEST_SUCCESS, keyState: "read", payload: response.data.result });
         }
-        dispatch({ type: Types.CURRENT_ITEM, payload: response.data.result });
       })
       .catch((error) => {
         dispatch({ type: Types.REQUEST_FAILED, keyState: "read", payload: error });
