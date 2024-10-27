@@ -58,7 +58,10 @@ function NewProduct() {
         success
         style={{ display: "block", marginTop: "-100px" }}
         title="Success!"
-        onConfirm={() => hideAlert()}
+        onConfirm={() => {
+          dispatch({ type: NEW_PRODUCT_RESET });
+          history.push("/admin/products");
+        }}
         onCancel={() => hideAlert()}
         confirmBtnBsStyle="success"
         btnSize="" >
@@ -67,10 +70,7 @@ function NewProduct() {
     );
   };
 
-  const hideAlert = () => {
-    setAlert(null);
-    history.push("/admin/products");
-  };
+  const hideAlert = () => { setAlert(null); };
 
   const createProductSubmitHandler = (e) => {
     e.preventDefault();
@@ -111,10 +111,9 @@ function NewProduct() {
 
   useEffect(() => {
     if (success) {
-      dispatch({ type: NEW_PRODUCT_RESET });
-      history.push("/admin/products");
+      successAlert();
     }
-  }, [history, success]);
+  }, [success]);
 
   useEffect(() => {
     dispatch({ type: NEW_PRODUCT_RESET })
@@ -128,6 +127,7 @@ function NewProduct() {
         <Loader />
       ) : ( 
         <>
+        {alert}
           <div className="content">
             <Row>
               <Col md="12">
