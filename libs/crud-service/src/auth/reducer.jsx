@@ -2,7 +2,6 @@ import * as Types from "./types";
 
 const INITIAL_STATE = {
   user: {},
-  current: {},
   loading: false,
   isLoggedIn: false,
   loginSuccess: false, 
@@ -22,7 +21,7 @@ const authReducer = (state = INITIAL_STATE, action) => {
 
     case Types.LOGIN_SUCCESS:
       return {
-        current: action.payload,
+        user: action.payload,
         loading: false,
         isLoggedIn: true,
         loginSuccess: true
@@ -30,7 +29,7 @@ const authReducer = (state = INITIAL_STATE, action) => {
     
     case Types.REGISTER_SUCCESS:
       return {
-        current: action.payload,
+        user: action.payload,
         loading: false,
         isLoggedIn: true,
         registerSuccess: true
