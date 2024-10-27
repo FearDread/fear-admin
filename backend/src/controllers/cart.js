@@ -1,34 +1,29 @@
 const { tryCatch } = require("../libs/handler/error");
 const Cart = require("../models/cart");
+const User = require("../models/user");
 const methods = require("./crud");
 const db = require("../libs/db");
 
+exports.getCart = tryCatch((userId) => async (req, res) => {
+  db.validate(userId);
+
+  await Cart.find({ userId })
+    .populate("productId")
+    .then((result) => { return res.status(200).json({ result, success: true, message:'Found Cart' }); })
+    .catch((error) => { throw new Error(error); });
+});
 
 exports.add = tryCatch(async (req, res) => {
+  console.log("user id = ", req.body);
     const {userId, productId, quantity, price } = req.body;
-    const userCart = await this.getCart(userId);
+    db.validate(userId);
 
     await new Cart({ userId, productId, price, quantity })
       .save()
       .then((result) => {
+        console.log('cart item = ', result);
         if ( !result ) return res.status(400).json({result: null, success: false, message: "Unable to add to cart" });
-
-        userCart.then((user) => {
-          user.cart.push(result);
-          user.save();
-
-          return res.status(200).json({ result: user, success: true, message: 'Added item to cart' })
-        })
-        .catch((error) => { throw new Error(error); }); })
-      .catch((error) => { throw new Error(error); });
-});
-  
-exports.getCart = tryCatch((userId) => async (req, res) => {
-    db.validate(userId);
-
-    await Cart.find({ userId })
-      .populate("productId")
-      .then((result) => { return res.status(200).json({ result, success: true, message:'Found Cart' }); })
+        return res.status(200).json({ result, success: true, message: 'Added item to cart' }); })
       .catch((error) => { throw new Error(error); });
 });
   
