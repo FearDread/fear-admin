@@ -58,7 +58,7 @@ const ShopDetails = ( {products} ) => {
       <div className="shopDetails">
         <div className="shopDetailMain">
           <div className="shopDetails__left">
-            <Filter />
+            <Filter products={result} />
           </div>
           <div className="shopDetails__right">
             <div className="shopDetailsSorting">

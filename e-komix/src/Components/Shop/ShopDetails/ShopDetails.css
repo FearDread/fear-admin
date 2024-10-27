@@ -5,6 +5,8 @@
 .shopDetailMain {
   display: flex;
   gap: 30px;
+  padding: 20px;
+  background: white;
 }
 
 .shopDetails__left {

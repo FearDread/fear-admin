@@ -1,20 +1,19 @@
-import React, { useState } from "react";
-import "./Filter.css";
-
+import React, { useState, useEffect } from "react";
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import { IoIosArrowDown } from "react-icons/io";
 import { BiSearch } from "react-icons/bi";
 import Slider from "@mui/material/Slider";
+import "./Filter.css";
 
-const Filter = () => {
+const Filter = ( {products} ) => {
   const [value, setValue] = useState([20, 69]);
 
   const [selectedColors, setSelectedColors] = useState([]);
   const [selectedSizes, setSelectedSizes] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [brandsData] = useState([
+  /* const [brandsData] = useState([
     { name: "Adidas", count: 2 },
     { name: "Balmain", count: 7 },
     { name: "Balenciaga", count: 10 },
@@ -23,6 +22,31 @@ const Filter = () => {
     { name: "Givenchy", count: 1092 },
     { name: "Zara", count: 48 },
   ]);
+  */
+
+  const getProductCategory = ( data ) => {
+    if(data && data.map) {
+        return [
+            'All',
+            ...new Set(data.map((item) => item.category))
+        ];
+    } else {
+        return [];
+    }
+  }
+
+  const getProductBrands = ( data ) => {
+    if(data && data.map) {
+      return [
+          'All',
+          ...new Set(data.map((item) => item.brand))
+      ];
+    } else {
+      return [];
+    }
+  }
+
+ 
 
   const handleColorChange = (color) => {
     setSelectedColors((prevColors) =>
@@ -44,10 +68,9 @@ const Filter = () => {
     setValue(newValue);
   };
 
-  const filteredBrands = brandsData.filter((brand) =>
-    brand.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
+
+  /*
   const filterCategories = [
     "Dresses",
     "Shorts",
@@ -60,6 +83,13 @@ const Filter = () => {
     "Men",
     "Jumpers & Cardigans",
   ];
+  */
+
+  const filterCategories = getProductCategory(products)
+  const brandsData = getProductBrands(products);
+    const filteredBrands = brandsData.filter((brand) =>
+    brand.toLowerCase().includes(searchTerm.toLowerCase())
+  ); 
 
   const filterColors = [
     "#0B2472",
@@ -76,10 +106,26 @@ const Filter = () => {
 
   const filterSizes = ["XS", "S", "M", "L", "XL", "XXL"];
 
+  useEffect(() => {
+
+
+  }, [products, filterCategories])
+
   return (
     <div>
       <div className="filterSection">
+                      {/* Search bar */}
+        <div className="searchBar">
+                <BiSearch className="searchIcon" size={20} color={"#767676"} />
+                <input
+                  type="text"
+                  placeholder="Search"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+        </div>
         <div className="filterCategories">
+          
           <Accordion defaultExpanded disableGutters elevation={0}>
             <AccordionSummary
               expandIcon={<IoIosArrowDown size={20} />}
@@ -96,63 +142,6 @@ const Filter = () => {
             </AccordionDetails>
           </Accordion>
         </div>
-        <div className="filterColors">
-          <Accordion defaultExpanded disableGutters elevation={0}>
-            <AccordionSummary
-              expandIcon={<IoIosArrowDown size={20} />}
-              aria-controls="panel1-content"
-              id="panel1-header"
-              sx={{ padding: 0, marginBottom: 2 }}
-            >
-              <h5 className="filterHeading">Color</h5>
-            </AccordionSummary>
-            <AccordionDetails sx={{ padding: 0 }}>
-              {
-                <div className="filterColorBtn">
-                  {filterColors.map((color, index) => (
-                    <button
-                      key={index}
-                      className={`colorButton ${
-                        selectedColors.includes(color) ? "selected" : ""
-                      }`}
-                      style={{
-                        backgroundColor: color,
-                      }}
-                      onClick={() => handleColorChange(color)}
-                    />
-                  ))}
-                </div>
-              }
-            </AccordionDetails>
-          </Accordion>
-        </div>
-        <div className="filterSizes">
-          <Accordion defaultExpanded disableGutters elevation={0}>
-            <AccordionSummary
-              expandIcon={<IoIosArrowDown size={20} />}
-              aria-controls="panel1-content"
-              id="panel1-header"
-              sx={{ padding: 0, marginBottom: 2 }}
-            >
-              <h5 className="filterHeading">Sizes</h5>
-            </AccordionSummary>
-            <AccordionDetails sx={{ padding: 0 }}>
-              <div className="sizeButtons">
-                {filterSizes.map((size, index) => (
-                  <button
-                    key={index}
-                    className={`sizeButton ${
-                      selectedSizes.includes(size) ? "selected" : ""
-                    }`}
-                    onClick={() => handleSizeChange(size)}
-                  >
-                    {size}
-                  </button>
-                ))}
-              </div>
-            </AccordionDetails>
-          </Accordion>
-        </div>
         <div className="filterBrands">
           <Accordion defaultExpanded disableGutters elevation={0}>
             <AccordionSummary
@@ -164,17 +153,6 @@ const Filter = () => {
               <h5 className="filterHeading">Brands</h5>
             </AccordionSummary>
             <AccordionDetails sx={{ padding: 0 }}>
-              {/* Search bar */}
-              <div className="searchBar">
-                <BiSearch className="searchIcon" size={20} color={"#767676"} />
-                <input
-                  type="text"
-                  placeholder="Search"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
-
               {/* Brand list */}
               <div className="brandList">
                 {filteredBrands.length > 0 ? (
@@ -189,10 +167,10 @@ const Filter = () => {
                       />
                       {/* Brand name */}
                       <label htmlFor={`brand-${index}`} className="brandLabel">
-                        {brand.name}
+                        {brand}
                       </label>
                       {/* Brand count */}
-                      <span className="brandCount">{brand.count}</span>
+                      <span className="brandCount">1</span>
                     </div>
                   ))
                 ) : (

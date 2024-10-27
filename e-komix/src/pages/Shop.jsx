@@ -8,6 +8,10 @@ const Shop = () => {
   const dispatch = useDispatch();
   const { loading, result } = useSelector((state) => state.crud.list);
 
+  const getCategories = () => {
+    
+  }
+
   const getTrendyProducts = () => {
     dispatch(cruds.all('product'));
   }
