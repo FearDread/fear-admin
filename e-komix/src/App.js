@@ -19,9 +19,17 @@ import BlogDetails from "./Components/Blog/BlogDetails/BlogDetails";
 import TermsConditions from "./Pages/TermsConditions";
 import ShoppingCart from "./Components/ShoppingCart/ShoppingCart";
 import Popup from "./Components/PopupBanner/Popup";
+//import Profile from "./Components/User/Profile";
+//import MyOrder from "./Components/Order/MyOrder";
+import PrivateRoute from "./Route/PrivateRoute";
+/////import Shipping from "./Components/Cart/Shipping/Shipping";
+//import UpdatePassword from "./Components/User/UpdatePassword";
+/////import ForgetPassword from "./Components/User/ForgetPassword";
+//import ResetPassword from "./Components/User/ResetPassword";
+//import UpdateProfile from "./Components/User/UpdateProfile";
 import { Toaster } from "react-hot-toast";
 import { cruds, cart, auth } from "@feardread/crud-service";
-// import Cart from "./Components/Cart/Cart/Cart";
+// import Cart from "./Componentss/Cart/Cart/Cart";
 
 const App = () => {
   return (
@@ -41,10 +49,22 @@ const App = () => {
           <Route path="/resetPassword" element={<ResetPass />} />
           <Route path="/terms" element={<TermsConditions />} />
           <Route path="/privacy" element={<TermsConditions />} />
-          <Route path="/cart" element={<ShoppingCart />} />
           <Route path="/authentication" element={<Authentication />} />
+          
+          <Route 
+            path="/cart" 
+            element={<PrivateRoute><ShoppingCart /></PrivateRoute>} 
+          />
+          {/*
+          <PrivateRoute path="/account" element={<Profile />} />
+ 
+          <PrivateRoute path="/forgot" element={<ForgetPassword />} />
+          <PrivateRoute path="/profile/update" element={<UpdateProfile />} />
+          <PrivateRoute path="/password/update" element={<UpdatePassword />} />
+          <PrivateRoute path="/orders" element={<MyOrder />} />
+          <PrivateRoute path="/shipping" element={<Shipping />} />
+          */}
           <Route path="*" element={<NotFound />} />
-
         </Routes>
         <Footer />
         <Toaster />

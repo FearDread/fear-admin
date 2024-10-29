@@ -1,11 +1,12 @@
-import React from "react";
-import "./Shipping.css";
+import React, { useState } from "react";
+
 import { useSelector, useDispatch } from "react-redux";
 import { saveShippingInfo } from "../../_store/actions/cartAction";
 import MetaData from "../layouts/MataData/MataData";
 import CheckoutSteps from "../Checkout/CheckoutSteps ";
 import { useAlert } from "react-alert";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import "./Shipping.css";
 
 import {
   Typography,
@@ -15,63 +16,14 @@ import {
   FormControlLabel,
   Grid,
 } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
 
-
-const useStyles = makeStyles((theme) => ({
-  shippingRoot: {
-    width: "60%",
-    margin: "auto",
-  },
-  heading: {
-    marginBottom: theme.spacing(2),
-    alignSelf: "flex-start",
-  },
-  formControl: {
-    marginBottom: theme.spacing(2),
-    minWidth: 200,
-  },
-  submitButton: {
-    marginTop: theme.spacing(2),
-    width: "50%",
-    backgroundColor: "#000000",
-    color: "#FFFFFF",
-    height: "3rem",
-    "&:hover": {
-      backgroundColor: "#ed1c24",
-      color: "#FFFFFF",
-    },
-  },
-  outlinedInput: {
-    "& .MuiOutlinedInput-root": {
-      "& fieldset": {
-        borderColor: "#000000",
-      },
-      "&:hover fieldset": {
-        borderColor: "#000000", 
-      },
-      "&.Mui-focused fieldset": {
-        borderColor: "#000000", 
-      },
-    },
-    "& .MuiInputBase-input": {
-      color: "#000000", 
-    },
-    "& .MuiInputLabel-root": {
-      color: "#000000", 
-    },
-  },
-
-
-}));
 
 const Shipping = () => {
   const alert = useAlert();
   const dispatch = useDispatch();
-  const history = useHistory();
+  const navigate = useNavigate();
   const { shippingInfo } = useSelector((state) => state.cart);
 
-  const classes = useStyles();
   const [address, setAddress] = React.useState(shippingInfo.address);
   const [firstName, setFirstName] = React.useState(shippingInfo.firstName);
   const [lastName, setLastName] = React.useState(shippingInfo.lastName);
@@ -174,7 +126,7 @@ const [isPhoneNoValid, setIsPhoneNoValid] = React.useState(true);
        lastName,
      })
    );
-   history.push("/process/payment");
+   navigate("/process/payment");
  };
 
 
@@ -190,9 +142,9 @@ const [isPhoneNoValid, setIsPhoneNoValid] = React.useState(true);
 
         <div className="shippingPage__container">
           <div className="shippingPage__container__left">
-            <div className={classes.shippingRoot}>
+            <div>
               <form onSubmit={handleSubmit}>
-                <Typography variant="h6" className={classes.heading}>
+                <Typography variant="h6">
                   SHIPPING ADDRESS
                 </Typography>
                 <Grid container spacing={2}>
@@ -203,7 +155,7 @@ const [isPhoneNoValid, setIsPhoneNoValid] = React.useState(true);
                       fullWidth
                       value={firstName}
                       onChange={handleFirstNameChange}
-                      className={classes.outlinedInput}
+                    
                     />
                   </Grid>
                   <Grid item xs={12}>
@@ -213,7 +165,7 @@ const [isPhoneNoValid, setIsPhoneNoValid] = React.useState(true);
                       fullWidth
                       value={lastName}
                       onChange={handleLastNameChange}
-                      className={classes.outlinedInput}
+
                     />
                   </Grid>
                   <Grid item xs={12}>
@@ -223,7 +175,7 @@ const [isPhoneNoValid, setIsPhoneNoValid] = React.useState(true);
                       fullWidth
                       value={address}
                       onChange={handleAddressChange}
-                      className={classes.outlinedInput}
+
                     />
                   </Grid>
                   <Grid item xs={6}>
@@ -233,7 +185,7 @@ const [isPhoneNoValid, setIsPhoneNoValid] = React.useState(true);
                       fullWidth
                       value={city}
                       onChange={handleCityChange}
-                      className={classes.outlinedInput}
+
                     />
                   </Grid>
                   <Grid item xs={6}>
@@ -243,7 +195,7 @@ const [isPhoneNoValid, setIsPhoneNoValid] = React.useState(true);
                       fullWidth
                       value={pinCode}
                       onChange={handlePincodeChange}
-                      className={classes.outlinedInput}
+
                     />
                   </Grid>
                   <Grid item xs={6}>
@@ -253,7 +205,7 @@ const [isPhoneNoValid, setIsPhoneNoValid] = React.useState(true);
                       fullWidth
                       value={state}
                       onChange={handleStateChange}
-                      className={classes.outlinedInput}
+
                     />
                   </Grid>
                   <Grid item xs={6}>
@@ -263,7 +215,7 @@ const [isPhoneNoValid, setIsPhoneNoValid] = React.useState(true);
                       fullWidth
                       value={country}
                       onChange={handleCountryChange}
-                      className={classes.outlinedInput}
+
                     />
                   </Grid>
 
@@ -274,7 +226,7 @@ const [isPhoneNoValid, setIsPhoneNoValid] = React.useState(true);
                       fullWidth
                       value={phoneNo}
                       onChange={handlePhoneChange}
-                      className={classes.outlinedInput}
+
                       error={!isPhoneNoValid && phoneNo !== ""}
                       helperText={
                         !isPhoneNoValid &&
@@ -290,7 +242,7 @@ const [isPhoneNoValid, setIsPhoneNoValid] = React.useState(true);
                       fullWidth
                       value={email}
                       onChange={handleEmailChange}
-                      className={classes.outlinedInput}
+
                       error={!isValidEmail && email !== ""}
                       helperText={
                         !isValidEmail &&
@@ -328,7 +280,6 @@ const [isPhoneNoValid, setIsPhoneNoValid] = React.useState(true);
                       type="submit"
                       variant="contained"
                       color="primary"
-                      className={classes.submitButton}
                      
                     >
                       Continue
