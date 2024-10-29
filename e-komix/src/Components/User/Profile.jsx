@@ -3,16 +3,16 @@ import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import { ExitToApp as LogoutIcon } from "@material-ui/icons";
-import { Link } from "react-router-dom";
 import "./Profile.css";
-import { useHistory } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../_store/actions/userAction";
 import { useAlert } from "react-alert";
+
 const ProfilePage = () => {
   const alert = useAlert();
   const dispatch = useDispatch();
-  const history = useHistory();
+  const history = useNavigate();
   const { user, isAuthenticated } = useSelector((state) => state.userData);
 
   const logoutHandler = () => {
