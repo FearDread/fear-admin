@@ -159,10 +159,10 @@ const cruds = {
     
       await axios.get(API_BASE_URL + link)
         .then((response) => {
-          dispatch({ type: Types.REQUEST_SUCCESS, payload: response.data.result });
+          dispatch({ type: Types.REQUEST_SUCCESS, keystate: "search", payload: response.data.result });
         })
         .catch((error) => {
-          dispatch({ type: Types.REQUEST_FAILED, payload: error });
+          dispatch({ type: Types.REQUEST_FAILED, keystate: "search", payload: error });
         });
     }
 };
