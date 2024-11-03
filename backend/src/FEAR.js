@@ -56,7 +56,7 @@ module.exports = FEAR = (( app ) => {
   const allowedOrigins = ['http://localhost:3000', 'http://fear.master.com',
     'http://fear.master.com:3000', 'http://fear.master.com:4000',
     'http://localhost:4000', 'http://fear.admin.com', 'http://localhost:4001',
-    'http://fear.admin.com:4000', 'http://fear.admin.com:3000',
+    'http://fear.admin.com:4000', 'http://fear.admin.com:3000','http://localhost:3001'
   ];
 
   this.app.use(cors({
