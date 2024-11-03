@@ -26,7 +26,7 @@ const TrendyCard = ( {product} ) => {
 
   const handleAddToCart = (product) => {
     const productInCart = cartItems.find(
-      (item) => item.productID === product.productID
+      (item) => item.productId === product.productId
     );
 
     if (productInCart && productInCart.quantity >= 20) {
