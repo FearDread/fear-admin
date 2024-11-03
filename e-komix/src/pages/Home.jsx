@@ -8,6 +8,7 @@ import LimitedEdition from "../Components/Home/Limited/LimitedEdition";
 import DealTimer from "../Components/Home/Deal/DealTimer";
 import Loader from "../Components/Loader/Loader";
 import AnimatedHero from "../Components/AnimatedHero/AnimatedHero";
+import Particles from "../Components/Particles/Particles";
 
 import { cruds } from "@feardread/crud-service";
 
@@ -15,7 +16,7 @@ const Home = () => {
   const dispatch = useDispatch();
   const { loading, result } = useSelector((state) => state.crud.list);
   const getTrendyProducts = () => {
-    dispatch(cruds.endpoint('product', 'trendy'));
+    dispatch(cruds.list('product', 'trendy'));
   }
 
   useEffect(() => {
@@ -32,7 +33,7 @@ const Home = () => {
       </>
     ) : (
       <>
-      <AnimatedHero />
+      <Particles />
       <CollectionBox />
       <Trendy products={result} />
       <DealTimer />
