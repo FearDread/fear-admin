@@ -1,51 +1,94 @@
-import React from "react";
-import { Particles as ReactParticles } from "react-particles";
+// Importing React Tsparticles
+import Particles from 'react-tsparticles';
 
-const Particles = () => {
-
+// Using React Tsparticles in a component
+const ReactParticles = () => {
+  
   return (
-    <ReactParticles
-      canvasClassName="particlesCanvas"
-      params={{
-        particles: {
-          number: {
-            value: 45,
-            density: {
-              enable: true,
-              value_area: 800,
+    <div className="App">
+      <Particles
+        id="tsparticles"
+        options={{
+          background: {
+            color: {
+              value: "#0d47a1",
             },
           },
-          shape: {
-            type: "circle",
-            stroke: {
+          fpsLimit: 60,
+          interactivity: {
+            detectsOn: "canvas",
+            events: {
+              onClick: {
+                enable: true,
+                mode: "push",
+              },
+              onHover: {
+                enable: true,
+                mode: "repulse",
+              },
+              resize: true,
+            },
+            modes: {
+              bubble: {
+                distance: 400,
+                duration: 2,
+                opacity: 0.8,
+                size: 40,
+              },
+              push: {
+                quantity: 4,
+              },
+              repulse: {
+                distance: 200,
+                duration: 0.4,
+              },
+            },
+          },
+          particles: {
+            color: {
+              value: "#ffffff",
+            },
+            links: {
+              color: "#ffffff",
+              distance: 150,
+              enable: true,
+              opacity: 0.5,
               width: 1,
-              color: "tomato",
             },
-          },
-          size: {
-            value: 8,
-            random: true,
-            anim: {
-              enable: false,
-              speed: 6,
-              size_min: 0,
-              sync: true,
-            },
-          },
-          opacity: {
-            value: 0.5,
-            random: true,
-            anim: {
+            collisions: {
               enable: true,
-              speed: 1,
-              opacity_min: 0.1,
-              sync: false,
+            },
+            move: {
+              direction: "none",
+              enable: true,
+              outMode: "bounce",
+              random: false,
+              speed: 6,
+              straight: false,
+            },
+            number: {
+              density: {
+                enable: true,
+                value_area: 800,
+              },
+              value: 80,
+            },
+            opacity: {
+              value: 0.5,
+            },
+            shape: {
+              type: "circle",
+            },
+            size: {
+              random: true,
+              value: 5,
             },
           },
-        },
-      }}
-    />
+          detectRetina: true,
+        }}
+      />
+    </div>
   );
-};
+}
 
-export default Particles;
+export default ReactParticles;
