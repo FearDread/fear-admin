@@ -2,7 +2,7 @@
     margin: 0;
     height: 100vh;
     font-weight: 100;
-    background: radial-gradient(#a23939,#030101);
+
     background-image: url("../../Assets/Images/home_banner_1.webp");
     background-size: cover;
     position:relative;
