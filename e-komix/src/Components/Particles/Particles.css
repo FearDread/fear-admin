@@ -1,6 +1,10 @@
 
 
-.particlesCanvas {
-    position: "fixed";
-    opacity: "0.3";
+.particles-container {
+    height: 100vh;
+    position: fixed;
+    opacity: 0.3;
+    background: url(../../Assets/Images/ekomix/_comic_banner_2.jpg);
+    background-size: cover;
+    background-position: fixed;
 }
