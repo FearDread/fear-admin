@@ -1,10 +1,10 @@
 import React from "react";
 import "./Loader.css";
 
-const CricketBallLoader = () => (
+const BatLoader = () => (
   <div class="loading-container">
-    <div class='pac-man' />
+    <div class='bat-loader' />
   </div>
 );
 
-export default CricketBallLoader;
+export default BatLoader;
