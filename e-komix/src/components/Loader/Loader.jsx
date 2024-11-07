@@ -1,10 +1,10 @@
 import React from "react";
 import "./Loader.css";
 
-const BatLoader = () => (
+const LoadingAnimation = () => (
   <div class="loading-container">
-    <div class='bat-loader' />
+    <div class='text-loader'> .. Loading ..   </div>
   </div>
 );
 
-export default BatLoader;
+export default LoadingAnimation;

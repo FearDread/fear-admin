@@ -10,10 +10,8 @@ const ReactParticles = () => {
 
     useEffect(() => {
         initParticlesEngine(async (engine) => {
-            //await loadAll(engine);
             await loadFull(engine);
             await loadSlim(engine);
-            //await loadBasic(engine);
         }).then(() => {
             setInit(true);
         });
@@ -65,13 +63,13 @@ const ReactParticles = () => {
                 },
                 particles: {
                     color: {
-                        value: "#ffffff",
+                        value: "#ee5407",
                     },
                     links: {
                         color: "#ffffff",
-                        distance: 150,
+                        distance: 80,
                         enable: true,
-                        opacity: 0.5,
+                        opacity: 0.8,
                         width: 1,
                     },
                     move: {
@@ -92,13 +90,13 @@ const ReactParticles = () => {
                         value: 80,
                     },
                     opacity: {
-                        value: 0.5,
+                        value: 0.8,
                     },
                     shape: {
                         type: "circle",
                     },
                     size: {
-                        value: { min: 1, max: 5 },
+                        value: { min: 1, max: 3 },
                     },
                 },
                 detectRetina: true

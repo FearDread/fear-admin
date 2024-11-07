@@ -33,13 +33,13 @@ const Home = () => {
       </>
     ) : (
       <>
-      <ReactParticles />
+      <AnimatedHero />
       <CollectionBox />
       <Trendy products={result} />
+      <Services />
       <DealTimer />
       <Banner />
       <LimitedEdition products={result} />
-      <Services />
     </>
     )}
     </>
