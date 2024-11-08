@@ -1,25 +1,24 @@
 import React, { useEffect } from "react";
-import Avatar from "@material-ui/core/Avatar";
-import Button from "@material-ui/core/Button";
-import Typography from "@material-ui/core/Typography";
-import { ExitToApp as LogoutIcon } from "@material-ui/icons";
-import "./Profile.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { logout } from "../../_store/actions/userAction";
-import { useAlert } from "react-alert";
+import { Avatar, Button, Typography } from "@material-ui/core";
+import { cruds, auth } from "@feardread/crud-service";
+import toast from "react-hot-toast";
+import Loader from "../Loader/Loader";
+import "./Profile.css";
 
 const ProfilePage = () => {
   const alert = useAlert();
   const dispatch = useDispatch();
-  const history = useNavigate();
+  const navigate = useNavigate();
   const { user, isAuthenticated } = useSelector((state) => state.userData);
 
   const logoutHandler = () => {
-    dispatch(logout());
-    alert.success("Logged out successfully");
-    history.push("/login");
+    dispatch(auth.logout());
+    toast("Logged out successfully");
+    navigate("/login");
   };
+
   useEffect(() => {
     // if user not logged in
     if (isAuthenticated === false) {
@@ -192,4 +191,5 @@ const ProfilePage = () => {
     </div>
   );
 };
+
 export default ProfilePage;

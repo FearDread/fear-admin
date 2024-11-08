@@ -19,7 +19,7 @@ import BlogDetails from "./Components/Blog/BlogDetails/BlogDetails";
 import TermsConditions from "./Pages/TermsConditions";
 import ShoppingCart from "./Components/ShoppingCart/ShoppingCart";
 import Popup from "./Components/PopupBanner/Popup";
-//import Profile from "./Components/User/Profile";
+import Profile from "./Components/User/Profile";
 //import MyOrder from "./Components/Order/MyOrder";
 import PrivateRoute from "./Route/PrivateRoute";
 /////import Shipping from "./Components/Cart/Shipping/Shipping";
@@ -52,11 +52,13 @@ const App = () => {
           <Route path="/authentication" element={<Authentication />} />
           
           <Route 
-            path="/cart" 
-            element={<PrivateRoute><ShoppingCart /></PrivateRoute>} 
+            path="/cart" element={<PrivateRoute><ShoppingCart /></PrivateRoute>} 
+          />
+          <Route
+            path="/account" element={<PrivateRoute><Profile /></PrivateRoute>}
           />
           {/*
-          <PrivateRoute path="/account" element={<Profile />} />
+          
  
           <PrivateRoute path="/forgot" element={<ForgetPassword />} />
           <PrivateRoute path="/profile/update" element={<UpdateProfile />} />
