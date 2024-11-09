@@ -1,4 +1,4 @@
-import React, { useState  } from "react";
+import React, { useState, useEffect  } from "react";
 import { useDispatch } from "react-redux";
 import { FiHeart } from "react-icons/fi";
 import { FaStar, FaCartPlus } from "react-icons/fa";
@@ -36,6 +36,12 @@ const TrendyCard = ( {product} ) => {
       toast.success(`Added to cart!`);
     }
   };
+
+  useEffect(() => {
+    if (product.images.length === 0) {
+      product.images = [defaultProdImg]
+    }
+  },[]);
 
     return (
         <div className="trendyProductContainer" key={product._id}>
