@@ -48,13 +48,13 @@ const TrendyCard = ( {product} ) => {
         <div className="trendyProductImages">
           <Link to={`/product/${product._id}`}>
             <img
-              src={product.images ? product.images[0].url : defaultProdImg}
-              alt=""
+              src={product.images && product.images[0] ? product.images[0].url : defaultProdImg}
+              alt="product-img"
               className="trendyProduct_front"
             />
             <img
-              src={product.images[1] ? product.images[1].url : defaultProdImg}
-              alt=""
+              src={product.images && product.images[1] ? product.images[1].url : defaultProdImg}
+              alt="product-img"
               className="trendyProduct_back"
             />
           </Link>

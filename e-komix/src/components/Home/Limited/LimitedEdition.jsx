@@ -101,8 +101,8 @@ const LimitedEdition = ( products ) => {
                     <div className="lpImageContainer">
                       <Link to={`/product/${product._id}`}>
                         <img
-                          src={product.images ? product.images[0].url : defaultProdImg}
-                          alt={product.images[1] ? product.images[1].url : defaultProdImg}
+                          src={product.images && product.images[0] ? product.images[0].url : defaultProdImg}
+                          alt={product.images && product.images[1] ? product.images[1].url : defaultProdImg}
                           className="lpImage"
                         />
                       </Link>
