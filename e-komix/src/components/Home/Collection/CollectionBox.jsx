@@ -1,4 +1,5 @@
 import React from "react";
+import { scrollToTop } from "../../../Utils";
 import "./CollectionBox.css";
 
 import { Link } from "react-router-dom";

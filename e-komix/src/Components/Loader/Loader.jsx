@@ -3,7 +3,7 @@ import "./Loader.css";
 
 const LoadingAnimation = () => (
   <div className="loading-container">
-    <div className='gal-loader'> .. Loading ..   </div>
+    <div className='text-loader'> .. Loading ..</div>
   </div>
 );
 
