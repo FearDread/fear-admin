@@ -37,8 +37,9 @@ const LoginSignUp = () => {
   }
 
   useEffect(() => {
+    if ( isLoggedIn ) navigate("/account");
     if (loginSuccess && isLoggedIn) {
-      navigate("/admin/account");
+      navigate("/account");
     }
   }, [])
 

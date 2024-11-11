@@ -35,7 +35,6 @@ const App = () => {
   return (
     <>
       <Popup />
-      <ScrollToTop />
       <BrowserRouter>
         <Header />
         <Routes>
@@ -66,8 +65,9 @@ const App = () => {
           <PrivateRoute path="/orders" element={<MyOrder />} />
           <PrivateRoute path="/shipping" element={<Shipping />} />
           */}
-          <Route path="*" element={<NotFound />} />
+          <Route path="*" element={<NotF87ound />} />
         </Routes>
+        <ScrollToTop />
         <Footer />
         <Toaster />
       </BrowserRouter>

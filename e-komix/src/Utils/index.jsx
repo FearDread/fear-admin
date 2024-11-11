@@ -1,3 +1,15 @@
+export const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+}
+
+export const formatDate = (datestr) => {
+
+}
+
+
 // Get Unique Brands from Json Data
 export const getBrands = (products) => {
     var brands = [];

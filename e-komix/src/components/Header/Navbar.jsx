@@ -161,7 +161,7 @@ const Navbar = () => {
 
           <div className="mobile-menuFooter">
             <div className="mobile-menuFooterLogin">
-              <Link to="/loginSignUp" onClick={toggleMobileMenu}>
+              <Link to="/account" onClick={toggleMobileMenu}>
                 <FaRegUser />
                 <p>My Account</p>
               </Link>
