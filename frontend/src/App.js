@@ -1,7 +1,7 @@
 import React from "react";
-import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Layout from "./components/Layout";
+
+import Layout from "./layouts/Layout";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
@@ -21,15 +21,18 @@ import TermAndContions from "./pages/TermAndContions";
 import SingleProduct from "./pages/SingleProduct";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
-import { PrivateRoutes } from "./routing/PrivateRoutes";
-import { OpenRoutes } from "./routing/OpenRoutes";
 import Orders from "./pages/Orders";
 import Profile from "./pages/Profile";
+
+import { PrivateRoutes } from "./routes/PrivateRoutes";
+import { OpenRoutes } from "./routes/OpenRoutes";
+
+import "./assets/css/App.css";
 
 function App() {
   return (
     <>
-      <BrowserRouter>
+      <BrowserRouter>s
         <Routes>
           <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />

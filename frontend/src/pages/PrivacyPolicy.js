@@ -1,6 +1,6 @@
 import React from "react";
 import BreadCrumb from "../components/BreadCrumb";
-import Meta from "../components/Meta";
+import Meta from "../components/Meta/Meta";
 import Container from "../components/Container";
 
 const PrivacyPolicy = () => {
