@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import BreadCrumb from "../components/BreadCrumb";
-import Meta from "../components/Meta";
+import Meta from "../components/Meta/Meta";
 import ReactStars from "react-rating-stars-component";
-import ProductCard from "../components/ProductCard";
+import ProductCard from "../components/Cards/ProductCard";
 import Color from "../components/Color";
 import Container from "../components/Container";
 import { useDispatch, useSelector } from "react-redux";

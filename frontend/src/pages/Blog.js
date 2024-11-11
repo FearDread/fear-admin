@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import BreadCrumb from "../components/BreadCrumb";
-import Meta from "../components/Meta";
-import BlogCard from "../components/BlogCard";
+import Meta from "../components/Meta/Meta";
+import BlogCard from "../components/Cards/BlogCard";
 import Container from "../components/Container";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllBlogs } from "../features/blogs/blogSlice";
