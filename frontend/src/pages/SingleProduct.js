@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
 import ReactStars from "react-rating-stars-component";
-import BreadCrumb from "../components/BreadCrumb";
-import Meta from "../components/Meta";
+import BreadCrumb from "../components/Common/BreadCrumb";
+import Meta from "../components/Meta/Meta";
 import ProductCard from "../components/Cards/ProductCard";
 import ReactImageZoom from "react-image-zoom";
-import Color from "../components/Color";
+import Color from "../components/Common/Color";
 import { TbGitCompare } from "react-icons/tb";
 import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import watch from "../assets/images/watch.jpg";
-import Container from "../components/Container";
+import Container from "../components/Common/Container";
 import { addToWishlist } from "../features/products/productSlilce";
 import { useDispatch, useSelector } from "react-redux";
 import {

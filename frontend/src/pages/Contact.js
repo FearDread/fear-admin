@@ -1,9 +1,9 @@
 import React from "react";
-import BreadCrumb from "../components/BreadCrumb";
+import BreadCrumb from "../components/Common/BreadCrumb";
 import Meta from "../components/Meta/Meta";
 import { AiOutlineHome, AiOutlineMail } from "react-icons/ai";
 import { BiPhoneCall, BiInfoCircle } from "react-icons/bi";
-import Container from "../components/Container";
+import Container from "../components/Common/Container";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { useDispatch } from "react-redux";

@@ -1,6 +1,6 @@
 import React from "react";
-import BreadCrumb from "../components/BreadCrumb";
-import Container from "../components/Container";
+import BreadCrumb from "../components/Common/BreadCrumb";
+import Container from "../components/Common/Container";
 import Meta from "../components/Meta/Meta";
 
 const ShippingPolicy = () => {

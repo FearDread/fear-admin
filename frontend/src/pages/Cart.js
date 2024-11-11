@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import BreadCrumb from "../components/BreadCrumb";
+import BreadCrumb from "../components/Common/BreadCrumb";
 import Meta from "../components/Meta/Meta";
 import watch from "../assets/images/watch.jpg";
 import { AiFillDelete } from "react-icons/ai";
 import { Link } from "react-router-dom";
-import Container from "../components/Container";
+import Container from "../components/Common/Container";
 import { useDispatch, useSelector } from "react-redux";
 import {
   deleteCartProduct,
