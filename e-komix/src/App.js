@@ -65,7 +65,7 @@ const App = () => {
           <PrivateRoute path="/orders" element={<MyOrder />} />
           <PrivateRoute path="/shipping" element={<Shipping />} />
           */}
-          <Route path="*" element={<NotF87ound />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
         <ScrollToTop />
         <Footer />

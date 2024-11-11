@@ -2,108 +2,32 @@
 .loading-container {
   background: transparent;
   height: 500vh;
+  text-align: center;
 }
 
 /* HTML: <div class="loader"></div> */
-.gal-loader {
-  width: fit-content;
-  font-size: 17px;
-  font-family: monospace;
-  line-height: 1.4;
-  font-weight: bold;
-  background: 
-    linear-gradient(#000 0 0) left ,
-    linear-gradient(#000 0 0) right;
-  background-repeat: no-repeat; 
-  border-right: 5px solid #0000;
-  border-left: 5px solid #0000;
-  background-origin: border-box;
-  position: relative;
-  animation: l9-0 2s infinite;
-}
-.gal-loader::before {
-  content:"Loading";
-}
-.gal-loader::after {
-  content: "";
-  position: absolute;
-  top: 100%;
-  left: 0;
-  width: 22px;
-  height: 60px;
-  background: 
-   linear-gradient(90deg,#000 4px,#0000 0 calc(100% - 4px),#000 0) bottom            /22px 20px,
-   linear-gradient(90deg,red  4px,#0000 0 calc(100% - 4px),red  0) bottom 10px left 0/22px 6px,
-   linear-gradient(#000 0 0) bottom 3px left 0  /22px 8px,
-   linear-gradient(#000 0 0) bottom 0   left 50%/8px  16px;
- background-repeat: no-repeat;
- animation: l9-1 2s infinite;
-}
-@keyframes l9-0{
-  0%,25%    {background-size: 50% 100%}
-  25.1%,75% {background-size: 0 0,50% 100%}
-  75.1%,100%{background-size: 0 0,0 0}
-}
-@keyframes l9-1{
-  25%   { background-position:bottom, bottom 54px left 0,bottom 3px left 0,bottom 0 left 50%;left:0}
-  25.1% { background-position:bottom, bottom 10px left 0,bottom 3px left 0,bottom 0 left 50%;left:0}
-  50%   { background-position:bottom, bottom 10px left 0,bottom 3px left 0,bottom 0 left 50%;left:calc(100% - 22px)}
-  75%   { background-position:bottom, bottom 54px left 0,bottom 3px left 0,bottom 0 left 50%;left:calc(100% - 22px)}
-  75.1% { background-position:bottom, bottom 10px left 0,bottom 3px left 0,bottom 0 left 50%;left:calc(100% - 22px)}
-}
+.loader {
+      width: fit-content;
+      font-size: 40px;
+      font-family: system-ui,sans-serif;
+      font-weight: bold;
+      text-transform: uppercase;
+      text-align: center;
+      color: #93050500;
+      margin-top:200px;
+      margin-left: auto;
+      margin-right: auto;
+      -webkit-text-stroke: 1px #000;
+      --g:conic-gradient(#000 0 0) no-repeat text;
+      background: var(--g) 0,var(--g) 100%,var(--g) 0 0,var(--g) 0 100%;
+      animation: l5 2s linear infinite;
+    }
+    .loader:before {
+      content: "Loading";
+    }
 
-/* HTML: <div class="loader"></div> */
-.text-loader {
-  --w:10ch;
-  font-weight: bold;
-  font-family: monospace;
-  font-size: 30px;
-  line-height: 1.4em;
-  letter-spacing: var(--w);
-  width: var(--w);
-  overflow: hidden;
-  white-space: nowrap;
-  color: #0000;
-  margin-top: 200px;
-  text-shadow: 
-        calc( 0*var(--w)) 0 #000,calc(-1*var(--w)) 0 #000,calc(-2*var(--w)) 0 #000,calc(-3*var(--w)) 0 #000,calc(-4*var(--w)) 0 #000, 
-        calc(-5*var(--w)) 0 #000,calc(-6*var(--w)) 0 #000,calc(-7*var(--w)) 0 #000,calc(-8*var(--w)) 0 #000,calc(-9*var(--w)) 0 #000;
-  animation: l20 2s infinite linear;
-  background: transparent;
-}
-.loader:before {
-  content:"Loading...";
-}
-
-@keyframes l20 {
-  9.09% {text-shadow: 
-        calc( 0*var(--w)) -10px #000,calc(-1*var(--w)) 0 #000,calc(-2*var(--w)) 0 #000,calc(-3*var(--w)) 0 #000,calc(-4*var(--w)) 0 #000, 
-        calc(-5*var(--w)) 0 #000,calc(-6*var(--w)) 0 #000,calc(-7*var(--w)) 0 #000,calc(-8*var(--w)) 0 #000,calc(-9*var(--w)) 0 #000}
-  18.18% {text-shadow: 
-        calc( 0*var(--w)) 0 #000,calc(-1*var(--w)) -10px #000,calc(-2*var(--w)) 0 #000,calc(-3*var(--w)) 0 #000,calc(-4*var(--w)) 0 #000, 
-        calc(-5*var(--w)) 0 #000,calc(-6*var(--w)) 0 #000,calc(-7*var(--w)) 0 #000,calc(-8*var(--w)) 0 #000,calc(-9*var(--w)) 0 #000}
-  27.27% {text-shadow: 
-        calc( 0*var(--w)) 0 #000,calc(-1*var(--w)) 0 #000,calc(-2*var(--w)) -10px #000,calc(-3*var(--w)) 0 #000,calc(-4*var(--w)) 0 #000, 
-        calc(-5*var(--w)) 0 #000,calc(-6*var(--w)) 0 #000,calc(-7*var(--w)) 0 #000,calc(-8*var(--w)) 0 #000,calc(-9*var(--w)) 0 #000}
-  36.36% {text-shadow: 
-        calc( 0*var(--w)) 0 #000,calc(-1*var(--w)) 0 #000,calc(-2*var(--w)) 0 #000,calc(-3*var(--w)) -10px #000,calc(-4*var(--w)) 0 #000, 
-        calc(-5*var(--w)) 0 #000,calc(-6*var(--w)) 0 #000,calc(-7*var(--w)) 0 #000,calc(-8*var(--w)) 0 #000,calc(-9*var(--w)) 0 #000}
-  45.45% {text-shadow: 
-        calc( 0*var(--w)) 0 #000,calc(-1*var(--w)) 0 #000,calc(-2*var(--w)) 0 #000,calc(-3*var(--w)) 0 #000,calc(-4*var(--w)) -10px #000, 
-        calc(-5*var(--w)) 0 #000,calc(-6*var(--w)) 0 #000,calc(-7*var(--w)) 0 #000,calc(-8*var(--w)) 0 #000,calc(-9*var(--w)) 0 #000}
-  54.54% {text-shadow: 
-        calc( 0*var(--w)) 0 #000,calc(-1*var(--w)) 0 #000,calc(-2*var(--w)) 0 #000,calc(-3*var(--w)) 0 #000,calc(-4*var(--w)) 0 #000, 
-        calc(-5*var(--w)) -10px #000,calc(-6*var(--w)) 0 #000,calc(-7*var(--w)) 0 #000,calc(-8*var(--w)) 0 #000,calc(-9*var(--w)) 0 #000}
-  63.63% {text-shadow: 
-        calc( 0*var(--w)) 0 #000,calc(-1*var(--w)) 0 #000,calc(-2*var(--w)) 0 #000,calc(-3*var(--w)) 0 #000,calc(-4*var(--w)) 0 #000, 
-        calc(-5*var(--w)) 0 #000,calc(-6*var(--w)) -10px #000,calc(-7*var(--w)) 0 #000,calc(-8*var(--w)) 0 #000,calc(-9*var(--w)) 0 #000}
-  72.72% {text-shadow: 
-        calc( 0*var(--w)) 0 #000,calc(-1*var(--w)) 0 #000,calc(-2*var(--w)) 0 #000,calc(-3*var(--w)) 0 #000,calc(-4*var(--w)) 0 #000, 
-        calc(-5*var(--w)) 0 #000,calc(-6*var(--w)) 0 #000,calc(-7*var(--w)) -10px #000,calc(-8*var(--w)) 0 #000,calc(-9*var(--w)) 0 #000}
-  81.81% {text-shadow: 
-        calc( 0*var(--w)) 0 #000,calc(-1*var(--w)) 0 #000,calc(-2*var(--w)) 0 #000,calc(-3*var(--w)) 0 #000,calc(-4*var(--w)) 0 #000, 
-        calc(-5*var(--w)) 0 #000,calc(-6*var(--w)) 0 #000,calc(-7*var(--w)) 0 #000,calc(-8*var(--w)) -10px #000,calc(-9*var(--w)) 0 #000}
-  90.90% {text-shadow: 
-        calc( 0*var(--w)) 0 #000,calc(-1*var(--w)) 0 #000,calc(-2*var(--w)) 0 #000,calc(-3*var(--w)) 0 #000,calc(-4*var(--w)) 0 #000, 
-        calc(-5*var(--w)) 0 #000,calc(-6*var(--w)) 0 #000,calc(-7*var(--w)) 0 #000,calc(-8*var(--w)) 0 #000,calc(-9*var(--w)) -10px #000}
+@keyframes l5 {
+      0%,100%{background-size: 0   100%,0   100%,100% 0  ,100% 0  }
+      50%    {background-size: 55% 100%,55% 100%,100% 0  ,100% 0  }
+      50.01% {background-size: 0   100%,0   100%,100% 55%,100% 55%}
 }
