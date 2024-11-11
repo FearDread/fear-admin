@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
-import BreadCrumb from "../components/BreadCrumb";
+import BreadCrumb from "../components/Common/BreadCrumb";
 import Meta from "../components/Meta/Meta";
-import Container from "../components/Container";
+import Container from "../components/Common/Container";
 import { useDispatch, useSelector } from "react-redux";
 import { addToWishlist } from "../features/products/productSlilce";
 import { getuserProductWishlist } from "../features/user/userSlice";

@@ -1,9 +1,9 @@
 import React from "react";
-import BreadCrumb from "../components/BreadCrumb";
-import Color from "../components/Color";
+import BreadCrumb from "../components/Common/BreadCrumb";
+import Color from "../components/Common/Color";
 import Meta from "../components/Meta/Meta";
 import watch from "../assets/images/watch.jpg";
-import Container from "../components/Container";
+import Container from "../components/Common/Container";
 
 const CompareProduct = () => {
   return (

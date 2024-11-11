@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
-import Container from "../components/Container";
-import BreadCrumb from "../components/BreadCrumb";
+import Container from "../components/Common/Container";
+import BreadCrumb from "../components/Common/BreadCrumb";
 import { useDispatch, useSelector } from "react-redux";
 import { getOrders } from "../features/user/userSlice";
 

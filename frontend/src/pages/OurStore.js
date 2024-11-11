@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import BreadCrumb from "../components/BreadCrumb";
+import BreadCrumb from "../components/Common/BreadCrumb";
 import Meta from "../components/Meta/Meta";
 import ReactStars from "react-rating-stars-component";
 import ProductCard from "../components/Cards/ProductCard";
-import Color from "../components/Color";
-import Container from "../components/Container";
+import Color from "../components/Common/Color";
+import Container from "../components/Common/Container";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllProducts } from "../features/products/productSlilce";
 import { Link } from "react-router-dom";

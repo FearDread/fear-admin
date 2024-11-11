@@ -4,10 +4,10 @@ import Marquee from "react-fast-marquee";
 import BlogCard from "../components/Cards/BlogCard";
 import ProductCard from "../components/Cards/ProductCard";
 import SpecialProduct from "../components/Cards/SpecialCard";
-import Container from "../components/Container";
+import Container from "../components/Common/Container";
 import { services } from "../utils/Data";
-import prodcompare from "../images/prodcompare.svg";
-import wish from "../images/wish.svg";
+import prodcompare from "../assets/images/prodcompare.svg";
+import wish from "../assets/images/wish.svg";
 import wishlist from "../assets/images/wishlist.svg";
 import watch from "../assets/images/watch.jpg";
 import watch2 from "../assets/images/watch-1.avif";
@@ -20,6 +20,8 @@ import { getAllProducts } from "../features/products/productSlilce";
 import ReactStars from "react-rating-stars-component";
 import { addToWishlist } from "../features/products/productSlilce";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
+
+import { cruds, auth, cart } from "@feardread/crud-service";
 
 const Home = () => {
   const blogState = useSelector((state) => state?.blog?.blog);
@@ -67,7 +69,7 @@ const Home = () => {
             <div className="d-flex flex-wrap gap-10 justify-content-between align-items-center">
               <div className="small-banner position-relative">
                 <img
-                  src="assets/images/catbanner-01.jpg"
+                  src="images/catbanner-01.jpg"
                   className="img-fluid rounded-3"
                   alt="main banner"
                 />
@@ -81,7 +83,7 @@ const Home = () => {
               </div>
               <div className="small-banner position-relative">
                 <img
-                  src="assets/images/catbanner-02.jpg"
+                  src="images/catbanner-02.jpg"
                   className="img-fluid rounded-3"
                   alt="main banner"
                 />
@@ -95,7 +97,7 @@ const Home = () => {
               </div>
               <div className="small-banner position-relative ">
                 <img
-                  src="assets/images/catbanner-03.jpg"
+                  src="images/catbanner-03.jpg"
                   className="img-fluid rounded-3"
                   alt="main banner"
                 />
@@ -109,7 +111,7 @@ const Home = () => {
               </div>
               <div className="small-banner position-relative ">
                 <img
-                  src="assets/images/catbanner-04.jpg"
+                  src="images/catbanner-04.jpg"
                   className="img-fluid rounded-3"
                   alt="main banner"
                 />

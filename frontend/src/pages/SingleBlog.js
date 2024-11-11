@@ -1,10 +1,10 @@
 import React, { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import BreadCrumb from "../components/BreadCrumb";
+import BreadCrumb from "../components/Common/BreadCrumb";
 import { HiOutlineArrowLeft } from "react-icons/hi";
 import Meta from "../components/Meta/Meta";
-import blog from "../images/blog-1.jpg";
-import Container from "../components/Container";
+import blog from "../assets/images/blog-1.jpg";
+import Container from "../components/Common/Container";
 import { useDispatch, useSelector } from "react-redux";
 import { getABlog } from "../features/blogs/blogSlice";
 

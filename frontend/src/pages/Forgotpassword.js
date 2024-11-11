@@ -1,9 +1,9 @@
 import React from "react";
-import BreadCrumb from "../components/BreadCrumb";
+import BreadCrumb from "../components/Common/BreadCrumb";
 import Meta from "../components/Meta/Meta";
 import { Link, useNavigate } from "react-router-dom";
-import Container from "../components/Container";
-import CustomInput from "../components/CustomInput";
+import Container from "../components/Common/Container";
+import CustomInput from "../components/Common/CustomInput";
 import { useFormik } from "formik";
 import * as yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
