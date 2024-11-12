@@ -20,12 +20,14 @@ import { getAllProducts } from "../features/products/productSlilce";
 import ReactStars from "react-rating-stars-component";
 import { addToWishlist } from "../features/products/productSlilce";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
+import TrendyCard from "../components/Product/TrendyCard/TrendyCard"
 
 import { cruds, auth, cart } from "@feardread/crud-service";
 
 const Home = () => {
   const blogState = useSelector((state) => state?.blog?.blog);
-  const productState = useSelector((state) => state?.product?.product);
+  const { result } = useSelector((state) => state.crud.list);
+  const productState = useSelector((state) => state?.products);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -39,6 +41,7 @@ const Home = () => {
   };
 
   const getProducts = () => {
+    dispatch(cruds.all("product"))
     dispatch(getAllProducts());
   };
 
@@ -215,9 +218,9 @@ const Home = () => {
           <div className="col-12">
             <h3 className="section-heading">Featured Collection</h3>
           </div>
-          {productState &&
-            productState?.map((item, index) => {
-              if (item.tags === "featured") {
+          {result &&
+            result.splice(4, 8).map((item, index) => {
+              if (item) {
                 return (
                   <div key={index} className={"col-3"}>
                     <div className="product-card position-relative">
@@ -358,9 +361,9 @@ const Home = () => {
           </div>
         </div>
         <div className="row">
-          {productState &&
-            productState?.map((item, index) => {
-              if (item.tags === "special") {
+          {result &&
+            result?.splice(8, 4).map((item, index) => {
+              if (item) {
                 //console.log(item?._id);
                 return (
                   <SpecialProduct
@@ -368,7 +371,7 @@ const Home = () => {
                     id={item?._id}
                     title={item?.title}
                     brand={item?.brand}
-                    totalrating={item?.totalrating.toString()}
+                    totalrating={item?.ratings.toString()}
                     price={item?.price}
                     img={item?.images[0].url}
                     sold={item?.sold}
