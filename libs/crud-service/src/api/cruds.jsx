@@ -142,15 +142,17 @@ const cruds = {
   },
 
   search: (
+      entity,
       keyword = "",
       currentPage = 1,
       price = [0, 100000],
       category,
       ratings = 0
     ) => async (dispatch) => {
+      console.log("search req = " + entity + ' + ' + keyword + ' + ' + category);
       dispatch({ type: Types.REQUEST_LOADING });
 
-      let link = API_BASE_URL + `/${entity}?`;
+      let link = API_BASE_URL + `/` + entity + '?';
       
       link += `keyword=${keyword}&page=${currentPage}&price=${price[0]}&ratings=${ratings}`;  
       if (category) {
