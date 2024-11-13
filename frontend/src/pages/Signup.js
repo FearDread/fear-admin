@@ -8,6 +8,7 @@ import { useFormik } from "formik";
 import * as yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
 import { registerUser } from "../features/user/userSlice";
+import { auth } from "@feardread/crud-service";
 
 let signUpSchema = yup.object({
   firstname: yup.string().required("First Name is Required"),
@@ -21,7 +22,7 @@ let signUpSchema = yup.object({
 });
 
 const Signup = () => {
-  const authState = useSelector((state) => state.auth);
+  const { user, isLoggedIn } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const formik = useFormik({
@@ -34,9 +35,16 @@ const Signup = () => {
     },
     validationSchema: signUpSchema,
     onSubmit: (values) => {
-      dispatch(registerUser(values));
+      dispatch(auth.register(values));
+      //dispatch(registerUser(values));
     },
   });
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigate("/profile");
+    }
+  }, [isLoggedIn])
 
   // useEffect(() => {
   //   if (authState.createdUser !== null && authState.isError === false) {

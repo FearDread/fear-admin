@@ -28,7 +28,7 @@ const Header = () => {
   const [paginate, setPaginate] = useState(true);
   const productState = useSelector((state) => state?.product?.product);
   const navigate = useNavigate();
-  const { result } = useSelector((state) => state.crud.list);
+  const { result } = useSelector((state) => state.crud.all);
   const { auth } = useSelector((state) => state );
 
   const getTokenFromLocalStorage = localStorage.getItem("customer")
@@ -105,7 +105,7 @@ const Header = () => {
             <div className="col-5">
               <div className="header-upper-links d-flex align-items-center justify-content-between">
                 <div>
-                  {/* <Link
+                  <Link
                     to="/compare-product"
                     className="d-flex align-items-center gap-10 text-white"
                   >
@@ -113,7 +113,7 @@ const Header = () => {
                     <p className="mb-0">
                       Compare <br /> Products
                     </p>
-                  </Link> */}
+                  </Link>
                 </div>
                 <div>
                   <Link
