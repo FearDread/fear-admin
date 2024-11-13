@@ -149,12 +149,14 @@ exports.list = tryCatch(async (Model, req, res) => {
  *  @returns {Array} List of Documents
  */
 exports.search = tryCatch(async (Model, req, res) => {
-  if (req.query.title  === undefined || req.query.title === "" || req.query.title === " ") {
+  if (req.query.keyword  === undefined || req.query.keyword === "") {
     return res.status(202).json(
       { result: [], success: false, message: "No Doc found by this request" }
     ).end();
   }
-  const limit = req.query.limit || 10;
+  const page = req.query.page || 1;
+  const limit = parseInt(req.query.items) || 10;
+  const skip = page * limit - limit;
   const sortby = req.query.title || req.query.name;
   const fieldsArray = req.query.fields.split(",");
   const fields = { $or: [] };
@@ -162,16 +164,24 @@ exports.search = tryCatch(async (Model, req, res) => {
   for (const field of fieldsArray) {
     fields.$or.push({ [field]: { $regex: new RegExp(sortby, "i") } });
   }
+
+  const countPromise = Model.count();
+  const resultsPromise = Model.find(fields)
+        .sort(sortby("desc"))
+        .limit(limit);
   
-  await Model.find(fields).sort(sortby["desc"]).limit(limit)
-    .then((result) => {
+  await Promise.all([resultsPromise, countPromise])
+    .then((result, count) => {
+      const pages = Math.ceil(count / limit);
+      const pagination = { page, pages, items: count };
+
       if (result.length >= 1) {
         return res.status(200).json(
-          { result, success: true, message: "Successfully found all documents" }
+          { result, success: true, pagination, message: "Successfully found all documents" }
         );
       } else {
         return res.status(202).json(
-          { result: [], success: false, message: "No document found by this request" }
+          { result: [], success: false, pagination, message: "No document found by this request" }
         )
         .end();
       }
