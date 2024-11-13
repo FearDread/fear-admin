@@ -3,8 +3,8 @@ import { NavLink, Link, useNavigate } from "react-router-dom";
 import { BsSearch } from "react-icons/bs";
 import compare from "../../assets/images/compare.svg";
 import wishlist from "../../assets/images/wishlist.svg";
-import user from "../../assets/images/user.svg";
-import cart from "../../assets/images/cart.svg";
+import userSvg from "../../assets/images/user.svg";
+import cartSvg from "../../assets/images/cart.svg";
 import menu from "../../assets/images/menu.svg";
 import logo from "../../assets/images/ekomix/logo.png";
 import { useDispatch, useSelector } from "react-redux";
@@ -13,6 +13,8 @@ import { Typeahead } from "react-bootstrap-typeahead";
 
 import { getAProduct } from "../../features/products/productSlilce";
 import { getUserCart } from "../../features/user/userSlice";
+
+import { cruds, auth, cart } from "@feardread/crud-service";
 
 import "react-bootstrap-typeahead/css/Typeahead.css";
 import "./Navbar.css";
@@ -26,6 +28,8 @@ const Header = () => {
   const [paginate, setPaginate] = useState(true);
   const productState = useSelector((state) => state?.product?.product);
   const navigate = useNavigate();
+  const { result } = useSelector((state) => state.crud.list);
+  const { auth } = useSelector((state) => state );
 
   const getTokenFromLocalStorage = localStorage.getItem("customer")
     ? JSON.parse(localStorage.getItem("customer"))
@@ -41,6 +45,7 @@ const Header = () => {
   };
 
   useEffect(() => {
+    dispatch(cruds.all("category"));
     dispatch(getUserCart(config2));
   }, []);
 
@@ -123,11 +128,11 @@ const Header = () => {
                 </div>
                 <div>
                   <Link
-                    to={authState?.user === null ? "/login" : "my-profile"}
+                    to={auth?.user === null ? "/login" : "my-profile"}
                     className="d-flex align-items-center gap-10 text-white"
                   >
-                    <img src={user} alt="user" />
-                    {authState?.user === null ? (
+                    <img src={userSvg} alt="user" />
+                    {auth.user === null ? (
                       <p className="mb-0">
                         Log in <br /> My Account
                       </p>
@@ -143,7 +148,7 @@ const Header = () => {
                     to="/cart"
                     className="d-flex align-items-center gap-10 text-white"
                   >
-                    <img src={cart} alt="cart" />
+                    <img src={cartSvg} alt="cart" />
                     <div className="d-flex flex-column gap-10">
                       <span className="badge bg-white text-dark">
                         {cartState?.length ? cartState?.length : 0}
@@ -182,12 +187,12 @@ const Header = () => {
                       className="dropdown-menu"
                       aria-labelledby="dropdownMenuButton1"
                     >
-                      {productState &&
-                        productState.map((item, index) => {
+                      {result &&
+                        result.map((item, index) => {
                           return (
                             <li key={index}>
-                              <Link className="dropdown-item text-white" to="">
-                                {item?.category}
+                              <Link className="dropdown-item" to={"/shop?category=" + item.title} >
+                                {item.title}
                               </Link>
                             </li>
                           );
@@ -196,17 +201,17 @@ const Header = () => {
                   </div>
                 </div>
                 <div className="menu-links">
-                  <div className="d-flex align-items-center gap-15">
+                  <div className="d-flex align-items-center gap-15 linkContainer">
                     <NavLink to="/">Home</NavLink>
-                    <NavLink to="/product">Our Store</NavLink>
-                    <NavLink to="/my-orders">My Orders</NavLink>
+                    <NavLink to="/shop">Store</NavLink>
+                    <NavLink to="/about">About</NavLink>
                     <NavLink to="/blogs">Blogs</NavLink>
                     <NavLink to="/contact">Contact</NavLink>
                     {authState?.user !== null ? (
                       <button
                         className="border border-0 bg-trasparent text-white text-uppercase"
                         type="button"
-                        style={{ backgroundColor: "#232f3e" }}
+                        style={{ backgroundColor: "black" }}
                         onClick={handleLogout}
                       >
                         LogOut

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import BreadCrumb from "../components/Common/BreadCrumb";
 import Meta from "../components/Meta/Meta";
 import ReactStars from "react-rating-stars-component";
@@ -8,15 +9,15 @@ import Container from "../components/Common/Container";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllProducts } from "../features/products/productSlilce";
 import { Link } from "react-router-dom";
+import { cruds, auth, caart } from "@feardread/crud-service";
 
 const OurStore = () => {
+  const { keyword } = useParams();
+  const dispatch = useDispatch();
   const [grid, setGrid] = useState(4);
-  const productState = useSelector((state) => state?.product?.product);
   const [brands, setBrands] = useState([]);
   const [categories, setCategories] = useState([]);
-
   const [tags, setTags] = useState([]);
-
   //filter state
   const [tag, setTag] = useState(null);
   const [category, setCategory] = useState(null);
@@ -24,6 +25,8 @@ const OurStore = () => {
   const [minPrice, setminPrice] = useState(null);
   const [maxPrice, setmaxPrice] = useState(null);
   const [sort, setSort] = useState(null);
+  //query state
+  const productState = useSelector((state) => state?.product?.product);
 
   useEffect(() => {
     let newBrands = [];
@@ -41,11 +44,13 @@ const OurStore = () => {
     setTags(newtags);
   }, [productState]);
 
-  const dispatch = useDispatch();
+
   useEffect(() => {
+    console.log("keyword = ", keyword);
     getProducts();
-  }, [sort, tag, brand, category, minPrice, maxPrice]);
+  }, [sort, tag, brand, category, minPrice, maxPrice, keyword]);
   const getProducts = () => {
+
     dispatch(
       getAllProducts({ sort, tag, brand, category, minPrice, maxPrice })
     );
