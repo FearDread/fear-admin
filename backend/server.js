@@ -18,6 +18,7 @@ require("dotenv").config();
         
         process.on("unhandledRejection", (error) => { 
             FEAR.log.error("Promise Error :: ", error);
+            process.exit(1);
         });
 
         process.on("uncaughtException", (err) => {

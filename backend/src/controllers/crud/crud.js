@@ -149,31 +149,33 @@ exports.list = tryCatch(async (Model, req, res) => {
  *  @returns {Array} List of Documents
  */
 exports.search = tryCatch(async (Model, req, res) => {
-  if (req.query.keyword  === undefined || req.query.keyword === "") {
+  
+  if (req.query  === undefined || req.query === "") {
     return res.status(202).json(
       { result: [], success: false, message: "No Doc found by this request" }
     ).end();
   }
-  const page = req.query.page || 1;
-  const limit = parseInt(req.query.items) || 10;
-  const skip = page * limit - limit;
-  const sortby = req.query.title || req.query.name;
-  const fieldsArray = req.query.fields.split(",");
+  const sorted = req.query.brand || "desc";
   const fields = { $or: [] };
+  const page = req.query.page || 1;
+  const limit = parseInt(req.query.count) || 10;
+  const skip = page * limit - limit;
 
-  for (const field of fieldsArray) {
-    fields.$or.push({ [field]: { $regex: new RegExp(sortby, "i") } });
+  for (var prop in req.query) {
+    if (req.query.hasOwnProperty(prop)) {
+      fields.$or.push({ [prop] : req.query[prop] });
+    }
   }
 
   const countPromise = Model.count();
   const resultsPromise = Model.find(fields)
-        .sort(sortby("desc"))
-        .limit(limit);
+        .sort({ sortby: sorted })
+        .limit(limit)
+        .populate();
   
   await Promise.all([resultsPromise, countPromise])
     .then((result, count) => {
-      const pages = Math.ceil(count / limit);
-      const pagination = { page, pages, items: count };
+      const pagination = { page, skip };
 
       if (result.length >= 1) {
         return res.status(200).json(
