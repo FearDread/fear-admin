@@ -115,7 +115,7 @@ const Signup = () => {
                 </div>
                 <div>
                   <div className="mt-3 d-flex justify-content-center gap-15 align-items-center">
-                    <button className="button border-0">Sign Up</button>
+                    <button className="button-30 border-0">Sign Up</button>
                   </div>
                 </div>
               </form>

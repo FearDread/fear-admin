@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import "./AdditionalInfo.css";
 
-import user1 from "../../../Assets/Users/user1.jpeg";
-import user2 from "../../../Assets/Users/user2.jpeg";
+import user1 from "../../../assets/images/comic_banner_1.jpg";
+import user2 from "../../../assets/images/comic_banner_1.jpg";
 
 import { FaStar } from "react-icons/fa";
-import Rating from "@mui/material/Rating";
+//import Rating from "@mui/material/Rating";
 
 const AdditionalInfo = () => {
   const [activeTab, setActiveTab] = useState("aiTab1");
@@ -211,7 +211,7 @@ const AdditionalInfo = () => {
                     </div>
                     <div className="userNewReviewRating">
                       <label>Your rating *</label>
-                      <Rating name="simple-controlled" size="small" />
+                      {/* <Rating name="simple-controlled" size="small" /> */}
                     </div>
                     <div className="userNewReviewForm">
                       <form>

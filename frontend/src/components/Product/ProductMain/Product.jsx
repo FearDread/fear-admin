@@ -9,8 +9,8 @@ import { PiShareNetworkLight } from "react-icons/pi";
 import { Link } from "react-router-dom";
 import { cruds, cart } from "@feardread/crud-service";
 import toast from "react-hot-toast";
-import Loader from "../../../Components/Loader/Loader";
-import defaultProdImg from "../../../Assets/Images/abstract_banner_1.jpg";
+import Loader from "../../../components/Loader/Loader";
+import defaultProdImg from "../../../assets/images/abstract_banner_1.jpg";
 import "./Product.css";
 
 

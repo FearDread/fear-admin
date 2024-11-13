@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Marquee from "react-fast-marquee";
+
 import BlogCard from "../components/Cards/BlogCard";
 import ProductCard from "../components/Cards/ProductCard";
 import SpecialProduct from "../components/Cards/SpecialCard";
@@ -20,8 +20,8 @@ import { getAllProducts } from "../features/products/productSlilce";
 import ReactStars from "react-rating-stars-component";
 import { addToWishlist } from "../features/products/productSlilce";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
-import TrendyCard from "../components/Product/TrendyCard/TrendyCard"
-
+import TrendyCard from "../components/Product/TrendyCard/TrendyCard";
+import AnimatedHero from "../components/AnimatedHero/AnimatedHero";
 import { cruds, auth, cart } from "@feardread/crud-service";
 
 const Home = () => {
@@ -51,6 +51,7 @@ const Home = () => {
   };
   return (
     <>
+    <AnimatedHero />
       <Container class1="home-wrapper-1 py-5">
         <div className="row">
           <div className="col-6">
@@ -461,40 +462,6 @@ const Home = () => {
                 );
               }
             })}
-        </div>
-      </Container>
-      <Container class1="marque-wrapper home-wrapper-2 py-5">
-        <div className="row">
-          <div className="col-12">
-            <div className="marquee-inner-wrapper card-wrapper">
-              <Marquee className="d-flex">
-                <div className="mx-4 w-25">
-                  <img src="images/brand-01.png" alt="brand" />
-                </div>
-                <div className="mx-4 w-25">
-                  <img src="images/brand-02.png" alt="brand" />
-                </div>
-                <div className="mx-4 w-25">
-                  <img src="images/brand-03.png" alt="brand" />
-                </div>
-                <div className="mx-4 w-25">
-                  <img src="images/brand-04.png" alt="brand" />
-                </div>
-                <div className="mx-4 w-25">
-                  <img src="images/brand-05.png" alt="brand" />
-                </div>
-                <div className="mx-4 w-25">
-                  <img src="images/brand-06.png" alt="brand" />
-                </div>
-                <div className="mx-4 w-25">
-                  <img src="images/brand-07.png" alt="brand" />
-                </div>
-                <div className="mx-4 w-25">
-                  <img src="images/brand-08.png" alt="brand" />
-                </div>
-              </Marquee>
-            </div>
-          </div>
         </div>
       </Container>
 
