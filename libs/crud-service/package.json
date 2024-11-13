@@ -1,6 +1,6 @@
 {
   "name": "@feardread/crud-service",
-  "version": "1.3.7",
+  "version": "1.3.8",
   "description": "API Hooks for RE\b\breact-redux",
   "main": "dist/index.js",
   "scripts": {
