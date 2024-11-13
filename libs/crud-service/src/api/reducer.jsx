@@ -8,21 +8,30 @@ const INITIAL_KEY_STATE = {
 };
 
 const INITIAL_STATE = {
-  list: {
+  order: INITIAL_KEY_STATE,
+  product: INITIAL_KEY_STATE,
+  category: INITIAL_KEY_STATE,
+  brand: INITIAL_KEY_STATE,
+  blog: {
     ...INITIAL_KEY_STATE,
     pagination: {
       page: 1,
-      pages: 1,
-      items: 10
+      pages: 1, 
+      count: 10
     }
   },
-  filter: INITIAL_KEY_STATE,
   create: INITIAL_KEY_STATE,
+  read: INITIAL_KEY_STATE,
   update: INITIAL_KEY_STATE,
   delete: INITIAL_KEY_STATE,
-  read: INITIAL_KEY_STATE,
-  search: { ...INITIAL_KEY_STATE, filter: {}, result: [] },
-};
+  search: { ...INITIAL_KEY_STATE, filter: {}, 
+    pagination: {
+      page: 1,
+      pages: 1, 
+      count: 10
+    }
+  }
+}
 
 const crudReducer = (state = INITIAL_STATE, action) => {
   const { payload, keyState } = action;
@@ -61,7 +70,6 @@ const crudReducer = (state = INITIAL_STATE, action) => {
         [keyState]: {
           ...state[keyState],
           result: payload,
-          current: payload,
           loading: false,
           success: true,
         },

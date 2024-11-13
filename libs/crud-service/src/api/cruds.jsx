@@ -29,32 +29,19 @@ const cruds = {
       console.log("Error :: Missing entity");
       return;
     }
-    dispatch({ type: Types.REQUEST_LOADING, keyState: "list", payload: null });
+    dispatch({ type: Types.REQUEST_LOADING, keyState: entity, payload: null });
 
     await axios.get(API_BASE_URL + '/' + entity + '/all')
-      .then((response) => { dispatch({ type: Types.REQUEST_SUCCESS, payload: response.data.result, keyState: "list" }); })
-      .catch((error) => { dispatch({ type: Types.REQUEST_FAILED, keyState: "list", payload: error }); })
-  },
-
-  endpoint: (entity, endpoint) => async (dispatch) => {
-    if (entity === undefined || endpoint === undefined) {
-      console.log("Error :: Missing entity or endpoint");
-      return;
-    }
-    dispatch({ type: Types.REQUEST_LOADING, keyState: "list", payload: null });
-
-    await axios.get(API_BASE_URL + '/' + entity + '/' + endpoint)
-      .then((response) => {
-        console.log('trendy res = ', response);
-        if (response.data.success) {
-          dispatch({ type: Types.REQUEST_SUCCESS, keyState: "list", payload: response.data.result });
-        }
-      })
-      .catch((error) => { dispatch({ type: Types.REQUEST_FAILED, keyState: "list", payload: error }); });
+      .then((response) => { dispatch({ type: Types.REQUEST_SUCCESS, payload: response.data.result, keyState: entity }); })
+      .catch((error) => { dispatch({ type: Types.REQUEST_FAILED, keyState: entity, payload: error }); })
   },
 
   list: ( entity, _page = 1, _items = 10) => async (dispatch) => {
-    dispatch({ type: Types.REQUEST_LOADING, keyState: "list", payload: null });
+    if (entity === undefined) {
+      console.log("Error :: Missing entity");
+      return;
+    }
+    dispatch({ type: Types.REQUEST_LOADING, keyState: entity, payload: null });
 
     let page = _page ? "page=" + _page : "";
     let items = _items ? "&items=" + _items : "";
@@ -64,10 +51,10 @@ const cruds = {
       .then((response) => {
         if ( response.data.success === true ) {
           const results = { result: response.data.result, pagination: response.data.pagination}; 
-          dispatch({ type: Types.REQUEST_SUCCESS, keyState: "list", payload: results });
+          dispatch({ type: Types.REQUEST_SUCCESS, keyState: entity, payload: results });
         }
       })
-      .catch((error) => { dispatch({ type: Types.REQUEST_FAILED, keyState: "list", payload: error }); });
+      .catch((error) => { dispatch({ type: Types.REQUEST_FAILED, keyState: entity, payload: error }); });
   },
 
   filter: ( entity, option = {} ) => async (dispatch) => {
@@ -78,10 +65,10 @@ const cruds = {
     await axios.get(API_BASE_URL + '/' + entity + query)
       .then((response) => {
         if ( response.data.success === true ) {
-          dispatch({ type: Types.REQUEST_SUCCESS, payload: response.data.result, keyState: "filter" });
+          dispatch({ type: Types.REQUEST_SUCCESS, keyState: entity, payload: response.data.result });
         }
       })
-      .catch((error) => { dispatch({ type: Types.REQUEST_FAILED, keyState: "filter", payload: error }); });
+      .catch((error) => { dispatch({ type: Types.REQUEST_FAILED, keyState: entity, payload: error }); });
   },
 
   create: ( entity, _data ) => async (dispatch) => {
@@ -91,12 +78,12 @@ const cruds = {
       {headers: { "Content-Type": "multipart/form-data" }})
       .then((response) => {
         if ( response.data.success === true ) {
-          dispatch({ type: Types.REQUEST_SUCCESS, payload: response.data.result, keyState: "create" });
+          dispatch({ type: Types.REQUEST_SUCCESS, keyState: "create", payload: response.data.result });
         }
-        dispatch({ type: Types.CURRENT_ITEM, payload: response.data.result });
+        dispatch({ type: Types.CURRENT_ITEM, keyState: entity, payload: response.data.result });
       })
       .catch((error) => {
-        dispatch({ type: Types.REQUEST_FAILED, payload: error, keyState: "create" });
+        dispatch({ type: Types.REQUEST_FAILED, keyState: "create", payload: error });
       });
   },
 
@@ -134,10 +121,10 @@ const cruds = {
 
     await axios.delete(API_BASE_URL + '/' + entity, _id)
       .then((response) => {
-        dispatch({ type: Types.REQUEST_SUCCESS, keyState: "delete", payload: response.data.result });
+        dispatch({ type: Types.REQUEST_SUCCESS, keyState: entity, payload: response.data.result });
       })
       .catch((error) => {
-        dispatch({ type: Types.REQUEST_FAILED, keyState: "delete", payload: error });
+        dispatch({ type: Types.REQUEST_FAILED, keyState: entity, payload: error });
       });
   },
 
@@ -147,10 +134,10 @@ const cruds = {
       currentPage = 1,
       price = [0, 100000],
       category,
+      brand,
       ratings = 0
     ) => async (dispatch) => {
-      console.log("search req = " + entity + ' + ' + keyword + ' + ' + category);
-      dispatch({ type: Types.REQUEST_LOADING });
+      dispatch({ type: Types.REQUEST_LOADING, keyState: "search" });
 
       let link = API_BASE_URL + `/` + entity + '?';
       
@@ -161,10 +148,10 @@ const cruds = {
     
       await axios.get(API_BASE_URL + link)
         .then((response) => {
-          dispatch({ type: Types.REQUEST_SUCCESS, keystate: "search", payload: response.data.result });
+          dispatch({ type: Types.REQUEST_SUCCESS, keyState: "search", payload: response.data.result });
         })
         .catch((error) => {
-          dispatch({ type: Types.REQUEST_FAILED, keystate: "search", payload: error });
+          dispatch({ type: Types.REQUEST_FAILED, keyState: "search", payload: error });
         });
     }
 };
