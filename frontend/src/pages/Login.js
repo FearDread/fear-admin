@@ -8,6 +8,7 @@ import { useFormik } from "formik";
 import * as yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../features/user/userSlice";
+import { crud, auth } from "@feardread/crud-service";
 
 let loginSchema = yup.object({
   email: yup
@@ -29,7 +30,9 @@ const Login = () => {
     },
     validationSchema: loginSchema,
     onSubmit: (values) => {
-      dispatch(loginUser(values));
+      
+      dispatch(auth.login(values));
+      //dispatch(loginUser(values));
 
       // setTimeout(() => {
       //   window.location.reload();
