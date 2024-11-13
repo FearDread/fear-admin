@@ -2,10 +2,10 @@ import React, { useState, useEffect  } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FiHeart } from "react-icons/fi";
 import { FaStar, FaCartPlus } from "react-icons/fa";
-import { addToCart } from "../../../Features/Cart/cartSlice";
+import { addToCart } from "../../../features/cart/cartSlice";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
-import defaultProdImg from "../../../Assets/Images/abstract_banner_1.jpg";
+import defaultProdImg from "../../../assets/images/abstract_banner_1.jpg";
 
 const TrendyCard = ( {product} ) => {
   const dispatch = useDispatch();

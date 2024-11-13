@@ -9,8 +9,8 @@ import { FiHeart } from "react-icons/fi";
 import { FaStar } from "react-icons/fa";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import { FaCartPlus } from "react-icons/fa";
-import { addToCart } from "../../../Features/Cart/cartSlice"
-import defaultProdImg from "../../../Assets/Images/abstract_banner_1.jpg";
+import { addToCart } from "../../../features/cart/cartSlice"
+import defaultProdImg from "../../../assets/images/abstract_banner_1.jpg";
 import "swiper/css";
 import "swiper/css/navigation";
 import "./LimitedEdition.css";

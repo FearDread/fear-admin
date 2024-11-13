@@ -119,7 +119,7 @@ const Contact = () => {
                     </div>
                   </div>
                   <div>
-                    <button className="button border-0">Submit</button>
+                    <button className="button-30 border-0">Submit</button>
                   </div>
                 </form>
               </div>
@@ -130,18 +130,18 @@ const Contact = () => {
                     <li className="mb-3 d-flex gap-15 align-items-center">
                       <AiOutlineHome className="fs-5" />
                       <address className="mb-0">
-                        Hno : Daiict college, Reliance Cross Rd,
-                        Gandhinagar,Gujarat, 382007
+                        US: 2003 E. Veterans Memorial Blvd.
+                        Killeen, TX, 76541
                       </address>
                     </li>
                     <li className="mb-3 d-flex gap-15 align-items-center">
                       <BiPhoneCall className="fs-5" />
-                      <a href="tel:+91 8264954234">+91 8264954234</a>
+                      <a href="tel:+91 8264954234">+1 254-435-0130</a>
                     </li>
                     <li className="mb-3 d-flex gap-15 align-items-center">
                       <AiOutlineMail className="fs-5" />
-                      <a href="mailto:devjariwala8444@gmail.com">
-                        devjariwala8444@gmail.com
+                      <a href="mailto:ekomix-support@gmail.com">
+                        ekomix-support@gmail.com
                       </a>
                     </li>
                     <li className="mb-3 d-flex gap-15 align-items-center">

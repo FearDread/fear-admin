@@ -9,7 +9,15 @@
   position: sticky;
   top: 0;
   color: white !important;
+}
+
+.header-bottom {
+  background: radial-gradient(ellipse at bottom, #5d1313 30%, rgba(44, 1, 1, 0.949) 80%);
   border-bottom:1px solid red;
+  display: flex;
+  position: fixed;
+  width: 100%;
+  z-index: 1;
 }
 
 .logoLinkContainer {
@@ -25,10 +33,10 @@
   justify-content: center;
 }
 
-.logoContainer img {
-  width: 100px;
+.logo-img {
+  width: 90px;
   background: none !important;
-  top: -11px;
+  top: -10px;
   position: absolute;
   left: 5%;
 }

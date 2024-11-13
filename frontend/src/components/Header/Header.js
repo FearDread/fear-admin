@@ -6,12 +6,17 @@ import wishlist from "../../assets/images/wishlist.svg";
 import user from "../../assets/images/user.svg";
 import cart from "../../assets/images/cart.svg";
 import menu from "../../assets/images/menu.svg";
+import logo from "../../assets/images/ekomix/logo.png";
 import { useDispatch, useSelector } from "react-redux";
 import { Typeahead } from "react-bootstrap-typeahead";
-import "react-bootstrap-typeahead/css/Typeahead.css";
+
 
 import { getAProduct } from "../../features/products/productSlilce";
 import { getUserCart } from "../../features/user/userSlice";
+
+import "react-bootstrap-typeahead/css/Typeahead.css";
+import "./Navbar.css";
+
 
 const Header = () => {
   const dispatch = useDispatch();
@@ -63,30 +68,13 @@ const Header = () => {
   };
   return (
     <>
-      <header className="header-top-strip py-3">
-        <div className="container-xxl">
-          <div className="row">
-            <div className="col-6">
-              <p className="text-white mb-0">Free Shipping Over Rs.100</p>
-            </div>
-            <div className="col-6">
-              <p className="text-end text-white mb-0">
-                Hotline:
-                <a className="text-white" href="tel:+91 8264954234">
-                  +91 8264954234
-                </a>
-              </p>
-            </div>
-          </div>
-        </div>
-      </header>
-      <header className="header-upper py-3">
+      <header className="header-upper navBar py-3">
         <div className="container-xxl">
           <div className="row align-items-center">
             <div className="col-2">
               <h2>
                 <Link className="text-white" to="/ ">
-                  Cart Corner
+                  <img className="logo-img" src={logo} alt="logo" />
                 </Link>
               </h2>
             </div>
