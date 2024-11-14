@@ -28,8 +28,8 @@ const Header = () => {
   const [paginate, setPaginate] = useState(true);
   const productState = useSelector((state) => state?.product?.product);
   const navigate = useNavigate();
-  const { result } = useSelector((state) => state.crud.all);
-  const { auth } = useSelector((state) => state );
+  const { result } = useSelector((state) => state.crud.category);
+  const { user, isLoggedIn } = useSelector((state) => state.auth );
 
   const getTokenFromLocalStorage = localStorage.getItem("customer")
     ? JSON.parse(localStorage.getItem("customer"))
@@ -189,9 +189,10 @@ const Header = () => {
                     >
                       {result &&
                         result.map((item, index) => {
+                          const link = "/store?category=" + item.title;
                           return (
                             <li key={index}>
-                              <Link className="dropdown-item" to={"/shop?category=" + item.title} >
+                              <Link className="dropdown-item" to={link} >
                                 {item.title}
                               </Link>
                             </li>

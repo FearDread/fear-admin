@@ -9,7 +9,7 @@ import Container from "../components/Common/Container";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllProducts } from "../features/products/productSlilce";
 import { Link } from "react-router-dom";
-import { cruds, auth, caart } from "@feardread/crud-service";
+import { cruds, auth, cart } from "@feardread/crud-service";
 
 const OurStore = () => {
   const { keyword } = useParams();
@@ -44,16 +44,17 @@ const OurStore = () => {
     setTags(newtags);
   }, [productState]);
 
-
   useEffect(() => {
     console.log("keyword = ", keyword);
     getProducts();
   }, [sort, tag, brand, category, minPrice, maxPrice, keyword]);
   const getProducts = () => {
-
+    dispatch(cruds.search('product', category, brand));
+    /*
     dispatch(
       getAllProducts({ sort, tag, brand, category, minPrice, maxPrice })
     );
+    */
   };
 
   return (
