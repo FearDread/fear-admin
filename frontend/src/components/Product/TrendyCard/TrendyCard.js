@@ -2,12 +2,15 @@ import React, { useState, useEffect  } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FiHeart } from "react-icons/fi";
 import { FaStar, FaCartPlus } from "react-icons/fa";
-import { addToCart } from "../../../features/cart/cartSlice";
 import { Link } from "react-router-dom";
+import { cart } from "@feardread/crud-service";
 import toast from "react-hot-toast";
 import defaultProdImg from "../../../assets/images/abstract_banner_1.jpg";
+import "./TrendyCard.css";
 
-const TrendyCard = ( {product} ) => {
+const TrendyCard = (props) => {
+  const { key, id, product } = props;
+
   const dispatch = useDispatch();
   const sortByPrice = (a, b) => a.productPrice - b.productPrice;
   const [ wishList, setWishList ] = useState({});
@@ -32,18 +35,19 @@ const TrendyCard = ( {product} ) => {
     if (productInCart && productInCart.quantity >= 20) {
       toast.error("Product limit reached");
     } else {
-      dispatch(addToCart(product));
+      dispatch(cart.add(product));
+      //dispatch(addToCart(product));
       toast.success(`Added to cart!`);
     }
   };
 
   useEffect(() => {
-    if (product.images.length === 0) {
-      product.images = [defaultProdImg]
-    }
+
   },[]);
 
     return (
+      <>
+        <div className="col-3 trendy-card" key={key}>
         <div className="trendyProductContainer" key={product._id}>
         <div className="trendyProductImages">
           <Link to={`/product/${product._id}`}>
@@ -100,6 +104,8 @@ const TrendyCard = ( {product} ) => {
           </div>
         </div>
       </div>
+      </div>
+      </>
     )
 }
 

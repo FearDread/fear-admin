@@ -29,10 +29,12 @@ const ProductDetails = () => {
       </>
     ) : (
       <>
+        <div className="product-details">
         <Product product={result} />
         <AdditionalInfo />
         <LimitedEdition products={result} />
         { /*<RelatedProducts /> */ }
+        </div>
       </>
     )};
   </>

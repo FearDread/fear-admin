@@ -1,8 +1,13 @@
+.trendy-card {
+  margin-bottom:30px;
+}
+
 .trendyProductContainer {
-    position: relative;
+  position: relative;
     padding: 5px;
     border: 1px solid #767676;
-    width: 258px;
+    border-radius: 5px;
+    background: white;
   }
   
   .trendyProductContainer:hover {
@@ -13,7 +18,6 @@
   
   .trendyProductImages {
     position: relative;
-    width: 258px;
     height: 320px;
     overflow: hidden;
     -webkit-transition: all 0.2s cubic-bezier(0.99, 0.99, 0, 0.61);
@@ -69,7 +73,9 @@
   }
   
   .trendyProductContainer:hover h4 {
-    top: 270px;
+    top: 250px;
+    border: 1px solid grey;
+
   }
   
   .trendyProductInfo {

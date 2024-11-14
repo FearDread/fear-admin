@@ -1,8 +1,42 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import toast from "react-hot-toast";
+import { Link } from "react-router-dom";
+import { FiHeart } from "react-icons/fi";
+import { FaStar } from "react-icons/fa";
+import { FaCartPlus } from "react-icons/fa";
+import { cart } from "@feardread/crud-service";
 import defaultProdImg from "../../../assets/images/abstract_banner_1.jpg";
-
+import "./LimitedCard.css";
 
 const LimitedCard = ( {product} ) => {
+    const dispatch = useDispatch();
+  const cartItems = 0;
+  const [wishList, setWishList] = useState({});
+
+  const handleWishlistClick = (productID) => {
+    setWishList((prevWishlist) => ({
+      ...prevWishlist,
+      [productID]: !prevWishlist[productID],
+    }));
+  };
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleAddToCart = (product) => {
+    const productInCart = cartItems.find(
+      (item) => item.productID === product.productID
+    );
+
+    if (productInCart && productInCart.quantity >= 20) {
+      toast.error("Product limit reached");
+    } else {
+      dispatch(cart.add(product));
+      toast.success(`Added to cart!`);
+    }
+  };
 
     return (
         <div className="lpContainer">
