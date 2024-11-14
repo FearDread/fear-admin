@@ -230,3 +230,7 @@
 .card-body{
   padding: $card-spacer-y;
 }
+.card-login {
+  border: none !important;
+  background: rgba(0,0,0,.6) !important;
+}

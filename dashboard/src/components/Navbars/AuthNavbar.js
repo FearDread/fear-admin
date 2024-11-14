@@ -23,7 +23,7 @@ const AuthNavbar = (props) => {
   };
   return (
     <Navbar
-      className={classnames("navbar-absolute fixed-top", color)}
+      className={classnames("navbar-absolute navbar-auth fixed-top", color)}
       expand="lg"
     >
       <Container fluid>
