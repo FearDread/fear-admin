@@ -3,15 +3,15 @@ const { ParsedMail, simpleParser } = require("mailparser");
 
 
 module.exports = class Worker {
-    constructor (serverInfo) {
-        this.serverinfo = serverInfo;
+    constructor (mailinfo) {
+        this.mailinfo = mailinfo;
     }
 
     connectToServer = async (req, res) => {
         const client = new ImapClient.default(
-            this.serverInfo.imap.host,
-            this.serverInfo.imap.port,
-            { auth: this.serverInfo.imap.auth } 
+            this.mailinfo.imap.host,
+            this.mailinfo.imap.port,
+            { auth: this.mailinfo.imap.auth } 
         );
 
         client.logLevel = client.LOG_LEVEL_NONE; // keep the output logging
