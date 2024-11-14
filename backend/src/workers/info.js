@@ -1,0 +1,19 @@
+
+module.exports = {
+    "smtp": {
+      "host": "mail.mydomain.com",
+      "port": 999,
+      "auth": {
+        "user": "user@domain.com",
+        "pass": "xxx"
+      }
+    },
+    "imap": {
+      "host": "mail.mydomain.com",
+      "port": 999,
+      "auth": {
+        "user": "user@domain.com",
+        "pass": "xxx"
+      }
+    }
+  }

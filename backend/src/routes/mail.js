@@ -1,12 +1,29 @@
-const ServerInfo = require("../libs/info");
-const imap = require("../controllers/imap");
-const smtp = require("../controllers/smtp");
-const Contacts = require("../models/contact");
+//onst imap = require("../workers/imap");
+//const Contacts = require("../models/contact");
+const smtp = require("../workers/smtp");
+const router = require("express").Router();
+const mailinfo = require("../workers/info"); 
 
-module.exports = (app) => {
-    // REST Endpoint: List Mailboxes
-// Express app is acting as a proxy to the IMAP (and also SMTP and Contacts) object
-app.get("/mailboxes", async (req, res) => {
+const mailer = new smtp(mailinfo);
+
+router.get('/', (req, res) => {
+    mailer.sendEmail()
+        .then((response) => res.send(response.message))
+        .catch((error) => res.status(500).send(error.message));
+});
+
+router.post('/send', (req, res) => {
+    console.log(`Received data: ${req.body}`);
+   
+    mailer.sendEmail(req.body)
+        .then((response) => res.json({ message: response.message }))
+        .catch((error) => res.status(500).json({ message: error.message }))
+});
+
+module.exports = router;
+
+/*
+router.get("/mailboxes", async (req, res) => {
     const imapWorker = new imap.Worker(ServerInfo);
     
     await imapWorker.listMailboxes()
@@ -15,7 +32,7 @@ app.get("/mailboxes", async (req, res) => {
 );
 
 // REST Endpoint: List Messages
-app.get("/mailboxes/:mailbox", // specify the name of the mailbox to get messages for
+router.get("/mailboxes/:mailbox", // specify the name of the mailbox to get messages for
     async (inRequest: Request, inResponse: Response) => {
         try {
             const imapWorker: IMAP.Worker = new IMAP.Worker(serverInfo);
@@ -32,7 +49,7 @@ app.get("/mailboxes/:mailbox", // specify the name of the mailbox to get message
 );
 
 // REST Endpoint: Get a Message
-app.get("/messages/:mailbox/:id",
+router.get("/messages/:mailbox/:id",
     async (inRequest: Request, inResponse: Response) => {
         try {
             const imapWorker: IMAP.Worker = new IMAP.Worker(serverInfo);
@@ -51,7 +68,7 @@ app.get("/messages/:mailbox/:id",
 
 // REST Endpoint: Delete a Message
 // the app.delete() method is used to register this endpoint.
-app.delete("/messages/:mailbox/:id",
+router.delete("/messages/:mailbox/:id",
     async (inRequest: Request, inResponse: Response) => {
         try {
             const imapWorker: IMAP.Worker = new IMAP.Worker(serverInfo);
@@ -72,7 +89,7 @@ app.delete("/messages/:mailbox/:id",
 // app.post() is used to send a message
 // IMAP protocol: retrieving mailboxes and messages
 // SMTP protocol: send messages
-app.post("/messages",
+router.post("/messages",
     async (inRequest: Request, inResponse: Response) => {
         try {
             const smtpWorker: SMTP.Worker = new SMTP.Worker(serverInfo);
@@ -87,7 +104,7 @@ app.post("/messages",
 );
 
 // REST Endpoint: List Contacts
-app.get("/contacts",
+router.get("/contacts",
     async (inRequest: Request, inResponse: Response) => {
         try {
             const contactsWorker: Contacts.Worker = new Contacts.Worker();
@@ -102,7 +119,7 @@ app.get("/contacts",
 );
 
 // REST Endpoint: Add Contact
-app.post("/contacts",
+router.post("/contacts",
     async (inRequest: Request, inResponse: Response) => {
         try {
             const contactsWorker: Contacts.Worker = new Contacts.Worker();
@@ -117,7 +134,7 @@ app.post("/contacts",
 );
 
 // REST Endpoint: Update Contacts
-app.put("/contacts",
+router.put("/contacts",
     async (inRequest: Request, inResponse: Response) => {
         try {
             const contactsWorker: Contacts.Worker = new Contacts.Worker();
@@ -132,7 +149,7 @@ app.put("/contacts",
 );
 
 // REST Endpoint: Delete Contact
-app.delete("/contacts/:id",
+router.delete("/contacts/:id",
     async (inRequest: Request, inResponse: Response) => {
         try {
             const contactsWorker: Contacts.Worker = new Contacts.Worker();
@@ -145,4 +162,5 @@ app.delete("/contacts/:id",
         }
     }
 );
-}
+*/
+
