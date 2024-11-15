@@ -52,7 +52,7 @@ function App() {
               }
             />
             <Route
-              path="my-orders"
+              path="orders"
               element={
                 <PrivateRoutes>
                   <Orders />
@@ -60,7 +60,7 @@ function App() {
               }
             />
             <Route
-              path="my-profile"
+              path="profile"
               element={
                 <PrivateRoutes>
                   <Profile />

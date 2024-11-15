@@ -51,7 +51,7 @@ exports.development = (err, req, res, next) => {
         "<mark>$&</mark>"
       ),
     };
-  
+    console.log("Error Details = ", err);
     res.status(500).json({ success: false, errorDetails });
   };
   

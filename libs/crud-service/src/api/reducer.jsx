@@ -24,7 +24,8 @@ const INITIAL_STATE = {
   read: INITIAL_KEY_STATE,
   update: INITIAL_KEY_STATE,
   delete: INITIAL_KEY_STATE,
-  search: { ...INITIAL_KEY_STATE, filter: {}, 
+  search: { ...INITIAL_KEY_STATE,
+    filter: {}, 
     pagination: {
       page: 1,
       pages: 1, 

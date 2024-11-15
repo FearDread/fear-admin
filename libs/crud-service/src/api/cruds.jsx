@@ -146,7 +146,7 @@ const cruds = {
         link += `keyword=${keyword}&page=${currentPage}&price[gte]=${price[0]}&price[lte]=${price[1]}&ratings[gte]=${ratings}&category=${category}`;
       }
     
-      await axios.get(API_BASE_URL + link)
+      await axios.get(link)
         .then((response) => {
           dispatch({ type: Types.REQUEST_SUCCESS, keyState: "search", payload: response.data.result });
         })

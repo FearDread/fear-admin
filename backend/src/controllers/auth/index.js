@@ -31,9 +31,11 @@ exports.logout = async (req, res, next) => {
 
 exports.register = async (req, res) => {
   const email = req.body.email;
+  const name = req.body.firstname ? req.body.firstname + " " + req.body.lastname : req.body.name;
   const newUser = await User.findOne({ email: email });
 
   if (!newUser) {
+    req.body.name = name;
     await User.create(req.body)
       .then((user) => { 
         let token = this.getJWTToken(res, user);
