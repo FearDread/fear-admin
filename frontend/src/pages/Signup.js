@@ -75,7 +75,7 @@ const Signup = () => {
                   onBlur={formik.handleBlur("firstname")}
                 />
                 <div className="error">
-                  {formik.touched.firstname && formik.errors.firstname}
+                  {formik.touched.name && formik.errors.firstname}
                 </div>
                 <CustomInput
                   type="text"
@@ -123,7 +123,7 @@ const Signup = () => {
                 </div>
                 <div>
                   <div className="mt-3 d-flex justify-content-center gap-15 align-items-center">
-                    <button className="button-30 border-0">Sign Up</button>
+                    <button type="submit" className="button-30 border-0">Sign Up</button>
                   </div>
                 </div>
               </form>
