@@ -1,5 +1,5 @@
 
-export { default as cruds } from "./api/cruds.jsx";
+export { default as cruds } from "./cruds/cruds.jsx";
 
 export { default as auth } from "./auth/auth.jsx";
 

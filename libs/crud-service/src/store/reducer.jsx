@@ -1,7 +1,7 @@
 import { combineReducers } from "redux";
-import * as actionTypes from "../api/types";
+import * as actionTypes from "../cruds/types.js";
 import authReducer from "../auth/reducer.jsx";
-import crudReducer  from "../api/reducer.jsx";
+import crudReducer  from "../cruds/reducer.jsx";
 import cartReducer from "../cart/reducer.jsx";
 
 const appReducer = combineReducers({

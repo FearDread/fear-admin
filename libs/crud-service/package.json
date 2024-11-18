@@ -1,6 +1,6 @@
 {
   "name": "@feardread/crud-service",
-  "version": "1.4.1",
+  "version": "1.4.5",
   "description": "API Hooks for RE\b\breact-redux",
   "main": "dist/index.js",
   "scripts": {
@@ -21,6 +21,7 @@
     "https-browserify": "^1.0.0",
     "os-browserify": "^0.3.0",
     "process": "^0.11.10",
+    "qs": "^6.13.1",
     "redux": "^5.0.1",
     "redux-logger": "^3.0.6",
     "redux-thunk": "^3.1.0",

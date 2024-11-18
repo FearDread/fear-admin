@@ -1,5 +1,5 @@
 import * as Types from "./types.js";
-import { API_BASE_URL } from "../api/config.jsx";
+import { API_BASE_URL } from "../cruds/config.jsx";
 import StorePersist from "../store/StorePersist.jsx";
 import axios from "axios";
 
