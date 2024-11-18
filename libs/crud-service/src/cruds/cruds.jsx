@@ -1,4 +1,5 @@
 import axios from "axios";
+import API from "../api/instance.js";
 import * as Types from "./types.js";
 import { API_BASE_URL } from "./config.jsx";
 
@@ -31,7 +32,7 @@ const cruds = {
     }
     dispatch({ type: Types.REQUEST_LOADING, keyState: entity, payload: null });
 
-    await axios.get(API_BASE_URL + '/' + entity + '/all')
+    await API.get(entity + '/all')
       .then((response) => { dispatch({ type: Types.REQUEST_SUCCESS, payload: response.data.result, keyState: entity }); })
       .catch((error) => { dispatch({ type: Types.REQUEST_FAILED, keyState: entity, payload: error }); })
   },
