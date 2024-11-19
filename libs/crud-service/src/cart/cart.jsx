@@ -1,11 +1,10 @@
-import axios from "axios";
+import API from "../api/instance";
 import * as Types from "./types.js";
 import StorePersist from "../store/StorePersist.jsx";
-import { API_BASE_URL } from "../cruds/config.jsx";
 
 const cart = {
     create: (_data) => async (dispatch, getState) => {
-        await axios.post(API_BASE_URL + "/cart/product/" + _data.productId, _data)
+        await API.post("cart/product/" + _data.productId, _data)
             .then((response) => {
                 console.log('added to cart :: ', response);
                 dispatch({ type: Types.CART_ADD_TO, payload: response.data.result })
@@ -18,7 +17,7 @@ const cart = {
     },
 
     read: (userId) => async (dispatch) => {
-        await axios.get(API_BASE_URL + "/cart/mycart", userId)
+        await API.get("cart/mycart", userId)
             .then((response) => {
                 dispatch({ type: Types.CART_USER, payload: response.data.result })
             })
