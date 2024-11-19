@@ -1,7 +1,5 @@
-import axios from "axios";
 import API from "../api/instance.js";
 import * as Types from "./types.js";
-import { API_BASE_URL } from "./config.jsx";
 
 const cruds = {
 
@@ -48,7 +46,7 @@ const cruds = {
     let items = _items ? "&items=" + _items : "";
     let query = `?${page}${items}`;
 
-    await axios.get(API_BASE_URL + '/' + entity + query)
+    await API.get(entity + query)
       .then((response) => {
         if ( response.data.success === true ) {
           const results = { result: response.data.result, pagination: response.data.pagination}; 
@@ -63,7 +61,7 @@ const cruds = {
     let equal = option.equal ? "&equal=" + option.equal : "";
     let query = `?${filter}${equal}`;
 
-    await axios.get(API_BASE_URL + '/' + entity + query)
+    await API.get(entity + query)
       .then((response) => {
         if ( response.data.success === true ) {
           dispatch({ type: Types.REQUEST_SUCCESS, keyState: entity, payload: response.data.result });
@@ -75,7 +73,7 @@ const cruds = {
   create: ( entity, _data ) => async (dispatch) => {
     dispatch({type: Types.REQUEST_LOADING});
   
-    await axios.post(API_BASE_URL + '/' + entity + `/new`, _data,
+    await API.post(entity + `/new`, _data,
       {headers: { "Content-Type": "multipart/form-data" }})
       .then((response) => {
         if ( response.data.success === true ) {
@@ -91,7 +89,7 @@ const cruds = {
   read: (entity, _id) => async (dispatch) => {
     dispatch({ type: Types.REQUEST_LOADING, keyState: "read", payload: null });
 
-    await axios.get(API_BASE_URL + '/' + entity + '/' + _id)
+    await API.get(entity + '/' + _id)
       .then((response) => { 
         if ( response.data.success ) {
           dispatch({ type: Types.REQUEST_SUCCESS, keyState: "read", payload: response.data.result });
@@ -105,7 +103,7 @@ const cruds = {
   update: (entity, _id, _data) => async (dispatch) => {
     dispatch({ type: Types.REQUEST_LOADING, keyState: "update", payload: null });
 
-    await axios.put(API_BASE_URL + '/' + entity, _id, _data)
+    await API.put(entity, _id, _data)
       .then((response) => {
         if ( response.data.success === true ) {
           dispatch({ type: Types.REQUEST_SUCCESS, keyState: "update", payload: response.data.result });
@@ -120,7 +118,7 @@ const cruds = {
   delete: (entity, _id) => async (dispatch) => {
     dispatch({type: Types.REQUEST_LOADING, keyState: "delete", payload: null });
 
-    await axios.delete(API_BASE_URL + '/' + entity, _id)
+    await API.delete(entity, _id)
       .then((response) => {
         dispatch({ type: Types.REQUEST_SUCCESS, keyState: entity, payload: response.data.result });
       })
@@ -140,14 +138,14 @@ const cruds = {
     ) => async (dispatch) => {
       dispatch({ type: Types.REQUEST_LOADING, keyState: "search" });
 
-      let link = API_BASE_URL + `/` + entity + '?';
+      let link = entity + '?';
       
       link += `keyword=${keyword}&page=${currentPage}&price=${price[0]}&ratings=${ratings}`;  
       if (category) {
         link += `keyword=${keyword}&page=${currentPage}&price[gte]=${price[0]}&price[lte]=${price[1]}&ratings[gte]=${ratings}&category=${category}`;
       }
     
-      await axios.get(link)
+      await API.get(link)
         .then((response) => {
           dispatch({ type: Types.REQUEST_SUCCESS, keyState: "search", payload: response.data.result });
         })

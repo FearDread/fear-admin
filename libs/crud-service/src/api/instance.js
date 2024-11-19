@@ -3,6 +3,7 @@ import axios from "axios";
 import qs from "qs";
 import StorePersist from "../store/StorePersist.jsx";
 
+const API_URL = process.env.API_URL;
 const API_BASE_URL = (process.env.NODE_ENV === "production")
                  ? "http://13.59.85.143:4000/fear/api/" 
                  : "http://localhost:4000/fear/api/";
@@ -11,6 +12,7 @@ const ACCESS_TOKEN_NAME = (process.env.JWT_TOKEN)
                 ? process.env.JWT_TOKEN 
                 : "x-token";
 
+console.log("Env Base URL = " + API_URL);
 const instance = axios.create({
     baseURL: `${API_BASE_URL}`,
     paramsSerializer: (params) => {
