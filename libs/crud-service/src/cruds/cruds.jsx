@@ -81,9 +81,7 @@ const cruds = {
         }
         dispatch({ type: Types.CURRENT_ITEM, keyState: entity, payload: response.data.result });
       })
-      .catch((error) => {
-        dispatch({ type: Types.REQUEST_FAILED, keyState: "create", payload: error });
-      });
+      .catch((error) => { dispatch({ type: Types.REQUEST_FAILED, keyState: "create", payload: error });});
   },
 
   read: (entity, _id) => async (dispatch) => {
@@ -119,39 +117,24 @@ const cruds = {
     dispatch({type: Types.REQUEST_LOADING, keyState: "delete", payload: null });
 
     await API.delete(entity, _id)
-      .then((response) => {
-        dispatch({ type: Types.REQUEST_SUCCESS, keyState: entity, payload: response.data.result });
-      })
-      .catch((error) => {
-        dispatch({ type: Types.REQUEST_FAILED, keyState: entity, payload: error });
-      });
+      .then((response) => { dispatch({ type: Types.REQUEST_SUCCESS, keyState: entity, payload: response.data.result }); })
+      .catch((error) => { dispatch({ type: Types.REQUEST_FAILED, keyState: entity, payload: error });});
   },
 
-  search: (
-      entity,
-      keyword = "",
-      currentPage = 1,
-      price = [0, 100000],
-      category,
-      brand,
-      ratings = 0
-    ) => async (dispatch) => {
-      dispatch({ type: Types.REQUEST_LOADING, keyState: "search" });
-
-      let link = entity + '?';
+  search: ( entity, params ) => async (dispatch) => {
+      let link = entity + '/search?';
+      let { keyword, category, currentPage, price, ratings } = params;
       
-      link += `keyword=${keyword}&page=${currentPage}&price=${price[0]}&ratings=${ratings}`;  
-      if (category) {
-        link += `keyword=${keyword}&page=${currentPage}&price[gte]=${price[0]}&price[lte]=${price[1]}&ratings[gte]=${ratings}&category=${category}`;
+      dispatch({ type: Types.REQUEST_LOADING, keyState: "search" });
+      
+      link += `category=${category}&keyword=${keyword}&page=${currentPage}&price=${price}&ratings=${ratings}`;  
+      if (price instanceof Array) {
+        link += `keyword=${keyword}&page=${currentPage}&price[gte]=${price[0]}&price[lte]=${price[1]}&ratings[gte]=${ratings}`;
       }
     
       await API.get(link)
-        .then((response) => {
-          dispatch({ type: Types.REQUEST_SUCCESS, keyState: "search", payload: response.data.result });
-        })
-        .catch((error) => {
-          dispatch({ type: Types.REQUEST_FAILED, keyState: "search", payload: error });
-        });
+        .then((response) => { dispatch({ type: Types.REQUEST_SUCCESS, keyState: "search", payload: response.data.result });})
+        .catch((error) => { dispatch({ type: Types.REQUEST_FAILED, keyState: "search", payload: error }); });
     }
 };
 

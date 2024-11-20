@@ -5,7 +5,7 @@ import StorePersist from "../store/StorePersist.jsx";
 
 const API_URL = process.env.API_URL;
 const API_BASE_URL = (process.env.NODE_ENV === "production")
-                 ? "http://13.59.85.143:4000/fear/api/" 
+                 ? "http://3.128.91.108:4000/fear/api/" 
                  : "http://localhost:4000/fear/api/";
 
 const ACCESS_TOKEN_NAME = (process.env.JWT_TOKEN) 
