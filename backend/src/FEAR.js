@@ -58,7 +58,7 @@ module.exports = FEAR = (( app ) => {
     'http://localhost:4000', 'http://fear.admin.com', 'http://localhost:4001',
     'http://fear.admin.com:4000', 'http://fear.admin.com:3000','http://localhost:3001',
     'http://192.168.12.81:4000', 'http://18.118.51.132:4000', 'http://18.118.51.132:3000',
-    'http://192.168.12.104:4000'
+    'http://192.168.12.104:4000', 'http://ekomix.vercel.app', 'http://3.128.91.108:4000'
   ];
 
   console.log("env=", this.env);
