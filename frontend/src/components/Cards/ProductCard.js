@@ -17,7 +17,7 @@ const ProductCard = (props) => {
   const navigate = useNavigate();
   const { grid, data } = props;
   const dispatch = useDispatch();
-  console.log(data);
+  console.log('product data = ', data);
   const location = useLocation();
 
   const wishlistState = useSelector((state) => state?.auth?.wishlist?.wishlist);
@@ -74,7 +74,7 @@ const ProductCard = (props) => {
 
               <div className="product-image">
                 <img
-                  src={item?.images[0]?.url}
+                  src={item?.images && item?.images[0]?.url}
                   // className="img-fluid d"
                   alt="product image"
                   height={"250px"}
@@ -82,7 +82,7 @@ const ProductCard = (props) => {
                   onClick={() => navigate("/product/" + item?._id)}
                 />
                 <img
-                  src={item?.images[0]?.url}
+                  src={item?.images && item?.images[1]?.url}
                   // className="img-fluid d"
                   alt="product image"
                   height={"250px"}

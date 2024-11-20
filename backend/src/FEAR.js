@@ -61,6 +61,11 @@ module.exports = FEAR = (( app ) => {
     'http://192.168.12.104:4000'
   ];
 
+  console.log("env=", this.env);
+  if ( this.env.API_URL && this.env.NODE_ENV !== "development" ) {
+    allowedOrigins.push(this.env.API_URL);
+  }
+
   this.app.use(cors({
     origin: (origin, callback) => {
       if (!origin) return callback(null, true);

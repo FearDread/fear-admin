@@ -1,18 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import BreadCrumb from "../components/Common/BreadCrumb";
 import Meta from "../components/Meta/Meta";
-import ReactStars from "react-rating-stars-component";
 import ProductCard from "../components/Cards/ProductCard";
-import Color from "../components/Common/Color";
 import Container from "../components/Common/Container";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllProducts } from "../features/products/productSlilce";
-import { Link } from "react-router-dom";
 import { cruds, auth, cart } from "@feardread/crud-service";
 
 const OurStore = () => {
-  const { keyword } = useParams();
   const dispatch = useDispatch();
   const [grid, setGrid] = useState(4);
   const [brands, setBrands] = useState([]);
@@ -20,42 +15,51 @@ const OurStore = () => {
   const [tags, setTags] = useState([]);
   //filter state
   const [tag, setTag] = useState(null);
-  const [category, setCategory] = useState(null);
+  const [keyword, setKeyword] = useState(null);
+  const [currentCategory, setCurrentCategory] = useState(null);
   const [brand, setBrand] = useState(null);
   const [minPrice, setminPrice] = useState(null);
   const [maxPrice, setmaxPrice] = useState(null);
   const [sort, setSort] = useState(null);
   //query state
-  const productState = useSelector((state) => state?.product?.product);
+  const productState = useSelector((state) => state.crud.product);
+  const searchState = useSelector((state) => state.crud.search);
+
+  let [searchParams, setSearchParams] = useSearchParams();
+
+  let params = useSearchParams();
+
+  const getProducts = () => {
+    let params = {};
+    searchParams.forEach((value, prop) => {
+      params[prop] = value;
+    })
+    console.log('params = ', params)
+    dispatch(cruds.search( 'product', params ));
+  };
+
+  useEffect(() => {
+    console.log("productState = ", productState);
+    getProducts();
+  }, [])
 
   useEffect(() => {
     let newBrands = [];
     let category = [];
     let newtags = [];
 
-    for (let index = 0; index < productState?.length; index++) {
-      const element = productState[index];
-      newBrands.push(element.brand);
-      category.push(element.category);
-      newtags.push(element.tags);
+    for (let index = 0; index < productState?.result?.length; index++) {
+      const item = productState?.result[index];
+
+      newBrands.push(item.brand);
+      category.push(item.category);
+      newtags.push(item.tags);
     }
+
     setBrands(newBrands);
     setCategories(category);
     setTags(newtags);
   }, [productState]);
-
-  useEffect(() => {
-    console.log("keyword = ", keyword);
-    getProducts();
-  }, [sort, tag, brand, category, minPrice, maxPrice, keyword]);
-  const getProducts = () => {
-    dispatch(cruds.search('product', category, brand));
-    /*
-    dispatch(
-      getAllProducts({ sort, tag, brand, category, minPrice, maxPrice })
-    );
-    */
-  };
 
   return (
     <>
@@ -79,7 +83,7 @@ const OurStore = () => {
                   {categories &&
                     [...new Set(categories)].map((item, index) => {
                       return (
-                        <li key={index} onClick={() => setCategory(item)}>
+                        <li key={index} onClick={() => setCurrentCategory(item)}>
                           {item}
                         </li>
                       );
@@ -182,7 +186,7 @@ const OurStore = () => {
                 </div>
                 <div className="d-flex align-items-center gap-10">
                   <p className="totalproducts mb-0">
-                    {productState?.length} Products
+                    {productState?.result?.length} Products
                   </p>
                   <div className="d-flex gap-10 align-items-center grid">
                     <img
@@ -225,7 +229,7 @@ const OurStore = () => {
             <div className="products-list pb-5">
               <div className="d-flex gap-10 flex-wrap">
                 <ProductCard
-                  data={productState ? productState : []}
+                  data={productState ? productState.result : []}
                   grid={grid}
                 />
               </div>

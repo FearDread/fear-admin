@@ -1,5 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700;800&display=swap");
-
+@import url("https://fonts.googleapis.com/css2?family=Bangers&display=swap");
 * {
   margin: 0;
   padding: 0;
@@ -14,6 +14,17 @@ body {
   background: url('../images/ekomix/_white_background.jpg');
   background-attachment: fixed;
   background-position: center;
+  background-size: cover;
+}
+
+body {
+  margin: 0;
+  background: linear-gradient(
+        45deg,
+        rgba(0, 110, 193, 0.3),
+        rgba(0, 115, 138, 0.1)
+      ) no-repeat fixed center, url("./images/spiderman.jpg") no-repeat fixed
+      center;
   background-size: cover;
 }
 
