@@ -149,7 +149,7 @@ exports.list = tryCatch(async (Model, req, res) => {
  *  @returns {Array} List of Documents
  */
 exports.search = tryCatch(async (Model, req, res) => {
-  
+  console.log('search req = ', req);
   if (req.query  === undefined || req.query === "") {
     return res.status(202).json(
       { result: [], success: false, message: "No Doc found by this request" }

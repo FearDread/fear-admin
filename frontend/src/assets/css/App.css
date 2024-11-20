@@ -23,7 +23,7 @@ body {
         45deg,
         rgba(0, 110, 193, 0.3),
         rgba(0, 115, 138, 0.1)
-      ) no-repeat fixed center, url("./images/spiderman.jpg") no-repeat fixed
+      ) no-repeat fixed center, url('../images/ekomix/_white_background.jpg') no-repeat fixed
       center;
   background-size: cover;
 }
