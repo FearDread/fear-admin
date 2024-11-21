@@ -3,16 +3,11 @@ import { Link, useNavigate } from "react-router-dom";
 import BlogCard from "../components/Cards/BlogCard";
 import Container from "../components/Common/Container";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllBlogs } from "../features/blogs/blogSlice";
 import moment from "moment";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import { Autoplay } from "swiper/modules";
-import { getAllProducts } from "../features/products/productSlilce";
-import ReactStars from "react-rating-stars-component";
 import { addToWishlist } from "../features/products/productSlilce";
-import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
-import TrendyCard from "../components/Product/TrendyCard/TrendyCard";
 import AnimatedHero from "../components/AnimatedHero/AnimatedHero";
 import Services from "../components/Home/Services/Services";
 import LimitedCard from "../components/Product/LimitedCard/LimitedCard";
@@ -34,12 +29,13 @@ const Home = () => {
     getProducts();
   }, []);
   const getblogs = () => {
-    dispatch(getAllBlogs());
+    dispatch(cruds.all("blog"));
+    //dispatch(getAllBlogs());
   };
 
   const getProducts = () => {
     dispatch(cruds.all("product"))
-    dispatch(getAllProducts());
+    //dispatch(getAllProducts());
   };
 
   const addToWish = (id) => {
