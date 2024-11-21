@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import BreadCrumb from "../components/Common/BreadCrumb";
 import Meta from "../components/Meta/Meta";
-import ProductCard from "../components/Cards/ProductCard";
+import ProductCard from "../components/Product/ProductCard";
 import Container from "../components/Common/Container";
 import { useDispatch, useSelector } from "react-redux";
 import { cruds, auth, cart } from "@feardread/crud-service";
@@ -117,10 +117,6 @@ const OurStore = () => {
                     <label htmlFor="floatingInput1">To</label>
                   </div>
                 </div>
-                {/* <h5 className="sub-title">Colors</h5>
-                <div>
-                  <Color />
-                </div> */}
               </div>
               <div className="mt-4 mb-3">
                 <h3 className="sub-title">Product Tags</h3>
