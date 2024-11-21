@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { NavLink, Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import { BsSearch } from "react-icons/bs";
 import compare from "../../assets/images/compare.svg";
 import wishlist from "../../assets/images/wishlist.svg";
@@ -7,46 +8,27 @@ import userSvg from "../../assets/images/user.svg";
 import cartSvg from "../../assets/images/cart.svg";
 import menu from "../../assets/images/menu.svg";
 import logo from "../../assets/images/ekomix/logo.png";
-import { useDispatch, useSelector } from "react-redux";
 import { Typeahead } from "react-bootstrap-typeahead";
-
-
-import { getAProduct } from "../../features/products/productSlilce";
-import { getUserCart } from "../../features/user/userSlice";
-
 import { cruds, auth, cart } from "@feardread/crud-service";
-
 import "react-bootstrap-typeahead/css/Typeahead.css";
 import "./Navbar.css";
 
 
 const Header = () => {
   const dispatch = useDispatch();
-  const cartState = useSelector((state) => state?.auth?.cartProducts);
-  const authState = useSelector((state) => state?.auth);
   const [total, setTotal] = useState(null);
   const [paginate, setPaginate] = useState(true);
   const productState = useSelector((state) => state?.product?.product);
   const navigate = useNavigate();
-  const { result } = useSelector((state) => state.crud.category);
-  const { user, isLoggedIn } = useSelector((state) => state.auth );
-
-  const getTokenFromLocalStorage = localStorage.getItem("customer")
-    ? JSON.parse(localStorage.getItem("customer"))
-    : null;
-
-  const config2 = {
-    headers: {
-      Authorization: `Bearer ${
-        getTokenFromLocalStorage !== null ? getTokenFromLocalStorage.token : ""
-      }`,
-      Accept: "application/json",
-    },
-  };
+  const cartState = useSelector((state) => state?.cart);
+  const categories = useSelector((state) => state?.crud?.category);
+  const authState = useSelector((state) => state?.auth );
 
   useEffect(() => {
     dispatch(cruds.all("category"));
-    dispatch(getUserCart(config2));
+    if ( authState.isLoggedIn ) {
+      dispatch(cart.read(authState.user._id));
+    }
   }, []);
 
   const [productOpt, setProductOpt] = useState([]);
@@ -89,8 +71,8 @@ const Header = () => {
                   id="pagination-example"
                   onPaginate={() => console.log("Results paginated")}
                   onChange={(selected) => {
-                    navigate(`/product/${selected[0]?.prod}`);
-                    dispatch(getAProduct(selected[0]?.prod));
+                    navigate(`/store?keyword=${selected}`);
+                    dispatch(cruds.search('product', selected));
                   }}
                   options={productOpt}
                   paginate={paginate}
@@ -187,8 +169,8 @@ const Header = () => {
                       className="dropdown-menu"
                       aria-labelledby="dropdownMenuButton1"
                     >
-                      {result &&
-                        result.map((item, index) => {
+                      {categories &&
+                        categories?.result?.map((item, index) => {
                           const link = "/store?category=" + item.title;
                           return (
                             <li key={index}>
@@ -204,7 +186,7 @@ const Header = () => {
                 <div className="menu-links">
                   <div className="d-flex align-items-center gap-15 linkContainer">
                     <NavLink to="/">Home</NavLink>
-                    <NavLink to="/shop">Store</NavLink>
+                    <NavLink to="/store">Store</NavLink>
                     <NavLink to="/about">About</NavLink>
                     <NavLink to="/blogs">Blogs</NavLink>
                     <NavLink to="/contact">Contact</NavLink>

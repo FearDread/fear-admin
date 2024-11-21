@@ -10,11 +10,10 @@ import "./TrendyCard.css";
 
 const TrendyCard = (props) => {
   const { key, id, product } = props;
-
   const dispatch = useDispatch();
   const sortByPrice = (a, b) => a.productPrice - b.productPrice;
   const [ wishList, setWishList ] = useState({});
-  const cartItems = 0;
+  const cartItems = useSelector((state) => state?.cart);
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -36,7 +35,6 @@ const TrendyCard = (props) => {
       toast.error("Product limit reached");
     } else {
       dispatch(cart.add(product));
-      //dispatch(addToCart(product));
       toast.success(`Added to cart!`);
     }
   };

@@ -3,11 +3,21 @@ import Container from "../Common/Container";
 import "./Loader.css";
 
 const LoadingAnimation = () => (
-  <Container>
+
     <div className="loading-container">
-      <div className="spinner"></div>
+      <div class="center">
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+      </div>
     </div>
-  </Container>
 );
 
 export default LoadingAnimation;
