@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+
 import BreadCrumb from "../components/Common/BreadCrumb";
 import Meta from "../components/Meta/Meta";
-import ProductCard from "../components/Product/ProductCard";
+import Loader from "../components/Loader/Loader";
+import ProductCard from "../components/Product/ProductCard/ProductCard"
 import Container from "../components/Common/Container";
-import { useDispatch, useSelector } from "react-redux";
+
 import { cruds, auth, cart } from "@feardread/crud-service";
 
 const OurStore = () => {
@@ -22,20 +25,25 @@ const OurStore = () => {
   const [maxPrice, setmaxPrice] = useState(null);
   const [sort, setSort] = useState(null);
   //query state
-  const productState = useSelector((state) => state.crud.product);
-  const searchState = useSelector((state) => state.crud.search);
-
+  const productState = useSelector((state) => state?.crud?.product);
+  const { result, loading } = useSelector((state) => state?.crud?.search);
+  const test = true;
   let [searchParams, setSearchParams] = useSearchParams();
 
   let params = useSearchParams();
 
   const getProducts = () => {
     let params = {};
+
     searchParams.forEach((value, prop) => {
       params[prop] = value;
     })
-    console.log('params = ', params)
-    dispatch(cruds.search( 'product', params ));
+
+    if (params && params !== undefined) {
+      dispatch(cruds.search( 'product', params ));
+    } else {
+      dispatch(cruds.list( 'product' ));
+    }
   };
 
   useEffect(() => {
@@ -63,6 +71,12 @@ const OurStore = () => {
 
   return (
     <>
+    {(loading) ? (
+      <>
+        <Loader />
+      </>
+    ) : (
+      <>
       <Meta title={"Our Store"} />
       <BreadCrumb title="Our Store" />
       <Container class1="store-wrapper home-wrapper-2 py-5">
@@ -224,17 +238,22 @@ const OurStore = () => {
             </div>
             <div className="products-list pb-5">
               <div className="d-flex gap-10 flex-wrap">
-                <ProductCard
-                  data={productState ? productState.result : []}
-                  grid={grid}
-                />
+                {result[0] && result[0]?.map((product, idx) => {
+                  return (
+                    <>
+                     <ProductCard key={idx} data={product} grid={grid} />
+                    </>
+                  )
+                })}
               </div>
             </div>
           </div>
         </div>
       </Container>
     </>
-  );
+  )}
+  </>
+  )
 };
 
 export default OurStore;
