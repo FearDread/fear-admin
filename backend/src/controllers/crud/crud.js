@@ -149,13 +149,13 @@ exports.list = tryCatch(async (Model, req, res) => {
  *  @returns {Array} List of Documents
  */
 exports.search = tryCatch(async (Model, req, res) => {
-  console.log('search req = ', req);
+  console.log('search req = ', req.query);
   if (req.query  === undefined || req.query === "") {
     return res.status(202).json(
       { result: [], success: false, message: "No Doc found by this request" }
     ).end();
   }
-  const sorted = req.query.brand || "desc";
+  const sorted = "desc";
   const fields = { $or: [] };
   const page = req.query.page || 1;
   const limit = parseInt(req.query.count) || 10;
@@ -163,13 +163,15 @@ exports.search = tryCatch(async (Model, req, res) => {
 
   for (var prop in req.query) {
     if (req.query.hasOwnProperty(prop)) {
-      fields.$or.push({ [prop] : req.query[prop] });
+      if (req.query[prop] !== 'undefined') {
+        fields.$or.push({ [prop] : req.query[prop] });
+      }
     }
   }
-
+  console.log("fields = ", fields);
   const countPromise = Model.count();
   const resultsPromise = Model.find(fields)
-        .sort({ sortby: sorted })
+        .sort({ created: sorted })
         .limit(limit)
         .populate();
   
