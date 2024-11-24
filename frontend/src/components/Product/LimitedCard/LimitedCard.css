@@ -60,6 +60,7 @@
   background: white;
   border-radius: 5px;
   padding: 5px;
+  height: 455px;
 }
 .lpContainer:hover {
     box-shadow: 13px 13px 77px -24px #000000b9;
@@ -122,9 +123,14 @@
 .productNameInfo a {
   text-decoration: none;
   color: black;
+  width: 250px; 
+  overflow: hidden;
+  white-space:nowrap;
+  text-overflow: ellipsis;
 }
 
 .productNameInfo h5 {
+
   font-weight: 400;
   font-size: 16px;
   text-align: left;
@@ -148,6 +154,10 @@
 
 .lpProductImagesCart {
   display: none;
+}
+
+.sdProductImagesCart {
+  float:right;
 }
 
 @media screen and (max-width: 1210px) {

@@ -1,29 +1,21 @@
-@import url("https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700;800&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Bangers&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Bangers&family=Lato&display=swap");
+
 * {
   margin: 0;
   padding: 0;
-  font-family: "Jost", sans-serif;
-}
-
-html {
-  scroll-behavior: smooth;
-}
-
-body {
-  background: url('../images/ekomix/_white_background.jpg');
-  background-attachment: fixed;
-  background-position: center;
-  background-size: cover;
+  font-family: "Open Sans", sans-serif;
+  font-family: "Bangers", cursive;
 }
 
 body {
   margin: 0;
+  font-family: "Open Sans", sans-serif;
+  font-family: "Bangers", cursive;
   background: linear-gradient(
         45deg,
         rgba(0, 110, 193, 0.3),
         rgba(0, 115, 138, 0.1)
-      ) no-repeat fixed center, url('../images/ekomix/_white_background.jpg') no-repeat fixed
+      ) no-repeat fixed center, url('../images/adobe_bg_1.jpeg') no-repeat fixed
       center;
   background-size: cover;
 }
@@ -144,6 +136,10 @@ a {
   border-color: inherit;
 }
 
+.container {
+  background: url("../images/paper.jpg");
+  background-size: cover;
+}
 .gap-10 {
   gap: 10px;
 }

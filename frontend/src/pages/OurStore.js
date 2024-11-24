@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-
 import BreadCrumb from "../components/Common/BreadCrumb";
 import Meta from "../components/Meta/Meta";
 import Loader from "../components/Loader/Loader";
 import ProductCard from "../components/Product/ProductCard/ProductCard"
 import Container from "../components/Common/Container";
-
 import { cruds, auth, cart } from "@feardread/crud-service";
 
 const OurStore = () => {
@@ -16,6 +14,7 @@ const OurStore = () => {
   const [brands, setBrands] = useState([]);
   const [categories, setCategories] = useState([]);
   const [tags, setTags] = useState([]);
+
   //filter state
   const [tag, setTag] = useState(null);
   const [keyword, setKeyword] = useState(null);
@@ -24,13 +23,12 @@ const OurStore = () => {
   const [minPrice, setminPrice] = useState(null);
   const [maxPrice, setmaxPrice] = useState(null);
   const [sort, setSort] = useState(null);
+  
   //query state
   const productState = useSelector((state) => state?.crud?.product);
   const { result, loading } = useSelector((state) => state?.crud?.search);
-  const test = true;
   let [searchParams, setSearchParams] = useSearchParams();
 
-  let params = useSearchParams();
 
   const getProducts = () => {
     let params = {};
@@ -47,7 +45,6 @@ const OurStore = () => {
   };
 
   useEffect(() => {
-    console.log("productState = ", productState);
     getProducts();
   }, [])
 

@@ -40,7 +40,7 @@ const TrendyCard = (props) => {
   };
 
   useEffect(() => {
-
+  
   },[]);
 
     return (
