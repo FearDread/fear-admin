@@ -1,4 +1,5 @@
 const mongoose = require("mongoose"); // Erase if already required
+const Review = require("./review");
 
 // Declare the Schema of the Mongo model
 const productSchema = new mongoose.Schema({
@@ -10,6 +11,7 @@ const productSchema = new mongoose.Schema({
     brand: { type: String, required: false },
     quantity: { type: Number, required: true },
     sold: { type: Number, default: 0 },
+    reviews: [Review.schema],
     images: [{
         public_id: String,
         url: String

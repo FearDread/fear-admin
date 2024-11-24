@@ -78,6 +78,10 @@ exports.create = tryCatch(async (Model, req, res) => {
  *  @returns {Document} Returns updated document
  */
 exports.update = tryCatch(async (Model, req, res) => {
+  if (req.body.images) {
+    let links = await cloud.uploadImages(req.body.images);
+    req.body.images = links;
+  }
 
   await Model.findOneAndUpdate({ _id: req.params.id }, req.body,
       { new: true, runValidators: true })

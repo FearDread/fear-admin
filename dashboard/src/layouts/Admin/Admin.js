@@ -3,6 +3,7 @@ import { Route, Switch, Redirect, useLocation } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import NotificationAlert from "react-notification-alert";
 import AdminNavbar from "components/Navbars/AdminNavbar.js";
+import ProductEdit from "_dashboard/ProductEdit.jsx";
 import Footer from "components/Footer/Footer.js";
 import Sidebar from "components/Sidebar/Sidebar.js";
 import * as Router from "router";
@@ -130,6 +131,7 @@ const Admin = (props) => {
         />
         <Switch>
           {Router.getRoutes(routes)}
+          <Route path="/admin/product/edit/:id" render={() => <ProductEdit />} />
           <Redirect from="*" to="/admin/dashboard" />
         </Switch>
         <Footer />

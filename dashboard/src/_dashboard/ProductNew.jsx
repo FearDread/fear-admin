@@ -22,7 +22,7 @@ import * as CatActions from "_redux/category/actions";
 import * as BrandActions from "_redux/brand/actions";
 import { NEW_PRODUCT_RESET } from "_redux/product/types";
 
-function NewProduct() {
+function NewProduct({product}) {
   const dispatch = useDispatch();
   const history = useHistory();
   const [title, setTitle] = useState("");
@@ -206,6 +206,7 @@ function NewProduct() {
                               type="select"
                               name="category"
                               placeholder="Choose Category"
+                              value={categories}
                               onChange={handleCategoryChange} >
                               {categories.map((cate, key) => (
                                 <option key={cate._id} value={cate.title}>
