@@ -11,6 +11,7 @@ import brand4 from "../../Assets/Brands/brand4.png";
 import brand5 from "../../Assets/Brands/brand5.png";
 import brand6 from "../../Assets/Brands/brand6.png";
 import brand7 from "../../Assets/Brands/brand7.png";
+
 import "swiper/css";
 import "./AboutPage.css";
 

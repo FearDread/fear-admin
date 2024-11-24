@@ -40,7 +40,7 @@ instance.interceptors.request.use(
 instance.interceptors.response.use(
     (response) => {
         console.log("API RES :: ", response);
-        const messages = response.data.message
+        const messages = response.data.message;
 
         if (response.status === 200 || 203) return response;
         
