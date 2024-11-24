@@ -16,6 +16,7 @@ router.route("/:id")
         .get(tryCatch(Product.read))
         .put(tryCatch(Product.update))
         .delete(tryCatch(Product.delete));
- 
+
+router.get("/edit/:id", tryCatch(Product.read));
 
 module.exports = router;

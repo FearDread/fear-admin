@@ -1,14 +1,12 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-//import { useAlert } from "react-alert";
-import { useHistory } from "react-router-dom";
-import { createProduct, clearErrors } from "_redux/actions/product";
-import { NEW_PRODUCT_RESET } from "_redux/types/product";
+import { useHistory, useParams } from "react-router-dom";
 import Loader from "components/Loader/Loading";
-
+import ReactBSAlert from "react-bootstrap-sweetalert";
 import {
   Button,
   Card,
+  Label,
   CardHeader,
   CardBody,
   CardTitle,
@@ -18,68 +16,88 @@ import {
   Row,
   Col
 } from "reactstrap";
-
+import * as ProductActions from "_redux/product/actions"
+import * as CatActions from "_redux/category/actions";
+import * as BrandActions from "_redux/brand/actions";
 import ImageUpload from "components/CustomUpload/ImageUpload.js";
 
+
+
 function ProductEdit() {
+  const { id } = useParams();
   const dispatch = useDispatch();
   const history = useHistory();
-  const [name, setName] = useState("");
-  const [price, setPrice] = useState(0);
-  const [description, setDescription] = useState("");
-  const [category, setCategory] = useState("");
-  const [stock, setStock] = useState(0);
-  const [info , setInfo] = useState("")
-  const [images, setImages] = useState([]);
+
+  const [title, setTitle] = useState();
+  const [price, setPrice] = useState();
+  const [description, setDescription] = useState();
+  const [category, setCategory] = useState();
+  const [quantity, setQuantity] = useState();
+  const [brand , setBrand] = useState()
+  const [images, setImages] = useState();
   const [imagesPreview, setImagesPreview] = useState([]);
   const [isCategory, setIsCategory] = useState(false);
   const fileInputRef = useRef();
-
+  const [alert, setAlert] = React.useState(null);
   const { user } = useSelector((state) => state.auth);
-  const { loading, error, success } = useSelector((state) => state.product);
-
+  const { loading, product, success } = useSelector((state) => state.product);
+  const { categories } = useSelector((state) => state.cat);
+  const { brands } = useSelector((state) => state.brand);
+  
   const handleCategoryChange = (e) => {
     setCategory(e.target.value);
     setIsCategory(true);
+  };
+
+  const handleBrandChange = (e) => {
+    setBrand(e.target.value);
   };
 
   const handleImageUpload = () => {
     fileInputRef.current.click();
   };
 
- const categories = [
-   "Comics",
-   "Coins",
-   "Sports Cards",
-   "Toys",
-   "Misc..",
- ];
+  const hideAlert = () => { setAlert(null); };
 
-  useEffect(() => {
-    if (success) {
-      history.push("/admin/dashboard");
-      dispatch({ type: NEW_PRODUCT_RESET });
-    }
-  }, [dispatch, error, history, success]);
+  const successAlert = () => {
+    setAlert(
+      <ReactBSAlert
+        success
+        style={{ display: "block", marginTop: "-100px" }}
+        title="Success!"
+        onConfirm={() => {
+          history.push("/admin/products");
+        }}
+        onCancel={() => hideAlert()}
+        confirmBtnBsStyle="success"
+        btnSize="" >
+        Product Updated
+      </ReactBSAlert>
+    );
+  };
+
   
   const updateProductSubmitHandler = (e) => {
     e.preventDefault();
     
     const myForm = new FormData();
-          myForm.set("name", name);
-          myForm.set("price", price);
-          myForm.set("description", description);
-          myForm.set("category", category);
-          myForm.set("Stock", stock);
-          myForm.set("info", info);
     
-    images.forEach((currImg) => {
-      myForm.append("images", currImg);
-    });
+    myForm.set("title", title ? title : product.title);
+    myForm.set("price", price ? price : product.price);
+    myForm.set("slug", title ? title.toLowerCase() : product.title.toLowerCase());
+    myForm.set("description", description ? description : product.description);
+    myForm.set("category", category ? category : product.category);
+    myForm.set("quantity", quantity ? quantity : product.quantity);
+    myForm.set("brand", brand ? brand : product.brand);
     
+    if ( images ) {
+      images.forEach((currImg) => {
+        myForm.append("images", currImg);
+      });
+    }
     myForm.set("user", user._id);
 
-    dispatch(createProduct(myForm));
+    dispatch(ProductActions.update(id, myForm));
   };
 
   const updateProductImagesChange = (e) => {
@@ -99,123 +117,192 @@ function ProductEdit() {
     });
   };
 
+  
+  useEffect(() => {
+    if (success) {
+      successAlert();
+    }
+  }, [success]);
+
+  useEffect(() => {
+    dispatch(ProductActions.read(id));
+    dispatch(CatActions.list());
+    dispatch(BrandActions.list());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (product && product.images) {
+      setImages(product.images);
+    }
+  },[]);
+
   return (
     <>
-      {loading ? (
+      {loading || !product ? (
         <Loader />
-      ) : (
+      ) : ( 
         <>
+        {alert}
           <div className="content">
             <Row>
-              <Col md="6" className="centered-form">
-                <Form
-                  encType="multipart/form-data"
-                  onSubmit={updateProductSubmitHandler}>
+              <Col md="12">
+                <Form 
+                  className="form-horizontal"
+                  encType="multipart/form-data">
                   <Card>
                     <CardHeader>
-                      <CardTitle tag="h4">Add New Product</CardTitle>
+                      <CardTitle tag="h4">Update Product - {product.title}</CardTitle>
                     </CardHeader>
                     <CardBody>
-                      <FormGroup className={`has-labe`}>
-                        <label>Product Name</label>
-                        <Input
-                          name="Product Name"
-                          required
-                          value={name}
-                          onChange={(e) => setName(e.target.value)}
-                        />
-                      </FormGroup>
-                      <FormGroup>
-                        <label>Product Description</label>
-                        <Input
-                          cols="80"
-                          value={description}
-                          placeholder="Here can be your description"
-                          rows="4"
-                          type="textarea"
-                          onChange={(e) => setDescription(e.target.value)}
-                        />
-                      </FormGroup>
-                      <FormGroup className={`has-label`}>
-                        <label>Price</label>
-                        <Input
-                          name="price"
-                          required
-                          value={price}
-                          onChange={(e) => setPrice(e.target.value)}
-                        />
-                      </FormGroup>
-                      <FormGroup className={`has-label`}>
-                        <label>Stock</label>
-                        <Input
-                          name="stock"
-                          required
-                          value={stock}
-                          onChange={(e) => setStock(e.target.value)}
-                        />
-                      </FormGroup>
-                      <FormGroup>
-                        <label>Select Category</label>
-                        <Input
-                          type="select"
-                          placeholder="Choose Category"
-                          value={category}
-                          onChange={handleCategoryChange}
-                        >
-                        {categories.map((cate) => (
-                          <option key={cate} value={cate}>
-                            {cate}
-                          </option>
-                        ))}
-                      </Input>
-                    </FormGroup>
-
-                    <FormGroup className={`has-label`}>
-                      <label>Product Info</label>
-                      <Input
-                          cols="80"
-                          value={info}
-                          placeholder="Here can be your extra information"
-                          rows="4"  
-                          type="textarea"
-                          onChange={(e) => setInfo(e.target.value)}
-                        />
-                    </FormGroup>
-                    <FormGroup>
-                      <CardTitle tag="h4">Upload Product Image</CardTitle>
-                        <i className="time-icons icon-upload">Add Image</i>
-                        <Input
-                          type="file"
-                          accept="image/*"
-                          onChange={updateProductImagesChange}
-                          multiple
-                          ref={fileInputRef}
-                        />
-
-                          <CardBody>
-                            {imagesPreview && imagesPreview.map((image, index) => (
+                      <Row>
+                        <Label sm="2">Title</Label>
+                        <Col sm="10">
+                          <FormGroup>
+                            <Input 
+                              type="name"
+                              autoComplete="off"
+                              name="title"
+                              required
+                              value={product.title}
+                              onChange={(e) => setTitle(e.target.value)}
+                            />
+                          </FormGroup>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Label sm="2">Description</Label>
+                        <Col sm="10">
+                          <FormGroup>
+                            <Input 
+                              autoComplete="off"
+                              name="description"
+                              cols="100"
+                              value={product.description}
+                              placeholder="Here can be your description"
+                              rows="4"
+                              type="textarea"
+                              onChange={(e) => setDescription(e.target.value)}
+                            />
+                          </FormGroup>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Label sm="2">Initial Price</Label>
+                        <Col sm="10">
+                          <FormGroup>
+                            <Input
+                              name="price"
+                              required
+                              value={product.price}
+                              onChange={(e) => setPrice(e.target.value)}
+                            />
+                          </FormGroup>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Label sm="2">Stock Available</Label>
+                        <Col sm="10">
+                          <FormGroup>
+                            <Input
+                              name="quantity"
+                              required
+                              value={product.quantity}
+                              onChange={(e) => setQuantity(e.target.value)}
+                            />
+                          </FormGroup>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Label sm="2">Select Category</Label>
+                        <Col sm="10">
+                          <FormGroup>
+                            <Input
+                              type="select"
+                              name="category"
+                              placeholder="Choose Category"
+                              defaultValue={product.category}
+                              onChange={handleCategoryChange} >
+                              {categories.map((cate, key) => (
+                                <option key={cate._id} value={cate.title}>
+                                  {cate.title}
+                                </option>
+                              ))}
+                            </Input>
+                          </FormGroup>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Label sm="2">Publish to store?</Label>
+                        <Col className="checkbox-radios" sm="10">
+                          <FormGroup check>
+                            <Label check>
+                            <Input type="checkbox" />
+                              <span className="form-check-sign" />
+                              Publish
+                            </Label>
+                          </FormGroup>
+                          <FormGroup check>
+                            <Label check>
+                            <Input type="checkbox" />
+                              <span className="form-check-sign" />
+                              Private
+                            </Label>
+                          </FormGroup>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Label sm="2">Brand</Label>
+                        <Col sm="10">
+                          <FormGroup>
+                          <Input
+                              type="select"
+                              name="brand"
+                              placeholder="Choose Category"
+                              defaultValue={product.brand}
+                              onChange={handleBrandChange} >
+                              {brands.map((b, key) => (
+                                <option key={b._id} value={b.title}>
+                                  {b.title}
+                                </option>
+                              ))}
+                            </Input>
+                          </FormGroup>
+                        </Col>
+                      </Row>
+                    </CardBody>
+                    <CardHeader>
+                      <CardTitle tag="h4">Drag or click here to add Images!</CardTitle>
+                    </CardHeader>
+                    <CardBody>
+                      <Row>
+                        <Col>
+                          <Input
+                            type="file"
+                            accept="image/*"
+                            onChange={updateProductImagesChange}
+                            multiple
+                            ref={fileInputRef} />
+                        <CardBody>
+                            {product.images && product.images.map((image, index) => (
                               <img
                                 key={index}
-                                src={image}
+                                src={image.url}
+                                className="add-product-img"
                                 alt="Product Preview"
                               />
                           ))}
-                          </CardBody>
-                          <Button
-                            variant="contained"
-                            onClick={handleImageUpload}
-                          >
-                            Upload Images
-                          </Button>
-                      </FormGroup> 
+                        </CardBody>
+                        <br />
+                      </Col>
+                      </Row>
+                      <Button
+                        variant="contained"
+                        type="submit"
+                        onClick={updateProductSubmitHandler}
+                        disabled={loading ? true : false}>
+                          UPDATE PRODUCT
+                      </Button> 
                     </CardBody>
-                    <Button
-                          variant="contained"
-                          type="submit"
-                          disabled={loading ? true : false}
-                        >
-                          SUBMIT PRODUCT
-                    </Button>
                   </Card>
                 </Form>
               </Col>

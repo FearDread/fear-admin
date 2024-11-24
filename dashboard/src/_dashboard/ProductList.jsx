@@ -86,6 +86,8 @@ function ProductList() {
           actions: ( 
             ReactTableActions( key, (() => {
               console.log("edit product ::", item);
+              history.push("/admin/product/edit/" + item._id);
+
             }),
             (() => {
               console.log("remove product :: ", item);

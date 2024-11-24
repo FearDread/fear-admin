@@ -50,9 +50,11 @@ export const update = (id, data) => async (dispatch) => {
         headers: { "Content-Type": "multipart/form-data" }
       })
       .then((response) => {
-        dispatch({ type: Types.UPDATE_PRODUCT_SUCCESS, payload: response.data.success });
+        console.log("update response = ", response);
+        dispatch({ type: Types.UPDATE_PRODUCT_SUCCESS, payload: response.data.result });
       })
       .catch((error) => {
+        console.log('error = ', error);
         dispatch({ type: Types.UPDATE_PRODUCT_FAIL, payload: error });
       });
 };

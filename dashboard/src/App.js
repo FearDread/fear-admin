@@ -3,6 +3,7 @@ import { useHistory, useLocation, Route, Switch, Redirect } from 'react-router-d
 import AuthLayout from "layouts/Auth/Auth.js";
 import AdminLayout from "layouts/Admin/Admin.js";
 import Loader from "components/Loader/Loading";
+import ProductEdit from "_dashboard/ProductEdit";
 import { useSelector, useDispatch } from "react-redux";
 
 function App(props) {
@@ -22,12 +23,9 @@ function App(props) {
 
   return (
       <Switch>
-        <Route path="/auth" render={(props) => <AuthLayout {...props} />} />  
-
-        <Route path="/admin" render={(props) => (
+        <Route path="/auth" render={(props) => <AuthLayout {...props} />} />
           isLoggedIn ? <AdminLayout {...props} />
         : <Redirect to={{ pathname: '/auth/login', state: { from: props.location } }} />
-        )} />
         <Redirect from="/" to="/admin" />
       </Switch>
   );

@@ -78,7 +78,7 @@ const routes = [
         name: "+ Product",
         mini: "+",
         component: NewProduct,
-        layout: "/admin"
+        layout: "/admin",
       },
       {
         path: "/product/reviews",
