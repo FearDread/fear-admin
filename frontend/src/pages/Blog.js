@@ -1,27 +1,42 @@
 import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import BreadCrumb from "../components/Common/BreadCrumb";
 import Meta from "../components/Meta/Meta";
 import BlogCard from "../components/Cards/BlogCard";
 import Container from "../components/Common/Container";
-import { useDispatch, useSelector } from "react-redux";
-import { getAllBlogs } from "../features/blogs/blogSlice";
+import Loader from "../components/Loader/Loader";
 import moment from "moment";
+import { cruds } from "@feardread/crud-service";
+
 
 const Blog = () => {
   const blogState = useSelector((state) => state?.blog?.blog);
-
+  const { result, loading } = useSelector((state) => state?.crud?.blog);
   const dispatch = useDispatch();
-  useEffect(() => {
-    getblogs();
-  }, []);
+  
   const getblogs = () => {
-    dispatch(getAllBlogs());
+    dispatch(cruds.all('blog'));
   };
 
+
+  useEffect(() => {
+    getblogs();
+    console.log('blogs = ', result);
+  }, []);
+
+
+
   return (
+
     <>
       <Meta title={"Blogs"} />
       <BreadCrumb title="Blogs" />
+      { (loading) ? (
+      <>
+        <Loader />
+      </>
+        ) : (
+      <>
       <Container class1="blog-wrapper home-wrapper-2 py-5">
         <div className="row">
           <div className="col-3">
@@ -39,8 +54,8 @@ const Blog = () => {
           </div>
           <div className="col-9">
             <div className="row">
-              {blogState &&
-                blogState?.map((item, index) => {
+              {result &&
+                result?.map((item, index) => {
                   return (
                     <div className="col-6 mb-3" key={index}>
                       <BlogCard
@@ -59,6 +74,8 @@ const Blog = () => {
           </div>
         </div>
       </Container>
+      </>
+    )}
     </>
   );
 };

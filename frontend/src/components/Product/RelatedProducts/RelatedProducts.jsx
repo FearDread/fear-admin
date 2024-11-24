@@ -18,7 +18,7 @@ const RelatedProducts = ( {products} ) => {
   const cartItems = 0;
   const [wishList, setWishList] = useState({});
 
-  const { result } = useSelector((state) => state.crud.list);
+ // const { result } = useSelector((state) => state.crud.list);
   const handleWishlistClick = (productID) => {
     setWishList((prevWishlist) => ({
       ...prevWishlist,
@@ -89,7 +89,7 @@ const RelatedProducts = ( {products} ) => {
               },
             }}
           >
-            {result && result.slice(0, 13).map((product) => {
+            {products && products.slice(0, 13).map((product) => {
               return (
                 <SwiperSlide key={product._id}>
                   <div className="lpContainer">
