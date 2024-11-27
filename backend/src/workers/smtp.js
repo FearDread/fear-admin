@@ -3,8 +3,7 @@ const nodemailer = require("nodemailer");
 module.exports = class Worker {
     constructor(mailinfo) {
         this.mailinfo = mailinfo;
-        this.email = process.env.EMAIL;
-        this.password = process.env.PASSWORD;
+        this.email = mailinfo.smtp.auth.user;
     }
 
     /**
@@ -23,35 +22,50 @@ module.exports = class Worker {
                 return resolve();  
             });
         });
-
     }
 
-    sendEmail = async (data) => {
+    sendProjectEmail = async (data) => {
         return new Promise((resolve, reject) => {
-            let transporter = nodemailer.createTransport({
-                service: 'gmail',
-                auth: {
-                    user: this.email,
-                    pass: this.password,
-                }
-            })
-    
-            const { $subject, fullname, email, phone, project, about } = data;
+            let transporter = nodemailer.createTransport(this.mailinfo.smtp);
+
+            const { $subject, fullname, company, email, phone, budget, about } = data;
     
             const message = `Fullname: ${fullname}\n`
                             + `Email: ${email}\n`
+                            + `Budget: ${budget}\n`
                             + `Phone number: + ${phone}\n`
-                            + `Project type: ${project}\n`
+                            + `Company: ${company}\n`
                             + `About project: ${about}\n`
     
-            const mail_config = {
+            const options = {
                 from: email,
                 to: this.email,
-                subject: $subject || `FEAR Contact Form Submission`,
+                subject: $subject || `Gfolio Contact Form Submission`,
                 text: message,
             };
     
-            transporter.sendMail(mail_config, function(error, info) {
+            transporter.sendMail(options, function(error, info) {
+                if (error) {
+                    return reject({ message: `An error has occured: ${error}`});
+                }
+                return resolve({ message: 'Email sent succesfully!'})
+            })
+        })
+    }
+
+    sendContactEmail = async (data) => {
+        return new Promise((resolve, reject) => {
+            let transport = nodemailer.createTransport(this.mailinfo.smtp);
+            const { $subject, email, message } = data;
+
+            const options = {
+                from: this.email,
+                to: this.email,
+                subject:"Contact Form Submission from " + email,
+                text: message,
+            }
+
+            transport.sendMail(options, function(error, info) {
                 if (error) {
                     console.log(error);
                     return reject({ message: `An error has occured: ${error}`});

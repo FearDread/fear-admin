@@ -53,42 +53,46 @@ module.exports = FEAR = (( app ) => {
   this.app.use(bodyParser.urlencoded({ extended: true }));
   this.app.use(passport.initialize());
 
-  const allowedOrigins = ['http://localhost:3000', 'http://fear.master.com',
-    'http://fear.master.com:3000', 'http://fear.master.com:4000',
-    'http://localhost:4000', 'http://fear.admin.com', 'http://localhost:4001',
-    'http://fear.admin.com:4000', 'http://fear.admin.com:3000','http://localhost:3001',
-    'http://192.168.12.81:4000', 'http://18.118.51.132:4000', 'http://18.118.51.132:3000',
-    'http://192.168.12.104:4000', 'http://ekomix.vercel.app', 'http://3.128.91.108:4000'
+  const allowedOrigins = [
+    'http://localhost:3000', 
+    'http://fear.master.com',
+    'http://fear.master.com:3000',
+    'http://fear.master.com:4000',
+    'http://localhost:4000',
+    'http://fear.admin.com',
+    'http://localhost:4001',
+    'http://fear.admin.com:4000', 
+    'http://fear.admin.com:3000',
+    'http://localhost:3001'
   ];
-
-  console.log("env=", this.env);
-  if ( this.env.API_URL && this.env.NODE_ENV !== "development" ) {
-    allowedOrigins.push(this.env.API_URL);
-  }
 
   this.app.use(cors({
     origin: (origin, callback) => {
       if (!origin) return callback(null, true);
 
-      if (allowedOrigins.indexOf(origin) === -1) {
-        var msg = 'The CORS policy for this site does not ' +
-                  'allow access from the specified Origin.';
-                  
-        return callback(new Error(msg), false);
-      }
-      return callback(null, true);
+      if ( this.env.NODE_ENV === "development" ) {
+        this.log.info(`Origin ${origin} is being granted CORS access`);
+        return callback(null, true);
+      } else {
+        if (allowedOrigins.indexOf(origin) === -1) {
+          var msg = 'The CORS policy for this site does not ' +
+                    'allow access from the specified Origin.';
+                    
+          return callback(new Error(msg), false);
+        }
+      };
     }
   }));
   this.app.options("*", cors());
+  
+  // Load Routes
+  this.app = this.load(app)
   
   this.app.use((req, res, next) => {
     this.log.info("FEAR API REQ :: " + req.url);
     next();
   });
-
-  // Load Routes
-  this.app = this.load(app);
-
+;
   this.app.use(express.static(path.join(__dirname1, "/dashboard/build")));
   this.app.get("*", (req, res) =>
     res.sendFile(path.resolve(__dirname1, "dashboard", "build", "index.html"))
