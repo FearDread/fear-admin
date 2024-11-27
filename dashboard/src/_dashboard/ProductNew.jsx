@@ -22,7 +22,7 @@ import * as CatActions from "_redux/category/actions";
 import * as BrandActions from "_redux/brand/actions";
 import { NEW_PRODUCT_RESET } from "_redux/product/types";
 
-function NewProduct({product}) {
+function NewProduct() {
   const dispatch = useDispatch();
   const history = useHistory();
   const [title, setTitle] = useState("");
