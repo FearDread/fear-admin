@@ -27,7 +27,6 @@ function ProductEdit() {
   const { id } = useParams();
   const dispatch = useDispatch();
   const history = useHistory();
-
   const [title, setTitle] = useState();
   const [price, setPrice] = useState();
   const [description, setDescription] = useState();
