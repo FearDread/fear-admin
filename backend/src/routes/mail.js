@@ -3,7 +3,6 @@
 const smtp = require("../workers/smtp");
 const router = require("express").Router();
 const mailinfo = require("../workers/info"); 
-
 const mailer = new smtp(mailinfo);
 
 router.get('/', (req, res) => {
@@ -12,13 +11,19 @@ router.get('/', (req, res) => {
         .catch((error) => res.status(500).send(error.message));
 });
 
-router.post('/send', (req, res) => {
-    console.log(`Received data: ${req.body}`);
+router.post('/contact', (req, res) => {
+    console.log('Received data:', req.body);
    
-    mailer.sendEmail(req.body)
-        .then((response) => res.json({ message: response.message }))
-        .catch((error) => res.status(500).json({ message: error.message }))
+    mailer.sendContactEmail(req.body)
+        .then((response) => res.json({ success: true, message: response.message }))
+        .catch((error) => res.status(500).json({ success: false, message: error.message }))
 });
+
+router.post("/project", (req, res) => {
+    mailer.sendProjectEmail(req.body)
+        .then((response) => res.json({ success: true, message: response.message }))
+        .catch((error) => res.status(500).json({ success: false, message: error.message }))
+})
 
 module.exports = router;
 

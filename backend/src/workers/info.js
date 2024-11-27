@@ -1,11 +1,13 @@
+require("dotenv").config({ path:"backend/.env"});
 
 module.exports = {
     "smtp": {
-      "host": "mail.mydomain.com",
-      "port": 999,
+      "service": process.env.SMTP_SERVICE,
+      "host": process.env.SMTP_HOST,
+      "port": process.env.SMTP_PORT,
       "auth": {
-        "user": "user@domain.com",
-        "pass": "xxx"
+        "user": process.env.SMTP_MAIL,
+        "pass": process.env.SMTP_PASS
       }
     },
     "imap": {
