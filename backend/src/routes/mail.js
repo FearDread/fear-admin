@@ -12,8 +12,6 @@ router.get('/', (req, res) => {
 });
 
 router.post('/contact', (req, res) => {
-    console.log('Received data:', req.body);
-   
     mailer.sendContactEmail(req.body)
         .then((response) => res.json({ success: true, message: response.message }))
         .catch((error) => res.status(500).json({ success: false, message: error.message }))
