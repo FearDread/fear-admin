@@ -12,7 +12,6 @@ const ACCESS_TOKEN_NAME = (process.env.JWT_TOKEN)
                 ? process.env.JWT_TOKEN 
                 : "x-token";
 
-console.log("Env Base URL = " + API_URL);
 const instance = axios.create({
     baseURL: `${API_BASE_URL}`,
     paramsSerializer: (params) => {
