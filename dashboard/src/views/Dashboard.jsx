@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
-import classNames from "classnames";
-import { Line, Bar } from "react-chartjs-2";
 import { VectorMap } from "react-jvectormap";
 import { useSelector, useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 import Loader from "components/Loader/Loading.js";
 import { logout } from "_redux/auth/actions";
+import { Line, Bar, Pie } from "react-chartjs-2";
 import * as UserActions from "_redux/user/actions";
 import * as ProductActions from "_redux/product/actions";
 // reactstrap components
@@ -37,7 +36,15 @@ import {
   chartExample3,
   chartExample4
 } from "variables/charts.js";
-
+// core components
+import {
+  chartExample5,
+  chartExample6,
+  chartExample7,
+  chartExample8,
+  chartExample9,
+  chartExample10
+} from "variables/charts.js";
 var mapData = {
   AU: 760,
   BR: 550,
@@ -57,10 +64,13 @@ const Dashboard = () => {
   const history = useHistory();
   const [toggle, setToggle] = useState(false);
   const [bigChartData, setbigChartData] = React.useState("data1");
+  const { user } = useSelector((state) => state.auth);
+  const { users } = useSelector((state) => state.user);
+  const { products, loading } = useSelector((state) => state.product);
 
   //const { products, loading, error } = useSelector((state) => state.products);
   //const { orders, error: ordersError } = useSelector((state) => state.allOrders);
-  const { loading, user, } = useSelector((state) => state.auth);
+
 
   const setBgChartData = (name) => {
     setbigChartData(name);
@@ -82,10 +92,9 @@ const Dashboard = () => {
 //  });
 
   useEffect(() => {
+    dispatch(ProductActions.list());
+    dispatch(UserActions.list());
 
-    //dispatch(getAllOrders());
-    //dispatch(getAllUsers());
-    //dispatch(getAdminProducts());
     console.log("Current User = ", user);
   }, [dispatch]);
   
@@ -96,87 +105,51 @@ const Dashboard = () => {
     ) : (
     <>
       <div className="content">
-        <Row>
-          <Col xs="12">
+          <Row>
+            <Col Lg="5">
+
+            <Row>
+          <Col className="ml-auto" md="5">
             <Card className="card-chart">
               <CardHeader>
-                <Row>
-                  <Col className="text-left" sm="6">
-                    <h5 className="card-category">Total Shipments</h5>
-                    <CardTitle tag="h2">Performance</CardTitle>
-                  </Col>
-                  <Col sm="6">
-                    <ButtonGroup
-                      className="btn-group-toggle float-right"
-                      data-toggle="buttons"
-                    >
-                      <Button
-                        color="info"
-                        id="0"
-                        size="sm"
-                        tag="label"
-                        className={classNames("btn-simple", {
-                          active: bigChartData === "data1"
-                        })}
-                        onClick={() => setBgChartData("data1")}
-                      >
-                        <span className="d-none d-sm-block d-md-block d-lg-block d-xl-block">
-                          Accounts
-                        </span>
-                        <span className="d-block d-sm-none">
-                          <i className="tim-icons icon-single-02" />
-                        </span>
-                      </Button>
-                      <Button
-                        color="info"
-                        id="1"
-                        size="sm"
-                        tag="label"
-                        className={classNames("btn-simple", {
-                          active: bigChartData === "data2"
-                        })}
-                        onClick={() => setBgChartData("data2")}
-                      >
-                        <span className="d-none d-sm-block d-md-block d-lg-block d-xl-block">
-                          Purchases
-                        </span>
-                        <span className="d-block d-sm-none">
-                          <i className="tim-icons icon-gift-2" />
-                        </span>
-                      </Button>
-                      <Button
-                        color="info"
-                        id="2"
-                        size="sm"
-                        tag="label"
-                        className={classNames("btn-simple", {
-                          active: bigChartData === "data3"
-                        })}
-                        onClick={() => setBgChartData("data3")}
-                      >
-                        <span className="d-none d-sm-block d-md-block d-lg-block d-xl-block">
-                          Sessions
-                        </span>
-                        <span className="d-block d-sm-none">
-                          <i className="tim-icons icon-tap-02" />
-                        </span>
-                      </Button>
-                    </ButtonGroup>
-                  </Col>
-                </Row>
+                <h5 className="card-category">Multiple Bars Chart With Grid</h5>
+                <CardTitle tag="h3">
+                  <i className="tim-icons icon-time-alarm text-warning" />{" "}
+                  130,000$
+                </CardTitle>
+              </CardHeader>
+              <CardBody>
+                <div className="chart-area">
+                  <Bar
+                    data={chartExample8.data}
+                    options={chartExample8.options}
+                  />
+                </div>
+              </CardBody>
+            </Card>
+            </Col>
+           <Col className="mr-auto" md="5">
+            <Card className="card-chart">
+              <CardHeader>
+                <h5 className="card-category">With Numbers and Grid</h5>
+                <CardTitle tag="h3">
+                  <i className="tim-icons icon-send text-info" /> 750,000€
+                </CardTitle>
               </CardHeader>
               <CardBody>
                 <div className="chart-area">
                   <Line
-                    data={chartExample1[bigChartData]}
-                    options={chartExample1.options}
+                    data={chartExample6.data}
+                    options={chartExample6.options}
                   />
                 </div>
               </CardBody>
             </Card>
           </Col>
-          <Col lg="3" md="6">
-            <Card className="card-stats">
+        </Row>
+            <Row>
+              <Col xs="4" sm="3">
+                <Card className="card-stats">
               <CardBody>
                 <Row>
                   <Col xs="5">
@@ -199,8 +172,8 @@ const Dashboard = () => {
                 </div>
               </CardFooter>
             </Card>
-          </Col>
-          <Col lg="3" md="6">
+            </Col>
+            <Col xs="4" sm="3">
             <Card className="card-stats card-animation-on-hover">
               <CardBody>
                 <Row>
@@ -224,8 +197,8 @@ const Dashboard = () => {
                 </div>
               </CardFooter>
             </Card>
-          </Col>
-          <Col lg="3" md="6">
+            </Col>
+            <Col xs="4" sm="3">
             <Card className="card-stats">
               <CardBody>
                 <Row>
@@ -249,8 +222,8 @@ const Dashboard = () => {
                 </div>
               </CardFooter>
             </Card>
-          </Col>
-          <Col lg="3" md="6">
+            </Col>
+            <Col xs="4" sm="3">
             <Card className="card-stats">
               <CardBody>
                 <Row>
@@ -274,100 +247,15 @@ const Dashboard = () => {
                 </div>
               </CardFooter>
             </Card>
+            </Col>
+            </Row>
           </Col>
-          <Col lg="4">
-            <Card className="card-chart">
-              <CardHeader>
-                <h5 className="card-category">Total Shipments</h5>
-                <CardTitle tag="h3">
-                  <i className="tim-icons icon-bell-55 text-primary" /> 763,215
-                </CardTitle>
-              </CardHeader>
-              <CardBody>
-                <div className="chart-area">
-                  <Line
-                    data={chartExample2.data}
-                    options={chartExample2.options}
-                  />
-                </div>
-              </CardBody>
-            </Card>
-          </Col>
-          <Col lg="4">
-            <Card className="card-chart card-animation-on-hover" >
-              <CardHeader>
-                <h5 className="card-category">Daily Sales</h5>
-                <CardTitle tag="h3">
-                  <i className="tim-icons icon-delivery-fast text-info" />{" "}
-                  3,500€
-                </CardTitle>
-              </CardHeader>
-              <CardBody>
-                <div className="chart-area">
-                  <Bar
-                    data={chartExample3.data}
-                    options={chartExample3.options}
-                  />
-                </div>
-              </CardBody>
-            </Card>
-          </Col>
-          <Col lg="4">
-            <Card className="card-chart">
-              <CardHeader>
-                <h5 className="card-category">Completed Tasks</h5>
-                <CardTitle tag="h3">
-                  <i className="tim-icons icon-send text-success" /> 12,100K
-                </CardTitle>
-              </CardHeader>
-              <CardBody>
-                <div className="chart-area">
-                  <Line
-                    data={chartExample4.data}
-                    options={chartExample4.options}
-                  />
-                </div>
-              </CardBody>
-            </Card>
-          </Col>
-        </Row>
-        <Row>
+
           <Col lg="5">
-            <Card className="card-tasks">
+          <Card className="card-tasks">
               <CardHeader>
                 <h6 className="title d-inline">Tasks(5)</h6>
                 <p className="card-category d-inline">today</p>
-                <UncontrolledDropdown>
-                  <DropdownToggle
-                    caret
-                    className="btn-icon"
-                    color="link"
-                    data-toggle="dropdown"
-                    type="button"
-                  >
-                    <i className="tim-icons icon-settings-gear-63" />
-                  </DropdownToggle>
-                  <DropdownMenu right>
-                    <DropdownItem
-                      href="#pablo"
-                      onClick={(e) => e.preventDefault()}
-                    >
-                      Action
-                    </DropdownItem>
-                    <DropdownItem
-                      href="#pablo"
-                      onClick={(e) => e.preventDefault()}
-                    >
-                      Another action
-                    </DropdownItem>
-                    <DropdownItem
-                      href="#pablo"
-                      onClick={(e) => e.preventDefault()}
-                    >
-                      Something else
-                    </DropdownItem>
-                  </DropdownMenu>
-                </UncontrolledDropdown>
               </CardHeader>
               <CardBody>
                 <div className="table-full-width table-responsive">
@@ -593,6 +481,8 @@ const Dashboard = () => {
               </CardBody>
             </Card>
           </Col>
+        </Row>
+        <Row>
           <Col lg="7">
             <Card>
               <CardHeader>
@@ -969,6 +859,33 @@ const Dashboard = () => {
               </CardBody>
             </Card>
           </Col>
+          <Col lg="5">
+          <Card className="card-chart card-chart-pie">
+              <CardHeader>
+                <h5 className="card-category">Simple Pie Chart</h5>
+              </CardHeader>
+              <CardBody>
+                <Row>
+                  <Col xs="6">
+                    <div className="chart-area">
+                      <Pie
+                        data={chartExample9.data}
+                        options={chartExample9.options}
+                      />
+                    </div>
+                  </Col>
+                  <Col xs="6">
+                    <CardTitle tag="h4">
+                      <i className="tim-icons icon-trophy text-success" />{" "}
+                      10.000$
+                    </CardTitle>
+                    <p className="category">A total of $54000</p>
+                  </Col>
+                </Row>
+              </CardBody>
+            </Card>
+            </Col>
+
           <Col lg="12">
             <Card>
               <CardHeader>
