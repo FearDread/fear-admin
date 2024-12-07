@@ -10,3 +10,5 @@ export { default as store } from "./store/store.jsx";
 export { default as StorePersist } from "./store/StorePersist.jsx";
 
 export { default as RootReducer } from "./store/reducer.jsx";
+
+export { default as mailer } from "./mail/mail.jsx";
