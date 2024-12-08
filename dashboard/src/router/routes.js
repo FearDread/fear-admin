@@ -51,6 +51,7 @@ const routes = [
       {
         path: "/users",
         name: "User List",
+        
         mini: "U",
         component: UserList,
         layout: "/admin"
