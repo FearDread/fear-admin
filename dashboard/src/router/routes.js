@@ -5,10 +5,12 @@ import SweetAlert from "views/components/SweetAlert.js";
 import Grid from "views/components/Grid.js";
 import RegularForms from "views/components/forms/RegularForms.js";
 import Wizard from "views/components/forms/Wizard.js";
+import Widgits from "views/pages/Widgets.js";
 /* ------------------------------------ */
 import Dashboard from "views/Dashboard.jsx";
 import Profile from "_dashboard/Profile.jsx";
 import UserList from "_dashboard/UserList.jsx";
+import UserNew from "_dashboard/UserList.jsx";
 import ProductList from "_dashboard/ProductList.jsx";
 import NewProduct from "_dashboard/ProductNew.jsx";
 import BrandsList from "_dashboard/BrandsList.jsx";
@@ -17,6 +19,8 @@ import CategoryList from "_dashboard/CategoryList.jsx";
 import CategoryNew from "_dashboard/CategoryNew.jsx";
 import BlogList from "_dashboard/BlogList.jsx";
 import BlogNew from "_dashboard/BlogNew.jsx";
+import TaskList from "_dashboard/BlogList.jsx";
+import TaskNew from "_dashboard/BlogNew.jsx";
 
 //import CouponsList from "_dashboard/CouponsList.jsx";
 //import CouponNew from "_dashboard/CouponNew.jsx";
@@ -33,29 +37,36 @@ const routes = [
   },
   {
     collapse: true,
-    name: "Customers",
+    name: "Admin",
     icon: "tim-icons icon-molecule-40",
     state: "usersCollapse",
     views:[
       {
+        path: "/profile",
+        name: "My Profile",
+        mini: "P",
+        component: Profile,
+        layout: "/admin"
+      },
+      {
         path: "/users",
-        name: "Customer List",
+        name: "User List",
         mini: "U",
         component: UserList,
         layout: "/admin"
       },
       {
         path: "/users/new",
-        name: "+ Customer",
+        name: "+ User",
         mini: "U",
-        component: UserList,
+        component: Widgits,
         layout: "/admin"
       },
       {
-        path: "/profile",
-        name: "My Profile",
-        mini: "P",
-        component: Profile,
+        path: "/tasks/new",
+        name: "+ Task",
+        mini: "T",
+        component: TaskNew,
         layout: "/admin"
       }
     ]
