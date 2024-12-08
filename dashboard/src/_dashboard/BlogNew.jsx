@@ -22,7 +22,6 @@ import Loader from "components/Loader/Loading.js";
 import * as BlogActions from "../_redux/blog/actions";
 import * as CatActions from "../_redux/category/actions";
 import { NEW_BLOG_RESET } from "_redux/blog/types";
-import { suppressDeprecationWarnings } from "moment";
 
 const BlogNew = () => {
   const dispatch = useDispatch();
@@ -38,7 +37,7 @@ const BlogNew = () => {
 
   const { categories } = useSelector((state) => state.cat);
   const { user } = useSelector((state) => state.auth);
-  const { sections } = useSelector((state) => state.sections);
+  const { sections } = useState(null);
   const { success, loading } = useSelector((state) => state.blog);
 
   const fileInputRef = useRef();
@@ -155,7 +154,7 @@ const BlogNew = () => {
                               name="category"
                               placeholder="Choose Category"
                               onChange={handleSectionChange} >
-                              {sections.map((sec, key) => (
+                              {sections && sections.map((sec, key) => (
                                 <option key={key} value={sec.title}>
                                   {sec.title}
                                 </option>
