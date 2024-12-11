@@ -7,6 +7,9 @@ import { logout } from "_redux/auth/actions";
 import { Line, Bar, Pie } from "react-chartjs-2";
 import * as UserActions from "_redux/user/actions";
 import * as ProductActions from "_redux/product/actions";
+import * as TaskActions from "_redux/task/actions";
+import { TaskRow } from "components/TaskRow/TaskRow";
+import logo from "assets/img/FEAR/logo.png";
 // reactstrap components
 import {
   Button,
@@ -59,7 +62,9 @@ var mapData = {
   US: 2920
 };
 
+
 const Dashboard = () => {
+  let totalInventory = 0;
   const dispatch = useDispatch();
   const history = useHistory();
   const [toggle, setToggle] = useState(false);
@@ -67,9 +72,8 @@ const Dashboard = () => {
   const { user } = useSelector((state) => state.auth);
   const { users } = useSelector((state) => state.user);
   const { products, loading } = useSelector((state) => state.product);
+  const { tasks } = useSelector((state) => state.task);
 
-  //const { products, loading, error } = useSelector((state) => state.products);
-  //const { orders, error: ordersError } = useSelector((state) => state.allOrders);
 
 
   const setBgChartData = (name) => {
@@ -82,20 +86,12 @@ const Dashboard = () => {
     history.push("/login");
   };
 
-
-  let totalInventory = 0;
-  //products && products.forEach((element) => {
-    // check how much items out of stocks in products array
- //   if (element.stock > 0) {
-//      totalInventory += 1;
-//    }
-//  });
-
   useEffect(() => {
+
     dispatch(ProductActions.list());
     dispatch(UserActions.list());
+    dispatch(TaskActions.list());
 
-    console.log("Current User = ", user);
   }, [dispatch]);
   
   return (
@@ -159,8 +155,8 @@ const Dashboard = () => {
                   </Col>
                   <Col xs="7">
                     <div className="numbers">
-                      <p className="card-category">Number</p>
-                      <CardTitle tag="h3">150GB</CardTitle>
+                      <p className="card-category">Inventory</p>
+                      <CardTitle tag="h3">{products && products.length}</CardTitle>
                     </div>
                   </Col>
                 </Row>
@@ -261,41 +257,10 @@ const Dashboard = () => {
                 <div className="table-full-width table-responsive">
                   <Table>
                     <tbody>
-                      <tr>
-                        <td>
-                          <FormGroup check>
-                            <Label check>
-                              <Input defaultValue="" type="checkbox" />
-                              <span className="form-check-sign">
-                                <span className="check" />
-                              </span>
-                            </Label>
-                          </FormGroup>
-                        </td>
-                        <td>
-                          <p className="title">Update the Documentation</p>
-                          <p className="text-muted">
-                            Dwuamish Head, Seattle, WA 8:47 AM
-                          </p>
-                        </td>
-                        <td className="td-actions text-right">
-                          <Button
-                            color="link"
-                            id="tooltip786630859"
-                            title=""
-                            type="button"
-                          >
-                            <i className="tim-icons icon-pencil" />
-                          </Button>
-                          <UncontrolledTooltip
-                            delay={0}
-                            target="tooltip786630859"
-                          >
-                            Edit Task
-                          </UncontrolledTooltip>
-                        </td>
-                      </tr>
-                      <tr>
+                      {tasks && tasks.map((item, idx) => {
+                        return (
+    
+                        <tr>
                         <td>
                           <FormGroup check>
                             <Label check>
@@ -311,12 +276,9 @@ const Dashboard = () => {
                           </FormGroup>
                         </td>
                         <td>
-                          <p className="title">GDPR Compliance</p>
+                          <p className="title">Task # {idx}</p>
                           <p className="text-muted">
-                            The GDPR is a regulation that requires businesses to
-                            protect the personal data and privacy of Europe
-                            citizens for transactions that occur within EU
-                            member states.
+                            {item.task}
                           </p>
                         </td>
                         <td className="td-actions text-right">
@@ -335,146 +297,10 @@ const Dashboard = () => {
                             Edit Task
                           </UncontrolledTooltip>
                         </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <FormGroup check>
-                            <Label check>
-                              <Input defaultValue="" type="checkbox" />
-                              <span className="form-check-sign">
-                                <span className="check" />
-                              </span>
-                            </Label>
-                          </FormGroup>
-                        </td>
-                        <td>
-                          <p className="title">Solve the issues</p>
-                          <p className="text-muted">
-                            Fifty percent of all respondents said they would be
-                            more likely to shop at a company
-                          </p>
-                        </td>
-                        <td className="td-actions text-right">
-                          <Button
-                            color="link"
-                            id="tooltip199559448"
-                            title=""
-                            type="button"
-                          >
-                            <i className="tim-icons icon-pencil" />
-                          </Button>
-                          <UncontrolledTooltip
-                            delay={0}
-                            target="tooltip199559448"
-                          >
-                            Edit Task
-                          </UncontrolledTooltip>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <FormGroup check>
-                            <Label check>
-                              <Input defaultValue="" type="checkbox" />
-                              <span className="form-check-sign">
-                                <span className="check" />
-                              </span>
-                            </Label>
-                          </FormGroup>
-                        </td>
-                        <td>
-                          <p className="title">Release v2.0.0</p>
-                          <p className="text-muted">
-                            Ra Ave SW, Seattle, WA 98116, SUA 11:19 AM
-                          </p>
-                        </td>
-                        <td className="td-actions text-right">
-                          <Button
-                            color="link"
-                            id="tooltip989676508"
-                            title=""
-                            type="button"
-                          >
-                            <i className="tim-icons icon-pencil" />
-                          </Button>
-                          <UncontrolledTooltip
-                            delay={0}
-                            target="tooltip989676508"
-                          >
-                            Edit Task
-                          </UncontrolledTooltip>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <FormGroup check>
-                            <Label check>
-                              <Input defaultValue="" type="checkbox" />
-                              <span className="form-check-sign">
-                                <span className="check" />
-                              </span>
-                            </Label>
-                          </FormGroup>
-                        </td>
-                        <td>
-                          <p className="title">Export the processed files</p>
-                          <p className="text-muted">
-                            The report also shows that consumers will not easily
-                            forgive a company once a breach exposing their
-                            personal data occurs.
-                          </p>
-                        </td>
-                        <td className="td-actions text-right">
-                          <Button
-                            color="link"
-                            id="tooltip557118868"
-                            title=""
-                            type="button"
-                          >
-                            <i className="tim-icons icon-pencil" />
-                          </Button>
-                          <UncontrolledTooltip
-                            delay={0}
-                            target="tooltip557118868"
-                          >
-                            Edit Task
-                          </UncontrolledTooltip>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <FormGroup check>
-                            <Label check>
-                              <Input defaultValue="" type="checkbox" />
-                              <span className="form-check-sign">
-                                <span className="check" />
-                              </span>
-                            </Label>
-                          </FormGroup>
-                        </td>
-                        <td>
-                          <p className="title">Arival at export process</p>
-                          <p className="text-muted">
-                            Capitol Hill, Seattle, WA 12:34 AM
-                          </p>
-                        </td>
-                        <td className="td-actions text-right">
-                          <Button
-                            color="link"
-                            id="tooltip143185858"
-                            title=""
-                            type="button"
-                          >
-                            <i className="tim-icons icon-pencil" />
-                          </Button>
-                          <UncontrolledTooltip
-                            delay={0}
-                            target="tooltip143185858"
-                          >
-                            Edit Task
-                          </UncontrolledTooltip>
-                        </td>
-                      </tr>
+                        </tr>
+                      
+                          )
+                      })}
                     </tbody>
                   </Table>
                 </div>
@@ -535,325 +361,68 @@ const Dashboard = () => {
                       <th className="text-center">Avatar</th>
                       <th>Name</th>
                       <th>Email Address</th>
+                      <th>Role</th>
+                      <th>Mobile</th>
                       <th className="text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td className="text-center">
-                        <div className="photo">
-                          <img
-                            alt="..."
-                            src={require("assets/img/tania.jpg")}
-                          />
-                        </div>
-                      </td>
-                      <td>Tania Mike</td>
-                      <td>Develop</td>
-                      <td className="text-center">
-                        <div className="progress-container progress-sm">
-                          <Progress multi>
-                            <span className="progress-value">25%</span>
-                            <Progress bar max="100" value="25" />
-                          </Progress>
-                        </div>
-                      </td>
-                      <td className="text-right">€ 99,225</td>
-                      <td className="text-right">
-                        <Button
-                          className="btn-link btn-icon btn-neutral"
-                          color="success"
-                          id="tooltip618296632"
-                          size="sm"
-                          title="Refresh"
-                          type="button"
-                        >
-                          <i className="tim-icons icon-refresh-01" />
-                        </Button>
-                        <UncontrolledTooltip
-                          delay={0}
-                          target="tooltip618296632"
-                        >
-                          Tooltip on top
-                        </UncontrolledTooltip>
-                        <Button
-                          className="btn-link btn-icon btn-neutral"
-                          color="danger"
-                          id="tooltip707467505"
-                          size="sm"
-                          title="Delete"
-                          type="button"
-                        >
-                          <i className="tim-icons icon-simple-remove" />
-                        </Button>
-                        <UncontrolledTooltip
-                          delay={0}
-                          target="tooltip707467505"
-                        >
-                          Tooltip on top
-                        </UncontrolledTooltip>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="text-center">
-                        <div className="photo">
-                          <img alt="..." src={require("assets/img/robi.jpg")} />
-                        </div>
-                      </td>
-                      <td>John Doe</td>
-                      <td>CEO</td>
-                      <td className="text-center">
-                        <div className="progress-container progress-sm">
-                          <Progress multi>
-                            <span className="progress-value">77%</span>
-                            <Progress bar max="100" value="77" />
-                          </Progress>
-                        </div>
-                      </td>
-                      <td className="text-right">€ 89,241</td>
-                      <td className="text-right">
-                        <Button
-                          className="btn-link btn-icon btn-neutral"
-                          color="success"
-                          id="tooltip216846074"
-                          size="sm"
-                          title="Refresh"
-                          type="button"
-                        >
-                          <i className="tim-icons icon-refresh-01" />
-                        </Button>
-                        <UncontrolledTooltip
-                          delay={0}
-                          target="tooltip216846074"
-                        >
-                          Tooltip on top
-                        </UncontrolledTooltip>
-                        <Button
-                          className="btn-link btn-icon btn-neutral"
-                          color="danger"
-                          id="tooltip391990405"
-                          size="sm"
-                          title="Delete"
-                          type="button"
-                        >
-                          <i className="tim-icons icon-simple-remove" />
-                        </Button>
-                        <UncontrolledTooltip
-                          delay={0}
-                          target="tooltip391990405"
-                        >
-                          Tooltip on top
-                        </UncontrolledTooltip>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="text-center">
-                        <div className="photo">
-                          <img alt="..." src={require("assets/img/lora.jpg")} />
-                        </div>
-                      </td>
-                      <td>Alexa Mike</td>
-                      <td>Design</td>
-                      <td className="text-center">
-                        <div className="progress-container progress-sm">
-                          <Progress multi>
-                            <span className="progress-value">41%</span>
-                            <Progress bar max="100" value="41" />
-                          </Progress>
-                        </div>
-                      </td>
-                      <td className="text-right">€ 92,144</td>
-                      <td className="text-right">
-                        <Button
-                          className="btn-link btn-icon btn-neutral"
-                          color="success"
-                          id="tooltip191500186"
-                          size="sm"
-                          title="Refresh"
-                          type="button"
-                        >
-                          <i className="tim-icons icon-refresh-01" />
-                        </Button>
-                        <UncontrolledTooltip
-                          delay={0}
-                          target="tooltip191500186"
-                        >
-                          Tooltip on top
-                        </UncontrolledTooltip>
-                        <Button
-                          className="btn-link btn-icon btn-neutral"
-                          color="danger"
-                          id="tooltip320351170"
-                          size="sm"
-                          title="Delete"
-                          type="button"
-                        >
-                          <i className="tim-icons icon-simple-remove" />
-                        </Button>
-                        <UncontrolledTooltip
-                          delay={0}
-                          target="tooltip320351170"
-                        >
-                          Tooltip on top
-                        </UncontrolledTooltip>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="text-center">
-                        <div className="photo">
-                          <img alt="..." src={require("assets/img/jana.jpg")} />
-                        </div>
-                      </td>
-                      <td>Jana Monday</td>
-                      <td>Marketing</td>
-                      <td className="text-center">
-                        <div className="progress-container progress-sm">
-                          <Progress multi>
-                            <span className="progress-value">50%</span>
-                            <Progress bar max="100" value="50" />
-                          </Progress>
-                        </div>
-                      </td>
-                      <td className="text-right">€ 49,990</td>
-                      <td className="text-right">
-                        <Button
-                          className="btn-link btn-icon"
-                          color="success"
-                          id="tooltip345411997"
-                          size="sm"
-                          title="Refresh"
-                          type="button"
-                        >
-                          <i className="tim-icons icon-refresh-01" />
-                        </Button>
-                        <UncontrolledTooltip
-                          delay={0}
-                          target="tooltip345411997"
-                        >
-                          Tooltip on top
-                        </UncontrolledTooltip>
-                        <Button
-                          className="btn-link btn-icon"
-                          color="danger"
-                          id="tooltip601343171"
-                          size="sm"
-                          title="Delete"
-                          type="button"
-                        >
-                          <i className="tim-icons icon-simple-remove" />
-                        </Button>
-                        <UncontrolledTooltip
-                          delay={0}
-                          target="tooltip601343171"
-                        >
-                          Tooltip on top
-                        </UncontrolledTooltip>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="text-center">
-                        <div className="photo">
-                          <img alt="..." src={require("assets/img/mike.jpg")} />
-                        </div>
-                      </td>
-                      <td>Paul Dickens</td>
-                      <td>Develop</td>
-                      <td className="text-center">
-                        <div className="progress-container progress-sm">
-                          <Progress multi>
-                            <span className="progress-value">100%</span>
-                            <Progress bar max="100" value="100" />
-                          </Progress>
-                        </div>
-                      </td>
-                      <td className="text-right">€ 69,201</td>
-                      <td className="text-right">
-                        <Button
-                          className="btn-link btn-icon"
-                          color="success"
-                          id="tooltip774891382"
-                          size="sm"
-                          title="Refresh"
-                          type="button"
-                        >
-                          <i className="tim-icons icon-refresh-01" />
-                        </Button>
-                        <UncontrolledTooltip
-                          delay={0}
-                          target="tooltip774891382"
-                        >
-                          Tooltip on top
-                        </UncontrolledTooltip>
-                        <Button
-                          className="btn-link btn-icon"
-                          color="danger"
-                          id="tooltip949929353"
-                          size="sm"
-                          title="Delete"
-                          type="button"
-                        >
-                          <i className="tim-icons icon-simple-remove" />
-                        </Button>
-                        <UncontrolledTooltip
-                          delay={0}
-                          target="tooltip949929353"
-                        >
-                          Tooltip on top
-                        </UncontrolledTooltip>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="text-center">
-                        <div className="photo">
-                          <img
-                            alt="..."
-                            src={require("assets/img/emilyz.jpg")}
-                          />
-                        </div>
-                      </td>
-                      <td>Manuela Rico</td>
-                      <td>Manager</td>
-                      <td className="text-center">
-                        <div className="progress-container progress-sm">
-                          <Progress multi>
-                            <span className="progress-value">15%</span>
-                            <Progress bar max="100" value="15" />
-                          </Progress>
-                        </div>
-                      </td>
-                      <td className="text-right">€ 99,201</td>
-                      <td className="text-right">
-                        <Button
-                          className="btn-link btn-icon"
-                          color="success"
-                          id="tooltip30547133"
-                          size="sm"
-                          title="Refresh"
-                          type="button"
-                        >
-                          <i className="tim-icons icon-refresh-01" />
-                        </Button>
-                        <UncontrolledTooltip delay={0} target="tooltip30547133">
-                          Tooltip on top
-                        </UncontrolledTooltip>
-                        <Button
-                          className="btn-link btn-icon"
-                          color="danger"
-                          id="tooltip156899243"
-                          size="sm"
-                          title="Delete"
-                          type="button"
-                        >
-                          <i className="tim-icons icon-simple-remove" />
-                        </Button>
-                        <UncontrolledTooltip
-                          delay={0}
-                          target="tooltip156899243"
-                        >
-                          Tooltip on top
-                        </UncontrolledTooltip>
-                      </td>
-                    </tr>
+                    {users && users.map((user, idx) => {
+                      return (
+                        <tr>
+                        <td className="text-center">
+                          <div className="photo">
+                            <img
+                              alt="..."
+                              src={user.avatar ? user.avatar.url : logo}
+                            />
+                          </div>
+                        </td>
+                        <td>{user.name}</td>
+                        <td>{user.email}</td>
+                        <td className="text-center">
+                          <div className="progress-container progress-sm">
+                            <span>{user.role}</span>
+                          </div>
+                        </td>
+                        <td className="text-right">{user.mobile}</td>
+                        <td className="text-right">
+                          <Button
+                            className="btn-link btn-icon btn-neutral"
+                            color="success"
+                            id="tooltip618296632"
+                            size="sm"
+                            title="Refresh"
+                            type="button"
+                          >
+                            <i className="tim-icons icon-refresh-01" />
+                          </Button>
+                          <UncontrolledTooltip
+                            delay={0}
+                            target="tooltip618296632"
+                          >
+                            Tooltip on top
+                          </UncontrolledTooltip>
+                          <Button
+                            className="btn-link btn-icon btn-neutral"
+                            color="danger"
+                            id="tooltip707467505"
+                            size="sm"
+                            title="Delete"
+                            type="button"
+                          >
+                            <i className="tim-icons icon-simple-remove" />
+                          </Button>
+                          <UncontrolledTooltip
+                            delay={0}
+                            target="tooltip707467505"
+                          >
+                            Tooltip on top
+                          </UncontrolledTooltip>
+                        </td>
+                      </tr>
+                      )
+                    })}
                   </tbody>
                 </Table>
               </CardBody>

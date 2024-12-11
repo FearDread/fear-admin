@@ -1,5 +1,5 @@
 import React, { useEffect, useLayoutEffect } from "react";
-import { Route, Switch, Redirect, useLocation } from "react-router-dom";
+import { Route, Switch, Redirect, useLocation, useHistory } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import NotificationAlert from "react-notification-alert";
 import AdminNavbar from "components/Navbars/AdminNavbar.js";
@@ -19,6 +19,15 @@ const Admin = (props) => {
   const mainPanelRef = React.useRef(null);
   const notificationAlertRef = React.useRef(null);
   const location = useLocation();
+  const { user, isLoggedIn } = useSelector((state) => state.auth);
+  const history = useHistory();
+
+    useEffect(() => { 
+     if (!isLoggedIn) {
+        history.push("/auth/login");
+     }
+  
+    }, [history, isLoggedIn]);
 
   useEffect(() => {
     document.body.classList.remove("sidebar-mini");
@@ -29,44 +38,6 @@ const Admin = (props) => {
       mainPanelRef.current.scrollTop = 0;
     }
   }, [location]);
-
-  useEffect(() => {
-    let innerMainPanelRef = mainPanelRef;
-    if (navigator.platform.indexOf("Win") > -1) {
-      mainPanelRef.current &&
-        mainPanelRef.current.addEventListener("ps-scroll-y", showNavbarButton);
-    }
-    window.addEventListener("scroll", showNavbarButton);
-
-    return function cleanup() {
-      if (navigator.platform.indexOf("Win") > -1) {
-
-        innerMainPanelRef.current &&
-          innerMainPanelRef.current.removeEventListener(
-            "ps-scroll-y",
-            showNavbarButton
-          );
-      }
-      window.removeEventListener("scroll", showNavbarButton);
-    };
-
-  }, []);
-
-  const showNavbarButton = () => {
-    if (
-      document.documentElement.scrollTop > 50 ||
-      document.scrollingElement.scrollTop > 50 ||
-      (mainPanelRef.current && mainPanelRef.current.scrollTop > 50)
-    ) {
-      setOpacity(1);
-    } else if (
-      document.documentElement.scrollTop <= 50 ||
-      document.scrollingElement.scrollTop <= 50 ||
-      (mainPanelRef.current && mainPanelRef.current.scrollTop <= 50)
-    ) {
-      setOpacity(0);
-    }
-  };
 
   const handleMiniClick = () => {
     let notifyMessage = "Sidebar mini ";
