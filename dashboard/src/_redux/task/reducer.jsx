@@ -20,7 +20,7 @@ const taskReducer = (state = initialState, action) => {
     case types.ALL_TASK_SUCCESS: {
       return {
         loading: false,
-        TASKs: action.payload,
+        tasks: action.payload,
       };
     }
     case types.ALL_TASK_FAIL:
@@ -43,7 +43,7 @@ const taskReducer = (state = initialState, action) => {
         ...state,
         loading: false,
         success: true,
-        TASK: action.payload.data,
+        task: action.payload.data,
       };
 
     case types.NEW_TASK_FAIL: {

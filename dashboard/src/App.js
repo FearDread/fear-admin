@@ -2,8 +2,6 @@ import React, { useEffect, useState, Suspense } from "react";
 import { useHistory, useLocation, Route, Switch, Redirect } from 'react-router-dom';
 import AuthLayout from "layouts/Auth/Auth.js";
 import AdminLayout from "layouts/Admin/Admin.js";
-import Loader from "components/Loader/Loading";
-import ProductEdit from "_dashboard/ProductEdit";
 import { useSelector, useDispatch } from "react-redux";
 
 function App(props) {

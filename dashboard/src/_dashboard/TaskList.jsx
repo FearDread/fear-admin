@@ -8,7 +8,7 @@ import { Card,
    Row, 
    Col } from "reactstrap";
 import Loader from "components/Loader/Loading.js";
-import * as TaskActions from "../_redux/brand/actions"; 
+import * as TaskActions from "../_redux/task/actions"; 
 import logo from "assets/img/FEAR/logo.png";
 import ReactTable from "components/ReactTable/ReactTable.js";
 import ReactTableActions from "components/ReactTable/ReactTableActions.js";
@@ -16,7 +16,7 @@ import ReactTableActions from "components/ReactTable/ReactTableActions.js";
 const tableHeader = [
   { Header: "Completed", accessor: "isComplete" },
   { Header: "Task", accessor: "task" },
-  { Header: "Created @", accessor: "createdAt" },
+  { Header: "Created ", accessor: "createdAt" },
   { Header: "Actions", accessor: "actions", sortable: false, filterable: false }
 ]
 
@@ -30,34 +30,32 @@ const TaskList = () => {
     tasks = nTasks;
   };
   
-  useEffect(() => {
-    dispatch(TaskActions.list());
-  }, [ dispatch ]);
-
   const displayTasks = () => {
     let dataTable = [];
 
-    brands && brands.forEach((item, key) => {
+    tasks && tasks.forEach((item, key) => {
       item.isActive = (item.isActive) ? "Active" : "Disabled";
       
       dataTable.push({
-        avatar: (
-          <img 
-            src={item.avatar ? item.avatar.url : logo} 
-            className="avatar"/>),
-        title: item.title,
-        isActive: item.isActive,
+        isComplete: item.isComplete,
+        task: item.title,
+        createdAt: item.createdAt,
         actions: ( ReactTableActions( key, (() => {
             console.log("edit item ::", item);
           }), (() => {
             handleRemove(item._id);
-            //dispatch(BrandActions.remove(item._id));
           })
         )) 
       })
     })
     return dataTable;
   }
+
+  useEffect(() => {
+
+    dispatch(TaskActions.list());
+    
+  }, [ dispatch ]);
 
   return (
       <>

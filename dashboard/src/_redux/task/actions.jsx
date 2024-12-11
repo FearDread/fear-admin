@@ -4,41 +4,41 @@ import { API_BASE_URL } from "../config";
 
 export const list = () => async (dispatch) => {
 
-  dispatch({ type: Types.ADMIN_BRAND_REQUEST });
+  dispatch({ type: Types.ADMIN_TASK_REQUEST });
   
-  await axios.get(API_BASE_URL + "/brand/all")
+  await axios.get(API_BASE_URL + "/task/all")
     .then((response) => {
-      dispatch({ type: Types.ADMIN_BRAND_SUCCESS, payload: response.data.result });
+      dispatch({ type: Types.ADMIN_TASK_SUCCESS, payload: response.data.result });
     })
     .catch((error) => {
-      dispatch({ type: Types.ADMIN_BRAND_FAIL, payload: error });
+      dispatch({ type: Types.ADMIN_TASK_FAIL, payload: error });
     });
 };
 
-export const create = (brandData) => async (dispatch) => {
-    dispatch({type: Types.NEW_BRAND_REQUEST});
+export const create = (data) => async (dispatch) => {
+    dispatch({type: Types.NEW_TASK_REQUEST});
 
-    await axios.post(API_BASE_URL + `/brand/new`, brandData,
+    await axios.post(API_BASE_URL + `/task/new`, data,
       {headers: { "Content-Type": "multipart/form-data" }})
       .then((response) => {
-        console.log("Brand response :: ", response);
-        dispatch({ type: Types.NEW_BRAND_SUCCESS, payload: response.data.result });
+        console.log("task response :: ", response);
+        dispatch({ type: Types.NEW_TASK_SUCCESS, payload: response.data.result });
       })
       .catch((error) => {
-        dispatch({ type: Types.NEW_BRAND_FAIL, payload: error });
+        dispatch({ type: Types.NEW_TASK_FAIL, payload: error });
     });
 }
   
 export function remove (id) {
     return async function(dispatch) {
       try {
-        dispatch({ type: Types.DELETE_BRAND_REQUEST });
+        dispatch({ type: Types.DELETE_TASK_REQUEST });
   
-        const { data } = await axios.delete(API_BASE_URL + `/brand/${id}`);
+        const { data } = await axios.delete(API_BASE_URL + `/task/${id}`);
       
-        dispatch({ type: Types.DELETE_BRAND_SUCCESS, payload: data.success });
+        dispatch({ type: Types.DELETE_TASK_SUCCESS, payload: data.success });
       } catch (error) {
-        dispatch({ type: Types.DELETE_BRAND_FAIL, payload: error.message });
+        dispatch({ type: Types.DELETE_TASK_FAIL, payload: error.message });
       }
   };
 }

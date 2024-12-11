@@ -19,8 +19,8 @@ import CategoryList from "_dashboard/CategoryList.jsx";
 import CategoryNew from "_dashboard/CategoryNew.jsx";
 import BlogList from "_dashboard/BlogList.jsx";
 import BlogNew from "_dashboard/BlogNew.jsx";
-import TaskList from "_dashboard/BlogList.jsx";
-import TaskNew from "_dashboard/BlogNew.jsx";
+import TaskList from "_dashboard/TaskList.jsx";
+import TaskNew from "_dashboard/TaskNew.jsx";
 
 //import CouponsList from "_dashboard/CouponsList.jsx";
 //import CouponNew from "_dashboard/CouponNew.jsx";
@@ -64,7 +64,7 @@ const routes = [
         layout: "/admin"
       },
       {
-        path: "/tasks/new",
+        path: "/task/new",
         name: "+ Task",
         mini: "T",
         component: TaskNew,
