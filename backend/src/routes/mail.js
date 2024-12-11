@@ -1,8 +1,8 @@
 //onst imap = require("../workers/imap");
 //const Contacts = require("../models/contact");
-const smtp = require("../workers/smtp");
+const smtp = require("../libs/workers/smtp");
 const router = require("express").Router();
-const mailinfo = require("../workers/info"); 
+const mailinfo = require("../libs/workers/info"); 
 const mailer = new smtp(mailinfo);
 
 router.get('/', (req, res) => {

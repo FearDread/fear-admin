@@ -4,10 +4,12 @@ const Product = require("../controllers/product");
 const { isAdmin, isAuthorized } = require("../controllers/auth");
 const router = express.Router();
 
-router.get("/", Product.list);
-router.get("/all", Product.all);
-router.post("/new", Product.create);
-router.get("/search", Product.search);
+router.get("/", Product.list)
+      .get("/all", Product.all)
+      .post("/new", Product.create)
+      .get("/search", Product.search)
+      .post("/review", Product.review)
+      .get("/edit/:id", Product.read);
 
 router.route("/rating").put(tryCatch(Product.rating));
 router.route("/trendy").get(tryCatch(Product.trending));   
@@ -17,6 +19,5 @@ router.route("/:id")
         .put(tryCatch(Product.update))
         .delete(tryCatch(Product.delete));
 
-router.get("/edit/:id", tryCatch(Product.read));
 
 module.exports = router;

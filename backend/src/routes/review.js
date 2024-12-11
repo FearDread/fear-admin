@@ -4,4 +4,7 @@ const Product = require("../controllers/product");
 const Review = require("../controllers/review");
 const router = express.Router();
 
+router.post("/new", Review.create)
+      .post("/add/:id", Product.review);
+
 module.exports = router;
