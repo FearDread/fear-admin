@@ -10,21 +10,21 @@ import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import RemoveShoppingCartIcon from "@material-ui/icons/RemoveShoppingCart";
 import CartItem from "./CartItem";
+import { cruds, cart, auth } from "@feardread/crud-service";
 import { addToCart, removeFromCart, updateQuantity } from "../../Features/Cart/cartService";
 import "./Cart.css";
 
 const Cart = () => {
   //const history = useHistory();
   const dispatch = useDispatch();
-  const { result } = useSelector((state) => state.crud.read);
+  const cartState = useSelector((state) => state.cart);
 
   // new code
   const [couponCode, setCouponCode] = useState("");
   const [isFocused, setIsFocused] = useState(false);
   const [isValid, setIsValid] = useState(true);
 
-  // new code end
-
+  // new code end\
   const increaseQuantity = (id, quantity, stock) => {
     const newQty = quantity + 1;
     if (stock <= quantity) {
