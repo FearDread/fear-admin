@@ -35,12 +35,14 @@ const SingleProduct = () => {
   const { result, loading } = useSelector((state) => state?.crud?.read);
   const productsState = useSelector((state) => state?.crud?.product);
   const cartState = useSelector((state) => state?.auth?.cartProducts);
+  const { user } = useSelector((state) => state?.auth)
   const rat = result?.totalrating;
   const wishlistState = useSelector((state) => state?.auth?.wishlist?.wishlist);
 
   useEffect(() => {
     dispatch(cruds.read("product", id))
     dispatch(cruds.list("product"));
+    dispatch(cruds.list("review"));
     /*
     dispatch(getAProduct(getProductId));
     dispatch(getUserCart());
@@ -125,8 +127,10 @@ const SingleProduct = () => {
       return false;
     } else {
       dispatch(
-        addRating({ star: star, comment: comment, prodId: getProductId })
+        cruds.create("review", { rating: star, comment: comment, product: id, user: user._id })
       );
+      productsState.reviews.push({rating: star, comment: comment, product: id, user: user._id});
+      dispatch(cruds.update("product", productsState));
       setTimeout(() => {
         dispatch(getAProduct(getProductId));
       }, 100);
@@ -365,7 +369,7 @@ const SingleProduct = () => {
                 </div>
                 <div>
                   <textarea
-                    name=""
+                    name="comment"
                     id=""
                     className="w-100 form-control"
                     cols="30"

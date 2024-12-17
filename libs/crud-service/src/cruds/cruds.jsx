@@ -77,7 +77,10 @@ const cruds = {
       {headers: { "Content-Type": "multipart/form-data" }})
       .then((response) => {
         if ( response.data.success === true ) {
-          dispatch({ type: Types.REQUEST_SUCCESS, keyState: "create", payload: response.data.result });
+          if (entity === "review") {
+            addReviewToProduct(_data.product, _data)
+          }
+          dispatch({ type: Types.REQUEST_SUCCESS, keyState: entity, payload: response.data.result });
         }
         dispatch({ type: Types.CURRENT_ITEM, keyState: entity, payload: response.data.result });
       })
@@ -90,7 +93,7 @@ const cruds = {
     await API.get(entity + '/' + _id)
       .then((response) => { 
         if ( response.data.success ) {
-          dispatch({ type: Types.REQUEST_SUCCESS, keyState: "read", payload: response.data.result });
+          dispatch({ type: Types.REQUEST_SUCCESS, keyState: entity, payload: response.data.result });
         }
       })
       .catch((error) => {
