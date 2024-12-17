@@ -33,7 +33,7 @@ module.exports = FEAR = (( app ) => {
   this.cloud = cloud;
   this.load = ( app ) => {
     const dir = "routes";
-    const modPath = require('path').join( __dirname, dir );
+    const modPath = path.join( __dirname, dir );
   
     require('fs').readdirSync(modPath).forEach(( file ) => {
       const name = file.replace(/\.js$/, '');

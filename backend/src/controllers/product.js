@@ -4,7 +4,7 @@ const Review = require("../models/review");
 const methods = require("./crud");
 
 exports.review = tryCatch(async (req, res) => {
-  const { rating, comment } = req.body;
+  const {id, rating, comment } = req.body;
   
   await Product.findById(req.params.id)
     .then((product) => {
