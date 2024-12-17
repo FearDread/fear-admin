@@ -5,6 +5,6 @@ const Review = require("../controllers/review");
 const router = express.Router();
 
 router.post("/new", Review.create)
-      .post("/add/:id", Product.review);
+      .post("/product/review/:id", Product.review);
 
 module.exports = router;
