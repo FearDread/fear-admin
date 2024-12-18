@@ -8,7 +8,7 @@ router.get("/", Product.list)
       .get("/all", Product.all)
       .post("/new", Product.create)
       .get("/search", Product.search)
-      .post("/review", Product.review)
+      .post("/review/:id", Product.review)
       .get("/edit/:id", Product.read);
 
 router.route("/rating").put(tryCatch(Product.rating));
