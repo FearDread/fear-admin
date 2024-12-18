@@ -19,12 +19,13 @@ import RefundPloicy from "./pages/RefundPloicy";
 import ShippingPolicy from "./pages/ShippingPolicy";
 import TermAndContions from "./pages/TermAndContions";
 import SingleProduct from "./pages/SingleProduct";
+import ScrollToTop from "./components/ScrollButton/ScrollToTop";
 import ProductDetails from "./pages/ProductDetails";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import Orders from "./pages/Orders";
 import Profile from "./pages/Profile";
-
+import Popup from "./components/PopupBanner/Popup";
 import { PrivateRoutes } from "./routes/PrivateRoutes";
 import { OpenRoutes } from "./routes/OpenRoutes";
 
@@ -33,6 +34,7 @@ import "./assets/css/App.css";
 function App() {
   return (
     <>
+      <Popup />
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Layout />}>
@@ -108,6 +110,7 @@ function App() {
             <Route path="term-conditions" element={<TermAndContions />} />
           </Route>
         </Routes>
+        <ScrollToTop />
       </BrowserRouter>
     </>
   );

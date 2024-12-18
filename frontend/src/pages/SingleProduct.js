@@ -5,27 +5,20 @@ import BreadCrumb from "../components/Common/BreadCrumb";
 import Meta from "../components/Meta/Meta";
 import ProductCard from "../components/Cards/ProductCard";
 import ReactImageZoom from "react-image-zoom";
-import Color from "../components/Common/Color";
 import { TbGitCompare } from "react-icons/tb";
 import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import watch from "../assets/images/watch.jpg";
 import Container from "../components/Common/Container";
-import { addToWishlist } from "../features/products/productSlilce";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  addRating,
-  getAProduct,
-  getAllProducts,
-} from "../features/products/productSlilce";
 import { toast } from "react-toastify";
-import { addProdToCart, getUserCart } from "../features/user/userSlice";
-import { cruds, cart } from "@feardread/crud-service";
+import { cruds, cart, auth } from "@feardread/crud-service";
 
 const SingleProduct = () => {
   const { id } = useParams();
-  const [color, setColor] = useState(null);
-
+  const [star, setStar] = useState(null);
+  const [comment, setComment] = useState(null);
+  const [like, setLike] = useState(false);
+  const [isFilled, setIsFilled] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [alreadyAdded, setAlreadyAdded] = useState(false);
   const location = useLocation();
@@ -34,45 +27,22 @@ const SingleProduct = () => {
   const dispatch = useDispatch();
   const { result, loading } = useSelector((state) => state?.crud?.read);
   const productsState = useSelector((state) => state?.crud?.product);
-  const cartState = useSelector((state) => state?.auth?.cartProducts);
-  const { user } = useSelector((state) => state?.auth)
+  const cartState = useSelector((state) => state?.cart);
+  const { user, isLoggedIn } = useSelector((state) => state?.auth)
   const rat = result?.totalrating;
   const wishlistState = useSelector((state) => state?.auth?.wishlist?.wishlist);
 
-  useEffect(() => {
-    dispatch(cruds.read("product", id))
-    dispatch(cruds.list("product"));
-    dispatch(cruds.list("review"));
-    /*
-    dispatch(getAProduct(getProductId));
-    dispatch(getUserCart());
-    dispatch(getAllProducts());
-    */
-  }, []);
-
-  useEffect(() => {
-    for (let index = 0; index < cartState?.length; index++) {
-      if (getProductId === cartState[index]?.productId?._id) {
-        setAlreadyAdded(true);
-      }
-    }
-  });
 
   const uploadCart = () => {
-    if (color === null) {
-      toast.error("Please choose Color");
-    } else {
-      dispatch(
-        addProdToCart({
-          productId: result?._id,
-          quantity,
-          color,
-          price: result?.price,
-        }),
-        navigate("/cart")
-      );
-    }
+    dispatch(cart.create({
+      productId: result?._id,
+      quantity,
+      image: result?.images[0].url,
+      price: result?.price,
+    }))
+    navigate("/cart")
   };
+
   const props = {
     width: 594,
     height: 600,
@@ -96,24 +66,6 @@ const SingleProduct = () => {
 
   const closeModal = () => {};
   const [popularProduct, setPopularProduct] = useState([]);
-
-  useEffect(() => {
-    let data = [];
-    for (let index = 0; index < productsState.length; index++) {
-      const element = productsState[index];
-      if (element.tags === "popular") {
-        data.push(element);
-      } else {
-        setPopularProduct(data);
-      }
-    }
-  }, [result]);
-
-  const [star, setStar] = useState(null);
-  const [comment, setComment] = useState(null);
-  const [like, setLike] = useState(false);
-  const [isFilled, setIsFilled] = useState(false);
-
   const handleToggle = () => {
     setIsFilled(!isFilled);
   };
@@ -126,17 +78,43 @@ const SingleProduct = () => {
       toast.error("Please Write Review About the Product");
       return false;
     } else {
-      dispatch(
-        cruds.create("review", { rating: star, comment: comment, product: id, user: user._id })
-      );
-      productsState.reviews.push({rating: star, comment: comment, product: id, user: user._id});
-      dispatch(cruds.update("product", productsState));
+      dispatch(cruds.create("review", { rating: star, comment: comment, product: id, user: user._id }));
       setTimeout(() => {
-        dispatch(getAProduct(getProductId));
+        window.location.reload();
       }, 100);
     }
     return false;
   };
+
+  useEffect(() => {
+
+    if (isLoggedIn) {
+      dispatch(cart.read(user._id));
+    }
+
+    dispatch(cruds.read("product", id))
+
+  }, [isLoggedIn, dispatch]);
+
+  useEffect(() => {
+    for (let index = 0; index < cartState?.length; index++) {
+      if (getProductId === cartState[index]?.productId?._id) {
+        setAlreadyAdded(true);
+      }
+    }
+  });
+  
+  useEffect(() => {
+    let data = [];
+    for (let index = 0; index < productsState.length; index++) {
+      const element = productsState[index];
+      if (element.tags === "popular") {
+        data.push(element);
+      } else {
+        setPopularProduct(data);
+      }
+    }
+  }, [result]);
 
   return (
     <>
@@ -218,7 +196,7 @@ const SingleProduct = () => {
                       XXL
                     </span>
                   </div>
-                </div> */}
+                </div>
                 {alreadyAdded === false && (
                   <div className="d-flex gap-10 flex-column mt-2 mb-3">
                     <h3 className="product-heading">Color :</h3>
@@ -228,7 +206,7 @@ const SingleProduct = () => {
                     />
                   </div>
                 )}
-
+               */}
                 <div className="d-flex align-items-center gap-15 flex-row mt-2 mb-3">
                   <h3 className="product-heading">Quantity :</h3>
                   {alreadyAdded === false && (

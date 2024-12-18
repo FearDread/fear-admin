@@ -77,9 +77,6 @@ const cruds = {
       {headers: { "Content-Type": "multipart/form-data" }})
       .then((response) => {
         if ( response.data.success === true ) {
-          if (entity === "review") {
-            addReviewToProduct(_data.product, _data)
-          }
           dispatch({ type: Types.REQUEST_SUCCESS, keyState: entity, payload: response.data.result });
         }
         dispatch({ type: Types.CURRENT_ITEM, keyState: entity, payload: response.data.result });
@@ -140,5 +137,16 @@ const cruds = {
         .catch((error) => { dispatch({ type: Types.REQUEST_FAILED, keyState: "search", payload: error }); });
     }
 };
+
+cruds.endpoint = (url, method, options = {}) => async (dispatch) => {
+  let link = url + '?';
+
+  dispatch(type: Types.REQUEST_LOADING, keyState: "custom")
+
+  await API[method](url, options)
+    .then((response) => {dispatch({ type: Types.REQUEST_SUCCESS, keyState: "custom", payload: response.data.result });})
+    .catch((error) => { dispatch({ type: Types.REQUEST_FAILED, keyState: "custom", payload: error }); });
+
+}
 
 export default cruds;
