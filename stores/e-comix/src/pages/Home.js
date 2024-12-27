@@ -13,7 +13,7 @@ const Home = () => {
               <div className="col position-relative">
                   <div className="comon-items-con position-relative d-flex align-items-center">
                      <figure className="m-0">
-                        <img alt="sert" src="../assets/images/world-icon.png"/>
+                        <img alt="sert" src="images/world-icon.png"/>
                      </figure>
                      <div className="rightextr">
                         <h5> Worldwide  Shipping </h5>
@@ -27,7 +27,7 @@ const Home = () => {
               <div className="col position-relative" data-aos="fade-up">
                 <div className="comon-items-con position-relative d-flex align-items-center" >
                    <figure className="m-0">
-                      <img alt="sert" src="../assets/images/secure.png"/>
+                      <img alt="sert" src="images/secure.png"/>
                    </figure>
                    <div className="rightextr">
                       <h5> Secure  Payment </h5>
@@ -41,7 +41,7 @@ const Home = () => {
               <div className="col position-relative">
                 <div className="comon-items-con position-relative d-flex align-items-center">
                    <figure className="m-0">
-                      <img alt="sert" src="../assets/images/online-supot.png"/>
+                      <img alt="sert" src="images/online-supot.png"/>
                    </figure>
                    <div className="rightextr">
                       <h5> Online Support </h5>
@@ -58,7 +58,7 @@ const Home = () => {
     </section>
     <section className="serices-div float-start w-100 position-relative">
         <div className="cloos pulse">
-           <img alt="cool" src="../assets/images/cool.png"/>
+           <img alt="cool" src="images/cool.png"/>
         </div>
         <div className="container">
             <h6 className="text-center sub-heading" data-aos="fade-down"> Comic </h6>
@@ -88,7 +88,7 @@ const Home = () => {
                           <div className="col">
                             <a href="index.html#" className="comon-items d-inline-block w-100 position-relative overflow-hidden">
                               <div className="img-box-div">
-                                 <img alt="srt" src="../assets/images/se01.png"/>
+                                 <img alt="srt" src="images/se01.png"/>
                               </div>
                               <div className="content-section">
                                  <h5> The Vitals: True EMS #0 </h5>
@@ -100,7 +100,7 @@ const Home = () => {
                           <div className="col" data-aos="fade-up">
                             <a href="index.html#" className="comon-items d-inline-block w-100 position-relative overflow-hidden">
                               <div className="img-box-div">
-                                 <img alt="srt" src="../assets/images/se2.png"/>
+                                 <img alt="srt" src="images/se2.png"/>
                               </div>
                               <div className="content-section">
                                  <h5> The Vitals: True EMS #0 </h5>
@@ -113,7 +113,7 @@ const Home = () => {
                           <div className="col" data-aos="fade-up">
                             <a href="index.html#" className="comon-items d-inline-block w-100 position-relative overflow-hidden">
                               <div className="img-box-div">
-                                 <img alt="srt" src="../assets/images/b5197a7a-image-22.jpg"/>
+                                 <img alt="srt" src="images/b5197a7a-image-22.jpg"/>
                               </div>
                               <div className="content-section">
                                  <h5> The Vitals: True EMS #0 </h5>
@@ -126,7 +126,7 @@ const Home = () => {
                           <div className="col">
                             <a href="index.html#" className="comon-items d-inline-block w-100 position-relative overflow-hidden">
                               <div className="img-box-div">
-                                 <img alt="srt" src="../assets/images/se3.png"/>
+                                 <img alt="srt" src="images/se3.png"/>
                               </div>
                               <div className="content-section">
                                  <h5> The Vitals: True EMS #0 </h5>
@@ -138,7 +138,7 @@ const Home = () => {
                           <div className="col" data-aos="fade-up">
                             <a href="index.html#" className="comon-items d-inline-block w-100 position-relative overflow-hidden">
                               <div className="img-box-div">
-                                 <img alt="srt" src="../assets/images/comics-news.jpg"/>
+                                 <img alt="srt" src="images/comics-news.jpg"/>
                               </div>
                               <div className="content-section">
                                  <h5> The Vitals: True EMS #0 </h5>
@@ -151,7 +151,7 @@ const Home = () => {
                           <div className="col" data-aos="fade-up">
                             <a href="index.html#" className="comon-items d-inline-block w-100 position-relative overflow-hidden">
                               <div className="img-box-div">
-                                 <img alt="srt" src="../assets/images/360_F_117750219_dEXN5T0ENx62pMVgADlHKDSy334VpKPJ.jpg"/>
+                                 <img alt="srt" src="images/360_F_117750219_dEXN5T0ENx62pMVgADlHKDSy334VpKPJ.jpg"/>
                               </div>
                               <div className="content-section">
                                  <h5> The Vitals: True EMS #0 </h5>
@@ -167,7 +167,7 @@ const Home = () => {
                         <div className="col">
                           <a href="index.html#" className="comon-items d-inline-block w-100 position-relative overflow-hidden">
                             <div className="img-box-div">
-                               <img alt="srt" src="../assets/images/se01.png"/>
+                               <img alt="srt" src="images/se01.png"/>
                             </div>
                             <div className="content-section">
                                <h5> The Vitals: True EMS #0 </h5>
@@ -179,20 +179,7 @@ const Home = () => {
                         <div className="col" data-aos="fade-up">
                           <a href="index.html#" className="comon-items d-inline-block w-100 position-relative overflow-hidden">
                             <div className="img-box-div">
-                               <img alt="srt" src="../assets/images/se2.png"/>
-                            </div>
-                            <div className="content-section">
-                               <h5> The Vitals: True EMS #0 </h5>
-                               <p> Ryan, Bachs </p>
-                            </div>
-                          </a>
-                        </div>
-
-
-                        <div className="col" data-aos="fade-up">
-                          <a href="index.html#" className="comon-items d-inline-block w-100 position-relative overflow-hidden">
-                            <div className="img-box-div">
-                               <img alt="srt" src="../assets/images/b5197a7a-image-22.jpg"/>
+                               <img alt="srt" src="images/se2.png"/>
                             </div>
                             <div className="content-section">
                                <h5> The Vitals: True EMS #0 </h5>
@@ -205,19 +192,7 @@ const Home = () => {
                         <div className="col" data-aos="fade-up">
                           <a href="index.html#" className="comon-items d-inline-block w-100 position-relative overflow-hidden">
                             <div className="img-box-div">
-                               <img alt="srt" src="../assets/images/se3.png"/>
-                            </div>
-                            <div className="content-section">
-                               <h5> The Vitals: True EMS #0 </h5>
-                               <p> Ryan, Bachs </p>
-                            </div>
-                          </a>
-                        </div>
-
-                        <div className="col" data-aos="fade-up">
-                          <a href="index.html#" className="comon-items d-inline-block w-100 position-relative overflow-hidden">
-                            <div className="img-box-div">
-                               <img alt="srt" src="../assets/images/comics-news.jpg"/>
+                               <img alt="srt" src="images/b5197a7a-image-22.jpg"/>
                             </div>
                             <div className="content-section">
                                <h5> The Vitals: True EMS #0 </h5>
@@ -230,7 +205,32 @@ const Home = () => {
                         <div className="col" data-aos="fade-up">
                           <a href="index.html#" className="comon-items d-inline-block w-100 position-relative overflow-hidden">
                             <div className="img-box-div">
-                               <img alt="srt" src="../assets/images/360_F_117750219_dEXN5T0ENx62pMVgADlHKDSy334VpKPJ.jpg"/>
+                               <img alt="srt" src="images/se3.png"/>
+                            </div>
+                            <div className="content-section">
+                               <h5> The Vitals: True EMS #0 </h5>
+                               <p> Ryan, Bachs </p>
+                            </div>
+                          </a>
+                        </div>
+
+                        <div className="col" data-aos="fade-up">
+                          <a href="index.html#" className="comon-items d-inline-block w-100 position-relative overflow-hidden">
+                            <div className="img-box-div">
+                               <img alt="srt" src="images/comics-news.jpg"/>
+                            </div>
+                            <div className="content-section">
+                               <h5> The Vitals: True EMS #0 </h5>
+                               <p> Ryan, Bachs </p>
+                            </div>
+                          </a>
+                        </div>
+
+
+                        <div className="col" data-aos="fade-up">
+                          <a href="index.html#" className="comon-items d-inline-block w-100 position-relative overflow-hidden">
+                            <div className="img-box-div">
+                               <img alt="srt" src="images/360_F_117750219_dEXN5T0ENx62pMVgADlHKDSy334VpKPJ.jpg"/>
                             </div>
                             <div className="content-section">
                                <h5> The Vitals: True EMS #0 </h5>
@@ -246,7 +246,7 @@ const Home = () => {
                         <div className="col" data-aos="fade-up">
                           <a href="index.html#" className="comon-items d-inline-block w-100 position-relative overflow-hidden">
                             <div className="img-box-div">
-                               <img alt="srt" src="../assets/images/se01.png"/>
+                               <img alt="srt" src="images/se01.png"/>
                             </div>
                             <div className="content-section">
                                <h5> The Vitals: True EMS #0 </h5>
@@ -258,20 +258,7 @@ const Home = () => {
                         <div className="col" data-aos="fade-up">
                           <a href="index.html#" className="comon-items d-inline-block w-100 position-relative overflow-hidden">
                             <div className="img-box-div">
-                               <img alt="srt" src="../assets/images/se2.png"/>
-                            </div>
-                            <div className="content-section">
-                               <h5> The Vitals: True EMS #0 </h5>
-                               <p> Ryan, Bachs </p>
-                            </div>
-                          </a>
-                        </div>
-
-
-                        <div className="col" data-aos="fade-up">
-                          <a href="index.html#" className="comon-items d-inline-block w-100 position-relative overflow-hidden">
-                            <div className="img-box-div">
-                               <img alt="srt" src="../assets/images/b5197a7a-image-22.jpg"/>
+                               <img alt="srt" src="images/se2.png"/>
                             </div>
                             <div className="content-section">
                                <h5> The Vitals: True EMS #0 </h5>
@@ -284,19 +271,7 @@ const Home = () => {
                         <div className="col" data-aos="fade-up">
                           <a href="index.html#" className="comon-items d-inline-block w-100 position-relative overflow-hidden">
                             <div className="img-box-div">
-                               <img alt="srt" src="../assets/images/se3.png"/>
-                            </div>
-                            <div className="content-section">
-                               <h5> The Vitals: True EMS #0 </h5>
-                               <p> Ryan, Bachs </p>
-                            </div>
-                          </a>
-                        </div>
-
-                        <div className="col" data-aos="fade-up">
-                          <a href="index.html#" className="comon-items d-inline-block w-100 position-relative overflow-hidden">
-                            <div className="img-box-div">
-                               <img alt="srt" src="../assets/images/comics-news.jpg"/>
+                               <img alt="srt" src="images/b5197a7a-image-22.jpg"/>
                             </div>
                             <div className="content-section">
                                <h5> The Vitals: True EMS #0 </h5>
@@ -309,7 +284,32 @@ const Home = () => {
                         <div className="col" data-aos="fade-up">
                           <a href="index.html#" className="comon-items d-inline-block w-100 position-relative overflow-hidden">
                             <div className="img-box-div">
-                               <img alt="srt" src="../assets/images/360_F_117750219_dEXN5T0ENx62pMVgADlHKDSy334VpKPJ.jpg"/>
+                               <img alt="srt" src="images/se3.png"/>
+                            </div>
+                            <div className="content-section">
+                               <h5> The Vitals: True EMS #0 </h5>
+                               <p> Ryan, Bachs </p>
+                            </div>
+                          </a>
+                        </div>
+
+                        <div className="col" data-aos="fade-up">
+                          <a href="index.html#" className="comon-items d-inline-block w-100 position-relative overflow-hidden">
+                            <div className="img-box-div">
+                               <img alt="srt" src="images/comics-news.jpg"/>
+                            </div>
+                            <div className="content-section">
+                               <h5> The Vitals: True EMS #0 </h5>
+                               <p> Ryan, Bachs </p>
+                            </div>
+                          </a>
+                        </div>
+
+
+                        <div className="col" data-aos="fade-up">
+                          <a href="index.html#" className="comon-items d-inline-block w-100 position-relative overflow-hidden">
+                            <div className="img-box-div">
+                               <img alt="srt" src="images/360_F_117750219_dEXN5T0ENx62pMVgADlHKDSy334VpKPJ.jpg"/>
                             </div>
                             <div className="content-section">
                                <h5> The Vitals: True EMS #0 </h5>
@@ -325,7 +325,7 @@ const Home = () => {
                         <div className="col" data-aos="fade-up">
                           <a href="index.html#" className="comon-items d-inline-block w-100 position-relative overflow-hidden">
                             <div className="img-box-div">
-                               <img alt="srt" src="../assets/images/se01.png"/>
+                               <img alt="srt" src="images/se01.png"/>
                             </div>
                             <div className="content-section">
                                <h5> The Vitals: True EMS #0 </h5>
@@ -337,20 +337,7 @@ const Home = () => {
                         <div className="col" data-aos="fade-up">
                           <a href="index.html#" className="comon-items d-inline-block w-100 position-relative overflow-hidden">
                             <div className="img-box-div">
-                               <img alt="srt" src="../assets/images/se2.png"/>
-                            </div>
-                            <div className="content-section">
-                               <h5> The Vitals: True EMS #0 </h5>
-                               <p> Ryan, Bachs </p>
-                            </div>
-                          </a>
-                        </div>
-
-
-                        <div className="col" data-aos="fade-up">
-                          <a href="index.html#" className="comon-items d-inline-block w-100 position-relative overflow-hidden">
-                            <div className="img-box-div">
-                               <img alt="srt" src="../assets/images/b5197a7a-image-22.jpg"/>
+                               <img alt="srt" src="images/se2.png"/>
                             </div>
                             <div className="content-section">
                                <h5> The Vitals: True EMS #0 </h5>
@@ -363,19 +350,7 @@ const Home = () => {
                         <div className="col" data-aos="fade-up">
                           <a href="index.html#" className="comon-items d-inline-block w-100 position-relative overflow-hidden">
                             <div className="img-box-div">
-                               <img alt="srt" src="../assets/images/se3.png"/>
-                            </div>
-                            <div className="content-section">
-                               <h5> The Vitals: True EMS #0 </h5>
-                               <p> Ryan, Bachs </p>
-                            </div>
-                          </a>
-                        </div>
-
-                        <div className="col" data-aos="fade-up">
-                          <a href="index.html#" className="comon-items d-inline-block w-100 position-relative overflow-hidden">
-                            <div className="img-box-div">
-                               <img alt="srt" src="../assets/images/comics-news.jpg"/>
+                               <img alt="srt" src="images/b5197a7a-image-22.jpg"/>
                             </div>
                             <div className="content-section">
                                <h5> The Vitals: True EMS #0 </h5>
@@ -388,7 +363,32 @@ const Home = () => {
                         <div className="col" data-aos="fade-up">
                           <a href="index.html#" className="comon-items d-inline-block w-100 position-relative overflow-hidden">
                             <div className="img-box-div">
-                               <img alt="srt" src="../assets/images/360_F_117750219_dEXN5T0ENx62pMVgADlHKDSy334VpKPJ.jpg"/>
+                               <img alt="srt" src="images/se3.png"/>
+                            </div>
+                            <div className="content-section">
+                               <h5> The Vitals: True EMS #0 </h5>
+                               <p> Ryan, Bachs </p>
+                            </div>
+                          </a>
+                        </div>
+
+                        <div className="col" data-aos="fade-up">
+                          <a href="index.html#" className="comon-items d-inline-block w-100 position-relative overflow-hidden">
+                            <div className="img-box-div">
+                               <img alt="srt" src="images/comics-news.jpg"/>
+                            </div>
+                            <div className="content-section">
+                               <h5> The Vitals: True EMS #0 </h5>
+                               <p> Ryan, Bachs </p>
+                            </div>
+                          </a>
+                        </div>
+
+
+                        <div className="col" data-aos="fade-up">
+                          <a href="index.html#" className="comon-items d-inline-block w-100 position-relative overflow-hidden">
+                            <div className="img-box-div">
+                               <img alt="srt" src="images/360_F_117750219_dEXN5T0ENx62pMVgADlHKDSy334VpKPJ.jpg"/>
                             </div>
                             <div className="content-section">
                                <h5> The Vitals: True EMS #0 </h5>
@@ -405,16 +405,16 @@ const Home = () => {
         </div>
 
         <div className="eg-bg">
-           <img alt="ser" src="../assets/images/edge1-d.svg"/>
+           <img alt="ser" src="images/edge1-d.svg"/>
         </div>
     </section>
     <section className="shop-collections float-start w-100 position-relative">
        <div className="lool pulse">
-        <img alt="loo" src="../assets/images/lol.png"/>
+        <img alt="loo" src="images/lol.png"/>
        </div>
        <div className="woder-women">
           <figure className="m-0">
-            <img alt="woder" src="../assets/images/wonder.svg"/>
+            <img alt="woder" src="images/wonder.svg"/>
           </figure>
        </div>
       <div className="container">
@@ -425,7 +425,7 @@ const Home = () => {
               <div className="col">
                 <a  href="index.html#" className="shop-items overflow-hidden d-inline-block w-100 position-relative" data-aos="zoom-in">
                   <div className="img-box-div position-relative">
-                    <img alt="srt" src="../assets/images/b5197a7a-image-22.jpg"/>
+                    <img alt="srt" src="images/b5197a7a-image-22.jpg"/>
                     <span className="off">10% off</span>
                   </div>
                   <div className="details-shopi">
@@ -445,7 +445,7 @@ const Home = () => {
               <div className="col">
                 <a  href="index.html#" className="shop-items overflow-hidden d-inline-block w-100 position-relative" data-aos="zoom-in">
                   <div className="img-box-div position-relative">
-                    <img alt="srt" src="../assets/images/ghui.jpg"/>
+                    <img alt="srt" src="images/ghui.jpg"/>
                     <span className="off">10% off</span>
                   </div>
                   <div className="details-shopi">
@@ -466,7 +466,7 @@ const Home = () => {
               <div className="col">
                 <a  href="index.html#" className="shop-items overflow-hidden d-inline-block w-100 position-relative" data-aos="zoom-in">
                   <div className="img-box-div position-relative">
-                    <img alt="srt" src="../assets/images/krish.jpg"/>
+                    <img alt="srt" src="images/krish.jpg"/>
                     <span className="off">10% off</span>
                   </div>
                   <div className="details-shopi">
@@ -493,10 +493,10 @@ const Home = () => {
     </section>
     <section className="super-hero-div float-start w-100 position-relative">
       <div className="eg-bg2">
-        <img alt="ser" src="../assets/images/edge1-d.svg"/>
+        <img alt="ser" src="images/edge1-d.svg"/>
      </div>
      <div className="boom hithere">
-       <img alt="so" src="../assets/images/boom.png"/>
+       <img alt="so" src="images/boom.png"/>
      </div>
        <div className="container">
           
@@ -526,7 +526,7 @@ const Home = () => {
                           <div className="col">
                             <a href="index.html#" className="shop-items super-items overflow-hidden d-inline-block w-100 position-relative" data-aos="fade-up">
                               <div className="img-box-div position-relative">
-                                <img alt="srt" src="../assets/images/super1.png"/>
+                                <img alt="srt" src="images/super1.png"/>
                                 <span className="off">10% off</span>
                               </div>
                               <div className="details-shopi">
@@ -549,7 +549,7 @@ const Home = () => {
                           <div className="col">
                             <a  href="index.html#" className="shop-items super-items overflow-hidden d-inline-block w-100 position-relative" data-aos="fade-up">
                               <div className="img-box-div position-relative">
-                                <img alt="srt" src="../assets/images/super2.png"/>
+                                <img alt="srt" src="images/super2.png"/>
                                 <span className="off">10% off</span>
                               </div>
                               <div className="details-shopi">
@@ -572,7 +572,7 @@ const Home = () => {
                           <div className="col">
                             <a  href="index.html#" className="shop-items super-items overflow-hidden d-inline-block w-100 position-relative" data-aos="fade-up">
                               <div className="img-box-div position-relative">
-                                <img alt="srt" src="../assets/images/super3.png"/>
+                                <img alt="srt" src="images/super3.png"/>
                                 <span className="off">10% off</span>
                               </div>
                               <div className="details-shopi">
@@ -595,7 +595,7 @@ const Home = () => {
                           <div className="col">
                             <a  href="index.html#" className="shop-items super-items overflow-hidden d-inline-block w-100 position-relative" data-aos="fade-up">
                               <div className="img-box-div position-relative">
-                                <img alt="srt" src="../assets/images/super5.png"/>
+                                <img alt="srt" src="images/super5.png"/>
                                 <span className="off">10% off</span>
                               </div>
                               <div className="details-shopi">
@@ -618,7 +618,7 @@ const Home = () => {
                           <div className="col">
                             <a  href="index.html#" className="shop-items super-items overflow-hidden d-inline-block w-100 position-relative" data-aos="fade-up">
                               <div className="img-box-div position-relative">
-                                <img alt="srt" src="../assets/images/super4.png"/>
+                                <img alt="srt" src="images/super4.png"/>
                                 <span className="off">10% off</span>
                               </div>
                               <div className="details-shopi">
@@ -650,7 +650,7 @@ const Home = () => {
                           <div className="col">
                             <a  href="index.html#" className="shop-items super-items overflow-hidden d-inline-block w-100 position-relative" data-aos="fade-up">
                               <div className="img-box-div position-relative">
-                                <img alt="srt" src="../assets/images/b5197a7a-image-22.jpg"/>
+                                <img alt="srt" src="images/b5197a7a-image-22.jpg"/>
                                 <span className="off">10% off</span>
                               </div>
                               <div className="details-shopi">
@@ -673,7 +673,7 @@ const Home = () => {
                           <div className="col">
                             <a  href="index.html#" className="shop-items super-items overflow-hidden d-inline-block w-100 position-relative" data-aos="fade-up">
                               <div className="img-box-div position-relative">
-                                <img alt="srt" src="../assets/images/b5197a7a-image-22.jpg"/>
+                                <img alt="srt" src="images/b5197a7a-image-22.jpg"/>
                                 <span className="off">10% off</span>
                               </div>
                               <div className="details-shopi">
@@ -696,7 +696,7 @@ const Home = () => {
                           <div className="col">
                             <a  href="index.html#" className="shop-items super-items overflow-hidden d-inline-block w-100 position-relative" data-aos="fade-up">
                               <div className="img-box-div position-relative">
-                                <img alt="srt" src="../assets/images/b5197a7a-image-22.jpg"/>
+                                <img alt="srt" src="images/b5197a7a-image-22.jpg"/>
                                 <span className="off">10% off</span>
                               </div>
                               <div className="details-shopi">
@@ -719,7 +719,7 @@ const Home = () => {
                           <div className="col">
                             <a  href="index.html#" className="shop-items super-items overflow-hidden d-inline-block w-100 position-relative" data-aos="fade-up">
                               <div className="img-box-div position-relative">
-                                <img alt="srt" src="../assets/images/b5197a7a-image-22.jpg"/>
+                                <img alt="srt" src="images/b5197a7a-image-22.jpg"/>
                                 <span className="off">10% off</span>
                               </div>
                               <div className="details-shopi">
@@ -742,7 +742,7 @@ const Home = () => {
                           <div className="col">
                             <a  href="index.html#" className="shop-items super-items overflow-hidden d-inline-block w-100 position-relative" data-aos="fade-up">
                               <div className="img-box-div position-relative">
-                                <img alt="srt" src="../assets/images/b5197a7a-image-22.jpg"/>
+                                <img alt="srt" src="images/b5197a7a-image-22.jpg"/>
                                 <span className="off">10% off</span>
                               </div>
                               <div className="details-shopi">
@@ -774,7 +774,7 @@ const Home = () => {
                           <div className="col">
                             <a  href="index.html#" className="shop-items super-items overflow-hidden d-inline-block w-100 position-relative" data-aos="fade-up">
                               <div className="img-box-div position-relative">
-                                <img alt="srt" src="../assets/images/b5197a7a-image-22.jpg"/>
+                                <img alt="srt" src="images/b5197a7a-image-22.jpg"/>
                                 <span className="off">10% off</span>
                               </div>
                               <div className="details-shopi">
@@ -797,7 +797,7 @@ const Home = () => {
                           <div className="col">
                             <a  href="index.html#" className="shop-items super-items overflow-hidden d-inline-block w-100 position-relative" data-aos="fade-up">
                               <div className="img-box-div position-relative">
-                                <img alt="srt" src="../assets/images/b5197a7a-image-22.jpg"/>
+                                <img alt="srt" src="images/b5197a7a-image-22.jpg"/>
                                 <span className="off">10% off</span>
                               </div>
                               <div className="details-shopi">
@@ -820,7 +820,7 @@ const Home = () => {
                           <div className="col">
                             <a  href="index.html#" className="shop-items super-items overflow-hidden d-inline-block w-100 position-relative" data-aos="fade-up">
                               <div className="img-box-div position-relative">
-                                <img alt="srt" src="../assets/images/b5197a7a-image-22.jpg"/>
+                                <img alt="srt" src="images/b5197a7a-image-22.jpg"/>
                                 <span className="off">10% off</span>
                               </div>
                               <div className="details-shopi">
@@ -843,7 +843,7 @@ const Home = () => {
                           <div className="col">
                             <a  href="index.html#" className="shop-items super-items overflow-hidden d-inline-block w-100 position-relative" data-aos="fade-up">
                               <div className="img-box-div position-relative">
-                                <img alt="srt" src="../assets/images/b5197a7a-image-22.jpg"/>
+                                <img alt="srt" src="images/b5197a7a-image-22.jpg"/>
                                 <span className="off">10% off</span>
                               </div>
                               <div className="details-shopi">
@@ -866,7 +866,7 @@ const Home = () => {
                           <div className="col">
                             <a  href="index.html#" className="shop-items super-items overflow-hidden d-inline-block w-100 position-relative" data-aos="fade-up">
                               <div className="img-box-div position-relative">
-                                <img alt="srt" src="../assets/images/b5197a7a-image-22.jpg"/>
+                                <img alt="srt" src="images/b5197a7a-image-22.jpg"/>
                                 <span className="off">10% off</span>
                               </div>
                               <div className="details-shopi">
@@ -902,7 +902,7 @@ const Home = () => {
        </div>
        <div className="superman" data-aos="fade-up">
          <figure className="m-0">
-            <img alt="seu" src="../assets/images/superman-hero-bg.svg"/>
+            <img alt="seu" src="images/superman-hero-bg.svg"/>
          </figure>
        </div>
     </section>
@@ -916,19 +916,19 @@ const Home = () => {
           </div>
 
           <figure className="m-0 boy-img" data-aos="fade-up">
-            <img alt="boy" src="../assets/images/join-boy.svg"/>
+            <img alt="boy" src="images/join-boy.svg"/>
           </figure>
 
        </div>
 
        <div className="eg-bg">
-        <img alt="ser" src="../assets/images/edge1-d.svg"/>
+        <img alt="ser" src="images/edge1-d.svg"/>
        </div>
        
     </section>
     <section className="testmonsaosl-div float-start w-100 position-relative">
       <div className="woo pulse">
-         <img alt="wo" src="../assets/images/wow.svg"/>
+         <img alt="wo" src="images/wow.svg"/>
       </div>
         <div className="container">
             <h6 className="text-center sub-heading" data-aos="fade-down"> Testimonial </h6>
@@ -941,7 +941,7 @@ const Home = () => {
                   </div>
                   <div className="userid d-flex align-items-center mt-4">
                     <figure className="m-0">
-                       <img alt="ser" src="../assets/images/test1.png"/>
+                       <img alt="ser" src="images/test1.png"/>
                     </figure>
                     <div className="name-d ms-4">
                       <h5> James Robert 
@@ -959,7 +959,7 @@ const Home = () => {
                   </div>
                   <div className="userid d-flex align-items-center mt-4">
                     <figure className="m-0">
-                      <img alt="ser" src="../assets/images/testimonials-1-1.jpg"/>
+                      <img alt="ser" src="images/testimonials-1-1.jpg"/>
                     </figure>
                     <div className="name-d ms-4">
                       <h5> James Robert 
@@ -978,7 +978,7 @@ const Home = () => {
                   </div>
                   <div className="userid d-flex align-items-center mt-4">
                     <figure className="m-0">
-                      <img alt="ser" src="../assets/images/manages-st2.jpg"/>
+                      <img alt="ser" src="images/manages-st2.jpg"/>
                     </figure>
                     <div className="name-d ms-4">
                       <h5> Smith Robert 
@@ -997,7 +997,7 @@ const Home = () => {
                   </div>
                   <div className="userid d-flex align-items-center mt-4">
                     <figure className="m-0">
-                      <img alt="ser" src="../assets/images/tim-hufner-9qBSeAN9vps-unsplash.jpg"/>
+                      <img alt="ser" src="images/tim-hufner-9qBSeAN9vps-unsplash.jpg"/>
                     </figure>
                     <div className="name-d ms-4">
                       <h5> Willum Robert 
@@ -1015,10 +1015,10 @@ const Home = () => {
 
     <section className="blogs-div float-start w-100 position-relative">
       <div className="eg-bg2">
-        <img alt="ser" src="../assets/images/edge1-d.svg"/>
+        <img alt="ser" src="images/edge1-d.svg"/>
      </div>
      <div className="spoider">
-       <img alt="speic" src="../assets/images/spider.svg"/>
+       <img alt="speic" src="images/spider.svg"/>
      </div>
         <div className="container">
            <h2 className="text-center page-haeding mt-4" data-aos="fade-down">  OUR LATEST NEWS & EVENT  </h2>
@@ -1026,7 +1026,7 @@ const Home = () => {
              <div className="col">
                 <a href="index.html#" className="hilishf-blogs d-inline-block w-100" data-aos="fade-up">
                     <div className="img-figh-pic">
-                       <img alt="st" src="../assets/images/blog1.png"/>
+                       <img alt="st" src="images/blog1.png"/>
                     </div>
                     <div className="blos-pos-dl">
                        <h5>  Anthology of comics by the magazine </h5>
@@ -1040,7 +1040,7 @@ const Home = () => {
                  <div className="row align-items-center gy-5 g-lg-5">
                      <div className="col-sm-4">
                         <div className="b-pic">
-                          <img alt="ser" src="../assets/images/blog2.png"/>
+                          <img alt="ser" src="images/blog2.png"/>
                         </div>
                      </div>
                      <div className="col-sm-8">
@@ -1058,7 +1058,7 @@ const Home = () => {
                 <div className="row align-items-center gy-5 g-lg-5">
                     <div className="col-sm-4">
                        <div className="b-pic">
-                         <img alt="ser" src="../assets/images/blog3.png"/>
+                         <img alt="ser" src="images/blog3.png"/>
                        </div>
                     </div>
                     <div className="col-sm-8">
@@ -1076,7 +1076,7 @@ const Home = () => {
                 <div className="row align-items-center gy-5 g-lg-5">
                     <div className="col-sm-4">
                        <div className="b-pic">
-                         <img alt="ser" src="../assets/images/blog4.png"/>
+                         <img alt="ser" src="images/blog4.png"/>
                        </div>
                     </div>
                     <div className="col-sm-8">
@@ -1100,7 +1100,7 @@ const Home = () => {
 
     <section className="subscribe-section float-start w-100 position-relative">
       <div className="azp shake">
-        <img alt="ser" src="../assets/images/zap.png"/>
+        <img alt="ser" src="images/zap.png"/>
       </div>
         <div className="container">
            <div className="col-lg-8">
@@ -1112,7 +1112,7 @@ const Home = () => {
            </div>
         </div>
         <div className="sub-ixtr" data-aos="fade-up">
-           <img alt="set" src="../assets/images/footer-superhero.png"/>
+           <img alt="set" src="images/footer-superhero.png"/>
         </div>
     </section>
 </main>

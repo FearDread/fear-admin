@@ -11,12 +11,15 @@ import Popup from "./components/PopupBanner/Popup";
 import { PrivateRoutes } from "./routes/PrivateRoutes";
 import { OpenRoutes } from "./routes/OpenRoutes";
 
-import "./assets/css/all.min.css";
-import "./assets/css/style.min.css";
 import "./assets/css/bootstrap.min.css";
-import "./assets/css/owl.carousel.min.css";
+
+import "./assets/css/all.min.css";
 import "./assets/css/aos.css";
+import "./assets/css/owl.carousel.min.css";
+import "./assets/css/owl.theme.default.min.css";
+
 import "./assets/css/site.css";
+import "./assets/css/style.min.css";
 
 function App() {
   return (
