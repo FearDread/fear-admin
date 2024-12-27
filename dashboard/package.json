@@ -9,6 +9,8 @@
     "bootstrap": "^4.5.3",
     "chart.js": "3.4.1",
     "classnames": "2.3.1",
+    "https": "^1.0.0",
+    "https-browserify": "^1.0.0",
     "match-sorter": "6.3.1",
     "moment": "2.29.3",
     "nouislider": "^14.6.3",

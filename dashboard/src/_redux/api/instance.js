@@ -1,8 +1,7 @@
 // axios.js
-import https from "https";
 import axios from "axios";
 import qs from "qs";
-import StorePersist from "../store/StorePersist.jsx";
+import storePersist from "../storePersist";
 
 const API_URL = process.env.API_URL;
 const API_BASE_URL = (process.env.NODE_ENV === "production")
@@ -18,12 +17,12 @@ const instance = axios.create({
     paramsSerializer: (params) => {
         return qs.stringify(params, { indices: false });
     },
-    httpsAgent: new https.Agent({ rejectUnauthorized: false })
+    //httpsAgent: new https.Agent({ rejectUnauthorized: false })
 });
 
 instance.interceptors.request.use(
     (config) => {
-        const isAuth = StorePersist.get("auth") ? StorePersist.get("auth") : null;
+        const isAuth = storePersist.get("auth") ? storePersist.get("auth") : null;
         let token = isAuth !== null ? isAuth.token : "";
     
         config.headers = {
@@ -53,7 +52,7 @@ instance.interceptors.response.use(
         console.log("API ERROR :: ", error);
         if (error.response) {
             if (error.response.status === 401) {
-                StorePersist.remove("auth");
+                storePersist.remove("auth");
                 return Promise.reject(error.response);
             }
             if (error.response.status === 500) {

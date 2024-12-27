@@ -12,6 +12,7 @@ const INITIAL_STATE = {
   product: INITIAL_KEY_STATE,
   category: INITIAL_KEY_STATE,
   brand: INITIAL_KEY_STATE,
+  review: INITIAL_KEY_STATE,
   blog: {
     ...INITIAL_KEY_STATE,
     pagination: {
