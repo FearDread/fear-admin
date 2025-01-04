@@ -31,6 +31,7 @@ module.exports = FEAR = (( app ) => {
   this.log = logger;
   this.env = _config;
   this.cloud = cloud;
+
   this.load = ( app ) => {
     const dir = "routes";
     const modPath = path.join( __dirname, dir );
@@ -45,6 +46,7 @@ module.exports = FEAR = (( app ) => {
   
     return app;
   }
+  
   this.logo = " ________  ________   ______   _______        \r\n|        \\|        \\ \/      \\ |       \\       \r\n| $$$$$$$$| $$$$$$$$|  $$$$$$\\| $$$$$$$\\      \r\n| $$__    | $$__    | $$__| $$| $$__| $$      \r\n| $$  \\   | $$  \\   | $$    $$| $$    $$      \r\n| $$$$$   | $$$$$   | $$$$$$$$| $$$$$$$\\      \r\n| $$      | $$_____ | $$  | $$| $$  | $$      \r\n| $$      | $$     \\| $$  | $$| $$  | $$      \r\n \\$$       \\$$$$$$$$ \\$$   \\$$ \\$$   \\$$      \r\n                                          ";
 
   this.app.use(morgan);
@@ -63,18 +65,20 @@ module.exports = FEAR = (( app ) => {
     'http://localhost:4001',
     'http://fear.admin.com:4000', 
     'http://fear.admin.com:3000',
-    'http://localhost:3001'
+    'http://localhost:3001',
+    'https://fear.goblin-kitchen.ts.net',
+    'https://fear.goblin-kitchen.ts.net:4000'
   ];
 
   this.app.use(cors({
     origin: (origin, callback) => {
-      if (!origin) return callback(null, true);
+      if ( !origin ) return callback(null, true);
 
       if ( this.env.NODE_ENV === "development" ) {
         this.log.info(`Origin ${origin} is being granted CORS access`);
         return callback(null, true);
       } else {
-        if (allowedOrigins.indexOf(origin) === -1) {
+        if ( allowedOrigins.indexOf(origin) === -1 ) {
           var msg = 'The CORS policy for this site does not ' +
                     'allow access from the specified Origin.';
                     
@@ -83,8 +87,8 @@ module.exports = FEAR = (( app ) => {
       };
     }
   }));
+
   this.app.options("*", cors());
-  
   // Load Routes
   this.app = this.load(app)
   
