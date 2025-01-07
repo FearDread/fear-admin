@@ -1,18 +1,13 @@
 import React from "react";
-import { FaFacebookF } from "react-icons/fa";
-import { FaXTwitter } from "react-icons/fa6";
-import { FaInstagram } from "react-icons/fa";
-import { FaYoutube } from "react-icons/fa";
-import { FaPinterest } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
-import logo from "./assets/images/ekomix/logo_transparent.png";
-import paymentIcon from "./assets/paymentIcon.png";
+import logo from "../../assets/images/ekomix/logo_transparent.png";
+import paymentIcon from "../../assets/images/paymentIcon.png";
 import "./Footer.css";
 
 const Footer = () => {
   const handleSubscribe = (e) => {
-    e.preventDefault();
+    e.preventDefault(); 
     alert("Subscribed Successfully");
   };
 
@@ -25,151 +20,71 @@ const Footer = () => {
 
   return (
     <>
-      <footer className="footer">
-        <div className="footer__container">
-          <div className="footer_left">
-            <div className="footer_logo_container">
-              <img src={logo} alt=""/>
+      <section className="footer float-start w-100">
+       <div className="container">
+          <div className="row">
+            <div className="col-lg-3 footer-logo">
+              <a href="index.html">E-Comix<span>.</span></a>
+              <img src="images/footer-icon.png" alt="bat-img" />
             </div>
-
-            <p>2003 E. Veterans Memorial Blvd, Killeen TX 76541 United States</p>
-
-            <div className="footer_address">
-              <strong> info@inmoshyn.com </strong>
-              <strong> +1 254-435-0130 </strong>
+            <div className="col-lg-2 col-md-4 footer-menu">
+              <h3>Quick Link</h3>
+              <a href="/">Home Page</a>
+              <a href="/about#">About</a>
+              <a href="/contact">Contact Us</a>
             </div>
-
-            <div className="social_links">
-              <FaFacebookF />
-              <FaXTwitter />
-              <FaInstagram />
-              <FaYoutube />
-              <FaPinterest />
+            <div className="col-lg-2 col-md-4 footer-menu">
+              <h3>Community</h3>
+              <a href="/contact#">Career Page</a>
+              <a href="/faq">FAQ</a>
+              <a href="index.html#">Supports</a>
+              <a href="/privacy#">Privacy Policy</a>
+              <a href="index.html#">Affiliate Marketing</a>
+              <a href="index.html#">Partnership</a>
+              <a href="/terms#">Terms & Condition</a>
             </div>
-          </div>
-
-          <div className="footer_content">
-            <h5>Company</h5>
-            <div className="links_container">
-              <ul onClick={scrollToTop}>
-                <li>
-                  <Link to="/about">About Us</Link>
-                </li>
-                <li>
-                  <Link to="/about">Career</Link>
-                </li>
-                <li>
-                  <Link to="/contact">Affilates</Link>
-                </li>
-                <li>
-                  <Link to="/blog">Blog</Link>
-                </li>
-                <li>
-                  <Link to="/contact">Contact Us</Link>
-                </li>
-              </ul>
+            <div className="col-lg-2 col-md-4 footer-menu">
+              <h3>Action Link</h3>
+              <a href="/contact">Contact Us</a>
+              <a href="index.html#">Payments</a>
+              <a href="/shop">Comic Books</a>
+              <a href="/collection">Community</a>
             </div>
-          </div>
-          <div className="footer_content">
-            <h5>Shop</h5>
-            <div className="links_container">
-              <ul onClick={scrollToTop}>
-                <li>
-                  <Link to="/shop">New Arrivals</Link>
-                </li>
-                <li>
-                  <Link to="/shop">Coins</Link>
-                </li>
-                <li>
-                  <Link to="/shop">Comics</Link>
-                </li>
-                <li>
-                  <Link to="/shop">Cards</Link>
-                </li>
-                <li>
-                  <Link to="/shop">Shop All</Link>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div className="footer_content">
-            <h5>Help</h5>
-            <div className="links_container">
-              <ul onClick={scrollToTop}>
-                <li>
-                  <Link to="/contact">Customer Service</Link>
-                </li>
-                <li>
-                  <Link to="/loginSignUp">My Account</Link>
-                </li>
-                <li>
-                  <Link to="/contact">Find a Store</Link>
-                </li>
-                <li>
-                  <Link to="/terms">Legal & Privacy</Link>
-                </li>
-                <li>
-                  <Link to="/contact">Contact</Link>
-                </li>
-                <li>
-                  <Link to="/">Gift Card</Link>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div className="footer_right">
-            <h5>Subscribe</h5>
-            <p>
-              Be the first to get the latest news about trends, promotions, and
-              much more!
-            </p>
-
-            <form onSubmit={handleSubscribe}>
-              <input type="email" placeholder="Your email address" required />
-              <button type="submit">Join</button>
-            </form>
-
-            <h6>Secure Payments</h6>
-            <div className="paymentIconContainer">
-              <img src={paymentIcon} alt="" />
+            <div className="col-lg-3 footer-action">
+              <h3>Connect Us</h3>
+              <div className="footer-social">
+                <a href="index.html#"><i className="fa-brands fa-facebook-f"></i></a>
+                <a href="index.html#"><i className="fa-brands fa-instagram"></i></a>
+                <a href="index.html#"><i className="fa-brands fa-twitter"></i></a>
+                <a href="index.html#"><i className="fa-brands fa-youtube"></i></a>
+                <a href="index.html#"><i className="fa-brands fa-tiktok"></i></a>
+              </div>
+              <h3>Get The App</h3>
+              <div className="footer-download">
+                <a href="index.html#" className="button-primary android"><i className="fa-brands fa-google-play"></i> Play Store</a>
+                <a href="index.html#" className="button-primary ios"><i className="fa-brands fa-apple"></i> App Store</a>
+              </div>
             </div>
           </div>
         </div>
-        <div className="footer_bottom">
-          <p>
-            © 2024 InMoshyn. All Rights Reserved | Made By{" "}
-            <a
-              href="https://github.com/FearDread"
-              target="_blank"
-              rel="noreferrer"
-              style={{ color: "#C22928", textDecoration: "none" }}
-            >
-              FearDread
-            </a>{" "}
-            with ❤️
-          </p>
-          <div className="footerLangCurrency">
-            <div className="footerLang">
-              <p>Language</p>
-              <select name="language" id="language">
-                <option value="english">United States | English</option>
-                <option value="Hindi">Hindi</option>
-                <option value="Germany">Germany</option>
-                <option value="French">French</option>
-              </select>
+      </section>
+      <section className="copy_right float-start w-100">
+        <div className="container">
+          <div className="row copyright-txt">
+            <div className="col-lg-6">
+              <span>LANGUAGE: </span>
+              <a href="index.html#">BAN</a>
+              <a href="index.html#">NL</a>
+              <a href="index.html#" className="active">EN</a>
+              <a href="index.html#">FR</a>
+              <a href="index.html#">EU</a>
             </div>
-            <div className="footerCurrency">
-              <p>Currency</p>
-              <select name="currency" id="currency">
-                <option value="USD">$ USD</option>
-                <option value="INR">₹ INR</option>
-                <option value="EUR">€ EUR</option>
-                <option value="GBP">£ GBP</option>
-              </select>
+            <div className="col-lg-6 text-end">
+              <p>&copy; Made by EpikTheme. All Rights Reserved.</p>
             </div>
           </div>
         </div>
-      </footer>
+      </section>
     </>
   );
 };

@@ -2,11 +2,14 @@ import React, { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
+import BannerSub from "../components/Banner/BannerSub"
+
 
 const About = () => {
 
   return (
     <>
+    <BannerSub />
       <main className="float-start w-100 total-body home-body mt-0">
         <section className="about-hisotry float-start w-100 position-relative">
           <div className="container">

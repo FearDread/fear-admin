@@ -166,15 +166,7 @@
     </nav>
   </header>
 
-<section class="banner-part sub-banner float-start w-100">
-    <div class="container">
-        
-    </div>
 
-    <div class="egge-img">
-      <img alt="eage" src="images/edge1-d.svg"/>
-    </div>
-</section>
 
 
 <main class="float-start w-100 total-body home-body mt-0">
