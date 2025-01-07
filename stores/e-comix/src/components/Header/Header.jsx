@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 import Cart from "../Cart/Cart";
-import BannerPart from "../Banner/BannerPart"
+import BannerSub from "../Banner/BannerSub";
 
 const Header = () => {
 
@@ -13,9 +13,9 @@ const Header = () => {
         <header className="float-start w-100">
 
           <nav className="navbar navbar-expand-lg">
-            <div className="container">
+            <div className="container container-top">
               <a className="navbar-brand mx-auto mb-4 me-lg-start" href="/">
-                <img alt="logo" src="images/logo.svg" />
+                <img alt="logo" src="images/ekomix/logo_transparent.png" />
               </a>
 
               <div className="collapse navbar-collapse" id="navbarSupportedContent">
@@ -29,22 +29,22 @@ const Header = () => {
                       <div className="row">
                         <div className="col-sm-6 col-lg-4 border-right mb-4">
                           <h6>Popular</h6>
-                          <a className="dropdown-item" href="shop.html">Action & Adventure</a>
-                          <a className="dropdown-item" href="shop.html">Art of Comics </a>
-                          <a className="dropdown-item" href="shop.html">Superhero Comics </a>
-                          <a className="dropdown-item" href="shop.html">Quisque pharetra </a>
+                          <a className="dropdown-item" href="/shop">Action & Adventure</a>
+                          <a className="dropdown-item" href="/shop">Art of Comics </a>
+                          <a className="dropdown-item" href="/shop">Superhero Comics </a>
+                          <a className="dropdown-item" href="/shop">Quisque pharetra </a>
                         </div>
                         <div className="col-sm-6 col-lg-4 border-right mb-4">
                           <h6>Special Offers</h6>
-                          <a className="dropdown-item" href="shop.html">Science Fiction</a>
-                          <a className="dropdown-item" href="shop.html">Superhero Comics </a>
-                          <a className="dropdown-item" href="shop.html"> Fantasy Novels </a>
-                          <a className="dropdown-item" href="shop.html">Art of Comics </a>
+                          <a className="dropdown-item" href="/shop">Science Fiction</a>
+                          <a className="dropdown-item" href="/shop">Superhero Comics </a>
+                          <a className="dropdown-item" href="/shop"> Fantasy Novels </a>
+                          <a className="dropdown-item" href="/shop">Art of Comics </a>
                         </div>
                         <div className="col-sm-6 col-lg-4 border-right mb-4">
                           <h6> Best Selling </h6>
-                          <a className="dropdown-item" href="shop.html"> Fantasy Novels </a>
-                          <a className="dropdown-item" href="shop.html">Art of Comics </a>
+                          <a className="dropdown-item" href="/shop"> Fantasy Novels </a>
+                          <a className="dropdown-item" href="/shop">Art of Comics </a>
                         </div>
 
                       </div>
@@ -52,13 +52,13 @@ const Header = () => {
                   </li>
 
                   <li className="nav-item">
-                    <a className="nav-link" href="collection.html">Collection</a>
+                    <a className="nav-link" href="/collection">Collection</a>
                   </li>
                   <li className="nav-item">
-                    <a className="nav-link" href="about.html">About</a>
+                    <a className="nav-link" href="/about">About</a>
                   </li>
                   <li className="nav-item">
-                    <a className="nav-link" href="blog.html">Blog</a>
+                    <a className="nav-link" href="/blog">Blog</a>
                   </li>
 
 
@@ -94,9 +94,7 @@ const Header = () => {
               </div>
             </div>
           </nav>
-        </header>
-
-        <BannerPart />
+        </header>  
         </>
     )
 }

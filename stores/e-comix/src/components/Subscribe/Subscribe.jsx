@@ -8,9 +8,6 @@ const Subscribe = () => {
     return (
         <>
             <section className="subscribe-section float-start w-100 position-relative">
-                <div className="azp shake">
-                    <img alt="ser" src="images/zap.png" />
-                </div>
                 <div className="container">
                     <div className="col-lg-8">
                         <h6 className="text-center text-lg-start sub-heading" data-aos="fade-down"> You may unsubscribe at any moment </h6>

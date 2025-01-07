@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
-const BannerPart = () => {
+const BannerMain = () => {
 
     return (
         <>
@@ -50,4 +50,4 @@ const BannerPart = () => {
     )
 }
 
-export default BannerPart
+export default BannerMain;

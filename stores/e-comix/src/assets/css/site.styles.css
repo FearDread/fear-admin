@@ -3,6 +3,7 @@
 * {
   margin: 0;
   padding: 0;
+  color:black;
   font-family: "Open Sans", sans-serif;
   font-family: "Bangers", cursive;
 }
@@ -15,9 +16,10 @@ body {
         45deg,
         rgba(0, 110, 193, 0.3),
         rgba(0, 115, 138, 0.1)
-      ) no-repeat fixed center, url('../images/ekomix/_white_background.jpg') no-repeat fixed
+      ) no-repeat fixed center, url('../images/ekomix/_main_background.jpg') no-repeat fixed
       center;
   background-size: cover;
+  background-position: fixed;
 }
 
 html {
@@ -36,15 +38,7 @@ a, abbr, acronym, address, applet, big, blockquote, body, cite, code, dd, del, d
   vertical-align: baseline;
   font-family: "Bangers", cursive; 
 }
-body {
-  margin: 0;
-  padding: 0;
-  background: black !important;
-  background-repeat: repeat-x;
-  font-size: 1.2rem;
-  color: white;
-  font-family: "Bangers", cursive;
-}
+
 a {
   color: inherit;
   outline: none !important;
@@ -108,7 +102,7 @@ img {
   --bg-color: #000000;  
   --special-color: #fe270a;
   --mainhedad-font: font-family: "Bangers",  cursive;
-  --text-font: font-family: "Aclonica",  sans-serif;
+  --text-font: font-family: "Bangers",  sans-serif;
   --hedding-size: 70px;
 }
 @media(min-width: 1200px) {
@@ -122,6 +116,9 @@ img {
   left: 0;
   right: 0;
   top: 0;
+}
+.container-top {
+  height: 200px;
 }
 .navbar-nav .nav-link {
   font-size: 18px;
@@ -332,7 +329,7 @@ img {
   visibility: visible;
 }
 .banner-part {
-  background: url(../images/banner-bg.jpg) no-repeat;
+  background: url(../images/ekomix/_blue-abstract-comic-bg.jpg) no-repeat;
   height: 730px;
   width: 100%;
   background-size: cover;
@@ -1026,8 +1023,8 @@ to {
 .sub-ixtr {
   position: absolute;
   right: 0;
-  bottom: -30px;
-  width: 50%;
+  bottom: 0px;
+  width: 40%;
   display: inline-block;
 }
 .svg-bg {
@@ -1049,6 +1046,7 @@ to {
   margin: auto;
   z-index: 2;
 }
+/*
 footer {
   padding: 30px 0 0 0;
 }
@@ -1072,6 +1070,7 @@ footer .items-footer-div li a {
 footer .items-footer-div li a span:first-child {
   margin-right: 8px;
 }
+  */
 .callo {
   font-size: 20px;
   color: #0fe;
