@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 
 const ShopItem = (props) => {
 
-    { _id, title, description, price, images, brand, category }
+    const { _id, title, description, price, images, brand, category } = props || {};
 
     const link = "/shop/product/" + _id;
 

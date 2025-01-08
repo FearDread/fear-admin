@@ -1,6 +1,11 @@
-
+import React, { useEffect } from "react";
+import OwlCarousel from 'react-owl-carousel2';
+import 'owl.carousel/dist/assets/owl.carousel.css';
+import 'owl.carousel/dist/assets/owl.theme.default.css';
 
 const Testimonial = () => {
+
+
     return (
         <>
             <section className="testmonsaosl-div float-start w-100 position-relative">
@@ -10,6 +15,14 @@ const Testimonial = () => {
                 <div className="container">
                     <h6 className="text-center sub-heading" data-aos="fade-down"> Testimonial </h6>
                     <h2 className="text-center page-haeding mt-4" data-aos="fade-up">  Few word form our community  </h2>
+                    
+                        <OwlCarousel options={{
+                                items: 3, // Number of items to display at once
+                                loop: true, // Loop the carousel
+                                margin: 10, // Margin between items
+                                nav: true, // Display navigation arrows
+                                 dots: true // Display navigation dots
+                         }}>
                     <div className="slider-divu owl-carousel owl-theme">
                         <div className="items-slider-txeti position-relative d-block w-100">
                             <div className="text-box d-inline-block w-100 position-relative">
@@ -84,9 +97,8 @@ const Testimonial = () => {
                                 </div>
                             </div>
                         </div>
-
-
                     </div>
+                    </OwlCarousel>
                 </div>
             </section>
         </>

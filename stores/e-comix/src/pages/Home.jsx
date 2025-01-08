@@ -3,476 +3,50 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 import BannerMain from "../components/Banner/BannerMain";
-import { cruds, auth } from "@feardread/crud-service"; 
+import ShopItem from "../components/Product/ShopItem";
+import SuperItem from "../components/Product/SuperItem";
+import Services from "../components/Services/Services";
+import { cruds, auth, cart } from "@feardread/crud-service"; 
+
 
 
 const Home = () => {
+
+  const { user, isLoggedIn } = useSelector((state) => state?.auth);
+  const featured = useSelector((state) => state?.cruds?.product);
+  const blogs = useSelector((state) => state?.cruds?.blog);
+
+  const fetchFeatured = () => {
+
+  }
+
+  const fetchBlogs = () => {
+
+  }
 
   return (
     <>
     <BannerMain />
       <main className="float-start w-100 total-body home-body">
-        <section className="top-sectionk float-start w-100">
-          <div className="container">
-            <div className="row row-cols-1 row-cols-lg-3 gy-5 g-lg-5">
-              <div className="col position-relative">
-                <div className="comon-items-con position-relative d-flex align-items-center">
-                  <figure className="m-0">
-                    <img alt="sert" src="images/world-icon.png" />
-                  </figure>
-                  <div className="rightextr">
-                    <h5> Worldwide  Shipping </h5>
-                    <p> International Shipping Available </p>
-                  </div>
-                </div>
-                <div className="comiuy-after"></div>
-              </div>
+        
+        <Services />
 
-
-              <div className="col position-relative" data-aos="fade-up">
-                <div className="comon-items-con position-relative d-flex align-items-center" >
-                  <figure className="m-0">
-                    <img alt="sert" src="images/secure.png" />
-                  </figure>
-                  <div className="rightextr">
-                    <h5> Secure  Payment </h5>
-                    <p> Guarantee Secure Online Payment </p>
-                  </div>
-                </div>
-                <div className="comiuy-after"></div>
-              </div>
-
-
-              <div className="col position-relative">
-                <div className="comon-items-con position-relative d-flex align-items-center">
-                  <figure className="m-0">
-                    <img alt="sert" src="images/online-supot.png" />
-                  </figure>
-                  <div className="rightextr">
-                    <h5> Online Support </h5>
-                    <p> Any Time Support our Team </p>
-                  </div>
-                </div>
-                <div className="comiuy-after"></div>
-              </div>
-
-
-
-            </div>
-          </div>
-        </section>
-
-        <section className="serices-div float-start w-100 position-relative">
-          <div className="cloos pulse">
-            <img alt="cool" src="images/cool.png" />
-          </div>
-          <div className="container">
-            <h6 className="text-center sub-heading" data-aos="fade-down"> Comic </h6>
-            <h2 className="text-center page-haeding mt-4" data-aos="fade-up">  Find Your Series  </h2>
-            <div className="tabs-div d-inline-block w-100">
-              <ul className="nav nav-pills mb-3 justify-content-center" role="tablist">
-                <li className="nav-item" role="presentation">
-                  <button className="nav-link active" data-bs-toggle="pill" data-bs-target="#today"
-                    type="button" role="tab" >Today's Top</button>
-                </li>
-                <li className="nav-item" role="presentation">
-                  <button className="nav-link" data-bs-toggle="pill" data-bs-target="#new-release"
-                    type="button" role="tab">New release</button>
-                </li>
-                <li className="nav-item" role="presentation">
-                  <button className="nav-link" data-bs-toggle="pill" data-bs-target="#most-popular"
-                    type="button" role="tab">Most Popular</button>
-                </li>
-                <li className="nav-item" role="presentation">
-                  <button className="nav-link" data-bs-toggle="pill" data-bs-target="#upcoming"
-                    type="button" role="tab">Upcoming</button>
-                </li>
-              </ul>
-              <div className="tab-content">
-                <div className="tab-pane fade show active" id="today" role="tabpanel">
-                  <div className="row row-cols-1 row-cols-sm-2 row-cols-lg-3 gy-5 g-lg-5 mt-0">
-                    <div className="col">
-                      <a href="index.html#" className="comon-items d-inline-block w-100 position-relative overflow-hidden">
-                        <div className="img-box-div">
-                          <img alt="srt" src="images/se01.png" />
-                        </div>
-                        <div className="content-section">
-                          <h5> The Vitals: True EMS #0 </h5>
-                          <p> Ryan, Bachs </p>
-                        </div>
-                      </a>
-                    </div>
-
-                    <div className="col" data-aos="fade-up">
-                      <a href="index.html#" className="comon-items d-inline-block w-100 position-relative overflow-hidden">
-                        <div className="img-box-div">
-                          <img alt="srt" src="images/se2.png" />
-                        </div>
-                        <div className="content-section">
-                          <h5> The Vitals: True EMS #0 </h5>
-                          <p> Ryan, Bachs </p>
-                        </div>
-                      </a>
-                    </div>
-
-
-                    <div className="col" data-aos="fade-up">
-                      <a href="index.html#" className="comon-items d-inline-block w-100 position-relative overflow-hidden">
-                        <div className="img-box-div">
-                          <img alt="srt" src="images/b5197a7a-image-22.jpg" />
-                        </div>
-                        <div className="content-section">
-                          <h5> The Vitals: True EMS #0 </h5>
-                          <p> Ryan, Bachs </p>
-                        </div>
-                      </a>
-                    </div>
-
-
-                    <div className="col">
-                      <a href="index.html#" className="comon-items d-inline-block w-100 position-relative overflow-hidden">
-                        <div className="img-box-div">
-                          <img alt="srt" src="images/se3.png" />
-                        </div>
-                        <div className="content-section">
-                          <h5> The Vitals: True EMS #0 </h5>
-                          <p> Ryan, Bachs </p>
-                        </div>
-                      </a>
-                    </div>
-
-                    <div className="col" data-aos="fade-up">
-                      <a href="index.html#" className="comon-items d-inline-block w-100 position-relative overflow-hidden">
-                        <div className="img-box-div">
-                          <img alt="srt" src="images/comics-news.jpg" />
-                        </div>
-                        <div className="content-section">
-                          <h5> The Vitals: True EMS #0 </h5>
-                          <p> Ryan, Bachs </p>
-                        </div>
-                      </a>
-                    </div>
-
-
-                    <div className="col" data-aos="fade-up">
-                      <a href="index.html#" className="comon-items d-inline-block w-100 position-relative overflow-hidden">
-                        <div className="img-box-div">
-                          <img alt="srt" src="images/360_F_117750219_dEXN5T0ENx62pMVgADlHKDSy334VpKPJ.jpg" />
-                        </div>
-                        <div className="content-section">
-                          <h5> The Vitals: True EMS #0 </h5>
-                          <p> Ryan, Bachs </p>
-                        </div>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="tab-pane fade" id="new-release" role="tabpanel">
-                  <div className="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-5 mt-0">
-                    <div className="col">
-                      <a href="index.html#" className="comon-items d-inline-block w-100 position-relative overflow-hidden">
-                        <div className="img-box-div">
-                          <img alt="srt" src="images/se01.png" />
-                        </div>
-                        <div className="content-section">
-                          <h5> The Vitals: True EMS #0 </h5>
-                          <p> Ryan, Bachs </p>
-                        </div>
-                      </a>
-                    </div>
-
-                    <div className="col" data-aos="fade-up">
-                      <a href="index.html#" className="comon-items d-inline-block w-100 position-relative overflow-hidden">
-                        <div className="img-box-div">
-                          <img alt="srt" src="images/se2.png" />
-                        </div>
-                        <div className="content-section">
-                          <h5> The Vitals: True EMS #0 </h5>
-                          <p> Ryan, Bachs </p>
-                        </div>
-                      </a>
-                    </div>
-
-
-                    <div className="col" data-aos="fade-up">
-                      <a href="index.html#" className="comon-items d-inline-block w-100 position-relative overflow-hidden">
-                        <div className="img-box-div">
-                          <img alt="srt" src="images/b5197a7a-image-22.jpg" />
-                        </div>
-                        <div className="content-section">
-                          <h5> The Vitals: True EMS #0 </h5>
-                          <p> Ryan, Bachs </p>
-                        </div>
-                      </a>
-                    </div>
-
-
-                    <div className="col" data-aos="fade-up">
-                      <a href="index.html#" className="comon-items d-inline-block w-100 position-relative overflow-hidden">
-                        <div className="img-box-div">
-                          <img alt="srt" src="images/se3.png" />
-                        </div>
-                        <div className="content-section">
-                          <h5> The Vitals: True EMS #0 </h5>
-                          <p> Ryan, Bachs </p>
-                        </div>
-                      </a>
-                    </div>
-
-                    <div className="col" data-aos="fade-up">
-                      <a href="index.html#" className="comon-items d-inline-block w-100 position-relative overflow-hidden">
-                        <div className="img-box-div">
-                          <img alt="srt" src="images/comics-news.jpg" />
-                        </div>
-                        <div className="content-section">
-                          <h5> The Vitals: True EMS #0 </h5>
-                          <p> Ryan, Bachs </p>
-                        </div>
-                      </a>
-                    </div>
-
-
-                    <div className="col" data-aos="fade-up">
-                      <a href="index.html#" className="comon-items d-inline-block w-100 position-relative overflow-hidden">
-                        <div className="img-box-div">
-                          <img alt="srt" src="images/360_F_117750219_dEXN5T0ENx62pMVgADlHKDSy334VpKPJ.jpg" />
-                        </div>
-                        <div className="content-section">
-                          <h5> The Vitals: True EMS #0 </h5>
-                          <p> Ryan, Bachs </p>
-                        </div>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="tab-pane fade" id="most-popular" role="tabpanel">
-                  <div className="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-5 mt-0">
-                    <div className="col" data-aos="fade-up">
-                      <a href="index.html#" className="comon-items d-inline-block w-100 position-relative overflow-hidden">
-                        <div className="img-box-div">
-                          <img alt="srt" src="images/se01.png" />
-                        </div>
-                        <div className="content-section">
-                          <h5> The Vitals: True EMS #0 </h5>
-                          <p> Ryan, Bachs </p>
-                        </div>
-                      </a>
-                    </div>
-
-                    <div className="col" data-aos="fade-up">
-                      <a href="index.html#" className="comon-items d-inline-block w-100 position-relative overflow-hidden">
-                        <div className="img-box-div">
-                          <img alt="srt" src="images/se2.png" />
-                        </div>
-                        <div className="content-section">
-                          <h5> The Vitals: True EMS #0 </h5>
-                          <p> Ryan, Bachs </p>
-                        </div>
-                      </a>
-                    </div>
-
-
-                    <div className="col" data-aos="fade-up">
-                      <a href="index.html#" className="comon-items d-inline-block w-100 position-relative overflow-hidden">
-                        <div className="img-box-div">
-                          <img alt="srt" src="images/b5197a7a-image-22.jpg" />
-                        </div>
-                        <div className="content-section">
-                          <h5> The Vitals: True EMS #0 </h5>
-                          <p> Ryan, Bachs </p>
-                        </div>
-                      </a>
-                    </div>
-
-
-                    <div className="col" data-aos="fade-up">
-                      <a href="index.html#" className="comon-items d-inline-block w-100 position-relative overflow-hidden">
-                        <div className="img-box-div">
-                          <img alt="srt" src="images/se3.png" />
-                        </div>
-                        <div className="content-section">
-                          <h5> The Vitals: True EMS #0 </h5>
-                          <p> Ryan, Bachs </p>
-                        </div>
-                      </a>
-                    </div>
-
-                    <div className="col" data-aos="fade-up">
-                      <a href="index.html#" className="comon-items d-inline-block w-100 position-relative overflow-hidden">
-                        <div className="img-box-div">
-                          <img alt="srt" src="images/comics-news.jpg" />
-                        </div>
-                        <div className="content-section">
-                          <h5> The Vitals: True EMS #0 </h5>
-                          <p> Ryan, Bachs </p>
-                        </div>
-                      </a>
-                    </div>
-
-
-                    <div className="col" data-aos="fade-up">
-                      <a href="index.html#" className="comon-items d-inline-block w-100 position-relative overflow-hidden">
-                        <div className="img-box-div">
-                          <img alt="srt" src="images/360_F_117750219_dEXN5T0ENx62pMVgADlHKDSy334VpKPJ.jpg" />
-                        </div>
-                        <div className="content-section">
-                          <h5> The Vitals: True EMS #0 </h5>
-                          <p> Ryan, Bachs </p>
-                        </div>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="tab-pane fade" id="upcoming" role="tabpanel">
-                  <div className="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-5 mt-0">
-                    <div className="col" data-aos="fade-up">
-                      <a href="index.html#" className="comon-items d-inline-block w-100 position-relative overflow-hidden">
-                        <div className="img-box-div">
-                          <img alt="srt" src="images/se01.png" />
-                        </div>
-                        <div className="content-section">
-                          <h5> The Vitals: True EMS #0 </h5>
-                          <p> Ryan, Bachs </p>
-                        </div>
-                      </a>
-                    </div>
-
-                    <div className="col" data-aos="fade-up">
-                      <a href="index.html#" className="comon-items d-inline-block w-100 position-relative overflow-hidden">
-                        <div className="img-box-div">
-                          <img alt="srt" src="images/se2.png" />
-                        </div>
-                        <div className="content-section">
-                          <h5> The Vitals: True EMS #0 </h5>
-                          <p> Ryan, Bachs </p>
-                        </div>
-                      </a>
-                    </div>
-
-
-                    <div className="col" data-aos="fade-up">
-                      <a href="index.html#" className="comon-items d-inline-block w-100 position-relative overflow-hidden">
-                        <div className="img-box-div">
-                          <img alt="srt" src="images/b5197a7a-image-22.jpg" />
-                        </div>
-                        <div className="content-section">
-                          <h5> The Vitals: True EMS #0 </h5>
-                          <p> Ryan, Bachs </p>
-                        </div>
-                      </a>
-                    </div>
-
-
-                    <div className="col" data-aos="fade-up">
-                      <a href="index.html#" className="comon-items d-inline-block w-100 position-relative overflow-hidden">
-                        <div className="img-box-div">
-                          <img alt="srt" src="images/se3.png" />
-                        </div>
-                        <div className="content-section">
-                          <h5> The Vitals: True EMS #0 </h5>
-                          <p> Ryan, Bachs </p>
-                        </div>
-                      </a>
-                    </div>
-
-                    <div className="col" data-aos="fade-up">
-                      <a href="index.html#" className="comon-items d-inline-block w-100 position-relative overflow-hidden">
-                        <div className="img-box-div">
-                          <img alt="srt" src="images/comics-news.jpg" />
-                        </div>
-                        <div className="content-section">
-                          <h5> The Vitals: True EMS #0 </h5>
-                          <p> Ryan, Bachs </p>
-                        </div>
-                      </a>
-                    </div>
-
-
-                    <div className="col" data-aos="fade-up">
-                      <a href="index.html#" className="comon-items d-inline-block w-100 position-relative overflow-hidden">
-                        <div className="img-box-div">
-                          <img alt="srt" src="images/360_F_117750219_dEXN5T0ENx62pMVgADlHKDSy334VpKPJ.jpg" />
-                        </div>
-                        <div className="content-section">
-                          <h5> The Vitals: True EMS #0 </h5>
-                          <p> Ryan, Bachs </p>
-                        </div>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-            <a href="index.html#" className="btn comon-button mx-auto d-table" data-aos="fade-up"> <span> Explore more </span> </a>
-          </div>
-
-          <div className="eg-bg">
-            <img alt="ser" src="images/edge1-d.svg" />
-          </div>
-        </section>
-
-        <section className="shop-collections float-start w-100 position-relative">
-          <div className="lool pulse">
-            <img alt="loo" src="images/lol.png" />
-          </div>
-          <div className="woder-women">
-            <figure className="m-0">
+        <section class="shop-collections float-start w-100 position-relative">
+          <div class="woder-women">
+            <figure class="m-0">
               <img alt="woder" src="images/wonder.svg" />
             </figure>
           </div>
-          <div className="container">
+          <div class="container">
 
-            <div className="col-lg-8 ms-auto d-block">
-              <h2 className="text-center text-lg-start text-white page-haeding mt-4" data-aos="fade-up">  Shop the collection  </h2>
-              <div className="row row-cols-1 row-cols-sm-2 gy-5 g-lg-5 mt-0">
+            <div class="col-lg-8 ms-auto d-block">
+              <h2 class="text-center text-lg-start text-white page-haeding mt-4" data-aos="fade-up">  Shop the collection  </h2>
+              <div class="row row-cols-1 row-cols-sm-2 gy-5 g-lg-5 mt-0">
 
-                <div className="col">
-                  <a href="index.html#" className="shop-items overflow-hidden d-inline-block w-100 position-relative" data-aos="zoom-in">
-                    <div className="img-box-div position-relative">
-                      <img alt="srt" src="images/ghui.jpg" />
-                      <span className="off">10% off</span>
-                    </div>
-                    <div className="details-shopi">
-                      <div className="row align-items-center">
-                        <div className="col-8">
-                          <h5> Fusce molestie.. </h5>
-                        </div>
-                        <div className="col-4">
-                          <h3> $30 <span> $50 </span> </h3>
-                        </div>
-                      </div>
 
-                    </div>
 
-                  </a>
-                </div>
-
-                <div className="col">
-                  <a href="index.html#" className="shop-items overflow-hidden d-inline-block w-100 position-relative" data-aos="zoom-in">
-                    <div className="img-box-div position-relative">
-                      <img alt="srt" src="images/krish.jpg" />
-                      <span className="off">10% off</span>
-                    </div>
-                    <div className="details-shopi">
-                      <div className="row align-items-center">
-                        <div className="col-8">
-                          <h5> Figures & Statues.. </h5>
-                        </div>
-                        <div className="col-4">
-                          <h3> $30 <span> $50 </span> </h3>
-                        </div>
-                      </div>
-
-                    </div>
-
-                  </a>
-                </div>
-                <div className="col">
-                  <a href="index.html#" className="btn comon-button mx-auto mt-5 d-table" data-aos="fade-up">  <span> <i className="fas fa-arrow-right"></i> View All Products </span> </a>
+                <div class="col">
+                  <a href="index.html#" class="btn comon-button mx-auto mt-5 d-table" data-aos="fade-up">  <span> <i class="fas fa-arrow-right"></i> View All Products </span> </a>
                 </div>
               </div>
             </div>
