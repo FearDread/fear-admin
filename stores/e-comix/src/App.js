@@ -7,6 +7,9 @@ import Contact from "./pages/Contact";
 import Blog from "./pages/Blog";
 import ScrollToTop from "./components/ScrollButton/ScrollToTop";
 import Popup from "./components/PopupBanner/Popup";
+import Collection from "./pages/Collection";
+
+import Shop from "./pages/Shop"; 
 
 import { PrivateRoutes } from "./routes/PrivateRoutes";
 import { OpenRoutes } from "./routes/OpenRoutes";
@@ -30,6 +33,12 @@ function App() {
             <Route index element={<Home />} />
             <Route path="about" element={<About />} />
             <Route path="contact" element={<Contact />} />
+            <Route path="collection" element={<Collection />} />
+            <Route path="shop" element={<Shop />} />
+            <Route path="blog" element={<Blog />} />
+          {/*  <Route path="terms" element={<Terms />} />
+            <Route path="product/:id" element={<ProductDetails />} /> */}
+            <Route path="*" element={<Home />} />
           </Route>
         </Routes>
         <ScrollToTop />

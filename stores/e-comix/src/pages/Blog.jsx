@@ -1,8 +1,11 @@
 import React, { useEffect } from "react";
 
+import BannerSub from "../components/Banner/BannerSub"
+
 const Blog = () => {
   return (
     <>
+    <BannerSub />
       <main className="float-start w-100 total-body home-body mt-0">
 
         <section className="bedcrum float-start w-100">
