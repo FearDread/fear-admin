@@ -1100,8 +1100,12 @@ footer .items-footer-div li a span:first-child {
   margin-top: 90px;
 }
 .sub-banner {
-  height: 221px;
+  height: 250px !important;
   padding-top: 0;
+  background-size: cover;
+  position: relative;
+  display: grid;
+  align-content: center;
 }
 .bedcrum {
   position: relative;
@@ -1470,6 +1474,8 @@ footer .items-footer-div li a span:first-child {
 }
 .itemp-spost {
   height: 420px;
+  background: white;
+  border-radius: 10px;
   text-align: center;
   margin-bottom: 30px;
 }
@@ -1506,13 +1512,18 @@ footer .items-footer-div li a span:first-child {
   text-decoration: line-through;
 }
 .itemp-spost .view-products {
-  background: var(--primarycolor);
+  background: red;
   padding: 12px 25px;
   border-radius: 15px 30px;
   color: var(--ligit-color) !important;
-  font-size: 15px;
+  font-size: 11px;
   display: table;
   margin: auto;
+}
+.itemp-spost:hover {
+  box-shadow: 13px 13px 77px -24px #000000b9;
+  transform: scale(1.07);
+  -webkit-transform: scale(1.07)
 }
 .ashow, .right-section-btn .dropdown-item, .right-section-btn .dropdown-toggle {
   font-size: 14px;

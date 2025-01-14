@@ -15,7 +15,7 @@ const OffCanvasModal = () => {
                 <div className="offcanvas-body px-5">
                     <div className="head-contact d-none d-lg-block mt-3">
                         <a href="index.html" className="logo-side">
-                            <img src="images/logo.svg" alt="logo">
+                            <img src="images/logo.svg" alt="logo" />
                         </a>
                         <p className="mt-4"> Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's
                             standard dummy text ever since the 1500s, when an unknown printer
@@ -68,3 +68,5 @@ const OffCanvasModal = () => {
         </>
     )
 }
+
+export default OffCanvasModal;

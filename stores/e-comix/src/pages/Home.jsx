@@ -11,42 +11,52 @@ import { cruds, auth, cart } from "@feardread/crud-service";
 
 
 const Home = () => {
-
+  const dispatch = useDispatch();
   const { user, isLoggedIn } = useSelector((state) => state?.auth);
-  const featured = useSelector((state) => state?.cruds?.product);
-  const blogs = useSelector((state) => state?.cruds?.blog);
-
+  const featured = useSelector((state) => state?.crud?.product);
+  const blogs = useSelector((state) => state?.crud?.blog);
+  const { result, loading } = useSelector((state) => state?.crud?.product);
   const fetchFeatured = () => {
-
+      dispatch(cruds.all( 'product' ));
   }
 
   const fetchBlogs = () => {
-
+      dispatch(cruds.list( 'blog' ));
   }
+
+  useEffect(() => {
+    fetchFeatured();
+    fetchBlogs();
+  }, []);
 
   return (
     <>
     <BannerMain />
       <main className="float-start w-100 total-body home-body">
-        
+      
         <Services />
 
-        <section class="shop-collections float-start w-100 position-relative">
-          <div class="woder-women">
-            <figure class="m-0">
+        <section className="shop-collections float-start w-100 position-relative">
+          <div className="woder-women">
+            <figure className="m-0">
               <img alt="woder" src="images/wonder.svg" />
             </figure>
           </div>
-          <div class="container">
+          <div className="container">
 
-            <div class="col-lg-8 ms-auto d-block">
-              <h2 class="text-center text-lg-start text-white page-haeding mt-4" data-aos="fade-up">  Shop the collection  </h2>
-              <div class="row row-cols-1 row-cols-sm-2 gy-5 g-lg-5 mt-0">
+            <div className="col-lg-8 ms-auto d-block">
+              <h2 className="text-center text-lg-start text-white page-haeding mt-4" data-aos="fade-up">  Shop the collection  </h2>
+              <div className="row row-cols-1 row-cols-sm-2 gy-5 g-lg-5 mt-0">
+                
 
+              {!loading && result.slice(0, 4).map((item) => {
+                        return (
+                          <ShopItem {...item} />
+                        )
+              })}
 
-
-                <div class="col">
-                  <a href="index.html#" class="btn comon-button mx-auto mt-5 d-table" data-aos="fade-up">  <span> <i class="fas fa-arrow-right"></i> View All Products </span> </a>
+                <div className="col">
+                  <a href="index.html#" className="btn comon-button mx-auto mt-5 d-table" data-aos="fade-up">  <span> <i className="fas fa-arrow-right"></i> View All Products </span> </a>
                 </div>
               </div>
             </div>

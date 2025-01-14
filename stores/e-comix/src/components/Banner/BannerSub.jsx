@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-
+import PageEdge from "../../components/PageEdge/PageEdge";
 
 const BannerSub = () => {
     return (
@@ -7,9 +7,7 @@ const BannerSub = () => {
             <section className="banner-part sub-banner float-start w-100">
                 <div className="container">
                 </div>
-                <div className="egge-img">
-                    <img alt="eage" src="images/edge1-d.svg" />
-                </div>
+                <PageEdge />
             </section>
         </>
 

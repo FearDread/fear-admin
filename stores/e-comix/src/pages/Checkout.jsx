@@ -1,27 +1,4 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="author" content="marhansolutions.com" />
-    <title>Comic Store - Checkout</title>
-    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-    <link href="css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-  
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Aclonica&family=Bangers&family=Barlow:wght@300;400;500;700;800;900&family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;1,500&family=Roboto+Condensed:wght@300;400;700&family=Source+Sans+3:wght@200;300;400;500;600;700&family=Work+Sans:wght@300;400;500;600;700;800;900&family=Yantramanav&display=swap" rel="stylesheet"/>
 
-    <link href="css/all.min.css" rel="stylesheet">
-    <link href="css/style.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/aos.css" />
-    <link rel="stylesheet" href="css/owl.carousel.min.css" />
-    <link rel="stylesheet" href="css/owl.theme.default.min.css"/>
-    
-  </head>
-
-<body>
 
 <header class="float-start w-100">
 <nav class="navbar navbar-expand-lg navbar-light">
@@ -171,9 +148,6 @@
         
     </div>
 
-    <div class="egge-img">
-      <img alt="eage" src="images/edge1-d.svg"/>
-    </div>
 </section>
 
 
