@@ -8,7 +8,7 @@ export const login = (email, password) => async (dispatch) => {
       
   await API.post("auth/login", { email, password }, config )
     .then((response) => {
-      storePersist.set("auth", { v user: response.data.user, 
+      storePersist.set("auth", { user: response.data.user, 
           token: response.data.token, 
           isLoggedIn: true 
         });
