@@ -23,7 +23,6 @@ import "./assets/css/aos.css";
 import "./assets/css/owl.carousel.min.css";
 import "./assets/css/owl.theme.default.min.css";
 
-import "./assets/css/style.min.css";
 import "./assets/css/site.styles.css";
 function App() {
   return (
