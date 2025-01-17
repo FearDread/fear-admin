@@ -14,7 +14,7 @@ const DetailedItem = (props) => {
                             <a href={link} >
                                 <div className="posi mb-0">
                                     <img src={images && images[0] ? images[0].url : "images/se2.png"} alt="sm" />
-                                    <span className="btn-sm strat-r "> -20%  </span>
+                                    <span className="btn-sm strat-r "> {brand}  </span>
                                 </div>
                             </a>
                         </div>

@@ -1,6 +1,32 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+
+import { auth } from "@feardread/crud-service";
 
 const RegisterModal = () => {
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [mobile, setMobile] = useState("");
+    const [password, setPassword] = useState("");
+ 
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        console.log("register hit = ");
+
+        const myForm = new FormData();
+              myForm.set("fullname", name);
+              myForm.set("email", email);
+              myForm.set("mobile", mobile);
+              myForm.set("password", password);
+    
+        dispatch(auth.register(myForm));
+      }
+
+
     return (
             <>
             <div className="modal fade login-div-modal" id="registerModal">
@@ -22,7 +48,14 @@ const RegisterModal = () => {
                                         <div className="cm-select-login mt-0">
                                             <div className="country-dp">
 
-                                                <input type="text" name="fullname" className="form-control" placeholder="Full Name" required />
+                                                <input type="text"
+                                                    name="fullname" 
+                                                    className="form-control" 
+                                                    placeholder="Full Name"
+                                                    onChange={(e) => setName(e.target.value)}
+                                                    required 
+                                                    
+                                                />
                                             </div>
                                             <div className="phone-div">
 
@@ -45,7 +78,7 @@ const RegisterModal = () => {
                                                 <input type="checkbox" className="form-check-input" id="exampleCheck1" />
                                             </div>
                                         </div>
-                                        <button type="submit" name="submit" className="btn continue-bn"> Register </button>
+                                        <button type="submit" name="submit" className="btn continue-bn" onSubmit={handleSubmit}> Register </button>
                                     </div>
 
                                     <p className="text-center  mt-3"> Do not have an account?

@@ -1,5 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Bangers&family=Lato&display=swap");
-
+html{font-size:68.75%}
+@font-face{font-family:"AclonicaRegular";src:url("../fonts/AclonicaRegular.eot");src:url("../fonts/AclonicaRegular.eot") format("embedded-opentype"),url("../fonts/AclonicaRegular.woff2") format("woff2"),url("../fonts/AclonicaRegular.woff") format("woff"),url("../fonts/AclonicaRegular.ttf") format("truetype"),url("../fonts/AclonicaRegular.svg") format("svg")}*
 * {
   margin: 0;
   padding: 0;
@@ -20,6 +21,9 @@ body {
       center;
   background-size: cover;
   background-position: fixed;
+}
+main {
+  background: rgba(198, 198, 198, 0.8);
 }
 
 html {
@@ -96,10 +100,10 @@ img {
   outline: 0;
 }
 :root {
-  --primarycolor: #ff0005e9;
-  --secondcolor: #ffffff;
+  --primarycolor: #bf0000e9;
+  --secondcolor: rgb(0, 0, 0);
   --ligit-color: #ffffff;
-  --bg-color: #000000;  
+  --bg-color: #ff00006a;  
   --special-color: #fe270a;
   --mainhedad-font: font-family: "Bangers",  cursive;
   --text-font: font-family: "Bangers",  sans-serif;

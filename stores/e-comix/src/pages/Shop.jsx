@@ -69,7 +69,11 @@ const Shop = (props) => {
     <>
     {(loading) ? (
       <>
+            <main className="float-start w-100 total-body home-body mt-0">
+            <section className="float-start w-100">
         <Loader />
+        </section>
+        </main>
       </>
     ) : (
       <>
