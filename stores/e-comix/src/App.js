@@ -17,12 +17,14 @@ import { OpenRoutes } from "./routes/OpenRoutes";
 import "./assets/css/bootstrap.min.css";
 
 import "./assets/css/site.icons.css";
-import "./assets/css/site.styles.css";
+
 
 import "./assets/css/aos.css";
 import "./assets/css/owl.carousel.min.css";
 import "./assets/css/owl.theme.default.min.css";
 
+import "./assets/css/style.min.css";
+import "./assets/css/site.styles.css";
 function App() {
   return (
     <>

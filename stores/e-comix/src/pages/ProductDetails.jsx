@@ -1,0 +1,458 @@
+import React from "react"
+
+
+const ProductDetails = (props) => {
+
+  return (
+    <>
+      <main className="float-start w-100 total-body home-body mt-0">
+
+        <section className="bedcrum float-start w-100">
+          <div className="container">
+            <nav aria-label="breadcrumb">
+              <ol className="breadcrumb">
+                <li className="breadcrumb-item"><a href="product-details.html#">Home</a></li>
+                <li className="breadcrumb-item active" aria-current="page">Product Details</li>
+              </ol>
+            </nav>
+          </div>
+        </section>
+
+        <section className="category float-start w-100 position-relative">
+
+          <div className="listing-page-div">
+            <div className="container">
+
+              <div className="row g-5">
+                <div className="col-lg-6">
+                  <div className="products-slide-1">
+                    <div id="sync1" className="owl-carousel owl-theme">
+                      <div className="item">
+                        <figure className="mian-ppic">
+                          <img src="images/0ea7b3bf-image-2.jpg" alt="re3" />
+                        </figure>
+                      </div>
+                      <div className="item">
+                        <figure className="mian-ppic">
+                          <img src="images/0ea7b3bf-image-2.jpg" alt="re3" />
+                        </figure>
+                      </div>
+                      <div className="item">
+                        <figure className="mian-ppic">
+                          <img src="images/0ea7b3bf-image-2.jpg" alt="re3" />
+                        </figure>
+                      </div>
+                      <div className="item">
+                        <figure className="mian-ppic">
+                          <img src="images/0ea7b3bf-image-2.jpg" alt="re3" />
+                        </figure>
+                      </div>
+
+
+
+                    </div>
+
+                    <div id="sync2" className="owl-carousel owl-theme">
+                      <div className="item">
+                        <div className="thum-pic-slide">
+                          <figure>
+                            <img src="images/0ea7b3bf-image-2.jpg" alt="re3" />
+                          </figure>
+                        </div>
+                      </div>
+                      <div className="item">
+                        <div className="thum-pic-slide">
+                          <figure>
+                            <img src="images/0ea7b3bf-image-2.jpg" alt="re3" />
+                          </figure>
+                        </div>
+                      </div>
+                      <div className="item">
+                        <div className="thum-pic-slide">
+                          <figure>
+                            <img src="images/0ea7b3bf-image-2.jpg" alt="re3" />
+                          </figure>
+                        </div>
+                      </div>
+                      <div className="item">
+                        <div className="thum-pic-slide">
+                          <figure>
+                            <img src="images/0ea7b3bf-image-2.jpg" alt="re3" />
+                          </figure>
+                        </div>
+                      </div>
+
+
+
+                    </div>
+                  </div>
+                </div>
+                <div className="col-lg-6">
+                  <div className="comon-details-part">
+                    <h5 className="tags-ts"> Comic </h5>
+                    <h2 className="my-2"> Angie’s Sweet & Salty Kettle Corn </h2>
+                    <div className="ratine">
+                      <span>
+                        <i className="fas fa-star"></i><i className="fas fa-star"></i><i className="fas fa-star"></i>
+                        <i className="fas fa-star"></i><i className="fas fa-star"></i>
+                      </span>
+                      <span>(12 Reviews)</span>
+                    </div>
+                    <h3 className="price-text mt-3">
+                      $20.00
+                      <span> $30.00 </span>
+                    </h3>
+                    <div className="feature-div-list">
+                      <ul className="mt-4">
+                        <li>
+                          <span>Vendor:</span>
+                          <span> Comic Jack</span>
+                        </li>
+                        <li>
+                          <span>Author(s):</span>
+                          <span>James Art</span>
+                        </li>
+                        <li>
+                          <span>Genre(s):</span>
+                          <span>Action, Adventure, Manhua, Martial Arts</span>
+                        </li>
+
+                        <li>
+                          <span>Release:</span>
+                          <span>Aug, 2023</span>
+                        </li>
+                        <li>
+                          <span>ID:</span>
+                          <span>A1245dJ</span>
+                        </li>
+                      </ul>
+                    </div>
+
+                    <div className="quantity-control" data-quantity="">
+                      <button className="btn quantity-btn" data-quantity-minus="">
+                        <i className="fas fa-minus"></i>
+                      </button>
+                      <input type="number" className="quantity-input" data-quantity-target="" value="1" step="0.1" min="1" max="50" name="quantity" />
+                      <button className="btn quantity-btn" data-quantity-plus="">
+                        <i className="fas fa-plus"></i>
+                      </button>
+                    </div>
+
+                    <div className="d-flex align-items-center my-4">
+                      <a href="product-details.html#" className="btn add-btn">
+                        <span>
+                          <i className="fas fa-shopping-cart"></i>
+                        </span> <span> Add to Cart  </span> </a>
+                      <a href="product-details.html#" className="btn ad-whish">
+                        <span> Buy Now </span>  </a>
+                    </div>
+
+
+
+                    <div className="delivery-part">
+                      <h5> Free worldwide shipping for orders over <span> $70</span> </h5>
+                      <ul>
+                        <li> Order will dispatch with in <span> 2 Hours </span> </li>
+                        <li>  Order delivery with in <span> 3day </span> </li>
+                      </ul>
+                    </div>
+
+                  </div>
+                </div>
+
+              </div>
+
+              <div className="tabs-details-gn mt-5 mt-lg-0">
+                <ul className="nav nav-tabs" id="myTab" role="tablist">
+                  <li className="nav-item" role="presentation">
+                    <button className="nav-link active" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab"
+                    >Description</button>
+                  </li>
+                  <li className="nav-item" role="presentation">
+                    <button className="nav-link" data-bs-toggle="tab" data-bs-target="#profile"
+                      type="button" role="tab" >
+                      Review & Feedback     </button>
+                  </li>
+
+                  <li className="nav-item" role="presentation">
+                    <button className="nav-link" data-bs-toggle="tab" data-bs-target="#shipping"
+                      type="button" role="tab" >
+                      Shipping Policy     </button>
+                  </li>
+
+                </ul>
+                <div className="tab-content" id="myTabContent">
+                  <div className="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                    <div className="comon-desctiopn py-5">
+                      <h3> Did you know </h3>
+                      <p className="mt-3"> The journey to the martial peak is a lonely, solitary and long one.In the face of adversity,you must survive and remain unyielding.Only then can you break through and and continue on your journey to become the strongest. Sky Tower tests its disciples in the harshest ways to prepare them for this journey.One day the lowly sweeper Yang Kai managed to obtain a
+                        black book, setting him on the road to the peak of the martials world. </p>
+
+                      <div className="feature-div-list">
+                        <ul className="mt-4">
+                          <li>
+                            <span>Chapter:</span>
+                            <span>3547</span>
+                          </li>
+                          <li>
+                            <span>Author(s):</span>
+                            <span> James Art</span>
+                          </li>
+                          <li>
+                            <span>Release:</span>
+                            <span>Jun 5 2022</span>
+                          </li>
+                          <li>
+                            <span>Language:</span>
+                            <span>English</span>
+
+                          </li>
+
+
+
+                        </ul>
+                      </div>
+
+                      <h3 className="mt-5"> Storyline </h3>
+                      <p className="mt-3"> Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap
+                        into electronic typesetting, remaining essentially unchanged.</p>
+
+                      <h5> Packaging & Delivery </h5>
+                      <p className="mt-2"> Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap
+                        into electronic typesetting, remaining essentially unchanged.</p>
+
+                      <h5> Other Ingredients</h5>
+                      <p className="mt-2"> Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap
+                        into electronic typesetting, remaining essentially unchanged.</p>
+
+                    </div>
+                  </div>
+                  <div className="tab-pane fade" id="profile" role="tabpanel"
+                    aria-labelledby="profile-tab">
+                    <div className="listing-paage-divb">
+                      <div className="review-div-sec mt-4">
+
+
+                        <div className="comment-user-div">
+                          <div className="userp">
+                            <div className="us-pic">  <img src="images/testimonials-1-1.jpg" alt="pico"> </div>
+                          </div>
+                          <div className="user-dsl">
+                            <h6> Kelvin Martine <span className="d-block"> <i className="fas fa-star"></i> <i className="fas fa-star"></i> <i className="fas fa-star"></i> <i className="fas fa-star"></i>
+                            </span> <span>  June 10, 2020 </span> </h6>
+
+                            <p> Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+                              Lorem Ipsum has been the industry's standard. </p>
+                          </div>
+                        </div>
+
+                        <div className="comment-user-div">
+                          <div className="userp"> 
+                            <div className="us-pic">  <img src="images/manages-st2.jpg" alt="pico" /> </div>
+                          </div>
+                          <div className="user-dsl">
+                            <h6> Jone Martine <span className="d-block"> <i className="fas fa-star"></i> <i className="fas fa-star"></i> <i className="fas fa-star"></i> <i className="fas fa-star"></i>
+                            </span> <span>  Nov 05, 2022 </span> </h6>
+
+                            <p> Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+                              Lorem Ipsum has been the industry's standard. </p>
+                          </div>
+                        </div>
+
+
+                      </div>
+
+                      <div className="submit-review mt-5">
+                        <h5> Leave a Comment </h5>
+                        <p> Your email address will not be published. Required fields are marked * </p>
+
+                        <form action="https://oxentictemplates.in/templatemonster/comicstore/man" method="get">
+                          <div className="col-lg-12 pl-0">
+                            <ul className="rate-area">
+                              <input type="radio" id="5-star" name="rating" value="5" /><label for="5-star" title="Amazing">5 stars</label>
+                              <input type="radio" id="4-star" name="rating" value="4" /><label for="4-star" title="Good">4 stars</label>
+                              <input type="radio" id="3-star" name="rating" value="3" /><label for="3-star" title="Average">3 stars</label>
+                              <input type="radio" id="2-star" name="rating" value="2" /><label for="2-star" title="Not Good">2 stars</label>
+                              <input type="radio" id="1-star" name="rating" value="1" /><label for="1-star" title="Bad">1 star</label>
+                            </ul>
+
+
+                          </div>
+                          <div className="row w-100">
+                            <div className="col-lg-6 form-group">
+                              <input type="text" className="form-control" placeholder="Full Name">
+
+                            </div>
+                            <div className="col-lg-6 form-group">
+                              <input type="text" className="form-control" placeholder="Email">
+
+                            </div>
+                            <div className="col-lg-12 form-group">
+                              <textarea className="form-control ted"></textarea>
+                            </div>
+                            <div className="col-lg-12">
+                              <button type="submit" className="btn sub-re">
+                                <span> Submit </span></button>
+
+                            </div>
+
+
+
+                          </div>
+                        </form>
+                      </div>
+
+
+                    </div>
+                  </div>
+
+                  <div className="tab-pane fade" id="shipping" role="tabpanel"
+                    aria-labelledby="profile-tab">
+                    <div className="listing-paage-divb my-5">
+                      <p className="mt-3"> Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap
+                        into electronic typesetting, remaining essentially unchanged.</p>
+
+                      <h5> Packaging & Delivery </h5>
+                      <p className="mt-2"> Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap
+                        into electronic typesetting, remaining essentially unchanged.</p>
+
+                      <h5> Other Ingredients</h5>
+                      <p className="mt-2"> Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap
+                        into electronic typesetting, remaining essentially unchanged.</p>
+
+
+                    </div>
+                  </div>
+
+
+
+                </div>
+              </div>
+
+              <div className="like-div-also mt-5">
+                <h2> You may also like </h2>
+                <div className="like-slide owl-carousel owl-theme mt-4">
+
+                  <a href="product-details.html#" className="shop-items super-items overflow-hidden d-inline-block w-100 position-relative" data-aos="fade-left">
+                    <div className="img-box-div position-relative">
+                      <img alt="srt" src="images/super1.png" />
+                      <span className="off">10% off</span>
+                    </div>
+                    <div className="details-shopi">
+                      <div className="row align-items-center">
+                        <div className="col-8">
+                          <h5 className="text-white"> Figures & Statues..
+                            <span className="d-block"> Das deutschsprachige </span>
+                          </h5>
+                        </div>
+                        <div className="col-4">
+                          <h3 className="text-center"> $30 <span className="d-block"> $50 </span> </h3>
+                        </div>
+                      </div>
+
+                    </div>
+
+                  </a>
+
+
+                  <a href="product-details.html#" className="shop-items super-items overflow-hidden d-inline-block w-100 position-relative" data-aos="fade-left">
+                    <div className="img-box-div position-relative">
+                      <img alt="srt" src="images/se01.png" />
+                      <span className="off">10% off</span>
+                    </div>
+                    <div className="details-shopi">
+                      <div className="row align-items-center">
+                        <div className="col-8">
+                          <h5 className="text-white"> Figures & Statues..
+                            <span className="d-block"> Das deutschsprachige </span>
+                          </h5>
+                        </div>
+                        <div className="col-4">
+                          <h3 className="text-center"> $30 <span className="d-block"> $50 </span> </h3>
+                        </div>
+                      </div>
+
+                    </div>
+
+                  </a>
+
+
+                  <a href="product-details.html#" className="shop-items super-items overflow-hidden d-inline-block w-100 position-relative" data-aos="fade-left">
+                    <div className="img-box-div position-relative">
+                      <img alt="srt" src="images/se2.png" />
+                      <span className="off">10% off</span>
+                    </div>
+                    <div className="details-shopi">
+                      <div className="row align-items-center">
+                        <div className="col-8">
+                          <h5 className="text-white"> Figures & Statues..
+                            <span className="d-block"> Das deutschsprachige </span>
+                          </h5>
+                        </div>
+                        <div className="col-4">
+                          <h3 className="text-center"> $30 <span className="d-block"> $50 </span> </h3>
+                        </div>
+                      </div>
+
+                    </div>
+
+                  </a>
+
+
+                  <a href="product-details.html#" className="shop-items super-items overflow-hidden d-inline-block w-100 position-relative" data-aos="fade-left">
+                    <div className="img-box-div position-relative">
+                      <img alt="srt" src="images/se3.png" />
+                      <span className="off">10% off</span>
+                    </div>
+                    <div className="details-shopi">
+                      <div className="row align-items-center">
+                        <div className="col-8">
+                          <h5 className="text-white"> Figures & Statues..
+                            <span className="d-block"> Das deutschsprachige </span>
+                          </h5>
+                        </div>
+                        <div className="col-4">
+                          <h3 className="text-center"> $30 <span className="d-block"> $50 </span> </h3>
+                        </div>
+                      </div>
+
+                    </div>
+
+                  </a>
+
+
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+        </section>
+
+
+
+        <section className="subscribe-section float-start w-100 position-relative">
+          <div className="azp shake">
+            <img alt="ser" src="images/zap.png" />
+          </div>
+          <div className="container">
+            <div className="col-lg-8">
+              <h6 className="text-center text-lg-start sub-heading" data-aos="fade-down"> You may unsubscribe at any moment </h6>
+              <h2 className="text-center text-lg-start page-haeding mt-4" data-aos="fade-up">  Get your Need on by subcribing
+                our newsletter </h2>
+
+              <a href="product-details.html#" className="btn comon-button mx-auto ms-lg-0 mt-5 d-table d-inline-lg-block" data-aos="fade-up">  <span> <i className="fas fa-arrow-right"></i> See All Post </span> </a>
+            </div>
+          </div>
+          <div className="sub-ixtr" data-aos="fade-up">
+            <img alt="set" src="images/footer-superhero.png" />
+          </div>
+        </section>
+      </main>
+    </>
+  )
+}
+
+export default ProductDetails;
+
+

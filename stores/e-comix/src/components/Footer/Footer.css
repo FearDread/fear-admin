@@ -24,7 +24,6 @@
 .footer-menu h3,
 .footer-action h3 {
 	font-size: 24px;
-	font-family: cm;
 	color: #fff;
 	padding-top: 17px;
 	text-transform: uppercase;
@@ -112,6 +111,7 @@
 =============================*/
 .copy_right {
 	background: #2a2a2a;
+	padding:0;
 }
 
 .copyright-txt {

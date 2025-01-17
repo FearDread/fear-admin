@@ -6,6 +6,7 @@ import BannerMain from "../components/Banner/BannerMain";
 import ShopItem from "../components/Product/ShopItem";
 import SuperItem from "../components/Product/SuperItem";
 import Services from "../components/Services/Services";
+import Brands from "../components/Brands/Brands";
 import { cruds, auth, cart } from "@feardread/crud-service"; 
 
 
@@ -63,6 +64,8 @@ const Home = () => {
           </div>
 
         </section>
+
+        <Brands />
 
         <section className="super-hero-div float-start w-100 position-relative">
           <div className="eg-bg2">

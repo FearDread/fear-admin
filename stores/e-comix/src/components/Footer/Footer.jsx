@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 
 import logo from "../../assets/images/ekomix/logo_transparent.png";
 import paymentIcon from "../../assets/images/paymentIcon.png";
+import PageEdge from "../PageEdge/PageEdge";
 import "./Footer.css";
 
 const Footer = () => {
@@ -24,8 +25,8 @@ const Footer = () => {
        <div className="container">
           <div className="row">
             <div className="col-lg-3 footer-logo">
-              <a href="index.html">E-Comix<span>.</span></a>
-              <img src="images/footer-icon.png" alt="bat-img" />
+              <a href="index.html"><span>.</span></a>
+              <img src="images/ekomix/logo_transparent.png" alt="bat-img" />
             </div>
             <div className="col-lg-2 col-md-4 footer-menu">
               <h3>Quick Link</h3>
@@ -68,19 +69,22 @@ const Footer = () => {
           </div>
         </div>
       </section>
+      
+      <PageEdge />
+
       <section className="copy_right float-start w-100">
         <div className="container">
           <div className="row copyright-txt">
             <div className="col-lg-6">
               <span>LANGUAGE: </span>
-              <a href="index.html#">BAN</a>
-              <a href="index.html#">NL</a>
-              <a href="index.html#" className="active">EN</a>
-              <a href="index.html#">FR</a>
-              <a href="index.html#">EU</a>
+              <a href="#">BAN</a>
+              <a href="#">NL</a>
+              <a href="#" className="active">EN</a>
+              <a href="#">FR</a>
+              <a href="#">EU</a>
             </div>
             <div className="col-lg-6 text-end">
-              <p>&copy; Made by EpikTheme. All Rights Reserved.</p>
+              <p>&copy; Made with love by InMoshyn Inc.n. All Rights Reserved.</p>
             </div>
           </div>
         </div>
