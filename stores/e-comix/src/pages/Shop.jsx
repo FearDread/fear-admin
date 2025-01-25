@@ -67,29 +67,18 @@ const Shop = (props) => {
 
   return (
     <>
-    {(loading) ? (
-      <>
-            <main className="float-start w-100 total-body home-body mt-0">
+      {(loading) ? (
+        <>
+          <main className="float-start w-100 total-body home-body mt-0">
             <section className="float-start w-100">
-        <Loader />
-        </section>
-        </main>
-      </>
+              <Loader />
+            </section>
+          </main>
+        </>
     ) : (
       <>
       <BannerSub />
       <main className="float-start w-100 total-body home-body mt-0">
-        <section className="bedcrum float-start w-100">
-          <div className="container">
-            <nav aria-label="breadcrumb">
-              <ol className="breadcrumb">
-                <li className="breadcrumb-item"><a href="shop.html#">Home</a></li>
-                <li className="breadcrumb-item active" aria-current="page">Shop</li>
-              </ol>
-            </nav>
-          </div>
-        </section>
-
 
         <section className="shop-page float-start w-100">
           <div className="listing-page-div">

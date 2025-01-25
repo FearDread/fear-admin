@@ -6,7 +6,7 @@ const Contact = () => {
 
   return (
     <>
-        <BannerSub />
+      <BannerSub />
       <main className="float-start w-100 total-body home-body mt-0">
         <section className="top-sectionk mt-5 float-start w-100">
           <div className="container">
