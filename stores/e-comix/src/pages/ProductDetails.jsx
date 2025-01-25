@@ -235,7 +235,7 @@ const ProductDetails = (props) => {
 
                         <div className="comment-user-div">
                           <div className="userp">
-                            <div className="us-pic">  <img src="images/testimonials-1-1.jpg" alt="pico"> </div>
+                            <div className="us-pic">  <img src="images/testimonials-1-1.jpg" alt="pico" /> </div>
                           </div>
                           <div className="user-dsl">
                             <h6> Kelvin Martine <span className="d-block"> <i className="fas fa-star"></i> <i className="fas fa-star"></i> <i className="fas fa-star"></i> <i className="fas fa-star"></i>
@@ -280,11 +280,11 @@ const ProductDetails = (props) => {
                           </div>
                           <div className="row w-100">
                             <div className="col-lg-6 form-group">
-                              <input type="text" className="form-control" placeholder="Full Name">
+                              <input type="text" className="form-control" placeholder="Full Name" />
 
                             </div>
                             <div className="col-lg-6 form-group">
-                              <input type="text" className="form-control" placeholder="Email">
+                              <input type="text" className="form-control" placeholder="Email" />
 
                             </div>
                             <div className="col-lg-12 form-group">
@@ -429,25 +429,6 @@ const ProductDetails = (props) => {
 
         </section>
 
-
-
-        <section className="subscribe-section float-start w-100 position-relative">
-          <div className="azp shake">
-            <img alt="ser" src="images/zap.png" />
-          </div>
-          <div className="container">
-            <div className="col-lg-8">
-              <h6 className="text-center text-lg-start sub-heading" data-aos="fade-down"> You may unsubscribe at any moment </h6>
-              <h2 className="text-center text-lg-start page-haeding mt-4" data-aos="fade-up">  Get your Need on by subcribing
-                our newsletter </h2>
-
-              <a href="product-details.html#" className="btn comon-button mx-auto ms-lg-0 mt-5 d-table d-inline-lg-block" data-aos="fade-up">  <span> <i className="fas fa-arrow-right"></i> See All Post </span> </a>
-            </div>
-          </div>
-          <div className="sub-ixtr" data-aos="fade-up">
-            <img alt="set" src="images/footer-superhero.png" />
-          </div>
-        </section>
       </main>
     </>
   )

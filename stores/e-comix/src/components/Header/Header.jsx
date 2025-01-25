@@ -6,6 +6,8 @@ import { useDispatch, useSelector } from "react-redux";
 import Cart from "../Cart/Cart";
 import BannerSub from "../Banner/BannerSub";
 
+import "./Header.css";
+
 const Header = () => {
 
     return (
@@ -29,10 +31,10 @@ const Header = () => {
                       <div className="row">
                         <div className="col-sm-6 col-lg-4 border-right mb-4">
                           <h6>Popular</h6>
-                          <a className="dropdown-item" href="/shop">Action & Adventure</a>
-                          <a className="dropdown-item" href="/shop">Art of Comics </a>
-                          <a className="dropdown-item" href="/shop">Superhero Comics </a>
-                          <a className="dropdown-item" href="/shop">Quisque pharetra </a>
+                          <a className="dropdown-item" href="/shop?category=comics">Comics</a>
+                          <a className="dropdown-item" href="/shop?category=pokemon cards">Pokemon Cards</a>
+                          <a className="dropdown-item" href="/shop?brand=dc">Superhero Comics</a>
+                          <a className="dropdown-item" href="/shop?category=trading cards">Trading Cards</a>
                         </div>
                         <div className="col-sm-6 col-lg-4 border-right mb-4">
                           <h6>Special Offers</h6>
