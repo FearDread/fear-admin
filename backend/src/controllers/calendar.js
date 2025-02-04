@@ -1,4 +1,4 @@
-const Calendar = require("../models/calendar");
+const Calendar = require("../models/events");
 const methods = require("./crud");
 
 
