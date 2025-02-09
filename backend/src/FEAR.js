@@ -90,7 +90,7 @@ module.exports = FEAR = (( app ) => {
 
   this.app.options("*", cors());
   // Load Routes
-  this.app = this.load(app)
+  this.app = this.load(this.app);
   
   this.app.use((req, res, next) => {
     this.log.info("FEAR API REQ :: " + req.url);
