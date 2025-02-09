@@ -1,2 +1,2 @@
 
-export { default as Seeder } from "./f-seed/seeder.js";
+export { default as Feeder } from "./feed/feeder.js";
