@@ -1,7 +1,7 @@
 const path = require('path');
 const { Seeder } = require('mongo-seeding');
 
-const FSeed = (props) => {
+const Feeder = (props) => {
     const config = {
         database: {
             name: props.name ? props.name : null,
@@ -13,7 +13,17 @@ const FSeed = (props) => {
     this.format = "JSON";
     this.seeder = new Seeder(config);
 
-    this.import = (dir, options = null) => {
+    this.swallow = async (Model, data) => {
+        await Model.insertMany(data)
+            .then((resp) => {
+                console.log(resp, ":: Seeded successfully");
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    }
+
+    this.feed = (dir, options = null) => {
         const collections = {name: "", documents: []}
 
         (options) ? options : {
@@ -39,7 +49,7 @@ const FSeed = (props) => {
             });
     }
     
-    this.clean = ( opts ) => {
+    this.wipe = ( opts ) => {
 
     }
 
@@ -47,4 +57,4 @@ const FSeed = (props) => {
     return this;
   };
 
-  export default FSeed;
+  export default Feeder;
