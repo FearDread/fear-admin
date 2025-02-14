@@ -31,7 +31,18 @@ module.exports = FEAR = (( app ) => {
   this.log = logger;
   this.env = _config;
   this.cloud = cloud;
+  this.origins = this.env.ALLOWED_ORIGINS.split(',').map(item => item.trim());
 
+  this.delegate = {
+    origin: (origin, callback) => {
+      if (!origin || this.origins.indexOf(origin) !== -1) { 
+        callback(null, true)
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true
+  }
   this.load = ( app ) => {
     const dir = "routes";
     const modPath = path.join( __dirname, dir );
@@ -55,40 +66,9 @@ module.exports = FEAR = (( app ) => {
   this.app.use(bodyParser.urlencoded({ extended: true }));
   this.app.use(passport.initialize());
 
-  const allowedOrigins = [
-    'http://localhost:3000', 
-    'http://fear.master.com',
-    'http://fear.master.com:3000',
-    'http://fear.master.com:4000',
-    'http://localhost:4000',
-    'http://fear.admin.com',
-    'http://localhost:4001',
-    'http://fear.admin.com:4000', 
-    'http://fear.admin.com:3000',
-    'http://localhost:3001',
-    'https://fear.goblin-kitchen.ts.net',
-    'https://fear.goblin-kitchen.ts.net:4000'
-  ];
-
-  this.app.use(cors({
-    origin: (origin, callback) => {
-      if ( !origin ) return callback(null, true);
-
-      if ( this.env.NODE_ENV === "development" ) {
-        this.log.info(`Origin ${origin} is being granted CORS access`);
-        return callback(null, true);
-      } else {
-        if ( allowedOrigins.indexOf(origin) === -1 ) {
-          var msg = 'The CORS policy for this site does not ' +
-                    'allow access from the specified Origin.';
-                    
-          return callback(new Error(msg), false);
-        }
-      };
-    }
-  }));
-
+  this.app.use(cors(this.delegate));
   this.app.options("*", cors());
+
   // Load Routes
   this.app = this.load(this.app);
   
