@@ -1,12 +1,13 @@
-import axios from "axios";
+import API from "API";
+import API from "../api/instance";
 import * as Types from "./types";
-import { API_BASE_URL } from "../config";
+import {  } from "../config";
 
 // Get Products Details
 export const read = (id) => async (dispatch) => {
   dispatch({ type: Types.PRODUCT_DETAILS_REQUEST });
 
-  await axios.get(API_BASE_URL + `/product/${id}`)
+  await API.get(`product/${id}`)
     .then((response) => {
       dispatch({ type: Types.PRODUCT_DETAILS_SUCCESS, payload: response.data.result });
     })
@@ -19,7 +20,7 @@ export const read = (id) => async (dispatch) => {
 export const list = () => async (dispatch) => {
   dispatch({ type: Types.ADMIN_PRODUCT_REQUEST });
 
-  await axios.get(API_BASE_URL + "/product/all")
+  await API.get("product/all")
     .then((response) => {
       dispatch({ type: Types.ADMIN_PRODUCT_SUCCESS, payload: response.data.result });
     })
@@ -32,7 +33,7 @@ export const list = () => async (dispatch) => {
 export const create = (data) => async (dispatch) => {
   dispatch({type: Types.NEW_PRODUCT_REQUEST});
 
-  await axios.post(API_BASE_URL + `/product/new`, data,
+  await API.post(`product/new`, data,
     {headers: { "Content-Type": "multipart/form-data" }})
     .then((response) => {
       dispatch({ type: Types.NEW_PRODUCT_SUCCESS, payload: response.data.result });
@@ -46,7 +47,7 @@ export const create = (data) => async (dispatch) => {
 export const update = (id, data) => async (dispatch) => {
   dispatch({ type: Types.UPDATE_PRODUCT_REQUEST });
 
-  await axios.put(API_BASE_URL + `/product/${id}`, data, {
+  await API.put(`product/${id}`, data, {
         headers: { "Content-Type": "multipart/form-data" }
       })
       .then((response) => {
@@ -63,7 +64,7 @@ export const update = (id, data) => async (dispatch) => {
 export const remove = (id) => async (dispatch) => {
   dispatch({ type: Types.DELETE_PRODUCT_REQUEST });
 
-  await axios.delete(API_BASE_URL + `/product/${id}`)
+  await API.delete(`product/${id}`)
     .then((response) => {
       dispatch({ type: Types.DELETE_PRODUCT_SUCCESS, payload: response.data.success });
     })
@@ -82,12 +83,12 @@ export const search = (
 ) => async (dispatch) => {
     dispatch({ type: Types.ALL_PRODUCT_REQUEST });
 
-    let link = API_BASE_URL + `/product?keyword=${keyword}&page=${currentPage}&price=${price[0]}&ratings=${ratings}`;  
+    let link = `product?keyword=${keyword}&page=${currentPage}&price=${price[0]}&ratings=${ratings}`;  
     if (category) {
       link = `/api/v1/product?keyword=${keyword}&page=${currentPage}&price[gte]=${price[0]}&price[lte]=${price[1]}&ratings[gte]=${ratings}&category=${category}`;
     }
     
-    await axios.get(API_BASE_URL + link)
+    await API.get(link)
       .then((response) => {
         dispatch({ type: Types.ALL_PRODUCT_SUCCESS, payload: response.data.result });
       })

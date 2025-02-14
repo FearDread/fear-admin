@@ -1,7 +1,7 @@
-import axios from "axios";
+import API from "../api/instance";
 import * as actionTypes from "./types";
 import storePersist from "_redux/storePersist";
-import { API_BASE_URL } from "../../variables/api.js";
+
 
 
 export function loadProfile() {
@@ -17,7 +17,7 @@ export function loadProfile() {
       
       } else {
   
-        const response = await axios.get(API_BASE_URL + "/profile");
+        const response = await API.get("profile");
         console.log("Load Profile Response :: ", response);
 
   
@@ -39,8 +39,8 @@ export function updateProfile(userData) {
       };
 
 
-      const { data } = await axios.put(
-        API_BASE_URL + `/user/profile/update`,
+      const { data } = await API.put(
+        `user/profile/update`,
         userData,
         config
       );
@@ -67,8 +67,8 @@ export function updatePassword(userPassWord) {
     try {
       dispatch({ type: actionTypes.UPDATE_PASSWORD_REQUEST });
 
-      const { data } = await axios.put(
-        API_BASE_URL + `/password/update`,
+      const { data } = await API.put(
+        `password/update`,
         userPassWord,
         {headers: {"Content-Type": "application/json"}}
       );
@@ -91,7 +91,7 @@ export function forgetPassword(email) {
         headers: { "Content-Type": "application/json" },
       };
 
-      const { data } = await axios.post(
+      const { data } = await API.post(
         `/api/v1/password/forgot`,
         email,
         config
@@ -115,7 +115,7 @@ export const resetPassword = (token, passwords) => async (dispatch) => {
 
     const config = { headers: { "Content-Type": "application/json" } };
 
-    const { data } = await axios.put(
+    const { data } = await API.put(
       `/api/v1/password/reset/${token}`,
       passwords,
       config
@@ -134,7 +134,7 @@ export const resetPassword = (token, passwords) => async (dispatch) => {
 // get All user Action --> admin 
 export const list  = () => async (dispatch) =>{
   dispatch({type : actionTypes.ALL_USERS_REQUEST})
-    await axios.get(API_BASE_URL + "/user/all")
+    await API.get("user/all")
       .then((response) => {
         dispatch({ type: actionTypes.ALL_USERS_SUCCESS, payload: response.data.result });
       })
@@ -149,7 +149,7 @@ export const read = (id) => async (dispatch) => {
   try {
      dispatch({type : actionTypes.USER_DETAILS_REQUEST})
      
-     const { data } = await axios.get(API_BASE_URL + `/admin/user/${id}`);
+     const { data } = await API.get(`admin/user/${id}`);
      
      dispatch({ type: actionTypes.USER_DETAILS_SUCCESS, payload: data.user });
 
@@ -166,8 +166,8 @@ export const updateUser = (id, userData) => async (dispatch) => {
 
 
      const config  = {headers : {"Content-Type" : "application/json"}}
-     const { data } = await axios.put(
-      API_BASE_URL + "/admin/user/:id}",
+     const { data } = await API.put(
+      "admin/user/:id}",
        userData,
        config
      );
@@ -180,11 +180,11 @@ export const updateUser = (id, userData) => async (dispatch) => {
 
 }
 
-export const deleteUser  =(id) => async (dispatch) =>{
+export const deleteUser  = (id) => async (dispatch) =>{
   try {
        dispatch({ type: actionTypes.DELETE_USER_REQUEST });
        
-       const { data } = await axios.delete(API_BASE_URL + `/admin/user/${id}`);
+       const { data } = await API.delete(`admin/user/${id}`);
       
        dispatch({type : actionTypes.DELETE_USER_SUCCESS , payload : data})
 
