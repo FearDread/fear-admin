@@ -57,4 +57,4 @@ const Feeder = (props) => {
     return this;
   };
 
-  export default Feeder;
+module.exports = Feeder;

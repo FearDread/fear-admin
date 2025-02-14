@@ -1,12 +1,12 @@
 const express = require('express');
-const Calendar = require('../controllers/calendar');
+const Events = require('../controllers/events');
 const router = express.Router();
 
-router.get("/all", Calendar.all);
-router.post("/new", Calendar.create);
+router.get("/all", Events.all);
+router.post("/new", Events.create);
 router.route("/:id")
-        .put(Calendar.update)
-        .get(Calendar.read)
-        .delete(Calendar.delete);
+        .put(Events.update)
+        .get(Events.read)
+        .delete(Events.delete);
 
 module.exports = router;
