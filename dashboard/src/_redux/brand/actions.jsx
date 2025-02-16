@@ -1,12 +1,11 @@
-import axios from "axios";
+import API from "../api/instance";
 import * as Types from "./types";
-import { API_BASE_URL } from "../config";
 
 export const list = () => async (dispatch) => {
 
   dispatch({ type: Types.ADMIN_BRAND_REQUEST });
   
-  await axios.get(API_BASE_URL + "/brand/all")
+  await API.get("brand/all")
     .then((response) => {
       dispatch({ type: Types.ADMIN_BRAND_SUCCESS, payload: response.data.result });
     })
@@ -18,7 +17,7 @@ export const list = () => async (dispatch) => {
 export const create = (brandData) => async (dispatch) => {
     dispatch({type: Types.NEW_BRAND_REQUEST});
 
-    await axios.post(API_BASE_URL + `/brand/new`, brandData,
+    await API.post(`brand/new`, brandData,
       {headers: { "Content-Type": "multipart/form-data" }})
       .then((response) => {
         console.log("Brand response :: ", response);
@@ -34,7 +33,7 @@ export function remove (id) {
       try {
         dispatch({ type: Types.DELETE_BRAND_REQUEST });
   
-        const { data } = await axios.delete(API_BASE_URL + `/brand/${id}`);
+        const { data } = await API.delete(`brand/${id}`);
       
         dispatch({ type: Types.DELETE_BRAND_SUCCESS, payload: data.success });
       } catch (error) {
