@@ -1,7 +1,5 @@
-import API from "API";
 import API from "../api/instance";
 import * as Types from "./types";
-import {  } from "../config";
 
 // Get Products Details
 export const read = (id) => async (dispatch) => {
