@@ -5,7 +5,7 @@ const ShopItem = (props) => {
 
     const { _id, title, description, price, images, brand, category } = props || {};
 
-    const link = "/shop/product/" + _id;
+    const link = "/product/" + _id;
 
     return (
         <>
