@@ -141,7 +141,7 @@ const cruds = {
 cruds.endpoint = (url, method, options = {}) => async (dispatch) => {
   let link = url + '?';
 
-  dispatch(type: Types.REQUEST_LOADING, keyState: "custom")
+  dispatch({type: Types.REQUEST_LOADING, keyState: "custom"})
 
   await API[method](url, options)
     .then((response) => {dispatch({ type: Types.REQUEST_SUCCESS, keyState: "custom", payload: response.data.result });})
