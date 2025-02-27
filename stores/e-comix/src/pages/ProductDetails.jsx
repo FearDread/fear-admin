@@ -1,10 +1,34 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
+import { useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import Loader from "../components/Loader/Loader";
+import BannerSub from "../components/Banner/BannerSub"
+import { cruds, auth, cart } from "@feardread/crud-service";
 
 
 const ProductDetails = (props) => {
+  const { id } = useParams();
+  const dispatch = useDispatch();
+  const relatedProducts = useSelector((state) => state?.crud?.list);
+  const { loading, result } = useSelector((state) => state?.crud?.read);
+
+  useEffect(() => {
+
+    dispatch(cruds.read('product', id));
+    dispatch(cruds.list('product'));
+
+    console.log('related = ', relatedProducts);
+  }, [dispatch, id])
 
   return (
     <>
+      {loading ? (
+      <>
+        <Loader />
+      </>
+    ) : (
+    <>
+      <BannerSub />
       <main className="float-start w-100 total-body home-body mt-0">
 
         <section className="bedcrum float-start w-100">
@@ -32,26 +56,7 @@ const ProductDetails = (props) => {
                           <img src="images/0ea7b3bf-image-2.jpg" alt="re3" />
                         </figure>
                       </div>
-                      <div className="item">
-                        <figure className="mian-ppic">
-                          <img src="images/0ea7b3bf-image-2.jpg" alt="re3" />
-                        </figure>
-                      </div>
-                      <div className="item">
-                        <figure className="mian-ppic">
-                          <img src="images/0ea7b3bf-image-2.jpg" alt="re3" />
-                        </figure>
-                      </div>
-                      <div className="item">
-                        <figure className="mian-ppic">
-                          <img src="images/0ea7b3bf-image-2.jpg" alt="re3" />
-                        </figure>
-                      </div>
-
-
-
                     </div>
-
                     <div id="sync2" className="owl-carousel owl-theme">
                       <div className="item">
                         <div className="thum-pic-slide">
@@ -60,33 +65,10 @@ const ProductDetails = (props) => {
                           </figure>
                         </div>
                       </div>
-                      <div className="item">
-                        <div className="thum-pic-slide">
-                          <figure>
-                            <img src="images/0ea7b3bf-image-2.jpg" alt="re3" />
-                          </figure>
-                        </div>
-                      </div>
-                      <div className="item">
-                        <div className="thum-pic-slide">
-                          <figure>
-                            <img src="images/0ea7b3bf-image-2.jpg" alt="re3" />
-                          </figure>
-                        </div>
-                      </div>
-                      <div className="item">
-                        <div className="thum-pic-slide">
-                          <figure>
-                            <img src="images/0ea7b3bf-image-2.jpg" alt="re3" />
-                          </figure>
-                        </div>
-                      </div>
-
-
-
                     </div>
                   </div>
                 </div>
+
                 <div className="col-lg-6">
                   <div className="comon-details-part">
                     <h5 className="tags-ts"> Comic </h5>
@@ -431,6 +413,8 @@ const ProductDetails = (props) => {
 
       </main>
     </>
+  )}
+  </>
   )
 }
 

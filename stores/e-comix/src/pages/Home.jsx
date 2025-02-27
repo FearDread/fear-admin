@@ -44,7 +44,6 @@ const Home = () => {
             </figure>
           </div>
           <div className="container">
-
             <div className="col-lg-8 ms-auto d-block">
               <h2 className="text-center text-lg-start text-white page-haeding mt-4" data-aos="fade-up">  Shop the collection  </h2>
               <div className="row row-cols-1 row-cols-sm-2 gy-5 g-lg-5 mt-0">
@@ -57,7 +56,7 @@ const Home = () => {
               })}
 
                 <div className="col">
-                  <a href="index.html#" className="btn comon-button mx-auto mt-5 d-table" data-aos="fade-up">  <span> <i className="fas fa-arrow-right"></i> View All Products </span> </a>
+                  <a href="/shop" className="btn comon-button mx-auto mt-5 d-table" data-aos="fade-up">  <span> <i className="fas fa-arrow-right"></i> View All Products </span> </a>
                 </div>
               </div>
             </div>
@@ -98,7 +97,7 @@ const Home = () => {
 
                       <div className="col">
 
-                        <a href="index.html#" className="btn comon-button mx-auto mt-5 d-table" data-aos="fade-up">  <span> <i className="fas fa-arrow-right"></i> See More Hero </span> </a>
+                        <a href="/shop" className="btn comon-button mx-auto mt-5 d-table" data-aos="fade-up">  <span> <i className="fas fa-arrow-right"></i> See More Hero </span> </a>
                       </div>
 
                     </div>

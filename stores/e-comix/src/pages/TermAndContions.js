@@ -6,15 +6,20 @@ import Container from "../components/Common/Container";
 const TermAndContions = () => {
   return (
     <>
-      <Meta title={"Term And Conditions"} />
-      <BreadCrumb title="Term And Conditions" />
-      <Container className="policy-wrapper py-5 home-wrapper-2">
+    <BannerSub />
+      <main className="float-start w-100 total-body home-body mt-0">
+      <section className="category float-start w-100 position-relative">
         <div className="row">
           <div className="col-12">
-            <div className="policy-container"></div>
+            <div className="policy-container">
+
+
+              
+            </div>
           </div>
         </div>
-      </Container>
+      </section>
+    </main>
     </>
   );
 };
