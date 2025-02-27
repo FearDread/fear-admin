@@ -33,7 +33,7 @@ module.exports = FEAR = (( app ) => {
   this.cloud = cloud;
   this.origins = this.env.ALLOWED_ORIGINS.split(',').map(item => item.trim());
 
-  this.delegate = {
+  this.cconfig = {
     origin: (origin, callback) => {
       if (!origin || this.origins.indexOf(origin) !== -1) { 
         callback(null, true)
@@ -43,34 +43,32 @@ module.exports = FEAR = (( app ) => {
     },
     credentials: true
   }
-  this.load = ( app ) => {
+  this.loadRoutes = () => {
     const dir = "routes";
     const modPath = path.join( __dirname, dir );
   
     require('fs').readdirSync(modPath).forEach(( file ) => {
       const name = file.replace(/\.js$/, '');
       const module = require(`./${dir}/${file}`);
-      
+  
       this.log.info("Route added :: /fear/api/" + name);
-      app.use('/fear/api/' + name, module);
+      this.app.use('/fear/api/' + name, module);
     });
+  };
   
-    return app;
-  }
+  this.logo = this.env.FEAR_LOGO;
   
-  this.logo = " ________  ________   ______   _______        \r\n|        \\|        \\ \/      \\ |       \\       \r\n| $$$$$$$$| $$$$$$$$|  $$$$$$\\| $$$$$$$\\      \r\n| $$__    | $$__    | $$__| $$| $$__| $$      \r\n| $$  \\   | $$  \\   | $$    $$| $$    $$      \r\n| $$$$$   | $$$$$   | $$$$$$$$| $$$$$$$\\      \r\n| $$      | $$_____ | $$  | $$| $$  | $$      \r\n| $$      | $$     \\| $$  | $$| $$  | $$      \r\n \\$$       \\$$$$$$$$ \\$$   \\$$ \\$$   \\$$      \r\n                                          ";
-
   this.app.use(morgan);
   this.app.use(express.json());
   this.app.use(bodyParser.json());
   this.app.use(bodyParser.urlencoded({ extended: true }));
   this.app.use(passport.initialize());
 
-  this.app.use(cors(this.delegate));
+  this.app.use(cors(this.cconfig));
   this.app.options("*", cors());
 
   // Load Routes
-  this.app = this.load(this.app);
+  this.loadRoutes();
   
   this.app.use((req, res, next) => {
     this.log.info("FEAR API REQ :: " + req.url);
