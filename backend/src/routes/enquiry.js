@@ -12,3 +12,6 @@ router.get("/", getallEnquiry);
 */
 
 module.exports = router;
+module.exports = ( app ) => {
+    
+}
