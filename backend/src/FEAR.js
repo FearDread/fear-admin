@@ -31,7 +31,7 @@ module.exports = FEAR = (( app ) => {
   this.log = logger;
   this.env = _config;
   this.cloud = cloud;
-  this.origins = this.env.ALLOWED_ORIGINS.split(',').map(item => item.trim());
+  this.origins = _config.ALLOWED_ORIGINS.split(',').map(item => item.trim());
 
   this.cconfig = {
     origin: (origin, callback) => {
@@ -66,17 +66,18 @@ module.exports = FEAR = (( app ) => {
 
   this.app.use(cors(this.cconfig));
   this.app.options("*", cors());
-
-  // Load Routes
-  this.loadRoutes();
   
   this.app.use((req, res, next) => {
     this.log.info("FEAR API REQ :: " + req.url);
     next();
   });
-;
+    
+  // Load Routes
+
+  this.loadRoutes();
+
   this.app.use(express.static(path.join(__dirname1, "/dashboard/build")));
-  this.app.get("*", (req, res) =>
+  this.app.get("*", cors(this.cconfig), (req, res) =>
     res.sendFile(path.resolve(__dirname1, "dashboard", "build", "index.html"))
   );
 
