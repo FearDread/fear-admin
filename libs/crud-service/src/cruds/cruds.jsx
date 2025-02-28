@@ -2,17 +2,25 @@ import API from "../api/instance.js";
 import * as Types from "./types.js";
 
 const cruds = {
+  storage: {
+    cache: {},
+    ttl: null,
 
-  getCurrentState: () => async (dispatch) => {
-    dispatch({ type: Types.CURRENT_ITEM });
+  },
+  setCache: (entity, data) => {
+    if (this.storage.cache[entity] === undefined) {
+      this.storage.cache[entity] = data;
+    }
+    console.log("Cached obj :: ", this.storage);
+    return true;
   },
 
-  resetCurrentState: () => async (dispatch) => {
-    dispatch({ type: Types.RESET_STATE });
+  checkCache: (entity) => {
+    return (this.storage.cache[entity]) ? true : false;
   },
 
-  resetCurrentAction: (actionType) => async (dispatch) => {
-    dispatch({ type: Types.RESET_ACTION, keyState: actionType, payload: null });
+  getCache: (entity) => {
+    return (this.storage.cache[entity]) ? this.storage.cache[entity] : null;
   },
 
   setCurrentItem: (data) => async (dispatch) => {
@@ -24,29 +32,44 @@ const cruds = {
   },
 
   all: (entity) => async (dispatch) => {
-    if (entity === undefined) {
-      console.log("Error :: Missing entity");
-      return;
-    }
-    dispatch({ type: Types.REQUEST_LOADING, keyState: entity, payload: null });
+    const _this = this;
 
-    await API.get(entity + '/all')
-      .then((response) => { dispatch({ type: Types.REQUEST_SUCCESS, payload: response.data.result, keyState: entity }); })
-      .catch((error) => { dispatch({ type: Types.REQUEST_FAILED, keyState: entity, payload: error }); })
+    dispatch({ type: Types.REQUEST_LOADING, keyState: entity, payload: null });
+    
+    if (this.checkCache(entity)) {
+    
+      dispatch({ type: Types.REQUEST_SUCCESS, keyState: entity, payload: this.getCache(entity)})
+    
+    } else {
+      await API.get(entity + '/all', {
+        id: "cruds-cache",
+        cache: {
+          ttl: 1000 * 60
+        }
+      })
+        .then((response) => { 
+            _this.setCache(entity, response.data.result);
+            dispatch({ type: Types.REQUEST_SUCCESS, payload: response.data.result, keyState: entity }); })
+        .catch((error) => { dispatch({ type: Types.REQUEST_FAILED, keyState: entity, payload: error }); })
+    }
+
+
   },
 
   list: ( entity, _page = 1, _items = 10) => async (dispatch) => {
-    if (entity === undefined) {
-      console.log("Error :: Missing entity");
-      return;
-    }
+    const _this = this;
     dispatch({ type: Types.REQUEST_LOADING, keyState: entity, payload: null });
 
     let page = _page ? "page=" + _page : "";
     let items = _items ? "&items=" + _items : "";
     let query = `?${page}${items}`;
 
-    await API.get(entity + query)
+    await API.get(entity + query, {
+      id: "list-cache",
+      cache: {
+        ttl: 1000 * 60
+      }
+    })
       .then((response) => {
         if ( response.data.success === true ) {
           const results = { result: response.data.result, pagination: response.data.pagination}; 
@@ -87,7 +110,12 @@ const cruds = {
   read: (entity, _id) => async (dispatch) => {
     dispatch({ type: Types.REQUEST_LOADING, keyState: "read", payload: null });
 
-    await API.get(entity + '/' + _id)
+    await API.get(entity + '/' + _id, {
+      id: "read-cruds",
+      cruds: {
+        ttl: 1000 * 60
+      }
+    })
       .then((response) => { 
         if ( response.data.success ) {
           dispatch({ type: Types.REQUEST_SUCCESS, keyState: entity, payload: response.data.result });
@@ -132,21 +160,15 @@ const cruds = {
         link += `keyword=${keyword}&page=${currentPage}&price[gte]=${price[0]}&price[lte]=${price[1]}&ratings[gte]=${ratings}`;
       }
     
-      await API.get(link)
+      await API.get(link, {
+        id: 'search-cruds',
+        cache: {
+          ttl: 1000 * 60
+        }
+      })
         .then((response) => { dispatch({ type: Types.REQUEST_SUCCESS, keyState: "search", payload: response.data.result });})
         .catch((error) => { dispatch({ type: Types.REQUEST_FAILED, keyState: "search", payload: error }); });
     }
 };
-
-cruds.endpoint = (url, method, options = {}) => async (dispatch) => {
-  let link = url + '?';
-
-  dispatch({type: Types.REQUEST_LOADING, keyState: "custom"})
-
-  await API[method](url, options)
-    .then((response) => {dispatch({ type: Types.REQUEST_SUCCESS, keyState: "custom", payload: response.data.result });})
-    .catch((error) => { dispatch({ type: Types.REQUEST_FAILED, keyState: "custom", payload: error }); });
-
-}
 
 export default cruds;

@@ -1,9 +1,9 @@
-// axios.js
-import https from "https";
 import axios from "axios";
 import qs from "qs";
-import { setupCache } from 'axios-cache-adapter';
+import { setupCache } from "axios-cache-interceptor/dev";
 import StorePersist from "../store/StorePersist.jsx";
+
+
 
 const API_BASE_URL = (process.env.NODE_ENV === "production")
                  ? "http://fear.master.com:4000/fear/api/" 
@@ -12,18 +12,14 @@ const API_BASE_URL = (process.env.NODE_ENV === "production")
 const ACCESS_TOKEN_NAME = (process.env.JWT_TOKEN) 
                 ? process.env.JWT_TOKEN 
                 : "x-token";
-
-const cache = setupCache({
-    maxAge: 15 * 60 * 1000
-})
+                                                          
 
 const instance = axios.create({
     baseURL: `${API_BASE_URL}`,
-    adapter: cache.adapter,
     paramsSerializer: (params) => {
         return qs.stringify(params, { indices: false });
     },
-    httpsAgent: new https.Agent({ rejectUnauthorized: false })
+    //httpsAgent: new https.Agent({ rejectUnauthorized: false })
 });
 
 instance.interceptors.request.use(
@@ -48,8 +44,9 @@ instance.interceptors.response.use(
         console.log("API RES :: ", response);
         const messages = response.data.message;
 
-        if (response.status === 200 || 203) return response;
-        
+        if (response.status === 200 || 203) { 
+            return response;
+        }
         if (messages) return Promise.reject({ messages: [messages] });
         
         return Promise.reject({ messages: ["got errors"] });
@@ -69,6 +66,19 @@ instance.interceptors.response.use(
     }
 );
 
-export const API = instance;
+
+export const API = setupCache(instance, {
+    ttl: 1000 * 60 * 15,
+    interpretHeader: false,
+    methods: ['get'],
+    cachePredicate: {
+      statusCheck: (status) => status >= 200 && status < 400,
+    },
+    update: {},
+    etag: false,
+    modifiedSince: false,
+    staleIfError: false,
+    debug: console.log
+})
 
 export default API;
