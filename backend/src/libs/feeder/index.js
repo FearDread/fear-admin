@@ -1,17 +1,10 @@
 const path = require('path');
 const { Seeder } = require('mongo-seeding');
 
-const Feeder = async () => {
-    const config = {
-        database: {
-            name: process.env.DB_NAME ? process.env.DB_NAME : null,
-            uri: props.uri ? props.uri : ""
-         },
-        dropDatabase: props.dropDatabase ? true : false
-    };
+module.exports = {
+        load: (env) => {
+            if ( !env ) env = config;
 
-    return {
-        load: () => {
             const dir = "models";
             const modPath = path.join(__dirname, dir);
 
@@ -32,8 +25,14 @@ const Feeder = async () => {
                 }
             );
         },
-        seed: async (config) => {
-            const seeder = new Seeder(config);
+        seed: async (env) => {
+            const seeder = new Seeder({
+                database: {
+                    name: env.DB_NAME,
+                    uri: env.DB_LINK
+                 },
+                dropDatabase: false
+            });
             const collections = seeder.readCollectionsFromPath(path.resolve(dir), options);
             
             seeder.import(collections)
@@ -43,7 +42,4 @@ const Feeder = async () => {
                 }
             );
         }
-    }
 }
-
-module.exports = Feeder;
