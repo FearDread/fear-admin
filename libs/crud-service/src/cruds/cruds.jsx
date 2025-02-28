@@ -1,28 +1,11 @@
 import API from "../api/instance.js";
 import * as Types from "./types.js";
 
+const loading = Types.REQUEST_LOADING;
+const success = Types.REQUEST_SUCCESS;
+const failed = Types.REQUEST_FAILED;
+
 const cruds = {
-  storage: {
-    cache: {},
-    ttl: null,
-
-  },
-  setCache: (entity, data) => {
-    if (this.storage.cache[entity] === undefined) {
-      this.storage.cache[entity] = data;
-    }
-    console.log("Cached obj :: ", this.storage);
-    return true;
-  },
-
-  checkCache: (entity) => {
-    return (this.storage.cache[entity]) ? true : false;
-  },
-
-  getCache: (entity) => {
-    return (this.storage.cache[entity]) ? this.storage.cache[entity] : null;
-  },
-
   setCurrentItem: (data) => async (dispatch) => {
     dispatch({ type: Types.CURRENT_ITEM, payload: { ...data } });
   },
@@ -32,13 +15,12 @@ const cruds = {
   },
 
   all: (entity) => async (dispatch) => {
-    const _this = this;
 
-    dispatch({ type: Types.REQUEST_LOADING, keyState: entity, payload: null });
+    dispatch({ type: loading, keyState: entity, payload: null });
     
-    if (this.checkCache(entity)) {
+    if (checkCache(entity)) {
     
-      dispatch({ type: Types.REQUEST_SUCCESS, keyState: entity, payload: this.getCache(entity)})
+      dispatch({ type: success, keyState: entity, payload: getCache(entity)})
     
     } else {
       await API.get(entity + '/all', {
@@ -48,16 +30,15 @@ const cruds = {
         }
       })
         .then((response) => { 
-            _this.setCache(entity, response.data.result);
-            dispatch({ type: Types.REQUEST_SUCCESS, payload: response.data.result, keyState: entity }); })
-        .catch((error) => { dispatch({ type: Types.REQUEST_FAILED, keyState: entity, payload: error }); })
+            //setCache(entity, response.data.result);
+            dispatch({ type: success, keyState: entity, payload: response.data.result }); })
+        .catch((error) => { dispatch({ type: failed, keyState: entity, payload: error }); })
     }
 
 
   },
 
   list: ( entity, _page = 1, _items = 10) => async (dispatch) => {
-    const _this = this;
     dispatch({ type: Types.REQUEST_LOADING, keyState: entity, payload: null });
 
     let page = _page ? "page=" + _page : "";
