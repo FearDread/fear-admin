@@ -141,7 +141,6 @@ const ProductDetails = (props) => {
 
                   </div>
                 </div>
-
               </div>
 
               <div className="tabs-details-gn mt-5 mt-lg-0">
