@@ -20,7 +20,6 @@ export const create = (data) => async (dispatch) => {
     await API.post("category/new", data,
       {headers: { "Content-Type": "multipart/form-data" }})
       .then((response) => {
-        console.log("CATEGORY response :: ", response);
         dispatch({ type: Types.NEW_CATEGORY_SUCCESS, payload: response.data.result });
       })
       .catch((error) => {

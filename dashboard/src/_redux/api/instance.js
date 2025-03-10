@@ -3,7 +3,7 @@ import axios from "axios";
 import qs from "qs";
 import storePersist from "../storePersist";
 
-const API_URL = "http://localhost:4000/fear/api";
+const API_URL = "http://fear.master.com:4000/fear/api";
 const API_BASE_URL = (process.env.NODE_ENV === "production")
                  ? "http://fear.master.com:4000/fear/api/" 
                  : "http://localhost:4000/fear/api/";
@@ -13,6 +13,7 @@ const ACCESS_TOKEN_NAME = (process.env.JWT_TOKEN)
                 : "x-token";
 
 const instance = axios.create({
+    timeout: 8000,
     baseURL: `${API_URL}`,
     paramsSerializer: (params) => {
         return qs.stringify(params, { indices: false });
