@@ -13,6 +13,7 @@ const ACCESS_TOKEN_NAME = (process.env.JWT_TOKEN)
                 : "x-token";
 
 const instance = axios.create({
+    timeout: 8000,
     baseURL: `${API_URL}`,
     paramsSerializer: (params) => {
         return qs.stringify(params, { indices: false });

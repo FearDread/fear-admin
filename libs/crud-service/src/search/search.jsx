@@ -8,11 +8,13 @@ const search = {
       payload: list,
     });
   },
+
   resetState: () => async (dispatch) => {
     dispatch({
       type: actionTypes.RESET_STATE,
     });
   },
+  
   resetRef: (keyRef) => async (dispatch) => {
     dispatch({
       type: actionTypes.RESET_REF,
