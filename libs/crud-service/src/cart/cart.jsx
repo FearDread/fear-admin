@@ -1,6 +1,7 @@
 import API from "../api/instance";
 import * as Types from "./types.js";
 import StorePersist from "../store/StorePersist.jsx";
+import cache from "../cache/cache.jsx";
 
 const cart = {
     create: (_data) => async (dispatch, getState) => {

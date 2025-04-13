@@ -1,9 +1,11 @@
 import API from "../api/instance.js";
 import * as Types from "./types.js";
+import cache from "../cache/cache.jsx";
 
 const loading = Types.REQUEST_LOADING;
 const success = Types.REQUEST_SUCCESS;
 const failed = Types.REQUEST_FAILED;
+const store = cache({local});
 
 const cruds = {
   setCurrentItem: (data) => async (dispatch) => {
@@ -17,12 +19,13 @@ const cruds = {
   all: (entity) => async (dispatch) => {
 
     dispatch({ type: loading, keyState: entity, payload: null });
+
+    if (store.get(entity)) {
     
-    if (checkCache(entity)) {
-    
-      dispatch({ type: success, keyState: entity, payload: getCache(entity)})
+      dispatch({ type: success, keyState: entity, payload: store.get(entity)})
     
     } else {
+
       await API.get(entity + '/all', {
         id: "cruds-cache",
         cache: {
@@ -30,12 +33,10 @@ const cruds = {
         }
       })
         .then((response) => { 
-            //setCache(entity, response.data.result);
+            cache.local.set(entity, response.data.result);
             dispatch({ type: success, keyState: entity, payload: response.data.result }); })
         .catch((error) => { dispatch({ type: failed, keyState: entity, payload: error }); })
     }
-
-
   },
 
   list: ( entity, _page = 1, _items = 10) => async (dispatch) => {

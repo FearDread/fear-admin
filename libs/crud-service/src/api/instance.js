@@ -1,9 +1,6 @@
 import axios from "axios";
 import qs from "qs";
-import { setupCache } from "axios-cache-interceptor/dev";
-import StorePersist from "../store/StorePersist.jsx";
-
-
+import cache from "../cache/cache.jsx";
 
 const API_BASE_URL = (process.env.NODE_ENV === "production")
                  ? "http://fear.master.com:4000/fear/api/" 
@@ -29,7 +26,7 @@ const instance = axios.create({
 
 instance.interceptors.request.use(
     (config) => {
-        const isAuth = StorePersist.get("auth") ? StorePersist.get("auth") : null;
+        const isAuth = cache.local.get("auth") ? cache.local.get("auth") : null;
         let token = isAuth !== null ? isAuth.token : "";
     
         config.headers = {
@@ -58,7 +55,7 @@ instance.interceptors.response.use(
         console.log("API ERROR :: ", error);
         if (error.response) {
             if (error.response.status === 401) {
-                StorePersist.remove("auth");
+                cache.local.remove("auth");
                 return Promise.reject(error.response);
             }
             if (error.response.status === 500) {

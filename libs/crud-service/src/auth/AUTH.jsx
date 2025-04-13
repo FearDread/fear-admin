@@ -1,6 +1,6 @@
 import API from "../api/instance";
 import * as Types from "./types.js";
-import StorePersist from "../store/StorePersist.jsx";
+import cache from "../cache/cache.jsx";
 
 
 const AUTH = {
@@ -11,7 +11,7 @@ const AUTH = {
       
     await API.post("auth/login", { email, password }, config )
       .then((response) => {
-        StorePersist.set("auth", { user: response.data.user, 
+        cache.local.set("auth", { user: response.data.user, 
             token: response.data.token, 
             isLoggedIn: true 
         });
@@ -20,7 +20,7 @@ const AUTH = {
   },
 
   logout: async (dispatch) => {
-    StorePersist.remove("auth");
+    cache.local.remove("auth");
 
     await API.get(`auth/logout`)
       .then((response) => { dispatch({ type: Types.LOGOUT_SUCCESS }); })
@@ -33,7 +33,7 @@ const AUTH = {
 
     await API.post("auth/register", data, config )
       .then((response) => {
-        StorePersist.set("auth", { user: response.data.user, 
+        cache.local.set("auth", { user: response.data.user, 
           token: response.data.token, 
           isLoggedIn: true 
         });
