@@ -7,8 +7,8 @@ export { default as cart } from "./cart/cart.jsx";
 
 export { default as store } from "./store/store.jsx";
 
-export { default as StorePersist } from "./store/StorePersist.jsx";
+export { default as mailer } from "./mail/mail.jsx";
+
+export { default as cache } from "./cache/cache.jsx";
 
 export { default as RootReducer } from "./store/reducer.jsx";
-
-export { default as mailer } from "./mail/mail.jsx";

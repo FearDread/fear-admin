@@ -2,7 +2,7 @@ import { createStore, applyMiddleware, compose } from "redux";
 import { thunk } from "redux-thunk";
 import { createLogger } from "redux-logger";
 import rootReducer from "./reducer.jsx";
-import StorePersist from "./StorePersist.jsx";
+import cache from "../cache/cache.jsx";
 
 const logger = createLogger();
 
@@ -17,8 +17,8 @@ if (process.env.NODE_ENV === "development") {
 }
 
 const initialState = { 
-  auth:StorePersist.get("auth") ? StorePersist.get("auth") : {},
-  cart:StorePersist.get("cart") ? StorePersist.get("cart") : {} 
+  auth: cache.local.get("auth") ? cache.local.get("auth") : {},
+  cart: cache.local.get("cart") ? cache.local.get("cart") : {} 
 };
 
 const store = createStore(rootReducer, initialState, configStore);
