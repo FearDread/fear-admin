@@ -1,13 +1,13 @@
 const mongoose = require("mongoose");
 
-const calendarSchema = new mongoose.Schema({
+const eventSchema = new mongoose.Schema({
     title: { type: String, required: true, unique: true, index: true },
-    comment: { type: String, required: false },
-    date: { type: Date, required: true, default: mongoose.now() },
-    author: { type: Object, required: true, default:
-        { userId: '', username: ''}},
+    start: { type: Date, required: true, default: mongoose.now() },
+    end:  { type: Date, required: false, default: mongoose.now() },
+    allDay: { type: Boolean, default: false },
+    color: { type: String, required: false, default: 'azure' }
   }, 
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Calendar", calendarSchema);
+module.exports = mongoose.model("Events", eventSchema);
