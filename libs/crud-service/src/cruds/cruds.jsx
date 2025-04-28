@@ -5,7 +5,7 @@ import cache from "../cache/cache.jsx";
 const loading = Types.REQUEST_LOADING;
 const success = Types.REQUEST_SUCCESS;
 const failed = Types.REQUEST_FAILED;
-const store = cache({local});
+const storage = cache({type:'local'});
 
 const cruds = {
   setCurrentItem: (data) => async (dispatch) => {
@@ -20,9 +20,9 @@ const cruds = {
 
     dispatch({ type: loading, keyState: entity, payload: null });
 
-    if (store.get(entity)) {
+    if (storage.has(entity)) {
     
-      dispatch({ type: success, keyState: entity, payload: store.get(entity)})
+      dispatch({ type: success, keyState: entity, payload: storage.get(entity)})
     
     } else {
 
@@ -33,8 +33,9 @@ const cruds = {
         }
       })
         .then((response) => { 
-            cache.local.set(entity, response.data.result);
-            dispatch({ type: success, keyState: entity, payload: response.data.result }); })
+            storage.set(entity, response.data.result);
+            dispatch({ type: success, keyState: entity, payload: response.data.result }); 
+        })
         .catch((error) => { dispatch({ type: failed, keyState: entity, payload: error }); })
     }
   },

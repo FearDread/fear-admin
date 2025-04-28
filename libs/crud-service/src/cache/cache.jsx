@@ -1,15 +1,23 @@
 
 const cache = (options = {}) => {
   
-  const type = options.storage
+  const type = options.type
   const { ttl, key, store, cmd, callback  } = options;
   
-  this.data = {};
+  if ( !window[Storage[type]] ) {
+    throw new Error("No storage found for type : " + type);
+  }
 
   return {
     [type] : {
       set: ( key, state ) => {
         window[Storage[type]].setItem(key, JSON.stringify(state))
+      },
+      has: (key) => {
+        if ( window[Storage[type]].getItem(key) ) {
+          return true;
+        }
+        return false;
       },
       get: (key) => {
         const result = window[Storage[type]].getItem(key);
@@ -17,7 +25,7 @@ const cache = (options = {}) => {
       },
       remove: (key) => {
         window[Storage[type]].removeItem(key);
-      ,
+      },
       getAll: () => {
         return window[Storage[type]];
       },

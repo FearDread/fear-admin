@@ -4,6 +4,7 @@ import { createLogger } from "redux-logger";
 import rootReducer from "./reducer.jsx";
 import cache from "../cache/cache.jsx";
 
+const storage = cache({type: 'local'})
 const logger = createLogger();
 
 let middleware = [thunk];
@@ -17,8 +18,8 @@ if (process.env.NODE_ENV === "development") {
 }
 
 const initialState = { 
-  auth: cache.local.get("auth") ? cache.local.get("auth") : {},
-  cart: cache.local.get("cart") ? cache.local.get("cart") : {} 
+  auth: storage.get("auth") ? storage.get("auth") : {},
+  cart: storage.get("cart") ? storage.get("cart") : {} 
 };
 
 const store = createStore(rootReducer, initialState, configStore);

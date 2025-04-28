@@ -3,6 +3,7 @@ import * as Types from "./types.js";
 import StorePersist from "../store/StorePersist.jsx";
 import cache from "../cache/cache.jsx";
 
+const storage = cache({type:'local'});
 const cart = {
     create: (_data) => async (dispatch, getState) => {
         await API.post("cart/product/" + _data.productId, _data)
