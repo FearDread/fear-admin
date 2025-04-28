@@ -2,7 +2,7 @@ import API from "../api/instance";
 import * as Types from "./types.js";
 import cache from "../cache/cache.jsx";
 
-
+const storage = cache({type:'session'});
 const AUTH = {
 
   login: (email, password) => async (dispatch) => {
@@ -11,7 +11,7 @@ const AUTH = {
       
     await API.post("auth/login", { email, password }, config )
       .then((response) => {
-        cache.local.set("auth", { user: response.data.user, 
+        storage.set("auth", { user: response.data.user, 
             token: response.data.token, 
             isLoggedIn: true 
         });
@@ -33,7 +33,7 @@ const AUTH = {
 
     await API.post("auth/register", data, config )
       .then((response) => {
-        cache.local.set("auth", { user: response.data.user, 
+        storage.set("auth", { user: response.data.user, 
           token: response.data.token, 
           isLoggedIn: true 
         });
