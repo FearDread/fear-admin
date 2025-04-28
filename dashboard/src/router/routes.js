@@ -1,4 +1,3 @@
-import Calendar from "views/pages/Calendar.js";
 import Charts from "views/pages/Charts.js";
 import Notifications from "views/pages/Notification.js";
 import SweetAlert from "views/components/SweetAlert.js";
@@ -11,6 +10,7 @@ import Dashboard from "views/Dashboard.jsx";
 import Profile from "_dashboard/Profile.jsx";
 import UserList from "_dashboard/UserList.jsx";
 import UserNew from "_dashboard/UserList.jsx";
+import Calendar from "_dashboard/Calendar.jsx"
 import ProductList from "_dashboard/ProductList.jsx";
 import NewProduct from "_dashboard/ProductNew.jsx";
 import BrandsList from "_dashboard/BrandsList.jsx";
@@ -68,6 +68,13 @@ const routes = [
         name: "+ Task",
         mini: "T",
         component: TaskNew,
+        layout: "/admin"
+      },
+      {
+        path: "/events",
+        name: "Calendar",
+        mini: "C",
+        component: Calendar,
         layout: "/admin"
       }
     ]
@@ -222,14 +229,7 @@ const routes = [
         mini: "T",
         component: Charts,
         layout: "/admin"
-      },
-      {
-        path: "/example-calendar",
-        name: "Calendar",
-        mini: "T",
-        component: Calendar,
-        layout: "/admin"
-      },
+      }
     ]
   },
 ]

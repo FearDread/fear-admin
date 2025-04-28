@@ -11,6 +11,7 @@ import categoriesReducer from "./category/reducer";
 import reviewReducer from "./review/reducer";
 import blogReducer from "./blog/reducer";
 import taskReducer from "./task/reducer";
+import eventReducer from "./event/reducer";
 //import storePersist from "./storePersist";
 
 const appReducer = combineReducers({
@@ -19,6 +20,7 @@ const appReducer = combineReducers({
   cart: cartReducer,
   blog: blogReducer,
   brand: brandReducer,
+  events: eventReducer,
   task: taskReducer,
   review: reviewReducer,
   product: productsReducer,
