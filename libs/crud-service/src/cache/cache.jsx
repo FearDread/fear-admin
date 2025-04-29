@@ -1,39 +1,66 @@
 
-const cache = (options = {}) => {
-  
-  const type = options.type
-  const { ttl, key, store, cmd, callback  } = options;
-  
-  if ( !window[Storage[type]] ) {
-    throw new Error("No storage found for type : " + type);
-  }
 
+// cache
+const cache = (options = {}) => {
+  var engine = options.type == 'local' ? 'localStorage' : 'sessionStorage';
+ 
   return {
-    [type] : {
-      set: ( key, state ) => {
-        window[Storage[type]].setItem(key, JSON.stringify(state))
-      },
-      has: (key) => {
-        if ( window[Storage[type]].getItem(key) ) {
-          return true;
-        }
+    check: () => {
+      if (!window[engine]) {
         return false;
-      },
-      get: (key) => {
-        const result = window[Storage[type]].getItem(key);
-        return JSON.parse(result);
-      },
-      remove: (key) => {
-        window[Storage[type]].removeItem(key);
-      },
-      getAll: () => {
-        return window[Storage[type]];
-      },
-      clear: () => {
-        window[Storage[type]].clear();
-      },
+      }
+      return true;
+    },
+    set: (key, value) => {
+      if (!key) throw Error('Error:> Invalid key');
+
+      try {
+        window[engine].setItem(key, JSON.stringify(value));
+
+      } catch (error) {
+        console.error(`Error setting item ${key}:`, error);
+        return false;
+      }
+      return true;
+    },
+    get: (key) => {
+      try {
+        const data = window[engine].getItem(key);
+        return data ? JSON.parse(data) : null;
+
+      } catch (error) {
+        console.error(`Error getting item ${key}:`, error);
+        return null;
+      }
+    },
+    remove: function (key) {
+      window[engine].removeItem(key);
+    },
+    clear: () => {
+      window[engine].clear();
+    },
+    keys: () => {
+      return Object.keys(window[engine]);
+    },
+    has: (key) => {
+      return window[engine].getItem(key) !== null;
+    },
+    _extend: () => {
+      const destination = typeof arguments[0] === 'object' ? arguments[0] : {};
+
+      for (var i = 1; i < arguments.length; i++) {
+        if (arguments[i] && typeof arguments[i] === 'object') {
+          for (var property in arguments[i])
+            destination[property] = arguments[i][property];
+        }
+      }
+
+      return destination;
     }
-  }
+  };
 }
+
+cache.local = new cache({type: 'local'})
+cache.session = new cache({type: 'session'})
 
 export default cache;
