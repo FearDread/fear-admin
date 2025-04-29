@@ -1,11 +1,9 @@
 import React, {useState , useEffect } from "react";
-
 import { Link, useHistory } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { getAllOrders, clearErrors  , deleteOrder} from "_actions/orderAction";
 import { useAlert } from "react-alert";
 import { DELETE_ORDER_RESET } from "_constants/orderConstant";
-
 
 
 function OrderList() {

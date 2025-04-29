@@ -2,10 +2,8 @@ import API from "../api/instance.js";
 import * as Types from "./types.js";
 import cache from "../cache/cache.jsx";
 
-const loading = Types.REQUEST_LOADING;
-const success = Types.REQUEST_SUCCESS;
-const failed = Types.REQUEST_FAILED;
-const storage = cache({type:'local'});
+
+const storage = new cache({type: 'local'});
 
 const cruds = {
   setCurrentItem: (data) => async (dispatch) => {
@@ -20,24 +18,12 @@ const cruds = {
 
     dispatch({ type: loading, keyState: entity, payload: null });
 
-    if (storage.has(entity)) {
-    
-      dispatch({ type: success, keyState: entity, payload: storage.get(entity)})
-    
-    } else {
-
-      await API.get(entity + '/all', {
-        id: "cruds-cache",
-        cache: {
-          ttl: 1000 * 60
-        }
-      })
+    await API.get(entity + '/all')
         .then((response) => { 
             storage.set(entity, response.data.result);
             dispatch({ type: success, keyState: entity, payload: response.data.result }); 
         })
         .catch((error) => { dispatch({ type: failed, keyState: entity, payload: error }); })
-    }
   },
 
   list: ( entity, _page = 1, _items = 10) => async (dispatch) => {
@@ -47,12 +33,7 @@ const cruds = {
     let items = _items ? "&items=" + _items : "";
     let query = `?${page}${items}`;
 
-    await API.get(entity + query, {
-      id: "list-cache",
-      cache: {
-        ttl: 1000 * 60
-      }
-    })
+    await API.get(entity + query)
       .then((response) => {
         if ( response.data.success === true ) {
           const results = { result: response.data.result, pagination: response.data.pagination}; 
