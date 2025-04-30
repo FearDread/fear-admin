@@ -1,9 +1,30 @@
-import React, { useEffect } from "react"
-import { useSelector } from "react-redux";
-
+import React, { useEffect, useState } from "react"
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { auth } from "@feardread/crud-service";
 
 const LoginModal = () => {
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+
+    const { isLoggedIn, loginSuccess } = useSelector((state) => state.auth)
+
+    const loginHandler = (e) => {
+        e.preventDefault();
+        const myForm = new FormData();
+
+        myForm.set("email", email);
+        myForm.set("password", password);
+
+        dispatch(auth.login(email, password));
+    }
+    useEffect(() => {
+        if (loginSuccess && isLoggedIn) {
+          navigate("/account");
+        }
+      }, [])
 
     return (
         <>
@@ -24,13 +45,34 @@ const LoginModal = () => {
                                     <div className="login-modal-pn">
                                         <div className="cm-select-login mt-3">
                                             <div className="country-dp">
-                                                <input type="email" name="user" className="form-control" placeholder="Username Or Email" required />
+                                                <input
+                                                    name="email"
+                                                    className="form-control"
+                                                    onChange={(e) => setEmail(e.target.value)}
+                                                    type="email"
+                                                    placeholder="Email address *"
+                                                    required />
+
                                             </div>
                                             <div className="phone-div">
-                                                <input type="password" name="password" className="form-control" placeholder="Password" required />
+                                                <input
+                                                    name="password"
+                                                    className="form-control"
+                                                    onChange={(e) => setPassword(e.target.value)}
+                                                    type="password"
+                                                    placeholder="Password *"
+                                                    required />
+
                                             </div>
                                         </div>
-                                        <button type="submit" name="submit" className="btn continue-bn"> <i className="fas fa-lock"></i> SIGN IN </button>
+                                        <button
+                                            type="submit" 
+                                            name="submit" 
+                                            className="btn continue-bn"
+                                            onClick={loginHandler} >
+                                            <i className="fas fa-lock"></i> 
+                                            SIGN IN 
+                                        </button>
                                     </div>
                                     <p className="text-center  mt-3">
                                         <a data-bs-toggle="modal" className="regster-bn" data-bs-target="#lostpsModal" data-bs-dismiss="modal"> Lost Password ? </a>  </p>
