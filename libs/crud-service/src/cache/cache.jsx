@@ -60,7 +60,7 @@ const cache = (options = {}) => {
   };
 }
 
-cache.local = new cache({type: 'local'})
-cache.session = new cache({type: 'session'})
+cache.local = cache({type: 'local'});
+cache.session = cache({type: 'session'});
 
 export default cache;

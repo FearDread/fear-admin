@@ -11,7 +11,7 @@ const AUTH = {
       
     await API.post("auth/login", { email, password }, config )
       .then((response) => {
-        storage.set("auth", { user: response.data.user, 
+        cache.session.set("auth", { user: response.data.user, 
             token: response.data.token, 
             isLoggedIn: true 
         });
@@ -20,7 +20,7 @@ const AUTH = {
   },
 
   logout: async (dispatch) => {
-    cache.local.remove("auth");
+    cache.session.remove("auth");
 
     await API.get(`auth/logout`)
       .then((response) => { dispatch({ type: Types.LOGOUT_SUCCESS }); })
@@ -33,7 +33,7 @@ const AUTH = {
 
     await API.post("auth/register", data, config )
       .then((response) => {
-        storage.set("auth", { user: response.data.user, 
+        cache.session.set("auth", { user: response.data.user, 
           token: response.data.token, 
           isLoggedIn: true 
         });
