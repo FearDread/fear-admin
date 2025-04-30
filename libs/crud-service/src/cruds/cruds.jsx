@@ -3,7 +3,7 @@ import * as Types from "./types.js";
 import cache from "../cache/cache.jsx";
 
 
-const storage = new cache({type: 'local'});
+const storage = cache({type: 'session'});
 
 const cruds = {
   setCurrentItem: (data) => async (dispatch) => {
