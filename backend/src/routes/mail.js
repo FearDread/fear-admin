@@ -23,6 +23,26 @@ router.post("/project", (req, res) => {
         .catch((error) => res.status(500).json({ success: false, message: error.message }))
 })
 
+exports.add = ( app ) => {
+    app.get('/', (req, res) => {
+        mailer.sendEmail()
+            .then((response) => res.send(response.message))
+            .catch((error) => res.status(500).send(error.message));
+    });
+    
+    app.post('/contact', (req, res) => {
+        mailer.sendContactEmail(req.body)
+            .then((response) => res.json({ success: true, message: response.message }))
+            .catch((error) => res.status(500).json({ success: false, message: error.message }))
+    });
+    
+    app.post("/project", (req, res) => {
+        mailer.sendProjectEmail(req.body)
+            .then((response) => res.json({ success: true, message: response.message }))
+            .catch((error) => res.status(500).json({ success: false, message: error.message }))
+    })
+}
+
 module.exports = router;
 
 /*
