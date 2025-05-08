@@ -3,8 +3,6 @@ import axios from "axios";
 import qs from "qs";
 import storePersist from "../storePersist";
 
-//const API_URL = "http://fear.master.com:4000/fear/api";
-//const API_URL = "http://localhost:4000/fear/api";
 const API_URL = (process.env.NODE_ENV === "production")
                  ? "http://fear.master.com/fear/api/" 
                  : "http://fear.master.com:4000/fear/api/";
