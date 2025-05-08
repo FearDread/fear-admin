@@ -1,4 +1,4 @@
-const User = require('../models/user');
+const User = require('../../models/user');
 const LocalStrategy = require('passport-local').Strategy;
 
 module.exports = (passport) => {
@@ -10,7 +10,7 @@ module.exports = (passport) => {
 
     // deserialized when subsequent requests are made
     passport.deserializeUser((id, done) => {
-        User.findById(id, (err, user) => {
+        User.findById(id).done((rr, user) => {
             done(err, user);
         });
     });
@@ -20,7 +20,7 @@ module.exports = (passport) => {
         passReqToCallback : true 
     }, (req, email, password, done) => {
         process.nextTick(() => {
-            User.findOne({'user.email': email}, (err, user) => {
+            User.findOne({'email': email}, (err, user) => {
                 if (err) return done(err);
 
                 if (!user) return done(null, false, req.flash('error', 'User does not exist.'));
@@ -35,58 +35,30 @@ module.exports = (passport) => {
     passport.use('register', new LocalStrategy({
         usernameField : 'email',
         passReqToCallback : true 
-    }, (req, email, password, done) => {
+    }, (req, email, done) => {
 
-        process.nextTick(function () {
+        process.nextTick(() => {
        
             if (!req.user) {
-                User.findOne({'user.email': email},
-                function (err, user) {
-                    if (err) { 
-                        return done(err);
-                    }
+                User.findOne({'email': email}, (err, user) => {
+                    if (err) return done(err);
 
-                    if (user) {
+                    if (user) return done(null, false, req.flash('signuperror', 'User already exists'));
 
-                        return done(null, false, req.flash('signuperror', 'User already exists'));
+                    const newUser = new User();
 
-                    } else {
+                    newUser.username = req.body.username;
+                    newUser.email = email;
+                    newUser.name = '';
+                    newUser.address = '';
 
-                        var newUser = new User();
-
-                        newUser.user.username = req.body.username;
-                        newUser.user.email = email;
-                        newUser.user.password = newUser.generateHash(password);
-                        newUser.user.name = '';
-                        newUser.user.address = '';
-
-                        newUser.save(function (err) {
-                            if (err) {
-                                throw err;
-                            }
+                    newUser.save((err) => {
+                            if (err) throw err;
 
                             return done(null, newUser);
                         });
-                    }
-                });
-
-            } else {
-                var user = req.user;
-
-                user.user.username = req.body.username;
-                user.user.email = email;
-                user.user.password = user.generateHash(password);
-                user.user.name = '';
-                user.user.address = '';
-
-                user.save(function (err) {
-                    if (err) {
-                        throw err;
-                    }
-
-                    return done(null, user);
-                });
-            }
-        });
-    }));
+                })
+            }}
+        )})
+    );
 };

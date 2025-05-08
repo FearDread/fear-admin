@@ -40,6 +40,7 @@
     "nodemon": "^3.0.3",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
+    "passport-local": "^1.0.0",
     "razorpay": "^2.9.4",
     "react-chartjs-2": "^5.2.0",
     "react-swipe": "^6.0.4",

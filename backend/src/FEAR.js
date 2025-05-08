@@ -17,6 +17,7 @@ module.exports = FEAR = (( app ) => {
   const morgan = require("./libs/logger/morgan");
   const errors = require("./libs/handler/error");
   const cloud = require("./libs/cloud");
+  const pass = require("./libs/passport");
   const db = require("./libs/db"),
         {parsed: _config} = env;
       
@@ -28,11 +29,13 @@ module.exports = FEAR = (( app ) => {
   this.app.use(cookieParser());
 
   this.db = db;
+  this.pass = pass;
   this.log = logger;
   this.env = _config;
   this.cloud = cloud;
   this.origins = _config.ALLOWED_ORIGINS.split(',').map(item => item.trim());
 
+  this.pass(passport);
   this.cconfig = {
     origin: (origin, callback) => {
       if (!origin || this.origins.indexOf(origin) !== -1) { 
@@ -52,7 +55,7 @@ module.exports = FEAR = (( app ) => {
       const module = require(`./${dir}/${file}`);
   
       this.log.info("Route added :: /fear/api/" + name);
-      this.app.use('/fear/api/' + name, module);
+      this.app.use('/fear/api/' + name, cors(this.cconfig), module);
     });
   };
   
@@ -62,8 +65,8 @@ module.exports = FEAR = (( app ) => {
   this.app.use(express.json());
   this.app.use(bodyParser.json());
   this.app.use(bodyParser.urlencoded({ extended: true }));
-  this.app.use(passport.initialize());
 
+  this.app.use(this.pass);
   this.app.use(cors(this.cconfig));
   this.app.options("*", cors());
   
@@ -73,7 +76,6 @@ module.exports = FEAR = (( app ) => {
   });
     
   // Load Routes
-
   this.loadRoutes();
 
   this.app.use(express.static(path.join(__dirname1, "/dashboard/build")));
