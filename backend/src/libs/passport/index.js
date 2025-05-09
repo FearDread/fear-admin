@@ -1,7 +1,8 @@
 const User = require('../../models/user');
+const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 
-module.exports = (passport) => {
+module.exports = () => {
     // Maintaining persistent login sessions
     // serialized  authenticated user to the session
     passport.serializeUser((user, done) => {
@@ -10,7 +11,7 @@ module.exports = (passport) => {
 
     // deserialized when subsequent requests are made
     passport.deserializeUser((id, done) => {
-        User.findById(id).done((rr, user) => {
+        User.findById(id).done((err, user) => {
             done(err, user);
         });
     });
