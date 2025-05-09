@@ -1,7 +1,7 @@
 const path = require("path"),
       express = require("express"),
       compression = require("compression"),
-      passport = require("passport"),
+     // passport = require("passport-local"),
       bodyParser = require("body-parser"),
       cookieParser = require("cookie-parser"),
       fileUpload = require("express-fileupload"),
@@ -17,7 +17,7 @@ module.exports = FEAR = (( app ) => {
   const morgan = require("./libs/logger/morgan");
   const errors = require("./libs/handler/error");
   const cloud = require("./libs/cloud");
-  const pass = require("./libs/passport");
+  const passport = require("./libs/passport");
   const db = require("./libs/db"),
         {parsed: _config} = env;
       
@@ -29,13 +29,11 @@ module.exports = FEAR = (( app ) => {
   this.app.use(cookieParser());
 
   this.db = db;
-  this.pass = pass;
+  this.passport = passport;
   this.log = logger;
   this.env = _config;
   this.cloud = cloud;
   this.origins = _config.ALLOWED_ORIGINS.split(',').map(item => item.trim());
-
-  this.pass(passport);
   this.cconfig = {
     origin: (origin, callback) => {
       if (!origin || this.origins.indexOf(origin) !== -1) { 
@@ -66,7 +64,7 @@ module.exports = FEAR = (( app ) => {
   this.app.use(bodyParser.json());
   this.app.use(bodyParser.urlencoded({ extended: true }));
 
-  this.app.use(this.pass);
+  this.app.use(this.passport);
   this.app.use(cors(this.cconfig));
   this.app.options("*", cors());
   
