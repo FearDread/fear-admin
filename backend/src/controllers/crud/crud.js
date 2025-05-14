@@ -37,7 +37,7 @@ exports.all = tryCatch(async (Model, req, res) => {
  */
 exports.read = tryCatch(async (Model, req, res) => {
   const { id } = req.params;
-  //db.validateId(id);
+
   if (!req.params || !id) throw new Error("No ID");
   const msg = "document with id :: " + req.params.productId;
   await Model.findOne({ _id: id })
@@ -153,46 +153,17 @@ exports.list = tryCatch(async (Model, req, res) => {
  *  @returns {Array} List of Documents
  */
 exports.search = tryCatch(async (Model, req, res) => {
-  console.log('search req = ', req.query);
-  if (req.query  === undefined || req.query === "") {
-    return res.status(202).json(
-      { result: [], success: false, message: "No Doc found by this request" }
-    ).end();
-  }
-  const sorted = "desc";
-  const fields = { $or: [] };
-  const page = req.query.page || 1;
-  const limit = parseInt(req.query.count) || 10;
-  const skip = page * limit - limit;
-
-  for (var prop in req.query) {
-    if (req.query.hasOwnProperty(prop)) {
-      if (req.query[prop] !== 'undefined') {
-        fields.$or.push({ [prop] : req.query[prop] });
-      }
-    }
-  }
-  console.log("fields = ", fields);
-  const countPromise = Model.count();
-  const resultsPromise = Model.find(fields)
-        .sort({ created: sorted })
-        .limit(limit)
-        .populate();
+  const { query } = req.query;
   
-  await Promise.all([resultsPromise, countPromise])
-    .then((result, count) => {
-      const pagination = { page, skip };
+  if (!query) return res.status(400).json({ success: false, error: "Query parameter is required" });
 
-      if (result.length >= 1) {
-        return res.status(200).json(
-          { result, success: true, pagination, message: "Successfully found all documents" }
-        );
-      } else {
-        return res.status(202).json(
-          { result: [], success: false, pagination, message: "No document found by this request" }
-        )
-        .end();
-      }
-    })
-    .catch((error) => {throw new Error(error); });
+  await Model.find({
+    $or: [
+      { title: { $regex: query, $options: "i" } },
+      { description: { $regex: query, $options: "i" } },
+      { category: { $regex: query, $options: "i" } },
+    ],
+  })
+  .then((products) => { res.status(200).json({ success: true, products }); })
+  .catch((error) => { res.status(500).json({ success: false, error: error.message }); });
 });

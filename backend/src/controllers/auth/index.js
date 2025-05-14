@@ -1,6 +1,39 @@
 const User = require("../../models/user");
+const passport = require('../../libs/passport');
 const jwt = require("jsonwebtoken");
 
+exports.passportLogin = async (req, res) => {
+  const { email, password } = req.body;
+  passport.authenticate("login", {
+    failureRedirect: "/user/signin",
+    failureFlash: true,
+  })
+  let cart = await Cart.findOne({ user: req.user._id });
+  // if there is a cart session and user has no cart, save it to the user's cart in db
+  if (req.session.cart && !cart) {
+    await new Cart(req.session.cart)
+      .then((cart) => {
+        cart.user = req.user._id;
+        cart.save(); }
+      )
+      .catch((error) => {
+        console.log(err);
+        req.flash("error", err.message);
+        
+        return res.redirect("/");
+      });
+  }
+  req.session.cart = cart;
+
+  // redirect to old URL before signing in
+  if (req.session.oldUrl) {
+    var oldUrl = req.session.oldUrl;
+    req.session.oldUrl = null;
+    res.redirect(oldUrl);
+  } else {
+    res.redirect("/user/profile");
+  }
+}
 /**
  * GET /fear/api/auth/login
  * @summary Authorize user to reach Admin / Dashboard 
