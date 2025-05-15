@@ -14,11 +14,11 @@ import { cruds, auth, cart } from "@feardread/crud-service";
 const Home = () => {
   const dispatch = useDispatch();
   const { user, isLoggedIn } = useSelector((state) => state?.auth);
-  const featured = useSelector((state) => state?.crud?.product);
+  //const featured = useSelector((state) => state?.crud?.product);
   const blogs = useSelector((state) => state?.crud?.blog);
   const { result, loading } = useSelector((state) => state?.crud?.product);
   const fetchFeatured = () => {
-      dispatch(cruds.all( 'product' ));
+
   }
 
   const fetchBlogs = () => {
@@ -26,9 +26,10 @@ const Home = () => {
   }
 
   useEffect(() => {
-    fetchFeatured();
-    fetchBlogs();
-  }, []);
+    //fetchFeatured();
+    //fetchBlogs();
+    dispatch(cruds.list( 'product' ));
+  }, [dispatch]);
 
   return (
     <>
