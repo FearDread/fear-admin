@@ -43,8 +43,8 @@ const Shop = (props) => {
   };
 
   useEffect(() => {
-    getProducts();
-    console.log('products = ', productState);
+    //getProducts();
+    //console.log('products = ', productState);
   }, [])
 
   useEffect(() => {
