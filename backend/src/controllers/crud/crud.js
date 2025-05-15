@@ -164,6 +164,6 @@ exports.search = tryCatch(async (Model, req, res) => {
       { category: { $regex: query, $options: "i" } },
     ],
   })
-  .then((products) => { res.status(200).json({ success: true, products }); })
+  .then((result) => { res.status(200).json({ success: true, result }); })
   .catch((error) => { res.status(500).json({ success: false, error: error.message }); });
 });

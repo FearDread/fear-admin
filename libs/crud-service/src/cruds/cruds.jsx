@@ -119,12 +119,8 @@ const cruds = {
       
       dispatch({ type: Types.REQUEST_LOADING, keyState: "search" });
       
-      link += `category=${category}&keyword=${keyword}&page=${currentPage}&price=${price}&ratings=${ratings}`;  
-      if (price instanceof Array) {
-        link += `keyword=${keyword}&page=${currentPage}&price[gte]=${price[0]}&price[lte]=${price[1]}&ratings[gte]=${ratings}`;
-      }
-    
-      await API.get(link, {
+      link += `category=${category}&keyword=${keyword}&page=${currentPage}&price=${price}&ratings=${ratings}`;
+      const query = await API.get(link, {
         id: 'search-cruds',
         cache: {
           ttl: 1000 * 60

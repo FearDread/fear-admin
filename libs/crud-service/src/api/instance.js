@@ -2,9 +2,13 @@ import axios from "axios";
 import qs from "qs";
 import cache from "../cache/cache.jsx";
 
-const API_BASE_URL = (process.env.NODE_ENV === "production")
+
+const API_LOCAL = process.env.API_BASE_URL || null;
+const API_PROD = (process.env.NODE_ENV === "production")
                  ? "http://fear.master.com:4000/fear/api/" 
                  : "http://localhost:4000/fear/api/";
+
+const API_BASE_URL = (API_LOCAL) ? API_LOCAL : API_PROD;
 
 const ACCESS_TOKEN_NAME = (process.env.JWT_TOKEN) 
                 ? process.env.JWT_TOKEN 
