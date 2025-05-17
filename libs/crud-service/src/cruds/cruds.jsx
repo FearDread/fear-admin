@@ -14,14 +14,16 @@ const cruds = {
     dispatch({ type: Types.CURRENT_ACTION, keyState: actionType, payload: { ...data } });
   },
 
-  all: (entity) => async (dispatch) => {
+  all: (entity, _page = 1, _items = 10) => async (dispatch) => {
+    dispatch({ type: Types.REQUEST_LOADING, keyState: entity, payload: null });
+    const query = '/all?page=' + _page + '&items=' + _items;
 
-    dispatch({ type: loading, keyState: entity, payload: null });
-
-    await API.get(entity + '/all')
+    await API.get(entity + query)
         .then((response) => { 
-            storage.set(entity, response.data.result);
-            dispatch({ type: success, keyState: entity, payload: response.data.result }); 
+            if (response.data.success) {
+              storage.set(entity, response.data.result);
+            }
+            dispatch({ type: Types.REQUEST_SUCCESS, keyState: entity, payload: response.data.result }); 
         })
         .catch((error) => { dispatch({ type: failed, keyState: entity, payload: error }); })
   },

@@ -13,7 +13,9 @@ const API_BASE_URL = (API_LOCAL) ? API_LOCAL : API_PROD;
 const ACCESS_TOKEN_NAME = (process.env.JWT_TOKEN) 
                 ? process.env.JWT_TOKEN 
                 : "x-token";
-                                                          
+
+console.log('LOCAL URL :: ' + API_LOCAL);
+console.log('API URL :: ' + API_BASE_URL);
 
 const instance = axios.create({
     baseURL: `${API_BASE_URL}`,
