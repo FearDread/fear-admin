@@ -68,16 +68,21 @@ module.exports = FEAR = (( app ) => {
   this.app.use(bodyParser.urlencoded({ extended: true }));
 
   this.app.use(this.passport);
-  this.app.use(cors(this.cconfig));  
+  this.app.use(cors(this.cconfig)); 
+  /*
   this.app.use((req, res, next) => {
     res.header( "Access-Control-Allow-Origin", "*" );
     res.header( "Access-Control-Allow-Headers", this.env.ALLOWED_HEADERS );
     res.setHeader( "Access-Control-Allow-Methods", "GET, POST, PUT, DELETE" );
     
-    this.log.info( "FEAR API Query :: " + req.query );
     next();
   });
-  this.app.options("*", cors());
+  */
+  this.app.use((req, res, next) => {
+    this.log.info( "FEAR API Query :: " + req.query );
+    next();
+  })
+  this.app.options("*", cors(this.cconfig));
   // Load Routes
   this.loadRoutes();
 
