@@ -28,7 +28,7 @@ const Home = () => {
   useEffect(() => {
     //fetchFeatured();
     //fetchBlogs();
-    dispatch(cruds.list( 'product' ));
+    dispatch(cruds.all( 'product' ));
   }, [dispatch]);
 
   return (
