@@ -5,7 +5,7 @@
   "author": "FearDread",
   "description": "Store front using FEAR backend and crud-service",
   "dependencies": {
-    "@feardread/crud-service": "^1.6.3",
+    "@feardread/crud-service": "^1.6.4",
     "@reduxjs/toolkit": "^1.9.5",
     "@rollup/plugin-inject": "^5.0.5",
     "aos": "^2.3.4",
