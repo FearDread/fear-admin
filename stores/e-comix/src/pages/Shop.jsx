@@ -4,7 +4,7 @@ import { useSearchParams } from "react-router-dom";
 import BannerSub from "../components/Banner/BannerSub"
 import DetailedItem from "../components/Product/DetailedItem";
 import Loader from "../components/Loader/Loader";
-import { cruds, auth, cart } from "@feardread/crud-service";
+
 
 const Shop = (props) => {
   const dispatch = useDispatch();
@@ -36,9 +36,9 @@ const Shop = (props) => {
     })
 
     if (params && params !== undefined) {
-      dispatch(cruds.search( 'product', params ));
+      //dispatch(cruds.search( 'product', params ));
     } else {
-      dispatch(cruds.list( 'product' ));
+      //dispatch(cruds.list( 'product' ));
     }
   };
 
