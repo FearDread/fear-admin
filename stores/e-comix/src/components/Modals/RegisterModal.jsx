@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
-import { auth } from "@feardread/crud-service";
 
 const RegisterModal = () => {
     const dispatch = useDispatch();
@@ -23,7 +22,7 @@ const RegisterModal = () => {
               myForm.set("mobile", mobile);
               myForm.set("password", password);
     
-        dispatch(auth.register(myForm));
+        //dispatch(auth.register(myForm));
       }
 
 
