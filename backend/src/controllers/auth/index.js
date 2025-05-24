@@ -44,19 +44,23 @@ exports.passportLogin = async (req, res) => {
 exports.login = async (req, res) => {
   const { email, password } = req.body; 
   
-  let resp = await User.findOne({ email });
-  resp.then((user) => {
+  try {
+  let user = await User.findOne({ email });
+  if (user) {
 
       let isMatch = user.compare(password);
       isMatch.then((pass) => {
-        
+
         if ( !pass ) return res.status(400).json({success: false, error: 'Invalid Credientials'})
 
         let token = this.getJWTToken(res, user);
         return res.status(200).json({ user, success: true, token});
       })
-      .catch((error) => { throw new Error(error); }); })
-    .catch((error) => { throw new Error("Could Not find User", error)});
+      .catch((error) => { throw new Error(error); });
+    }
+  } catch (error) {
+    throw new Error("Could Not find User", error)
+  }
 }
 
 exports.logout = async (req, res, next) => {
