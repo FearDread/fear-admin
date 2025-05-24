@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk, createAction } from "@reduxjs/toolkit";
 import { authService } from "./userService";
 import { toast } from "react-toastify";
+import cache from "../cache";
 
 export const registerUser = createAsyncThunk(
   "auth/register",
@@ -147,12 +148,12 @@ export const resetPassword = createAsyncThunk(
 
 export const resetState = createAction("Reset_all");
 
-const getCustomerfromLocalStorage = localStorage.getItem("customer")
-  ? JSON.parse(localStorage.getItem("customer"))
+const userData = cache.local.has("customer")
+  ? cache.local.get("customer")
   : null;
 
 const initialState = {
-  user: getCustomerfromLocalStorage,
+  user: userData,
   isError: false,
   isSuccess: false,
   isLoading: false,

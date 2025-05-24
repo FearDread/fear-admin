@@ -4,6 +4,7 @@ import cache from "../cache";
 const register = async (userData) => {
   const response = await API.post(`user/register`, userData);
   if (response.data) {
+    cache.local.set("customer", response.data.result);
     return response.data;
   }
 };
@@ -13,9 +14,9 @@ const login = async (userData) => {
 
   if (response.data) {
     cache.local.set("customer", response.data.result);
-    //localStorage.setItem("customer", JSON.stringify(response.data));
+    return response.data.result;
   }
-  return response.data;
+
 };
 
 const getUserWislist = async () => {

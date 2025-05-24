@@ -9,9 +9,7 @@ import Services from "../components/Services/Services";
 import Brands from "../components/Brands/Brands";
 
 import { getAllBlogs } from "../features/blogs/blogSlice";
-import moment from "moment";
 import { getAllProducts } from "../features/products/productSlilce";
-import ReactStars from "react-rating-stars-component";
 import { addToWishlist } from "../features/products/productSlilce";
 
 
@@ -39,9 +37,9 @@ const Home = () => {
 
   return (
     <>
-    <BannerMain />
+      <BannerMain />
       <main className="float-start w-100 total-body home-body">
-      
+
         <Services />
 
         <section className="shop-collections float-start w-100 position-relative">
@@ -54,13 +52,13 @@ const Home = () => {
             <div className="col-lg-8 ms-auto d-block">
               <h2 className="text-center text-lg-start text-white page-haeding mt-4" data-aos="fade-up">  Shop the collection  </h2>
               <div className="row row-cols-1 row-cols-sm-2 gy-5 g-lg-5 mt-0">
-                
 
-              {productState && productState.slice(0, 4).map((item) => {
-                        return (
-                          <ShopItem {...item} />
-                        )
-              })}
+
+                {productState && productState.slice(0, 4).map((item) => {
+                  return (
+                    <ShopItem {...item} />
+                  )
+                })}
 
                 <div className="col">
                   <a href="/shop" className="btn comon-button mx-auto mt-5 d-table" data-aos="fade-up">  <span> <i className="fas fa-arrow-right"></i> View All Products </span> </a>
@@ -102,33 +100,33 @@ const Home = () => {
                   <div className="tab-pane fade show active" id="supcoming" role="tabpanel">
                     <div className="row row-cols-1 row-cols-sm-2 gy-5 g-lg-5 mt-0">
 
-              {productState && productState.slice(5, 9).map((item) => {
+                      {productState && productState.slice(5, 9).map((item) => {
                         return (
                           <SuperItem {...item} />
                         )
-              })}
-       </div>
-       </div>
+                      })}
+                    </div>
+                  </div>
                   <div className="tab-pane fade" id="sbest" role="tabpanel">
                     <div className="row row-cols-1 row-cols-sm-2 gy-5 g-lg-5 mt-0">
 
-              {productState && productState.slice(10, 14).map((item) => {
+                      {productState && productState.slice(10, 14).map((item) => {
                         return (
                           <SuperItem {...item} />
                         )
-              })}
-                </div>
-              </div>
-              
-                      <div className="col">
-
-                        <a href="/shop" className="btn comon-button mx-auto mt-5 d-table" data-aos="fade-up">  <span> <i className="fas fa-arrow-right"></i> See More Hero </span> </a>
-                      </div>
-
+                      })}
                     </div>
                   </div>
+
+                  <div className="col">
+
+                    <a href="/shop" className="btn comon-button mx-auto mt-5 d-table" data-aos="fade-up">  <span> <i className="fas fa-arrow-right"></i> See More Hero </span> </a>
+                  </div>
+
                 </div>
               </div>
+            </div>
+          </div>
           <div className="superman" data-aos="fade-up">
             <figure className="m-0">
               <img alt="seu" src="images/superman-hero-bg.svg" />
@@ -227,4 +225,3 @@ const Home = () => {
 }
 
 export default Home;
-   
