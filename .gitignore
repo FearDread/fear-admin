@@ -7,5 +7,6 @@ package-lock.json
 yarn.lock
 .eslintcache
 .env
+build/
 
 
