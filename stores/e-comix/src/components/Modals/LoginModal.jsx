@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { auth } from "@feardread/crud-service";
+
 
 const LoginModal = () => {
     const navigate = useNavigate();
@@ -18,7 +18,7 @@ const LoginModal = () => {
         myForm.set("email", email);
         myForm.set("password", password);
 
-        dispatch(auth.login(email, password));
+        //dispatch(auth.login(email, password));
     }
     useEffect(() => {
         if (loginSuccess && isLoggedIn) {

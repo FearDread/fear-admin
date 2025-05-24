@@ -30,11 +30,11 @@ module.exports = FEAR = (( app ) => {
   this.app.use(cookieParser());
 
   this.db = db;
-  this.passport = passport;
+  //this.passport = passport;
   this.log = logger;
   this.env = _config;
   this.cloud = cloud;
-  this.validator = validator;
+  //this.validator = validator;
   this.origins = _config.ALLOWED_ORIGINS.split(',').map(item => item.trim());
   this.cconfig = {
     credentials: true,
@@ -42,6 +42,7 @@ module.exports = FEAR = (( app ) => {
       if (!origin || this.origins.indexOf(origin) !== -1) { 
         callback(null, true)
       } else {
+        this.log.error("Origin :: " + origin + " :: Not allowed by CORS");
         callback(new Error("Not allowed by CORS"));
       }
     }
@@ -56,7 +57,7 @@ module.exports = FEAR = (( app ) => {
       const module = require(`./${dir}/${file}`);
   
       this.log.info("Route added :: /fear/api/" + name);
-      this.app.use('/fear/api/' + name, cors(this.cconfig), module);
+      this.app.use('/fear/api/' + name, cors(), module);
     });
   };
   
@@ -67,7 +68,7 @@ module.exports = FEAR = (( app ) => {
   this.app.use(bodyParser.json());
   this.app.use(bodyParser.urlencoded({ extended: true }));
 
-  this.app.use(this.passport);
+  //this.app.use(this.passport);
   this.app.use(cors(this.cconfig)); 
   /*
   this.app.use((req, res, next) => {
@@ -78,16 +79,18 @@ module.exports = FEAR = (( app ) => {
     next();
   });
   */
-  this.app.use((req, res, next) => {
-    this.log.info( "FEAR API Query :: " + req.query );
-    next();
-  })
+
   this.app.options("*", cors(this.cconfig));
   // Load Routes
   this.loadRoutes();
 
+  this.app.use((req, res, next) => {
+    this.log.info( "FEAR API Query :: " + req.url );
+    next();
+  })
+
   this.app.use(express.static(path.join(__dirname1, "/dashboard/build")));
-  this.app.get("*", cors(this.cconfig), (req, res) =>
+  this.app.get("*", (req, res) =>
     res.sendFile(path.resolve(__dirname1, "dashboard", "build", "index.html"))
   );
 
