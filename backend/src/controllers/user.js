@@ -21,19 +21,6 @@ exports.wishlist = async (req, res) => {
   }
 }
 
-exports.cart = async (req, res) => {
-  const { _id } = req.user;
-  //db.validateId(_id);
-  try {
-    const cart = await Cart.find({ userId: _id })
-      .populate("productId")
-      .populate("color");
-    res.json(cart);
-  } catch (error) {
-    throw new Error(error);
-  }
-}
-
 const crud = methods.crudController( UserModel );
 for(prop in crud) {
   if(crud.hasOwnProperty(prop)) {

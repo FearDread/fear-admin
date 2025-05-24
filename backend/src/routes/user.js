@@ -5,7 +5,7 @@ const { isAuthorized, isAdmin, authorizeRoles } = require("../controllers/auth")
 
 router.get("/all", User.all); 
 router.get("/wishlist", isAuthorized, User.wishlist);
-router.get("/cart", isAuthorized, User.cart);
+//router.get("/cart", isAuthorized, User.cart);
 
 router.route("/:id", isAuthorized)
         .get(User.read)

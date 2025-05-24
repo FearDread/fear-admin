@@ -20,7 +20,7 @@ const instance = axios.create({
     paramsSerializer: (params) => {
         return qs.stringify(params, { indices: false });
     },
-    credentials: true
+     credentials: true
     //httpsAgent: new https.Agent({ rejectUnauthorized: false })
 });
 

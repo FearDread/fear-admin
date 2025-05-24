@@ -16,7 +16,6 @@ const login = async (userData) => {
     cache.local.set("customer", response.data.result);
     return response.data.result;
   }
-
 };
 
 const getUserWislist = async () => {
@@ -27,14 +26,14 @@ const getUserWislist = async () => {
 };
 
 const addToCart = async (cartData) => {
-  const response = await API.post(`user/cart`, cartData);
+  const response = await API.post(`cart`, cartData);
   if (response.data) {
     return response.data;
   }
 };
 
 const getCart = async (data) => {
-  const response = await API.get(`user/cart`, data);
+  const response = await API.get(`cart`, data);
   if (response.data) {
     return response.data;
   }

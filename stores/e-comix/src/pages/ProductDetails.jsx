@@ -1,32 +1,54 @@
 import React, { useEffect, useState } from "react"
-import { useParams } from "react-router-dom";
+import { useParams, useLocation, useNavigate} from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import Loader from "../components/Loader/Loader";
 import BannerSub from "../components/Banner/BannerSub"
-
-
+import {
+  addRating,
+  getAProduct,
+  getAllProducts,
+} from "../features/products/productSlilce";
+import { toast } from "react-toastify";
+import { addProdToCart, getUserCart } from "../features/user/userSlice";
+import defaultProdImg from "../assets/images/abstract_banner_1.jpg";
 
 const ProductDetails = (props) => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
-  const relatedProducts = useSelector((state) => state?.crud?.list);
-  const { loading, result } = useSelector((state) => state?.crud?.read);
+
+   const [quantity, setQuantity] = useState(1);
+    const [alreadyAdded, setAlreadyAdded] = useState(false);
+
+  const product = useSelector((state) => state?.product?.current);
+  const productsState = useSelector((state) => state?.product?.product);
+  const cartState = useSelector((state) => state?.auth?.cartProducts);
+  const { isLoggedIn } = useSelector((state) => state?.auth);
+  
+  const ratings = product?.totalrating;
+  const wishlist = useSelector((state) => state?.auth?.wishlist?.wishlist);
+  console.log("Auth = ", useSelector((state) => state?.auth));
 
   useEffect(() => {
+    dispatch(getAProduct(id));
 
-    //dispatch(cruds.read('product', id));
-    //dispatch(cruds.list('product'));
+    dispatch(getAllProducts());
 
-    console.log('related = ', relatedProducts);
-  }, [dispatch, id])
+    if (isLoggedIn) {
+          dispatch(getUserCart());
+    }
+  }, []);
+
+  useEffect(() => {
+    for (let index = 0; index < cartState?.length; index++) {
+      if (id === cartState[index]?.productId?._id) {
+        setAlreadyAdded(true);
+      }
+    }
+  });
+
 
   return (
-    <>
-      {loading ? (
-      <>
-        <Loader />
-      </>
-    ) : (
     <>
       <BannerSub />
       <main className="float-start w-100 total-body home-body mt-0">
@@ -47,101 +69,132 @@ const ProductDetails = (props) => {
           <div className="listing-page-div">
             <div className="container">
 
-              <div className="row g-5">
-                <div className="col-lg-6">
-                  <div className="products-slide-1">
-                    <div id="sync1" className="owl-carousel owl-theme">
-                      <div className="item">
-                        <figure className="mian-ppic">
-                          <img src="images/0ea7b3bf-image-2.jpg" alt="re3" />
-                        </figure>
-                      </div>
-                    </div>
-                    <div id="sync2" className="owl-carousel owl-theme">
-                      <div className="item">
-                        <div className="thum-pic-slide">
-                          <figure>
-                            <img src="images/0ea7b3bf-image-2.jpg" alt="re3" />
-                          </figure>
+              {(product) ? (
+                <>
+                  <div className="row g-5">
+                    <div className="col-lg-6">
+                      <div className="products-slide-1">
+                      {product.images && product.images.map((item, idx) => {
+                        return (
+                            <div id={idx} className="owl-carousel owl-theme">
+                          <div className="item">
+                            <figure className="mian-ppic">
+                              <img src={item.url ? item.url : defaultProdImg} alt="re3" />
+                            </figure>
+                          </div>
+                        </div>
+                        )
+                          })}
+                        <div id="sync1" className="owl-carousel owl-theme">
+                          <div className="item">
+                            <figure className="mian-ppic">
+                              <img src="images/0ea7b3bf-image-2.jpg" alt="re3" />
+                            </figure>
+                          </div>
+                        </div>
+                        <div id="sync2" className="owl-carousel owl-theme">
+                          <div className="item">
+                            <div className="thum-pic-slide">
+                              <figure>
+                                <img src="images/0ea7b3bf-image-2.jpg" alt="re3" />
+                              </figure>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
+
+                    <div className="col-lg-6">
+                      <div className="comon-details-part">
+                        <h5 className="tags-ts"> {product.title} </h5>
+                        <h2 className="my-2"> {product.slug} </h2>
+                        <div className="ratine">
+                          <span>
+                            <i className="fas fa-star"></i><i className="fas fa-star"></i><i className="fas fa-star"></i>
+                            <i className="fas fa-star"></i><i className="fas fa-star"></i>
+                          </span>
+                          <span>(12 Reviews)</span>
+                        </div>
+                        <h3 className="price-text mt-3">
+                          $20.00
+                          <span> $30.00 </span>
+                        </h3>
+                        <div className="feature-div-list">
+                          <ul className="mt-4">
+                            <li>
+                              <span>Vendor:</span>
+                              <span> Comic Jack</span>
+                            </li>
+                            <li>
+                              <span>Author(s):</span>
+                              <span>James Art</span>
+                            </li>
+                            <li>
+                              <span>Genre(s):</span>
+                              <span>Action, Adventure, Manhua, Martial Arts</span>
+                            </li>
+
+                            <li>
+                              <span>Release:</span>
+                              <span>Aug, 2023</span>
+                            </li>
+                            <li>
+                              <span>ID:</span>
+                              <span>A1245dJ</span>
+                            </li>
+                          </ul>
+                        </div>
+
+                        <div className="quantity-control" data-quantity="">
+                          <button className="btn quantity-btn" data-quantity-minus="">
+                            <i className="fas fa-minus"></i>
+                          </button>
+                          <input type="number" className="quantity-input"
+                           data-quantity-target=""
+                           value={quantity} 
+                           step="0.1" min="1" max="50"
+                           name="quantity" 
+                           onChange={() => {
+                              const newQuant = quantity++;
+                              setQuantity(newQuant)
+                            }} />
+                          
+                          <button className="btn quantity-btn" data-quantity-plus="">
+                            <i className="fas fa-plus"></i>
+                          </button>
+                        </div>
+
+                        <div className="d-flex align-items-center my-4">
+                          <a href="product-details.html#" className="btn add-btn">
+                            <span>
+                              <i className="fas fa-shopping-cart"></i>
+                            </span> <span> Add to Cart  </span> </a>
+                          <a href="product-details.html#" className="btn ad-whish">
+                            <span> Buy Now </span>  </a>
+                        </div>
+
+
+
+                        <div className="delivery-part">
+                          <h5> Free worldwide shipping for orders over <span> $70</span> </h5>
+                          <ul>
+                            <li> Order will dispatch with in <span> 2 Hours </span> </li>
+                            <li>  Order delivery with in <span> 3day </span> </li>
+                          </ul>
+                        </div>
+
+                      </div>
+                    </div>
                   </div>
-                </div>
+                  </>
 
-                <div className="col-lg-6">
-                  <div className="comon-details-part">
-                    <h5 className="tags-ts"> Comic </h5>
-                    <h2 className="my-2"> Angie’s Sweet & Salty Kettle Corn </h2>
-                    <div className="ratine">
-                      <span>
-                        <i className="fas fa-star"></i><i className="fas fa-star"></i><i className="fas fa-star"></i>
-                        <i className="fas fa-star"></i><i className="fas fa-star"></i>
-                      </span>
-                      <span>(12 Reviews)</span>
-                    </div>
-                    <h3 className="price-text mt-3">
-                      $20.00
-                      <span> $30.00 </span>
-                    </h3>
-                    <div className="feature-div-list">
-                      <ul className="mt-4">
-                        <li>
-                          <span>Vendor:</span>
-                          <span> Comic Jack</span>
-                        </li>
-                        <li>
-                          <span>Author(s):</span>
-                          <span>James Art</span>
-                        </li>
-                        <li>
-                          <span>Genre(s):</span>
-                          <span>Action, Adventure, Manhua, Martial Arts</span>
-                        </li>
+                ) : (
+                  <>
+                  <div>No Data</div>
+                  </>
+                )}
 
-                        <li>
-                          <span>Release:</span>
-                          <span>Aug, 2023</span>
-                        </li>
-                        <li>
-                          <span>ID:</span>
-                          <span>A1245dJ</span>
-                        </li>
-                      </ul>
-                    </div>
-
-                    <div className="quantity-control" data-quantity="">
-                      <button className="btn quantity-btn" data-quantity-minus="">
-                        <i className="fas fa-minus"></i>
-                      </button>
-                      <input type="number" className="quantity-input" data-quantity-target="" value="1" step="0.1" min="1" max="50" name="quantity" />
-                      <button className="btn quantity-btn" data-quantity-plus="">
-                        <i className="fas fa-plus"></i>
-                      </button>
-                    </div>
-
-                    <div className="d-flex align-items-center my-4">
-                      <a href="product-details.html#" className="btn add-btn">
-                        <span>
-                          <i className="fas fa-shopping-cart"></i>
-                        </span> <span> Add to Cart  </span> </a>
-                      <a href="product-details.html#" className="btn ad-whish">
-                        <span> Buy Now </span>  </a>
-                    </div>
-
-
-
-                    <div className="delivery-part">
-                      <h5> Free worldwide shipping for orders over <span> $70</span> </h5>
-                      <ul>
-                        <li> Order will dispatch with in <span> 2 Hours </span> </li>
-                        <li>  Order delivery with in <span> 3day </span> </li>
-                      </ul>
-                    </div>
-
-                  </div>
-                </div>
-              </div>
+  
 
               <div className="tabs-details-gn mt-5 mt-lg-0">
                 <ul className="nav nav-tabs" id="myTab" role="tablist">
@@ -250,11 +303,11 @@ const ProductDetails = (props) => {
                         <form action="https://oxentictemplates.in/templatemonster/comicstore/man" method="get">
                           <div className="col-lg-12 pl-0">
                             <ul className="rate-area">
-                              <input type="radio" id="5-star" name="rating" value="5" /><label for="5-star" title="Amazing">5 stars</label>
-                              <input type="radio" id="4-star" name="rating" value="4" /><label for="4-star" title="Good">4 stars</label>
-                              <input type="radio" id="3-star" name="rating" value="3" /><label for="3-star" title="Average">3 stars</label>
-                              <input type="radio" id="2-star" name="rating" value="2" /><label for="2-star" title="Not Good">2 stars</label>
-                              <input type="radio" id="1-star" name="rating" value="1" /><label for="1-star" title="Bad">1 star</label>
+                              <input type="radio" id="5-star" name="rating" value="5" readOnly={true} /><label htmlFor="5-star" title="Amazing">5 stars</label>
+                              <input type="radio" id="4-star" name="rating" value="4" readOnly={true} /><label htmlFor="4-star" title="Good">4 stars</label>
+                              <input type="radio" id="3-star" name="rating" value="3" readOnly={true} /><label htmlFor="3-star" title="Average">3 stars</label>
+                              <input type="radio" id="2-star" name="rating" value="2" readOnly={true} /><label htmlFor="2-star" title="Not Good">2 stars</label>
+                              <input type="radio" id="1-star" name="rating" value="1" readOnly={true} /><label htmlFor="1-star" title="Bad">1 star</label>
                             </ul>
 
 
@@ -304,9 +357,6 @@ const ProductDetails = (props) => {
 
                     </div>
                   </div>
-
-
-
                 </div>
               </div>
 
@@ -404,6 +454,8 @@ const ProductDetails = (props) => {
 
                 </div>
               </div>
+
+
             </div>
           </div>
 
@@ -412,8 +464,6 @@ const ProductDetails = (props) => {
 
       </main>
     </>
-  )}
-  </>
   )
 }
 

@@ -2,12 +2,18 @@ const router = require("express").Router();
 const Cart = require("../controllers/cart");
 const { isAuthorized, isAdmin } = require("../controllers/auth");
 
-//router.post("/new", Cart.add);
-router.get("/mycart", Cart.getCart);
-router.get("/:id", Cart.getCart);
-router.route("/product/:id")
-    .post(Cart.add)
-    .put(Cart.updateFromCart)
-    .delete(Cart.deleteFromCart);
+router.post("/", Cart.userCart);
+router.get("/", Cart.getUserCart);
+
+router.delete(
+  "/product/delete/:id",
+  Cart.removeFromCart
+);
+router.delete(
+  "/product/update/:id/:quantity",
+  Cart.updateProductQuantityFromCart
+);
+
+router.delete("/empty", Cart.emptyCart);
 
 module.exports = router;
