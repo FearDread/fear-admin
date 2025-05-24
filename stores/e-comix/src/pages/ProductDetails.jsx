@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import Loader from "../components/Loader/Loader";
 import BannerSub from "../components/Banner/BannerSub"
-import { cruds, auth, cart } from "@feardread/crud-service";
+
 
 
 const ProductDetails = (props) => {
@@ -14,8 +14,8 @@ const ProductDetails = (props) => {
 
   useEffect(() => {
 
-    dispatch(cruds.read('product', id));
-    dispatch(cruds.list('product'));
+    //dispatch(cruds.read('product', id));
+    //dispatch(cruds.list('product'));
 
     console.log('related = ', relatedProducts);
   }, [dispatch, id])

@@ -7,29 +7,35 @@ import ShopItem from "../components/Product/ShopItem";
 import SuperItem from "../components/Product/SuperItem";
 import Services from "../components/Services/Services";
 import Brands from "../components/Brands/Brands";
-import { cruds, auth, cart } from "@feardread/crud-service"; 
 
+import { getAllBlogs } from "../features/blogs/blogSlice";
+import moment from "moment";
+import { getAllProducts } from "../features/products/productSlilce";
+import ReactStars from "react-rating-stars-component";
+import { addToWishlist } from "../features/products/productSlilce";
 
 
 const Home = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { user, isLoggedIn } = useSelector((state) => state?.auth);
-  //const featured = useSelector((state) => state?.crud?.product);
-  const blogs = useSelector((state) => state?.crud?.blog);
-  const { result, loading } = useSelector((state) => state?.crud?.product);
-  const fetchFeatured = () => {
 
-  }
+  const blogState = useSelector((state) => state?.blog?.blog);
+  const productState = useSelector((state) => state?.product?.product);
 
-  const fetchBlogs = () => {
-      dispatch(cruds.list( 'blog' ));
-  }
+  const getblogs = () => {
+    dispatch(getAllBlogs());
+  };
+  const getProducts = () => {
+    dispatch(getAllProducts());
+  };
+  const addToWish = (id) => {
+    dispatch(addToWishlist(id));
+  };
 
   useEffect(() => {
-    //fetchFeatured();
-    //fetchBlogs();
-    dispatch(cruds.all( 'product' ));
-  }, [dispatch]);
+    getblogs();
+    getProducts();
+  }, []);
 
   return (
     <>
@@ -50,7 +56,7 @@ const Home = () => {
               <div className="row row-cols-1 row-cols-sm-2 gy-5 g-lg-5 mt-0">
                 
 
-              {!loading && result.slice(0, 4).map((item) => {
+              {productState && productState.slice(0, 4).map((item) => {
                         return (
                           <ShopItem {...item} />
                         )
@@ -96,6 +102,24 @@ const Home = () => {
                   <div className="tab-pane fade show active" id="supcoming" role="tabpanel">
                     <div className="row row-cols-1 row-cols-sm-2 gy-5 g-lg-5 mt-0">
 
+              {productState && productState.slice(5, 9).map((item) => {
+                        return (
+                          <SuperItem {...item} />
+                        )
+              })}
+       </div>
+       </div>
+                  <div className="tab-pane fade" id="sbest" role="tabpanel">
+                    <div className="row row-cols-1 row-cols-sm-2 gy-5 g-lg-5 mt-0">
+
+              {productState && productState.slice(10, 14).map((item) => {
+                        return (
+                          <SuperItem {...item} />
+                        )
+              })}
+                </div>
+              </div>
+              
                       <div className="col">
 
                         <a href="/shop" className="btn comon-button mx-auto mt-5 d-table" data-aos="fade-up">  <span> <i className="fas fa-arrow-right"></i> See More Hero </span> </a>
@@ -105,12 +129,6 @@ const Home = () => {
                   </div>
                 </div>
               </div>
-
-
-
-            </div>
-
-          </div>
           <div className="superman" data-aos="fade-up">
             <figure className="m-0">
               <img alt="seu" src="images/superman-hero-bg.svg" />
