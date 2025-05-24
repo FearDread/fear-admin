@@ -1,7 +1,7 @@
 const User = require("../../models/user");
-const passport = require('../../libs/passport');
+//const passport = require('../../libs/passport');
 const jwt = require("jsonwebtoken");
-
+/*
 exports.passportLogin = async (req, res) => {
   const { email, password } = req.body;
   passport.authenticate("login", {
@@ -33,7 +33,7 @@ exports.passportLogin = async (req, res) => {
   } else {
     res.redirect("/user/profile");
   }
-}
+}*/
 /**
  * GET /fear/api/auth/login
  * @summary Authorize user to reach Admin / Dashboard 
@@ -42,13 +42,14 @@ exports.passportLogin = async (req, res) => {
  * @return {object} 400 - Bad request response
  */
 exports.login = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password } = req.body; 
   
-  await User.findOne({ email })
-    .then((user) => {
-      let isMatch = user.compare(password);
+  let resp = await User.findOne({ email });
+  resp.then((user) => {
 
+      let isMatch = user.compare(password);
       isMatch.then((pass) => {
+        
         if ( !pass ) return res.status(400).json({success: false, error: 'Invalid Credientials'})
 
         let token = this.getJWTToken(res, user);
@@ -73,7 +74,7 @@ exports.register = async (req, res) => {
       .then((user) => { 
         let token = this.getJWTToken(res, user);
         return res.status(200).json({user, success: true, token }); })
-      .catch((error) => { throw new Error(error);})
+      .catch((error) => { throw new Error(error);}).next();
 
   } else {
     throw new Error("User Already Exists");
