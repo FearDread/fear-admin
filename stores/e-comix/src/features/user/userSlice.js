@@ -37,7 +37,7 @@ export const getuserProductWishlist = createAsyncThunk(
 );
 
 export const addProdToCart = createAsyncThunk(
-  "user/cart/add",
+  "cart/add",
   async (cartData, thunkAPI) => {
     try {
       return await authService.addToCart(cartData);
@@ -48,7 +48,7 @@ export const addProdToCart = createAsyncThunk(
 );
 
 export const getUserCart = createAsyncThunk(
-  "user/cart/get",
+  "cart/get",
   async (data, thunkAPI) => {
     try {
       return await authService.getCart(data);

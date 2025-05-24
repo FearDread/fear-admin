@@ -4,7 +4,7 @@ const PageEdge = () => {
 
     return (
         <>
-            <div class="egge-img">
+            <div className="egge-img">
                 <img alt="eage" src="images/edge1-d.svg" />
             </div>
         </>

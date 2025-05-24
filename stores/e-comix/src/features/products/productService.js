@@ -28,7 +28,7 @@ const getProducts = async (data) => {
 const getSingleProduct = async (id) => {
   const response = await API.get(`product/${id}`);
   if (response.data) {
-    return response.data;
+    return response.data.result;
   }
 };
 

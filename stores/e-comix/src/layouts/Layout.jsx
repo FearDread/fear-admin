@@ -16,19 +16,16 @@ const Layout = () => {
 
 
   useEffect(() => {
-    console.log("window = ", window);
-    window.scroll(() => {
-      var height = window.scrollTop();
-      if(height >= 100) {
-        alert(1);
-        document.body.classList.toggle('fixed-menu')
-
-          //$('header').addClass('fixed-menu');
+    /*
+    window.addEventListener("scroll", () => {
+      var height = window.scrollY;
+      if (height > 100) {
+        document.documentElement.classList.toggle('fixed-menu')
       } else {
-        document.body.classList.remove('fixed-menu');
-          //$('header').removeClass('fixed-menu');
+        document.documentElement.classList.remove('fixed-menu');
       }
-  });
+    });
+  */
     AOS.init({
       offset: 100,
       easing: 'ease',
@@ -36,7 +33,7 @@ const Layout = () => {
       duration: 800
     });
 
-  }, [window]);
+  }, []);
 
   return (
     <>

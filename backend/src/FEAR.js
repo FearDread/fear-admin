@@ -18,7 +18,7 @@ module.exports = FEAR = (( app ) => {
   const morgan = require("./libs/logger/morgan");
   const errors = require("./libs/handler/error");
   const cloud = require("./libs/cloud");
-  const passport = require("./libs/passport");
+  //const passport = require("./libs/passport");
   const db = require("./libs/db"),
         {parsed: _config} = env;
       
