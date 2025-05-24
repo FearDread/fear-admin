@@ -3,8 +3,8 @@ const router = require('express').Router();
 const User = require("../controllers/user");
 const { login, logout, register, passportLogin } = require("../controllers/auth");
 
-//router.post("/login", tryCatch(login));
-router.post('/login', tryCatch(passportLogin));
+router.post("/login", tryCatch(login));
+//router.post('/login', tryCatch(passportLogin));
 router.post("/logout", tryCatch(logout));
 router.post("/register", tryCatch(register));
 
