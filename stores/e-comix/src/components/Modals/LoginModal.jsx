@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { loginUser } from "../../features/user/userSlice";
 
 
 const LoginModal = () => {
@@ -18,7 +19,7 @@ const LoginModal = () => {
         myForm.set("email", email);
         myForm.set("password", password);
 
-        //dispatch(auth.login(email, password));
+        dispatch(loginUser(myForm));
     }
     useEffect(() => {
         if (loginSuccess && isLoggedIn) {

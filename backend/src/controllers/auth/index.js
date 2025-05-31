@@ -43,24 +43,22 @@ exports.passportLogin = async (req, res) => {
  */
 exports.login = async (req, res) => {
   const { email, password } = req.body; 
-  
-  try {
-  let user = await User.findOne({ email });
-  if (user) {
+  console.log('logging in', email);
 
-      let isMatch = user.compare(password);
-      isMatch.then((pass) => {
+  await User.findOne({ email: email })
+    .then((user) => {
+      if (user) {
+        let isMatch = user.compare(password);
+        isMatch.then((pass) => {
+          if (!pass) return res.status(400).json({ success: false, error: 'Invalid Credientials' })
 
-        if ( !pass ) return res.status(400).json({success: false, error: 'Invalid Credientials'})
-
-        let token = this.getJWTToken(res, user);
-        return res.status(200).json({ user, success: true, token});
-      })
-      .catch((error) => { throw new Error(error); });
-    }
-  } catch (error) {
-    throw new Error("Could Not find User", error)
-  }
+          let token = this.getJWTToken(res, user);
+          return res.status(200).json({ user, success: true, token });
+        })
+          .catch((error) => { throw new Error(error); });
+      }
+    })
+    .catch((error) => { throw new Error("User Not found"); });
 }
 
 exports.logout = async (req, res, next) => {

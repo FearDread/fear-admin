@@ -2,7 +2,7 @@ import API from "../api";
 import cache from "../cache";
 
 const register = async (userData) => {
-  const response = await API.post(`user/register`, userData);
+  const response = await API.post(`auth/register`, userData);
   if (response.data) {
     cache.local.set("customer", response.data.result);
     return response.data;
@@ -10,10 +10,9 @@ const register = async (userData) => {
 };
 
 const login = async (userData) => {
-  const response = await API.post(`user/login`, userData);
-
+  const response = await API.post(`auth/login`, userData);
   if (response.data) {
-    cache.local.set("customer", response.data.result);
+    cache.local.set("auth", response.data.result);
     return response.data.result;
   }
 };
