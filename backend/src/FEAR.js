@@ -12,13 +12,11 @@ const path = require("path"),
 module.exports = FEAR = (( app ) => {
   const env = require("dotenv").config({ path:"backend/.env"});
   if ( !env || env.error ) throw env.error;
-  
-  const validator = require("./libs/validator");
+
   const logger = require("./libs/logger");
   const morgan = require("./libs/logger/morgan");
   const errors = require("./libs/handler/error");
   const cloud = require("./libs/cloud");
-  //const passport = require("./libs/passport");
   const db = require("./libs/db"),
         {parsed: _config} = env;
       

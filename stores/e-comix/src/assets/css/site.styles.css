@@ -3183,3 +3183,6 @@ to {
   width: 20px;
 }
 /*# sourceMappingURL=style.min.css.map */
+.Toastify__toast-theme--dark {
+  background: white !important;
+}

@@ -196,7 +196,7 @@ export const authSlice = createSlice({
         state.isSuccess = true;
         state.user = action.payload;
         if (state.isSuccess === true) {
-          localStorage.setItem("token", action.payload.token);
+          cache.local.set("auth", action.payload);
 
           toast.info("User Logged In Successfully");
         }
@@ -346,7 +346,7 @@ export const authSlice = createSlice({
         state.updatedUser = action.payload;
 
         if (state.isSuccess === true) {
-          let currentUserData = JSON.parse(localStorage.getItem("customer"));
+          let currentUserData = cache.local.get('auth');
           let newUserData = {
             _id: currentUserData?._id,
             token: currentUserData.token,
