@@ -70,7 +70,7 @@ const Footer = () => {
         </div>
       </section>
       
-      <PageEdge />
+    <PageEdge />
 
       <section className="copy_right float-start w-100">
         <div className="container">

@@ -6,13 +6,13 @@ html{font-size:68.75%}
   padding: 0;
   color:black;
   font-family: "Open Sans", sans-serif;
-  font-family: "Bangers", cursive;
+  font-family: "AclonicaRegular", cursive;
 }
 
 body {
   margin: 0;
   font-family: "Open Sans", sans-serif;
-  font-family: "Bangers", cursive;
+  font-family: "AclonicaRegular", cursive;
   background: linear-gradient(
         45deg,
         rgba(0, 110, 193, 0.3),
@@ -27,7 +27,8 @@ main {
 }
 
 html {
-  font-size: 68.75%}
+  font-size: 100%;
+}
 
 *, ::after, ::before {
   box-sizing: border-box;
@@ -40,7 +41,7 @@ a, abbr, acronym, address, applet, big, blockquote, body, cite, code, dd, del, d
   outline: none !important;
   padding: 0;
   vertical-align: baseline;
-  font-family: "Bangers", cursive; 
+  //font-family: "Bangers", cursive; 
 }
 
 a {
@@ -123,6 +124,9 @@ img {
 }
 .container-top {
   height: 200px;
+}
+.navbar-brand img {
+  width: 300px;
 }
 .navbar-nav .nav-link {
   font-size: 18px;
@@ -1753,6 +1757,12 @@ footer .items-footer-div li a span:first-child {
   font-family: "Bangers", cursive;
   font-size: 24px;
 }
+.product-details-div {
+  border: solid 3px var(--primarycolor);
+  padding: 0 20px;
+  border-radius: 0 0 20px 20px;
+  background: white;
+}
 .products-slide-1 .item .mian-ppic {
   height: 500px;
   overflow: hidden;
@@ -1793,6 +1803,7 @@ footer .items-footer-div li a span:first-child {
   border: solid 3px var(--primarycolor);
   padding: 0 20px;
   border-radius: 0 0 20px 20px;
+  background: white;
 }
 .delivery-part {
   background: #f7f7f7;

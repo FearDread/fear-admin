@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { useParams, useLocation, useNavigate} from "react-router-dom";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import Loader from "../components/Loader/Loader";
 import BannerSub from "../components/Banner/BannerSub"
@@ -7,35 +7,45 @@ import {
   addRating,
   getAProduct,
   getAllProducts,
-} from "../features/products/productSlilce";
+} from "../features/products/slice";
+import ReactImageZoom from "react-image-zoom";
+import ReactStars from "react-rating-stars-component"
 import { toast } from "react-toastify";
 import { addProdToCart, getUserCart } from "../features/user/userSlice";
 import defaultProdImg from "../assets/images/abstract_banner_1.jpg";
 
-const ProductDetails = (props) => {
+const ProductDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-   const [quantity, setQuantity] = useState(1);
-    const [alreadyAdded, setAlreadyAdded] = useState(false);
+  const [quantity, setQuantity] = useState(1);
+  const [alreadyAdded, setAlreadyAdded] = useState(false);
 
   const product = useSelector((state) => state?.product?.current);
   const productsState = useSelector((state) => state?.product?.product);
   const cartState = useSelector((state) => state?.auth?.cartProducts);
-  const { isLoggedIn } = useSelector((state) => state?.auth);
-  
+  const { isLoggedIn, user } = useSelector((state) => state?.auth);
+
   const ratings = product?.totalrating;
   const wishlist = useSelector((state) => state?.auth?.wishlist?.wishlist);
-  console.log("Auth = ", useSelector((state) => state?.auth));
+  const props = {
+    width: 594,
+    height: 600,
+    zoomWidth: 600,
+
+    img: product?.images[0].url
+      ? product?.images[0].url
+      : defaultProdImg,
+  };
 
   useEffect(() => {
     dispatch(getAProduct(id));
 
     dispatch(getAllProducts());
-
+    console.log('Auth = ', user, isLoggedIn);
     if (isLoggedIn) {
-          dispatch(getUserCart());
+      dispatch(getUserCart());
     }
   }, []);
 
@@ -63,7 +73,6 @@ const ProductDetails = (props) => {
             </nav>
           </div>
         </section>
-
         <section className="category float-start w-100 position-relative">
 
           <div className="listing-page-div">
@@ -71,39 +80,25 @@ const ProductDetails = (props) => {
 
               {(product) ? (
                 <>
-                  <div className="row g-5">
+                  <div className="row g-5 product-details-div">
                     <div className="col-lg-6">
-                      <div className="products-slide-1">
-                      {product.images && product.images.map((item, idx) => {
-                        return (
-                            <div id={idx} className="owl-carousel owl-theme">
-                          <div className="item">
-                            <figure className="mian-ppic">
-                              <img src={item.url ? item.url : defaultProdImg} alt="re3" />
-                            </figure>
-                          </div>
-                        </div>
-                        )
-                          })}
-                        <div id="sync1" className="owl-carousel owl-theme">
-                          <div className="item">
-                            <figure className="mian-ppic">
-                              <img src="images/0ea7b3bf-image-2.jpg" alt="re3" />
-                            </figure>
-                          </div>
-                        </div>
-                        <div id="sync2" className="owl-carousel owl-theme">
-                          <div className="item">
-                            <div className="thum-pic-slide">
-                              <figure>
-                                <img src="images/0ea7b3bf-image-2.jpg" alt="re3" />
-                              </figure>
-                            </div>
-                          </div>
+                      <div className="main-product-image products-slide-1">
+                        <div>
+                          <ReactImageZoom {...props} />
                         </div>
                       </div>
+                      <div className="other-product-images thum-pic-slide d-flex flex-wrap gap-15">
+                        {product?.images.map((item, index) => {
+                          return (
+                            <div className="item">
+                              <figure className="main-ppic ">
+                                <img src={item?.url} className="img-fluid" alt="" />
+                              </figure>
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
-
                     <div className="col-lg-6">
                       <div className="comon-details-part">
                         <h5 className="tags-ts"> {product.title} </h5>
@@ -113,52 +108,47 @@ const ProductDetails = (props) => {
                             <i className="fas fa-star"></i><i className="fas fa-star"></i><i className="fas fa-star"></i>
                             <i className="fas fa-star"></i><i className="fas fa-star"></i>
                           </span>
-                          <span>(12 Reviews)</span>
+                          <span>({product.reviews.length} Reviews)</span>
                         </div>
                         <h3 className="price-text mt-3">
-                          $20.00
-                          <span> $30.00 </span>
+                          ${product.price}
+                          {/*<span> ${product.price} </span>*/}
                         </h3>
                         <div className="feature-div-list">
                           <ul className="mt-4">
                             <li>
-                              <span>Vendor:</span>
-                              <span> Comic Jack</span>
+                              <span>Category:</span>
+                              <span>{product.category}</span>
                             </li>
                             <li>
-                              <span>Author(s):</span>
-                              <span>James Art</span>
-                            </li>
-                            <li>
-                              <span>Genre(s):</span>
-                              <span>Action, Adventure, Manhua, Martial Arts</span>
+                              <span>Brand</span>
+                              <span>{product.brand}</span>
                             </li>
 
                             <li>
-                              <span>Release:</span>
-                              <span>Aug, 2023</span>
+                              <span>Tags:</span>
+                              <span>Action, Adventure, Manhua, Martial Arts</span>
                             </li>
                             <li>
                               <span>ID:</span>
-                              <span>A1245dJ</span>
+                              <span>{product._id}</span>
                             </li>
                           </ul>
                         </div>
-
                         <div className="quantity-control" data-quantity="">
                           <button className="btn quantity-btn" data-quantity-minus="">
                             <i className="fas fa-minus"></i>
                           </button>
                           <input type="number" className="quantity-input"
-                           data-quantity-target=""
-                           value={quantity} 
-                           step="0.1" min="1" max="50"
-                           name="quantity" 
-                           onChange={() => {
+                            data-quantity-target=""
+                            value={quantity}
+                            step="0.1" min="1" max="50"
+                            name="quantity"
+                            onChange={() => {
                               const newQuant = quantity++;
                               setQuantity(newQuant)
                             }} />
-                          
+
                           <button className="btn quantity-btn" data-quantity-plus="">
                             <i className="fas fa-plus"></i>
                           </button>
@@ -186,16 +176,13 @@ const ProductDetails = (props) => {
                       </div>
                     </div>
                   </div>
-                  </>
+                </>
 
-                ) : (
-                  <>
+              ) : (
+                <>
                   <div>No Data</div>
-                  </>
-                )}
-
-  
-
+                </>
+              )}
               <div className="tabs-details-gn mt-5 mt-lg-0">
                 <ul className="nav nav-tabs" id="myTab" role="tablist">
                   <li className="nav-item" role="presentation">
@@ -281,7 +268,7 @@ const ProductDetails = (props) => {
                         </div>
 
                         <div className="comment-user-div">
-                          <div className="userp"> 
+                          <div className="userp">
                             <div className="us-pic">  <img src="images/manages-st2.jpg" alt="pico" /> </div>
                           </div>
                           <div className="user-dsl">
@@ -362,106 +349,11 @@ const ProductDetails = (props) => {
 
               <div className="like-div-also mt-5">
                 <h2> You may also like </h2>
-                <div className="like-slide owl-carousel owl-theme mt-4">
-
-                  <a href="product-details.html#" className="shop-items super-items overflow-hidden d-inline-block w-100 position-relative" data-aos="fade-left">
-                    <div className="img-box-div position-relative">
-                      <img alt="srt" src="images/super1.png" />
-                      <span className="off">10% off</span>
-                    </div>
-                    <div className="details-shopi">
-                      <div className="row align-items-center">
-                        <div className="col-8">
-                          <h5 className="text-white"> Figures & Statues..
-                            <span className="d-block"> Das deutschsprachige </span>
-                          </h5>
-                        </div>
-                        <div className="col-4">
-                          <h3 className="text-center"> $30 <span className="d-block"> $50 </span> </h3>
-                        </div>
-                      </div>
-
-                    </div>
-
-                  </a>
-
-
-                  <a href="product-details.html#" className="shop-items super-items overflow-hidden d-inline-block w-100 position-relative" data-aos="fade-left">
-                    <div className="img-box-div position-relative">
-                      <img alt="srt" src="images/se01.png" />
-                      <span className="off">10% off</span>
-                    </div>
-                    <div className="details-shopi">
-                      <div className="row align-items-center">
-                        <div className="col-8">
-                          <h5 className="text-white"> Figures & Statues..
-                            <span className="d-block"> Das deutschsprachige </span>
-                          </h5>
-                        </div>
-                        <div className="col-4">
-                          <h3 className="text-center"> $30 <span className="d-block"> $50 </span> </h3>
-                        </div>
-                      </div>
-
-                    </div>
-
-                  </a>
-
-
-                  <a href="product-details.html#" className="shop-items super-items overflow-hidden d-inline-block w-100 position-relative" data-aos="fade-left">
-                    <div className="img-box-div position-relative">
-                      <img alt="srt" src="images/se2.png" />
-                      <span className="off">10% off</span>
-                    </div>
-                    <div className="details-shopi">
-                      <div className="row align-items-center">
-                        <div className="col-8">
-                          <h5 className="text-white"> Figures & Statues..
-                            <span className="d-block"> Das deutschsprachige </span>
-                          </h5>
-                        </div>
-                        <div className="col-4">
-                          <h3 className="text-center"> $30 <span className="d-block"> $50 </span> </h3>
-                        </div>
-                      </div>
-
-                    </div>
-
-                  </a>
-
-
-                  <a href="product-details.html#" className="shop-items super-items overflow-hidden d-inline-block w-100 position-relative" data-aos="fade-left">
-                    <div className="img-box-div position-relative">
-                      <img alt="srt" src="images/se3.png" />
-                      <span className="off">10% off</span>
-                    </div>
-                    <div className="details-shopi">
-                      <div className="row align-items-center">
-                        <div className="col-8">
-                          <h5 className="text-white"> Figures & Statues..
-                            <span className="d-block"> Das deutschsprachige </span>
-                          </h5>
-                        </div>
-                        <div className="col-4">
-                          <h3 className="text-center"> $30 <span className="d-block"> $50 </span> </h3>
-                        </div>
-                      </div>
-
-                    </div>
-
-                  </a>
-
-
-                </div>
+                {/* <RelatedProducts {...products} /> */}
               </div>
-
-
             </div>
           </div>
-
-
         </section>
-
       </main>
     </>
   )

@@ -1,12 +1,12 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
-import { productSevice } from "./productService";
+import { productService } from "./service";
 
 export const getAllProducts = createAsyncThunk(
   "product/all",
   async (thunkAPI) => {
     try {
-      return await productSevice.getAllProducts();
+      return await productService.getAllProducts();
     } catch (error) {
       return thunkAPI.rejectWithValue(error);
     }
@@ -17,7 +17,7 @@ export const getProducts = createAsyncThunk(
   "product/query",
   async (data, thunkAPI) => {
     try {
-      return await productSevice.getProducts(data);
+      return await productService.getProducts(data);
     } catch (error) {
       return thunkAPI.rejectWithValue(error);
     }
@@ -28,7 +28,7 @@ export const getAProduct = createAsyncThunk(
   "product/getAProduct",
   async (id, thunkAPI) => {
     try {
-      return await productSevice.getSingleProduct(id);
+      return await productService.getSingleProduct(id);
     } catch (error) {
       return thunkAPI.rejectWithValue(error);
     }
@@ -39,7 +39,7 @@ export const addToWishlist = createAsyncThunk(
   "product/wishlist",
   async (prodId, thunkAPI) => {
     try {
-      return await productSevice.addToWishlist(prodId);
+      return await productService.addToWishlist(prodId);
     } catch (error) {
       return thunkAPI.rejectWithValue(error);
     }
@@ -50,7 +50,7 @@ export const addRating = createAsyncThunk(
   "product/rating",
   async (data, thunkAPI) => {
     try {
-      return await productSevice.rateProduct(data);
+      return await productService.rateProduct(data);
     } catch (error) {
       return thunkAPI.rejectWithValue(error);
     }
