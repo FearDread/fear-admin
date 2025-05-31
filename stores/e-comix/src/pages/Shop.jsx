@@ -3,8 +3,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 import BannerSub from "../components/Banner/BannerSub"
 import DetailedItem from "../components/Product/DetailedItem";
+import SuperItem from "../components/Product/SuperItem";
 import Loader from "../components/Loader/Loader";
-
+import {
+  addRating,
+  getAProduct,
+  getAllProducts,
+} from "../features/products/slice";
 
 const Shop = (props) => {
   const dispatch = useDispatch();
@@ -23,9 +28,9 @@ const Shop = (props) => {
   const [sort, setSort] = useState(null);
   
   //query state
-  let productState = useSelector((state) => state?.crud?.product);
-  const { result, loading } = useSelector((state) => state?.crud?.search);
-  let [searchParams, setSearchParams] = useSearchParams();
+  //const products = useSelector((state) => state?.crud?.product);
+  const products = useSelector((state) => state?.product?.product);
+  const [searchParams, setSearchParams] = useSearchParams();
 
 
   const getProducts = () => {
@@ -44,7 +49,8 @@ const Shop = (props) => {
 
   useEffect(() => {
     //getProducts();
-    //console.log('products = ', productState);
+        dispatch(getAllProducts());
+    //console.log('products = ', products);
   }, [])
 
   useEffect(() => {
@@ -52,8 +58,8 @@ const Shop = (props) => {
     let category = [];
     let newtags = [];
 
-    for (let index = 0; index < productState?.result?.length; index++) {
-      const item = productState?.result[index];
+    for (let index = 0; index < products?.result?.length; index++) {
+      const item = products?.result[index];
 
       newBrands.push(item.brand);
       category.push(item.category);
@@ -63,11 +69,11 @@ const Shop = (props) => {
     setBrands(newBrands);
     setCategories(category);
     setTags(newtags);
-  }, [productState]);
+  }, [products]);
 
   return (
     <>
-      {(loading) ? (
+      {(!products) ? (
         <>
           <main className="float-start w-100 total-body home-body mt-0">
             <section className="float-start w-100">
@@ -268,7 +274,7 @@ const Shop = (props) => {
 
                   <div id="products" className="mt-4 righty">
                     <div className="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-lg-5">
-                      {result[0] && result[0].slice(0, 9).map((item) => {
+                      {products && products.slice(0, 9).map((item) => {
                         return (
                           <DetailedItem {...item} />
                         )

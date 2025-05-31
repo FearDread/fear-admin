@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import { Link } from "react-router-dom";
 
 
 const ShopItem = (props) => {
@@ -10,7 +11,7 @@ const ShopItem = (props) => {
     return (
         <>
             <div className="col" data-idx={_id}>
-                <a href={link} className="shop-items overflow-hidden d-inline-block w-100 position-relative" data-aos="zoom-in">
+                <Link to={link} className="shop-items overflow-hidden d-inline-block w-100 position-relative" data-aos="zoom-in">
                     <div className="img-box-div position-relative">
                         <img alt="srt" src={images && images[0] ? images[0].url : "images/b5197a7a-image-22.jpg" } />
                         <span className="off">10% off</span>
@@ -24,10 +25,8 @@ const ShopItem = (props) => {
                                 <h3> {category} <span> {price} </span> </h3>
                             </div>
                         </div>
-
                     </div>
-
-                </a>
+                </Link>
             </div>
         </>
     )

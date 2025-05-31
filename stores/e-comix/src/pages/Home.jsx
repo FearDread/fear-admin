@@ -9,8 +9,8 @@ import Services from "../components/Services/Services";
 import Brands from "../components/Brands/Brands";
 
 import { getAllBlogs } from "../features/blogs/blogSlice";
-import { getAllProducts } from "../features/products/productSlilce";
-import { addToWishlist } from "../features/products/productSlilce";
+import { getAllProducts } from "../features/products/slice";
+import { addToWishlist } from "../features/products/slice";
 
 
 const Home = () => {

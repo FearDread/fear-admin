@@ -20,7 +20,7 @@ const Layout = () => {
     window.addEventListener("scroll", () => {
       var height = window.scrollY;
       if (height > 100) {
-        document.documentElement.classList.toggle('fixed-menu')
+        document.documentElement.classList.add('fixed-menu')
       } else {
         document.documentElement.classList.remove('fixed-menu');
       }

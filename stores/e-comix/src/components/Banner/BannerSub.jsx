@@ -7,8 +7,8 @@ const BannerSub = () => {
             <section className="banner-part sub-banner float-start w-100">
                 <div className="container">
                 </div>
-                <PageEdge />
             </section>
+            <PageEdge />
         </>
 
     )

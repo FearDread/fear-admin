@@ -1,13 +1,14 @@
 import React, { useEffect } from 'react';
+import { Link } from "react-router-dom";
 
 const SuperItem = (props) => {
 
-    const { title, description, category, price, images, brand } = props || {};
-
+    const { _id, title, description, category, price, images, brand } = props || {};
+    const link = "/product/" + _id;
     return (
         <>
             <div className="col">
-                <a href="index.html#" className="shop-items super-items overflow-hidden d-inline-block w-100 position-relative" data-aos="fade-up">
+                <Link to={link} className="shop-items super-items overflow-hidden d-inline-block w-100 position-relative" data-aos="fade-up">
                     <div className="img-box-div position-relative">
                         <img alt="srt" src={images && images[0] ? images[0].url : "images/b5197a7a-image-22.jpg"} />
                         <span className="off">10% off</span>
@@ -26,7 +27,7 @@ const SuperItem = (props) => {
 
                     </div>
 
-                </a>
+                </Link>
             </div>
         </>
     )

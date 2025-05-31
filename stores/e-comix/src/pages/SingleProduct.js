@@ -1,92 +1,77 @@
 import React, { useEffect, useState } from "react";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import ReactStars from "react-rating-stars-component";
-import BreadCrumb from "../components/BreadCrumb";
-import Meta from "../components/Meta";
-import ProductCard from "../components/ProductCard";
+import ProductCard from "../components/Product/ProductCard";
 import ReactImageZoom from "react-image-zoom";
-import Color from "../components/Color";
-import { TbGitCompare } from "react-icons/tb";
 import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import watch from "../images/watch.jpg";
-import Container from "../components/Container";
-import { addToWishlist } from "../features/products/productSlilce";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addRating,
   getAProduct,
   getAllProducts,
-} from "../features/products/productSlilce";
+} from "../features/products/slice";
 import { toast } from "react-toastify";
 import { addProdToCart, getUserCart } from "../features/user/userSlice";
 
 const SingleProduct = () => {
-  const [color, setColor] = useState(null);
-
-  const [quantity, setQuantity] = useState(1);
-  const [alreadyAdded, setAlreadyAdded] = useState(false);
-  const location = useLocation();
+  const { id } = useParams();
   const navigate = useNavigate();
-  const getProductId = location.pathname.split("/")[2];
   const dispatch = useDispatch();
-  const productState = useSelector((state) => state?.product?.singleproduct);
+
+   const [quantity, setQuantity] = useState(1);
+    const [alreadyAdded, setAlreadyAdded] = useState(false);
+
+  const product = useSelector((state) => state?.product?.current);
   const productsState = useSelector((state) => state?.product?.product);
   const cartState = useSelector((state) => state?.auth?.cartProducts);
-  const rat = productState?.totalrating;
-  const wishlistState = useSelector((state) => state?.auth?.wishlist?.wishlist);
-  console.log(wishlistState);
+  const { isLoggedIn } = useSelector((state) => state?.auth);
+  
+  const ratings = product?.totalrating;
+  const wishlist = useSelector((state) => state?.auth?.wishlist?.wishlist);
+  console.log("Auth = ", useSelector((state) => state?.auth));
 
   useEffect(() => {
-    dispatch(getAProduct(getProductId));
-    dispatch(getUserCart());
+    dispatch(getAProduct(id));
+
     dispatch(getAllProducts());
+
+    if (isLoggedIn) {
+          dispatch(getUserCart());
+    }
   }, []);
 
   useEffect(() => {
     for (let index = 0; index < cartState?.length; index++) {
-      if (getProductId === cartState[index]?.productId?._id) {
+      if (id === cartState[index]?.productId?._id) {
         setAlreadyAdded(true);
       }
     }
   });
 
+
   const uploadCart = () => {
-    if (color === null) {
-      toast.error("Please choose Color");
-    } else {
+
       dispatch(
         addProdToCart({
-          productId: productState?._id,
+          productId: product?._id,
           quantity,
-          color,
-          price: productState?.price,
+          price: product?.price,
         }),
         navigate("/cart")
       );
-    }
   };
   const props = {
     width: 594,
     height: 600,
     zoomWidth: 600,
 
-    img: productState?.images[0].url
-      ? productState?.images[0].url
+    img: product?.images[0].url
+      ? product?.images[0].url
       : "https://images.pexels.com/photos/190819/pexels-photo-190819.jpeg?cs=srgb&dl=pexels-fernando-arcos-190819.jpg&fm=jpg",
   };
 
   const [orderedProduct, setorderedProduct] = useState(true);
-  const copyToClipboard = (text) => {
-    console.log("text", text);
-    var textField = document.createElement("textarea");
-    textField.innerText = text;
-    document.body.appendChild(textField);
-    textField.select();
-    document.execCommand("copy");
-    textField.remove();
-  };
 
-  const closeModal = () => {};
   const [popularProduct, setPopularProduct] = useState([]);
 
   useEffect(() => {
@@ -99,7 +84,7 @@ const SingleProduct = () => {
         setPopularProduct(data);
       }
     }
-  }, [productState]);
+  }, [product]);
 
   const [star, setStar] = useState(null);
   const [comment, setComment] = useState(null);
@@ -119,10 +104,10 @@ const SingleProduct = () => {
       return false;
     } else {
       dispatch(
-        addRating({ star: star, comment: comment, prodId: getProductId })
+        addRating({ star: star, comment: comment, prodId: id })
       );
       setTimeout(() => {
-        dispatch(getAProduct(getProductId));
+        dispatch(getAProduct(id));
       }, 100);
     }
     return false;
@@ -130,9 +115,7 @@ const SingleProduct = () => {
 
   return (
     <>
-      <Meta title={"Product Name"} />
-      <BreadCrumb title={productState?.title} />
-      <Container class1="main-product-wrapper py-5 home-wrapper-2">
+      <section className="main-product-wrapper py-5 home-wrapper-2">
         <div className="row">
           <div className="col-6">
             <div className="main-product-image">
@@ -141,7 +124,7 @@ const SingleProduct = () => {
               </div>
             </div>
             <div className="other-product-images d-flex flex-wrap gap-15">
-              {productState?.images.map((item, index) => {
+              {product?.images.map((item, index) => {
                 return (
                   <div>
                     <img src={item?.url} className="img-fluid" alt="" />
@@ -153,20 +136,20 @@ const SingleProduct = () => {
           <div className="col-6">
             <div className="main-product-details">
               <div className="border-bottom">
-                <h3 className="title">{productState?.title}</h3>
+                <h3 className="title">{product?.title}</h3>
               </div>
               <div className="border-bottom py-3">
-                <p className="price"> Rs. {productState?.price}/-</p>
+                <p className="price"> Rs. {product?.price}/-</p>
                 <div className="d-flex align-items-center gap-10">
                   <ReactStars
                     count={5}
                     size={24}
-                    value={productState?.totalrating.toString()}
+                    value={product?.totalrating.toString()}
                     edit={false}
                     activeColor="#ffd700"
                   />
                   <p className="mb-0 t-review">
-                    ( {productState?.ratings?.length} Reviews )
+                    ( {product?.ratings?.length} Reviews )
                   </p>
                 </div>
                 <a className="review-btn" href="#review">
@@ -176,19 +159,19 @@ const SingleProduct = () => {
               <div className=" py-3">
                 <div className="d-flex gap-10 align-items-center my-2">
                   <h3 className="product-heading">Type :</h3>
-                  <p className="product-data">{productState?.category}</p>
+                  <p className="product-data">{product?.category}</p>
                 </div>
                 <div className="d-flex gap-10 align-items-center my-2">
                   <h3 className="product-heading">Brand :</h3>
-                  <p className="product-data">{productState?.brand}</p>
+                  <p className="product-data">{product?.brand}</p>
                 </div>
                 <div className="d-flex gap-10 align-items-center my-2">
                   <h3 className="product-heading">Category :</h3>
-                  <p className="product-data">{productState?.category}</p>
+                  <p className="product-data">{product?.category}</p>
                 </div>
                 <div className="d-flex gap-10 align-items-center my-2">
                   <h3 className="product-heading">Tags :</h3>
-                  <p className="product-data">{productState?.tags}</p>
+                  <p className="product-data">{product?.tags}</p>
                 </div>
                 <div className="d-flex gap-10 align-items-center my-2">
                   <h3 className="product-heading">Availablity :</h3>
@@ -211,15 +194,6 @@ const SingleProduct = () => {
                     </span>
                   </div>
                 </div> */}
-                {alreadyAdded === false && (
-                  <div className="d-flex gap-10 flex-column mt-2 mb-3">
-                    <h3 className="product-heading">Color :</h3>
-                    <Color
-                      setColor={setColor}
-                      colorData={productState?.color}
-                    />
-                  </div>
-                )}
 
                 <div className="d-flex align-items-center gap-15 flex-row mt-2 mb-3">
                   <h3 className="product-heading">Quantity :</h3>
@@ -292,7 +266,7 @@ const SingleProduct = () => {
                   <a
                     href="javascript:void(0);"
                     onClick={() => {
-                      copyToClipboard(window.location.href);
+                      //copyToClipboard(window.location.href);
                     }}
                   >
                     Copy Product Link
@@ -302,20 +276,20 @@ const SingleProduct = () => {
             </div>
           </div>
         </div>
-      </Container>
-      <Container class1="description-wrapper py-5 home-wrapper-2">
+      </section>
+      <section className="description-wrapper py-5 home-wrapper-2">
         <div className="row">
           <div className="col-12">
             <h4>Description</h4>
             <div className="bg-white p-3">
               <p
-                dangerouslySetInnerHTML={{ __html: productState?.description }}
+                dangerouslySetInnerHTML={{ __html: product?.description }}
               ></p>
             </div>
           </div>
         </div>
-      </Container>
-      <Container class1="reviews-wrapper home-wrapper-2">
+      </section>
+      <section className="reviews-wrapper home-wrapper-2">
         <div className="row">
           <div className="col-12">
             <h3 id="review">Reviews</h3>
@@ -327,12 +301,12 @@ const SingleProduct = () => {
                     <ReactStars
                       count={5}
                       size={24}
-                      value={productState?.totalrating?.toString()}
+                      value={product?.totalrating?.toString()}
                       edit={false}
                       activeColor="#ffd700"
                     />
                     <p className="mb-0">
-                      Based on {productState?.ratings?.length} Reviews
+                      Based on {product?.ratings?.length} Reviews
                     </p>
                   </div>
                 </div>
@@ -383,8 +357,8 @@ const SingleProduct = () => {
                 </div>
               </div>
               <div className="reviews mt-4">
-                {productState &&
-                  productState.ratings?.map((item, index) => {
+                {product &&
+                  product.ratings?.map((item, index) => {
                     return (
                       <div className="review">
                         <div className="d-flex gap-10 align-items-center">
@@ -405,8 +379,8 @@ const SingleProduct = () => {
             </div>
           </div>
         </div>
-      </Container>
-      <Container class1="popular-wrapper py-5 home-wrapper-2">
+      </section>
+      <section className="popular-wrapper py-5 home-wrapper-2">
         <div className="row">
           <div className="col-12">
             <h3 className="section-heading">Our Popular Products</h3>
@@ -415,62 +389,7 @@ const SingleProduct = () => {
         <div className="row">
           <ProductCard data={popularProduct} />
         </div>
-      </Container>
-
-      {/* <div
-        className="modal fade"
-        id="staticBackdrop"
-        data-bs-backdrop="static"
-        data-bs-keyboard="false"
-        tabindex="-1"
-        aria-labelledby="staticBackdropLabel"
-        aria-hidden="true"
-      >
-        <div className="modal-dialog modal-dialog-centered ">
-          <div className="modal-content">
-            <div className="modal-header py-0 border-0">
-              <button
-                type="button"
-                className="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
-            </div>
-            <div className="modal-body py-0">
-              <div className="d-flex align-items-center">
-                <div className="flex-grow-1 w-50">
-                  <img src={watch} className="img-fluid" alt="product imgae" />
-                </div>
-                <div className="d-flex flex-column flex-grow-1 w-50">
-                  <h6 className="mb-3">Apple Watch</h6>
-                  <p className="mb-1">Quantity: asgfd</p>
-                  <p className="mb-1">Color: asgfd</p>
-                  <p className="mb-1">Size: asgfd</p>
-                </div>
-              </div>
-            </div>
-            <div className="modal-footer border-0 py-0 justify-content-center gap-30">
-              <button type="button" className="button" data-bs-dismiss="modal">
-                View My Cart
-              </button>
-              <button type="button" className="button signup">
-                Checkout
-              </button>
-            </div>
-            <div className="d-flex justify-content-center py-3">
-              <Link
-                className="text-dark"
-                to="/product"
-                onClick={() => {
-                  closeModal();
-                }}
-              >
-                Continue To Shopping
-              </Link>
-            </div>
-          </div>
-        </div>
-      </div> */}
+      </section>
     </>
   );
 };
