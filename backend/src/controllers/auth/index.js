@@ -55,7 +55,7 @@ exports.login = async (req, res) => {
           let token = this.getJWTToken(res, user);
           return res.status(200).json({ user, success: true, token });
         })
-          .catch((error) => { throw new Error(error); });
+        .catch((error) => { throw new Error(error); });
       }
     })
     .catch((error) => { throw new Error("User Not found"); });

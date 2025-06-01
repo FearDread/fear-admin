@@ -25,8 +25,11 @@ const cache = (options = {}) => {
     },
     get: (key) => {
       try {
+        if ( key !== "undefined") {
         const data = window[engine].getItem(key);
         return data ? JSON.parse(data) : null;
+        }
+
 
       } catch (error) {
         console.error(`Error getting item ${key}:`, error);

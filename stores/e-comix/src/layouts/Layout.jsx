@@ -54,7 +54,7 @@ const Layout = () => {
         pauseOnFocusLoss
         draggable
         pauseOnHover
-        theme="dark"
+        theme="light"
       />
     </>
   );
