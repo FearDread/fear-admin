@@ -22,17 +22,22 @@ module.exports = FEAR = (( app ) => {
       
   this.app = app;
 
+  this.db = db;
+  this.log = logger;
+  this.env = _config;
+  this.cloud = cloud;
+  this.logo = this.env.FEAR_LOGO;
+
   this.app.set("PORT", 4000);
+  this.app.use(morgan);
+  this.app.use(express.json());
+  this.app.use(bodyParser.json({limit:"200mb"}));
+  this.app.use(bodyParser.urlencoded({ extended: true }));
   this.app.use(compression());
   this.app.use(fileUpload());
   this.app.use(cookieParser());
 
-  this.db = db;
-  //this.passport = passport;
-  this.log = logger;
-  this.env = _config;
-  this.cloud = cloud;
-  //this.validator = validator;
+
   this.origins = _config.ALLOWED_ORIGINS.split(',').map(item => item.trim());
   this.cconfig = {
     credentials: true,
@@ -59,12 +64,7 @@ module.exports = FEAR = (( app ) => {
     });
   };
   
-  this.logo = this.env.FEAR_LOGO;
-  
-  this.app.use(morgan);
-  this.app.use(express.json());
-  this.app.use(bodyParser.json());
-  this.app.use(bodyParser.urlencoded({ extended: true }));
+
 
   //this.app.use(this.passport);
   this.app.use(cors(this.cconfig)); 
