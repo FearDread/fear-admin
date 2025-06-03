@@ -1,8 +1,6 @@
 const path = require("path"),
       express = require("express"),
       compression = require("compression"),
-     // passport = require("passport-local"),
-      bodyParser = require("body-parser"),
       cookieParser = require("cookie-parser"),
       fileUpload = require("express-fileupload"),
       cors = require("cors"),
@@ -30,9 +28,9 @@ module.exports = FEAR = (( app ) => {
 
   this.app.set("PORT", 4000);
   this.app.use(morgan);
-  this.app.use(express.json());
-  this.app.use(bodyParser.json({limit:"50mb"}));
-  this.app.use(bodyParser.urlencoded({ limit:'50mb', extended: true }));
+  this.app.use(express.json({limit: '10mb'}));
+  //this.app.use(bodyParser.json({limit:"50mb"}));
+  //this.app.use(bodyParser.urlencoded({ limit:'50mb', extended: true }));
   this.app.use(compression());
   this.app.use(fileUpload());
   this.app.use(cookieParser());
