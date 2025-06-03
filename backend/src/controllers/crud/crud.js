@@ -52,7 +52,7 @@ exports.read = tryCatch(async (Model, req, res) => {
  */
 exports.create = tryCatch(async (Model, req, res) => {
   if (req.body.images) {
-    let links = await cloud.uploadImages(req.body.images);
+    const links = await cloud.uploadImages(req.body.images);
     req.body.images = links;
   }
 
