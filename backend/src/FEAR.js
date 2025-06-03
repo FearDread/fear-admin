@@ -31,8 +31,8 @@ module.exports = FEAR = (( app ) => {
   this.app.set("PORT", 4000);
   this.app.use(morgan);
   this.app.use(express.json());
-  this.app.use(bodyParser.json({limit:"200mb"}));
-  this.app.use(bodyParser.urlencoded({ extended: true }));
+  this.app.use(bodyParser.json({limit:"50mb"}));
+  this.app.use(bodyParser.urlencoded({ limit:'50mb', extended: true }));
   this.app.use(compression());
   this.app.use(fileUpload());
   this.app.use(cookieParser());
