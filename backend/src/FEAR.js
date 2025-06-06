@@ -2,8 +2,11 @@ const path = require("path"),
       express = require("express"),
       compression = require("compression"),
       cookieParser = require("cookie-parser"),
+      session = require("express-session"),
       fileUpload = require("express-fileupload"),
+      passport = require("passport"),
       cors = require("cors"),
+
       __dirname1 = path.resolve();
 
 
@@ -25,18 +28,24 @@ module.exports = FEAR = (( app ) => {
   this.env = _config;
   this.cloud = cloud;
   this.logo = this.env.FEAR_LOGO;
+  this.origins = _config.ALLOWED_ORIGINS.split(',').map(item => item.trim());
 
   this.app.set("PORT", 4000);
   this.app.use(morgan);
   this.app.use(express.json({limit: '10mb'}));
-  //this.app.use(bodyParser.json({limit:"50mb"}));
-  //this.app.use(bodyParser.urlencoded({ limit:'50mb', extended: true }));
   this.app.use(compression());
   this.app.use(fileUpload());
   this.app.use(cookieParser());
-
-
-  this.origins = _config.ALLOWED_ORIGINS.split(',').map(item => item.trim());
+  /*
+  this.app.use(
+    session({
+      resave: true,
+      saveUninitialized: true,
+      secret: this.env.SECRETE_KEY,
+      store: new MongoStore({ url: this.env.DB_URL, autoReconnect: true }),
+    })
+  );
+  */
   this.cconfig = {
     credentials: true,
     origin: (origin, callback) => {
@@ -62,26 +71,19 @@ module.exports = FEAR = (( app ) => {
     });
   };
   
+  this.app.use(passport.initialize());
+  this.app.use(passport.session());
 
-
-  //this.app.use(this.passport);
   this.app.use(cors(this.cconfig)); 
-  /*
-  this.app.use((req, res, next) => {
-    res.header( "Access-Control-Allow-Origin", "*" );
-    res.header( "Access-Control-Allow-Headers", this.env.ALLOWED_HEADERS );
-    res.setHeader( "Access-Control-Allow-Methods", "GET, POST, PUT, DELETE" );
-    
-    next();
-  });
-  */
-
   this.app.options("*", cors(this.cconfig));
+
   // Load Routes
   this.loadRoutes();
 
   this.app.use((req, res, next) => {
     this.log.info( "FEAR API Query :: " + req.url );
+    
+    res.locals.user = req.user;
     next();
   })
 
