@@ -1,8 +1,6 @@
 // needed for local authentication
 const passport = require("passport");
-// needed for local login
 const LocalStrategy = require("passport-local").Strategy;
-// needed for facebook authentication
 const FacebookStrategy = require("passport-facebook").Strategy;
 const secret = require("../config/secret");
 const User = require("../models/user");
@@ -20,6 +18,13 @@ passport.deserializeUser((id, done) => {
   });
 });
 
+// custom function validate
+exports.isAuthenticated = (req, res, next) => {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.redirect("/login");
+};
 // give the middleware a name, and create a new anonymous instance of LocalStrategy
 passport.use(
   "local-login",
@@ -102,10 +107,3 @@ passport.use(
   )
 );
 
-// custom function validate
-exports.isAuthenticated = (req, res, next) => {
-  if (req.isAuthenticated()) {
-    return next();
-  }
-  res.redirect("/login");
-};
