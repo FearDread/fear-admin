@@ -96,7 +96,7 @@ exports.isAuthorized = async (req, res, next) => {
   } else {
     return res.status(401).json({success: false, message: "No Token Cookie"});
   }     
-}
+}  
 
 exports.getJWTToken = (res, user) => {
   const token = jwt.sign({
