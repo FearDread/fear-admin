@@ -41,7 +41,7 @@ module.exports = FEAR = (( app ) => {
       resave: true,
       saveUninitialized: true,
       secret: this.env.SESSION_KEY,
-      //store: new MongoStore({ url: this.env.DB_URL, autoReconnect: true }),
+      //store: MongoStore({ url: this.env.DB_URL, autoReconnect: true }),
     })
   );
 

@@ -9,8 +9,9 @@ import Services from "../components/Services/Services";
 import Brands from "../components/Brands/Brands";
 
 import { getAllBlogs } from "../features/blogs/blogSlice";
-import { getAllProducts } from "../features/products/slice";
-import { addToWishlist } from "../features/products/slice";
+import { product } from "../features/products/factory";
+//import { addToWishlist } from "../features/products/slice";
+//import { factory } from "../features/factory/factory";
 
 
 const Home = () => {
@@ -18,21 +19,25 @@ const Home = () => {
   const dispatch = useDispatch();
 
   const blogState = useSelector((state) => state?.blog?.blog);
-  const productState = useSelector((state) => state?.product?.product);
+  const productState = useSelector((state) => state.product.product);
 
   const getblogs = () => {
-    dispatch(getAllBlogs());
+    //dispatch(getAllBlogs());
   };
   const getProducts = () => {
-    dispatch(getAllProducts());
+    dispatch(product.fetch());
+    console.log('new state = ', productState)
+    //dispatch(factory.fetch('product/all'));
+
   };
   const addToWish = (id) => {
-    dispatch(addToWishlist(id));
+    //dispatch(addToWishlist(id));
   };
 
   useEffect(() => {
     getblogs();
     getProducts();
+        console.log('state = ', productState);
   }, []);
 
   return (
