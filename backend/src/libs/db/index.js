@@ -11,7 +11,8 @@ module.exports = {
         })
         .then(() => {
             console.log("You successfully connected to MongoDB! Using :: " + env.DB_NAME);
-            if ( callback ) callback(); })
+            if ( callback ) callback();
+        })
         .catch((err) => { console.log("Error connecting to MongoDB", err); })
     },
     store: () => {},

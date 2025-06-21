@@ -7,8 +7,9 @@ const StateFactory = (entity, data = null) => ({
     success: false,
     error: null
 });
+
 const FeatureFactory = (name, endpoint, options = {}) => {
-    const { initialData, transform } = options;
+    const { initialData, service } = options;
     const apiurl = `${name}/${endpoint}`;
 
     const fetch = createAsyncThunk(
@@ -16,7 +17,6 @@ const FeatureFactory = (name, endpoint, options = {}) => {
         async (_, { rejectWithValue }) => {
             return await API.get(apiurl)
                 .then((response) => {
-                    console.log('factory resp = ', response);
                     if (response.data && response.data.success) {
                         return response.data.result;
                     }
@@ -27,13 +27,29 @@ const FeatureFactory = (name, endpoint, options = {}) => {
         }
     )  
 
-    const fetchOne = (id) => {
+    const fetchOne = async (id) => {
         return createAsyncThunk(
         `${name}/${id}`,
         async (_, { rejectWithValue }) => {
             return await API.get(`${name}/${id}`)
                 .then((response) => {
-                    console.log('factory resp = ', response);
+                    if (response.data && response.data.success) {
+                        return response.data.result;
+                    }
+                })
+                .catch((error) => {
+                    return rejectWithValue('Error :: ', error);
+                })
+            }
+        )
+    }
+
+    const search = async (query) => {
+        return createAsyncThunk(
+        `${name}/search?${query}`,
+        async (_, { rejectWithValue }) => {
+            return await API.get(`${name}/search?${query}`)
+                .then((response) => {
                     if (response.data && response.data.success) {
                         return response.data.result;
                     }
@@ -48,7 +64,11 @@ const FeatureFactory = (name, endpoint, options = {}) => {
     const slice = createSlice({
         name,
         initialState: StateFactory(name, initialData),
-        reducers: {},
+        reducers: {
+            clearData: (state) => {
+                state[name] = null;
+            }
+        },
         extraReducers: (builder) => {
             builder
                 .addCase(fetch.pending, (state) => {
@@ -77,18 +97,33 @@ const FeatureFactory = (name, endpoint, options = {}) => {
                     state.loading = false;
                     state.success = false;
                 })
+                .addCase(search.pending, (state) => {
+                    state.loading = true;
+                })
+                .addCase(search.fulfilled, (state, action) => {
+                    state.loading = false;
+                    state.success = true;
+                    state[name] = action.payload;
+                })
+                .addCase(search.rejected, (state, action) => {
+                    state.error = action.error;
+                    state.loading = false;
+                    state.success = false;
+                })
         }
     })
 
     return {
+        API,
         reducer: slice.reducer,
         actions: slice.actions,
         asyncActions: {
             fetch,
             fetchOne,
-            search
+            search,
+            services: (service) ? service : {}
         },
-        extraActions: (options) ? options.extra : {}
+
     }
 
 }
