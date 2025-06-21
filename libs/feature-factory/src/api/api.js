@@ -1,6 +1,6 @@
 import axios from "axios";
 import qs from "qs";
-import cache from "./cache";
+import cache from "../cache/cache.js";
 
 
 const API_BASE_URL = (process.env.NODE_ENV === "production")

@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import API from "../api";
+import API from "../api/api.js";
 
 const StateFactory = (entity, data = null) => ({
     [entity]: data,
@@ -31,7 +31,7 @@ const FeatureFactory = (name, endpoint, options = {}) => {
         return createAsyncThunk(
         `${name}/${id}`,
         async (_, { rejectWithValue }) => {
-            return await API.get(apiurl)
+            return await API.get(`${name}/${id}`)
                 .then((response) => {
                     console.log('factory resp = ', response);
                     if (response.data && response.data.success) {
@@ -64,6 +64,19 @@ const FeatureFactory = (name, endpoint, options = {}) => {
                     state.loading = false;
                     state.success = false;
                 })
+                .addCase(fetchOne.pending, (state) => {
+                    state.loading = true;
+                })
+                .addCase(fetchOne.fulfilled, (state, action) => {
+                    state.loading = false;
+                    state.success = true;
+                    state[name] = action.payload;
+                })
+                .addCase(fetchOne.rejected, (state, action) => {
+                    state.error = action.error;
+                    state.loading = false;
+                    state.success = false;
+                })
         }
     })
 
@@ -72,8 +85,10 @@ const FeatureFactory = (name, endpoint, options = {}) => {
         actions: slice.actions,
         asyncActions: {
             fetch,
-            fetchOne
-        }
+            fetchOne,
+            search
+        },
+        extraActions: (options) ? options.extra : {}
     }
 
 }
