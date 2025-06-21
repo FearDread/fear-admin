@@ -12,6 +12,8 @@ import {
 } from "../features/products/slice";
 import { toast } from "react-toastify";
 import { addProdToCart, getUserCart } from "../features/user/userSlice";
+import { product }  from "../features/products/factory";
+
 
 const SingleProduct = () => {
   const { id } = useParams();
@@ -21,19 +23,19 @@ const SingleProduct = () => {
    const [quantity, setQuantity] = useState(1);
     const [alreadyAdded, setAlreadyAdded] = useState(false);
 
-  const product = useSelector((state) => state?.product?.current);
-  const productsState = useSelector((state) => state?.product?.product);
+  //const product = useSelector((state) => state?.product?.current);
+  const productsState = useSelector((state) => state.product.product);
   const cartState = useSelector((state) => state?.auth?.cartProducts);
   const { isLoggedIn } = useSelector((state) => state?.auth);
   
-  const ratings = product?.totalrating;
+  //const ratings = product?.totalrating;
   const wishlist = useSelector((state) => state?.auth?.wishlist?.wishlist);
   console.log("Auth = ", useSelector((state) => state?.auth));
 
   useEffect(() => {
-    dispatch(getAProduct(id));
+    dispatch(product.fetchOne(id));
 
-    dispatch(getAllProducts());
+    dispatch(product.fetch());
 
     if (isLoggedIn) {
           dispatch(getUserCart());
