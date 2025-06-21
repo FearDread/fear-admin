@@ -3,7 +3,7 @@ const path = require("path"),
       compression = require("compression"),
       cookieParser = require("cookie-parser"),
       fileUpload = require("express-fileupload"),
-      passport = require("passport"),
+      //passport = require("passport"),
       cors = require("cors"),
       __dirname1 = path.resolve();
 
@@ -60,8 +60,8 @@ module.exports = FEAR = (( app ) => {
     });
   };
   
-  this.app.use(passport.initialize());
-  this.app.use(passport.session());
+  //this.app.use(passport.initialize());
+  //this.app.use(passport.session());
 
   this.app.use(cors(this.cconfig)); 
   this.app.options("*", cors(this.cconfig));
