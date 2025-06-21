@@ -84,32 +84,6 @@ const FeatureFactory = (name, endpoint, options = {}) => {
                     state.loading = false;
                     state.success = false;
                 })
-                .addCase(fetchOne.pending, (state) => {
-                    state.loading = true;
-                })
-                .addCase(fetchOne.fulfilled, (state, action) => {
-                    state.loading = false;
-                    state.success = true;
-                    state[name] = action.payload;
-                })
-                .addCase(fetchOne.rejected, (state, action) => {
-                    state.error = action.error;
-                    state.loading = false;
-                    state.success = false;
-                })
-                .addCase(search.pending, (state) => {
-                    state.loading = true;
-                })
-                .addCase(search.fulfilled, (state, action) => {
-                    state.loading = false;
-                    state.success = true;
-                    state[name] = action.payload;
-                })
-                .addCase(search.rejected, (state, action) => {
-                    state.error = action.error;
-                    state.loading = false;
-                    state.success = false;
-                })
         }
     })
 
