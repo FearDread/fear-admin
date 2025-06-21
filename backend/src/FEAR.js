@@ -2,7 +2,6 @@ const path = require("path"),
       express = require("express"),
       compression = require("compression"),
       cookieParser = require("cookie-parser"),
-      session = require("express-session"),
       fileUpload = require("express-fileupload"),
       passport = require("passport"),
       cors = require("cors"),
@@ -19,7 +18,7 @@ module.exports = FEAR = (( app ) => {
   const cloud = require("./libs/cloud");
   const db = require("./libs/db"),
         {parsed: _config} = env;
-      4
+      
   this.app = app;
 
   this.db = db;
@@ -35,15 +34,6 @@ module.exports = FEAR = (( app ) => {
   this.app.use(compression());
   this.app.use(fileUpload());
   this.app.use(cookieParser());
-
-  this.app.use(
-    session({
-      resave: true,
-      saveUninitialized: true,
-      secret: this.env.SESSION_KEY,
-      //store: MongoStore({ url: this.env.DB_URL, autoReconnect: true }),
-    })
-  );
 
   this.cconfig = {
     credentials: true,
