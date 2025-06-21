@@ -6,4 +6,4 @@ const {reducer: productReducer, asyncActions: product, API } = FeatureFactory(
      productService
 )
 
-export { productReducer, product };
+export { productReducer, product, API};
