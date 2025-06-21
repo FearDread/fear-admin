@@ -1,8 +1,9 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { toast } from "react-toastify";
+import { FeatureFactory } from "@feardread/feature-factory";
 import { productService } from "./service";
-import FeatureFactory from "@feardread/feature-factory";
 
-const {reducer: productReducer, asyncActions: product } = FeatureFactory('product', 'all', {})
+const {reducer: productReducer, asyncActions: product, API } = FeatureFactory(
+    'product', 'all', {},
+     productService
+)
 
 export { productReducer, product };
