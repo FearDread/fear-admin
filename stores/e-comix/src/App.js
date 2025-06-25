@@ -44,7 +44,7 @@ function App() {
             <Route path="collection" element={<Collection />} />
             <Route path="shop" element={<Shop />} />
 
-            <Route path="product/:id" element={<ProductDetails />} />
+            <Route path="product/:id" element={<SingleProduct />} />
             <Route path="blog" element={<Blog />} />
             <Route path="blog/:id" element={<BlogDetails />} />
             <Route

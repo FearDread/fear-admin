@@ -1,3 +1,4 @@
+import { API } from "../api";
 
 const getUserWislist = async () => {
   const response = await API.get(`user/wishlist`);
@@ -20,7 +21,7 @@ const getCart = async (data) => {
   }
 };
 
-export const service = {
+export const cartService = {
     getCart,
     addToCart,
     getUserWislist

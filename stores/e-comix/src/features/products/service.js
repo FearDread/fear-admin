@@ -1,5 +1,6 @@
-import API from "../api";
-//mport { base_url, config } from "../../utils/axiosConfig";
+import { API } from "../api";
+
+
 
 const getAllProducts = async () => {
   const response = await API.get("product/all");

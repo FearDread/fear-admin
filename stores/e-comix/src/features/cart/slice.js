@@ -1,7 +1,6 @@
 import { FeatureFactory } from "@feardread/feature-factory";
-import service from "./service";
+import { cartService } from "./service";
 
-const { reducer: cartReducer, asyncActions: cart } = FeatureFactory('category', 'all', service);
-
+const { reducer: cartReducer, asyncActions: cart } = FeatureFactory('cart', 'user', { service: cartService });
 
 export { cartReducer, cart };

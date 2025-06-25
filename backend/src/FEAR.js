@@ -48,6 +48,7 @@ module.exports = FEAR = (( app ) => {
   }
 
   this.loadRoutes = () => {
+    const _this = this;
     const dir = "routes";
     const modPath = path.join( __dirname, dir );
   
@@ -56,7 +57,7 @@ module.exports = FEAR = (( app ) => {
       const module = require(`./${dir}/${file}`);
   
       this.log.info("Route added :: /fear/api/" + name);
-      this.app.use('/fear/api/' + name, cors(), module);
+      this.app.use('/fear/api/' + name, cors(_this.cconfig), module);
     });
   };
   
