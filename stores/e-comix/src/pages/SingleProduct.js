@@ -23,25 +23,25 @@ const SingleProduct = () => {
    const [quantity, setQuantity] = useState(1);
     const [alreadyAdded, setAlreadyAdded] = useState(false);
 
-  //const product = useSelector((state) => state?.product?.current);
-  const productsState = useSelector((state) => state.product.product);
-  const cartState = useSelector((state) => state?.auth?.cartProducts);
-  const { isLoggedIn } = useSelector((state) => state?.auth);
+  //const product = useSelector((state) => state?.productState.current);
+  const productState = useSelector((state) => state.product.product);
+  //const cartState = useSelector((state) => state?.auth?.cartProducts);
+  //const { isLoggedIn } = useSelector((state) => state?.auth);
   
-  //const ratings = product?.totalrating;
+  //const ratings = productState.totalrating;
   const wishlist = useSelector((state) => state?.auth?.wishlist?.wishlist);
-  console.log("Auth = ", useSelector((state) => state?.auth));
 
   useEffect(() => {
     dispatch(product.fetchOne(id));
 
-    dispatch(product.fetch());
-
+    //dispatch(productState.fetch());
+    /*
     if (isLoggedIn) {
           dispatch(getUserCart());
     }
+          */
   }, []);
-
+/*
   useEffect(() => {
     for (let index = 0; index < cartState?.length; index++) {
       if (id === cartState[index]?.productId?._id) {
@@ -49,15 +49,16 @@ const SingleProduct = () => {
       }
     }
   });
-
+)
+*/
 
   const uploadCart = () => {
 
       dispatch(
         addProdToCart({
-          productId: product?._id,
+          productId: productState._id,
           quantity,
-          price: product?.price,
+          price: productState.price,
         }),
         navigate("/cart")
       );
@@ -67,15 +68,14 @@ const SingleProduct = () => {
     height: 600,
     zoomWidth: 600,
 
-    img: product?.images[0].url
-      ? product?.images[0].url
-      : "https://images.pexels.com/photos/190819/pexels-photo-190819.jpeg?cs=srgb&dl=pexels-fernando-arcos-190819.jpg&fm=jpg",
+    img: "https://images.pexels.com/photos/190819/pexels-photo-190819.jpeg?cs=srgb&dl=pexels-fernando-arcos-190819.jpg&fm=jpg",
   };
 
   const [orderedProduct, setorderedProduct] = useState(true);
 
   const [popularProduct, setPopularProduct] = useState([]);
 
+  /*
   useEffect(() => {
     let data = [];
     for (let index = 0; index < productsState.length; index++) {
@@ -87,7 +87,7 @@ const SingleProduct = () => {
       }
     }
   }, [product]);
-
+*/
   const [star, setStar] = useState(null);
   const [comment, setComment] = useState(null);
   const [like, setLike] = useState(false);
@@ -126,7 +126,7 @@ const SingleProduct = () => {
               </div>
             </div>
             <div className="other-product-images d-flex flex-wrap gap-15">
-              {product?.images.map((item, index) => {
+              { productState.images && productState.images.map((item, index) => {
                 return (
                   <div>
                     <img src={item?.url} className="img-fluid" alt="" />
@@ -138,20 +138,20 @@ const SingleProduct = () => {
           <div className="col-6">
             <div className="main-product-details">
               <div className="border-bottom">
-                <h3 className="title">{product?.title}</h3>
+                <h3 className="title">{productState.title}</h3>
               </div>
               <div className="border-bottom py-3">
-                <p className="price"> Rs. {product?.price}/-</p>
+                <p className="price"> Rs. {productState.price}/-</p>
                 <div className="d-flex align-items-center gap-10">
                   <ReactStars
                     count={5}
                     size={24}
-                    value={product?.totalrating.toString()}
+                    value={productState.totalrating.toString()}
                     edit={false}
                     activeColor="#ffd700"
                   />
                   <p className="mb-0 t-review">
-                    ( {product?.ratings?.length} Reviews )
+                    ( {productState.ratings?.length} Reviews )
                   </p>
                 </div>
                 <a className="review-btn" href="#review">
@@ -161,19 +161,19 @@ const SingleProduct = () => {
               <div className=" py-3">
                 <div className="d-flex gap-10 align-items-center my-2">
                   <h3 className="product-heading">Type :</h3>
-                  <p className="product-data">{product?.category}</p>
+                  <p className="product-data">{productState.category}</p>
                 </div>
                 <div className="d-flex gap-10 align-items-center my-2">
                   <h3 className="product-heading">Brand :</h3>
-                  <p className="product-data">{product?.brand}</p>
+                  <p className="product-data">{productState.brand}</p>
                 </div>
                 <div className="d-flex gap-10 align-items-center my-2">
                   <h3 className="product-heading">Category :</h3>
-                  <p className="product-data">{product?.category}</p>
+                  <p className="product-data">{productState.category}</p>
                 </div>
                 <div className="d-flex gap-10 align-items-center my-2">
                   <h3 className="product-heading">Tags :</h3>
-                  <p className="product-data">{product?.tags}</p>
+                  <p className="product-data">{productState.tags}</p>
                 </div>
                 <div className="d-flex gap-10 align-items-center my-2">
                   <h3 className="product-heading">Availablity :</h3>
@@ -285,7 +285,7 @@ const SingleProduct = () => {
             <h4>Description</h4>
             <div className="bg-white p-3">
               <p
-                dangerouslySetInnerHTML={{ __html: product?.description }}
+                dangerouslySetInnerHTML={{ __html: productState.description }}
               ></p>
             </div>
           </div>
@@ -303,12 +303,12 @@ const SingleProduct = () => {
                     <ReactStars
                       count={5}
                       size={24}
-                      value={product?.totalrating?.toString()}
+                      value={productState.totalrating?.toString()}
                       edit={false}
                       activeColor="#ffd700"
                     />
                     <p className="mb-0">
-                      Based on {product?.ratings?.length} Reviews
+                      Based on {productState.ratings?.length} Reviews
                     </p>
                   </div>
                 </div>
@@ -360,7 +360,7 @@ const SingleProduct = () => {
               </div>
               <div className="reviews mt-4">
                 {product &&
-                  product.ratings?.map((item, index) => {
+                  productState.ratings?.map((item, index) => {
                     return (
                       <div className="review">
                         <div className="d-flex gap-10 align-items-center">

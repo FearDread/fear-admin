@@ -26,7 +26,7 @@ const Home = () => {
   };
   const getProducts = () => {
     dispatch(product.fetch());
-    console.log('new state = ', productState)
+    console.log('factory slice  = ', product)
     //dispatch(factory.fetch('product/all'));
 
   };
@@ -37,7 +37,6 @@ const Home = () => {
   useEffect(() => {
     getblogs();
     getProducts();
-        console.log('state = ', productState);
   }, []);
 
   return (
