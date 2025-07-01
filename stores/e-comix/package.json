@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "author": "FearDread",
-  "description": "Store front using FEAR backend and crud-service",
+  "description": "Store front using FEAR backend and new feature factory",
   "dependencies": {
-    "@feardread/feature-factory": "^1.1.7",
+    "@feardread/feature-factory": "^2.0.6",
     "@reduxjs/toolkit": "^1.9.5",
     "@rollup/plugin-inject": "^5.0.5",
     "aos": "^2.3.4",
