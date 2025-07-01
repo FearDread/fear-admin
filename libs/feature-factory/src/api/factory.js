@@ -4,27 +4,28 @@ import cache from "../cache/cache.js";
 
 
 
-
-const InstanceFactory = ( options ) => {
-
-    const API_BASE_URL = (options.API_BASE_URL)
-    ? options.API_BASE_URL
-    : "http://fear.master.com:4000/fear/api/";
-
-    const ACCESS_TOKEN_NAME = (options.JWT_TOKEN)
-    ? options.JWT_TOKEN
-    : "x-token";
+/**
+ * Creates and configures an Axios instance.
+ * @param {string} baseURL - The base URL for API requests.
+ * @param {object} [headers={}] - Optional default headers for requests.
+ * @returns {object} An object containing configured Axios methods (get, post, put, delete).
+ */
+export const InstanceFactory = (baseURL, headers = {}) => {
+    const API_BASE_URL = (baseURL)
+        ? baseURL
+        : "http://fear.master.com/fear/api/";
 
     const instance = axios.create({
-        baseURL: `${API_BASE_URL}`,
+        baseURL: API_BASE_URL,
         headers: {
             Accept: "application/json",
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
+            ...headers,
         },
         paramsSerializer: (params) => {
             return qs.stringify(params, { indices: false });
         },
-        credentials: true
+        withCredentials: true
         //httpsAgent: new https.Agent({ rejectUnauthorized: false })
     });
 
@@ -35,7 +36,7 @@ const InstanceFactory = ( options ) => {
 
             config.headers = {
                 Authorization: `Bearer ${token}`,
-                [ACCESS_TOKEN_NAME]: token
+                ['fear-x-token']: token
             };
 
             return config;
@@ -70,8 +71,14 @@ const InstanceFactory = ( options ) => {
         }
     );
 
-    return instance;
-}
+    return {
+        get: (url, config) => instance.get(url, config),
+        post: (url, data, config) => instance.post(url, data, config),
+        put: (url, data, config) => instance.put(url, data, config),
+        delete: (url, config) => instance.delete(url, config),
+        // Add other methods as needed (patch, head, etc.)
+    };
+};
 
 
 
