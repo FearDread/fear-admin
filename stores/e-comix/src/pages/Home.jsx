@@ -15,6 +15,7 @@ import { product } from "../features/products/factory";
 
 
 const Home = () => {
+  console.log('product = ', product);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -25,6 +26,7 @@ const Home = () => {
     //dispatch(getAllBlogs());
   };
   const getProducts = () => {
+    console.log('state ', productState);
     dispatch(product.fetch());
     console.log('factory slice  = ', product)
     //dispatch(factory.fetch('product/all'));
@@ -35,9 +37,11 @@ const Home = () => {
   };
 
   useEffect(() => {
+    dispatch(product.fetch());
     getblogs();
     getProducts();
-  }, []);
+
+  }, [dispatch]);
 
   return (
     <>
