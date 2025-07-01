@@ -10,15 +10,12 @@ const StateFactory = (entity, data = null) => ({
 
 const FeatureFactory = (sliceName, endpoint, options = {}) => {
     const apiEndpoint = `${sliceName}/${endpoint}`;
-    const apiInstance = InstanceFactory({
-        API_BASE_URL: 'http://fear.master.com:4000/fear/api',
-        JWT_TOKEN: 'fear-x-token'
-    });
+    const API = (options.instance) ? options.instance : InstanceFactory('http://localhost:4000/fear/api');
 
     const fetch = createAsyncThunk(
         apiEndpoint,
         async (_, { rejectWithValue }) => {
-            return await apiInstance.get(apiEndpoint)
+            return await API.get(apiEndpoint)
                 .then((response) => {
                     if (response.data && response.data.success) {
                         return response.data.result;
@@ -34,7 +31,7 @@ const FeatureFactory = (sliceName, endpoint, options = {}) => {
     const fetchOne = createAsyncThunk(
         `${sliceName}/one`,
         async (id, { rejectWithValue }) => {
-            return await apiInstance.get(`${sliceName}/${id}`)
+            return await API.get(`${sliceName}/${id}`)
                 .then((response) => {
                     if (response.data && response.data.success) {
                         return response.data.result;
@@ -49,7 +46,7 @@ const FeatureFactory = (sliceName, endpoint, options = {}) => {
     const search = createAsyncThunk(
         `${sliceName}/search`,
         async (query, { rejectWithValue }) => {
-            return await apiInstance.get(`${sliceName}/search?${query}`)
+            return await API.get(`${sliceName}/search?${query}`)
                 .then((response) => {
                     if (response.data && response.data.success) {
                         return response.data.result;
@@ -62,8 +59,8 @@ const FeatureFactory = (sliceName, endpoint, options = {}) => {
     );
 
     const slice = createSlice({
-        sliceName,
-        initialState: StateFactory(sliceName, initialData),
+        name: sliceName,
+        initialState: StateFactory(sliceName),
         reducers: {
             clearData: (state) => {
                 state[sliceName] = null;
@@ -116,7 +113,6 @@ const FeatureFactory = (sliceName, endpoint, options = {}) => {
     return {
         reducer: slice.reducer,
         actions: slice.actions,
-        instance: apiInstance,
         asyncActions: {
             fetch,
             fetchOne,
