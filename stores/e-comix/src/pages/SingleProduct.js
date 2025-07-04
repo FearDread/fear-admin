@@ -12,7 +12,7 @@ import {
 } from "../features/products/slice";
 import { toast } from "react-toastify";
 import { addProdToCart, getUserCart } from "../features/user/userSlice";
-import { product }  from "../features/products/factory";
+import { fetchProducts }  from "../features/products/factory";
 
 
 const SingleProduct = () => {
@@ -20,21 +20,19 @@ const SingleProduct = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-   const [quantity, setQuantity] = useState(1);
-    const [alreadyAdded, setAlreadyAdded] = useState(false);
-
-  //const product = useSelector((state) => state?.productState.current);
-  const productState = useSelector((state) => state.product.product);
+  const [quantity, setQuantity] = useState(1);
+  const [alreadyAdded, setAlreadyAdded] = useState(false);
+  const { product, loading, success } = useSelector((state) => state.product);
   //const cartState = useSelector((state) => state?.auth?.cartProducts);
   //const { isLoggedIn } = useSelector((state) => state?.auth);
   
-  //const ratings = productState.totalrating;
+  //const ratings = product.totalrating;
   const wishlist = useSelector((state) => state?.auth?.wishlist?.wishlist);
 
   useEffect(() => {
-    dispatch(product.fetchOne(id));
+    dispatch(fetchProducts(id));
 
-    //dispatch(productState.fetch());
+    //dispatch(product.fetch());
     /*
     if (isLoggedIn) {
           dispatch(getUserCart());
@@ -56,9 +54,9 @@ const SingleProduct = () => {
 
       dispatch(
         addProdToCart({
-          productId: productState._id,
+          productId: product._id,
           quantity,
-          price: productState.price,
+          price: product.price,
         }),
         navigate("/cart")
       );
@@ -126,7 +124,7 @@ const SingleProduct = () => {
               </div>
             </div>
             <div className="other-product-images d-flex flex-wrap gap-15">
-              { productState.images && productState.images.map((item, index) => {
+              { product.images && product.images.map((item, index) => {
                 return (
                   <div>
                     <img src={item?.url} className="img-fluid" alt="" />
@@ -138,20 +136,20 @@ const SingleProduct = () => {
           <div className="col-6">
             <div className="main-product-details">
               <div className="border-bottom">
-                <h3 className="title">{productState.title}</h3>
+                <h3 className="title">{product.title}</h3>
               </div>
               <div className="border-bottom py-3">
-                <p className="price"> Rs. {productState.price}/-</p>
+                <p className="price"> Rs. {product.price}/-</p>
                 <div className="d-flex align-items-center gap-10">
                   <ReactStars
                     count={5}
                     size={24}
-                    value={productState.totalrating.toString()}
+                    value={product.totalrating.toString()}
                     edit={false}
                     activeColor="#ffd700"
                   />
                   <p className="mb-0 t-review">
-                    ( {productState.ratings?.length} Reviews )
+                    ( {product.ratings?.length} Reviews )
                   </p>
                 </div>
                 <a className="review-btn" href="#review">
@@ -161,19 +159,19 @@ const SingleProduct = () => {
               <div className=" py-3">
                 <div className="d-flex gap-10 align-items-center my-2">
                   <h3 className="product-heading">Type :</h3>
-                  <p className="product-data">{productState.category}</p>
+                  <p className="product-data">{product.category}</p>
                 </div>
                 <div className="d-flex gap-10 align-items-center my-2">
                   <h3 className="product-heading">Brand :</h3>
-                  <p className="product-data">{productState.brand}</p>
+                  <p className="product-data">{product.brand}</p>
                 </div>
                 <div className="d-flex gap-10 align-items-center my-2">
                   <h3 className="product-heading">Category :</h3>
-                  <p className="product-data">{productState.category}</p>
+                  <p className="product-data">{product.category}</p>
                 </div>
                 <div className="d-flex gap-10 align-items-center my-2">
                   <h3 className="product-heading">Tags :</h3>
-                  <p className="product-data">{productState.tags}</p>
+                  <p className="product-data">{product.tags}</p>
                 </div>
                 <div className="d-flex gap-10 align-items-center my-2">
                   <h3 className="product-heading">Availablity :</h3>
@@ -285,7 +283,7 @@ const SingleProduct = () => {
             <h4>Description</h4>
             <div className="bg-white p-3">
               <p
-                dangerouslySetInnerHTML={{ __html: productState.description }}
+                dangerouslySetInnerHTML={{ __html: product.description }}
               ></p>
             </div>
           </div>
@@ -303,12 +301,12 @@ const SingleProduct = () => {
                     <ReactStars
                       count={5}
                       size={24}
-                      value={productState.totalrating?.toString()}
+                      value={product.totalrating?.toString()}
                       edit={false}
                       activeColor="#ffd700"
                     />
                     <p className="mb-0">
-                      Based on {productState.ratings?.length} Reviews
+                      Based on {product.ratings?.length} Reviews
                     </p>
                   </div>
                 </div>
@@ -360,7 +358,7 @@ const SingleProduct = () => {
               </div>
               <div className="reviews mt-4">
                 {product &&
-                  productState.ratings?.map((item, index) => {
+                  product.ratings?.map((item, index) => {
                     return (
                       <div className="review">
                         <div className="d-flex gap-10 align-items-center">
