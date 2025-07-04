@@ -3,7 +3,7 @@
 // cache
 const cache = (options = {}) => {
   var engine = options.type == 'local' ? 'localStorage' : 'sessionStorage';
- 
+
   return {
     check: () => {
       if (!window[engine]) {
@@ -25,9 +25,9 @@ const cache = (options = {}) => {
     },
     get: (key) => {
       try {
-        if ( key !== "undefined") {
-        const data = window[engine].getItem(key);
-        return data ? JSON.parse(data) : null;
+        if (key !== "undefined") {
+          const data = window[engine].getItem(key);
+          return data ? JSON.parse(data) : null;
         }
 
 
@@ -65,7 +65,7 @@ const cache = (options = {}) => {
   };
 }
 
-cache.local = cache({type: 'local'});
-cache.session = cache({type: 'session'});
+cache.local = cache({ type: 'local' });
+cache.session = cache({ type: 'session' });
 
 export default cache;
