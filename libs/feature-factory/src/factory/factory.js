@@ -1,6 +1,12 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import InstanceFactory from "../api/factory.js";
+import API from "../api/api.js";
 
+/**
+ * Creates object state instance.
+ * @param {string} entity - The namespace of the state 
+ * @param {object} [data={}] - Optional default data.
+ * @returns {object} An object containing state data
+ */
 const StateFactory = (entity, data = null) => ({
     [entity]: data,
     loading: false,
@@ -8,64 +14,45 @@ const StateFactory = (entity, data = null) => ({
     error: null
 });
 
-const FeatureFactory = (sliceName, endpoint, options = {}) => {
-    const apiEndpoint = `${sliceName}/${endpoint}`;
-    const API = (options.instance) ? options.instance : InstanceFactory('http://localhost:4000/fear/api');
+/**
+ * Creates and configures an Axios instance.
+ * @param {string} baseURL - The base URL for API requests.
+ * @param {object} [headers={}] - Optional default headers for requests.
+ * @returns {object} An object containing configured Axios methods (get, post, put, delete).
+ */
+const FeatureFactory = (sliceName, endpoint, options = {
+    service: null,
+    initialState: []
+}) => {
+    
+    let apiEndpoint = `${sliceName}/${endpoint}`;
 
     const fetch = createAsyncThunk(
         apiEndpoint,
-        async (_, { rejectWithValue }) => {
-            return await API.get(apiEndpoint)
-                .then((response) => {
-                    if (response.data && response.data.success) {
-                        return response.data.result;
+        async (params, { rejectWithValue }) => {
+            try {
+                if (params) {
+                    console.log('params = ', params);
+                    if (params.id) {
+                        apiEndpoint = `${sliceName}/${params.id}`;
+                    } else if (params.query) {
+                        apiEndpoint = `${sliceName}/search?${query}`
                     }
-                    return response.data;
-                })
-                .catch((error) => {
-                    return rejectWithValue('Error :: ', error.message);
-                })
-        }
-    );
+                }
+                const response = await API.get(apiEndpoint);
+                return response.data.result;
 
-    const fetchOne = createAsyncThunk(
-        `${sliceName}/one`,
-        async (id, { rejectWithValue }) => {
-            return await API.get(`${sliceName}/${id}`)
-                .then((response) => {
-                    if (response.data && response.data.success) {
-                        return response.data.result;
-                    }
-                })
-                .catch((error) => {
-                    return rejectWithValue('Error :: ', error);
-                })
-        }
-    );
+            } catch (error) {
+                return rejectWithValue('Error :: ', error.message);
+            }
 
-    const search = createAsyncThunk(
-        `${sliceName}/search`,
-        async (query, { rejectWithValue }) => {
-            return await API.get(`${sliceName}/search?${query}`)
-                .then((response) => {
-                    if (response.data && response.data.success) {
-                        return response.data.result;
-                    }
-                })
-                .catch((error) => {
-                    return rejectWithValue('Error :: ', error.message);
-                })
         }
     );
 
     const slice = createSlice({
         name: sliceName,
-        initialState: StateFactory(sliceName),
-        reducers: {
-            clearData: (state) => {
-                state[sliceName] = null;
-            }
-        },
+        initialState: StateFactory(sliceName, options.initialState),
+        reducers: {},
         extraReducers: (builder) => {
             builder
                 .addCase(fetch.pending, (state) => {
@@ -81,47 +68,16 @@ const FeatureFactory = (sliceName, endpoint, options = {}) => {
                     state.loading = false;
                     state.success = false;
                 })
-                .addCase(fetchOne.pending, (state) => {
-                    state.loading = true;
-                })
-                .addCase(fetchOne.fulfilled, (state, action) => {
-                    state.loading = false;
-                    state.success = true;
-                    state[sliceName] = action.payload;
-                })
-                .addCase(fetchOne.rejected, (state, action) => {
-                    state.error = action.error;
-                    state.loading = false;
-                    state.success = false;
-                })
-                .addCase(search.pending, (state) => {
-                    state.loading = true;
-                })
-                .addCase(search.fulfilled, (state, action) => {
-                    state.loading = false;
-                    state.success = true;
-                    state[sliceName] = action.payload;
-                })
-                .addCase(search.rejected, (state, action) => {
-                    state.error = action.error;
-                    state.loading = false;
-                    state.success = false;
-                })
         }
     })
 
     return {
+        slice,
+        fetch,
         reducer: slice.reducer,
         actions: slice.actions,
-        asyncActions: {
-            fetch,
-            fetchOne,
-            search,
-            service: (options.service) ? options.service : null
-        },
-
+        service: options.service
     }
-
 }
 
 export default FeatureFactory;
