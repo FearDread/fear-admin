@@ -70,6 +70,7 @@ const FeatureFactory = (sliceName, endpoint, options = {
                 })
         }
     })
+    console.log('Factory Slice = ', slice);
 
     return {
         slice,
