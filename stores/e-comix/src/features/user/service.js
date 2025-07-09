@@ -136,3 +136,5 @@ export const authService = {
   resetPass,
   emptyCart,
 };
+
+export default authService;

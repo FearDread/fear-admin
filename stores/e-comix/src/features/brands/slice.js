@@ -1,4 +1,4 @@
-import { FeatureFactory } from "@feardread/feature-factory";
+import { FeatureFactory } from "../factory/factory";
 
 const { reducer: brandReducer, fetch: fetchBrands } = FeatureFactory('brand', 'all');
 

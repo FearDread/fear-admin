@@ -11,7 +11,7 @@ import {
   getAllProducts,
 } from "../features/products/slice";
 import { toast } from "react-toastify";
-import { addProdToCart, getUserCart } from "../features/user/userSlice";
+//import { addProdToCart, getUserCart } from "../features/user/userSlice";
 import { fetchProducts }  from "../features/products/factory";
 
 
@@ -51,7 +51,7 @@ const SingleProduct = () => {
 */
 
   const uploadCart = () => {
-
+/*
       dispatch(
         addProdToCart({
           productId: product._id,
@@ -61,6 +61,8 @@ const SingleProduct = () => {
         navigate("/cart")
       );
   };
+  */
+  }
   const props = {
     width: 594,
     height: 600,

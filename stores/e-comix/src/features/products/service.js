@@ -1,6 +1,4 @@
-import API from "../api";
-
-
+import API from "../factory/api";
 
 const getAllProducts = async () => {
   const response = await API.get("product/all");

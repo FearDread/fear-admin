@@ -1,6 +1,6 @@
-import FeatureFactory from "@feardread/feature-factory";
+import FeatureFactory from "../factory/factory";
 import userService from "./service";
 
-const { reducer: userReducer, fetch: fetchUser } = FeatureFactory('user', 'profile', { service: userService })
+const { reducer: authReducer, fetch: fetchUser } = FeatureFactory('auth', 'profile');
 
-export { userReducer, fetchUser };
+export { authReducer, fetchUser, userService };
