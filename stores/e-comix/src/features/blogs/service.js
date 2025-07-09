@@ -18,3 +18,5 @@ export const blogService = {
   getBlogs,
   getBlog,
 };
+
+export default blogService;

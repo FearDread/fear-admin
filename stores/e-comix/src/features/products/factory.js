@@ -1,6 +1,6 @@
-import { FeatureFactory } from "@feardread/feature-factory";
+import FeatureFactory from "../factory/factory";
 import { productService } from "./service";
 
-const {reducer: productReducer, fetch: fetchProducts } = FeatureFactory('product', 'all', { service: productService })
+const { reducer: productReducer, fetch: fetchProducts } = FeatureFactory('product', 'all')
 
-export { productReducer, fetchProducts };
+export { productReducer, fetchProducts, productService };

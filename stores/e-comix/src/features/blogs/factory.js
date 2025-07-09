@@ -1,5 +1,6 @@
 import FeatureFactory from "../factory/factory";
+import blogService from "./service";
 
-const {reducer: productReducer, asyncActions: product } = FeatureFactory('product', 'all', {})
+const {reducer: blogReducer, fetch: fetchBlogs } = FeatureFactory('blog', 'all', { service: blogService });
 
-export { productReducer, product };
+export { blogReducer, fetchBlogs };
