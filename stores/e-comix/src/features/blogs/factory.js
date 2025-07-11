@@ -1,6 +1,6 @@
-import FeatureFactory from "../factory/factory";
+import FeatureFactory from "../factory";
 import blogService from "./service";
 
-const {reducer: blogReducer, fetch: fetchBlogs } = FeatureFactory('blog', 'all', { service: blogService });
+const {slice: blogSlice, asyncActions: Blog } = FeatureFactory('blog').slicer('all', { service: blogService } );
 
-export { blogReducer, fetchBlogs };
+export { blogSlice, Blog };

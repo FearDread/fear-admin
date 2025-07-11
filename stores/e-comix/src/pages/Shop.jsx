@@ -5,11 +5,7 @@ import BannerSub from "../components/Banner/BannerSub"
 import DetailedItem from "../components/Product/DetailedItem";
 import SuperItem from "../components/Product/SuperItem";
 import Loader from "../components/Loader/Loader";
-import {
-  addRating,
-  getAProduct,
-  getAllProducts,
-} from "../features/products/slice";
+import { Product } from "../features/products/factory";
 
 const Shop = (props) => {
   const dispatch = useDispatch();
@@ -49,7 +45,7 @@ const Shop = (props) => {
 
   useEffect(() => {
     //getProducts();
-        dispatch(getAllProducts());
+        dispatch(Product.fetch());
     //console.log('products = ', products);
   }, [])
 

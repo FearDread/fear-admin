@@ -8,8 +8,8 @@ import SuperItem from "../components/Product/SuperItem";
 import Services from "../components/Services/Services";
 import Brands from "../components/Brands/Brands";
 
-import { getAllBlogs } from "../features/blogs/blogSlice";
-import { fetchProducts } from "../features/products/factory";
+import { Blog } from "../features/blogs/factory";
+import { Product } from "../features/products/factory";
 //import { addToWishlist } from "../features/products/slice";
 //import { factory } from "../features/factory/factory";
 
@@ -19,23 +19,27 @@ const Home = () => {
   const dispatch = useDispatch();
 
   const blogState = useSelector((state) => state?.blog?.blog);
-  const { product, loading, success} = useSelector((state) => state.product);
+  const { loading, success} = useSelector((state) => state.product);
+  const productState = useSelector((state) => state?.product?.product);
+
 
   const getblogs = () => {
-    //dispatch(getAllBlogs());
+    dispatch(Blog.fetch());
   };
   const getProducts = () => {
-    dispatch(fetchProducts());
+    dispatch(Product.fetch());
   };
   const addToWish = (id) => {
     //dispatch(addToWishlist(id));
   };
 
   useEffect(() => {
-    getblogs();
-    getProducts();
 
-  }, []);
+    console.log('making it here?', productState )
+
+    dispatch(Product.fetch());
+
+  }, [dispatch]);
 
   return (
     <>
@@ -56,7 +60,7 @@ const Home = () => {
               <div className="row row-cols-1 row-cols-sm-2 gy-5 g-lg-5 mt-0">
 
 
-                {product && product.slice(0, 4).map((item) => {
+                 {productState && productState.slice(0, 4).map((item) => {
                   return (
                     <ShopItem {...item} />
                   )
@@ -102,7 +106,7 @@ const Home = () => {
                   <div className="tab-pane fade show active" id="supcoming" role="tabpanel">
                     <div className="row row-cols-1 row-cols-sm-2 gy-5 g-lg-5 mt-0">
 
-                      {product && product.slice(5, 9).map((item) => {
+                      {productState && productState.slice(5, 9).map((item) => {
                         return (
                           <SuperItem {...item} />
                         )
@@ -112,7 +116,7 @@ const Home = () => {
                   <div className="tab-pane fade" id="sbest" role="tabpanel">
                     <div className="row row-cols-1 row-cols-sm-2 gy-5 g-lg-5 mt-0">
 
-                      {product && product.slice(10, 14).map((item) => {
+                      {productState && productState.slice(10, 14).map((item) => {
                         return (
                           <SuperItem {...item} />
                         )

@@ -1,7 +1,7 @@
-import API from "../api";
-import cache from "../cache";
+import API from "../factory/api";
+import cache from "../factory/cache";
 
-const register = async (userData) => {
+export const register = async (userData) => {
   const response = await API.post(`auth/register`, userData);
   if (response.data) {
     cache.local.set("auth", response.data.result);
@@ -9,7 +9,7 @@ const register = async (userData) => {
   }
 };
 
-const login = async (userData) => {
+export const login = async (userData) => {
   const response = await API.post(`auth/login`, userData);
   if (response.data) {
 
@@ -18,28 +18,28 @@ const login = async (userData) => {
   }
 };
 
-const getUserWislist = async () => {
+export const getUserWislist = async () => {
   const response = await API.get(`user/wishlist`);
   if (response.data) {
     return response.data;
   }
-};
+};  
 
-const addToCart = async (cartData) => {
+export const addToCart = async (cartData) => {
   const response = await API.post(`cart`, cartData);
   if (response.data) {
     return response.data;
   }
 };
 
-const getCart = async (data) => {
+export const getCart = async (data) => {
   const response = await API.get(`cart`, data);
   if (response.data) {
     return response.data;
   }
 };
 
-const removeProductFromCart = async (data) => {
+export const removeProductFromCart = async (data) => {
   const response = await API.delete(
     `user/delete-product-cart/${data.id}`,
 
@@ -50,7 +50,7 @@ const removeProductFromCart = async (data) => {
   }
 };
 
-const updateProductFromCart = async (cartDetail) => {
+export const updateProductFromCart = async (cartDetail) => {
   const response = await API.delete(
     `user/update-product-cart/${cartDetail.cartItemId}/${cartDetail.quantity}`,
   );
@@ -59,7 +59,7 @@ const updateProductFromCart = async (cartDetail) => {
   }
 };
 
-const createOrder = async (orderDetail) => {
+export const createOrder = async (orderDetail) => {
   const response = await API.post(
     `user/cart/create-order/`,
     orderDetail,
@@ -69,7 +69,7 @@ const createOrder = async (orderDetail) => {
   }
 };
 
-const getUserOrders = async () => {
+export const getUserOrders = async () => {
   const response = await API.get(`user/getmyorders`);
 
   if (response.data) {
@@ -77,7 +77,7 @@ const getUserOrders = async () => {
   }
 };
 
-const updateUser = async (data) => {
+export const updateUser = async (data) => {
   const response = await API.put(
     `user/edit-user`,
     data.data,
@@ -113,7 +113,7 @@ const resetPass = async (data) => {
   }
 };
 
-const emptyCart = async (data) => {
+export const emptyCart = async (data) => {
   const response = await API.delete(`user/empty-cart`, data);
 
   if (response.data) {

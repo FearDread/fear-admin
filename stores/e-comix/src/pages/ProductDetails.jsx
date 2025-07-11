@@ -3,15 +3,11 @@ import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import Loader from "../components/Loader/Loader";
 import BannerSub from "../components/Banner/BannerSub"
-import {
-  addRating,
-  getAProduct,
-  getAllProducts,
-} from "../features/products/slice";
+import { Product } from "../features/products/factory";
 import ReactImageZoom from "react-image-zoom";
 import ReactStars from "react-rating-stars-component"
 import { toast } from "react-toastify";
-import { addProdToCart, getUserCart } from "../features/user/userSlice";
+import { addProdToCart, getCart } from "../features/user/service";
 import defaultProdImg from "../assets/images/abstract_banner_1.jpg";
 
 const ProductDetails = () => {
@@ -40,12 +36,12 @@ const ProductDetails = () => {
   };
 
   useEffect(() => {
-    dispatch(getAProduct(id));
+    dispatch(Product.fetchOne(id));
 
-    dispatch(getAllProducts());
+    dispatch(Product.fetch());
     console.log('Auth = ', user, isLoggedIn);
     if (isLoggedIn) {
-      dispatch(getUserCart());
+      dispatch(Product.getCart());
     }
   }, []);
 

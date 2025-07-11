@@ -1,4 +1,4 @@
-import API from "../api";
+import API from "../factory/api";
 
 const getBlogs = async () => {
   const response = await API.get(`blog/all`);

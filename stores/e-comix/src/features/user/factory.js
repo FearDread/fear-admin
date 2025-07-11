@@ -1,6 +1,9 @@
-import FeatureFactory from "../factory/factory";
-import userService from "./service";
+import FeatureFactory from "../factory";
+import authService from "./service"
 
-const { reducer: authReducer, fetch: fetchUser } = FeatureFactory('auth', 'profile');
+const {
+    slice: authSlice,
+    asyncActions: User
+} = FeatureFactory('user').slicer('profile', { service: authService });
 
-export { authReducer, fetchUser, userService };
+export { authSlice, User };

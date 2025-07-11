@@ -1,25 +1,25 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { authReducer } from "./user/factory";
-import { productReducer } from "./products/factory";
-import { brandReducer } from "./brands/slice";
+import { authSlice } from "./user/factory";
+import { productSlice } from "./products/factory";
+import { brandSlice } from "./brands/factory";
 ///import blogReducer from "./blogs/blogSlice";
 //import contactReducer from "./contact/contactSlice";
-import ReducerFactory from "./factory/reduce";
+import FeatureFactory from "./factory";
 
 const baseReducer = {
-    auth: authReducer,
-    brand: brandReducer,
-    product: productReducer,
+    auth: authSlice.reducer,
+    brand: brandSlice.reducer,
+    product: productSlice.reducer,
 }
 
-const manager = ReducerFactory( { baseReducer} );
+const manager = FeatureFactory().manager( { baseReducer} );
 
 const store = configureStore({
-  reducer: manager.reduce,
+  reducer: baseReducer
 })
 
 store.manager = manager;
-
+console.log('store = ', store);
 export default store;
 
 
