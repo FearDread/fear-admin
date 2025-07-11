@@ -1,7 +1,7 @@
 // axios.js
 import axios from "axios";
 import qs from "qs";
-import cache from "./cache/cache.js";
+import cache from "./cache";
 
 const API_URL = (process.env.NODE_ENV === "production")
                  ? "http://fear.master.com/fear/api/" 
@@ -22,7 +22,7 @@ const instance = axios.create({
 
 instance.interceptors.request.use(
     (config) => {
-        const isAuth = cache.get("auth") ? cache.get("auth") : null;
+        const isAuth = cache.local.get("auth") ? cache.local.get("auth") : null;
         let token = isAuth !== null ? isAuth.token : "";
     
         config.headers = {

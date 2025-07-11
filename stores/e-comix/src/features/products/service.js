@@ -1,13 +1,14 @@
 import API from "../factory/api";
 
-const getAllProducts = async () => {
+export const getAllProducts = async () => {
+  console.log('service call');
   const response = await API.get("product/all");
   if (response.data) {
     return response.data.result;
   }
 }
 
-const getProducts = async (data) => {
+export const getProducts = async (data) => {
   console.log(data);
   const response = await API.get(
     `product?${data?.brand ? `brand=${data?.brand}&&` : ""}${
@@ -24,14 +25,14 @@ const getProducts = async (data) => {
   }
 };
 
-const getSingleProduct = async (id) => {
+export const getSingleProduct = async (id) => {
   const response = await API.get(`product/${id}`);
   if (response.data) {
     return response.data.result;
   }
 };
 
-const addToWishlist = async (prodId) => {
+export const addToWishlist = async (prodId) => {
   const response = await API.put(
     `product/Wishlist`,
     { prodId },
@@ -41,7 +42,7 @@ const addToWishlist = async (prodId) => {
   }
 };
 
-const rateProduct = async (data) => {
+export const addRating = async (data) => {
   const response = await API.put(`product/rating`, data);
   if (response.data) {
     return response.data;
@@ -53,5 +54,5 @@ export const productService = {
   getAllProducts,
   addToWishlist,
   getSingleProduct,
-  rateProduct,
+  addRating,
 };

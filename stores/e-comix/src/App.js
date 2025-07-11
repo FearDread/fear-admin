@@ -1,5 +1,4 @@
 import React from "react";
-import * as $ from "jquery"
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./layouts/Layout";
 import Home from "./pages/Home";
@@ -17,7 +16,6 @@ import ShippingPolicy from "./pages/ShippingPolicy";
 import ScrollToTop from "./components/ScrollButton/ScrollToTop";
 import Popup from "./components/PopupBanner/Popup";
 import Collection from "./pages/Collection";
-
 import Shop from "./pages/Shop"; 
 
 import { PrivateRoutes } from "./routes/PrivateRoutes";

@@ -5,14 +5,10 @@ import ProductCard from "../components/Product/ProductCard";
 import ReactImageZoom from "react-image-zoom";
 import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  addRating,
-  getAProduct,
-  getAllProducts,
-} from "../features/products/slice";
+import { Product } from "../features/products/factory";
+import { addRating } from "../features/products/service";
 import { toast } from "react-toastify";
 //import { addProdToCart, getUserCart } from "../features/user/userSlice";
-import { fetchProducts }  from "../features/products/factory";
 
 
 const SingleProduct = () => {
@@ -30,7 +26,7 @@ const SingleProduct = () => {
   const wishlist = useSelector((state) => state?.auth?.wishlist?.wishlist);
 
   useEffect(() => {
-    dispatch(fetchProducts(id));
+    dispatch(Product.fetchOne(id));
 
     //dispatch(product.fetch());
     /*
@@ -109,7 +105,7 @@ const SingleProduct = () => {
         addRating({ star: star, comment: comment, prodId: id })
       );
       setTimeout(() => {
-        dispatch(getAProduct(id));
+        dispatch(Product.fetchOne(id));
       }, 100);
     }
     return false;
