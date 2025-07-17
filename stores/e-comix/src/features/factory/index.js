@@ -1,5 +1,5 @@
-import { createSlice, createAsyncThunk, createEntityAdapter, combineReducers } from '@reduxjs/toolkit';
-import API from "./api.js";
+import { createSlice, createEntityAdapter, combineReducers } from '@reduxjs/toolkit';
+import ThunkFactory from './thunk';
 
 export const stateGenerator = (namespace, data = null) => ({
     [namespace]: data,
@@ -46,74 +46,17 @@ export function FeatureFactory(entity, reducers = {}) {
         return dest;
     }
 
-    factory.slicer = (endpoint, options = {service: null, initialState: null}) => {
-
+    factory.create = (endpoint = '', options = {service: null, initialState: {}}) => {
+        const { service, initialState } = options;
         const sliceName = factory.entity;
         const apiEndpoint = `${sliceName}/${endpoint}`;
-
-        const fetch = createAsyncThunk(
-            `${sliceName}/all`,
-            async (_, { dispatch, rejectWithValue }) => {
-
-                dispatch(fetchStart());
-
-                try {
-                    const response = await API.get(apiEndpoint);
-                    return response.data.result;
-                    if (response.success) {
-
-                        dispatch(fetchSuccess(response.data.result));
-
-                    }
-                    console.log('Failed to fetch :', response);
-                    dispatch(fetchFailure(response));
-                } catch (error) {
-                    if (error instanceof Error) {
-                        dispatch(fetchFailure(error.message));
-                    }
-                    return rejectWithValue(error)
-                }
-            }
-        )
-        const fetchOne = createAsyncThunk(
-            `${sliceName}/one`,
-            async ({ id }, { dispatch, rejectWithValue }) => {
-                try {
-                    const response = await API.get(`${sliceName}/${id}`)
-                    if (response.success) {
-                        dispatch(fetchSuccess(response.data.result));
-                    }
-                    console.log('Failed to fetch one :', response);
-                    dispatch(fetchFailure(response));
-
-                } catch (error) {
-                    if (error instanceof Error) {
-                        dispatch(fetchFailure(error.message));
-                    }
-                    return rejectWithValue(error);
-                }
-            }
-        )
-        const search = createAsyncThunk(
-            `${sliceName}/search`,
-            async ({ query = '' }, { dispatch, rejectWithValue }) => {
-                try {
-                    const response = API.get(`${sliceName}?search=${query}`)
-                    if (response.success) {
-                        dispatch(fetchSuccess(response.data.result));
-                    }
-                    console.log('Failed to search :', response);
-                    dispatch(fetchFailure(response));
-                } catch (error) {
-                    return rejectWithValue(error);
-                }
-            }
-        )
-
+        
+        const fetch = ThunkFactory.create(sliceName, 'all');
+        const search = ThunkFactory.create(sliceName, 'search');
         const apiSlice = createSlice({
             name: sliceName,
             initialState: {
-                [sliceName]: options.initialState || {},
+                data: {},
                 loading: false,
                 success: false,
                 error: null
@@ -126,14 +69,14 @@ export function FeatureFactory(entity, reducers = {}) {
                 fetchSuccess: (state, action) => {
                     state.loading = false;
                     state.success = true;
-                    state[sliceName] = action.payload;
+                    state.data = action.payload;
                 },
                 fetchFailure: (state, action) => {
                     state.loading = false;
                     state.error = action.payload;
                 },
             },
-            extraReducers: (builder) => {
+            extraReducers: builder => {
             builder
                 .addCase(fetch.pending, (state) => {
                     state.loading = true;
@@ -141,35 +84,31 @@ export function FeatureFactory(entity, reducers = {}) {
                 .addCase(fetch.fulfilled, (state, action) => {
                     state.loading = false;
                     state.success = true;
-                    state[sliceName] = action.payload;
+                    state.data = action.payload;
                 })
                 .addCase(fetch.rejected, (state, action) => {
                     state.error = action.error;
                     state.loading = false;
                     state.success = false;
                 })
+
         }});
 
-        const { fetchStart, fetchSuccess, fetchFailure } = apiSlice.actions;
-
-        const sliceObj = {
-            slice: apiSlice,
-            asyncActions: {
-                search,
-                fetch,
-                fetchOne,
-            }
-        };
-
+        //const { fetchStart, fetchSuccess, fetchFailure } = apiSlice.actions;
+        const asyncActions = { fetch, search };
+        
         if (options.service) {
-            factory.inject(options.service, sliceObj.asyncActions );
+            factory.inject(options.service, asyncActions);
         }
-
-        console.log('slice = ', sliceObj);
-        return sliceObj;
+        
+        console.log('slice = ', apiSlice);
+        return {
+            slice: apiSlice,
+            asyncActions
+        };
     }
 
-    return factory;
+    return factory; 
 }
 
 export default FeatureFactory;

@@ -6,7 +6,7 @@ import ReactImageZoom from "react-image-zoom";
 import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
 import { Product } from "../features/products/factory";
-import { addRating } from "../features/products/service";
+//import { addRating } from "../features/products/service";
 import { toast } from "react-toastify";
 //import { addProdToCart, getUserCart } from "../features/user/userSlice";
 
@@ -18,7 +18,8 @@ const SingleProduct = () => {
 
   const [quantity, setQuantity] = useState(1);
   const [alreadyAdded, setAlreadyAdded] = useState(false);
-  const { product, loading, success } = useSelector((state) => state.product);
+  const { data, loading, success } = useSelector((state) => state.product);
+  const productState = useSelector((state) => state.product.data);
   //const cartState = useSelector((state) => state?.auth?.cartProducts);
   //const { isLoggedIn } = useSelector((state) => state?.auth);
   
@@ -26,7 +27,7 @@ const SingleProduct = () => {
   const wishlist = useSelector((state) => state?.auth?.wishlist?.wishlist);
 
   useEffect(() => {
-    dispatch(Product.fetchOne(id));
+    dispatch(Product.fetch(id));
 
     //dispatch(product.fetch());
     /*
@@ -102,7 +103,7 @@ const SingleProduct = () => {
       return false;
     } else {
       dispatch(
-        addRating({ star: star, comment: comment, prodId: id })
+        //addRating({ star: star, comment: comment, prodId: id })
       );
       setTimeout(() => {
         dispatch(Product.fetchOne(id));
@@ -122,7 +123,7 @@ const SingleProduct = () => {
               </div>
             </div>
             <div className="other-product-images d-flex flex-wrap gap-15">
-              { product.images && product.images.map((item, index) => {
+              { productState.images && productState.images.map((item, index) => {
                 return (
                   <div>
                     <img src={item?.url} className="img-fluid" alt="" />
@@ -134,20 +135,20 @@ const SingleProduct = () => {
           <div className="col-6">
             <div className="main-product-details">
               <div className="border-bottom">
-                <h3 className="title">{product.title}</h3>
+                <h3 className="title">{productState.title}</h3>
               </div>
               <div className="border-bottom py-3">
-                <p className="price"> Rs. {product.price}/-</p>
+                <p className="price"> Rs. {productState.price}/-</p>
                 <div className="d-flex align-items-center gap-10">
                   <ReactStars
                     count={5}
                     size={24}
-                    value={product.totalrating.toString()}
+                    value={productState.totalrating.toString()}
                     edit={false}
                     activeColor="#ffd700"
                   />
                   <p className="mb-0 t-review">
-                    ( {product.ratings?.length} Reviews )
+                    ( {productState.ratings?.length} Reviews )
                   </p>
                 </div>
                 <a className="review-btn" href="#review">
@@ -157,19 +158,19 @@ const SingleProduct = () => {
               <div className=" py-3">
                 <div className="d-flex gap-10 align-items-center my-2">
                   <h3 className="product-heading">Type :</h3>
-                  <p className="product-data">{product.category}</p>
+                  <p className="product-data">{productState.category}</p>
                 </div>
                 <div className="d-flex gap-10 align-items-center my-2">
                   <h3 className="product-heading">Brand :</h3>
-                  <p className="product-data">{product.brand}</p>
+                  <p className="product-data">{productState.brand}</p>
                 </div>
                 <div className="d-flex gap-10 align-items-center my-2">
                   <h3 className="product-heading">Category :</h3>
-                  <p className="product-data">{product.category}</p>
+                  <p className="product-data">{productState.category}</p>
                 </div>
                 <div className="d-flex gap-10 align-items-center my-2">
                   <h3 className="product-heading">Tags :</h3>
-                  <p className="product-data">{product.tags}</p>
+                  <p className="product-data">{productState.tags}</p>
                 </div>
                 <div className="d-flex gap-10 align-items-center my-2">
                   <h3 className="product-heading">Availablity :</h3>
@@ -281,7 +282,7 @@ const SingleProduct = () => {
             <h4>Description</h4>
             <div className="bg-white p-3">
               <p
-                dangerouslySetInnerHTML={{ __html: product.description }}
+                dangerouslySetInnerHTML={{ __html: productState.description }}
               ></p>
             </div>
           </div>
@@ -299,12 +300,12 @@ const SingleProduct = () => {
                     <ReactStars
                       count={5}
                       size={24}
-                      value={product.totalrating?.toString()}
+                      value={productState.totalrating?.toString()}
                       edit={false}
                       activeColor="#ffd700"
                     />
                     <p className="mb-0">
-                      Based on {product.ratings?.length} Reviews
+                      Based on {productState.ratings?.length} Reviews
                     </p>
                   </div>
                 </div>
@@ -355,8 +356,8 @@ const SingleProduct = () => {
                 </div>
               </div>
               <div className="reviews mt-4">
-                {product &&
-                  product.ratings?.map((item, index) => {
+                {productState &&
+                  productState.ratings?.map((item, index) => {
                     return (
                       <div className="review">
                         <div className="d-flex gap-10 align-items-center">

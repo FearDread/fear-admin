@@ -7,7 +7,7 @@ import { Product } from "../features/products/factory";
 import ReactImageZoom from "react-image-zoom";
 import ReactStars from "react-rating-stars-component"
 import { toast } from "react-toastify";
-import { addProdToCart, getCart } from "../features/user/service";
+//ddProdToCart, getCart } from "../features/user/service";
 import defaultProdImg from "../assets/images/abstract_banner_1.jpg";
 
 const ProductDetails = () => {
