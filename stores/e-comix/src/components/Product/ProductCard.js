@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import ReactStars from "react-rating-stars-component";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { addToWishlist } from "../../features/products/service";
+//import { addToWishlist } from "../../features/products/service";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 import { useState } from "react";
 
@@ -28,12 +28,12 @@ const ProductCard = (props) => {
 
   const addToWish = (productId) => {
     if (isProductInWishlist(productId)) {
-      dispatch(addToWishlist(productId)); // Dispatch the action to update the wishlist in Redux store
+      //dispatch(addToWishlist(productId)); // Dispatch the action to update the wishlist in Redux store
 
       const updatedWishlist = wishlist.filter((item) => item._id !== productId);
       setWishlist(updatedWishlist);
     } else {
-      dispatch(addToWishlist(productId)); // Dispatch the action to update the wishlist in Redux store
+      //dispatch(addToWishlist(productId)); // Dispatch the action to update the wishlist in Redux store
 
       const product = data.find((item) => item._id === productId);
       setWishlist([...wishlist, product]);

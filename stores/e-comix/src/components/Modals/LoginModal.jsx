@@ -10,7 +10,7 @@ const LoginModal = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
-    const { isLoggedIn, loginSuccess } = useSelector((state) => state.auth)
+    //const { isLoggedIn, loginSuccess } = useSelector((state) => state.auth)
 
     const loginHandler = (e) => {
         e.preventDefault();
@@ -22,9 +22,9 @@ const LoginModal = () => {
         dispatch(login(myForm));
     }
     useEffect(() => {
-        if (loginSuccess && isLoggedIn) {
-          navigate("/account");
-        }
+        //if (loginSuccess && isLoggedIn) {
+          //navigate("/account");
+        //}
       }, [])
 
     return (
