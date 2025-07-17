@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
+import { useDispatch, useSelector } from "react-redux";
+
 import ReactStars from "react-rating-stars-component";
 import ProductCard from "../components/Product/ProductCard";
 import ReactImageZoom from "react-image-zoom";
-import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
-import { useDispatch, useSelector } from "react-redux";
-import { Product } from "../features/products/factory";
-//import { addRating } from "../features/products/service";
-import { toast } from "react-toastify";
-//import { addProdToCart, getUserCart } from "../features/user/userSlice";
 
+//import { addRating } from "../features/products/service";
+//import { addProdToCart, getUserCart } from "../features/user/userSlice";
+import { toast } from "react-toastify";
+import { Product } from "../features/products/slice";
 
 const SingleProduct = () => {
   const { id } = useParams();
@@ -18,13 +19,14 @@ const SingleProduct = () => {
 
   const [quantity, setQuantity] = useState(1);
   const [alreadyAdded, setAlreadyAdded] = useState(false);
-  const { data, loading, success } = useSelector((state) => state.product);
+
+  const { loading, success } = useSelector((state) => state.product);
   const productState = useSelector((state) => state.product.data);
   //const cartState = useSelector((state) => state?.auth?.cartProducts);
   //const { isLoggedIn } = useSelector((state) => state?.auth);
   
   //const ratings = product.totalrating;
-  const wishlist = useSelector((state) => state?.auth?.wishlist?.wishlist);
+  //const wishlist = useSelector((state) => state?.auth?.wishlist?.wishlist);
 
   useEffect(() => {
     dispatch(Product.fetch(id));

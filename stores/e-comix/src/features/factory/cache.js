@@ -1,7 +1,7 @@
 
 
 // cache
-const cache = (options = {}) => {
+export const cache = (options = {}) => {
   var engine = options.type == 'local' ? 'localStorage' : 'sessionStorage';
 
   return {

@@ -4,7 +4,7 @@ import Layout from "./layouts/Layout";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
-import ProductDetails from "./pages/ProductDetails";
+//import ProductDetails from "./pages/ProductDetails";
 import SingleProduct from "./pages/SingleProduct";
 import BlogDetails from "./pages/BlogDetails";
 import Blog from "./pages/Blog";

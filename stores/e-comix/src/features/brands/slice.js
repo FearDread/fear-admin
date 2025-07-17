@@ -1,5 +1,6 @@
-import { FeatureFactory } from "../factory/factory";
 
-const { reducer: brandReducer, fetch: fetchBrands } = FeatureFactory('brand', 'all');
+import FeatureFactory from "../factory";
 
-export { brandReducer, fetchBrands };
+export const { slice: brandSlice, asyncActions: Brand } = FeatureFactory('brand').create();
+
+export default { brandSlice, Brand }
