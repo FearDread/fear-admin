@@ -32,8 +32,7 @@ const RegisterModal = () => {
                 <div className="modal-dialog modal-dialog-centered">
                     <div className="modal-content">
                         <div className="modal-body">
-                            <form action="index.html
-                            " method="get">
+                            <form action="" method="get">
                                 <div className="com-div-md">
 
                                     <h5 className="text-center mb-3"> Free Register </h5>
@@ -70,7 +69,7 @@ const RegisterModal = () => {
                                             </div>
 
                                             <div className="forget2 mt-3 ml-3 d-flex justify-content-between">
-                                            <label className="form-check-label" for="exampleCheck1"> By clicking Register, you agree to our
+                                            <label className="form-check-label" htmlFor="exampleCheck1"> By clicking Register, you agree to our
                                                         Terms of Use
                                                         and
                                                         Cookie Policy</label>

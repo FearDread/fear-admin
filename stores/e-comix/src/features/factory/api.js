@@ -10,7 +10,7 @@ const API_BASE_URL = (process.env.NODE_ENV === "production")
 const ACCESS_TOKEN_NAME = (process.env.JWT_TOKEN) 
                 ? process.env.JWT_TOKEN 
                 : "x-token";
-console.log('axios = ', axios);
+
 const instance = axios.create({
     baseURL: `${API_BASE_URL}`,
     headers: {
@@ -23,7 +23,6 @@ const instance = axios.create({
      credentials: true
     //httpsAgent: new https.Agent({ rejectUnauthorized: false })
 });
-console.log('instance = ', instance);
 
 instance.interceptors.request.use(
     (config) => {

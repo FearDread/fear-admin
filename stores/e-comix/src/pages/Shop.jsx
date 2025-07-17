@@ -5,7 +5,7 @@ import BannerSub from "../components/Banner/BannerSub"
 import DetailedItem from "../components/Product/DetailedItem";
 import SuperItem from "../components/Product/SuperItem";
 import Loader from "../components/Loader/Loader";
-import { Product } from "../features/products/factory";
+import { Product } from "../features/products/slice";
 
 const Shop = (props) => {
   const dispatch = useDispatch();
@@ -23,10 +23,12 @@ const Shop = (props) => {
   const [maxPrice, setmaxPrice] = useState(null);
   const [sort, setSort] = useState(null);
   
+  const [searchParams, setSearchParams] = useSearchParams();
   //query state
   //const products = useSelector((state) => state?.crud?.product);
-  const products = useSelector((state) => state?.product?.product);
-  const [searchParams, setSearchParams] = useSearchParams();
+  const { loading, succcess } = useSelector((state) => state.product);
+  const products = useSelector((state) => state.product.data);
+
 
 
   const getProducts = () => {
@@ -45,7 +47,7 @@ const Shop = (props) => {
 
   useEffect(() => {
     //getProducts();
-        dispatch(Product.fetch());
+    dispatch(Product.fetch());
     //console.log('products = ', products);
   }, [])
 
@@ -69,7 +71,7 @@ const Shop = (props) => {
 
   return (
     <>
-      {(!products) ? (
+      {(loading && !products) ? (
         <>
           <main className="float-start w-100 total-body home-body mt-0">
             <section className="float-start w-100">

@@ -8,7 +8,34 @@ export const stateGenerator = (namespace, data = null) => ({
     error: null
 });
 
-export function FeatureFactory(entity, reducers = {}) {
+export function FeatureFactory(entity, reducers = {
+    fetchStart: (state) => {
+        state.loading = true;
+        state.error = null;
+    },
+    fetchSuccess: (state, action) => {
+        state.loading = false;
+        state.success = true;
+        state.data = action.payload;
+    },
+    fetchFailure: (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+    },
+    searchStart: (state) => {
+        state.loading = true;
+        state.error = null;
+    },
+    searchSuccess: (state, action) => {
+        state.loading = false;
+        state.success = true;
+        state.data = action.payload;
+    },
+    searchFailure: (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+    },
+}) {
     
     const factory = {
         entity,
@@ -46,13 +73,15 @@ export function FeatureFactory(entity, reducers = {}) {
         return dest;
     }
 
-    factory.create = (endpoint = '', options = {service: null, initialState: {}}) => {
+
+
+    factory.create = (options = {service: null, initialState: {}}) => {
         const { service, initialState } = options;
         const sliceName = factory.entity;
-        const apiEndpoint = `${sliceName}/${endpoint}`;
-        
+
         const fetch = ThunkFactory.create(sliceName, 'all');
         const search = ThunkFactory.create(sliceName, 'search');
+
         const apiSlice = createSlice({
             name: sliceName,
             initialState: {
@@ -61,27 +90,16 @@ export function FeatureFactory(entity, reducers = {}) {
                 success: false,
                 error: null
             },
-            reducers: {
-                fetchStart: (state) => {
-                    state.loading = true;
-                    state.error = null;
-                },
-                fetchSuccess: (state, action) => {
-                    state.loading = false;
-                    state.success = true;
-                    state.data = action.payload;
-                },
-                fetchFailure: (state, action) => {
-                    state.loading = false;
-                    state.error = action.payload;
-                },
-            },
-            extraReducers: builder => {
-            builder
+            reducers: factory.reducers,
+            extraReducers: (builder) => {
+                builder
                 .addCase(fetch.pending, (state) => {
+                    console.log('fetch called', state);
                     state.loading = true;
+                                console.log('fetch called', state);
                 })
                 .addCase(fetch.fulfilled, (state, action) => {
+                    console.log('fetch data = ', action.payload);
                     state.loading = false;
                     state.success = true;
                     state.data = action.payload;
@@ -91,17 +109,29 @@ export function FeatureFactory(entity, reducers = {}) {
                     state.loading = false;
                     state.success = false;
                 })
+                .addCase(search.pending, (state) => {
+                    state.loading = true;
+                })
+                .addCase(search.fulfilled, (state, action) => {
+                    state.loading = false;
+                    state.success = true;
+                    state.data = action.payload;
+                })
+                .addCase(search.rejected, (state, action) => {
+                    state.error = action.error;
+                    state.loading = false;
+                    state.success = false;
+                })
 
         }});
 
-        //const { fetchStart, fetchSuccess, fetchFailure } = apiSlice.actions;
+        const { fetchStart, fetchSuccess, fetchFailure } = apiSlice.actions;
         const asyncActions = { fetch, search };
         
         if (options.service) {
             factory.inject(options.service, asyncActions);
         }
         
-        console.log('slice = ', apiSlice);
         return {
             slice: apiSlice,
             asyncActions

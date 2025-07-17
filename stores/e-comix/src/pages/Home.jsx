@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
+import Loader from "../components/Loader/Loader";
 import BannerMain from "../components/Banner/BannerMain";
 import ShopItem from "../components/Product/ShopItem";
 import SuperItem from "../components/Product/SuperItem";
@@ -9,34 +10,31 @@ import Services from "../components/Services/Services";
 import Brands from "../components/Brands/Brands";
 
 //import { Blog } from "../features/blogs/factory";
-import { Product } from "../features/products/factory";
+import { Product } from "../features/products/slice";
 //import { addToWishlist } from "../features/products/slice";
-//import { factory } from "../features/factory/factory";
 
 
 const Home = () => {
   //const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { loading, success } = useSelector( state => state.product);
+  const productState = useSelector(state => state.product.data);
 
-  //const blogState = useSelector((state) => state?.blog?.blog);
-  const { loading, success, data } = useSelector((state) => state.product);
-  const productState = useSelector((state) => state.product.data);
-
-
-  React.useEffect(() => {
+  useEffect(() => {
+    
     dispatch(Product.fetch());
-Product.fetch()
-    //console.log('making it here?', productState )
 
-    //dispatch(productSlice.actions.fetch());
-
-  }, []);
+  }, [dispatch]);
 
   return (
     <>
-      {loading && !productState ? (
+      {(loading) ? (
         <>
-          <div><p>Loading</p></div>
+          <main className="float-start w-100 total-body home-body mt-0">
+            <section className="float-start w-100">
+              <Loader />
+            </section>
+          </main>
         </>
       ) : (
         <>
