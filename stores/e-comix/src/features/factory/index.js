@@ -94,12 +94,10 @@ export function FeatureFactory(entity, reducers = {
             extraReducers: (builder) => {
                 builder
                 .addCase(fetch.pending, (state) => {
-                    console.log('fetch called', state);
                     state.loading = true;
-                                console.log('fetch called', state);
                 })
                 .addCase(fetch.fulfilled, (state, action) => {
-                    console.log('fetch data = ', action.payload);
+                    console.log('action = ', action);
                     state.loading = false;
                     state.success = true;
                     state.data = action.payload;
@@ -126,12 +124,15 @@ export function FeatureFactory(entity, reducers = {
         }});
 
         const { fetchStart, fetchSuccess, fetchFailure } = apiSlice.actions;
+        //apiSlice.search = search;
+        //apiSlice.fetch = fetch;
         const asyncActions = { fetch, search };
         
         if (options.service) {
             factory.inject(options.service, asyncActions);
         }
         
+        console.log('slice = ', apiSlice);
         return {
             slice: apiSlice,
             asyncActions

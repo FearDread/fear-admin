@@ -3,7 +3,8 @@ import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import Loader from "../components/Loader/Loader";
 import BannerSub from "../components/Banner/BannerSub"
-import { Product } from "../features/products/factory";
+import { Product } from "../features/products/slice";
+import { store } from "../features/store";
 import ReactImageZoom from "react-image-zoom";
 import ReactStars from "react-rating-stars-component"
 import { toast } from "react-toastify";
@@ -12,39 +13,37 @@ import defaultProdImg from "../assets/images/abstract_banner_1.jpg";
 
 const ProductDetails = () => {
   const { id } = useParams();
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-
   const [quantity, setQuantity] = useState(1);
   const [alreadyAdded, setAlreadyAdded] = useState(false);
-
-  const product = useSelector((state) => state?.product?.current);
-  const productsState = useSelector((state) => state?.product?.product);
-  const cartState = useSelector((state) => state?.auth?.cartProducts);
-  const { isLoggedIn, user } = useSelector((state) => state?.auth);
-
+  //const [imgProps, setImgProps ] = useState({})
+  const { loading, success, error } = useSelector((state) => state?.product);
+  const activeProduct = useSelector((state) => state?.product?.data);
+  //const cartState = useSelector((state) => state?.auth?.cartProducts);
+  //const { isLoggedIn, user } = useSelector((state) => state?.auth);
+/*
   const ratings = product?.totalrating;
-  const wishlist = useSelector((state) => state?.auth?.wishlist?.wishlist);
+  //const wishlist = useSelector((state) => state?.auth?.wishlist?.wishlist);
+
+*/
+
   const props = {
-    width: 594,
+            width: 594,
     height: 600,
     zoomWidth: 600,
-
-    img: product?.images[0].url
-      ? product?.images[0].url
-      : defaultProdImg,
-  };
-
+    img: "../assets/images/abstract_banner_1.jpg"
+  }
   useEffect(() => {
-    dispatch(Product.fetchOne(id));
+    store.dispatch(Product.fetch(id));
 
-    dispatch(Product.fetch());
+    /*
     console.log('Auth = ', user, isLoggedIn);
     if (isLoggedIn) {
       dispatch(Product.getCart());
     }
+      */
   }, []);
 
+  /*
   useEffect(() => {
     for (let index = 0; index < cartState?.length; index++) {
       if (id === cartState[index]?.productId?._id) {
@@ -52,10 +51,20 @@ const ProductDetails = () => {
       }
     }
   });
-
+*/
 
   return (
     <>
+      {(loading) ? (
+        <>
+          <main className="float-start w-100 total-body home-body mt-0">
+            <section className="float-start w-100">
+              <Loader />
+            </section>
+          </main>
+        </>
+    ) : (
+      <> 
       <BannerSub />
       <main className="float-start w-100 total-body home-body mt-0">
 
@@ -69,22 +78,21 @@ const ProductDetails = () => {
             </nav>
           </div>
         </section>
+
         <section className="category float-start w-100 position-relative">
 
           <div className="listing-page-div">
             <div className="container">
-
-              {(product) ? (
-                <>
                   <div className="row g-5 product-details-div">
                     <div className="col-lg-6">
                       <div className="main-product-image products-slide-1">
-                        <div>
-                          <ReactImageZoom {...props} />
+                        <div>x
+                            <ReactImageZoom {...props} />
+                          { /* <ReactImageZoom props={getImgProps(activeProduct)} /> */}
                         </div>
                       </div>
                       <div className="other-product-images thum-pic-slide d-flex flex-wrap gap-15">
-                        {product?.images.map((item, index) => {
+                        {activeProduct.images.map((item, index) => {
                           return (
                             <div className="item">
                               <figure className="main-ppic ">
@@ -97,28 +105,28 @@ const ProductDetails = () => {
                     </div>
                     <div className="col-lg-6">
                       <div className="comon-details-part">
-                        <h5 className="tags-ts"> {product.title} </h5>
-                        <h2 className="my-2"> {product.slug} </h2>
+                        <h5 className="tags-ts"> {activeProduct.title} </h5>
+                        <h2 className="my-2"> {activeProduct.slug} </h2>
                         <div className="ratine">
                           <span>
                             <i className="fas fa-star"></i><i className="fas fa-star"></i><i className="fas fa-star"></i>
                             <i className="fas fa-star"></i><i className="fas fa-star"></i>
                           </span>
-                          <span>({product.reviews.length} Reviews)</span>
+                          <span>({activeProduct.reviews.length} Reviews)</span>
                         </div>
                         <h3 className="price-text mt-3">
-                          ${product.price}
+                          ${activeProduct.price}
                           {/*<span> ${product.price} </span>*/}
                         </h3>
                         <div className="feature-div-list">
                           <ul className="mt-4">
                             <li>
                               <span>Category:</span>
-                              <span>{product.category}</span>
+                              <span>{activeProduct.category}</span>
                             </li>
                             <li>
                               <span>Brand</span>
-                              <span>{product.brand}</span>
+                              <span>{activeProduct.brand}</span>
                             </li>
 
                             <li>
@@ -127,7 +135,7 @@ const ProductDetails = () => {
                             </li>
                             <li>
                               <span>ID:</span>
-                              <span>{product._id}</span>
+                              <span>{activeProduct._id}</span>
                             </li>
                           </ul>
                         </div>
@@ -172,13 +180,6 @@ const ProductDetails = () => {
                       </div>
                     </div>
                   </div>
-                </>
-
-              ) : (
-                <>
-                  <div>No Data</div>
-                </>
-              )}
               <div className="tabs-details-gn mt-5 mt-lg-0">
                 <ul className="nav nav-tabs" id="myTab" role="tablist">
                   <li className="nav-item" role="presentation">
@@ -352,9 +353,10 @@ const ProductDetails = () => {
         </section>
       </main>
     </>
+  )}
+  </>
   )
 }
-
 export default ProductDetails;
 
 

@@ -1,10 +1,11 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useSelector } from "react-redux";
 import Layout from "./layouts/Layout";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
-//import ProductDetails from "./pages/ProductDetails";
+import ProductDetails from "./pages/ProductDetails";
 import SingleProduct from "./pages/SingleProduct";
 import BlogDetails from "./pages/BlogDetails";
 import Blog from "./pages/Blog";
@@ -30,19 +31,21 @@ import "./assets/css/site.styles.css";
 
 
 function App() {
+  const productState = useSelector(state => state.product.data );
   return (
     <>
       <Popup />
       <BrowserRouter>
+      <Suspense >
         <Routes>
           <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />
             <Route path="about" element={<About />} />
             <Route path="contact" element={<Contact />} />
-            <Route path="collection" element={<Collection />} />
+            <Route path="collection" element={<Collection props={productState} />} />
             <Route path="shop" element={<Shop />} />
 
-            <Route path="product/:id" element={<SingleProduct />} />
+            <Route path="product/:id" element={<ProductDetails />} />
             <Route path="blog" element={<Blog />} />
             <Route path="blog/:id" element={<BlogDetails />} />
             <Route
@@ -53,6 +56,7 @@ function App() {
                 </PrivateRoutes>
               }
             />
+            
             { /*
             <Route
               path="orders"
@@ -97,6 +101,7 @@ function App() {
             */}
             </Route>
         </Routes>
+        </Suspense> 
         <ScrollToTop />
       </BrowserRouter>
     </>
