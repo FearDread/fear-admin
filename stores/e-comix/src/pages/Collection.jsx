@@ -83,6 +83,7 @@ const Collection = (props) => {
             <img alt="ser" src="images/edge1-d.svg" />
           </div>
         </section>
+        
         <section className="features-collection float-start w-100 position-relative">
           <div className="container">
             <h2 className="text-center page-haeding text-white"> Promote & featured collection</h2>

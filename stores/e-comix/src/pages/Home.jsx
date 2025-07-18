@@ -11,19 +11,19 @@ import Brands from "../components/Brands/Brands";
 
 //import { Blog } from "../features/blogs/factory";
 import { Product } from "../features/products/slice";
+import { store } from "../features/store";
 //import { addToWishlist } from "../features/products/slice";
 
 
 const Home = () => {
   //const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { loading, success } = useSelector( state => state.product);
-  const productState = useSelector(state => state.product.data);
-
+ const productState = useSelector( state => state.product.data );
+ const { loading } = useSelector( state => state.product )
+ //const loading = true;
   useEffect(() => {
-    
-    dispatch(Product.fetch());
-
+    store.dispatch(Product.fetch({extra:'test'}));
+    console.log('making it here?', productState )
   }, [dispatch]);
 
   return (

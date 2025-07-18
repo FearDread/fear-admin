@@ -11,6 +11,7 @@ import ReactImageZoom from "react-image-zoom";
 //import { addProdToCart, getUserCart } from "../features/user/userSlice";
 import { toast } from "react-toastify";
 import { Product } from "../features/products/slice";
+import { store } from "../features/store";
 
 const SingleProduct = () => {
   const { id } = useParams();
@@ -29,7 +30,7 @@ const SingleProduct = () => {
   //const wishlist = useSelector((state) => state?.auth?.wishlist?.wishlist);
 
   useEffect(() => {
-    dispatch(Product.fetch(id));
+    store.dispatch(Product.fetch(id));
 
     //dispatch(product.fetch());
     /*
@@ -108,7 +109,7 @@ const SingleProduct = () => {
         //addRating({ star: star, comment: comment, prodId: id })
       );
       setTimeout(() => {
-        dispatch(Product.fetchOne(id));
+        //dispatch(Product.fetchOne(id));
       }, 100);
     }
     return false;
@@ -145,8 +146,8 @@ const SingleProduct = () => {
                   <ReactStars
                     count={5}
                     size={24}
-                    value={productState.totalrating.toString()}
-                    edit={false}
+                    value={2 /*productState.totalrating.toString()*/}
+                    edit={false}    
                     activeColor="#ffd700"
                   />
                   <p className="mb-0 t-review">

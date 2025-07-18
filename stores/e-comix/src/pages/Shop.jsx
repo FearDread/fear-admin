@@ -24,11 +24,9 @@ const Shop = (props) => {
   const [sort, setSort] = useState(null);
   
   const [searchParams, setSearchParams] = useSearchParams();
-  //query state
-  //const products = useSelector((state) => state?.crud?.product);
-  const { loading, succcess } = useSelector((state) => state.product);
-  const products = useSelector((state) => state.product.data);
 
+  const { loading, success } = useSelector( state => state.product);
+  const productState = useSelector( state => state.product.data);
 
 
   const getProducts = () => {
@@ -48,16 +46,16 @@ const Shop = (props) => {
   useEffect(() => {
     //getProducts();
     dispatch(Product.fetch());
-    //console.log('products = ', products);
-  }, [])
+    console.log('products = ', productState);
+  }, [dispatch])
 
   useEffect(() => {
     let newBrands = [];
     let category = [];
     let newtags = [];
 
-    for (let index = 0; index < products?.result?.length; index++) {
-      const item = products?.result[index];
+    for (let index = 0; index < productState?.result?.length; index++) {
+      const item = productState?.result[index];
 
       newBrands.push(item.brand);
       category.push(item.category);
@@ -67,11 +65,11 @@ const Shop = (props) => {
     setBrands(newBrands);
     setCategories(category);
     setTags(newtags);
-  }, [products]);
+  }, []);
 
   return (
     <>
-      {(loading && !products) ? (
+      {(loading) ? (
         <>
           <main className="float-start w-100 total-body home-body mt-0">
             <section className="float-start w-100">
@@ -80,7 +78,7 @@ const Shop = (props) => {
           </main>
         </>
     ) : (
-      <>
+      <>  
       <BannerSub />
       <main className="float-start w-100 total-body home-body mt-0">
 
@@ -272,7 +270,7 @@ const Shop = (props) => {
 
                   <div id="products" className="mt-4 righty">
                     <div className="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-lg-5">
-                      {products && products.slice(0, 9).map((item) => {
+                      {productState && productState.slice(0, 9).map((item) => {
                         return (
                           <DetailedItem {...item} />
                         )

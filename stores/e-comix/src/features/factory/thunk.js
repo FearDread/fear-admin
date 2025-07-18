@@ -12,13 +12,13 @@ export const ThunkFactory = {
 
         `${entity}/${prefix}`,
 
-        async (id = prefix, { rejectWithValue }) => {
+        async ( params = 'all', thunkApi ) => {
 
-          return API.get(`${entity}/${id}`)
+          return API.get(`${entity}/${params}`)
             
             .then((response) => response.data.result )
             
-            .catch((error) => rejectWithValue(error.message) )
+            .catch((error) => thunkApi.rejectWithValue(error.message) )
         }
       )
     )
