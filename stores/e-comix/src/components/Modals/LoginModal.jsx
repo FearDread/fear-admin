@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { login } from "../../features/user/service";
+import { Auth } from "../../features/user/slice";
 
 
 const LoginModal = () => {
@@ -19,7 +19,7 @@ const LoginModal = () => {
         myForm.set("email", email);
         myForm.set("password", password);
 
-        dispatch(login(myForm));
+        dispatch(Auth.login(myForm));
     }
     useEffect(() => {
         //if (loginSuccess && isLoggedIn) {

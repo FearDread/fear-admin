@@ -1,8 +1,10 @@
 import { FeatureFactory } from "../factory";
-import { cartService } from "./service";
+import { ThunkFactory } from "../factory/thunk";
 
-export const { slice: cartSlice, asyncActions: Cart } = FeatureFactory('cart').create({
-     service: cartService
-});
+export const { slice: cartSlice, asyncActions: Cart } = FeatureFactory('cart').create();
+
+Cart.addToCart = ThunkFactory.post('user', 'cart')
+Cart.getCart = ThunkFactory.create('user', 'cart');
+Cart.getUserWishlist = ThunkFactory.create('user', 'wishlist');
 
 export default { cartSlice, Cart };

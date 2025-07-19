@@ -7,7 +7,7 @@ import { blogSlice } from "./blogs/slice";
 
 export const store = configureStore({
   reducer: {
-    auth: authSlice.reducer,
+    user: authSlice.reducer,
     product: productSlice.reducer,
     brand: brandSlice.reducer,
     cart: cartSlice.reducer,

@@ -22,6 +22,23 @@ export const ThunkFactory = {
         }
       )
     )
+  },
+  post: (entity, prefix) => {
+    return ( 
+      createAsyncThunk(
+        
+        `${entity}/${prefix}`,
+
+        async ( data, thunkApi ) => {
+
+          return API.post(`${entity}/${prefix}`, data)
+            
+            .then((response) => response.data )
+            
+            .catch((error) => thunkApi.rejectWithValue(error.message) )
+        }
+      )
+    )
   }
 }
 

@@ -11,8 +11,8 @@ const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
-    const { success, error } = useSelector((state) => state.auth)
-    const userState = useSelector( state => state.auth.data );
+    //const { success, error } = useSelector((state) => state.user)
+    const userState = useSelector( state => state.user.user );
 
     const loginHandler = (e) => {
         e.preventDefault();

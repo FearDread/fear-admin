@@ -1,51 +1,39 @@
 import React, { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { Cart } from "../../features/cart/slice"
+import { store } from "../../features/store";
+import CartItem from "./CartItem";
 
-const Cart = (props) => {
+const CartBasket = ( props ) => {
+  const { id } = props;
+  const userState = useSelector( state => state?.user?.user );
+  const cartState = useSelector( state => state?.cart?.data );
+  const cartItems = 2;
+  const loading = true;
+
+  useEffect(() => {
+    if ( id ) {
+      store.dispatch(Cart.getCart())
+    }
+
+  },[]);
 
     return (
         <>
             <ul className="dropdown-menu shadow cart-dropdown-ne p-4" >
                <li className="top-notitext">
                  <div className="d-flex align-items-center justify-content-between">
-                   <h6> Your Products(2 Items) </h6>
+                   <h6> Your Products({cartItems} Items) </h6>
                    <a href="cart.html" className="btn cart-drop-bn m-0"> View Cart </a>
                  </div>
                </li>
                <li>
-                 <div className="comon-cart-ps">
-                     <div className="d-flex align-items-center justify-content-between">
-                       <a href="index.html#" className="products-sm-pic">
-                           <div className="imo-caty">
-                               <img src="images/blog2.png" alt="bn"/>
-                           </div>
-                       </a>
-                       <div className="cart-ps-details">
-                           <a href="index.html#" className="titel-crt-products">
-                           Birthday Card
-                           </a>
-                           <h6> $12.52 </h6>
-                       </div>
-                       <a href="index.html#" className="close-crt"> <i className="fas fa-close"></i> </a>
-                     </div>
-                 </div>
-                 <div className="comon-cart-ps">
-                   <div className="d-flex align-items-center justify-content-between">
-                     <a href="index.html#" className="products-sm-pic">
-                         <div className="imo-caty">
-                             <img src="images/b5197a7a-image-22.jpg" alt="bn"/>
-                         </div>
-                     </a>
-                     <div className="cart-ps-details">
-                         <a href="index.html#" className="titel-crt-products">
-                           Wedding Card
-                         </a>
-                         <h6> $12.52 </h6>
-                     </div>
-                     <a href="index.html#" className="close-crt"> <i className="fas fa-close"></i> </a>
-                   </div>
-                 </div>
+                { !loading && cartState.map((idx, item) => {
+                  return (
+                    <CartItem {...item} />
+                  )
+                })}
                </li>
                <li>
                  <div className="sub-total-products">
@@ -63,4 +51,4 @@ const Cart = (props) => {
     )
 }
 
-export default Cart;
+export default CartBasket;
