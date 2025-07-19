@@ -7,14 +7,14 @@ import CartItem from "./CartItem";
 
 const CartBasket = ( props ) => {
   const { id } = props;
-  const userState = useSelector( state => state?.user?.user );
+  const { user } = useSelector( state => state.user );
   const cartState = useSelector( state => state?.cart?.data );
   const cartItems = 2;
   const loading = true;
 
   useEffect(() => {
-    if ( id ) {
-      store.dispatch(Cart.getCart())
+    if ( user ) {
+      store.dispatch(Cart.getCart(user._id))
     }
 
   },[]);

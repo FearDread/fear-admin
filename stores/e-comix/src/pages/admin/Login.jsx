@@ -3,6 +3,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Auth } from "../../features/user/slice";
 import BannerSub from "../../components/Banner/BannerSub";
+import cache from "../../features/factory/cache";
+import { store } from "../../features/store";
 
 
 const Login = () => {
@@ -11,8 +13,7 @@ const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
-    //const { success, error } = useSelector((state) => state.user)
-    const userState = useSelector( state => state.user.user );
+    const { success, user } = useSelector((state) => state.user)
 
     const loginHandler = (e) => {
         e.preventDefault();
@@ -21,9 +22,16 @@ const Login = () => {
         myForm.set("email", email);
         myForm.set("password", password);
 
-        dispatch(Auth.login(myForm));
+        store.dispatch(Auth.login(myForm));
     }
 
+    useEffect(() => {
+        if ( success && user ) {
+            cache.local.set("auth", user) ;
+            console.log('cache =', cache.local.get("auth"));
+            navigate("/profile");
+        }
+    }, []);
     return (
         <>
         <BannerSub />

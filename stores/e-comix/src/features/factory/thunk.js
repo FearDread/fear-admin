@@ -12,9 +12,9 @@ export const ThunkFactory = {
 
         `${entity}/${prefix}`,
 
-        async ( params = 'all', thunkApi ) => {
-
-          return API.get(`${entity}/${params}`)
+        async ( params, thunkApi ) => {
+          console.log('params = ', params);
+          return API.get(`${entity}/${prefix}`, params)
             
             .then((response) => response.data.result )
             
