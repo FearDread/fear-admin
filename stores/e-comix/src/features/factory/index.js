@@ -132,7 +132,7 @@ export function FeatureFactory(entity, reducers = {
             factory.inject(options.service, asyncActions);
         }
         
-        console.log('slice = ', apiSlice);
+        console.log('slice = ', asyncActions);
         return {
             slice: apiSlice,
             asyncActions

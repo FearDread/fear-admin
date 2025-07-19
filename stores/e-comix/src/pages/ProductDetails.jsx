@@ -1,23 +1,23 @@
 import React, { useEffect, useState } from "react"
-import { useParams, useLocation, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import Loader from "../components/Loader/Loader";
 import BannerSub from "../components/Banner/BannerSub"
 import { Product } from "../features/products/slice";
 import { store } from "../features/store";
-import ReactImageZoom from "react-image-zoom";
-import ReactStars from "react-rating-stars-component"
-import { toast } from "react-toastify";
+//import ReactImageZoom from "react-image-zoom";
+//import ReactStars from "react-rating-stars-component"
+//import { toast } from "react-toastify";
 //ddProdToCart, getCart } from "../features/user/service";
-import defaultProdImg from "../assets/images/abstract_banner_1.jpg";
+//import defaultProdImg from "../assets/images/abstract_banner_1.jpg";
 
 const ProductDetails = () => {
   const { id } = useParams();
   const [quantity, setQuantity] = useState(1);
   const [alreadyAdded, setAlreadyAdded] = useState(false);
-  //const [imgProps, setImgProps ] = useState({})
-  const { loading, success, error } = useSelector((state) => state?.product);
-  const activeProduct = useSelector((state) => state?.product?.data);
+
+  const { loading, success, error } = useSelector(state => state.product);
+  const activeProduct = useSelector(state => state.product.data );
   //const cartState = useSelector((state) => state?.auth?.cartProducts);
   //const { isLoggedIn, user } = useSelector((state) => state?.auth);
 /*
@@ -25,7 +25,7 @@ const ProductDetails = () => {
   //const wishlist = useSelector((state) => state?.auth?.wishlist?.wishlist);
 
 */
-
+  //const loading = true;
   const props = {
             width: 594,
     height: 600,
@@ -33,6 +33,7 @@ const ProductDetails = () => {
     img: "../assets/images/abstract_banner_1.jpg"
   }
   useEffect(() => {
+    console.log('id = ', id);
     store.dispatch(Product.fetch(id));
 
     /*
@@ -72,8 +73,8 @@ const ProductDetails = () => {
           <div className="container">
             <nav aria-label="breadcrumb">
               <ol className="breadcrumb">
-                <li className="breadcrumb-item"><a href="product-details.html#">Home</a></li>
-                <li className="breadcrumb-item active" aria-current="page">Product Details</li>
+                <li key={1} className="breadcrumb-item"><a href="product-details.html#">Home</a></li>
+                <li key={2} className="breadcrumb-item active" aria-current="page">Product Details</li>
               </ol>
             </nav>
           </div>
@@ -86,13 +87,12 @@ const ProductDetails = () => {
                   <div className="row g-5 product-details-div">
                     <div className="col-lg-6">
                       <div className="main-product-image products-slide-1">
-                        <div>x
-                            <ReactImageZoom {...props} />
+                        <div>
                           { /* <ReactImageZoom props={getImgProps(activeProduct)} /> */}
                         </div>
                       </div>
                       <div className="other-product-images thum-pic-slide d-flex flex-wrap gap-15">
-                        {activeProduct.images.map((item, index) => {
+                        {activeProduct && activeProduct.images.map((item, index) => {
                           return (
                             <div className="item">
                               <figure className="main-ppic ">
@@ -120,20 +120,20 @@ const ProductDetails = () => {
                         </h3>
                         <div className="feature-div-list">
                           <ul className="mt-4">
-                            <li>
+                            <li key={1}>
                               <span>Category:</span>
                               <span>{activeProduct.category}</span>
                             </li>
-                            <li>
+                            <li key={2}>
                               <span>Brand</span>
                               <span>{activeProduct.brand}</span>
                             </li>
 
-                            <li>
+                            <li key={3}>
                               <span>Tags:</span>
                               <span>Action, Adventure, Manhua, Martial Arts</span>
                             </li>
-                            <li>
+                            <li key={4}>
                               <span>ID:</span>
                               <span>{activeProduct._id}</span>
                             </li>
@@ -172,8 +172,8 @@ const ProductDetails = () => {
                         <div className="delivery-part">
                           <h5> Free worldwide shipping for orders over <span> $70</span> </h5>
                           <ul>
-                            <li> Order will dispatch with in <span> 2 Hours </span> </li>
-                            <li>  Order delivery with in <span> 3day </span> </li>
+                            <li key={1}> Order will dispatch with in <span> 2 Hours </span> </li>
+                            <li key={2}>  Order delivery with in <span> 3day </span> </li>
                           </ul>
                         </div>
 
@@ -182,17 +182,17 @@ const ProductDetails = () => {
                   </div>
               <div className="tabs-details-gn mt-5 mt-lg-0">
                 <ul className="nav nav-tabs" id="myTab" role="tablist">
-                  <li className="nav-item" role="presentation">
+                  <li key={1} className="nav-item" role="presentation">
                     <button className="nav-link active" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab"
                     >Description</button>
                   </li>
-                  <li className="nav-item" role="presentation">
+                  <li key={2} className="nav-item" role="presentation">
                     <button className="nav-link" data-bs-toggle="tab" data-bs-target="#profile"
                       type="button" role="tab" >
                       Review & Feedback     </button>
                   </li>
 
-                  <li className="nav-item" role="presentation">
+                  <li key={3} className="nav-item" role="presentation">
                     <button className="nav-link" data-bs-toggle="tab" data-bs-target="#shipping"
                       type="button" role="tab" >
                       Shipping Policy     </button>
@@ -205,7 +205,7 @@ const ProductDetails = () => {
                       <h3> Did you know </h3>
                       <p className="mt-3"> The journey to the martial peak is a lonely, solitary and long one.In the face of adversity,you must survive and remain unyielding.Only then can you break through and and continue on your journey to become the strongest. Sky Tower tests its disciples in the harshest ways to prepare them for this journey.One day the lowly sweeper Yang Kai managed to obtain a
                         black book, setting him on the road to the peak of the martials world. </p>
-
+                       {/*    
                       <div className="feature-div-list">
                         <ul className="mt-4">
                           <li>
@@ -230,7 +230,7 @@ const ProductDetails = () => {
 
                         </ul>
                       </div>
-
+                          */}
                       <h3 className="mt-5"> Storyline </h3>
                       <p className="mt-3"> Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap
                         into electronic typesetting, remaining essentially unchanged.</p>

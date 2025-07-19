@@ -4,7 +4,7 @@ import cache from "../features/factory/cache.js";
 export const PrivateRoutes = ({ children }) => {
   //const getTokenFromLocalStorage = JSON.parse(localStorage.getItem("auth"));
   const isAuthorized = cache.local.has("auth") ? cache.local.get("auth") : undefined;
-  
+  alert(isAuthorized);
   return isAuthorized !== undefined ? (
     children
   ) : (

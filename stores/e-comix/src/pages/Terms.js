@@ -1,9 +1,7 @@
 import React from "react";
-import BreadCrumb from "../components/Common/BreadCrumb";
-import Meta from "../components/Meta/Meta";
-import Container from "../components/Common/Container";
+import BannerSub from "../components/Banner/BannerSub"
 
-const TermAndContions = () => {
+const Terms = () => {
   return (
     <>
     <BannerSub />
@@ -24,4 +22,4 @@ const TermAndContions = () => {
   );
 };
 
-export default TermAndContions;
+export default Terms;

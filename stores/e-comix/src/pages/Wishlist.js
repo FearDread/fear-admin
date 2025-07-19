@@ -1,33 +1,33 @@
 import React, { useEffect } from "react";
 import BreadCrumb from "../components/Common/BreadCrumb";
 import Meta from "../components/Meta/Meta";
-import Container from "../components/Common/Container";
+//import Container from "../components/Common/Container";
 import { useDispatch, useSelector } from "react-redux";
-import { addToWishlist } from "../features/products/productSlilce";
-import { getuserProductWishlist } from "../features/user/userSlice";
+//import { addToWishlist } from "../features/products/productSlilce";
+//import { getuserProductWishlist } from "../features/user/userSlice";
 
 
 const Wishlist = () => {
   const dispatch = useDispatch();
   useEffect(() => {
-    getWishlistFromDb();
+    //getWishlistFromDb();
   }, []);
   const getWishlistFromDb = () => {
-    dispatch(getuserProductWishlist());
+    //dispatch(getuserProductWishlist());
   };
 
   const wishlistState = useSelector((state) => state?.auth?.wishlist?.wishlist);
   const removeFromWishlist = (id) => {
-    dispatch(addToWishlist(id));
+    //dispatch(addToWishlist(id));
     setTimeout(() => {
-      dispatch(getuserProductWishlist());
+      //dispatch(getuserProductWishlist());
     }, 300);
   };
   return (
     <>
       <Meta title={"Wishlist"} />
       <BreadCrumb title="Wishlist" />
-      <Container class1="wishlist-wrapper home-wrapper-2 py-5">
+      <container class1="wishlist-wrapper home-wrapper-2 py-5">
         <div className="row">
           {wishlistState && wishlistState.length === 0 && (
             <div className="text-center fs-3">No Data</div>
@@ -65,7 +65,7 @@ const Wishlist = () => {
               );
             })}
         </div>
-      </Container>
+      </container>
     </>
   );
 };
