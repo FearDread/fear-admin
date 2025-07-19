@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react"
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { Auth } from "../../features/user/slice";
+import cache from "../../features/factory/cache";
 
 
 const LoginModal = () => {
@@ -11,6 +12,8 @@ const LoginModal = () => {
     const [password, setPassword] = useState("");
 
     //const { isLoggedIn, loginSuccess } = useSelector((state) => state.auth)
+     
+    const { user, success } = useSelector( state => state.user )
 
     const loginHandler = (e) => {
         e.preventDefault();
@@ -22,9 +25,10 @@ const LoginModal = () => {
         dispatch(Auth.login(myForm));
     }
     useEffect(() => {
-        //if (loginSuccess && isLoggedIn) {
-          //navigate("/account");
-        //}
+        if ( success && user ) {
+            cache.local.set("auth", user) ;
+            navigate("/profile");
+        }
       }, [])
 
     return (

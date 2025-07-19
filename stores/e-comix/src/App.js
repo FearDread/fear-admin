@@ -1,4 +1,4 @@
-import React, { Suspense } from "react";
+import React, { Suspense, useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Layout from "./layouts/Layout";
@@ -25,8 +25,10 @@ import Wishlist from './pages/Wishlist';
 
 import { PrivateRoutes } from "./routes/PrivateRoutes";
 import { OpenRoutes } from "./routes/OpenRoutes";
-
+import cache from "./features/factory/cache";
 import { store } from "./features/store";
+import { Cart } from "./features/cart/slice";
+import { Auth } from "./features/user/slice";
 import { Product } from "./features/products/slice";
 
 import "./assets/css/bootstrap.min.css";
@@ -39,7 +41,15 @@ import "./assets/css/site.styles.css";
 
 function App() {
   const products = useSelector(state => state.product.data);
+  //const { user } = useSelector( state => state.user );
+  const user = cache.local.has("auth") ? cache.local.get("auth") : undefined;
 
+  useEffect(() => {
+    console.log('user =', user);
+    if ( user ) {
+      store.dispatch(Cart.getCart(user.user));
+    }
+  }, [])
   return (
     <>
       <Popup />
