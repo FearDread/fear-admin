@@ -4,6 +4,7 @@ const { isAuthorized, isAdmin } = require("../controllers/auth");
 
 router.post("/", Cart.userCart);
 router.get("/all", Cart.getUserCart);
+router.get("/user/cart/:id", Cart.getUserCart);
 
 router.delete(
   "/product/delete/:id",
