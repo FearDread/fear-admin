@@ -23,7 +23,7 @@ const Header = () => {
               <div className="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul className="navbar-nav mx-auto mb-2 mb-lg-0">
                   <li className="nav-item dmenu  megamenu-li dropdown shop-mega">
-                    <a className="nav-link dropdown-toggle" href="index.html#" role="button" data-bs-toggle="dropdown">
+                    <a className="nav-link dropdown-toggle" href="/shop" role="button" data-bs-toggle="dropdown">
                       Shop
                     </a>
 

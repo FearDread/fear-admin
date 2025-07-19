@@ -15,16 +15,13 @@ import { store } from "../features/store";
 //import { addToWishlist } from "../features/products/slice";
 
 
-const Home = () => {
+const Home = ( products ) => {
   //const navigate = useNavigate();
   const dispatch = useDispatch();
  const productState = useSelector( state => state.product.data );
  const { loading } = useSelector( state => state.product )
  //const loading = true;
-  useEffect(() => {
-    store.dispatch(Product.fetch({extra:'test'}));
-    console.log('making it here?', productState )
-  }, [dispatch]);
+
 
   return (
     <>
