@@ -3,7 +3,7 @@ const Cart = require("../controllers/cart");
 const { isAuthorized, isAdmin } = require("../controllers/auth");
 
 router.post("/", Cart.userCart);
-router.get("/", Cart.getUserCart);
+router.get("/all", Cart.getUserCart);
 
 router.delete(
   "/product/delete/:id",

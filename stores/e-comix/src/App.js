@@ -8,7 +8,7 @@ import Contact from "./pages/Contact";
 import ProductDetails from "./pages/ProductDetails";
 import BlogDetails from "./pages/BlogDetails";
 import Blog from "./pages/Blog";
-import Cart from "./pages/Cart";
+import UserCart from "./pages/admin/UserCart";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import ShippingPolicy from "./pages/ShippingPolicy";
 import ScrollToTop from "./components/ScrollButton/ScrollToTop";
@@ -66,7 +66,7 @@ function App() {
                 path="cart"
                 element={
                   <PrivateRoutes>
-                    <Cart />
+                    <UserCart />
                   </PrivateRoutes>
                 }
               />      

@@ -73,9 +73,7 @@ export function FeatureFactory(entity, reducers = {
         return dest;
     }
 
-
-
-    factory.create = (options = {service: null, initialState: {}}) => {
+    factory.create = (options = {service: null, initialState: null}) => {
         const { service, initialState } = options;
         const sliceName = factory.entity;
 
@@ -84,7 +82,7 @@ export function FeatureFactory(entity, reducers = {
 
         const apiSlice = createSlice({
             name: sliceName,
-            initialState: {
+            initialState: (initialState) ? initialState : {
                 data: {},
                 loading: false,
                 success: false,
@@ -124,15 +122,12 @@ export function FeatureFactory(entity, reducers = {
         }});
 
         const { fetchStart, fetchSuccess, fetchFailure } = apiSlice.actions;
-        //apiSlice.search = search;
-        //apiSlice.fetch = fetch;
         const asyncActions = { fetch, search };
         
         if (options.service) {
             factory.inject(options.service, asyncActions);
         }
         
-        console.log('slice = ', asyncActions);
         return {
             slice: apiSlice,
             asyncActions
