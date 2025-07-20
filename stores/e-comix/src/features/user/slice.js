@@ -7,4 +7,4 @@ export const { slice: authSlice, asyncActions: Auth } = FeatureFactory('user').c
 Auth.login = ThunkFactory.post('auth', 'login');
 Auth.register = ThunkFactory.post('auth', 'register');
 
-export default { authSlice, Auth };  
+export default { authSlice, Auth };
