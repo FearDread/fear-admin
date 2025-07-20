@@ -4,7 +4,7 @@ const User = require("../models/user");
 const methods = require("./crud");
 const db = require("../libs/db");
 
-exports.userCart = tryCatch(async (req, res) => {
+exports.addToCart = tryCatch(async (req, res) => {
   const { productId, quantity, price } = req.body;
   const { _id } = req.user;
 
@@ -24,16 +24,18 @@ exports.userCart = tryCatch(async (req, res) => {
 });
 
 exports.getUserCart = tryCatch(async (req, res) => {
-  const { _id } = req.user;
-  db.validate(_id);
-  try {
-    const cart = await Cart.find({ userId: _id })
+  const { _id } = req.body;
+  //db.validate(_id);
+  await Cart.find({ userId: _id })
       .populate("productId")
-      .populate("color");
-    res.json(cart);
-  } catch (error) {
-    throw new Error(error);
-  }
+      .then((cart) => {
+        console.log('cart data = ', cart);
+        return res.status(200).json({success: true, result: cart})
+      })
+      .catch((error) => {
+        throw new Error(error);
+      });
+
 });
 
 exports.removeFromCart = tryCatch(async (req, res) => {
