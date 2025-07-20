@@ -13,8 +13,10 @@ const CartBasket = ( props ) => {
   const loading = true;
 
   useEffect(() => {
+
     if ( user ) {
-      store.dispatch(Cart.getCart(user._id))
+      store.dispatch(Cart.getCart(user))
+      console.log('cart =', cartState); 
     }
 
   },[]);
