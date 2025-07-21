@@ -36,13 +36,15 @@ exports.all = tryCatch(async (Model, req, res) => {
  *  @returns {Document} Single Document
  */
 exports.read = tryCatch(async (Model, req, res) => {
-  const { id } = req.params;
 
-  if (!req.params || !id) throw new Error("No ID");
-  const msg = "document with id :: " + req.params.productId;
+  if (!req.params) throw new Error("No ID Params");
+
+  const { id } = req.params.id;
+  const { prodId } = req.params.productId;
+
   await Model.findOne({ _id: id })
-    .then((result) => { return res.status(200).json({ result, success: true, message: "Found " + msg }); })
-    .catch((error) => { return res.status(404).json({ result: null, success: false, message: "No " + msg }); })
+    .then((result) => { return res.status(200).json({ result, success: true, message: "Found Doc"}); })
+    .catch((error) => { return res.status(404).json({ result: error, success: false, message: "No Doc Found"}); })
 });
 
 /**
@@ -55,8 +57,6 @@ exports.create = tryCatch(async (Model, req, res) => {
     const links = await cloud.uploadImages(req.body.images);
     req.body.images = links;
   }
-
-  console.log("Creating Document :: ", req.body);
   await new Model(req.body)
     .save()
     .then((result) => { 
@@ -65,7 +65,7 @@ exports.create = tryCatch(async (Model, req, res) => {
     }) 
     .catch((error) => {
       if (error.name == "ValidationError") {
-        return res.status(400).json({ result: null, success: false, message: "Required fields are not supplied" });
+        return res.status(400).json({ result: error, success: false, message: "Required fields are not supplied" });
       } else {
         throw new Error("Internal Server Error");
       }
@@ -78,12 +78,14 @@ exports.create = tryCatch(async (Model, req, res) => {
  *  @returns {Document} Returns updated document
  */
 exports.update = tryCatch(async (Model, req, res) => {
+  const { _id } = req.params.id;
+
   if (req.body.images) {
     let links = await cloud.uploadImages(req.body.images);
     req.body.images = links;
   }
 
-  await Model.findOneAndUpdate({ _id: req.params.id }, req.body,
+  await Model.findOneAndUpdate({ _id }, req.body,
       { new: true, runValidators: true })
       .exec()
       .then((result) => {
@@ -92,9 +94,8 @@ exports.update = tryCatch(async (Model, req, res) => {
       .catch((err) => {
         if (err.name == "ValidationError") {
           return res.status(400).json({ success: false, result: null, message: "Required fields are not supplied" });
-        } else {
-          throw new Error("Internal Server Error");
         }
+        throw new Error("Internal Server Error");
       })
 });
 
@@ -136,7 +137,7 @@ exports.list = tryCatch(async (Model, req, res) => {
 
       if ( count > 0 ) {
         return res.status(200).json(
-          { result, success: true, pagination, message: "Successfully found all documents" }
+          { result, success: true, pagination, message: "Successfully found all Docs" }
         );
       } else {
         return res.status(203).json(
@@ -144,7 +145,7 @@ exports.list = tryCatch(async (Model, req, res) => {
         );
       }
     })
-    .catch((error) => { throw new Error(error); }); 
+    .catch((error) => { return res.status(400).json({ success: false, result: error })}); 
 });
 
 /**
@@ -165,5 +166,5 @@ exports.search = tryCatch(async (Model, req, res) => {
     ],
   })
   .then((result) => { res.status(200).json({ success: true, result }); })
-  .catch((error) => { res.status(500).json({ success: false, error: error.message }); });
+  .catch((error) => { res.status(500).json({ success: false, result: error }); });
 });
