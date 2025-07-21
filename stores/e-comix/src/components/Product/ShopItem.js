@@ -10,7 +10,7 @@ const ShopItem = (props) => {
 
     return (
         <>
-            <div className="col" data-idx={_id}>
+            <div className="col" data-idx={_id} key={_id}>
                 <Link to={link} className="shop-items overflow-hidden d-inline-block w-100 position-relative" data-aos="zoom-in">
                     <div className="img-box-div position-relative">
                         <img alt="srt" src={images && images[0] ? images[0].url : "images/b5197a7a-image-22.jpg" } />

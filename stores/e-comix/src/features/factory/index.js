@@ -1,14 +1,7 @@
 import { createSlice, createEntityAdapter, combineReducers } from '@reduxjs/toolkit';
 import ThunkFactory from './thunk';
 
-export const stateGenerator = (namespace, data = null) => ({
-    [namespace]: data,
-    loading: false,
-    success: false,
-    error: null
-});
-
-export function FeatureFactory(entity, reducers = {
+const defaultReducers = {
     fetchStart: (state) => {
         state.loading = true;
         state.error = null;
@@ -34,16 +27,32 @@ export function FeatureFactory(entity, reducers = {
     searchFailure: (state, action) => {
         state.loading = false;
         state.error = action.payload;
-    },
-}) {
-    
+    }
+}
+
+export const stateGenerator = (namespace, data = null) => ({
+    entity: namespace,
+    data: data,
+    loading: false,
+    success: false,
+    error: null
+});
+
+export function FeatureFactory(entity, reducers = null, endpoints = null) {
+
+
     const factory = {
         entity,
-        reducers,
+        endpoints,
+        reducers: defaultReducers,
         state: stateGenerator(entity, []) ,
-        adapter: createEntityAdapter() 
+        adapter: createEntityAdapter()
     };
-    
+    /*
+    factory.manager.add(defaultReducers);
+    factory.manager.add(reducers);
+    factory.reducers = factory.manager.getReducerMap(),
+    */
     factory.manager = (initialReducers) => {
         const reducers = { ...initialReducers };
         let combinedReducer = combineReducers(reducers);
@@ -121,7 +130,7 @@ export function FeatureFactory(entity, reducers = {
 
         }});
 
-        const { fetchStart, fetchSuccess, fetchFailure } = apiSlice.actions;
+ 
         const asyncActions = { fetch, search };
         
         if (options.service) {
