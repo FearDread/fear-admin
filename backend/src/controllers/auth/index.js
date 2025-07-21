@@ -1,40 +1,7 @@
 const User = require("../../models/user");
-//const passport = require('../../libs/passport');
 const jwt = require("jsonwebtoken");
-/*
-exports.passportLogin = async (req, res) => {
-  const { email, password } = req.body;
-  passport.authenticate("login", {
-    failureRedirect: "/user/signin",
-    failureFlash: true,
-  })
-  let cart = await Cart.findOne({ user: req.user._id });
-  // if there is a cart session and user has no cart, save it to the user's cart in db
-  if (req.session.cart && !cart) {
-    await new Cart(req.session.cart)
-      .then((cart) => {
-        cart.user = req.user._id;
-        cart.save(); }
-      )
-      .catch((error) => {
-        console.log(err);
-        req.flash("error", err.message);
-        
-        return res.redirect("/");
-      });
-  }
-  req.session.cart = cart;
 
-  // redirect to old URL before signing in
-  if (req.session.oldUrl) {
-    var oldUrl = req.session.oldUrl;
-    req.session.oldUrl = null;
-    res.redirect(oldUrl);
-  } else {
-    res.redirect("/user/profile");
-  }
-}*/
-/**
+/*
  * GET /fear/api/auth/login
  * @summary Authorize user to reach Admin / Dashboard 
  * @tags login
@@ -42,23 +9,22 @@ exports.passportLogin = async (req, res) => {
  * @return {object} 400 - Bad request response
  */
 exports.login = async (req, res) => {
-  const { email, password } = req.body; 
+  const { email, password } = req.body;
   console.log('logging in', email);
 
   await User.findOne({ email: email })
     .then((user) => {
-      if (user) {
-        let isMatch = user.compare(password);
-        isMatch.then((pass) => {
+      let isMatch = user.compare(password);
+      
+      isMatch
+        .then((pass) => {
           if (!pass) return res.status(400).json({ success: false, error: 'Invalid Credientials' })
 
           let token = this.getJWTToken(res, user);
           return res.status(200).json({ user, success: true, token });
         })
-        .catch((error) => { throw new Error(error); });
-      }
-    })
-    .catch((error) => { throw new Error("User Not found"); });
+        .catch(error => new Error(error))})
+    .catch(() => new Error("User Not found"));
 }
 
 exports.logout = async (req, res, next) => {
