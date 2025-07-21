@@ -12,9 +12,10 @@ const Collection = (products) => {
   const { loading } = useSelector(state => state?.product);
 
   useEffect(() => {
-    console.log('prod = ', products);
+
     store.dispatch(Product.fetch());
   }, [])
+
   return (
     <>
       {loading ? (
@@ -110,7 +111,7 @@ const Collection = (products) => {
                           <div className="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-lg-5">
                       {productState && productState.slice(0, 9).map((item) => {
                         return (
-                          <DetailedItem {...item} />
+                          <DetailedItem {...item} key={item._id} />
                         )
                       })}
                     </div>

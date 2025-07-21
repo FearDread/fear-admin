@@ -54,7 +54,7 @@ const Home = ( products ) => {
 
                     {productState && productState.slice(0, 4).map((item) => {
                       return (
-                        <ShopItem {...item} />
+                        <ShopItem {...item} key={item._id} />
                       )
                     })}
 
@@ -80,15 +80,15 @@ const Home = ( products ) => {
 
                   <div className="tabs-div d-inline-block w-100" >
                     <ul className="nav nav-pills mb-3 justify-content-center justify-content-lg-start" id="pills-tab" role="tablist" data-aos="zoom-in">
-                      <li className="nav-item" role="presentation">
+                      <li className="nav-item" role="presentation" key={1}>
                         <button className="nav-link active" data-bs-toggle="pill" data-bs-target="#supcoming"
                           type="button" role="tab" >Upcoming</button>
                       </li>
-                      <li className="nav-item" role="presentation">
+                      <li className="nav-item" role="presentation" key={2} >
                         <button className="nav-link" data-bs-toggle="pill" data-bs-target="#sbest"
                           type="button" role="tab">Weekly Best</button>
                       </li>
-                      <li className="nav-item" role="presentation">
+                      <li className="nav-item" role="presentation" key={3} >
                         <button className="nav-link" data-bs-toggle="pill" data-bs-target="#smost"
                           type="button" role="tab">Most Polpular</button>
                       </li>
@@ -100,22 +100,31 @@ const Home = ( products ) => {
 
                           {productState && productState.slice(5, 9).map((item) => {
                             return (
-                              <SuperItem {...item} />
+                              <SuperItem {...item} key={item._id} />
                             )
                           })}
                         </div>
                       </div>
-                      <div className="tab-pane fade" id="sbest" role="tabpanel">
+                      <div className="tab-pane fade" id="sbest" role="tabpane2">
                         <div className="row row-cols-1 row-cols-sm-2 gy-5 g-lg-5 mt-0">
 
                           {productState && productState.slice(10, 14).map((item) => {
                             return (
-                              <SuperItem {...item} />
+                              <SuperItem {...item} key={item._id} />
                             )
                           })}
                         </div>
                       </div>
+                   <div className="tab-pane fade" id="smost" role="tabpane3">
+                        <div className="row row-cols-1 row-cols-sm-2 gy-5 g-lg-5 mt-0">
 
+                          {productState && productState.slice(0, 4).map((item) => {
+                            return (
+                              <SuperItem {...item} key={item._id} />
+                            )
+                          })}
+                        </div>
+                      </div>
                       <div className="col">
 
                         <a href="/shop" className="btn comon-button mx-auto mt-5 d-table" data-aos="fade-up">  <span> <i className="fas fa-arrow-right"></i> See More Hero </span> </a>

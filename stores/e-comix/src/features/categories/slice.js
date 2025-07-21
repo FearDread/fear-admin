@@ -1,5 +1,5 @@
 import { FeatureFactory } from "@feardread/feature-factory";
 
-const { reducer: categoryReducer, asyncActions: fetchCategory } = FeatureFactory('category', 'all', {});
+const { slice: categorySlice, asyncActions: Category } = FeatureFactory('category').create();
 
-export { categoryReducer, fetchCategory };
+export { categorySlice, Category };

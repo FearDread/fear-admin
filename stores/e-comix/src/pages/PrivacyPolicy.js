@@ -1,11 +1,12 @@
 import React from "react";
 import Breadcrumbs from "../components/Common/Breadcrumbs";
 import Meta from "../components/Meta/Meta";
+import BannerSub from "../components/Banner/BannerSub";
 
 const PrivacyPolicy = () => {
   return (
     <>
-      <Meta title={"Privacy Policy"} />
+      <BannerSub />
       <main className="float-start w-100 total-body home-body mt-0">
         <Breadcrumbs crumbs={{link:"/", crumb:"Privacy Policy"}} />
         <section className="about-hisotry float-start w-100 position-relative">
