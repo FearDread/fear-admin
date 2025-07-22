@@ -6,6 +6,8 @@ import DetailedItem from "../components/Product/DetailedItem";
 import SuperItem from "../components/Product/SuperItem";
 import Loader from "../components/Loader/Loader";
 import { Product } from "../features/products/slice";
+import { store } from "../features/store";
+import { Category } from "../features/categories/slice";
 
 const Shop = (props) => {
   const dispatch = useDispatch();
@@ -25,9 +27,9 @@ const Shop = (props) => {
   
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const { loading, success } = useSelector( state => state.product);
+  const { data } = useSelector( state => state.product );
   const productState = useSelector( state => state.product.data);
-
+  const loading = true;
 
   const getProducts = () => {
     let params = {};
@@ -36,18 +38,18 @@ const Shop = (props) => {
       params[prop] = value;
     })
 
+
     if (params && params !== undefined) {
-      //dispatch(cruds.search( 'product', params ));
+      store.dispatch(Product.search(params));
     } else {
-      //dispatch(cruds.list( 'product' ));
+      store.dispatch(Product.fetch());
     }
   };
 
   useEffect(() => {
-    //getProducts();
-    dispatch(Product.fetch());
-    console.log('products = ', productState);
-  }, [dispatch])
+    getProducts();
+    //store.dispatch(Product.fetch());
+  }, [])
 
   useEffect(() => {
     let newBrands = [];
@@ -270,7 +272,7 @@ const Shop = (props) => {
 
                   <div id="products" className="mt-4 righty">
                     <div className="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-lg-5">
-                      {productState && productState.slice(0, 9).map((item) => {
+                      {data && data.slice(0, 9).map((item) => {
                         return (
                           <DetailedItem {...item} />
                         )

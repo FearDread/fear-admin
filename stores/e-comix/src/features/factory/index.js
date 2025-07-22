@@ -104,7 +104,6 @@ export function FeatureFactory(entity, reducers = null, endpoints = null) {
                     state.loading = true;
                 })
                 .addCase(fetch.fulfilled, (state, action) => {
-                    console.log('action = ', action);
                     state.loading = false;
                     state.success = true;
                     state.data = action.payload;
