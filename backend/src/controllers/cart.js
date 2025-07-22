@@ -4,7 +4,7 @@ const User = require("../models/user");
 const db = require("../libs/db");
 
 exports.create = tryCatch(async (req, res) => {
-  const { _id, productId, quantity, price } = req.body;
+  const { userId, productId, quantity, price } = req.body;
   //db.validate(_id);
   await new Cart(req.body)
     .save()
