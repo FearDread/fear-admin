@@ -5,35 +5,29 @@ import { Cart } from "../../features/cart/slice"
 import { store } from "../../features/store";
 import CartItem from "./CartItem";
 
-const CartBasket = ( props ) => {
-  const { id } = props;
-  const { user } = useSelector( state => state.user );
-  const cartState = useSelector( state => state?.cart?.data );
+const CartBasket = ( cart ) => {
+
+  const { data } = useSelector(state => state.cart);
   const cartItems = 2;
   const loading = true;
 
   useEffect(() => {
-
-    if ( user ) {
-      store.dispatch(Cart.getCart(user))
-      console.log('cart =', cartState); 
-    }
-
-  },[]);
+    console.log('cart data = ', data);
+  }, [])
 
     return (
         <>
             <ul className="dropdown-menu shadow cart-dropdown-ne p-4" >
                <li className="top-notitext">
                  <div className="d-flex align-items-center justify-content-between">
-                   <h6> Your Products({cartItems} Items) </h6>
+                   <h6> Your Products(1 Items) </h6>
                    <a href="cart.html" className="btn cart-drop-bn m-0"> View Cart </a>
                  </div>
                </li>
                <li>
-                { !loading && cartState.map((idx, item) => {
+                { !loading && data.map((item) => {
                   return (
-                    <CartItem {...item} />
+                    <CartItem {...item.productId} key={item._id} />
                   )
                 })}
                </li>

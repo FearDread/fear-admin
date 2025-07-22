@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { Outlet } from "react-router-dom";
+import { useSelector } from "react-redux";
 import Footer from "../components/Footer/Footer";
 import Header from "../components/Header/Header";
 import BannerMain from "../components/Banner/BannerMain";
@@ -11,10 +12,18 @@ import AOS from "aos";
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import cache from "../features/factory/cache";
+import { store } from "../features/store";
+import { Cart } from "../features/cart/slice";
+import { Auth } from "../features/user/slice";
+import { Product } from "../features/products/slice";
 const Layout = () => {
 
+  const { data, loading } = useSelector(state => state.cart);
+  
+  const user = cache.local.has("auth") ? cache.local.get("auth") : undefined;
 
+  
   useEffect(() => {
     /*
     window.addEventListener("scroll", () => {
@@ -35,9 +44,17 @@ const Layout = () => {
 
   }, []);
 
+  useEffect(() => {
+        console.log('layout cart data = ', data)
+    if ( user ) {
+
+      store.dispatch(Cart.fetch(user.user));
+    }
+
+  }, [])
   return (
     <>
-      <Header />
+      <Header cart={data} />
       <Outlet />
       <Subscribe />
       <Footer />

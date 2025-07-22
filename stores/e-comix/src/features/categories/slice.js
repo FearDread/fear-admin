@@ -1,4 +1,4 @@
-import { FeatureFactory } from "@feardread/feature-factory";
+import { FeatureFactory } from "../factory";
 
 const { slice: categorySlice, asyncActions: Category } = FeatureFactory('category').create();
 

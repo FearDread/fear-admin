@@ -3,12 +3,12 @@ import React, { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
-import Cart from "../Cart/Cart";
+import CartBasket from "../Cart/Cart";
 import BannerSub from "../Banner/BannerSub";
 
 import "./Header.css";
 
-const Header = () => {
+const Header = ( {cart} ) => {
 
     return (
         <>
@@ -82,7 +82,7 @@ const Header = () => {
                       <span className="nubn">1</span>
                     </button>
 
-                    <Cart />
+                    <CartBasket cart={cart} />
 
                   </li>
                   <li>

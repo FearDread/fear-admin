@@ -16,7 +16,8 @@ const ProductDetails = () => {
   const [quantity, setQuantity] = useState(1);
   const [alreadyAdded, setAlreadyAdded] = useState(false);
 
-  const { loading, success, error } = useSelector(state => state.product);
+  const { data } = useSelector(state => state.product);
+  //const loading = useSelector(state => state.product.loading )
   const activeProduct = useSelector(state => state.product.data );
   //const cartState = useSelector((state) => state?.auth?.cartProducts);
   //const { isLoggedIn, user } = useSelector((state) => state?.auth);
@@ -25,7 +26,8 @@ const ProductDetails = () => {
   //const wishlist = useSelector((state) => state?.auth?.wishlist?.wishlist);
 
 */
-  //const loading = true;
+
+const loading = true;
   const props = {
             width: 594,
     height: 600,
@@ -33,8 +35,8 @@ const ProductDetails = () => {
     img: "../assets/images/abstract_banner_1.jpg"
   }
   useEffect(() => {
-    console.log('id = ', id);
-    store.dispatch(Product.fetch(id));
+    console.log('id = ', data);
+    store.dispatch(Product.fetch({id}));  
 
     /*
     console.log('Auth = ', user, isLoggedIn);
@@ -92,11 +94,11 @@ const ProductDetails = () => {
                         </div>
                       </div>
                       <div className="other-product-images thum-pic-slide d-flex flex-wrap gap-15">
-                        {activeProduct && activeProduct.images.map((item, index) => {
+                        {!loading && data.images.map((item) => {
                           return (
                             <div className="item">
                               <figure className="main-ppic ">
-                                <img src={item?.url} className="img-fluid" alt="" />
+                                <img src={item.url} className="img-fluid" alt="" />
                               </figure>
                             </div>
                           );
