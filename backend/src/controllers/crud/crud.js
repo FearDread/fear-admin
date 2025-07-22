@@ -1,6 +1,6 @@
 const { tryCatch } = require("../../libs/handler/error");
 const cloud = require("../../libs/cloud");
-const api = require("../../libs/features/api");
+const ApiFeatures = require("../../libs/features/api");
 
 
 /**
@@ -39,10 +39,10 @@ exports.read = tryCatch(async (Model, req, res) => {
 
   if (!req.params) throw new Error("No ID Params");
 
-  const { id } = req.params.id;
-  const { prodId } = req.params.productId;
+  const _id  = req.params.id;
+ //const { prodId } = req.params.productId;
 
-  await Model.findOne({ _id: id })
+  await Model.find({_id})
     .then((result) => { return res.status(200).json({ result, success: true, message: "Found Doc"}); })
     .catch((error) => { return res.status(404).json({ result: error, success: false, message: "No Doc Found"}); })
 });
@@ -153,10 +153,35 @@ exports.list = tryCatch(async (Model, req, res) => {
  *  @param {Object} req.query
  *  @returns {Array} List of Documents
  */
-exports.search = tryCatch(async (Model, req, res) => {
-  const { query } = req.query;
-  
-  if (!query) return res.status(400).json({ success: false, error: "Query parameter is required" });
+exports.search = tryCatch( async (Model, req, res) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const { search, category, sortBy, order } = req.query;
+  let query = {};
+  let sort = {};
+
+  // Search functionality
+  if (search) query.name = { $regex: search, $options: 'i' };
+  // Filter functionality
+  if (category) query.category = category;
+  // Sort functionality
+  if (sortBy && order) sort[sortBy] = order === 'asc' ? 1 : -1;
+  console.log('search query = ', query);
+  await Model
+    .find(query)
+    .then((result) => { 
+      console.log('search res = ', result);
+        return res.status(200).json({ success: true, result }) })
+    .catch((error) => { return res.status(500).json({ success: false, result: error }); });;
+})
+/*
+  await ApiFeatures(Model)
+    .search( searchCriteria )
+    .paginate(page, limit)
+    .then((result) => { return res.status(200).json({ success: true, result })})
+    .catch((error) => { return res.status(500).json({ success: false, result: error }); });
+
+    const totalDocs = await Model.countDocuments(searchCriteria);
 
   await Model.find({
     $or: [
@@ -167,4 +192,5 @@ exports.search = tryCatch(async (Model, req, res) => {
   })
   .then((result) => { res.status(200).json({ success: true, result }); })
   .catch((error) => { res.status(500).json({ success: false, result: error }); });
-});
+  */
+
