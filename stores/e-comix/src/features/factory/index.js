@@ -87,14 +87,15 @@ export function FeatureFactory(entity, reducers = null, endpoints = null) {
         const sliceName = factory.entity;
 
         const fetch = ThunkFactory.create(sliceName, 'all');
-        const fetchOne = ThunkFactory.create(sliceName, 'id');
+        const fetchOne = ThunkFactory.create(sliceName, 'one');
         const search = ThunkFactory.create(sliceName, 'search');
 
         const apiSlice = createSlice({
             name: sliceName,
             initialState: (initialState) ? initialState : {
-                data: {},
-                loading: false,
+                [sliceName]: {},
+                data: [],
+                loading: true,
                 success: false,
                 error: null
             },
@@ -103,6 +104,7 @@ export function FeatureFactory(entity, reducers = null, endpoints = null) {
                 builder
                 .addCase(fetch.pending, (state) => {
                     state.loading = true;
+                    state.error = null;
                 })
                 .addCase(fetch.fulfilled, (state, action) => {
                     state.loading = false;
@@ -110,17 +112,18 @@ export function FeatureFactory(entity, reducers = null, endpoints = null) {
                     state.data = action.payload;
                 })
                 .addCase(fetch.rejected, (state, action) => {
-                    state.error = action.error;
                     state.loading = false;
                     state.success = false;
+                    state.error = action.error;
                 })
                 .addCase(fetchOne.pending, (state) => {
                     state.loading = true;
+                    state.error = null;
                 })
                 .addCase(fetchOne.fulfilled, (state, action) => {
                     state.loading = false;
                     state.success = true;
-                    state.data = action.payload;
+                    state[sliceName] = action.payload[0];
                 })
                 .addCase(fetchOne.rejected, (state, action) => {
                     state.error = action.error;
@@ -143,7 +146,7 @@ export function FeatureFactory(entity, reducers = null, endpoints = null) {
         }});
 
         const asyncActions = factory.inject({ fetch, fetchOne, search }, {});
-        
+        console.log('slice = ', apiSlice);
         return {
             slice: apiSlice,
             asyncActions

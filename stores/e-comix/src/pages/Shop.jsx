@@ -27,9 +27,9 @@ const Shop = (props) => {
   
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const { data } = useSelector( state => state.product );
+  const { data, loading } = useSelector( state => state.product );
   const productState = useSelector( state => state.product.data);
-  const loading = true;
+  //const loading = true;
 
   const getProducts = () => {
     let params = {};
@@ -41,9 +41,7 @@ const Shop = (props) => {
 
     if (params && params !== undefined) {
       store.dispatch(Product.search(params));
-    } else {
-      store.dispatch(Product.fetch());
-    }
+    } 
   };
 
   useEffect(() => {

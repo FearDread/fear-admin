@@ -11,9 +11,7 @@ const root = createRoot(container);
 
 store.dispatch(Product.fetch());
 root.render(
-  <React.StrictMode>
     <Provider store={store}>
       <App />
     </Provider>
-  </React.StrictMode>
 );

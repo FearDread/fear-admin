@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import Loader from "../components/Loader/Loader";
 import BannerSub from "../components/Banner/BannerSub"
@@ -15,35 +15,18 @@ const ProductDetails = () => {
   const { id } = useParams();
   const [quantity, setQuantity] = useState(1);
   const [alreadyAdded, setAlreadyAdded] = useState(false);
+  const { product, loading } = useSelector(state => state.product );
+  const isLoading = useSelector(state => state.product.loading );
+  const activeProduct = useSelector(state => state.product.product );
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const { data } = useSelector(state => state.product);
-  //const loading = useSelector(state => state.product.loading )
-  const activeProduct = useSelector(state => state.product.data );
-  //const cartState = useSelector((state) => state?.auth?.cartProducts);
-  //const { isLoggedIn, user } = useSelector((state) => state?.auth);
-/*
-  const ratings = product?.totalrating;
-  //const wishlist = useSelector((state) => state?.auth?.wishlist?.wishlist);
-
-*/
-
-const loading = true;
-  const props = {
-            width: 594,
-    height: 600,
-    zoomWidth: 600,
-    img: "../assets/images/abstract_banner_1.jpg"
+  const getProductDetails = () => {
+    store.dispatch(Product.fetchOne({id}));
   }
   useEffect(() => {
-    console.log('id = ', data);
-    store.dispatch(Product.fetch({id}));  
 
-    /*
-    console.log('Auth = ', user, isLoggedIn);
-    if (isLoggedIn) {
-      dispatch(Product.getCart());
-    }
-      */
+    getProductDetails() 
+
   }, []);
 
   /*
@@ -58,7 +41,7 @@ const loading = true;
 
   return (
     <>
-      {(loading) ? (
+      {(isLoading) ? (
         <>
           <main className="float-start w-100 total-body home-body mt-0">
             <section className="float-start w-100">
@@ -94,7 +77,7 @@ const loading = true;
                         </div>
                       </div>
                       <div className="other-product-images thum-pic-slide d-flex flex-wrap gap-15">
-                        {!loading && data.images.map((item) => {
+                        {product.images && product.images.map((item) => {
                           return (
                             <div className="item">
                               <figure className="main-ppic ">
@@ -114,7 +97,7 @@ const loading = true;
                             <i className="fas fa-star"></i><i className="fas fa-star"></i><i className="fas fa-star"></i>
                             <i className="fas fa-star"></i><i className="fas fa-star"></i>
                           </span>
-                          <span>({activeProduct.reviews.length} Reviews)</span>
+                          <span>({activeProduct.reviews} Reviews)</span>
                         </div>
                         <h3 className="price-text mt-3">
                           ${activeProduct.price}
@@ -184,17 +167,17 @@ const loading = true;
                   </div>
               <div className="tabs-details-gn mt-5 mt-lg-0">
                 <ul className="nav nav-tabs" id="myTab" role="tablist">
-                  <li key={1} className="nav-item" role="presentation">
+                  <li key="home" className="nav-item" role="presentation">
                     <button className="nav-link active" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab"
                     >Description</button>
                   </li>
-                  <li key={2} className="nav-item" role="presentation">
+                  <li key="profile" className="nav-item" role="presentation">
                     <button className="nav-link" data-bs-toggle="tab" data-bs-target="#profile"
                       type="button" role="tab" >
                       Review & Feedback     </button>
                   </li>
 
-                  <li key={3} className="nav-item" role="presentation">
+                  <li key="shipping" className="nav-item" role="presentation">
                     <button className="nav-link" data-bs-toggle="tab" data-bs-target="#shipping"
                       type="button" role="tab" >
                       Shipping Policy     </button>
@@ -204,9 +187,8 @@ const loading = true;
                 <div className="tab-content" id="myTabContent">
                   <div className="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
                     <div className="comon-desctiopn py-5">
-                      <h3> Did you know </h3>
-                      <p className="mt-3"> The journey to the martial peak is a lonely, solitary and long one.In the face of adversity,you must survive and remain unyielding.Only then can you break through and and continue on your journey to become the strongest. Sky Tower tests its disciples in the harshest ways to prepare them for this journey.One day the lowly sweeper Yang Kai managed to obtain a
-                        black book, setting him on the road to the peak of the martials world. </p>
+                      <h3> Description </h3>
+                      <p className="mt-3"> {activeProduct.description }</p>
                        {/*    
                       <div className="feature-div-list">
                         <ul className="mt-4">
@@ -247,6 +229,7 @@ const loading = true;
 
                     </div>
                   </div>
+                  { /*
                   <div className="tab-pane fade" id="profile" role="tabpanel"
                     aria-labelledby="profile-tab">
                     <div className="listing-paage-divb">
@@ -255,7 +238,7 @@ const loading = true;
 
                         <div className="comment-user-div">
                           <div className="userp">
-                            <div className="us-pic">  <img src="images/testimonials-1-1.jpg" alt="pico" /> </div>
+                            <div className="us-pic">  <img src="images/cool.png" alt="pico" /> </div>
                           </div>
                           <div className="user-dsl">
                             <h6> Kelvin Martine <span className="d-block"> <i className="fas fa-star"></i> <i className="fas fa-star"></i> <i className="fas fa-star"></i> <i className="fas fa-star"></i>
@@ -268,7 +251,7 @@ const loading = true;
 
                         <div className="comment-user-div">
                           <div className="userp">
-                            <div className="us-pic">  <img src="images/manages-st2.jpg" alt="pico" /> </div>
+                            <div className="us-pic">  <img src="images/coo.png" alt="pico" /> </div>
                           </div>
                           <div className="user-dsl">
                             <h6> Jone Martine <span className="d-block"> <i className="fas fa-star"></i> <i className="fas fa-star"></i> <i className="fas fa-star"></i> <i className="fas fa-star"></i>
@@ -343,6 +326,7 @@ const loading = true;
 
                     </div>
                   </div>
+                  */ }
                 </div>
               </div>
 
