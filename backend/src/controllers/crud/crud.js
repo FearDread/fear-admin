@@ -1,6 +1,6 @@
 const { tryCatch } = require("../../libs/handler/error");
 const cloud = require("../../libs/cloud");
-const ApiFeatures = require("../../libs/features/api");
+const SearchFeatures = require("../../libs/features/api");
 
 
 /**
@@ -148,22 +148,33 @@ exports.list = tryCatch(async (Model, req, res) => {
     .catch((error) => { return res.status(400).json({ success: false, result: error })}); 
 });
 
+exports.search = tryCatch( async (Model, req, res) => {
+  const searchFeature = new SearchFeatures(Model, req.query)
+    .search()
+    .paginate(10);
+
+  await searchFeature.query
+    .then((result) => { return res.status(200).json({ success: true, result }); })
+    .catch((error) => { return res.status(500).json({ success: false, result: error }); });;
+})
 /**
  *  Searching documents with specific properties
  *  @param {Object} req.query
  *  @returns {Array} List of Documents
- */
+
 exports.search = tryCatch( async (Model, req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
-  const { search, category, sortBy, order } = req.query;
+  const { search, category, sortBy, order, brand } = req.query;
   let query = {};
   let sort = {};
 
-  // Search functionality
-  if (search) query.name = { $regex: search, $options: 'i' };
+  // Search functionatelity
+  if (search) query.$search = { $regex: search, $options: 'i' };
   // Filter functionality
   if (category) query.category = category;
+
+  if (brand) query.brand = brand;
   // Sort functionality
   if (sortBy && order) sort[sortBy] = order === 'asc' ? 1 : -1;
   console.log('search query = ', query);
@@ -172,7 +183,9 @@ exports.search = tryCatch( async (Model, req, res) => {
     .then((result) => { 
       console.log('search res = ', result);
         return res.status(200).json({ success: true, result }) })
-    .catch((error) => { return res.status(500).json({ success: false, result: error }); });;
+    .catch((error) => {
+      console.log('error = ', error);
+       return res.status(500).json({ success: false, result: error }); });;
 })
 /*
   await ApiFeatures(Model)
