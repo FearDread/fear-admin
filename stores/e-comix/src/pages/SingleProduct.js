@@ -30,7 +30,7 @@ const SingleProduct = () => {
   //const wishlist = useSelector((state) => state?.auth?.wishlist?.wishlist);
 
   useEffect(() => {
-    store.dispatch(Product.fetch(id));
+    store.dispatch(Product.fetchOne({id}));
 
     //dispatch(product.fetch());
     /*

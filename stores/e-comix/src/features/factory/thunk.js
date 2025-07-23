@@ -4,9 +4,9 @@ import API from "./api"
 // Async Thunk Factory Function
 // This factory creates a specific createAsyncThunk for a given 'itemType'
 export const ThunkFactory = {
-  create: (entity, prefix) => {
-    prefix = (prefix) ? prefix : 'all'
-    
+
+  create: (entity, prefix) => { 
+
     return (
       createAsyncThunk(
 
@@ -15,8 +15,7 @@ export const ThunkFactory = {
         async ( params, thunkApi ) => {
           let url = `${entity}/${prefix}`;
 
-          if (prefix == 'id') url = `${entity}/${params.id}`
-
+          if (prefix == 'one') url = `${entity}/${params.id}`
 
           return API.get(url, (prefix == 'search') ? {params} : {})                           
             
@@ -27,6 +26,7 @@ export const ThunkFactory = {
       )
     )
   },
+
   post: (entity, prefix) => {
     return ( 
       createAsyncThunk(

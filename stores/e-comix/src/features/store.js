@@ -1,7 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { authSlice } from "./user/slice";
 import { productSlice } from "./products/slice";
-import { singleProductSlice } from "./products/single";
 import { brandSlice } from "./brands/slice";
 import { cartSlice } from "./cart/slice";
 import { blogSlice } from "./blogs/slice";
@@ -9,7 +8,6 @@ import { blogSlice } from "./blogs/slice";
 export const store = configureStore({
   reducer: {
     user: authSlice.reducer,
-    single: singleProductSlice.reducer,
     product: productSlice.reducer,
     brand: brandSlice.reducer,
     cart: cartSlice.reducer,
