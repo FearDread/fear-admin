@@ -87,6 +87,7 @@ export function FeatureFactory(entity, reducers = null, endpoints = null) {
         const sliceName = factory.entity;
 
         const fetch = ThunkFactory.create(sliceName, 'all');
+        const fetchOne = ThunkFactory.create(sliceName, 'id');
         const search = ThunkFactory.create(sliceName, 'search');
 
         const apiSlice = createSlice({
@@ -113,6 +114,19 @@ export function FeatureFactory(entity, reducers = null, endpoints = null) {
                     state.loading = false;
                     state.success = false;
                 })
+                .addCase(fetchOne.pending, (state) => {
+                    state.loading = true;
+                })
+                .addCase(fetchOne.fulfilled, (state, action) => {
+                    state.loading = false;
+                    state.success = true;
+                    state.data = action.payload;
+                })
+                .addCase(fetchOne.rejected, (state, action) => {
+                    state.error = action.error;
+                    state.loading = false;
+                    state.success = false;
+                })
                 .addCase(search.pending, (state) => {
                     state.loading = true;
                 })
@@ -126,15 +140,9 @@ export function FeatureFactory(entity, reducers = null, endpoints = null) {
                     state.loading = false;
                     state.success = false;
                 })
-
         }});
 
- 
-        const asyncActions = { fetch, search };
-        
-        if (options.service) {
-            factory.inject(options.service, asyncActions);
-        }
+        const asyncActions = factory.inject({ fetch, fetchOne, search }, {});
         
         return {
             slice: apiSlice,
