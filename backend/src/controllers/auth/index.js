@@ -13,7 +13,7 @@ exports.login = async (req, res) => {
   console.log('logging in', email);
 
   await User.findOne({ email: email })
-    .then((user) => {
+    .then((user) => { 
       let isMatch = user.compare(password);
       
           isMatch.then((pass) => {

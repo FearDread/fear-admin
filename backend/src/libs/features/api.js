@@ -1,84 +1,57 @@
 
-function ApiFeatures ( Model ) {
-  const _this = {};
 
-  _this.query = Model.find();
-  _this.queryParams = [];
-  _this.queryString = {};
-  _this.queryObj = {};
+module.exports = class SearchFeatures {
 
-  _this.buildQuery = (obj) => {
-    let queryObj = _this.queryObj || {};
+  constructor(Model, queryObj) {
+    this.Model = Model;
+    this.query = Model.find();
+    this.queryObj = queryObj;
+  }
 
-    for (const [key, value] of Object.entries(obj)) {
+  search() {
+    let keywords = {}
 
-            _this.queryObj[key] = {
-              [key]: {
-                $regex: value,
-                $options: "i", // for case insenstiveness
-              },
-            }
+    for ( prop in this.queryObj )
+      if (this.queryObj.hasOwnProperty(prop)) 
+        keywords[prop] = {
+          $regex: this.queryObj[prop],
+          $options: "i" 
         }
-        console.log(_this.queryObj)
-        //_this.queryObj = queryObj
-        return _this.queryObj;
+
+    console.log('full query = ', keywords);
+    this.query = this.query.find( {...keywords} )
+      .sort({ created: "desc" })
+      .populate();
+
+    return this;
   }
 
-  return {
-    search: (params) => {
-      console.log('search params = ', params);
-      const { search, category, sort, title, price, brand } = params;
-      let query = {};
-      let sortOptions = _this.sort();
+  filter() {
+    const queryCopy = { ...this.queryObj }
 
-      // Build filter query
-      if (search) {
-        query.name = { $regex: search, $options: 'i' }; // Case-insensitive search
-      }
-      if (category) {
-        query.category = category;
-      }
+    // fields to remove for category
+    const removeFields = ["keyword", "page", "limit"];
 
-      _this.query = _this.Model.find(query).sort(sortOptions); // here query ==> await Product.find(); we know that
-      return _this;
-    },
-    filter: () => {
-      const queryObj = { ..._this.queryString };
-      const excludedFields = ['sort', 'fields', 'page', 'limit'];
+    // console.log(queryCopy);
+    removeFields.forEach(key => delete queryCopy[key]);
+    // console.log(queryCopy);
 
-      excludedFields.forEach((el) => delete queryObj[el]);
+    // price filter
+    let queryString = JSON.stringify(queryCopy);
+    queryString = queryString.replace(/\b(gt|gte|lt|lte)\b/g, key => `$${key}`);
 
-      let queryString = JSON.stringify(queryObj);
-      queryString = queryString.replace(
-        /\b(gt|gte|lt|lte\b)/g,
-        (match) => `$${match}`
-      );
+    // console.log(JSON.parse(queryString));
 
-      _this.query = _this.query.find(JSON.parse(queryString));
-      return _this;
-    },
-
-    sort: (defaultSort) => {
-      if (_this.queryString.sort) {
-        const sortBy = _this.queryString.sort.split(',').join(' ');
-        _this.query = _this.query.sort(sortBy);
-      } else {
-        _this.query = _this.query.sort(defaultSort);
-      }
-
-      return _this;
-    },
-
-    paginate: (_page = 1, _limit = 10) => {
-      const page = _this.queryString.page * 1 || _page;
-      const limit = _this.queryString.limit * 1 || _limit;
-      const skip = (page - 1) * limit;
-
-      _this.query = _this.query.skip(skip).limit(limit);
-      return _this;
-    }
-
+    this.query = this.query.find(JSON.parse(queryString));
+    return this;
   }
-}
 
-module.exports = ApiFeatures;
+  paginate(resultPerPage) {
+    const page = Number(this.queryObj.page) || 1;
+
+    const skip = resultPerPage * (page - 1);
+
+    this.query = this.query.limit(resultPerPage).skip(skip);
+    return this;
+  }
+};
