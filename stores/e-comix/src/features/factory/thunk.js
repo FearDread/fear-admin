@@ -14,10 +14,11 @@ export const ThunkFactory = {
 
         async ( params, thunkApi ) => {
           let url = `${entity}/${prefix}`;
-          console.log('params = ', params);
-          if (params.id ) url = `${entity}/${params.id}`
 
-          return API.get(url, (prefix == "search") ? {params} : {})                           
+          if (prefix == 'id') url = `${entity}/${params.id}`
+
+
+          return API.get(url, (prefix == 'search') ? {params} : {})                           
             
             .then((response) => response.data.result )
             
