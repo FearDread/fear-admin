@@ -147,7 +147,11 @@ exports.list = tryCatch(async (Model, req, res) => {
     })
     .catch((error) => { return res.status(400).json({ success: false, result: error })}); 
 });
-
+/**
+ *  Searching documents with specific properties
+ *  @param {Object} req.query
+ *  @returns {Array} List of Documents
+*/
 exports.search = tryCatch( async (Model, req, res) => {
   const searchFeature = new SearchFeatures(Model, req.query)
     .search()
@@ -156,54 +160,6 @@ exports.search = tryCatch( async (Model, req, res) => {
   await searchFeature.query
     .then((result) => { return res.status(200).json({ success: true, result }); })
     .catch((error) => { return res.status(500).json({ success: false, result: error }); });;
-})
-/**
- *  Searching documents with specific properties
- *  @param {Object} req.query
- *  @returns {Array} List of Documents
+});
 
-exports.search = tryCatch( async (Model, req, res) => {
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 10;
-  const { search, category, sortBy, order, brand } = req.query;
-  let query = {};
-  let sort = {};
-
-  // Search functionatelity
-  if (search) query.$search = { $regex: search, $options: 'i' };
-  // Filter functionality
-  if (category) query.category = category;
-
-  if (brand) query.brand = brand;
-  // Sort functionality
-  if (sortBy && order) sort[sortBy] = order === 'asc' ? 1 : -1;
-  console.log('search query = ', query);
-  await Model
-    .find(query)
-    .then((result) => { 
-      console.log('search res = ', result);
-        return res.status(200).json({ success: true, result }) })
-    .catch((error) => {
-      console.log('error = ', error);
-       return res.status(500).json({ success: false, result: error }); });;
-})
-/*
-  await ApiFeatures(Model)
-    .search( searchCriteria )
-    .paginate(page, limit)
-    .then((result) => { return res.status(200).json({ success: true, result })})
-    .catch((error) => { return res.status(500).json({ success: false, result: error }); });
-
-    const totalDocs = await Model.countDocuments(searchCriteria);
-
-  await Model.find({
-    $or: [
-      { title: { $regex: query, $options: "i" } },
-      { description: { $regex: query, $options: "i" } },
-      { category: { $regex: query, $options: "i" } },
-    ],
-  })
-  .then((result) => { res.status(200).json({ success: true, result }); })
-  .catch((error) => { res.status(500).json({ success: false, result: error }); });
-  */
 
