@@ -1,20 +1,8 @@
 import { createSlice, createEntityAdapter, combineReducers } from '@reduxjs/toolkit';
 import ThunkFactory from './thunk';
+import ApiFactory from './service';
 
 const defaultReducers = {
-    fetchStart: (state) => {
-        state.loading = true;
-        state.error = null;
-    },
-    fetchSuccess: (state, action) => {
-        state.loading = false;
-        state.success = true;
-        state.data = action.payload;
-    },
-    fetchFailure: (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-    },
     searchStart: (state) => {
         state.loading = true;
         state.error = null;
@@ -30,9 +18,9 @@ const defaultReducers = {
     }
 }
 
-export const stateGenerator = (namespace, data = null) => ({
-    entity: namespace,
-    data: data,
+export const stateGenerator = (namespace) => ({
+    [namespace]: {},
+    data: [],
     loading: false,
     success: false,
     error: null
@@ -82,6 +70,8 @@ export function FeatureFactory(entity, reducers = null, endpoints = null) {
         return dest;
     }
 
+    factory.apiSlice = ApiFactory().create(sliceName);
+
     factory.create = (options = {service: null, initialState: null}) => {
         const { service, initialState } = options;
         const sliceName = factory.entity;
@@ -90,7 +80,7 @@ export function FeatureFactory(entity, reducers = null, endpoints = null) {
         const fetchOne = ThunkFactory.create(sliceName, 'one');
         const search = ThunkFactory.create(sliceName, 'search');
 
-        const apiSlice = createSlice({
+        const factorySlice = createSlice({
             name: sliceName,
             initialState: (initialState) ? initialState : {
                 [sliceName]: {},
@@ -146,9 +136,10 @@ export function FeatureFactory(entity, reducers = null, endpoints = null) {
         }});
 
         const asyncActions = factory.inject({ fetch, fetchOne, search }, {});
-        console.log('slice = ', apiSlice);
+        console.log('api slice factory = ', factory.apiSlice);
         return {
-            slice: apiSlice,
+            slice: factorySlice,
+            apiSlice: factory.apiSlice,
             asyncActions
         };
     }
