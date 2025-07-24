@@ -121,6 +121,8 @@ export const emptyCart = async (data) => {
   }
 };
 
+//const authApi = ApiFactory('user').create();
+
 export const authService = {
   register,
   login,
