@@ -32,15 +32,15 @@ export function FeatureFactory(entity, reducers = null, endpoints = null) {
     const factory = {
         entity,
         endpoints,
+        api: ApiFactory,
+        thunk: ThunkFactory,
         reducers: defaultReducers,
         state: stateGenerator(entity, []) ,
         adapter: createEntityAdapter()
     };
-    /*
-    factory.manager.add(defaultReducers);
-    factory.manager.add(reducers);
-    factory.reducers = factory.manager.getReducerMap(),
-    */
+
+    factory.apiSlice = factory.api('auth').create();
+    
     factory.manager = (initialReducers) => {
         const reducers = { ...initialReducers };
         let combinedReducer = combineReducers(reducers);
@@ -70,15 +70,14 @@ export function FeatureFactory(entity, reducers = null, endpoints = null) {
         return dest;
     }
 
-    factory.apiSlice = ApiFactory().create(sliceName);
 
     factory.create = (options = {service: null, initialState: null}) => {
         const { service, initialState } = options;
         const sliceName = factory.entity;
 
-        const fetch = ThunkFactory.create(sliceName, 'all');
-        const fetchOne = ThunkFactory.create(sliceName, 'one');
-        const search = ThunkFactory.create(sliceName, 'search');
+        const fetch = factory.thunk.create(sliceName, 'all');
+        const fetchOne = factory.thunk.create(sliceName, 'one');
+        const search = factory.thunk.create(sliceName, 'search');
 
         const factorySlice = createSlice({
             name: sliceName,
@@ -136,10 +135,9 @@ export function FeatureFactory(entity, reducers = null, endpoints = null) {
         }});
 
         const asyncActions = factory.inject({ fetch, fetchOne, search }, {});
-        console.log('api slice factory = ', factory.apiSlice);
+
         return {
             slice: factorySlice,
-            apiSlice: factory.apiSlice,
             asyncActions
         };
     }

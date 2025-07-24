@@ -1,26 +1,27 @@
 // src/services/myApi.js
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+const USERS_URL = "auth"
 
-
-const ApiFactory = ( endpoints = (builder) => {}) => {
+const ApiFactory = ( sliceName, endpoints = (builder) => {}) => {
     const _this = {};
-    _this.API_BASE_URL = options.base_url || "http://localhost:4000/fear/api";
+    _this.API_BASE_URL = _this.base_url || "http://localhost:4000/fear/api/";
     _this.baseQuery = { baseUrl: _this.API_BASE_URL };
-        _this.baseApi = createApi({
-            reducerPath: entity,
+        
+    _this.baseApi = createApi({
+            reducerPath: sliceName,
             tagTypes: ["Product", "Order", "User", "Category"],
             baseQuery: fetchBaseQuery(_this.baseQuery),
             endpoints: (builder) => ({
                 login: builder.mutation({
                     query: (data) => ({
-                        url: `${USERS_URL}/auth`,
+                        url: `${USERS_URL}/login`,
                         method: "POST",
                         body: data,
                     }),
                 }),
                 register: builder.mutation({
                     query: (data) => ({
-                        url: `${USERS_URL}`,
+                        url: `${USERS_URL}/register`,
                         method: "POST",
                         body: data,
                     }),
@@ -41,11 +42,10 @@ const ApiFactory = ( endpoints = (builder) => {}) => {
             }),
         });
 
-    _this.create = (sliceName) => {
-        _this.api = _this.baseApi.injectEndpoints(endpoints);
-        console.log('api slice = ', _this.api)
-        return _this.api;
+    _this.create = () => {
+        return _this.baseApi;
     }
+
     return _this;
 }
 
