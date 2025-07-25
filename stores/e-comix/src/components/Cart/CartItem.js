@@ -1,4 +1,5 @@
-
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 
 const CartItem = ( data ) => {
@@ -9,18 +10,18 @@ const CartItem = ( data ) => {
         <>
             <div className="comon-cart-ps">
                 <div className="d-flex align-items-center justify-content-between">
-                    <a href={linkref} className="products-sm-pic">
+                    <Link to={linkref} className="products-sm-pic">
                         <div className="imo-caty">
                             <img src={data.images[0].url} alt="bn" />
                         </div>
-                    </a>
+                    </Link>
                     <div className="cart-ps-details">
-                        <a href={linkref} className="titel-crt-products">
+                        <Link to={linkref} className="titel-crt-products">
                             { data.title }
-                        </a>
+                        </Link>
                         <h6> ${data.price} </h6>
                     </div>
-                    <a href="index.html#" className="close-crt"> <i className="fas fa-close"></i> </a>
+                    <Link to="/" className="close-crt"> <i className="fas fa-close"></i> </Link>
                 </div>
             </div>
         </>

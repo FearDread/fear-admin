@@ -17,24 +17,18 @@ import { store } from "../features/store";
 import { Cart } from "../features/cart/slice";
 import { Auth } from "../features/user/slice";
 import { Product } from "../features/products/slice";
-const Layout = () => {
 
-  const { data, loading } = useSelector(state => state.cart);
-  
+const Layout = (props) => {
   const user = cache.local.has("auth") ? cache.local.get("auth") : undefined;
+
+  const {data: cartData, loading } = useSelector(state => state.cart);
+  const products = useSelector(state => state.product.data)
+  
+
 
   
   useEffect(() => {
-    /*
-    window.addEventListener("scroll", () => {
-      var height = window.scrollY;
-      if (height > 100) {
-        document.documentElement.classList.add('fixed-menu')
-      } else {
-        document.documentElement.classList.remove('fixed-menu');
-      }
-    });
-  */
+  
     AOS.init({
       offset: 100,
       easing: 'ease',
@@ -45,16 +39,14 @@ const Layout = () => {
   }, []);
 
   useEffect(() => {
-        console.log('layout cart data = ', data)
-    if ( user ) {
-
-      store.dispatch(Cart.fetch(user.user));
-    }
+    console.log('layout products = ', products);
+    console.log('layout products from prop', props)
+    if ( user ) store.dispatch(Cart.fetch(user.user));
 
   }, [])
   return (
     <>
-      <Header cart={data} />
+      <Header cart={cartData} user={user} />
       <Outlet />
       <Subscribe />
       <Footer />

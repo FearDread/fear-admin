@@ -4,6 +4,7 @@ import { productSlice } from "./products/slice";
 import { brandSlice } from "./brands/slice";
 import { cartSlice } from "./cart/slice";
 import { blogSlice } from "./blogs/slice";
+import cache from "./factory/cache";
 
 export const store = configureStore({
   reducer: {
@@ -14,3 +15,7 @@ export const store = configureStore({
     blog: blogSlice.reducer,
   }
 });
+
+store.cache = cache;
+
+export default store;

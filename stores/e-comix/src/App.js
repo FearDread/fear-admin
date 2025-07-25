@@ -1,12 +1,12 @@
 import React, { Suspense, useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useSelector } from "react-redux";
+
 import Layout from "./layouts/Layout";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import ProductDetails from "./pages/ProductDetails";
-//import SingleProduct from "./pages/SingleProduct";
 import BlogDetails from "./pages/BlogDetails";
 import Blog from "./pages/Blog";
 import UserCart from "./pages/admin/UserCart";
@@ -27,6 +27,7 @@ import Wishlist from './pages/Wishlist';
 import { PrivateRoutes } from "./routes/PrivateRoutes";
 import { OpenRoutes } from "./routes/OpenRoutes";
 
+import store from "./features/store";
 
 import "./assets/css/bootstrap.min.css";
 import "./assets/css/site.icons.css";
@@ -37,8 +38,14 @@ import "./assets/css/site.styles.css";
 
 
 function App() {
+  //const user = store.cache.local.has("auth") ? store.cache.local.get("auth") : undefined;
+  const { data: userState, success } = useSelector(state => state.user);
   const products = useSelector(state => state.product.data);
-  //const { user } = useSelector( state => state.user );
+
+  useEffect(() => {
+    
+    console.log('user logged ', success );
+  }, []);
 
   return (
     <>
@@ -46,11 +53,13 @@ function App() {
       <BrowserRouter>
         <Suspense >
           <Routes>
-            <Route path="/" element={<Layout />}>
-              <Route index element={<Home {...products} />} />
+            
+            <Route path="/" element={<Layout {...products} />}>
+              
+              <Route index element={<Home />} />
               <Route path="about" element={<About />} />
               <Route path="contact" element={<Contact />} />
-              <Route path="collection" element={<Collection {...products} />} />
+              <Route path="collection" element={<Collection />} />
               <Route path="shop" element={<Shop />} />
               <Route path="product/:id" element={<ProductDetails />} />
               <Route path="blog" element={<Blog />} />
@@ -69,7 +78,7 @@ function App() {
                     <UserCart />
                   </PrivateRoutes>
                 }
-              />      
+              />    
               <Route
                 path="wishlist"
                 element={
