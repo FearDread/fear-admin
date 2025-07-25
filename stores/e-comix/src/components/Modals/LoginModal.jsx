@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react"
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { Auth } from "../../features/user/slice";
+import { User } from "../../features/user/slice";
+import { store } from "../../features/store";
 import cache from "../../features/factory/cache";
 
 
@@ -15,6 +16,7 @@ const LoginModal = () => {
     //const { isLoggedIn, loginSuccess } = useSelector((state) => state.auth)
      
     const { user, success } = useSelector( state => state.user )
+    const userState = useSelector(state => state.user) 
 
     const loginHandler = (e) => {
         e.preventDefault();
@@ -23,14 +25,17 @@ const LoginModal = () => {
         myForm.set("email", email);
         myForm.set("password", password);
 
-        dispatch(Auth.login(myForm));
+        store.dispatch(User.login(myForm));
     }
+
     useEffect(() => {
-        if ( success && user ) {
-            cache.local.set("auth", user) ;
-            navigate("/profile");
+        console.log("user state = ", userState);
+        if ( success ) {
+            console.log('user = ', user);
+            store.local.set("auth", user) ;
         }
       }, [])
+
 
     return (
         <>

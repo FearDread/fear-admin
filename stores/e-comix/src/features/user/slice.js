@@ -1,11 +1,17 @@
 import FeatureFactory from "../factory";
-import authService from "./service"
 import ThunkFactory from "../factory/thunk";
 
-export const { slice: authSlice, asyncActions: Auth } = FeatureFactory('user').create();
+export const { slice: userSlice, asyncActions: User } = FeatureFactory('user').create();
 
-Auth.login = ThunkFactory.post('auth', 'login');
-Auth.logout = ThunkFactory.post('auth', 'logout');
-Auth.register = ThunkFactory.post('auth', 'register');
+User.login = ThunkFactory.post('user', 'login');
+User.logout = ThunkFactory.post('user', 'logout');
+User.register = ThunkFactory.post('user', 'register');
 
-export default { authSlice, Auth };
+userSlice.extraReducers = (builder) => (
+    builder.addCase(User.login.fulfilled, (state, action) => {
+        state.success = true;
+        state.data = action.payload;
+    })
+)
+
+export default { userSlice, User };

@@ -9,7 +9,7 @@ const Header = ({ cart }) => {
   const { data: userState, success } = useSelector(state => state.user);
 
   const logoutHandler = () => {
-    store.cache.local.clear();
+    store.local.remove('auth');
     //User.logout();
   }
 

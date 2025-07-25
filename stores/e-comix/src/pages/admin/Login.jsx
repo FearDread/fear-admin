@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { Auth } from "../../features/user/slice";
+import { User } from "../../features/user/slice";
 import BannerSub from "../../components/Banner/BannerSub";
 import cache from "../../features/factory/cache";
 import { store } from "../../features/store";
@@ -22,18 +22,18 @@ const Login = () => {
         myForm.set("email", email);
         myForm.set("password", password);
 
-        store.dispatch(Auth.login(myForm));
+        store.dispatch(User.login(myForm));
     }
 
     
 
     useEffect(() => {
         if ( success ) {
-            store.cache.local.set("auth", user) ;
-            console.log('cache =', cache.local.get("auth"));
-            navigate("/profile");
+            console.log('set user here =', user)
+            store.local.set("auth", user);
         }
     }, []);
+    
     return (
         <>
         <BannerSub />
