@@ -1,9 +1,8 @@
 import { Navigate } from "react-router-dom";
-import cache from "../features/factory/cache.js";
+import { store } from "../features/store";
 
 export const PrivateRoutes = ({ children }) => {
-  //const getTokenFromLocalStorage = JSON.parse(localStorage.getItem("auth"));
-  const user = cache.local.has("auth") ? cache.local.get("auth") : undefined;
+  const user = store.local.has("auth") ? store.local.get("auth") : undefined;
 
   return (user && user.token !== undefined) ? (
     children

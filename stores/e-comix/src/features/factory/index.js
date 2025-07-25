@@ -1,24 +1,8 @@
 import { createSlice, createEntityAdapter, combineReducers } from '@reduxjs/toolkit';
 import ThunkFactory from './thunk';
-import ApiFactory from './service';
+//import ApiFactory from './service';
 
-const defaultReducers = {
-    searchStart: (state) => {
-        state.loading = true;
-        state.error = null;
-    },
-    searchSuccess: (state, action) => {
-        state.loading = false;
-        state.success = true;
-        state.data = action.payload;
-    },
-    searchFailure: (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-    }
-}
-
-export const stateGenerator = (namespace) => ({
+export const StateFactory = (namespace) => ({
     [namespace]: {},
     data: [],
     loading: false,
@@ -26,21 +10,17 @@ export const stateGenerator = (namespace) => ({
     error: null
 });
 
-export function FeatureFactory(entity, reducers = null, endpoints = null) {
-
+export function FeatureFactory(entity, reducers = {}, endpoints = null) {
 
     const factory = {
         entity,
-        endpoints,
-        service: ApiFactory,
+        reducers,
+        //api: ApiFactory,
         thunk: ThunkFactory,
-        reducers: defaultReducers,
-        state: stateGenerator(entity, []) ,
+        state: StateFactory,
         adapter: createEntityAdapter()
     };
 
-    factory.apiSlice = factory.service('auth').create();
-    
     factory.manager = (initialReducers) => {
         const reducers = { ...initialReducers };
         let combinedReducer = combineReducers(reducers);
@@ -70,7 +50,6 @@ export function FeatureFactory(entity, reducers = null, endpoints = null) {
         return dest;
     }
 
-
     factory.create = (options = {service: null, initialState: null}) => {
         const { service, initialState } = options;
         const sliceName = factory.entity;
@@ -81,13 +60,7 @@ export function FeatureFactory(entity, reducers = null, endpoints = null) {
 
         const factorySlice = createSlice({
             name: sliceName,
-            initialState: (initialState) ? initialState : {
-                [sliceName]: {},
-                data: [],
-                loading: true,
-                success: false,
-                error: null
-            },
+            initialState: StateFactory(sliceName),
             reducers: factory.reducers,
             extraReducers: (builder) => {
                 builder
@@ -141,6 +114,7 @@ export function FeatureFactory(entity, reducers = null, endpoints = null) {
             asyncActions
         };
     }
+    
     console.log('factory :: ', factory);
     return factory; 
 }

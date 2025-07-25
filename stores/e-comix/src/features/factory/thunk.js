@@ -38,9 +38,9 @@ export const ThunkFactory = {
           return API.post(`${entity}/${prefix}`, data)
             
             .then((response) => {
-              if ( response.success ) {
-                return {success:true, result: response.data.result};
-              }
+
+              return response.data;
+
             })
             
             .catch((error) => thunkApi.rejectWithValue(error.message) )
