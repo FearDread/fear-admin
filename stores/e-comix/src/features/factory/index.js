@@ -39,7 +39,7 @@ export function FeatureFactory(entity, reducers = null, endpoints = null) {
         adapter: createEntityAdapter()
     };
 
-    factory.auth = factory.service('auth').create();
+    factory.apiSlice = factory.service('auth').create();
     
     factory.manager = (initialReducers) => {
         const reducers = { ...initialReducers };
@@ -135,7 +135,7 @@ export function FeatureFactory(entity, reducers = null, endpoints = null) {
         }});
 
         const asyncActions = factory.inject({ fetch, fetchOne, search }, (service) ? service : {});
-        
+
         return {
             slice: factorySlice,
             asyncActions
