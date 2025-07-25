@@ -65,12 +65,13 @@ module.exports = FEAR = (( app ) => {
   //this.app.use(passport.session());
 
   this.app.use(cors(this.cconfig)); 
-  this.app.options("*", cors(this.cconfig));
+  //this.app.options("*", cors(this.cconfig));
 
   // Load Routes
   this.loadRoutes();
 
   this.app.use((req, res, next) => {
+    console.log('Making it here?');
     this.log.info( "FEAR API Query :: " + req.url );
     
     res.locals.user = req.user;

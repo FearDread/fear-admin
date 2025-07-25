@@ -5,11 +5,14 @@ const db = require("../libs/db");
 
 exports.create = tryCatch(async (req, res) => {
   const { userId, productId, quantity, price } = req.body;
+  console.log('req body', req.body);
   //db.validate(_id);
   await new Cart(req.body)
     .save()
-    .then((created) => { return res.status(200).json({ success: true, result: created }) })
-    .catch(error => new Error(error));
+    .then((created) => { 
+      console.log('cart item = ', created);
+      return res.status(200).json({ success: true, result: created }) })
+    .catch(error => {throw new Error(error)});
 });
 
 exports.read = tryCatch(async (req, res) => {
