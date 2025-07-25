@@ -29,7 +29,7 @@ const Login = () => {
 
     useEffect(() => {
         if ( success ) {
-            cache.local.set("auth", user) ;
+            store.cache.local.set("auth", user) ;
             console.log('cache =', cache.local.get("auth"));
             navigate("/profile");
         }
