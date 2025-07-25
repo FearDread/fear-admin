@@ -17,7 +17,7 @@ import { store } from "../features/store";
 
 const Home = ( products ) => {
   //const navigate = useNavigate();
-  const dispatch = useDispatch();
+ const dispatch = useDispatch();
  const productState = useSelector( state => state.product.data );
  const { loading } = useSelector( state => state.product )
  //const loading = true;

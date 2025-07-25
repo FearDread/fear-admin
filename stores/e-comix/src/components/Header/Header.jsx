@@ -85,7 +85,7 @@ const Header = ({ cart }) => {
 
                   <CartBasket {...cart} />
 
-                </li>
+                </li> 
                 </>
               ) : (
                 <>
