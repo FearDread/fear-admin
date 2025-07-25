@@ -32,14 +32,14 @@ export function FeatureFactory(entity, reducers = null, endpoints = null) {
     const factory = {
         entity,
         endpoints,
-        api: ApiFactory,
+        service: ApiFactory,
         thunk: ThunkFactory,
         reducers: defaultReducers,
         state: stateGenerator(entity, []) ,
         adapter: createEntityAdapter()
     };
 
-    factory.apiSlice = factory.api('auth').create();
+    factory.auth = factory.service('auth').create();
     
     factory.manager = (initialReducers) => {
         const reducers = { ...initialReducers };
@@ -134,14 +134,14 @@ export function FeatureFactory(entity, reducers = null, endpoints = null) {
                 })
         }});
 
-        const asyncActions = factory.inject({ fetch, fetchOne, search }, {});
-
+        const asyncActions = factory.inject({ fetch, fetchOne, search }, (service) ? service : {});
+        
         return {
             slice: factorySlice,
             asyncActions
         };
     }
-
+    console.log('factory :: ', factory);
     return factory; 
 }
 

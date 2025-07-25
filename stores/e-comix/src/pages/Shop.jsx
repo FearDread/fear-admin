@@ -250,9 +250,6 @@ const Shop = (props) => {
                   <div className="d-flex justify-content-between align-items-center righty">
                     <h6 className="ashow">Showing<b> 1–12 </b>  of <b>41</b>Results </h6>
                     <div className="right-section-btn d-flex align-items-center">
-
-
-
                       <div className="dropdown">
                         <button className="btn  dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                           Default sorting
@@ -262,22 +259,21 @@ const Shop = (props) => {
                           <li><a className="dropdown-item" href="shop.html#">latest</a></li>
                           <li><a className="dropdown-item" href="shop.html#">low to high</a></li>
                           <li><a className="dropdown-item" href="shop.html#">high to low</a></li>
-
                         </ul>
                       </div>
                     </div>
                   </div>
-
                   <div id="products" className="mt-4 righty">
                     <div className="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-lg-5">
-                      {data && data.slice(0, 9).map((item) => {
+                      
+                      {productState && productState.slice(0, 9).map((item) => {
                         return (
                           <DetailedItem {...item} />
                         )
                       })}
+                    
                     </div>
                   </div>
-
                 </div>
               </div>
             </div>

@@ -26,7 +26,7 @@ const Login = () => {
     }
 
     useEffect(() => {
-        if ( success && user ) {
+        if ( success ) {
             cache.local.set("auth", user) ;
             console.log('cache =', cache.local.get("auth"));
             navigate("/profile");
