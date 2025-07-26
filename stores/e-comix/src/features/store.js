@@ -5,7 +5,7 @@ import { brandSlice } from "./brands/slice";
 import { cartSlice } from "./cart/slice";
 import { blogSlice } from "./blogs/slice";
 import cache from "./factory/cache";
-import { setupListeners } from "@reduxjs/toolkit/query/react";
+//import { setupListeners } from "@reduxjs/toolkit/query/react";
 
 
 export const store = configureStore({
@@ -15,11 +15,10 @@ export const store = configureStore({
     brand: brandSlice.reducer,
     cart: cartSlice.reducer,
     blog: blogSlice.reducer,
-  },
-  devTools: true,
+  }
 });
 
-setupListeners(store.dispatch);
+//setupListeners(store.dispatch);
 
 store.local = cache.local;
 store.session = cache.session;

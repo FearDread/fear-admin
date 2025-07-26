@@ -33,7 +33,7 @@ const Login = () => {
             store.local.set("auth", user);
         }
     }, []);
-    
+
     return (
         <>
         <BannerSub />
