@@ -64,6 +64,28 @@ export function FeatureFactory(entity, reducers = {}, endpoints = null) {
             initialState: StateFactory(sliceName),
             reducers: factory.reducers,
             extraReducers: (builder) => {
+                Object.key(standard).forEach( key => {
+                    builder
+                            .addCase(standard[key].pending, (state) => {
+                                state.loading = true;
+                                state.error = null;
+                            })
+                           .addCase(standard[key].fulfilled, (state, action) => {
+                                state.loading = false;
+                                state.success = true;
+                                state.data = action.payload;
+                                state[sliceName] = action.payload[0];
+                                if (act == 'fetchOne') {
+                                    state[sliceName] = action.payload[0];
+                                }
+                            })
+                            .addCase(standard[key].rejected, (state, action) => {
+                                state.loading = false;
+                                state.success = false;
+                                state.error = action.error;
+                            });
+                })
+                /*
                 for (var act in standard) {
                     if (standard.hasOwnProperty(act)) {
                         builder
@@ -87,6 +109,7 @@ export function FeatureFactory(entity, reducers = {}, endpoints = null) {
                             });
                     }
                 }
+                                            */
                 if (service) {
                     for (var key in service) {
                         if (service.hasOwnProperty(key) && !standard.hasOwnProperty(key)) {
@@ -108,6 +131,7 @@ export function FeatureFactory(entity, reducers = {}, endpoints = null) {
                                 });
                         }
                     }
+
                 }
             }
         });
@@ -119,8 +143,6 @@ export function FeatureFactory(entity, reducers = {}, endpoints = null) {
             asyncActions
         };
     }
-
-    console.log('factory :: ', factory);
     return factory;
 }
 

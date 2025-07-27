@@ -8,16 +8,13 @@ import cache from "../../features/factory/cache";
 
 
 const LoginModal = () => {
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [showModal, setShowModal] = useState(false);
+    const userState = useSelector( state => state.user.data ) 
 
-    //const { isLoggedIn, loginSuccess } = useSelector((state) => state.auth)
-     
-    const { user, success } = useSelector( state => state.user )
-    const userState = useSelector(state => state.user.data.user) 
-
+    const handleClose = () => setShowModal(false);
+    const handleShow = () => setShowModal(true);
     const loginHandler = (e) => {
         e.preventDefault();
         const myForm = new FormData();
@@ -29,12 +26,11 @@ const LoginModal = () => {
     }
 
     useEffect(() => {
-        console.log("user state = ", userState);
-        if ( success ) {
-
-            store.local.set("auth", userState) ;
+        if ( userState.token ) {
+            store.local.set("auth", userState);
+            handleClose()
         }
-      }, [])
+      }, [userState])
 
 
     return (
@@ -48,7 +44,7 @@ const LoginModal = () => {
                             <form action="index.html" method="get">
                                 <div id="login-td-div" className="com-div-md">
                                     <h5 className="text-center mb-3"> Login </h5>
-                                    <button type="button" className="close" data-bs-dismiss="modal">
+                                    <button onClick={handleClose} type="button" className="close" data-bs-dismiss="modal">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-x" viewBox="0 0 16 16">
                                             <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
                                         </svg>

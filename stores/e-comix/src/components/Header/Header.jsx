@@ -6,7 +6,7 @@ import "./Header.css";
 
 const Header = ({ cart }) => {
  
-  const user = store.local.get('auth') || null;
+  const user = (store.local.has('auth')) ? store.local.get('auth') : undefined;
   const { data: userState, success } = useSelector(state => state.user);
 
 
