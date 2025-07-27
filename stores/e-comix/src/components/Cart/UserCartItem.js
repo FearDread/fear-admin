@@ -6,7 +6,7 @@ const UserCartItem = ({ data }) => {
     const linkref = "/product/" + data._id;
 
     const handleRemoveItem = () => {
-
+        console.log('remove item with id ', )
     }
 
     return (

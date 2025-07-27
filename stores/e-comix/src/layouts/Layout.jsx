@@ -11,15 +11,15 @@ import OffCanvasModal from "../components/Modals/OffCanvasModal";
 import AOS from "aos";
 
 import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import cache from "../features/factory/cache";
 import { store } from "../features/store";
 import { Cart } from "../features/cart/slice";
 import { Auth } from "../features/user/slice";
 import { Product } from "../features/products/slice";
 
+import "react-toastify/dist/ReactToastify.css";
+
 const Layout = (props) => {
-  
+
   const localData = store.local.has("auth") ? store.local.get("auth") : undefined;
   const cartData = useSelector( state => state.cart.data );
 
