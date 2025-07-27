@@ -61,15 +61,6 @@ module.exports = FEAR = (( app ) => {
     });
   };
   
-  //this.app.use(passport.initialize());
-  //this.app.use(passport.session());
-
-  this.app.use(cors(this.cconfig)); 
-  //this.app.options("*", cors(this.cconfig));
-
-  // Load Routes
-  this.loadRoutes();
-
   this.app.use((req, res, next) => {
     console.log('Making it here?');
     this.log.info( "FEAR API Query :: " + req.url );
@@ -77,6 +68,12 @@ module.exports = FEAR = (( app ) => {
     res.locals.user = req.user;
     next();
   })
+  
+  this.app.use(cors(this.cconfig)); 
+  this.app.options("*", cors(this.cconfig));
+
+  // Load Routes
+  this.loadRoutes();
 
   this.app.use(express.static(path.join(__dirname1, "/dashboard/build")));
   this.app.get("*", (req, res) =>

@@ -6,10 +6,10 @@ const User = require("../controllers/user");
 
 
 router.post("/new", tryCatch(Cart.create))
+router.post("/user", Cart.getUserCart);
 
-router.patch("/user/:id", Cart.update)
-router.delete("/user/empty", Cart.delete)
+router.patch("/:userId", Cart.update)
+router.delete("/empty", Cart.empty)
 router.patch("/quantity/:id", Cart.updateQuantity);
 
-router.route("/all").get(Cart.getUserCart);
 module.exports = router;
