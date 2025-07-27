@@ -19,14 +19,10 @@ import { Auth } from "../features/user/slice";
 import { Product } from "../features/products/slice";
 
 const Layout = (props) => {
-  const user = store.local.has("auth") ? store.local.get("auth") : undefined;
-
-  const {data: cartData, loading } = useSelector(state => state.cart);
-  const products = useSelector(state => state.product.data)
-  //const apiSliceData = useSelector()
-
-
   
+  const localData = store.local.has("auth") ? store.local.get("auth") : undefined;
+  const cartData = useSelector( state => state.cart.data );
+
   useEffect(() => {
   
     AOS.init({
@@ -40,12 +36,12 @@ const Layout = (props) => {
 
   useEffect(() => {
 
-    if ( user ) store.dispatch(Cart.getUserCart({id: user._id}));
-    
+    if ( localData && localData.token ) store.dispatch(Cart.getUserCart({id: localData.user._id}));
+
   }, [])
   return (
     <>
-      <Header cart={cartData} user={user} />
+      <Header cart={cartData} user={localData.user} />
       <Outlet />
       <Subscribe />
       <Footer />

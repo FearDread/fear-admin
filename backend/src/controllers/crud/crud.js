@@ -1,16 +1,11 @@
 const { tryCatch } = require("../../libs/handler/error");
 const cloud = require("../../libs/cloud");
 const SearchFeatures = require("../../libs/features/api");
-
-
 /**
- * @api {get} /all Request Model information
- * @apiName crud.all
- * @apiGroup Model
- *
- * @apiSuccess {Object} Model document.
- * @apiSuccess {Boolean} Success: true / false.
- * @apiSuccess {String} Informative message.
+ * {get} /all Documents for requested Model
+ *  @returns {boolean} Sucess
+ *  @returns {string} Message
+ *  @returns {Array} Result: Array of found Documents
  */
 exports.all = tryCatch(async (Model, req, res) => {
   //const featured = api(Model.find(), req.query).paginate();
@@ -117,7 +112,6 @@ exports.delete = tryCatch(async (Model, req, res) => {
  *  @param {Object} req.params
  *  @returns {Object} Results with pagination
  */
-
 exports.list = tryCatch(async (Model, req, res) => {
   const page = req.query.page || 1;
   const limit = parseInt(req.query.items) || 10;
