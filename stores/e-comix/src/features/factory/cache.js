@@ -27,7 +27,7 @@ export const cache = (options = {}) => {
       try {
         if (key !== "undefined") {
           const data = window[engine].getItem(key);
-          return data ? JSON.parse(data) : null;
+          return data != 'undefined' ? JSON.parse(data) : null;
         }
 
 
