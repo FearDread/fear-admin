@@ -16,7 +16,7 @@ const LoginModal = () => {
     //const { isLoggedIn, loginSuccess } = useSelector((state) => state.auth)
      
     const { user, success } = useSelector( state => state.user )
-    const userState = useSelector(state => state.user) 
+    const userState = useSelector(state => state.user.data.user) 
 
     const loginHandler = (e) => {
         e.preventDefault();
@@ -31,8 +31,8 @@ const LoginModal = () => {
     useEffect(() => {
         console.log("user state = ", userState);
         if ( success ) {
-            console.log('user = ', user);
-            store.local.set("auth", user) ;
+
+            store.local.set("auth", userState) ;
         }
       }, [])
 

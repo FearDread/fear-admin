@@ -31,6 +31,7 @@ const Login = () => {
         if ( success ) {
             console.log('set user here =', user)
             store.local.set("auth", user);
+            navigate('/cart');
         }
     }, []);
 

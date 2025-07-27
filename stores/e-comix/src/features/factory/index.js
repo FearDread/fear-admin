@@ -75,6 +75,7 @@ export function FeatureFactory(entity, reducers = {}, endpoints = null) {
                                 state.loading = false;
                                 state.success = true;
                                 state.data = action.payload;
+                                state[sliceName] = action.payload[0];
                                 if (act == 'fetchOne') {
                                     state[sliceName] = action.payload[0];
                                 }
@@ -98,6 +99,7 @@ export function FeatureFactory(entity, reducers = {}, endpoints = null) {
                                     state.loading = false;
                                     state.success = true;
                                     state.data = action.payload;
+                                    console.log('action fulfilled :', state.data);
                                 })
                                 .addCase(service[key].rejected, (state, action) => {
                                     state.loading = false;

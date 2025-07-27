@@ -19,11 +19,11 @@ import { Auth } from "../features/user/slice";
 import { Product } from "../features/products/slice";
 
 const Layout = (props) => {
-  const user = cache.local.has("auth") ? cache.local.get("auth") : undefined;
+  const user = store.local.has("auth") ? store.local.get("auth") : undefined;
 
   const {data: cartData, loading } = useSelector(state => state.cart);
   const products = useSelector(state => state.product.data)
-  
+  //const apiSliceData = useSelector()
 
 
   
@@ -41,7 +41,8 @@ const Layout = (props) => {
   useEffect(() => {
     console.log('layout products = ', products);
     console.log('layout products from prop', props)
-    if ( user ) store.dispatch(Cart.fetch(user.user));
+    console.log('user stored ', user);
+    if ( user ) store.dispatch(Cart.fetch({id: user._id}));
 
   }, [])
   return (
