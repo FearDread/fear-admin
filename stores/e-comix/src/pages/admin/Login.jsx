@@ -12,8 +12,9 @@ const Login = () => {
     const dispatch = useDispatch();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-
-    const { success, user } = useSelector((state) => state.user)
+    const loginSucess = useSelector(state => state.user.success );
+    const userState = useSelector(state => state.user.data );
+    //const { success, user } = useSelector((state) => state.user.user)
 
     const loginHandler = (e) => {
         e.preventDefault();
@@ -22,15 +23,14 @@ const Login = () => {
         myForm.set("email", email);
         myForm.set("password", password);
 
-        store.dispatch(User.login(myForm));
+        store.dispatch(User.login(myForm));  
     }
 
     
 
     useEffect(() => {
-        if ( success ) {
-            console.log('set user here =', user)
-            store.local.set("auth", user);
+        if ( loginSucess ) {
+            store.local.set("auth", userState);
             navigate('/cart');
         }
     }, []);

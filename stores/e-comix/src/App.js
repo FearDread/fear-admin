@@ -38,15 +38,16 @@ import "./assets/css/site.styles.css";
 
 
 function App() {
-  const user = store.local.has("auth") ? store.local.get("auth") : undefined;
+  const user = (store.local.has("auth")) ? store.local.get("auth") : undefined;
   //const { data: userState, success } = useSelector(state => state.user);
   const products = useSelector(state => state.product.data);
+  const check = useSelector(state => state.user.data);
 
   useEffect(() => {
-
-    //if ( user ) console.log('user logged in', user);
-    
-  }, []);
+    if ( user && (check.token == user.token) ) {
+      store.local.set('auth', check);
+    }
+  }, [check, user]);
 
   return (
     <>
