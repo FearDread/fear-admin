@@ -62,13 +62,12 @@ module.exports = FEAR = (( app ) => {
   };
   
   this.app.use((req, res, next) => {
-    console.log('Making it here?');
     this.log.info( "FEAR API Query :: " + req.url );
-    
+    this.log.warn( "User :: " + req.user )
     res.locals.user = req.user;
     next();
   })
-  
+
   this.app.use(cors(this.cconfig)); 
   this.app.options("*", cors(this.cconfig));
 
