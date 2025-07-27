@@ -38,18 +38,19 @@ import "./assets/css/site.styles.css";
 
 
 function App() {
-  //const user = store.cache.local.has("auth") ? store.cache.local.get("auth") : undefined;
-  const { data: userState, success } = useSelector(state => state.user);
+  const user = store.local.has("auth") ? store.local.get("auth") : undefined;
+  //const { data: userState, success } = useSelector(state => state.user);
   const products = useSelector(state => state.product.data);
 
   useEffect(() => {
+
+    //if ( user ) console.log('user logged in', user);
     
-    console.log('user logged ', success );
   }, []);
 
   return (
     <>
-      <Popup />
+      {/* <Popup  /> */ }
       <BrowserRouter>
         <Suspense >
           <Routes>

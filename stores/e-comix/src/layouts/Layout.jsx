@@ -39,11 +39,9 @@ const Layout = (props) => {
   }, []);
 
   useEffect(() => {
-    console.log('layout products = ', products);
-    console.log('layout products from prop', props)
-    console.log('user stored ', user);
-    if ( user ) store.dispatch(Cart.getUserCart({id: user._id}));
 
+    if ( user ) store.dispatch(Cart.getUserCart({id: user._id}));
+    
   }, [])
   return (
     <>

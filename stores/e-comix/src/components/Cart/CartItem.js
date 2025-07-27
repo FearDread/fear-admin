@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 
-const CartItem = ( data ) => {
+const CartItem = ({ data }) => {
 
     const linkref = "/product/" + data._id;
 
