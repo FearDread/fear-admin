@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
-const MongoStore = require("connect-mongo");
-const session = require('express-session');
+const ObjectId = mongoose.Types.ObjectId;
 
 module.exports = {
     run: ( env, callback ) => {
@@ -16,8 +15,13 @@ module.exports = {
         .catch((err) => { console.log("Error connecting to MongoDB", err); })
     },
     store: () => {},
+    wrapId: (id) => {
+        return ObjectId(id);
+    },
     validate: (id) => {
         const isValid = mongoose.Types.ObjectId.isValid(id);
+        //if (!isValid) id = this.wrapId(id);
+        //return id;
         if (!isValid) throw new Error("This id is not valid or not Found");
     }
 }

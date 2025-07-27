@@ -20,7 +20,7 @@ exports.login = async (req, res) => {
             if (!pass) return res.status(400).json({ success: false, error: 'Invalid Credientials' })
 
             let token = this.getJWTToken(res, user);
-           return res.status(200).json({ user, success: true, token });
+           return res.status(200).json({ result: {user, token}, success: true });
           })
           .catch(error => new Error(error))})
     .catch(() => new Error("User Not found"));

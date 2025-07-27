@@ -11,6 +11,17 @@ exports.passwordReset = () => {
   
 }
 
+exports.getUserCart = async (req, res) => {
+  console.log('req = ', req);
+  var userId = req.body;
+  userId = db.wrapId(userId);
+
+    await Cart.find({ userId: userId })
+      .populate("productId")
+      .then((cart) => { return res.status(200).json({ success: true, result: cart }) })
+      .catch(error => new Error(error));
+}
+
 exports.wishlist = async (req, res) => {
   const { _id } = req.user;
   try {
