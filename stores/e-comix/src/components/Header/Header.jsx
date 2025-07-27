@@ -5,8 +5,10 @@ import store from "../../features/store";
 import "./Header.css";
 
 const Header = ({ cart }) => {
-
+ 
+  const user = store.local.get('auth') || null;
   const { data: userState, success } = useSelector(state => state.user);
+
 
   const logoutHandler = () => {
     store.local.remove('auth');
@@ -14,8 +16,6 @@ const Header = ({ cart }) => {
   }
 
   useEffect(() => {
-    console.log('user = ', userState);
-    console.log('cart prop from header = ', cart);
 
   }, []);
 
@@ -71,7 +71,7 @@ const Header = ({ cart }) => {
             <div className="right-sction">
 
               <ul className="d-flex align-items-center">
-              { success ? (
+              { user ? (
                 <>
                 <li>
                   <a className="right-menu btn logout submit-btn" onClick={logoutHandler}> Logout </a>
