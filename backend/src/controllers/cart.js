@@ -15,10 +15,10 @@ exports.create = tryCatch(async (req, res) => {
     .catch(error => {throw new Error(error)});
 });
 
-exports.read = tryCatch(async (req, res) => {
-  const { _id } = req.body;
-  //db.validate(_id);
-  await Cart.find({ userId: _id })
+exports.getUserCart = tryCatch(async (req, res) => {
+  const { id } = req.query;
+  console.log('cart query =', req.query);
+  await Cart.find({ userId: id })
     .populate("productId")
     .then((cart) => { return res.status(200).json({ success: true, result: cart }) })
     .catch(error => new Error(error));
