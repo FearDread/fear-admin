@@ -2167,6 +2167,10 @@ footer .items-footer-div li a span:first-child {
   transform: translate(17px,  13px);
   transition: ease-in .15s;
 }
+.user-cart-items {
+  max-height: 90vh;
+  overflow-y: auto;
+}
 .cart-haedeing h2 {
   text-transform: capitalize;
   font-style: normal;
@@ -2184,6 +2188,9 @@ footer .items-footer-div li a span:first-child {
   flex-wrap: wrap;
   box-shadow: #efefef 1px 2px 30px;
   padding: 20px;
+  background: white;
+  border-radius: 10px;
+  border: 4px solid black;
 }
 .comon-items-cart .left-section-div .products-cart1 ul {
   margin-top: 12px;
@@ -2259,6 +2266,7 @@ footer .items-footer-div li a span:first-child {
   width: 100%;
   border-radius: 20px;
   border: solid 4px #000;
+  background: white;
 }
 .quantity-control {
   display: flex;

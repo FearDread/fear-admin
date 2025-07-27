@@ -34,7 +34,7 @@ export const ThunkFactory = {
         `${entity}/${prefix}`,
 
         async ( data, thunkApi ) => {
-
+          console.log('params = ', data);
           return API.post(`${entity}/${prefix}`, data)
             
             .then((response) => {
