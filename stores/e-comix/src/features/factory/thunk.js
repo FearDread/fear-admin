@@ -14,10 +14,10 @@ export const ThunkFactory = {
 
         async ( params, thunkApi ) => {
           let url = `${entity}/${prefix}`;
+          console.log('params = ', params);
+          if ( prefix == 'one' ) url = `${entity}/${params.id}`
 
-          if (prefix == 'one') url = `${entity}/${params.id}`
-
-          return API.get(url, (prefix == 'search') ? {params} : {})                           
+          return API.get(url, (params) ? {params} : {})                           
             
             .then((response) => response.data.result )
             
@@ -39,7 +39,7 @@ export const ThunkFactory = {
             
             .then((response) => {
 
-              return response.data;
+              return response.data.result;
 
             })
             

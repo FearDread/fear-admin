@@ -6,8 +6,8 @@ import { Cart } from "../../features/cart/slice";
 
 
 const DetailedItem = ( props ) => {
-    const user = store.cache.local.has("auth") ? store.cache.local.get("auth") : undefined;
-    const userState = useSelector(state => state.user);
+    const user = store.local.has("auth") ? store.local.get("auth") : undefined;
+    const userState = useSelector(state => state.user.data.user);
     const { _id, title, brand, description, category, price, images, reviews } = props;
     const link = "/product/" + _id;
 
@@ -15,7 +15,7 @@ const DetailedItem = ( props ) => {
         console.log('add to cart item : ' + id)
 
         const newItem = {
-            userId: user.user._id,
+            userId: user._id,
             productId: id,
             quantity: 1,
             price
