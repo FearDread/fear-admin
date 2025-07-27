@@ -16,12 +16,12 @@ exports.create = tryCatch(async (req, res) => {
 });
 
 exports.getUserCart = tryCatch(async (req, res) => {
-  const { id } = req.query;
-  console.log('cart query =', req.query);
+  const { id } = req.body;
+  console.log('cart query =', req.body);
   await Cart.find({ userId: id })
     .populate("productId")
     .then((cart) => { return res.status(200).json({ success: true, result: cart }) })
-    .catch(error => new Error(error));
+    .catch(error => { throw new Error(error)});
 });
 
 exports.update = tryCatch(async (req, res) => {
@@ -35,7 +35,7 @@ exports.update = tryCatch(async (req, res) => {
 
 });
 
-exports.delete = tryCatch(async (req, res) => {
+exports.empty = tryCatch(async (req, res) => {
   const { _id } = req.body;
  // db.validate(_id);
   await Cart.deleteMany({ userId: _id })
