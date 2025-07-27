@@ -17,7 +17,7 @@ export const ThunkFactory = {
           console.log('params = ', params);
           if ( prefix == 'one' ) url = `${entity}/${params.id}`
 
-          return API.get(url, (params) ? {params} : {})                           
+          return API.get(url, (prefix == 'search') ? {params} : {})                           
             
             .then((response) => response.data.result )
             
