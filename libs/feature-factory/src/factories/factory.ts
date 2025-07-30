@@ -1,170 +1,158 @@
-// index.ts
 import {
   createSlice,
   createEntityAdapter,
   combineReducers,
-  SliceCaseReducers,
   EntityAdapter,
-  Slice,
-  ActionReducerMapBuilder,
+  AsyncThunk,
+  Reducer,
   AnyAction,
-  AsyncThunk
+  SliceCaseReducers,
+  PayloadAction,
 } from '@reduxjs/toolkit';
 import ThunkFactory from './thunk';
-import { StateFactory } from './state';  // assume you have this
 
-// A map of async thunks
-export interface ServiceMap {
-  [key: string]: AsyncThunk<any, any, any>;
+// Define the shape of your feature state
+export interface FeatureState<T> {
+  loading: boolean;
+  success: boolean;
+  error: unknown | null;
+  data: T[];
+  [key: string]: any;
 }
 
-// Manager interface for dynamic reducers
-export interface Manager<S> {
-  reduce(state: S | undefined, action: AnyAction): S;
-  add(key: string, reducer: (state: any, action: AnyAction) => any): void;
-  remove(key: string): void;
-  getReducerMap(): Record<string, (state: any, action: AnyAction) => any>;
+// A helper type for mapping service thunks
+export type ServiceMap = Record<string, AsyncThunk<any, any, any>>;
+
+// Manager API for dynamic reducer injection
+export interface ReducerManager {
+  reduce: (state: any, action: AnyAction) => any;
+  add: (key: string, reducer: Reducer<any, AnyAction>) => void;
+  remove: (key: string) => void;
+  getReducerMap: () => Record<string, Reducer<any, AnyAction>>;
 }
 
-// Factory return type
-export interface FactoryReturn<S> {
-  entity: string;
-  reducers: SliceCaseReducers<S>;
-  thunk: typeof ThunkFactory;
-  state: typeof StateFactory;
-  adapter: EntityAdapter<any>;
-  manager(initialReducers?: Record<string, (state: any, action: AnyAction) => any>): Manager<any>;
-  inject<T, D>(source: T, dest: D): T & D;
-  create(options?: { service?: ServiceMap; initialState?: S }): {
-    slice: Slice<ReturnType<typeof StateFactory>>;
-    asyncActions: ServiceMap;
+// Assume you have a StateFactory function somewhere:
+function StateFactory<T>(name: string): FeatureState<T> {
+  return {
+    loading: false,
+    success: false,
+    error: null,
+    data: [],
+    [name]: null,
   };
 }
 
-export function FeatureFactory<S = any>(
+// The main factory, now generic in T
+export function FeatureFactory<T>(
   entity: string,
-  reducers: SliceCaseReducers<S> = {} as SliceCaseReducers<S>,
-  endpoints: ServiceMap | null = null
-): FactoryReturn<S> {
+  reducers: SliceCaseReducers<FeatureState<T>> = {},      // → typed slices
+  endpoints: ServiceMap | null = null                     // → typed services
+) {
   const factory = {
     entity,
     reducers,
+    manager: ReducerManager ,
     thunk: ThunkFactory,
-    state: StateFactory,
-    adapter: createEntityAdapter<any>()
+    state: StateFactory as (name: string) => FeatureState<T>,
+    adapter: createEntityAdapter<T>() as EntityAdapter<T>, // → typed adapter
   };
 
-  // Manager for adding/removing reducers dynamically
-  factory.manager = (initialReducers: Record<string, any> = {}) => {
-    const reducersMap: Record<string, any> = { ...initialReducers };
+  factory.manager = (initialReducers: Record<string, Reducer<any, AnyAction>> = {}) => {
+    const reducersMap = { ...initialReducers };
     let combined = combineReducers(reducersMap);
 
-    return {
-      reduce: (state: any, action: AnyAction) => combined(state, action),
-      add: (key: string, reducer: any) => {
+    const manager: ReducerManager = {
+      reduce: (state, action) => combined(state, action),
+      add: (key, reducer) => {
         if (!key || reducersMap[key]) return;
         reducersMap[key] = reducer;
         combined = combineReducers(reducersMap);
       },
-      remove: (key: string) => {
+      remove: (key) => {
         if (!key || !reducersMap[key]) return;
         delete reducersMap[key];
         combined = combineReducers(reducersMap);
       },
-      getReducerMap: () => reducersMap
+      getReducerMap: () => reducersMap,
     };
+
+    return manager;
   };
 
-  // Generic injector
-  factory.inject = <T, D>(source: T, dest: D): T & D => {
-    for (const prop in source) {
-      if (Object.prototype.hasOwnProperty.call(source, prop)) {
-        // @ts-ignore
-        dest[prop] = source[prop];
-      }
-    }
-    return dest as T & D;
+  factory.inject = <S extends object, D extends object>(source: S, dest: D): D & S => {
+    Object.keys(source).forEach((k) => {
+      // @ts-ignore
+      dest[k] = source[k];
+    });
+    return dest as D & S;
   };
 
-  // Create slice + async thunks
-  factory.create = (options = {} as { service?: ServiceMap; initialState?: S }) => {
+  factory.create = (options: { service?: ServiceMap; initialState?: FeatureState<T> } = {}) => {
     const { service, initialState } = options;
     const sliceName = factory.entity;
 
-    // Standard async actions
     const standard: ServiceMap = {
       fetch: factory.thunk.create(sliceName, 'all'),
       fetchOne: factory.thunk.create(sliceName, 'one'),
-      search: factory.thunk.create(sliceName, 'search')
+      search: factory.thunk.create(sliceName, 'search'),
     };
 
     const slice = createSlice({
       name: sliceName,
-      initialState: StateFactory(sliceName, initialState),
+      initialState: initialState ?? StateFactory<T>(sliceName),
       reducers: factory.reducers,
-      extraReducers: (builder: ActionReducerMapBuilder<any>) => {
-        // Handle standard thunks
-        for (const act in standard) {
-          if (standard.hasOwnProperty(act)) {
-            builder
-              .addCase(standard[act].pending, (state) => {
-                state.loading = true;
-                state.error = null;
-              })
-              .addCase(standard[act].fulfilled, (state, action) => {
-                state.loading = false;
-                state.success = true;
-                state.data = action.payload;
-                if (act === 'fetchOne') {
-                  state[sliceName] = action.payload[0];
-                } else {
-                  state[sliceName] = action.payload[0];
-                }
-              })
-              .addCase(standard[act].rejected, (state, action) => {
-                state.loading = false;
-                state.success = false;
-                state.error = action.error;
-              });
-          }
-        }
+      extraReducers: (builder) => {
+        // handle standard thunks
+        Object.entries(standard).forEach(([act, thunk]) => {
+          builder
+            .addCase(thunk.pending, (state) => {
+              state.loading = true;
+              state.error = null;
+            })
+            .addCase(thunk.fulfilled, (state, action: PayloadAction<T[]>) => {
+              state.loading = false;
+              state.success = true;
+              state.data = action.payload;
+              state[sliceName] = action.payload[0];
+            })
+            .addCase(thunk.rejected, (state, action) => {
+              state.loading = false;
+              state.success = false;
+              state.error = action.error;
+            });
+        });
 
-        // Handle custom service thunks
+        // handle extra service thunks
         if (service) {
-          for (const key in service) {
-            if (service.hasOwnProperty(key) && !standard.hasOwnProperty(key)) {
+          Object.entries(service).forEach(([key, thunk]) => {
+            if (!standard[key]) {
               builder
-                .addCase(service[key].pending, (state) => {
+                .addCase(thunk.pending, (state) => {
                   state.loading = true;
                   state.error = null;
                 })
-                .addCase(service[key].fulfilled, (state, action) => {
+                .addCase(thunk.fulfilled, (state, action: PayloadAction<any>) => {
                   state.loading = false;
                   state.success = true;
                   state.data = action.payload;
                   console.log('action fulfilled :', state.data);
                 })
-                .addCase(service[key].rejected, (state, action) => {
+                .addCase(thunk.rejected, (state, action) => {
                   state.loading = false;
                   state.success = false;
                   state.error = action.payload;
                 });
             }
-          }
+          });
         }
-      }
+      },
     });
 
-    // Merge standard + custom actions
-    const asyncActions = factory.inject<ServiceMap, ServiceMap>(
-      standard,
-      service ? service : {}
-    );
-
+    const asyncActions = factory.inject(standard, service ?? {});
     return { slice, asyncActions };
   };
 
-  return factory as FactoryReturn<S>;
+  return factory;
 }
 
 export default FeatureFactory;
