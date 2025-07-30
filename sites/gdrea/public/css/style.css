@@ -22,7 +22,7 @@
 /*---------------------------------------------------*/
 
 :root{
-    --main-color: #eb4a4c;
+    --main-color: #56019cff;
 }
 html {
 	overflow-x: hidden;
@@ -115,7 +115,7 @@ h6 { font-size: 16px; }
     width: 50%;
     height: 100%;
     z-index: -1;
-    background-color: #fff;
+    background-color: #000417;
     -webkit-transition: all 0.3s ease 0s;
     -o-transition: all 0.3s ease 0s;
     transition: all 0.3s ease 0s;
@@ -145,7 +145,7 @@ h6 { font-size: 16px; }
     -ms-transform: translateY(-50%);
     -o-transform: translateY(-50%);
     transform: translateY(-50%);
-    background-color: #000;
+    background-color: #ffffff;
     -webkit-animation: lineheight 1000ms ease-in-out 0s forwards;
     -o-animation: lineheight 1000ms ease-in-out 0s forwards;
     animation: lineheight 1000ms ease-in-out 0s forwards;
@@ -157,7 +157,7 @@ h6 { font-size: 16px; }
     top: 0;
     width: 1px;
     height: 100%;
-    background-color: #ddd;
+    background-color: #2f0142;
     -webkit-transform: translateY(-100%);
     -ms-transform: translateY(-100%);
     -o-transform: translateY(-100%);
