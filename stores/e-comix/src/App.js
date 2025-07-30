@@ -17,15 +17,16 @@ import Collection from "./pages/Collection";
 import Terms from "./pages/Terms";
 import Shop from "./pages/Shop";
 import RefundPolicy from "./pages/PrivacyPolicy";
-//import Checkout from "./pages/admin/Checkout"
 import Login from "./pages/Login";
+import Register from "./pages/Register";
 import Wishlist from './pages/Wishlist';
 
 //import UserOrder from "./pages/admin/UserOrder";
-import UserCart from "./pages/admin/UserCart";
-//import Profile from "./pages/admin/Profile";
+//import Checkout from "./pages/admin/Checkout"
 //import Wishlist from "./pages/Wishlist";
 //import ForgotPassword from "./pages/Forgotpassword";
+import UserCart from "./pages/admin/UserCart";
+import Profile from "./pages/admin/Profile";
 
 import { PrivateRoutes } from "./routes/PrivateRoutes";
 import { OpenRoutes } from "./routes/OpenRoutes";
@@ -75,6 +76,7 @@ function App() {
                 <Route path="privacy" element={<PrivacyPolicy />} />
                 <Route path="refund-policy" element={<RefundPolicy />} />
                 <Route path="login" element={<Login />} />
+                <Route path="register" element={<Register />} />
               
               <Route
                 path="cart"
@@ -90,7 +92,7 @@ function App() {
                     <Wishlist />
                   </PrivateRoutes>
                 } />
-              {/*  
+              
               <Route
                 path='profile'
                 element={
@@ -98,7 +100,7 @@ function App() {
                     <Profile />
                   </PrivateRoutes>
                 } /> 
-           
+           {/*
                 <Route
                   path='order'
                   element={

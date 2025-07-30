@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react"
 import { useParams, useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
 import Loader from "../components/Loader/Loader";
 import BannerSub from "../components/Banner/BannerSub"
+import Recommended from "../components/Carousel/Recommended";
 import { Product } from "../features/products/slice";
 import { store } from "../features/store";
 //import ReactImageZoom from "react-image-zoom";
@@ -23,6 +25,7 @@ const ProductDetails = () => {
   const getProductDetails = () => {
     store.dispatch(Product.fetchOne({id}));
   }
+
   useEffect(() => {
 
     getProductDetails() 
@@ -73,11 +76,11 @@ const ProductDetails = () => {
                     <div className="col-lg-6">
                       <div className="main-product-image products-slide-1">
                         <div>
-                          { /* <ReactImageZoom props={getImgProps(activeProduct)} /> */}
+                          {/*<ReactImageZoom props={{width: 400, height: 250, zoomWidth: 500, img: product?.images[0]?.url}} /> */}
                         </div>
                       </div>
                       <div className="other-product-images thum-pic-slide d-flex flex-wrap gap-15">
-                        {product.images && product.images.map((item) => {
+                        {product?.images && product.images?.map((item) => {
                           return (
                             <div className="item">
                               <figure className="main-ppic ">
@@ -332,7 +335,7 @@ const ProductDetails = () => {
 
               <div className="like-div-also mt-5">
                 <h2> You may also like </h2>
-                {/* <RelatedProducts {...products} /> */}
+                <Recommended />
               </div>
             </div>
           </div>

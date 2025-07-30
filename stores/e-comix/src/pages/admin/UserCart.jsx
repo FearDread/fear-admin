@@ -12,14 +12,14 @@ const UserCart = (props) => {
   return (
     <>
       <BannerSub />
-      <main class="float-start w-100 total-body home-body mt-0">
-        <section class="cart-page-div pt-5 d-inline-block w-100">
-          <div class="container">
-            <div class="row gx-lg-5">
-              <div class="col-lg-8 user-cart-items">
-                <div class="cart-haedeing">
-                  <h2 class="d-flex page-haeding align-items-center justify-content-between mb-4">  My Cart
-                    <span class="ms-lg-auto">
+      <main className="float-start w-100 total-body home-body mt-0">
+        <section className="cart-page-div pt-5 d-inline-block w-100">
+          <div className="container">
+            <div className="row gx-lg-5">
+              <div className="col-lg-8 user-cart-items">
+                <div className="cart-haedeing">
+                  <h2 className="d-flex page-haeding align-items-center justify-content-between mb-4">  My Cart
+                    <span className="ms-lg-auto">
                       3Items
                     </span>
                   </h2>
@@ -33,37 +33,37 @@ const UserCart = (props) => {
                 })}
                 </div>
                 <div className="col-lg-4 cart-summary">
-                  <div class="total-count-div">
+                  <div className="total-count-div">
                     <h4> Order Summary</h4>
-                    <hr class="my-2" />
-                    <div class="itemsl-list my-4">
+                    <hr className="my-2" />
+                    <div className="itemsl-list my-4">
                       <ul>
-                        <li class="d-flex align-items-center justify-content-between">
+                        <li className="d-flex align-items-center justify-content-between">
                           <span>Items(3)</span>
                           <span>$104.00</span>
                         </li>
                       </ul>
                     </div>
 
-                    <div class="promo-code1">
-                      <div class="form-group">
+                    <div className="promo-code1">
+                      <div className="form-group">
                         <label>Do you have Any Discount Code?</label>
-                        <input type="text" class="form-control" placeholder="Enter your code" />
-                        <input type="submit" value="Apply" class="btn" />
+                        <input type="text" className="form-control" placeholder="Enter your code" />
+                        <input type="submit" value="Apply" className="btn" />
                       </div>
                     </div>
-                    <ul class="pay-listy mt-4">
+                    <ul className="pay-listy mt-4">
                       <li>
-                        <span class="list-payt">Subtotal <b>(3 Items)</b></span>
-                        <span class="price-bn">$45.00</span>
+                        <span className="list-payt">Subtotal <b>(3 Items)</b></span>
+                        <span className="price-bn">$45.00</span>
                       </li>
                       <li>
-                        <span class="list-payt">Delivery charges</span>
-                        <span class="price-bn">$05.00</span>
+                        <span className="list-payt">Delivery charges</span>
+                        <span className="price-bn">$05.00</span>
                       </li>
                       <li>
-                        <span class="list-payt">Discount price</span>
-                        <span class="price-bn">-</span>
+                        <span className="list-payt">Discount price</span>
+                        <span className="price-bn">-</span>
                       </li>
                     </ul>
                     <hr />
@@ -71,31 +71,31 @@ const UserCart = (props) => {
                     <h3><span>Total Cost</span> <span>$40.00</span> </h3>
 
                   </div>
-                  <a href="cart.html#" class="btn comon-button mt-5">
+                  <a href="cart.html#" className="btn comon-button mt-5">
                     <span> Checkout </span>
                   </a>
                 </div>
 
-                <div class="reconded-procuts d-inline-block w-100 py-5">
+                <div className="reconded-procuts d-inline-block w-100 py-5">
                   <h2>  Recommended  </h2>
 
 
-                  <div class="like-slide owl-carousel owl-theme mt-4">
+                  <div className="like-slide owl-carousel owl-theme mt-4">
 
-                    <a href="cart.html#" class="shop-items super-items overflow-hidden d-inline-block w-100 position-relative" data-aos="fade-left">
-                      <div class="img-box-div position-relative">
+                    <a href="cart.html#" className="shop-items super-items overflow-hidden d-inline-block w-100 position-relative" data-aos="fade-left">
+                      <div className="img-box-div position-relative">
                         <img alt="srt" src="images/0ea7b3bf-image-2.jpg" />
-                        <span class="off">10% off</span>
+                        <span className="off">10% off</span>
                       </div>
-                      <div class="details-shopi">
-                        <div class="row align-items-center">
-                          <div class="col-8">
-                            <h5 class="text-white"> Figures & Statues..
-                              <span class="d-block"> Das deutschsprachige </span>
+                      <div className="details-shopi">
+                        <div className="row align-items-center">
+                          <div className="col-8">
+                            <h5 className="text-white"> Figures & Statues..
+                              <span className="d-block"> Das deutschsprachige </span>
                             </h5>
                           </div>
-                          <div class="col-4">
-                            <h3 class="text-center"> $30 <span class="d-block"> $50 </span> </h3>
+                          <div className="col-4">
+                            <h3 className="text-center"> $30 <span className="d-block"> $50 </span> </h3>
                           </div>
                         </div>
 
@@ -104,20 +104,20 @@ const UserCart = (props) => {
                     </a>
 
 
-                    <a href="cart.html#" class="shop-items super-items overflow-hidden d-inline-block w-100 position-relative" data-aos="fade-left">
-                      <div class="img-box-div position-relative">
+                    <a href="cart.html#" className="shop-items super-items overflow-hidden d-inline-block w-100 position-relative" data-aos="fade-left">
+                      <div className="img-box-div position-relative">
                         <img alt="srt" src="images/_742c2c04-e263-11e7-814a-000c05070a4c.jpg" />
-                        <span class="off">10% off</span>
+                        <span className="off">10% off</span>
                       </div>
-                      <div class="details-shopi">
-                        <div class="row align-items-center">
-                          <div class="col-8">
-                            <h5 class="text-white"> Figures & Statues..
-                              <span class="d-block"> Das deutschsprachige </span>
+                      <div className="details-shopi">
+                        <div className="row align-items-center">
+                          <div className="col-8">
+                            <h5 className="text-white"> Figures & Statues..
+                              <span className="d-block"> Das deutschsprachige </span>
                             </h5>
                           </div>
-                          <div class="col-4">
-                            <h3 class="text-center"> $30 <span class="d-block"> $50 </span> </h3>
+                          <div className="col-4">
+                            <h3 className="text-center"> $30 <span className="d-block"> $50 </span> </h3>
                           </div>
                         </div>
 
@@ -125,20 +125,20 @@ const UserCart = (props) => {
 
                     </a>
 
-                    <a href="cart.html#" class="shop-items super-items overflow-hidden d-inline-block w-100 position-relative" data-aos="fade-left">
-                      <div class="img-box-div position-relative">
+                    <a href="cart.html#" className="shop-items super-items overflow-hidden d-inline-block w-100 position-relative" data-aos="fade-left">
+                      <div className="img-box-div position-relative">
                         <img alt="srt" src="images/b5197a7a-image-22.jpg" />
-                        <span class="off">10% off</span>
+                        <span className="off">10% off</span>
                       </div>
-                      <div class="details-shopi">
-                        <div class="row align-items-center">
-                          <div class="col-8">
-                            <h5 class="text-white"> Figures & Statues..
-                              <span class="d-block"> Das deutschsprachige </span>
+                      <div className="details-shopi">
+                        <div className="row align-items-center">
+                          <div className="col-8">
+                            <h5 className="text-white"> Figures & Statues..
+                              <span className="d-block"> Das deutschsprachige </span>
                             </h5>
                           </div>
-                          <div class="col-4">
-                            <h3 class="text-center"> $30 <span class="d-block"> $50 </span> </h3>
+                          <div className="col-4">
+                            <h3 className="text-center"> $30 <span className="d-block"> $50 </span> </h3>
                           </div>
                         </div>
 
@@ -147,20 +147,20 @@ const UserCart = (props) => {
                     </a>
 
 
-                    <a href="cart.html#" class="shop-items super-items overflow-hidden d-inline-block w-100 position-relative" data-aos="fade-left">
-                      <div class="img-box-div position-relative">
+                    <a href="cart.html#" className="shop-items super-items overflow-hidden d-inline-block w-100 position-relative" data-aos="fade-left">
+                      <div className="img-box-div position-relative">
                         <img alt="srt" src="images/brett-jordan-CsZQ50xO35I-unsplash.jpg" />
-                        <span class="off">10% off</span>
+                        <span className="off">10% off</span>
                       </div>
-                      <div class="details-shopi">
-                        <div class="row align-items-center">
-                          <div class="col-8">
-                            <h5 class="text-white"> Figures & Statues..
-                              <span class="d-block"> Das deutschsprachige </span>
+                      <div className="details-shopi">
+                        <div className="row align-items-center">
+                          <div className="col-8">
+                            <h5 className="text-white"> Figures & Statues..
+                              <span className="d-block"> Das deutschsprachige </span>
                             </h5>
                           </div>
-                          <div class="col-4">
-                            <h3 class="text-center"> $30 <span class="d-block"> $50 </span> </h3>
+                          <div className="col-4">
+                            <h3 className="text-center"> $30 <span className="d-block"> $50 </span> </h3>
                           </div>
                         </div>
 
@@ -168,20 +168,20 @@ const UserCart = (props) => {
 
                     </a>
 
-                    <a href="cart.html#" class="shop-items super-items overflow-hidden d-inline-block w-100 position-relative" data-aos="fade-left">
-                      <div class="img-box-div position-relative">
+                    <a href="cart.html#" className="shop-items super-items overflow-hidden d-inline-block w-100 position-relative" data-aos="fade-left">
+                      <div className="img-box-div position-relative">
                         <img alt="srt" src="images/super5.png" />
-                        <span class="off">10% off</span>
+                        <span className="off">10% off</span>
                       </div>
-                      <div class="details-shopi">
-                        <div class="row align-items-center">
-                          <div class="col-8">
-                            <h5 class="text-white"> Figures & Statues..
-                              <span class="d-block"> Das deutschsprachige </span>
+                      <div className="details-shopi">
+                        <div className="row align-items-center">
+                          <div className="col-8">
+                            <h5 className="text-white"> Figures & Statues..
+                              <span className="d-block"> Das deutschsprachige </span>
                             </h5>
                           </div>
-                          <div class="col-4">
-                            <h3 class="text-center"> $30 <span class="d-block"> $50 </span> </h3>
+                          <div className="col-4">
+                            <h3 className="text-center"> $30 <span className="d-block"> $50 </span> </h3>
                           </div>
                         </div>
                       </div>

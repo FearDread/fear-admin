@@ -3,7 +3,6 @@ import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { User } from "../features/user/slice";
 import BannerSub from "../components/Banner/BannerSub";
-import cache from "../features/factory/cache";
 import { store } from "../features/store";
 
 
@@ -25,8 +24,6 @@ const Login = () => {
 
         store.dispatch(User.login(myForm));  
     }
-
-    
 
     useEffect(() => {
         if ( loginSucess ) {
