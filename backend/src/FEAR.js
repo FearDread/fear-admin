@@ -63,7 +63,7 @@ module.exports = FEAR = (( app ) => {
   
   this.app.use((req, res, next) => {
     this.log.info( "FEAR API Query :: " + req.url );
-    this.log.warn( "User :: " + req.user )
+
     res.locals.user = req.user;
     next();
   })

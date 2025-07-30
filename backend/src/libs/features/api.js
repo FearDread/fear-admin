@@ -1,4 +1,4 @@
-
+const logger = require("../logger");
 
 module.exports = class SearchFeatures {
 
@@ -18,7 +18,7 @@ module.exports = class SearchFeatures {
           $options: "i" 
         }
 
-    console.log('full query = ', keywords);
+    logger.warn(keywords);
     this.query = this.query.find( {...keywords} )
       .sort({ created: "desc" })
       .populate();
