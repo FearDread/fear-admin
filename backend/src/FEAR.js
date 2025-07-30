@@ -4,17 +4,15 @@ const path = require("path"),
       cookieParser = require("cookie-parser"),
       fileUpload = require("express-fileupload"),
       //passport = require("passport"),
-      cors = require("cors"),
-      __dirname1 = path.resolve();
+      cors = require("cors");
 
 
 module.exports = FEAR = (( app ) => {
-  const env = require("dotenv").config({ path:"backend/.env"});
+  const env = require("dotenv").config({ path:".env"});
   if ( !env || env.error ) throw env.error;
 
   const logger = require("./libs/logger");
   const morgan = require("./libs/logger/morgan");
-  const errors = require("./libs/handler/error");
   const cloud = require("./libs/cloud");
   const db = require("./libs/db"),
         {parsed: _config} = env;
@@ -26,9 +24,10 @@ module.exports = FEAR = (( app ) => {
   this.env = _config;
   this.cloud = cloud;
   this.logo = this.env.FEAR_LOGO;
-  this.origins = _config.ALLOWED_ORIGINS.split(',').map(item => item.trim());
+  this.origins = (_config.ALLOWED_ORIGINS) ? _config.ALLOWED_ORIGINS.split(',').map(item => item.trim()) : {};
 
   this.app.set("PORT", 4000);
+  this.app.set("DREAD_PORT", 5000);
   this.app.use(morgan);
   this.app.use(express.json({limit: '10mb'}));
   this.app.use(compression());
@@ -68,19 +67,8 @@ module.exports = FEAR = (( app ) => {
     next();
   })
 
-  this.app.use(cors(this.cconfig)); 
-  this.app.options("*", cors(this.cconfig));
-
   // Load Routes
   this.loadRoutes();
-
-  this.app.use(express.static(path.join(__dirname1, "/dashboard/build")));
-  this.app.get("*", (req, res) =>
-    res.sendFile(path.resolve(__dirname1, "dashboard", "build", "index.html"))
-  );
-
-  this.app.use(errors.notFound);
-  this.app.use(errors.development);
 
   return this;
 
