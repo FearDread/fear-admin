@@ -41,7 +41,7 @@ const Layout = (props) => {
   }, [])
   return (
     <>
-      <Header cart={cartData} user={localData.user} />
+      <Header cart={cartData} user={localData && localData.user} />
       <Outlet />
       <Subscribe />
       <Footer />
