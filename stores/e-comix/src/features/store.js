@@ -9,7 +9,7 @@ import cache from "./factory/cache";
 
 
 export const store = configureStore({
-  reducer: {
+   reducer: {
     user: userSlice.reducer,
     product: productSlice.reducer,
     brand: brandSlice.reducer,

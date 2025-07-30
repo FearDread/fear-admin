@@ -8,7 +8,6 @@ import { store } from "../features/store";
 
 const Login = () => {
     const navigate = useNavigate();
-    const dispatch = useDispatch();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const loginSucess = useSelector(state => state.user.success );
