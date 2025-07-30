@@ -1,7 +1,7 @@
-export { default as FeatureFactory } from "./factories/factory.js";
+export { default as FeatureFactory } from "./factory/index.js";
 
-export { default as ThunkFactory } from "./factories/thunk.js";
+export { default as ThunkFactory } from "./factory/thunk.js";
 
-export { default as ApiFactory } from "./factories/service.js";
+export { default as ApiFactory } from "./factory/service.js";
 
-export { default as StateFactory } from "./factories/state.js";
+export { default as StateFactory } from "./factory/state.js";
