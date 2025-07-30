@@ -1,5 +1,5 @@
-import FeatureFactory from "../factory";
-import ThunkFactory from "../factory/thunk";
+import { FeatureFactory, ThunkFactory } from "@feardread/feature-factory";
+//import ThunkFactory from "../factory/thunk";
 
 export const addToWishlist = ThunkFactory.post('user', 'wishlist');
 
