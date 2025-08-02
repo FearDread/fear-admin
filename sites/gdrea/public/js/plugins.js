@@ -3737,7 +3737,7 @@ e(this):c.doc,k=new N(c,e(this)),e(this).data("__nicescroll",k));h.push(k)});ret
 
 
 
-function edrea_tm_headline(){
+function fear_headline(){
 	"use strict";
 	//set animation timing
 	var animationDelay = 2500,

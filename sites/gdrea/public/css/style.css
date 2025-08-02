@@ -84,15 +84,15 @@ h3 { font-size: 30px; }
 h4 { font-size: 24px; }
 h5 { font-size: 20px; }
 h6 { font-size: 16px; }
-.edrea_tm_all_wrap{
+.fear_all_wrap{
 	width: 100%;
 	min-height: 100vh;
 	clear: both;
 	float: left;
 	position: relative;
 }
-.edrea_tm_all_wrap,
-.edrea_tm_all_wrap *{
+.fear_all_wrap,
+.fear_all_wrap *{
 	-webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
 	   -moz-box-sizing: border-box; /* Firefox, other Gecko */
 			box-sizing: border-box; /* Opera/IE 8+ */
@@ -228,7 +228,7 @@ h6 { font-size: 16px; }
 /*	02) EDREA MOBILE MENU
 /*---------------------------------------------------*/
 
-.edrea_tm_topbar{
+.fear_topbar{
 	position: fixed;
 	top: 0px;
 	left: 0px;
@@ -238,7 +238,7 @@ h6 { font-size: 16px; }
 	z-index: 10;
 	display: none;
 }
-.edrea_tm_topbar .topbar_inner{
+.fear_topbar .topbar_inner{
 	width: 100%;
 	height: 100%;
 	clear: both;
@@ -247,33 +247,33 @@ h6 { font-size: 16px; }
 	justify-content: space-between;
 	padding: 0px 20px;
 }
-.edrea_tm_topbar .logo img{
+.fear_topbar .logo img{
 	max-width: 100px;
 	max-height: 40px;
 }
-.edrea_tm_topbar .hamburger{
+.fear_topbar .hamburger{
 	padding: 0px;
 }
-.edrea_tm_topbar .hamburger-inner, 
-.edrea_tm_topbar .hamburger-inner:after, 
-.edrea_tm_topbar .hamburger-inner:before{
+.fear_topbar .hamburger-inner, 
+.fear_topbar .hamburger-inner:after, 
+.fear_topbar .hamburger-inner:before{
 	width: 30px;
 	height: 2px;
 	background-color: #fff;
 }
-.edrea_tm_topbar .hamburger.is-active .hamburger-inner, 
-.edrea_tm_topbar .hamburger.is-active .hamburger-inner:after, 
-.edrea_tm_topbar .hamburger.is-active .hamburger-inner:before{
+.fear_topbar .hamburger.is-active .hamburger-inner, 
+.fear_topbar .hamburger.is-active .hamburger-inner:after, 
+.fear_topbar .hamburger.is-active .hamburger-inner:before{
 	background-color: #fff;
 }
-.edrea_tm_topbar .trigger{
+.fear_topbar .trigger{
 	position: relative;
 	top: 5px;
 }
-.edrea_tm_topbar .hamburger-box{
+.fear_topbar .hamburger-box{
 	width: 30px;
 }
-.edrea_tm_mobile_menu{
+.fear_mobile_menu{
 	position: fixed;
 	top: 50px;
 	right: -200px;
@@ -288,35 +288,35 @@ h6 { font-size: 16px; }
 	     -o-transition: all .3s ease;
 	        transition: all .3s ease;
 }
-.edrea_tm_mobile_menu.opened{
+.fear_mobile_menu.opened{
 	right: 0px;
 }
-.edrea_tm_mobile_menu .inner{
+.fear_mobile_menu .inner{
 	position: relative;
 	width: 100%;
 	height: 100%;
 	text-align: right;
 	padding: 50px 20px 20px 20px;
 }
-.edrea_tm_mobile_menu .menu_list{
+.fear_mobile_menu .menu_list{
 	width: 100%;
 	height: auto;
 	clear: both;
 	float: left;
 }
-.edrea_tm_mobile_menu .menu_list ul{
+.fear_mobile_menu .menu_list ul{
 	margin: 0px;
 	list-style-type: none;
 }
-.edrea_tm_mobile_menu .menu_list ul li{
+.fear_mobile_menu .menu_list ul li{
 	margin: 0px 0px 7px 0px;
 }
-.edrea_tm_mobile_menu .menu_list ul li a{
+.fear_mobile_menu .menu_list ul li a{
 	text-decoration: none;
 	color: #fff;
 	font-family: "Poppins";
 }
-.edrea_tm_mobile_menu .menu_list ul li.active a{
+.fear_mobile_menu .menu_list ul li.active a{
 	color: var(--main-color);
 }
 
@@ -324,13 +324,13 @@ h6 { font-size: 16px; }
 /*	03) EDREA HEADER
 /*---------------------------------------------------*/
 
-.edrea_tm_header{
+.fear_header{
 	position: fixed;
 	width: 900px;
 	transform: translateX(-50%);
 	left: 50%;
 }
-.edrea_tm_header .header_inner{
+.fear_header .header_inner{
 	width: 100%;
 	height: auto;
 	clear: both;
@@ -340,21 +340,21 @@ h6 { font-size: 16px; }
 	align-items: center;
 	justify-content: space-between;
 }
-.edrea_tm_header .logo img{
+.fear_header .logo img{
 	max-width: 100px;
 }
-.edrea_tm_header .menu ul{
+.fear_header .menu ul{
 	margin: 0px;
 	list-style-type: none;
 }
-.edrea_tm_header .menu ul li{
+.fear_header .menu ul li{
 	margin: 0px 30px 0px 0px;
 	display: inline-block;
 }
-.edrea_tm_header .menu ul li:last-child{
+.fear_header .menu ul li:last-child{
 	margin-right: 0px;
 }
-.edrea_tm_header .menu ul li a{
+.fear_header .menu ul li a{
 	text-decoration: none;
 	color: #fff;
 	font-family: "Poppins";
@@ -366,10 +366,10 @@ h6 { font-size: 16px; }
 	     -o-transition: all .3s ease;
 	        transition: all .3s ease;
 }
-.edrea_tm_header .menu ul li.active a{
+.fear_header .menu ul li.active a{
 	color: var(--main-color);
 }
-.edrea_tm_header .menu ul li a:hover{
+.fear_header .menu ul li a:hover{
 	color: var(--main-color);
 }
 
@@ -377,7 +377,7 @@ h6 { font-size: 16px; }
 /*	04) EDREA CONTENT
 /*---------------------------------------------------*/
 
-.edrea_tm_content{
+.fear_content{
 	position: fixed;
 	width: 900px;
 	top: 100px;
@@ -385,7 +385,7 @@ h6 { font-size: 16px; }
 	left: 50%;
 	transform: translateX(-50%);
 }
-.edrea_tm_section{
+.fear_section{
 	position: absolute;
 	top: 0px;
 	bottom: 0px;
@@ -402,25 +402,25 @@ h6 { font-size: 16px; }
 	-webkit-transition: visibility .5s linear, opacity 0s linear;
 	-o-transition: visibility .5s linear, opacity 0s linear;
 }
-.edrea_tm_section.animated {
+.fear_section.animated {
 	opacity: 1;
 	visibility: visible;
 	z-index: 9;
 }
-.edrea_tm_section.active {
+.fear_section.active {
 	opacity: 1;
 	visibility: visible;
 	z-index: 10;
 }
-.edrea_tm_section.hidden {
+.fear_section.hidden {
 	opacity: 0;
 	visibility: hidden;
 	z-index: 9;
 }
-.edrea_tm_section::-webkit-scrollbar{
+.fear_section::-webkit-scrollbar{
   width: 0px;
 }
-.edrea_tm_section .section_inner{
+.fear_section .section_inner{
 	position: relative;
 	width: 100%;
 	min-height: 100%;
@@ -432,31 +432,31 @@ h6 { font-size: 16px; }
 /*	05) EDREA HOME
 /*---------------------------------------------------*/
 
-.edrea_tm_home{
+.fear_home{
 	width: 100%;
 	height: auto;
 	clear: both;
 	float: left;
 	text-align: center;
 }
-.edrea_tm_home .name{
+.fear_home .name{
 	color: #fff;
 	font-size: 72px;
 	font-weight: 700;
 	text-transform: uppercase;
 	margin-bottom: 20px;
 }
-.edrea_tm_home .job{
+.fear_home .job{
 	font-size: 25px;
 	font-weight: 500;
 	color: #A2A2A2;
 	margin-bottom: 40px;
 }
-.edrea_tm_home .job b{
+.fear_home .job b{
 	color: #fff;
 	font-weight: 600;
 }
-.edrea_tm_button{
+.fear_button{
 	width: 100%;
 	height: auto;
 	clear: both;
@@ -464,7 +464,7 @@ h6 { font-size: 16px; }
 	position: relative;
 	z-index: 5;
 }
-.edrea_tm_button a{
+.fear_button a{
 	text-decoration: none;
 	color: #fff;
 	display: inline-block;
@@ -480,35 +480,35 @@ h6 { font-size: 16px; }
 	     -o-transition: all .3s ease;
 	        transition: all .3s ease;
 }
-.edrea_tm_button a:hover{
+.fear_button a:hover{
 	background-color: #fff;
 	color: #000;
 }
-.edrea_tm_button.full a{display: block;}
+.fear_button.full a{display: block;}
 
 /*---------------------------------------------------*/
 /*	06) EDREA ABOUT
 /*---------------------------------------------------*/
 
-.edrea_tm_about{
+.fear_about{
 	width: 100%;
 	height: auto;
 	clear: both;
 	float: left;
 	display: flex;
 }
-.edrea_tm_about .left{
+.fear_about .left{
 	width: 40%;
 }
-.edrea_tm_about .left .image{
+.fear_about .left .image{
 	position: relative;
 }
-.edrea_tm_about .left .image img{
+.fear_about .left .image img{
 	position: relative;
 	min-width: 100%;
 	opacity: 0;
 }
-.edrea_tm_about .left .image .main{
+.fear_about .left .image .main{
 	position: absolute;
 	top: 0px;
 	bottom: 0px;
@@ -519,48 +519,48 @@ h6 { font-size: 16px; }
 	background-position: center;
 	border-radius: 10px;
 }
-.edrea_tm_about .right{
+.fear_about .right{
 	width: 60%;
 	padding-left: 100px;
 }
-.edrea_tm_about .right .short{
+.fear_about .right .short{
 	width: 100%;
 	float: left;
 	margin-bottom: 24px;
 	border-bottom: 1px dashed rgba(255,255,255,.15);
 	padding-bottom: 30px;
 }
-.edrea_tm_about .right .short .name{
+.fear_about .right .short .name{
 	text-transform: uppercase;
 	margin-bottom: 15px;
 	font-size: 40px;
 	font-weight: 700;
 }
-.edrea_tm_about .right .short .job{
+.fear_about .right .short .job{
 	font-size: 18px;
 	font-weight: 400;
 	color: #A2A2A2;
 }
-.edrea_tm_about .right .short .job b{
+.fear_about .right .short .job b{
 	color: #fff;
 	font-weight: 400;
 }
-.edrea_tm_about .right .text{
+.fear_about .right .text{
 	width: 100%;
 	float: left;
 	margin-bottom: 36px;
 }
-.edrea_tm_about .right .text p{
+.fear_about .right .text p{
 	margin-bottom: 15px;
 }
-.edrea_tm_about .right .text p:last-child{
+.fear_about .right .text p:last-child{
 	margin-bottom: 0px;
 }
-.edrea_tm_about .right .text span{
+.fear_about .right .text span{
 	color: #fff;
 }
 .coloring{color: var(--main-color);}
-.edrea_tm_modalbox{
+.fear_modalbox{
 	position: fixed;
 	top: 0px;
 	left: 0px;
@@ -577,11 +577,11 @@ h6 { font-size: 16px; }
 	     -o-transition: all .3s ease;
 	        transition: all .3s ease;
 }
-.edrea_tm_modalbox.opened{
+.fear_modalbox.opened{
 	opacity: 1;
 	visibility: visible;
 }
-.edrea_tm_modalbox .box_inner{
+.fear_modalbox .box_inner{
 	position: absolute;
 	top: 70px;
 	bottom: 70px;
@@ -602,19 +602,19 @@ h6 { font-size: 16px; }
 	     -o-transition: all .3s ease;
 	        transition: all .3s ease;
 }
-.edrea_tm_modalbox.opened .box_inner{
+.fear_modalbox.opened .box_inner{
 	opacity: 1;
 	visibility: visible;
 	margin-top: 0px;
 }
-.edrea_tm_modalbox .close{
+.fear_modalbox .close{
 	position: fixed;
 	left: 100%;
 	top: 0px;
 	margin-left: 30px;
 	z-index: 10;
 }
-.edrea_tm_modalbox .close a{
+.fear_modalbox .close a{
 	display: block;
 	width: 40px;
 	height: 40px;
@@ -630,16 +630,16 @@ h6 { font-size: 16px; }
 	     -o-transition: all .3s ease;
 	        transition: all .3s ease;
 }
-.edrea_tm_modalbox .close a:hover{
+.fear_modalbox .close a:hover{
 	border-radius: 100%;
 }
-.edrea_tm_modalbox .close a i{
+.fear_modalbox .close a i{
 	position: absolute;
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%,-50%);
 }
-.edrea_tm_modalbox .description_wrap{
+.fear_modalbox .description_wrap{
 	position: relative;
 	width: 100%;
 	height: 100%;
@@ -648,7 +648,7 @@ h6 { font-size: 16px; }
 	overflow: hidden;
 	overflow-y: scroll;
 }
-.edrea_tm_modalbox .description_wrap:before{
+.fear_modalbox .description_wrap:before{
 	position: fixed;
 	content: "";
 	top: 0px;
@@ -660,7 +660,7 @@ h6 { font-size: 16px; }
 	border-top-left-radius: 10px;
 	border-top-right-radius: 10px;
 }
-.edrea_tm_modalbox .description_wrap:after{
+.fear_modalbox .description_wrap:after{
 	position: fixed;
 	content: "";
 	bottom: 0px;
@@ -672,24 +672,24 @@ h6 { font-size: 16px; }
 	border-bottom-left-radius: 10px;
 	border-bottom-right-radius: 10px;
 }
-.edrea_tm_modalbox .description_wrap::-webkit-scrollbar{
+.fear_modalbox .description_wrap::-webkit-scrollbar{
   width: 0px;
 }
-.edrea_tm_hidden_content{
+.fear_hidden_content{
 	position: absolute;
 	z-index: -111;
 	visibility: hidden;
 	opacity: 0;
 	display: none;
 }
-.edrea_tm_modalbox .about_popup_details{
+.fear_modalbox .about_popup_details{
 	width: 100%;
 	height: 100%;
 	clear: both;
 	float: left;
 	position: relative;
 }
-.edrea_tm_modalbox .about_popup_details .left{
+.fear_modalbox .about_popup_details .left{
 	position: fixed;
 	width: 40%;
 	left: 0px;
@@ -698,7 +698,7 @@ h6 { font-size: 16px; }
 	border-right:1px dashed rgba(255,255,255,.1);
 	z-index: 5;
 }
-.edrea_tm_modalbox .about_popup_details .left .left_inner{
+.fear_modalbox .about_popup_details .left .left_inner{
 	width: 100%;
 	height: auto;
 	clear: both;
@@ -706,24 +706,24 @@ h6 { font-size: 16px; }
 	position: relative;
 	padding: 50px 40px;
 }
-.edrea_tm_modalbox .about_popup_details .left .author{
+.fear_modalbox .about_popup_details .left .author{
 	width: 100%;
 	float: left;
 	margin-bottom: 35px;
 	text-align: center;
 	overflow: hidden;
 }
-.edrea_tm_modalbox .about_popup_details .left .avatar_image{
+.fear_modalbox .about_popup_details .left .avatar_image{
 	position: relative;
 	margin: 0px auto 25px auto;
 	max-width: 50%;
 }
-.edrea_tm_modalbox .about_popup_details .left .avatar_image img{
+.fear_modalbox .about_popup_details .left .avatar_image img{
 	position: relative;
 	opacity: 0;
 	min-width: 100%;
 }
-.edrea_tm_modalbox .about_popup_details .left .avatar_image .main{
+.fear_modalbox .about_popup_details .left .avatar_image .main{
 	position: absolute;
 	top: 0px;
 	bottom: 0px;
@@ -734,35 +734,35 @@ h6 { font-size: 16px; }
 	background-position: center;
 	border-radius: 100%;
 }
-.edrea_tm_modalbox .about_popup_details .left .short{
+.fear_modalbox .about_popup_details .left .short{
 	width: 100%;
 	float: left;
 }
-.edrea_tm_modalbox .about_popup_details .left .short .name{
+.fear_modalbox .about_popup_details .left .short .name{
 	font-size: 22px;
 	text-transform: uppercase;
 	margin-bottom: 7px;
 }
-.edrea_tm_modalbox .about_popup_details .left .short .job{
+.fear_modalbox .about_popup_details .left .short .job{
 	font-weight: 400;
 	color: #A2A2A2;
 	font-size: 15px;
 	
 }
-.edrea_tm_modalbox .about_popup_details .left .short .job b{
+.fear_modalbox .about_popup_details .left .short .job b{
 	color: #fff;
 	font-weight: 400;
 }
-.edrea_tm_modalbox .about_popup_details .left .list{
+.fear_modalbox .about_popup_details .left .list{
 	width: 100%;
 	float: left;
 	margin-bottom: 35px;
 }
-.edrea_tm_modalbox .about_popup_details .left .list ul{
+.fear_modalbox .about_popup_details .left .list ul{
 	margin: 0px;
 	list-style-type: none;
 }
-.edrea_tm_modalbox .about_popup_details .left .list ul li{
+.fear_modalbox .about_popup_details .left .list ul li{
 	margin: 0px;
 	width: 100%;
 	float: left;
@@ -770,18 +770,18 @@ h6 { font-size: 16px; }
 	padding-bottom: 7px;
 	margin-bottom: 7px;
 }
-.edrea_tm_modalbox .about_popup_details .left .list ul li:last-child{
+.fear_modalbox .about_popup_details .left .list ul li:last-child{
 	border: none;
 	padding: 0px;
 	margin: 0px;
 }
-.edrea_tm_modalbox .about_popup_details .left .list ul li .list_inner{
+.fear_modalbox .about_popup_details .left .list ul li .list_inner{
 	margin: 0px;
 	width: 100%;
 	float: left;
 	position: relative;
 }
-.edrea_tm_modalbox .about_popup_details .left .list ul li i{
+.fear_modalbox .about_popup_details .left .list ul li i{
 	color: var(--main-color);
 	font-size: 16px;
 	position: absolute;
@@ -789,10 +789,10 @@ h6 { font-size: 16px; }
 	top: 50%;
 	transform: translateY(-50%);
 }
-.edrea_tm_modalbox .about_popup_details .left .list ul li span{
+.fear_modalbox .about_popup_details .left .list ul li span{
 	padding-left: 37px;
 }
-.edrea_tm_modalbox .about_popup_details .left .list ul li a{
+.fear_modalbox .about_popup_details .left .list ul li a{
 	text-decoration: none;
 	color: #fff;
 	
@@ -802,10 +802,10 @@ h6 { font-size: 16px; }
 	     -o-transition: all .3s ease;
 	        transition: all .3s ease;
 }
-.edrea_tm_modalbox .about_popup_details .left .list ul li a:hover{
+.fear_modalbox .about_popup_details .left .list ul li a:hover{
 	color: var(--main-color);
 }
-.edrea_tm_modalbox .about_popup_details .right{
+.fear_modalbox .about_popup_details .right{
 	width: 100%;
 	position: absolute;
 	padding-left: 40%;
@@ -813,7 +813,7 @@ h6 { font-size: 16px; }
 	right: 0px;
 	bottom: 0px;
 }
-.edrea_tm_modalbox .about_popup_details .right .right_inner{
+.fear_modalbox .about_popup_details .right .right_inner{
 	width: 100%;
 	height: auto;
 	clear: both;
@@ -821,12 +821,12 @@ h6 { font-size: 16px; }
 	position: relative;
 	padding: 50px 40px;
 }
-.edrea_tm_modalbox .about_popup_details .biography{
+.fear_modalbox .about_popup_details .biography{
 	width: 100%;
 	float: left;
 	margin-bottom: 55px;
 }
-.edrea_tm_modalbox .about_popup_details .about_title{
+.fear_modalbox .about_popup_details .about_title{
 	width: 100%;
 	float: left;
 	position: relative;
@@ -834,19 +834,19 @@ h6 { font-size: 16px; }
 	border-bottom: 1px dashed rgba(255,255,255,.15);
 	padding-bottom: 15px;
 }
-.edrea_tm_modalbox .about_popup_details .about_title h3{
+.fear_modalbox .about_popup_details .about_title h3{
 	font-size: 18px;
 	font-weight: 600;
 }
-.edrea_tm_modalbox .about_popup_details .biography .text{
+.fear_modalbox .about_popup_details .biography .text{
 	width: 100%;
 	float: left;
 	margin-top: 29px;
 }
-.edrea_tm_modalbox .about_popup_details .biography .text span{
+.fear_modalbox .about_popup_details .biography .text span{
 	color: #fff;
 }
-.edrea_tm_modalbox .about_popup_details .prog_skill{
+.fear_modalbox .about_popup_details .prog_skill{
 	width: 100%;
 	float: left;
 	margin-bottom: 62px;
@@ -902,7 +902,7 @@ h6 { font-size: 16px; }
 @-moz-keyframes wow {0%{ width:0%; } 100%{ width:100%; }}
 @keyframes wow {0%{ width:0%; } 100%{ width:100%; }}
 
-.edrea_tm_modalbox .about_popup_details .lang_skill{
+.fear_modalbox .about_popup_details .lang_skill{
 	width: 100%;
 	float: left;
 	margin-bottom: 34px;
@@ -956,33 +956,33 @@ h6 { font-size: 16px; }
 	left: 50%;
 	transform: translate(-50%,-50%);
 }
-.edrea_tm_modalbox .about_popup_details .service{
+.fear_modalbox .about_popup_details .service{
 	width: 100%;
 	float: left;
 	margin-bottom: 55px;
 }
-.edrea_tm_modalbox .about_popup_details .service .list{
+.fear_modalbox .about_popup_details .service .list{
 	width: 100%;
 	height: auto;
 	clear: both;
 	float: left;
 	margin-top: 29px;
 }
-.edrea_tm_modalbox .about_popup_details .service .list ul{
+.fear_modalbox .about_popup_details .service .list ul{
 	margin: 0px;
 	list-style-type: none;
 }
-.edrea_tm_modalbox .about_popup_details .service .list ul li{
+.fear_modalbox .about_popup_details .service .list ul li{
 	margin: 0px 0px 8px 0px;
 	width: 100%;
 	float: left;
 	position: relative;
 	padding-left: 25px;
 }
-.edrea_tm_modalbox .about_popup_details .service .list ul li:last-child{
+.fear_modalbox .about_popup_details .service .list ul li:last-child{
 	margin-bottom: 0px;
 }
-.edrea_tm_modalbox .about_popup_details .service .list ul li i{
+.fear_modalbox .about_popup_details .service .list ul li i{
 	position: absolute;
 	left: -7px;
 	top: 50%;
@@ -991,26 +991,26 @@ h6 { font-size: 16px; }
 	font-size: 16px;
 	margin-top: 1px;
 }
-.edrea_tm_modalbox .about_popup_details .timeline{
+.fear_modalbox .about_popup_details .timeline{
 	width: 100%;
 	float: left;
 	margin-bottom: 55px;
 }
-.edrea_tm_modalbox .about_popup_details .timeline .list{
+.fear_modalbox .about_popup_details .timeline .list{
 	width: 100%;
 	height: auto;
 	clear: both;
 	float: left;
 	margin-top: 45px;
 }
-.edrea_tm_modalbox .about_popup_details .timeline .list ul{
+.fear_modalbox .about_popup_details .timeline .list ul{
 	margin: 0px;
 	list-style-type: none;
 	position: relative;
 	display: inline-block;
 	padding-top: 10px;
 }
-.edrea_tm_modalbox .about_popup_details .timeline .list ul:before{
+.fear_modalbox .about_popup_details .timeline .list ul:before{
 	content: "";
     position: absolute;
     width: 1px;
@@ -1019,7 +1019,7 @@ h6 { font-size: 16px; }
     left: 0;
     background-color: rgba(255,255,255,.15);
 }
-.edrea_tm_modalbox .about_popup_details .timeline .list ul li{
+.fear_modalbox .about_popup_details .timeline .list ul li{
 	margin: 0px;
 	width: 100%;
 	float: left;
@@ -1027,10 +1027,10 @@ h6 { font-size: 16px; }
 	padding-left: 20px;
 	padding-bottom: 45px;
 }
-.edrea_tm_modalbox .about_popup_details .timeline .list ul li:last-child{
+.fear_modalbox .about_popup_details .timeline .list ul li:last-child{
 	padding-bottom: 0px;
 }
-.edrea_tm_modalbox .about_popup_details .timeline .list ul li:before{
+.fear_modalbox .about_popup_details .timeline .list ul li:before{
 	content: "";
     position: absolute;
     height: 12px;
@@ -1041,18 +1041,18 @@ h6 { font-size: 16px; }
     left: -6px;
     top: 12px;
 }
-.edrea_tm_modalbox .about_popup_details .timeline .list ul li .list_inner{
+.fear_modalbox .about_popup_details .timeline .list ul li .list_inner{
 	width: 100%;
 	height: auto;
 	clear: both;
 	display: flex;
 	position: relative;
 }
-.edrea_tm_modalbox .about_popup_details .timeline .list ul li .time{
+.fear_modalbox .about_popup_details .timeline .list ul li .time{
 	width: 50%;
 	padding-right: 15px;
 }
-.edrea_tm_modalbox .about_popup_details .timeline .list ul li .time span{
+.fear_modalbox .about_popup_details .timeline .list ul li .time span{
 	display: inline-block;
 	padding: 5px 25px;
 	background-color: rgba(255,255,255,.05);
@@ -1060,23 +1060,23 @@ h6 { font-size: 16px; }
 	font-size: 14px;
 	white-space: nowrap;
 }
-.edrea_tm_modalbox .about_popup_details .timeline .list ul li .place{
+.fear_modalbox .about_popup_details .timeline .list ul li .place{
 	width: 50%;
 	padding-left: 15px;
 }
-.edrea_tm_modalbox .about_popup_details .timeline .list ul li .place h3{
+.fear_modalbox .about_popup_details .timeline .list ul li .place h3{
 	font-size: 15px;
     margin-bottom: 2px;
 }
-.edrea_tm_modalbox .about_popup_details .timeline .list ul li .place span{
+.fear_modalbox .about_popup_details .timeline .list ul li .place span{
 	font-size: 14px;
 }
-.edrea_tm_modalbox .about_popup_details .partners{
+.fear_modalbox .about_popup_details .partners{
 	width: 100%;
 	float: left;
 	margin-bottom: 62px;
 }
-.edrea_tm_modalbox .about_popup_details .partners .list{
+.fear_modalbox .about_popup_details .partners .list{
 	width: 100%;
     float: left;
     clear: both;
@@ -1084,7 +1084,7 @@ h6 { font-size: 16px; }
     border: 2px solid #333;
 	margin-top: 40px;
 }
-.edrea_tm_modalbox .about_popup_details .partners .list ul{
+.fear_modalbox .about_popup_details .partners .list ul{
 	margin: -2px -10px -2px -2px;
     list-style-type: none;
     padding-top: 2px;
@@ -1092,7 +1092,7 @@ h6 { font-size: 16px; }
     padding-left: 2px;
     min-width: calc(100% + 12px);
 } 
-.edrea_tm_modalbox .about_popup_details .partners .list ul li{
+.fear_modalbox .about_popup_details .partners .list ul li{
 	margin: 0px;
     float: left;
     width: 50%;
@@ -1105,11 +1105,11 @@ h6 { font-size: 16px; }
     margin-left: -2px;
     overflow: hidden;
 } 
-.edrea_tm_modalbox .about_popup_details .partners .list ul li img{
+.fear_modalbox .about_popup_details .partners .list ul li img{
 	max-width: 65%;
     max-height: 65px;
 } 
-.edrea_tm_modalbox .about_popup_details .partners .list ul li .list_inner{
+.fear_modalbox .about_popup_details .partners .list ul li .list_inner{
 	width: 100%;
 	height: auto;
 	clear: both;
@@ -1122,36 +1122,36 @@ h6 { font-size: 16px; }
 	     -o-transition: all .3s ease;
 	        transition: all .3s ease;
 }
-.edrea_tm_modalbox .about_popup_details .partners .list ul li .list_inner:hover{
+.fear_modalbox .about_popup_details .partners .list ul li .list_inner:hover{
 	opacity: 1;
 }
-.edrea_tm_modalbox .about_popup_details .testimonial{
+.fear_modalbox .about_popup_details .testimonial{
 	width: 100%;
 	float: left;
 }
-.edrea_tm_modalbox .about_popup_details .testimonial .list{
+.fear_modalbox .about_popup_details .testimonial .list{
 	width: 100%;
 	height: auto;
 	clear: both;
 	float: left;
 	margin-top: 54px;
 }
-.edrea_tm_modalbox .about_popup_details .testimonial .list ul{
+.fear_modalbox .about_popup_details .testimonial .list ul{
 	margin: 0px;
 	list-style-type: none;
 	cursor: e-resize;
 }
-.edrea_tm_modalbox .about_popup_details .testimonial .list ul li{
+.fear_modalbox .about_popup_details .testimonial .list ul li{
 	margin: 0px;
 }
-.edrea_tm_modalbox .about_popup_details .testimonial .list ul li .list_inner{
+.fear_modalbox .about_popup_details .testimonial .list ul li .list_inner{
 	width: 100%;
 	height: auto;
 	clear: both;
 	float: left;
 	position: relative;
 }
-.edrea_tm_modalbox .about_popup_details .testimonial .list ul li .text{
+.fear_modalbox .about_popup_details .testimonial .list ul li .text{
 	width: 100%;
 	height: auto;
 	clear: both;
@@ -1161,7 +1161,7 @@ h6 { font-size: 16px; }
 	padding: 40px;
 	margin-bottom: 30px;
 }
-.edrea_tm_modalbox .about_popup_details .testimonial .list ul li .text:before{
+.fear_modalbox .about_popup_details .testimonial .list ul li .text:before{
 	position: absolute;
 	content: "";
 	height: 0px;
@@ -1172,7 +1172,7 @@ h6 { font-size: 16px; }
     border-top-color: #333;
     border-width: 18px 18px 0px 0px;
 }
-.edrea_tm_modalbox .about_popup_details .testimonial .list ul li .text:after{
+.fear_modalbox .about_popup_details .testimonial .list ul li .text:after{
 	position: absolute;
 	content: "";
 	top: 100%;
@@ -1184,7 +1184,7 @@ h6 { font-size: 16px; }
     border-width: 14px 13px 0px 0px;
     margin-left: 2px;
 }
-.edrea_tm_modalbox .about_popup_details .testimonial .list ul li .text i{
+.fear_modalbox .about_popup_details .testimonial .list ul li .text i{
 	position: absolute;
 	z-index: 1;
 	font-size: 30px;
@@ -1192,7 +1192,7 @@ h6 { font-size: 16px; }
 	left: 50px;
 	color: var(--main-color);
 }
-.edrea_tm_modalbox .about_popup_details .testimonial .details{
+.fear_modalbox .about_popup_details .testimonial .details{
 	width: 100%;
 	height: auto;
 	clear: both;
@@ -1201,12 +1201,12 @@ h6 { font-size: 16px; }
 	align-items: center;
 	padding-left: 20px;
 }
-.edrea_tm_modalbox .about_popup_details .testimonial .details .image{
+.fear_modalbox .about_popup_details .testimonial .details .image{
 	position: relative;
 	width: 60px;
 	height: 60px;
 }
-.edrea_tm_modalbox .about_popup_details .testimonial .details .image .main{
+.fear_modalbox .about_popup_details .testimonial .details .image .main{
 	position: absolute;
 	top: 0px;
 	bottom: 0px;
@@ -1217,26 +1217,26 @@ h6 { font-size: 16px; }
 	background-position: center;
 	border-radius: 100%;
 }
-.edrea_tm_modalbox .about_popup_details .testimonial .details .info{
+.fear_modalbox .about_popup_details .testimonial .details .info{
 	padding-left: 20px;
 }
-.edrea_tm_modalbox .about_popup_details .testimonial .details .info h3{
+.fear_modalbox .about_popup_details .testimonial .details .info h3{
 	font-size: 15px;
     margin-bottom: 2px;
 }
-.edrea_tm_modalbox .about_popup_details .testimonial .details .info span{
+.fear_modalbox .about_popup_details .testimonial .details .info span{
 	font-size: 14px;
 }
-.edrea_tm_modalbox .about_popup_details .testimonial .owl-carousel .owl-stage-outer{
+.fear_modalbox .about_popup_details .testimonial .owl-carousel .owl-stage-outer{
 	overflow: hidden;
 }
-.edrea_tm_modalbox .about_popup_details .testimonial .owl-carousel .owl-stage-outer{
+.fear_modalbox .about_popup_details .testimonial .owl-carousel .owl-stage-outer{
 	overflow: visible;
 }
-.edrea_tm_modalbox .about_popup_details .testimonial .owl-item.active{
+.fear_modalbox .about_popup_details .testimonial .owl-item.active{
 	opacity: 1;
 }
-.edrea_tm_modalbox .about_popup_details .testimonial .owl-item{
+.fear_modalbox .about_popup_details .testimonial .owl-item{
 	opacity: 0;
 }
 
@@ -1244,7 +1244,7 @@ h6 { font-size: 16px; }
 /*	07) EDREA PORTFOLIO
 /*---------------------------------------------------*/
 
-.edrea_tm_main_title{
+.fear_main_title{
 	width: 100%;
 	height: auto;
 	clear: both;
@@ -1252,23 +1252,23 @@ h6 { font-size: 16px; }
 	border-bottom: 1px dashed rgba(255,255,255,.15);
 	padding-bottom: 20px;
 }
-.edrea_tm_main_title h3{
+.fear_main_title h3{
 	font-weight: 700;
 }
-.edrea_tm_portfolio{
+.fear_portfolio{
 	width: 100%;
 	height: auto;
 	clear: both;
 	float: left;
 }
-.edrea_tm_portfolio .portfolio_list{
+.fear_portfolio .portfolio_list{
 	width: 100%;
 	height: auto;
 	clear: both;
 	float: left;
 	padding-top: 60px;
 }
-.edrea_tm_portfolio .portfolio_list .list_inner{
+.fear_portfolio .portfolio_list .list_inner{
 	width: 100%;
 	height: auto;
 	clear: both;
@@ -1277,16 +1277,16 @@ h6 { font-size: 16px; }
 	border-radius: 10px;
 	overflow: hidden;
 }
-.edrea_tm_portfolio .portfolio_list .image{
+.fear_portfolio .portfolio_list .image{
 	position: relative;
 	overflow: hidden;
 }
-.edrea_tm_portfolio .portfolio_list .image img{
+.fear_portfolio .portfolio_list .image img{
 	position: relative;
 	min-width: 100%;
 	opacity: 0;
 }
-.edrea_tm_portfolio .portfolio_list .image .main{
+.fear_portfolio .portfolio_list .image .main{
 	position: absolute;
 	top: 0px;
 	bottom: 0px;
@@ -1303,7 +1303,7 @@ h6 { font-size: 16px; }
 	     -o-transition: all .3s ease;
 	        transition: all .3s ease;
 }
-.edrea_tm_portfolio .portfolio_list .details{
+.fear_portfolio .portfolio_list .details{
 	position: absolute;
 	z-index: 2;
 	bottom: -100px;
@@ -1319,22 +1319,22 @@ h6 { font-size: 16px; }
 	     -o-transition: all .3s ease;
 	        transition: all .3s ease;
 }
-.edrea_tm_portfolio .portfolio_list .details h3{
+.fear_portfolio .portfolio_list .details h3{
 	color: #000;
 	font-size: 15px;
 	margin-bottom: 2px;
 }
-.edrea_tm_portfolio .portfolio_list .details span{
+.fear_portfolio .portfolio_list .details span{
 	color: #777;
 	font-size: 14px;
 }
-.edrea_tm_portfolio .portfolio_list .list_inner:hover .details{
+.fear_portfolio .portfolio_list .list_inner:hover .details{
 	bottom: 20px;
 }
-.edrea_tm_portfolio .portfolio_list .list_inner:hover .image .main{
+.fear_portfolio .portfolio_list .list_inner:hover .image .main{
 	transform: scale(1.1)translateZ(0);
 }
-.edrea_tm_full_link{
+.fear_full_link{
 	position: absolute;
 	top: 0px;
 	bottom: 0px;
@@ -1342,7 +1342,7 @@ h6 { font-size: 16px; }
 	right: 0px;
 	z-index: 5;
 }
-.edrea_tm_swiper_progress{
+.fear_swiper_progress{
 	width: 100%;
 	display: flex;
 	align-items: center;
@@ -1350,11 +1350,11 @@ h6 { font-size: 16px; }
 	clear: both;
 	margin-top: 32px;
 }
-.edrea_tm_swiper_progress .my_pagination_in{
+.fear_swiper_progress .my_pagination_in{
 	float: left;
 	position: relative;
 }
-.edrea_tm_swiper_progress span{
+.fear_swiper_progress span{
 	display: block;
 	float: left;
 	font-size: 16px;
@@ -1363,12 +1363,12 @@ h6 { font-size: 16px; }
 	height: 22px;
 	line-height: 22px;
 }
-.edrea_tm_swiper_progress .pagination_progress{
+.fear_swiper_progress .pagination_progress{
 	width: 100px;
 	margin: 0 20px;
 	position: relative;
 }
-.edrea_tm_swiper_progress .pagination_progress .all{
+.fear_swiper_progress .pagination_progress .all{
 	height: 1px;
 	width: 100%;
 	position: absolute;
@@ -1378,7 +1378,7 @@ h6 { font-size: 16px; }
 	left: 0;
 	background-color: rgba(255,255,255,.2);
 }
-.edrea_tm_swiper_progress .pagination_progress .all span{
+.fear_swiper_progress .pagination_progress .all span{
 	height: 1px;
 	width: 100%;
 	background-color: rgba(255,255,255,.5);
@@ -1395,22 +1395,22 @@ h6 { font-size: 16px; }
 	     -o-transition: all .3s ease;
 	        transition: all .3s ease;
 }
-.edrea_tm_swiper_progress .my_navigation{
+.fear_swiper_progress .my_navigation{
 	position: relative;
 	left: 6px;
 }
-.edrea_tm_swiper_progress .my_navigation ul{
+.fear_swiper_progress .my_navigation ul{
 	margin: 0px;
 	list-style-type: none;
 }
-.edrea_tm_swiper_progress .my_navigation ul li{
+.fear_swiper_progress .my_navigation ul li{
 	margin: 0px 10px 0px 0px;
 	display: inline-block;
 }
-.edrea_tm_swiper_progress .my_navigation ul li:last-child{
+.fear_swiper_progress .my_navigation ul li:last-child{
 	margin-right: 0px;
 }
-.edrea_tm_swiper_progress .my_navigation ul li a{
+.fear_swiper_progress .my_navigation ul li a{
 	text-decoration: none;
 	color: #fff;
 	font-size: 14px;
@@ -1421,26 +1421,26 @@ h6 { font-size: 16px; }
 	     -o-transition: all .3s ease;
 	        transition: all .3s ease;
 }
-.edrea_tm_swiper_progress .my_navigation ul li a:hover{
+.fear_swiper_progress .my_navigation ul li a:hover{
 	color: var(--main-color);
 }
-.edrea_tm_modalbox .portfolio_popup_details{
+.fear_modalbox .portfolio_popup_details{
 	width: 100%;
 	height: auto;
 	clear: both;
 	float: left;
 	padding: 50px 50px 20px 50px;
 }
-.edrea_tm_modalbox .portfolio_popup_details .top_image{
+.fear_modalbox .portfolio_popup_details .top_image{
 	position: relative;
 	margin-bottom: 25px;
 }
-.edrea_tm_modalbox .portfolio_popup_details .top_image img{
+.fear_modalbox .portfolio_popup_details .top_image img{
 	position: relative;
 	opacity: 0;
 	min-width: 100%;
 }
-.edrea_tm_modalbox .portfolio_popup_details .top_image .main{
+.fear_modalbox .portfolio_popup_details .top_image .main{
 	position: absolute;
 	top: 0px;
 	bottom: 0px;
@@ -1451,16 +1451,16 @@ h6 { font-size: 16px; }
 	background-position: center;
 	border-radius: 10px;
 }
-.edrea_tm_modalbox .portfolio_popup_details .portfolio_main_title{
+.fear_modalbox .portfolio_popup_details .portfolio_main_title{
 	width: 100%;
 	float:left; 
 	margin-bottom: 25px;
 }
-.edrea_tm_modalbox .portfolio_popup_details .portfolio_main_title h3{
+.fear_modalbox .portfolio_popup_details .portfolio_main_title h3{
 	font-size: 25px; 
 	margin-bottom: 3px;
 }
-.edrea_tm_modalbox .portfolio_popup_details .portfolio_main_title a{
+.fear_modalbox .portfolio_popup_details .portfolio_main_title a{
 	color: #A2A2A2;
 	text-decoration: none;
 	
@@ -1470,54 +1470,54 @@ h6 { font-size: 16px; }
 	     -o-transition: all .3s ease;
 	        transition: all .3s ease;
 }
-.edrea_tm_modalbox .portfolio_popup_details .portfolio_main_title a:hover{
+.fear_modalbox .portfolio_popup_details .portfolio_main_title a:hover{
 	color: #fff;
 }
-.edrea_tm_modalbox .portfolio_popup_details .text{
+.fear_modalbox .portfolio_popup_details .text{
 	width: 100%;
 	float: left;
 	margin-bottom: 42px;
 }
-.edrea_tm_modalbox .portfolio_popup_details .text p{
+.fear_modalbox .portfolio_popup_details .text p{
 	margin-bottom: 10px;
 }
-.edrea_tm_modalbox .portfolio_popup_details .text p:last-child{
+.fear_modalbox .portfolio_popup_details .text p:last-child{
 	margin-bottom: 0px;
 }
-.edrea_tm_modalbox .portfolio_popup_details .additional_images{
+.fear_modalbox .portfolio_popup_details .additional_images{
 	width: 100%;
 	height: auto;
 	clear: both;
 	float: left;
 }
-.edrea_tm_modalbox .portfolio_popup_details .additional_images ul{
+.fear_modalbox .portfolio_popup_details .additional_images ul{
 	margin: 0px 0px 0px -30px;
 	list-style-type: none;
 }
-.edrea_tm_modalbox .portfolio_popup_details .additional_images ul li{
+.fear_modalbox .portfolio_popup_details .additional_images ul li{
 	margin: 0px 0px 30px 0px;
 	float: left;
 	width: 50%;
 	padding-left: 30px;
 }
-.edrea_tm_modalbox .portfolio_popup_details .additional_images ul li:nth-child(3n-2){
+.fear_modalbox .portfolio_popup_details .additional_images ul li:nth-child(3n-2){
 	width: 100%;
 }
-.edrea_tm_modalbox .portfolio_popup_details .additional_images ul li .list_inner{
+.fear_modalbox .portfolio_popup_details .additional_images ul li .list_inner{
 	width: 100%;
 	height: auto;
 	clear: both;
 	float: left;
 	position: relative;
 }
-.edrea_tm_modalbox .portfolio_popup_details .additional_images ul li .image{
+.fear_modalbox .portfolio_popup_details .additional_images ul li .image{
 	position: relative;
 }
-.edrea_tm_modalbox .portfolio_popup_details .additional_images ul li .image img{
+.fear_modalbox .portfolio_popup_details .additional_images ul li .image img{
 	opacity: 0;
 	min-width: 100%;
 }
-.edrea_tm_modalbox .portfolio_popup_details .additional_images ul li .image .main{
+.fear_modalbox .portfolio_popup_details .additional_images ul li .image .main{
 	position: absolute;
 	top: 0px;
 	bottom: 0px;
@@ -1533,20 +1533,20 @@ h6 { font-size: 16px; }
 /*	08) EDREA NEWS
 /*---------------------------------------------------*/
 
-.edrea_tm_news{
+.fear_news{
 	width: 100%;
 	height: auto;
 	clear: both;
 	float: left;
 }
-.edrea_tm_news .news_list{
+.fear_news .news_list{
 	width: 100%;
 	height: auto;
 	clear: both;
 	float: left;
 	padding-top: 60px;
 }
-.edrea_tm_news .news_list .list_inner{
+.fear_news .news_list .list_inner{
 	width: 100%;
 	height: auto;
 	clear: both;
@@ -1555,16 +1555,16 @@ h6 { font-size: 16px; }
 	border-radius: 10px;
 	overflow: hidden;
 }
-.edrea_tm_news .news_list .image{
+.fear_news .news_list .image{
 	position: relative;
 	overflow: hidden;
 }
-.edrea_tm_news .news_list .image img{
+.fear_news .news_list .image img{
 	position: relative;
 	opacity: 0;
 	min-width: 100%;
 }
-.edrea_tm_news .news_list .image .main{
+.fear_news .news_list .image .main{
 	position: absolute;
 	top: 0px;
 	bottom: 0px;
@@ -1581,20 +1581,20 @@ h6 { font-size: 16px; }
 	     -o-transition: all .3s ease;
 	        transition: all .3s ease;
 }
-.edrea_tm_news .news_list .image:hover .main{
+.fear_news .news_list .image:hover .main{
 	transform: scale(1.1)translateZ(0);
 }
-.edrea_tm_news .news_list .details{
+.fear_news .news_list .details{
 	width: 100%;
 	float: left;
 	background-color: #222;
 	padding: 30px 20px 27px 20px;
 }
-.edrea_tm_news .news_list h3{
+.fear_news .news_list h3{
 	font-size: 15px;
 	margin-bottom: 4px;
 }
-.edrea_tm_news .news_list h3 a{
+.fear_news .news_list h3 a{
 	text-decoration: none;
 	color: #fff;
 	
@@ -1604,10 +1604,10 @@ h6 { font-size: 16px; }
 	     -o-transition: all .3s ease;
 	        transition: all .3s ease;
 }
-.edrea_tm_news .news_list h3 a:hover{
+.fear_news .news_list h3 a:hover{
 	color: var(--main-color);
 }
-.edrea_tm_news .news_list span a{
+.fear_news .news_list span a{
 	text-decoration: none;
 	color: #A2A2A2;
 	font-size: 14px;
@@ -1618,26 +1618,26 @@ h6 { font-size: 16px; }
 	     -o-transition: all .3s ease;
 	        transition: all .3s ease;
 }
-.edrea_tm_news .news_list span a:hover{
+.fear_news .news_list span a:hover{
 	color: #fff;
 }
-.edrea_tm_modalbox .news_popup_details{
+.fear_modalbox .news_popup_details{
 	width: 100%;
 	height: auto;
 	clear: both;
 	float: left;
 	padding: 50px 50px 42px 50px;
 }
-.edrea_tm_modalbox .news_popup_details .top_image{
+.fear_modalbox .news_popup_details .top_image{
 	position: relative;
 	margin-bottom: 25px;
 }
-.edrea_tm_modalbox .news_popup_details .top_image img{
+.fear_modalbox .news_popup_details .top_image img{
 	position: relative;
 	opacity: 0;
 	min-width: 100%;
 }
-.edrea_tm_modalbox .news_popup_details .top_image .main{
+.fear_modalbox .news_popup_details .top_image .main{
 	position: absolute;
 	top: 0px;
 	bottom: 0px;
@@ -1648,16 +1648,16 @@ h6 { font-size: 16px; }
 	background-position: center;
 	border-radius: 10px;
 }
-.edrea_tm_modalbox .news_popup_details .news_main_title{
+.fear_modalbox .news_popup_details .news_main_title{
 	width: 100%;
 	float:left; 
 	margin-bottom: 25px;
 }
-.edrea_tm_modalbox .news_popup_details .news_main_title h3{
+.fear_modalbox .news_popup_details .news_main_title h3{
 	font-size: 25px; 
 	margin-bottom: 3px;
 }
-.edrea_tm_modalbox .news_popup_details .news_main_title a{
+.fear_modalbox .news_popup_details .news_main_title a{
 	color: #A2A2A2;
 	text-decoration: none;
 	
@@ -1667,17 +1667,17 @@ h6 { font-size: 16px; }
 	     -o-transition: all .3s ease;
 	        transition: all .3s ease;
 }
-.edrea_tm_modalbox .news_popup_details .news_main_title a:hover{
+.fear_modalbox .news_popup_details .news_main_title a:hover{
 	color: #fff;
 }
-.edrea_tm_modalbox .news_popup_details .text{
+.fear_modalbox .news_popup_details .text{
 	width: 100%;
 	float: left;
 }
-.edrea_tm_modalbox .news_popup_details .text p{
+.fear_modalbox .news_popup_details .text p{
 	margin-bottom: 10px;
 }
-.edrea_tm_modalbox .news_popup_details .text p:last-child{
+.fear_modalbox .news_popup_details .text p:last-child{
 	margin-bottom: 0px;
 }
 
@@ -1685,13 +1685,13 @@ h6 { font-size: 16px; }
 /*	09) EDREA CONTACT
 /*---------------------------------------------------*/
 
-.edrea_tm_contact{
+.fear_contact{
 	width: 100%;
 	height: auto;
 	clear: both;
 	float: left;
 }
-.edrea_tm_contact .wrapper{
+.fear_contact .wrapper{
 	width: 100%;
 	height: auto;
 	clear: both;
@@ -1699,23 +1699,23 @@ h6 { font-size: 16px; }
 	display: flex;
 	padding-top: 60px;
 }
-.edrea_tm_contact .wrapper .left{
+.fear_contact .wrapper .left{
 	width: 50%;
 	padding-right: 50px;
 }
-.edrea_tm_contact .wrapper .left ul{
+.fear_contact .wrapper .left ul{
 	margin: 0px;
 	list-style-type: none;
 }
-.edrea_tm_contact .wrapper .left ul li{
+.fear_contact .wrapper .left ul li{
 	margin: 0px 0px 20px 0px;
 	width: 100%;
 	float: left;
 }
-.edrea_tm_contact .wrapper .left ul li:last-child{
+.fear_contact .wrapper .left ul li:last-child{
 	margin-bottom: 0px;
 }
-.edrea_tm_contact .wrapper .left ul li .list_inner{
+.fear_contact .wrapper .left ul li .list_inner{
 	width: 100%;
 	height: auto;
 	clear: both;
@@ -1725,7 +1725,7 @@ h6 { font-size: 16px; }
 	border-radius: 10px;
 	padding: 10px;
 }
-.edrea_tm_contact .wrapper .left ul li i{
+.fear_contact .wrapper .left ul li i{
 	color: var(--main-color);
 	font-size: 16px;
 	position: absolute;
@@ -1734,11 +1734,11 @@ h6 { font-size: 16px; }
 	margin-top: 1px;
 	transform: translateY(-50%);
 }
-.edrea_tm_contact .wrapper .left ul li span{
+.fear_contact .wrapper .left ul li span{
 	display: inline-block;
 	padding-left: 48px;
 }
-.edrea_tm_contact .wrapper .left ul li a{
+.fear_contact .wrapper .left ul li a{
 	text-decoration: none;
 	color: #fff;
 	
@@ -1748,35 +1748,35 @@ h6 { font-size: 16px; }
 	     -o-transition: all .3s ease;
 	        transition: all .3s ease;
 }
-.edrea_tm_contact .wrapper .left ul li a:hover{
+.fear_contact .wrapper .left ul li a:hover{
 	color: var(--main-color);
 }
-.edrea_tm_contact .wrapper .right{
+.fear_contact .wrapper .right{
 	width: 50%;
 	padding-left: 50px;
 }
-.edrea_tm_contact .fields{
+.fear_contact .fields{
 	width: 100%;
 	height: auto;
 	clear: both;
 	float: left;
 }
-.edrea_tm_contact .fields .first{
+.fear_contact .fields .first{
 	width: 100%;
 	float: left;
 	margin-bottom: 20px;
 }
-.edrea_tm_contact .fields .first ul{
+.fear_contact .fields .first ul{
 	margin: 0px 0px 0px -20px;
 	list-style-type: none;
 }
-.edrea_tm_contact .fields .first ul li{
+.fear_contact .fields .first ul li{
 	margin: 0px;
 	width: 50%;
 	padding-left: 20px;
 	float: left;
 }
-.edrea_tm_contact .fields .first ul li .list_inner{
+.fear_contact .fields .first ul li .list_inner{
 	width: 100%;
 	height: auto;
 	clear: both;
@@ -1784,7 +1784,7 @@ h6 { font-size: 16px; }
 	background-color: #222;
 	border-radius: 10px;
 }
-.edrea_tm_contact .fields .first ul li input{
+.fear_contact .fields .first ul li input{
 	width: 100%;
 	height: 45px;
 	background-color: transparent;
@@ -1793,17 +1793,17 @@ h6 { font-size: 16px; }
 	padding: 20px;
 	font-family: "Poppins";
 }
-.edrea_tm_contact .fields .first ul li input:focus{
+.fear_contact .fields .first ul li input:focus{
 	outline: none;
 }
-.edrea_tm_contact .fields .last{
+.fear_contact .fields .last{
 	width: 100%;
 	float: left;
 	background-color: #222;
 	border-radius: 10px;
 	margin-bottom: 20px;
 }
-.edrea_tm_contact .fields .last textarea{
+.fear_contact .fields .last textarea{
 	width: 100%;
 	height: 108px;
 	background-color: transparent;
@@ -1813,22 +1813,22 @@ h6 { font-size: 16px; }
 	padding: 20px;
 	font-family: "Poppins";
 }
-.edrea_tm_contact .fields .last textarea:focus{
+.fear_contact .fields .last textarea:focus{
 	outline: none;
 }
-.edrea_tm_contact .empty_notice{
+.fear_contact .empty_notice{
 	color: #F52225;
 	margin-bottom: 7px;
 	display: none;
 	text-align: left;
 	font-weight: 500;
 }
-.edrea_tm_contact .contact_error{
+.fear_contact .contact_error{
 	color: #F52225;
 	text-align: left;
 	font-weight: 500;
 }
-.edrea_tm_contact .returnmessage{
+.fear_contact .returnmessage{
 	color:#3A00FF;
 	text-align: left;
 	font-weight: 500;
@@ -1882,7 +1882,7 @@ h6 { font-size: 16px; }
 .cursor-outer.cursor-hover{
   opacity: 0;
 }
-.edrea_tm_all_wrap[data-magic-cursor="hide"] .mouse-cursor{
+.fear_all_wrap[data-magic-cursor="hide"] .mouse-cursor{
 	display: none;
 	opacity: 0;
 	visibility: hidden;
@@ -1895,7 +1895,7 @@ h6 { font-size: 16px; }
 /*	08) SHANE SETTINGS
 /*---------------------------------------------------*/
 
-.edrea_tm_settings{
+.fear_settings{
 	position: fixed;
 	z-index: 10;
 	top: 20%;
@@ -1910,29 +1910,29 @@ h6 { font-size: 16px; }
 	     -o-transition: all .3s ease;
 	        transition: all .3s ease;
 }
-.edrea_tm_settings.opened{
+.fear_settings.opened{
 	right: 0px;
 }
-.edrea_tm_settings .wrapper{
+.fear_settings .wrapper{
 	width: 100%;
 	height: auto;
 	clear: both;
 	float: left;
 }
-.edrea_tm_settings .icon{
+.fear_settings .icon{
 	position: absolute;
 	top: 0px;
 	right: 100%;
 	background-color: #222;
 	padding: 12px 12px 4px 12px;
 }
-.edrea_tm_settings .icon .svg{
+.fear_settings .icon .svg{
 	color: #fff;
 	width: 25px;
 	height: 25px;
 	animation: fa-spin 2s infinite linear;
 }
-.edrea_tm_settings .link{
+.fear_settings .link{
 	position: absolute;
 	top: 0px;
 	bottom: 0px;
@@ -1961,7 +1961,7 @@ h6 { font-size: 16px; }
         transform: rotate(359deg);
     }
 }
-.edrea_tm_settings .title{
+.fear_settings .title{
 	color: #fff;
 	font-family: "Poppins";
 	font-weight: 600;
@@ -1969,7 +1969,7 @@ h6 { font-size: 16px; }
 	position: relative;
 	display: inline-block;
 }
-.edrea_tm_settings .title:before{
+.fear_settings .title:before{
 	position: absolute;
 	content: "";
 	width: 100%;
@@ -1978,42 +1978,41 @@ h6 { font-size: 16px; }
 	left: 0px;
 	bottom: 0px;
 }
-.edrea_tm_settings .colors{
+.fear_settings .colors{
 	margin: 0px 0px 22px 0px;
 	list-style-type: none;
 	padding-top: 32px;
 }
-.edrea_tm_settings .colors li{
+.fear_settings .colors li{
 	margin: 0px;
 	display: inline-block;
 }
-.edrea_tm_settings .colors li a{
+.fear_settings .colors li a{
 	text-decoration: none;
 	display: inline-block;
 	width: 30px;
 	height: 30px;
 	border-radius: 100%;
 }
-
-.edrea_tm_settings .cursor{
+.fear_settings .cursor{
 	margin: 0px;
 	list-style-type: none;
 	padding-top: 15px;
 }
-.edrea_tm_settings .cursor li{
+.fear_settings .cursor li{
 	margin: 0px 20px 0px 0px;
 	display: inline-block;
 }
-.edrea_tm_settings .cursor li a{
+.fear_settings .cursor li a{
 	text-decoration: none;
 	color: #fff;
 	opacity: .4;
 	font-weight: 600;
 }
-.edrea_tm_settings .cursor li a.showme{
+.fear_settings .cursor li a.showme{
 	opacity: 1;
 }
-.edrea_tm_settings .cursor li:nth-child(1) a{
+.fear_settings .cursor li:nth-child(1) a{
 	width: 30px;
 	height: 30px;
 	border-radius: 100%;
@@ -2021,7 +2020,7 @@ h6 { font-size: 16px; }
 	position: relative;
 	display: inline-block;
 }
-.edrea_tm_settings .cursor li:nth-child(1) a:before{
+.fear_settings .cursor li:nth-child(1) a:before{
 	position: absolute;
 	content: "";
 	width: 4px;
@@ -2032,12 +2031,12 @@ h6 { font-size: 16px; }
 	left: 50%;
 	top: 50%;
 }
-.edrea_tm_settings .cursor li .svg{
+.fear_settings .cursor li .svg{
 	width: 25px;
 	height: 25px;
 	color: #fff;
 }
-.edrea_tm_settings .cursor li:nth-child(2){
+.fear_settings .cursor li:nth-child(2){
 	position: relative;
 	top: -2px;
 }
@@ -2048,88 +2047,88 @@ h6 { font-size: 16px; }
 
 @media (max-width: 1400px) {
 	body{font-size: 15px;}
-	.edrea_tm_header{width: 800px;}
-	.edrea_tm_header .header_inner{padding-top: 30px;}
-	.edrea_tm_content{top: 80px;bottom: 80px;width: 800px;}
-	.edrea_tm_home .name{font-size: 55px;margin-bottom: 17px;}
-	.edrea_tm_home .job{font-size: 23px;margin-bottom: 32px;}
-	.edrea_tm_about .right .short .name{font-size: 32px;margin-bottom: 12px;}
-	.edrea_tm_about .right .short{margin-bottom: 20px;padding-bottom: 25px;}
-	.edrea_tm_about .right .short{margin-bottom: 30px;}
-	.edrea_tm_about .right{padding-left: 75px;}
-	.edrea_tm_about .right .text{margin-bottom: 30px;}
-	.edrea_tm_modalbox .box_inner{width: 700px;top: 35px;bottom: 35px;}
-	.edrea_tm_modalbox .close{margin-left: 20px;}
-	.edrea_tm_modalbox .close a{width: 35px;height: 35px;}
-	.edrea_tm_modalbox .about_popup_details .left{width: 35%;}
-	.edrea_tm_modalbox .about_popup_details .right{padding-left: 35%;}
-	.edrea_tm_modalbox .about_popup_details .left .left_inner{padding: 30px 25px;}
-	.edrea_tm_modalbox .about_popup_details .left .short .name{font-size: 19px;margin-bottom: 5px;}
-	.edrea_tm_modalbox .about_popup_details .left .list ul li{padding-bottom: 5px;margin-bottom: 5px;}
-	.edrea_tm_button a{padding: 8px 40px;}
-	.edrea_tm_modalbox .about_popup_details .left .list ul li span{padding-left: 32px;font-size: 14px;}
-	.edrea_tm_modalbox .about_popup_details .left .list ul li i{font-size: 15px;}
-	.edrea_tm_contact .wrapper{padding-top: 50px;}
-	.edrea_tm_portfolio .portfolio_list{padding-top: 50px;}
-	.edrea_tm_news .news_list{padding-top: 50px;}
-	.edrea_tm_news .news_list .image{max-height: 150px;}
-	.edrea_tm_news .news_list .details{padding: 25px 20px 22px 20px;}
+	.fear_header{width: 800px;}
+	.fear_header .header_inner{padding-top: 30px;}
+	.fear_content{top: 80px;bottom: 80px;width: 800px;}
+	.fear_home .name{font-size: 55px;margin-bottom: 17px;}
+	.fear_home .job{font-size: 23px;margin-bottom: 32px;}
+	.fear_about .right .short .name{font-size: 32px;margin-bottom: 12px;}
+	.fear_about .right .short{margin-bottom: 20px;padding-bottom: 25px;}
+	.fear_about .right .short{margin-bottom: 30px;}
+	.fear_about .right{padding-left: 75px;}
+	.fear_about .right .text{margin-bottom: 30px;}
+	.fear_modalbox .box_inner{width: 700px;top: 35px;bottom: 35px;}
+	.fear_modalbox .close{margin-left: 20px;}
+	.fear_modalbox .close a{width: 35px;height: 35px;}
+	.fear_modalbox .about_popup_details .left{width: 35%;}
+	.fear_modalbox .about_popup_details .right{padding-left: 35%;}
+	.fear_modalbox .about_popup_details .left .left_inner{padding: 30px 25px;}
+	.fear_modalbox .about_popup_details .left .short .name{font-size: 19px;margin-bottom: 5px;}
+	.fear_modalbox .about_popup_details .left .list ul li{padding-bottom: 5px;margin-bottom: 5px;}
+	.fear_button a{padding: 8px 40px;}
+	.fear_modalbox .about_popup_details .left .list ul li span{padding-left: 32px;font-size: 14px;}
+	.fear_modalbox .about_popup_details .left .list ul li i{font-size: 15px;}
+	.fear_contact .wrapper{padding-top: 50px;}
+	.fear_portfolio .portfolio_list{padding-top: 50px;}
+	.fear_news .news_list{padding-top: 50px;}
+	.fear_news .news_list .image{max-height: 150px;}
+	.fear_news .news_list .details{padding: 25px 20px 22px 20px;}
 }
 @media (max-width: 1040px) {
 	.mouse-cursor{display: none;}
 	#preloader{display: none;}
-	.edrea_tm_header{display: none;}
-	.edrea_tm_topbar{display: block;}
-	.edrea_tm_content{width: 100%;top: 70px;bottom: 70px;}
-	.edrea_tm_home{padding: 0px 20px;}
-	.edrea_tm_about{flex-direction: column;align-items: baseline;padding: 0px 20px;}
-	.edrea_tm_about .left{width: 100%;margin-bottom: 40px;}
-	.edrea_tm_about .right{width: 100%;padding-left: 0px;}
-	.edrea_tm_about .right .short .name{font-size: 30px;margin-bottom: 13px;}
-	.edrea_tm_about .right .short .job{font-size: 16px;}
-	.edrea_tm_about .right .short{margin-bottom: 19px;padding-bottom: 25px;}
-	.edrea_tm_modalbox .box_inner{width: 700px;}
-	.edrea_tm_modalbox .close{left: auto;right: 10px;top: 10px;}
-	.edrea_tm_modalbox .close a{width: 30px;height: 30px;}
-	.edrea_tm_modalbox .close a i{font-size: 13px;}
-	.edrea_tm_modalbox .about_popup_details .left{position: relative;width: 100%;border: none;}
-	.edrea_tm_modalbox .about_popup_details .right{position: relative;padding: 0px;}
-	.edrea_tm_modalbox .about_popup_details .left .avatar_image{max-width: 50%;}
-	.edrea_tm_modalbox .about_popup_details .right .right_inner{padding: 20px 20px 50px 20px;}
-	.edrea_tm_modalbox .about_popup_details .left .left_inner{padding: 50px 20px;}
-	.edrea_tm_main_title h3{font-size: 26px;}
-	.edrea_tm_portfolio{padding: 0px 20px;}
-	.edrea_tm_swiper_progress{margin-top: 25px;}
-	.edrea_tm_news{padding: 0px 20px;}
-	.edrea_tm_news .news_list .image{max-height: 100%;}
-	.edrea_tm_contact{padding: 0px 20px;}
-	.edrea_tm_contact .wrapper{flex-direction: column;align-items: baseline;}
-	.edrea_tm_contact .wrapper .left{padding: 0px;width: 100%;margin-bottom: 20px;}
-	.edrea_tm_contact .wrapper .right{padding: 0px;width: 100%;}
-	.edrea_tm_contact .fields .first ul{margin: 0px;}
-	.edrea_tm_contact .fields .first ul li{width: 100%;padding-left: 0px;}
-	.edrea_tm_contact .fields .first ul li:first-child{margin-bottom: 20px;}
+	.fear_header{display: none;}
+	.fear_topbar{display: block;}
+	.fear_content{width: 100%;top: 70px;bottom: 70px;}
+	.fear_home{padding: 0px 20px;}
+	.fear_about{flex-direction: column;align-items: baseline;padding: 0px 20px;}
+	.fear_about .left{width: 100%;margin-bottom: 40px;}
+	.fear_about .right{width: 100%;padding-left: 0px;}
+	.fear_about .right .short .name{font-size: 30px;margin-bottom: 13px;}
+	.fear_about .right .short .job{font-size: 16px;}
+	.fear_about .right .short{margin-bottom: 19px;padding-bottom: 25px;}
+	.fear_modalbox .box_inner{width: 700px;}
+	.fear_modalbox .close{left: auto;right: 10px;top: 10px;}
+	.fear_modalbox .close a{width: 30px;height: 30px;}
+	.fear_modalbox .close a i{font-size: 13px;}
+	.fear_modalbox .about_popup_details .left{position: relative;width: 100%;border: none;}
+	.fear_modalbox .about_popup_details .right{position: relative;padding: 0px;}
+	.fear_modalbox .about_popup_details .left .avatar_image{max-width: 50%;}
+	.fear_modalbox .about_popup_details .right .right_inner{padding: 20px 20px 50px 20px;}
+	.fear_modalbox .about_popup_details .left .left_inner{padding: 50px 20px;}
+	.fear_main_title h3{font-size: 26px;}
+	.fear_portfolio{padding: 0px 20px;}
+	.fear_swiper_progress{margin-top: 25px;}
+	.fear_news{padding: 0px 20px;}
+	.fear_news .news_list .image{max-height: 100%;}
+	.fear_contact{padding: 0px 20px;}
+	.fear_contact .wrapper{flex-direction: column;align-items: baseline;}
+	.fear_contact .wrapper .left{padding: 0px;width: 100%;margin-bottom: 20px;}
+	.fear_contact .wrapper .right{padding: 0px;width: 100%;}
+	.fear_contact .fields .first ul{margin: 0px;}
+	.fear_contact .fields .first ul li{width: 100%;padding-left: 0px;}
+	.fear_contact .fields .first ul li:first-child{margin-bottom: 20px;}
 }
 @media (max-width: 768px) {
-	.edrea_tm_home .name{font-size: 40px;margin-bottom: 14px;}
-	.edrea_tm_home .job{font-size: 18px;margin-bottom: 30px;}
-	.edrea_tm_modalbox .box_inner{width: 300px;}
-	.edrea_tm_modalbox .close a{width: 20px;height: 20px;}
-	.edrea_tm_modalbox .close a i{font-size: 10px;}
+	.fear_home .name{font-size: 40px;margin-bottom: 14px;}
+	.fear_home .job{font-size: 18px;margin-bottom: 30px;}
+	.fear_modalbox .box_inner{width: 300px;}
+	.fear_modalbox .close a{width: 20px;height: 20px;}
+	.fear_modalbox .close a i{font-size: 10px;}
 	.circular_progress_bar ul li{width: 50%;}
-	.edrea_tm_modalbox .about_popup_details .timeline .list ul li .list_inner{flex-direction: column;}
-	.edrea_tm_modalbox .about_popup_details .timeline .list ul li .place{padding-left: 0px;width: 100%;}
-	.edrea_tm_modalbox .about_popup_details .timeline .list ul li .time{width: auto;padding: 0px;margin-bottom: 20px;}
-	.edrea_tm_modalbox .about_popup_details .testimonial .list ul li .text{padding: 30px;}
-	.edrea_tm_modalbox .about_popup_details .testimonial .list ul li .text:before{left: 30px;}
-	.edrea_tm_modalbox .about_popup_details .testimonial .list ul li .text:after{left: 30px;}
-	.edrea_tm_modalbox .about_popup_details .testimonial .details{padding-left: 0px;}
-	.edrea_tm_modalbox .portfolio_popup_details{padding-left: 20px;padding-right: 20px;}
-	.edrea_tm_modalbox .portfolio_popup_details .portfolio_main_title h3{font-size: 20px;}
-	.edrea_tm_modalbox .portfolio_popup_details .additional_images ul{margin: 0px;}
-	.edrea_tm_modalbox .portfolio_popup_details .additional_images ul li{width: 100% !important;padding-left: 0px;}
-	.edrea_tm_modalbox .portfolio_popup_details .portfolio_main_title{margin-bottom: 18px;}
-	.edrea_tm_modalbox .news_popup_details{padding-left: 20px;padding-right: 20px;}
-	.edrea_tm_modalbox .news_popup_details .news_main_title h3{font-size: 20px;}
-	.edrea_tm_modalbox .news_popup_details .news_main_title{margin-bottom: 18px;}	
+	.fear_modalbox .about_popup_details .timeline .list ul li .list_inner{flex-direction: column;}
+	.fear_modalbox .about_popup_details .timeline .list ul li .place{padding-left: 0px;width: 100%;}
+	.fear_modalbox .about_popup_details .timeline .list ul li .time{width: auto;padding: 0px;margin-bottom: 20px;}
+	.fear_modalbox .about_popup_details .testimonial .list ul li .text{padding: 30px;}
+	.fear_modalbox .about_popup_details .testimonial .list ul li .text:before{left: 30px;}
+	.fear_modalbox .about_popup_details .testimonial .list ul li .text:after{left: 30px;}
+	.fear_modalbox .about_popup_details .testimonial .details{padding-left: 0px;}
+	.fear_modalbox .portfolio_popup_details{padding-left: 20px;padding-right: 20px;}
+	.fear_modalbox .portfolio_popup_details .portfolio_main_title h3{font-size: 20px;}
+	.fear_modalbox .portfolio_popup_details .additional_images ul{margin: 0px;}
+	.fear_modalbox .portfolio_popup_details .additional_images ul li{width: 100% !important;padding-left: 0px;}
+	.fear_modalbox .portfolio_popup_details .portfolio_main_title{margin-bottom: 18px;}
+	.fear_modalbox .news_popup_details{padding-left: 20px;padding-right: 20px;}
+	.fear_modalbox .news_popup_details .news_main_title h3{font-size: 20px;}
+	.fear_modalbox .news_popup_details .news_main_title{margin-bottom: 18px;}	
 }
