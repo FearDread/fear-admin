@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0">
+    <channel>
+        <title>G-Haps Personal Site</title>
+        <link>http://localhost:3001</link>
+        <description>The jack of all things Information Technology</description>
+        <lastBuildDate>Sat, 30 Nov 2024 11:16:53 GMT</lastBuildDate>
+        <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
+        <generator>https://github.com/jpmonette/feed</generator>
+        <language>en_US</language>
+        <image>
+            <title>G-Haps Personal Site</title>
+            <url>http://localhost:3001/favicon.ico</url>
+            <link>http://localhost:3001</link>
+        </image>
+        <copyright>All rights reserved 2024, GFolio</copyright>
+        <item>
+            <title><![CDATA[Branding Agency Replaced Ten Tools With Just One]]></title>
+            <link>http://localhost:3001/blog/marketing/branding-agency-replaced-ten-tools-with-just-one</link>
+            <guid>http://localhost:3001/blog/marketing/branding-agency-replaced-ten-tools-with-just-one</guid>
+            <pubDate>Tue, 05 Sep 2023 00:00:00 GMT</pubDate>
+            <description><![CDATA[Officia qui magna laboris laborum eu sit sit. Et dolor qui esse commodo ad dolor nostrud.]]></description>
+            <author>ghaptonstall@gmail.com (GFolio)</author>
+        </item>
+        <item>
+            <title><![CDATA[How to Leverage the Power of Video for Your Business]]></title>
+            <link>http://localhost:3001/blog/marketing/how-to-leverage-the-power-of-video-for-your-business</link>
+            <guid>http://localhost:3001/blog/marketing/how-to-leverage-the-power-of-video-for-your-business</guid>
+            <pubDate>Mon, 21 Nov 2022 00:00:00 GMT</pubDate>
+            <description><![CDATA[Adipisicing nostrud in qui ex pariatur nisi dolor sunt magna ad sint officia incididunt. Officia cupidatat duis tempor aute ipsum excepteur tempor aute Lorem.]]></description>
+            <author>ghaptonstall@gmail.com (GFolio)</author>
+        </item>
+        <item>
+            <title><![CDATA[How to Stop the Scroll for Social Media Advertising]]></title>
+            <link>http://localhost:3001/blog/marketing/how-to-stop-the-scroll-for-social-media-advertising</link>
+            <guid>http://localhost:3001/blog/marketing/how-to-stop-the-scroll-for-social-media-advertising</guid>
+            <pubDate>Mon, 21 Nov 2022 00:00:00 GMT</pubDate>
+            <description><![CDATA[Adipisicing nostrud in qui ex pariatur nisi dolor sunt magna ad sint officia incididunt. Officia cupidatat duis tempor aute ipsum excepteur tempor aute Lorem.]]></description>
+            <author>ghaptonstall@gmail.com (GFolio)</author>
+        </item>
+        <item>
+            <title><![CDATA[How to Use Data to Drive Decisions and Improve Results]]></title>
+            <link>http://localhost:3001/blog/marketing/how-to-use-data-to-drive-decisions-and-improve-results</link>
+            <guid>http://localhost:3001/blog/marketing/how-to-use-data-to-drive-decisions-and-improve-results</guid>
+            <pubDate>Mon, 21 Nov 2022 00:00:00 GMT</pubDate>
+            <description><![CDATA[Adipisicing nostrud in qui ex pariatur nisi dolor sunt magna ad sint officia incididunt. Officia cupidatat duis tempor aute ipsum excepteur tempor aute Lorem.]]></description>
+            <author>ghaptonstall@gmail.com (GFolio)</author>
+        </item>
+        <item>
+            <title><![CDATA[Marketing Automation - Tips and Tricks for Streamlining Your Campaigns]]></title>
+            <link>http://localhost:3001/blog/marketing/marketing-automation-tips-and-tricks-for-streamlining-your-campaigns</link>
+            <guid>http://localhost:3001/blog/marketing/marketing-automation-tips-and-tricks-for-streamlining-your-campaigns</guid>
+            <pubDate>Tue, 21 Nov 2023 00:00:00 GMT</pubDate>
+            <description><![CDATA[Adipisicing nostrud in qui ex pariatur nisi dolor sunt magna ad sint officia incididunt. Officia cupidatat duis tempor aute ipsum excepteur tempor aute Lorem.]]></description>
+            <author>ghaptonstall@gmail.com (GFolio)</author>
+        </item>
+        <item>
+            <title><![CDATA[Optimizing Your Website for Search Engines to Drive Traffic]]></title>
+            <link>http://localhost:3001/blog/marketing/optimizing-your-website-for-search-engines-to-drive-traffic</link>
+            <guid>http://localhost:3001/blog/marketing/optimizing-your-website-for-search-engines-to-drive-traffic</guid>
+            <pubDate>Mon, 21 Nov 2022 00:00:00 GMT</pubDate>
+            <description><![CDATA[Adipisicing nostrud in qui ex pariatur nisi dolor sunt magna ad sint officia incididunt. Officia cupidatat duis tempor aute ipsum excepteur tempor aute Lorem.]]></description>
+            <author>ghaptonstall@gmail.com (GFolio)</author>
+        </item>
+        <item>
+            <title><![CDATA[5 Easy Ways to Boost Your Team Performance Immediately]]></title>
+            <link>http://localhost:3001/blog/next-js/5-easy-ways-to-boost-your-team-performance-immediately</link>
+            <guid>http://localhost:3001/blog/next-js/5-easy-ways-to-boost-your-team-performance-immediately</guid>
+            <pubDate>Mon, 05 Sep 2022 00:00:00 GMT</pubDate>
+            <description><![CDATA[Reprehenderit deserunt occaecat cupidatat adipisicing consequat incididunt commodo. Non irure nostrud tempor qui incididunt dolore labore anim nulla.]]></description>
+            <author>ghaptonstall@gmail.com (GFolio)</author>
+        </item>
+        <item>
+            <title><![CDATA[Building and Deploying a Next.js E-commerce Website]]></title>
+            <link>http://localhost:3001/blog/next-js/building-and-deploying-a-nextjs-e-commerce-website</link>
+            <guid>http://localhost:3001/blog/next-js/building-and-deploying-a-nextjs-e-commerce-website</guid>
+            <pubDate>Mon, 05 Sep 2022 00:00:00 GMT</pubDate>
+            <description><![CDATA[Reprehenderit deserunt occaecat cupidatat adipisicing consequat incididunt commodo. Non irure nostrud tempor qui incididunt dolore labore anim nulla.]]></description>
+            <author>ghaptonstall@gmail.com (GFolio)</author>
+        </item>
+        <item>
+            <title><![CDATA[Mastering Routing in Next.js - From Basics to Advanced]]></title>
+            <link>http://localhost:3001/blog/next-js/mastering-routing-in-nextjs-from-basics-to-advanced-techniques</link>
+            <guid>http://localhost:3001/blog/next-js/mastering-routing-in-nextjs-from-basics-to-advanced-techniques</guid>
+            <pubDate>Mon, 05 Sep 2022 00:00:00 GMT</pubDate>
+            <description><![CDATA[Reprehenderit deserunt occaecat cupidatat adipisicing consequat incididunt commodo. Non irure nostrud tempor qui incididunt dolore labore anim nulla.]]></description>
+            <author>ghaptonstall@gmail.com (GFolio)</author>
+        </item>
+        <item>
+            <title><![CDATA[Next.js vs Gatsby - A Comprehensive Comparison]]></title>
+            <link>http://localhost:3001/blog/next-js/nextjs-vs-gatsby-a-comprehensive-comparison</link>
+            <guid>http://localhost:3001/blog/next-js/nextjs-vs-gatsby-a-comprehensive-comparison</guid>
+            <pubDate>Mon, 05 Sep 2022 00:00:00 GMT</pubDate>
+            <description><![CDATA[Reprehenderit deserunt occaecat cupidatat adipisicing consequat incididunt commodo. Non irure nostrud tempor qui incididunt dolore labore anim nulla.]]></description>
+            <author>ghaptonstall@gmail.com (GFolio)</author>
+        </item>
+        <item>
+            <title><![CDATA[The Power of Server-side Rendering with Next.js]]></title>
+            <link>http://localhost:3001/blog/next-js/the-power-of-server-side-rendering-with-nextjs</link>
+            <guid>http://localhost:3001/blog/next-js/the-power-of-server-side-rendering-with-nextjs</guid>
+            <pubDate>Mon, 05 Sep 2022 00:00:00 GMT</pubDate>
+            <description><![CDATA[Reprehenderit deserunt occaecat cupidatat adipisicing consequat incididunt commodo. Non irure nostrud tempor qui incididunt dolore labore anim nulla.]]></description>
+            <author>ghaptonstall@gmail.com (GFolio)</author>
+        </item>
+        <item>
+            <title><![CDATA[Use Serverless Functions and Services to Collect Form Data]]></title>
+            <link>http://localhost:3001/blog/next-js/use-serverless-functions-and-services-to-collect-form-data</link>
+            <guid>http://localhost:3001/blog/next-js/use-serverless-functions-and-services-to-collect-form-data</guid>
+            <pubDate>Sat, 01 Oct 2022 00:00:00 GMT</pubDate>
+            <description><![CDATA[Velit dolore id incididunt veniam est commodo cillum excepteur. Consectetur in irure nulla ut magna in duis ut consequat do in commodo dolor in.]]></description>
+            <author>ghaptonstall@gmail.com (GFolio)</author>
+        </item>
+        <item>
+            <title><![CDATA[Using Next.js with GraphQL for Seamless Data Management]]></title>
+            <link>http://localhost:3001/blog/next-js/using-next.js-with-graphql-for-seamless-data-management</link>
+            <guid>http://localhost:3001/blog/next-js/using-next.js-with-graphql-for-seamless-data-management</guid>
+            <pubDate>Mon, 05 Sep 2022 00:00:00 GMT</pubDate>
+            <description><![CDATA[Reprehenderit deserunt occaecat cupidatat adipisicing consequat incididunt commodo. Non irure nostrud tempor qui incididunt dolore labore anim nulla.]]></description>
+            <author>ghaptonstall@gmail.com (GFolio)</author>
+        </item>
+        <item>
+            <title><![CDATA[Yarn Workspaces Organize Your Project’s Codebase Like A Pro]]></title>
+            <link>http://localhost:3001/blog/next-js/yarn-workspaces-organize-your-projects-codebase-like-a-pro</link>
+            <guid>http://localhost:3001/blog/next-js/yarn-workspaces-organize-your-projects-codebase-like-a-pro</guid>
+            <pubDate>Sat, 01 Oct 2022 00:00:00 GMT</pubDate>
+            <description><![CDATA[Velit in occaecat tempor consectetur nulla do deserunt veniam. Laborum enim sit fugiat et labore deserunt ad irure pariatur.]]></description>
+            <author>ghaptonstall@gmail.com (GFolio)</author>
+        </item>
+        <item>
+            <title><![CDATA[Creating Secure Password Flows With Node.js And MySQL]]></title>
+            <link>http://localhost:3001/blog/nodejs/creating-secure-password-flows-with-nodejs-and-mysql</link>
+            <guid>http://localhost:3001/blog/nodejs/creating-secure-password-flows-with-nodejs-and-mysql</guid>
+            <pubDate>Sat, 01 Oct 2022 00:00:00 GMT</pubDate>
+            <description><![CDATA[Ea culpa reprehenderit officia ad sunt ex consequat consequat deserunt fugiat. Sunt pariatur in veniam irure commodo in sint labore non laborum in enim nisi.]]></description>
+            <author>ghaptonstall@gmail.com (GFolio)</author>
+        </item>
+        <item>
+            <title><![CDATA[How To Build A Simple Cryptocurrency Blockchain In Node.js]]></title>
+            <link>http://localhost:3001/blog/nodejs/how-to-build-a-simple-cryptocurrency-blockchain-in-nodejs</link>
+            <guid>http://localhost:3001/blog/nodejs/how-to-build-a-simple-cryptocurrency-blockchain-in-nodejs</guid>
+            <pubDate>Mon, 21 Nov 2022 00:00:00 GMT</pubDate>
+            <description><![CDATA[Dolor ipsum ipsum fugiat sit. Deserunt in non fugiat anim esse reprehenderit. Amet ea officia proident laboris officia ea eu et et adipisicing officia.]]></description>
+            <author>ghaptonstall@gmail.com (GFolio)</author>
+        </item>
+        <item>
+            <title><![CDATA[Modern Node.js Explained For Beginners]]></title>
+            <link>http://localhost:3001/blog/nodejs/modern-nodejs-explained-for-beginners</link>
+            <guid>http://localhost:3001/blog/nodejs/modern-nodejs-explained-for-beginners</guid>
+            <pubDate>Wed, 01 Mar 2023 00:00:00 GMT</pubDate>
+            <description><![CDATA[Incididunt aliqua commodo anim laboris quis nostrud esse irure sit exercitation quis. Ullamco velit veniam in qui est aute quis amet.]]></description>
+            <author>ghaptonstall@gmail.com (GFolio)</author>
+        </item>
+        <item>
+            <title><![CDATA[The Cost Of Node.js In 2022]]></title>
+            <link>http://localhost:3001/blog/nodejs/the-cost-of-nodejs-in-2022</link>
+            <guid>http://localhost:3001/blog/nodejs/the-cost-of-nodejs-in-2022</guid>
+            <pubDate>Sat, 01 Oct 2022 00:00:00 GMT</pubDate>
+            <description><![CDATA[Nisi ullamco non aliquip esse aliqua sunt ut aliqua eiusmod culpa. Magna est laboris eu voluptate.]]></description>
+            <author>ghaptonstall@gmail.com (GFolio)</author>
+        </item>
+        <item>
+            <title><![CDATA[The Future of Real-Time Web Applications with Node.js]]></title>
+            <link>http://localhost:3001/blog/nodejs/the-future-of-real-time-web-applications-with-nodejs</link>
+            <guid>http://localhost:3001/blog/nodejs/the-future-of-real-time-web-applications-with-nodejs</guid>
+            <pubDate>Sat, 01 Oct 2022 00:00:00 GMT</pubDate>
+            <description><![CDATA[Ea culpa reprehenderit officia ad sunt ex consequat consequat deserunt fugiat. Sunt pariatur in veniam irure commodo in sint labore non laborum in enim nisi.]]></description>
+            <author>ghaptonstall@gmail.com (GFolio)</author>
+        </item>
+        <item>
+            <title><![CDATA[Building A Web App With Headless CMS And React]]></title>
+            <link>http://localhost:3001/blog/react/building-a-web-app-with-headless-cms-and-react</link>
+            <guid>http://localhost:3001/blog/react/building-a-web-app-with-headless-cms-and-react</guid>
+            <pubDate>Thu, 22 Dec 2022 00:00:00 GMT</pubDate>
+            <description><![CDATA[Anim ex adipisicing pariatur aliqua. Esse ad laboris amet dolor Ea minim officia labore nisi duis mollit et nulla. Velit ex eiusmod nostrud ipsum pariatur id et cillum.]]></description>
+            <author>ghaptonstall@gmail.com (GFolio)</author>
+        </item>
+        <item>
+            <title><![CDATA[How To Create A Card Matching Game Using React And RxJS]]></title>
+            <link>http://localhost:3001/blog/react/how-to-create-a-card-matching-game-using-react-and-rxjs</link>
+            <guid>http://localhost:3001/blog/react/how-to-create-a-card-matching-game-using-react-and-rxjs</guid>
+            <pubDate>Sat, 01 Oct 2022 00:00:00 GMT</pubDate>
+            <description><![CDATA[Incididunt adipisicing voluptate quis ipsum non culpa fugiat officia. Ea ad nulla laborum cillum ullamco exercitation irure.]]></description>
+            <author>ghaptonstall@gmail.com (GFolio)</author>
+        </item>
+        <item>
+            <title><![CDATA[How To Create A Particle Trail Animation In React]]></title>
+            <link>http://localhost:3001/blog/react/how-to-create-a-particle-trail-animation-in-javascript</link>
+            <guid>http://localhost:3001/blog/react/how-to-create-a-particle-trail-animation-in-javascript</guid>
+            <pubDate>Sat, 01 Oct 2022 00:00:00 GMT</pubDate>
+            <description><![CDATA[Anim Lorem sunt excepteur adipisicing incididunt adipisicing sunt veniam. Eiusmod sint incididunt amet laboris.]]></description>
+            <author>ghaptonstall@gmail.com (GFolio)</author>
+        </item>
+        <item>
+            <title><![CDATA[How To Create Maps With React And Leaflet]]></title>
+            <link>http://localhost:3001/blog/react/how-to-create-maps-with-react-and-leaflet</link>
+            <guid>http://localhost:3001/blog/react/how-to-create-maps-with-react-and-leaflet</guid>
+            <pubDate>Sat, 01 Oct 2022 00:00:00 GMT</pubDate>
+            <description><![CDATA[Dolore commodo laboris bore enim. Magna aliqua deserunt quis cupidatat mollit elit irure labore dolor culpa sit exercitation aute exercitation.]]></description>
+            <author>ghaptonstall@gmail.com (GFolio)</author>
+        </item>
+        <item>
+            <title><![CDATA[How to use React Context effectively]]></title>
+            <link>http://localhost:3001/blog/react/how-to-use-react-context-effectively</link>
+            <guid>http://localhost:3001/blog/react/how-to-use-react-context-effectively</guid>
+            <pubDate>Sat, 01 Oct 2022 00:00:00 GMT</pubDate>
+            <description><![CDATA[Laboris cillum exercitation ea laborum ad magna ea laborum dolor tempor commodo. Amet cupidatat fugiat ea elit velit dolor qui sit nisi.]]></description>
+            <author>ghaptonstall@gmail.com (GFolio)</author>
+        </item>
+        <item>
+            <title><![CDATA[Top JavaScript VSCode Extensions for Development]]></title>
+            <link>http://localhost:3001/blog/react/top-javascript-vscode-extensions-for-development</link>
+            <guid>http://localhost:3001/blog/react/top-javascript-vscode-extensions-for-development</guid>
+            <pubDate>Sat, 01 Oct 2022 00:00:00 GMT</pubDate>
+            <description><![CDATA[Id magna enim excepteur velit aliquip aliquip reprehenderit aute eiusmod ipsum magna dolor. Ut do tempor aute ut et aliquip.]]></description>
+            <author>ghaptonstall@gmail.com (GFolio)</author>
+        </item>
+        <item>
+            <title><![CDATA[Combining the Powers of SEM and BIO for Improving CSS]]></title>
+            <link>http://localhost:3001/blog/tailwindcss/combining-the-powers-of-sem-and-bio-for-improving-css</link>
+            <guid>http://localhost:3001/blog/tailwindcss/combining-the-powers-of-sem-and-bio-for-improving-css</guid>
+            <pubDate>Mon, 21 Nov 2022 00:00:00 GMT</pubDate>
+            <description><![CDATA[Ad consequat dolor voluptate proident et. Commodo veniam consequat excepteur aliqua laboris tempor sunt laborum consequat proident dolor sint.]]></description>
+            <author>ghaptonstall@gmail.com (GFolio)</author>
+        </item>
+        <item>
+            <title><![CDATA[Helping Browsers Optimize With The CSS Contain Property]]></title>
+            <link>http://localhost:3001/blog/tailwindcss/helping-browsers-optimize-with-the-css-contain-property</link>
+            <guid>http://localhost:3001/blog/tailwindcss/helping-browsers-optimize-with-the-css-contain-property</guid>
+            <pubDate>Mon, 21 Nov 2022 00:00:00 GMT</pubDate>
+            <description><![CDATA[Id anim magna occaecat laboris ex enim incididunt do esse do ea in nulla. Consequat deserunt duis ex reprehenderit qui tempor nostrud veniam eiusmod.]]></description>
+            <author>ghaptonstall@gmail.com (GFolio)</author>
+        </item>
+        <item>
+            <title><![CDATA[How To Use Create an Image Gallery with Tailwind CSS]]></title>
+            <link>http://localhost:3001/blog/tailwindcss/how-to-use-the-html-drag-and-drop-api-in-react</link>
+            <guid>http://localhost:3001/blog/tailwindcss/how-to-use-the-html-drag-and-drop-api-in-react</guid>
+            <pubDate>Mon, 03 Oct 2022 00:00:00 GMT</pubDate>
+            <description><![CDATA[Irure dolor pariatur veniam minim ipsum. Excepteur aliqua cupidatat ullamco esse nostrud culpa aute fugiat ad excepteur laborum.]]></description>
+            <author>ghaptonstall@gmail.com (GFolio)</author>
+        </item>
+        <item>
+            <title><![CDATA[How to quickly prototype apps with Tailwind CSS Grid]]></title>
+            <link>http://localhost:3001/blog/tailwindcss/post-title-how-to-quickly-prototype-apps-with-tailwind-css-grid</link>
+            <guid>http://localhost:3001/blog/tailwindcss/post-title-how-to-quickly-prototype-apps-with-tailwind-css-grid</guid>
+            <pubDate>Mon, 21 Nov 2022 00:00:00 GMT</pubDate>
+            <description><![CDATA[Ea labore ad culpa aliqua mollit duis do exercitation anim sunt aute. Nostrud culpa et Lorem non.]]></description>
+            <author>ghaptonstall@gmail.com (GFolio)</author>
+        </item>
+    </channel>
+</rss>
