@@ -10,28 +10,28 @@ jQuery(document).ready(function(){
 	
 	// here all ready functions
 	
-	edrea_tm_picker();
-	edrea_tm_modalbox();
-	edrea_tm_page_transition();
-	edrea_tm_trigger_menu();
-	edrea_tm_about_popup();
-	edrea_tm_portfolio_popup();
-	edrea_tm_news_popup();
-	edrea_tm_cursor();
-	edrea_tm_imgtosvg();
-	edrea_tm_popup();
-	edrea_tm_data_images();
-	edrea_tm_contact_form();
+	fear_picker();
+	fear_modalbox();
+	fear_page_transition();
+	fear_trigger_menu();
+	fear_about_popup();
+	fear_portfolio_popup();
+	fear_news_popup();
+	fear_cursor();
+	fear_imgtosvg();
+	fear_popup();
+	fear_data_images();
+	fear_contact_form();
 	hashtag();
-	edrea_tm_swiper();
-	edrea_tm_headline();
-	edrea_tm_location();
-	edrea_tm_color_switcher();
-	edrea_tm_cursor_switcher();
-	edrea_tm_switcher_opener();
+	fear_swiper();
+	fear_headline();
+	fear_location();
+	fear_color_switcher();
+	fear_cursor_switcher();
+	fear_switcher_opener();
 	
 	jQuery(window).load('body', function(){
-		edrea_tm_my_load();
+		fear_my_load();
 	});
 	
 });
@@ -44,14 +44,14 @@ jQuery(document).ready(function(){
 // ---------------   COLOR PICKER    -------------------
 // -----------------------------------------------------
 
-function edrea_tm_picker(){
+function fear_picker(){
 	
 	"use strict";
 	
-	if(jQuery('.edrea_tm_settings').length){
+	if(jQuery('.fear_settings').length){
 
 		// attach background for all colors
-		var list	= jQuery('.edrea_tm_settings .colors li a');
+		var list	= jQuery('.fear_settings .colors li a');
 		list.each(function(){
 			jQuery(this).css({backgroundColor: jQuery(this).data('color')});
 		});
@@ -71,7 +71,7 @@ function edrea_tm_picker(){
 // -------------  PROGRESS BAR  --------------------
 // -------------------------------------------------
 
-function edrea_tm_my_progress(){
+function fear_my_progress(){
 	
 	"use strict";
 	
@@ -90,7 +90,7 @@ function edrea_tm_my_progress(){
 // ---------------   CIRCULAR PROGRESS   ---------------
 // -----------------------------------------------------
 
-function edrea_tm_circular_progress(){
+function fear_circular_progress(){
 	
 	"use strict";
 	
@@ -122,31 +122,31 @@ function edrea_tm_circular_progress(){
 // --------------------   MODALBOX    ------------------
 // -----------------------------------------------------
 
-function edrea_tm_modalbox(){
+function fear_modalbox(){
 	"use strict";
 	
-	jQuery('.edrea_tm_all_wrap').prepend('<div class="edrea_tm_modalbox"><div class="box_inner"><div class="close"><a href="#"><i class="icon-cancel"></i></a></div><div class="description_wrap"></div></div></div>')
+	jQuery('.fear_all_wrap').prepend('<div class="fear_modalbox"><div class="box_inner"><div class="close"><a href="#"><i class="icon-cancel"></i></a></div><div class="description_wrap"></div></div></div>')
 }
 
 // -----------------------------------------------------
 // -------------   PAGE TRANSITION    ------------------
 // -----------------------------------------------------
 
-function edrea_tm_page_transition(){
+function fear_page_transition(){
 	
 	"use strict";
 	
-	var section 		= jQuery('.edrea_tm_section');
+	var section 		= jQuery('.fear_section');
 	var allLi 			= jQuery('.transition_link li');
 	var button			= jQuery('.transition_link a');
-	var wrapper 		= jQuery('.edrea_tm_all_wrap');
+	var wrapper 		= jQuery('.fear_all_wrap');
 	var enter	 		= wrapper.data('enter');
 	var exit		 	= wrapper.data('exit');
 	
 	button.on('click',function(){
 		var element 	= jQuery(this);
 		var href		= element.attr('href');
-		if(element.parent().hasClass('edrea_tm_button')){
+		if(element.parent().hasClass('fear_button')){
 			jQuery('.menu .transition_link a[href="'+href+'"]').trigger('click');
 			hashtag();
 			return false;
@@ -173,13 +173,13 @@ function edrea_tm_page_transition(){
 // ---------------   TRIGGER MENU    -------------------
 // -----------------------------------------------------
 
-function edrea_tm_trigger_menu(){
+function fear_trigger_menu(){
 	
 	"use strict";
 
-	var hamburger 		= jQuery('.edrea_tm_topbar .trigger .hamburger');
-	var mobileMenu		= jQuery('.edrea_tm_mobile_menu');
-	var mobileMenuList	= jQuery('.edrea_tm_mobile_menu ul li a');
+	var hamburger 		= jQuery('.fear_topbar .trigger .hamburger');
+	var mobileMenu		= jQuery('.fear_mobile_menu');
+	var mobileMenuList	= jQuery('.fear_mobile_menu ul li a');
 
 	hamburger.on('click',function(){
 		var element 	= jQuery(this);
@@ -195,7 +195,7 @@ function edrea_tm_trigger_menu(){
 	});
 	
 	mobileMenuList.on('click',function(){
-		jQuery('.edrea_tm_topbar .trigger .hamburger').removeClass('is-active');
+		jQuery('.fear_topbar .trigger .hamburger').removeClass('is-active');
 		mobileMenu.removeClass('opened');
 		return false;
 	});
@@ -205,23 +205,23 @@ function edrea_tm_trigger_menu(){
 // ---------------  ABOUT POPUP  -------------------
 // -------------------------------------------------
 
-function edrea_tm_about_popup(){
+function fear_about_popup(){
 	
 	"use strict";
 	
-	var button			= jQuery('.edrea_tm_about .edrea_tm_button a');
-	var close			= jQuery('.edrea_tm_modalbox .close');
-	var modalBox		= jQuery('.edrea_tm_modalbox');
-	var hiddenContent	= jQuery('.edrea_tm_hidden_content').html();
+	var button			= jQuery('.fear_about .fear_button a');
+	var close			= jQuery('.fear_modalbox .close');
+	var modalBox		= jQuery('.fear_modalbox');
+	var hiddenContent	= jQuery('.fear_hidden_content').html();
 	
 	button.on('click',function(){
 		modalBox.addClass('opened');
 		modalBox.find('.description_wrap').html(hiddenContent);
-		edrea_tm_data_images();
-		edrea_tm_my_progress();
-		edrea_tm_circular_progress();
-		edrea_tm_mycarousel();
-		edrea_tm_location();
+		fear_data_images();
+		fear_my_progress();
+		fear_circular_progress();
+		fear_mycarousel();
+		fear_location();
 	});
 	close.on('click',function(){
 		modalBox.removeClass('opened');
@@ -233,18 +233,18 @@ function edrea_tm_about_popup(){
 // -----------  PORTFOLIO POPUP  -------------------
 // -------------------------------------------------
 
-function edrea_tm_portfolio_popup(){
+function fear_portfolio_popup(){
 	
 	"use strict";
 	
-	var modalBox		= jQuery('.edrea_tm_modalbox');
-	var button			= jQuery('.edrea_tm_portfolio .portfolio_popup');
+	var modalBox		= jQuery('.fear_modalbox');
+	var button			= jQuery('.fear_portfolio .portfolio_popup');
 	var closePopup		= modalBox.find('.close');
 	
 	button.off().on('click',function(){
 		var element 	= jQuery(this);
 		var parent 		= element.closest('.list_inner');
-		var content 	= parent.find('.edrea_tm_hidden_content').html();
+		var content 	= parent.find('.fear_hidden_content').html();
 		var image		= parent.find('.image .main').data('img-url');
 		var title		= parent.find('.details h3').text();
 		var category	= parent.find('.details span').text();
@@ -252,8 +252,8 @@ function edrea_tm_portfolio_popup(){
 		modalBox.find('.description_wrap').html(content);
 		modalBox.find('.portfolio_popup_details').prepend('<div class="top_image"><img src="img/thumbs/4-2.jpg" alt="" /><div class="main" data-img-url="'+image+'"></div></div>');
 		modalBox.find('.portfolio_popup_details .top_image').after('<div class="portfolio_main_title"><h3>'+title+'</h3><span><a href="#">'+category+'</a></span><div>');
-		edrea_tm_data_images();
-		edrea_tm_popup();
+		fear_data_images();
+		fear_popup();
 		return false;
 	});
 	closePopup.on('click',function(){
@@ -267,18 +267,18 @@ function edrea_tm_portfolio_popup(){
 // ----------------  NEWS POPUP  -------------------
 // -------------------------------------------------
 
-function edrea_tm_news_popup(){
+function fear_news_popup(){
 	
 	"use strict";
 	
-	var modalBox		= jQuery('.edrea_tm_modalbox');
-	var button			= jQuery('.edrea_tm_news .news_popup,.edrea_tm_news .news_list h3 a');
+	var modalBox		= jQuery('.fear_modalbox');
+	var button			= jQuery('.fear_news .news_popup,.fear_news .news_list h3 a');
 	var closePopup		= modalBox.find('.close');
 	
 	button.off().on('click',function(){
 		var element 	= jQuery(this);
 		var parent 		= element.closest('.list_inner');
-		var content 	= parent.find('.edrea_tm_hidden_content').html();
+		var content 	= parent.find('.fear_hidden_content').html();
 		var image		= parent.find('.image .main').data('img-url');
 		var title		= parent.find('.details h3 a').text();
 		var category	= parent.find('.details span').html();
@@ -286,7 +286,7 @@ function edrea_tm_news_popup(){
 		modalBox.find('.description_wrap').html(content);
 		modalBox.find('.news_popup_details').prepend('<div class="top_image"><img src="img/thumbs/4-2.jpg" alt="" /><div class="main" data-img-url="'+image+'"></div></div>');
 		modalBox.find('.news_popup_details .top_image').after('<div class="news_main_title"><h3>'+title+'</h3><span>'+category+'</span><div>');
-		edrea_tm_data_images();
+		fear_data_images();
 		return false;
 	});
 	closePopup.on('click',function(){
@@ -300,7 +300,7 @@ function edrea_tm_news_popup(){
 // ---------------   PRELOADER   -----------------------
 // -----------------------------------------------------
 
-function edrea_tm_preloader(){
+function fear_preloader(){
 	
 	"use strict";
 	
@@ -324,19 +324,19 @@ function edrea_tm_preloader(){
 // -----------------   MY LOAD    ----------------------
 // -----------------------------------------------------
 
-function edrea_tm_my_load(){
+function fear_my_load(){
 	
 	"use strict";
 	
 	var speed	= 500;
-	setTimeout(function(){edrea_tm_preloader();},speed);
+	setTimeout(function(){fear_preloader();},speed);
 }
 
 // -----------------------------------------------------
 // ------------------   CURSOR    ----------------------
 // -----------------------------------------------------
 
-function edrea_tm_cursor(){
+function fear_cursor(){
 	
     "use strict";
 	
@@ -350,9 +350,9 @@ function edrea_tm_cursor(){
             o = !1;
         window.onmousemove = function (s) {
             o || (t.style.transform = "translate(" + s.clientX + "px, " + s.clientY + "px)"), e.style.transform = "translate(" + s.clientX + "px, " + s.clientY + "px)", n = s.clientY, i = s.clientX
-        }, $("body").on("mouseenter", "a,.edrea_tm_topbar .trigger, .cursor-pointer", function () {
+        }, $("body").on("mouseenter", "a,.fear_topbar .trigger, .cursor-pointer", function () {
             e.classList.add("cursor-hover"), t.classList.add("cursor-hover")
-        }), $("body").on("mouseleave", "a,.edrea_tm_topbar .trigger, .cursor-pointer", function () {
+        }), $("body").on("mouseleave", "a,.fear_topbar .trigger, .cursor-pointer", function () {
             $(this).is("a") && $(this).closest(".cursor-pointer").length || (e.classList.remove("cursor-hover"), t.classList.remove("cursor-hover"))
         }), e.style.visibility = "visible", t.style.visibility = "visible"
     }
@@ -363,7 +363,7 @@ function edrea_tm_cursor(){
 // ---------------    IMAGE TO SVG    ------------------
 // -----------------------------------------------------
 
-function edrea_tm_imgtosvg(){
+function fear_imgtosvg(){
 	
 	"use strict";
 	
@@ -397,7 +397,7 @@ function edrea_tm_imgtosvg(){
 // --------------------   POPUP    ---------------------
 // -----------------------------------------------------
 
-function edrea_tm_popup(){
+function fear_popup(){
 	
 	"use strict";
 
@@ -436,7 +436,7 @@ function edrea_tm_popup(){
 // ---------------   DATA IMAGES    --------------------
 // -----------------------------------------------------
 
-function edrea_tm_data_images(){
+function fear_data_images(){
 	
 	"use strict";
 	
@@ -453,7 +453,7 @@ function edrea_tm_data_images(){
 // ----------------    CONTACT FORM    -----------------
 // -----------------------------------------------------
 
-function edrea_tm_contact_form(){
+function fear_contact_form(){
 	
 	"use strict";
 	
@@ -499,11 +499,11 @@ function edrea_tm_contact_form(){
 // --------------    OWL CAROUSEL    -------------------
 // -----------------------------------------------------
 
- function edrea_tm_mycarousel(){
+ function fear_mycarousel(){
 	 
 	 "use strict";
 	 
-	 var carousel			= jQuery('.edrea_tm_modalbox .owl-carousel');
+	 var carousel			= jQuery('.fear_modalbox .owl-carousel');
 	
 	carousel.owlCarousel({
 		loop: true,
@@ -533,14 +533,14 @@ function edrea_tm_contact_form(){
 
 function hashtag(){
 	"use strict";
-	var ccc 			= $('.edrea_tm_header .menu .ccc');
-	var element 		= $('.edrea_tm_header .menu .active a');
-	$('.edrea_tm_header .menu a').on('mouseenter',function(){
+	var ccc 			= $('.fear_header .menu .ccc');
+	var element 		= $('.fear_header .menu .active a');
+	$('.fear_header .menu a').on('mouseenter',function(){
 		var e 			= $(this);
 		currentLink(ccc,e);
 	});
-	$('.edrea_tm_header .menu').on('mouseleave',function(){
-		element 		= $('.edrea_tm_header .menu .active a');
+	$('.fear_header .menu').on('mouseleave',function(){
+		element 		= $('.fear_header .menu .active a');
 		currentLink(ccc,element);
 		element.parent().siblings().removeClass('mleave');
 	});
@@ -553,7 +553,7 @@ function currentLink(ccc,e){
 	if(!e.length){return false;}
 	var left 		= e.offset().left;
 	var width		= e.outerWidth();
-	var menuleft 	= $('.edrea_tm_header .menu').offset().left;
+	var menuleft 	= $('.fear_header .menu').offset().left;
 	e.parent().removeClass('mleave');
 	e.parent().siblings().addClass('mleave');
 	ccc.css({left: (left-menuleft) + 'px',width: width + 'px'});
@@ -564,7 +564,7 @@ function currentLink(ccc,e){
 // ---------------   SWIPER SLIDER    ------------------
 // -----------------------------------------------------
 
-function edrea_tm_swiper(){
+function fear_swiper(){
 	"use strict";
 	
 	$('.swiper-section').each(function(){
@@ -585,14 +585,14 @@ function edrea_tm_swiper(){
 			  },
 			
 			pagination: {
-				el: '.edrea_tm_swiper_progress',
+				el: '.fear_swiper_progress',
 				type: 'custom', // progressbar
 				renderCustom: function (swiper,current,total) {
 
 
 					// progress animation
 					var scale,translateX;
-					var progressDOM	= container.find('.edrea_tm_swiper_progress');
+					var progressDOM	= container.find('.fear_swiper_progress');
 					if(progressDOM.hasClass('fill')){
 						translateX 	= '0px';
 						scale		= parseInt((current/total)*100)/100;
@@ -621,14 +621,14 @@ function edrea_tm_swiper(){
 			}
 		});
 	});
-	edrea_tm_imgtosvg();
+	fear_imgtosvg();
 }
 
 // -------------------------------------------------
 // -----------------  LOCATION  --------------------
 // -------------------------------------------------
 
-function edrea_tm_location(){
+function fear_location(){
 	
 	"use strict";
 	
@@ -647,29 +647,29 @@ function edrea_tm_location(){
 // ---------------------   SWITCHERS    ----------------
 // -----------------------------------------------------
 
-function edrea_tm_color_switcher(){
+function fear_color_switcher(){
 	
 	"use strict";
 	
-	var list	= jQuery('.edrea_tm_settings .colors li a');
+	var list	= jQuery('.fear_settings .colors li a');
 	
 	list.on('click',function(){
 		var element = jQuery(this);
 		var elval	= element.attr('class');
-		element.closest('.edrea_tm_all_wrap').attr('data-color',''+elval+'');
-//		edrea_tm_circular_progress();
+		element.closest('.fear_all_wrap').attr('data-color',''+elval+'');
+//		fear_circular_progress();
 		return false;
 	});	
 }
 
-function edrea_tm_cursor_switcher(){
+function fear_cursor_switcher(){
 	
 	"use strict";
 	
-	var wrapper		= jQuery('.edrea_tm_all_wrap');
-	var button		= jQuery('.edrea_tm_settings .cursor li a');
-	var show		= jQuery('.edrea_tm_settings .cursor li a.show');
-	var hide		= jQuery('.edrea_tm_settings .cursor li a.hide');
+	var wrapper		= jQuery('.fear_all_wrap');
+	var button		= jQuery('.fear_settings .cursor li a');
+	var show		= jQuery('.fear_settings .cursor li a.show');
+	var hide		= jQuery('.fear_settings .cursor li a.hide');
 	
 	button.on('click',function(){
 		var element = jQuery(this);
@@ -688,21 +688,21 @@ function edrea_tm_cursor_switcher(){
 	
 }
 
-function edrea_tm_switcher_opener(){
+function fear_switcher_opener(){
 
 	"use strict";
 
-	var settings	= jQuery('.edrea_tm_settings');
+	var settings	= jQuery('.fear_settings');
 	var button		= settings.find('.link');
 
 	button.on('click',function(){
 		var element = jQuery(this);
 		if(element.hasClass('opened')){
 			element.removeClass('opened');
-			element.closest('.edrea_tm_settings').removeClass('opened');
+			element.closest('.fear_settings').removeClass('opened');
 		}else{
 			element.addClass('opened');
-			element.closest('.edrea_tm_settings').addClass('opened');
+			element.closest('.fear_settings').addClass('opened');
 		}
 		return false;
 	});
