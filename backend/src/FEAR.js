@@ -59,6 +59,25 @@ module.exports = FEAR = (( app ) => {
       this.app.use('/fear/api/' + name, cors(_this.cconfig), module);
     });
   };
+
+  this.shutdown = () => {
+    // 1. Stop accepting new connections
+    this.app.listen().close((err) => {
+      if (err) {
+        this.log.error('Error closing server:', err);
+        process.exit(1); // Exit with error code if server close fails
+      }
+      this.log.warn('HTTP server closed.');
+
+      this.log.warn('Closing database connections...');
+      this.db.close(() => {
+        this.log.warn('Closed DB Connection');
+      })
+
+      this.log.warn('All resources released. Exiting process.');
+      process.exit(0); // Exit with success code
+    });
+  }
   
   this.app.use((req, res, next) => {
     this.log.info( "FEAR API Query :: " + req.url );

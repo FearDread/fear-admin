@@ -15,7 +15,6 @@ require("dotenv").config();
         FEAR.log.warn(FEAR.logo);
 
         FEAR.app.use(express.static(path.join(__dirname1, "/dashboard/build")));
-        
         FEAR.app.get("*", (req, res) =>
             res.sendFile(path.resolve(__dirname1, "dashboard", "build", "index.html"))
         );
@@ -27,17 +26,11 @@ require("dotenv").config();
             });
         });
 
-        process.on("unhandledRejection", (error) => {
-            FEAR.log.error("Promise Error :: ", error);
-            process.exit(1);
-        });
-
-        process.on("uncaughtException", (err) => {
-            FEAR.log.error("Server Error", err);
-            FEAR.app.listen().close(() => {
-                process.exit(1);
-            })
-        });
+        process.on("unhandledRejection", FEAR.shutdown);
+        process.on("uncaughtException", FEAR.shutdown);
+        
+        process.on('SIGTERM', FEAR.shutdown);
+        process.on('SIGINT', FEAR.shutdown);
     }
 
     await start();
