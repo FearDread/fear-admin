@@ -7,7 +7,6 @@ const FEAR = require('../../backend/src/FEAR'),
     async function start() {
 
         FEAR.app.use(express.static(path.join(__dirname, '/public'))); // Assuming your SPA files are in a 'public' folder
-
         FEAR.app.get('/', (req, res) => {
             res.sendFile(path.join(__dirname, 'public', 'index.html')); // Send the main HTML file
         });
@@ -15,18 +14,12 @@ const FEAR = require('../../backend/src/FEAR'),
         FEAR.app.listen(5000, (err) => {
             FEAR.log.warn('Fear Dread Initialized');
         })
-        
-        process.on("unhandledRejection", (error) => {
-            FEAR.log.error("Promise Error :: ", error);
-            process.exit(1);
-        });
 
-        process.on("uncaughtException", (err) => {
-            FEAR.log.error("Server Error", err);
-            FEAR.app.listen().close(() => {
-                process.exit(1);
-            })
-        });
+        process.on("unhandledRejection", FEAR.shutdown);
+        process.on("uncaughtException", FEAR.shutdown);
+        
+        process.on('SIGTERM', FEAR.shutdown);
+        process.on('SIGINT', FEAR.shutdown);
     }
 
     await start();

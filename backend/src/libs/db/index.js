@@ -14,6 +14,12 @@ module.exports = {
         })
         .catch((err) => { console.log("Error connecting to MongoDB", err); })
     },
+    close: (callback) => {
+        mongoose.disconnect((err) => {
+            console.log("You successfully disconnected to MongoDB! Using :: " + env.DB_NAME);
+            callback();
+        })
+    },
     store: () => {},
     wrapId: (id) => {
         return ObjectId(id);
