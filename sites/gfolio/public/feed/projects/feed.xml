@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0">
+    <channel>
+        <title>G-Haps Personal Site</title>
+        <link>http://localhost:3001</link>
+        <description>The jack of all things Information Technology</description>
+        <lastBuildDate>Sat, 30 Nov 2024 11:16:39 GMT</lastBuildDate>
+        <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
+        <generator>https://github.com/jpmonette/feed</generator>
+        <language>en_US</language>
+        <image>
+            <title>G-Haps Personal Site</title>
+            <url>http://localhost:3001/favicon.ico</url>
+            <link>http://localhost:3001</link>
+        </image>
+        <copyright>All rights reserved 2024, GFolio</copyright>
+        <item>
+            <title><![CDATA[Branding Agency Replaced Ten Tools With Just One]]></title>
+            <link>http://localhost:3001/projects/e-komix/e-komix-project-details</link>
+            <guid>http://localhost:3001/projects/e-komix/e-komix-project-details</guid>
+            <pubDate>Tue, 05 Sep 2023 00:00:00 GMT</pubDate>
+            <description><![CDATA[Officia qui magna laboris laborum eu sit sit. Et dolor qui esse commodo ad dolor nostrud.]]></description>
+            <author>ghaptonstall@gmail.com (GFolio)</author>
+        </item>
+        <item>
+            <title><![CDATA[Fear Admin Dashboard - Main CRM utalizing the FEAR API for E-Com]]></title>
+            <link>http://localhost:3001/projects/fear-admin/fear-admin-project-details</link>
+            <guid>http://localhost:3001/projects/fear-admin/fear-admin-project-details</guid>
+            <pubDate>Thu, 05 Sep 2024 00:00:00 GMT</pubDate>
+            <description><![CDATA[Official Content management system for managing online stores.]]></description>
+            <author>ghaptonstall@gmail.com (GFolio)</author>
+        </item>
+        <item>
+            <title><![CDATA[In-Moshyn]]></title>
+            <link>http://localhost:3001/projects/inmoshyn/in-moshyn-project-details</link>
+            <guid>http://localhost:3001/projects/inmoshyn/in-moshyn-project-details</guid>
+            <pubDate>Thu, 05 Sep 2024 00:00:00 GMT</pubDate>
+            <description><![CDATA[Lets put your idea In - Moshyn.]]></description>
+            <author>ghaptonstall@gmail.com (GFolio)</author>
+        </item>
+    </channel>
+</rss>
