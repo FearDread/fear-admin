@@ -1,5 +1,5 @@
 
-const FEAR = (async () => {
+window.FEAR = (async ($, window ) => {
 
     const _this = {
         start: async () => {
@@ -335,9 +335,9 @@ const FEAR = (async () => {
         },
         trigger_menu: () => {
 
-            var hamburger = $('.this.topbar .trigger .hamburger');
-            var mobileMenu = $('.this.mobile_menu');
-            var mobileMenuList = $('.this.mobile_menu ul li a');
+            var hamburger = $('.fear_topbar .trigger .hamburger');
+            var mobileMenu = $('.fear_mobile_menu');
+            var mobileMenuList = $('.fear_mobile_menu ul li a');
 
             hamburger.on('click', function () {
                 var element = $(this);
@@ -353,7 +353,7 @@ const FEAR = (async () => {
             });
 
             mobileMenuList.on('click', function () {
-                $('.this.topbar .trigger .hamburger').removeClass('is-active');
+                $('.fear_topbar .trigger .hamburger').removeClass('is-active');
                 mobileMenu.removeClass('opened');
                 return false;
             });
@@ -370,9 +370,9 @@ const FEAR = (async () => {
                         o = !1;
                     window.onmousemove = function (s) {
                         o || (t.style.transform = "translate(" + s.clientX + "px, " + s.clientY + "px)"), e.style.transform = "translate(" + s.clientX + "px, " + s.clientY + "px)", n = s.clientY, i = s.clientX
-                    }, $("body").on("mouseenter", "a,.this.topbar .trigger, .cursor-pointer", function () {
+                    }, $("body").on("mouseenter", "a,.fear_topbar .trigger, .cursor-pointer", function () {
                         e.classList.add("cursor-hover"), t.classList.add("cursor-hover")
-                    }), $("body").on("mouseleave", "a,.this.topbar .trigger, .cursor-pointer", function () {
+                    }), $("body").on("mouseleave", "a,.fear_topbar .trigger, .cursor-pointer", function () {
                         $(this).is("a") && $(this).closest(".cursor-pointer").length || (e.classList.remove("cursor-hover"), t.classList.remove("cursor-hover"))
                     }), e.style.visibility = "visible", t.style.visibility = "visible"
                 }
@@ -673,7 +673,6 @@ const FEAR = (async () => {
                     return false;
                 });
             }
-
         },
         plugins: {
             headline: () => {
@@ -835,4 +834,4 @@ const FEAR = (async () => {
 
     await _this.start();
 
-})();
+})(jQuery, window);
