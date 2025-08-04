@@ -47,7 +47,9 @@ function App() {
   const products = useSelector(state => state.product.data);
   const check = useSelector(state => state.user.data);
 
+
   useEffect(() => {
+  
     if ( user && (check.token == user.token) ) {
       store.local.set('auth', check);
     }
