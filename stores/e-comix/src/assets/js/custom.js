@@ -5,9 +5,9 @@ $(document).ready(function() {
     $( window ).scroll(function() {
           var height = $(window).scrollTop();
           if(height >= 100) {
-              $('header').addClass('fixed-menu');
+              $('.header').addClass('fixed-menu');
           } else {
-              $('header').removeClass('fixed-menu');
+              $('.header').removeClass('fixed-menu');
           }
       });
   });

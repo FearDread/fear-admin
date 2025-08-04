@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import BannerSub from "../../components/Banner/BannerSub";
 import UserCartItem from "../../components/Cart/UserCartItem";
+import Recommended from "../../components/Carousel/Recommended";
 
 const UserCart = (props) => {
 
@@ -71,7 +72,7 @@ const UserCart = (props) => {
                     <h3><span>Total Cost</span> <span>$40.00</span> </h3>
 
                   </div>
-                  <a href="cart.html#" className="btn comon-button mt-5">
+                  <a href="/checkout" className="btn comon-button mt-5">
                     <span> Checkout </span>
                   </a>
                 </div>
@@ -81,111 +82,7 @@ const UserCart = (props) => {
 
 
                   <div className="like-slide owl-carousel owl-theme mt-4">
-
-                    <a href="cart.html#" className="shop-items super-items overflow-hidden d-inline-block w-100 position-relative" data-aos="fade-left">
-                      <div className="img-box-div position-relative">
-                        <img alt="srt" src="images/0ea7b3bf-image-2.jpg" />
-                        <span className="off">10% off</span>
-                      </div>
-                      <div className="details-shopi">
-                        <div className="row align-items-center">
-                          <div className="col-8">
-                            <h5 className="text-white"> Figures & Statues..
-                              <span className="d-block"> Das deutschsprachige </span>
-                            </h5>
-                          </div>
-                          <div className="col-4">
-                            <h3 className="text-center"> $30 <span className="d-block"> $50 </span> </h3>
-                          </div>
-                        </div>
-
-                      </div>
-
-                    </a>
-
-
-                    <a href="cart.html#" className="shop-items super-items overflow-hidden d-inline-block w-100 position-relative" data-aos="fade-left">
-                      <div className="img-box-div position-relative">
-                        <img alt="srt" src="images/_742c2c04-e263-11e7-814a-000c05070a4c.jpg" />
-                        <span className="off">10% off</span>
-                      </div>
-                      <div className="details-shopi">
-                        <div className="row align-items-center">
-                          <div className="col-8">
-                            <h5 className="text-white"> Figures & Statues..
-                              <span className="d-block"> Das deutschsprachige </span>
-                            </h5>
-                          </div>
-                          <div className="col-4">
-                            <h3 className="text-center"> $30 <span className="d-block"> $50 </span> </h3>
-                          </div>
-                        </div>
-
-                      </div>
-
-                    </a>
-
-                    <a href="cart.html#" className="shop-items super-items overflow-hidden d-inline-block w-100 position-relative" data-aos="fade-left">
-                      <div className="img-box-div position-relative">
-                        <img alt="srt" src="images/b5197a7a-image-22.jpg" />
-                        <span className="off">10% off</span>
-                      </div>
-                      <div className="details-shopi">
-                        <div className="row align-items-center">
-                          <div className="col-8">
-                            <h5 className="text-white"> Figures & Statues..
-                              <span className="d-block"> Das deutschsprachige </span>
-                            </h5>
-                          </div>
-                          <div className="col-4">
-                            <h3 className="text-center"> $30 <span className="d-block"> $50 </span> </h3>
-                          </div>
-                        </div>
-
-                      </div>
-
-                    </a>
-
-
-                    <a href="cart.html#" className="shop-items super-items overflow-hidden d-inline-block w-100 position-relative" data-aos="fade-left">
-                      <div className="img-box-div position-relative">
-                        <img alt="srt" src="images/brett-jordan-CsZQ50xO35I-unsplash.jpg" />
-                        <span className="off">10% off</span>
-                      </div>
-                      <div className="details-shopi">
-                        <div className="row align-items-center">
-                          <div className="col-8">
-                            <h5 className="text-white"> Figures & Statues..
-                              <span className="d-block"> Das deutschsprachige </span>
-                            </h5>
-                          </div>
-                          <div className="col-4">
-                            <h3 className="text-center"> $30 <span className="d-block"> $50 </span> </h3>
-                          </div>
-                        </div>
-
-                      </div>
-
-                    </a>
-
-                    <a href="cart.html#" className="shop-items super-items overflow-hidden d-inline-block w-100 position-relative" data-aos="fade-left">
-                      <div className="img-box-div position-relative">
-                        <img alt="srt" src="images/super5.png" />
-                        <span className="off">10% off</span>
-                      </div>
-                      <div className="details-shopi">
-                        <div className="row align-items-center">
-                          <div className="col-8">
-                            <h5 className="text-white"> Figures & Statues..
-                              <span className="d-block"> Das deutschsprachige </span>
-                            </h5>
-                          </div>
-                          <div className="col-4">
-                            <h3 className="text-center"> $30 <span className="d-block"> $50 </span> </h3>
-                          </div>
-                        </div>
-                      </div>
-                    </a>
+                    <Recommended />
                   </div>
                 </div>
             </div>

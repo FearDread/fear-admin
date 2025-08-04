@@ -121,7 +121,7 @@ window.FEAR = (async ($, window ) => {
 
                             // progress animation
                             var scale, translateX;
-                            var progressDOM = container.find('.this.swiper_progress');
+                            var progressDOM = container.find('.fear_swiper_progress');
                             if (progressDOM.hasClass('fill')) {
                                 translateX = '0px';
                                 scale = parseInt((current / total) * 100) / 100;

@@ -1,5 +1,4 @@
-import FeatureFactory from "../factory";
-import ThunkFactory from "../factory/thunk";
+import { FeatureFactory, ThunkFactory } from "@feardread/feature-factory";
 
 export const login = ThunkFactory.post('user', 'login');
 export const logout = ThunkFactory.post('user', 'logout');

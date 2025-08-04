@@ -1,7 +1,7 @@
 
 
 // cache
-export const cache = (options = {}) => {
+export const CacheFactory = (options = {}) => {
   var engine = options.type == 'local' ? 'localStorage' : 'sessionStorage';
 
   return {
@@ -48,24 +48,10 @@ export const cache = (options = {}) => {
     has: (key) => {
       return window[engine].getItem(key) !== null;
     },
-    /*
-    _extend: () => {
-      const destination = typeof arguments[0] === 'object' ? arguments[0] : {};
-
-      for (var i = 1; i < arguments.length; i++) {
-        if (arguments[i] && typeof arguments[i] === 'object') {
-          for (var property in arguments[i])
-            destination[property] = arguments[i][property];
-        }
-      }
-
-      return destination;
-    }
-      */
   };
 }
 
-cache.local = cache({ type: 'local' });
-cache.session = cache({ type: 'session' });
+CacheFactory.local = CacheFactory({ type: 'local' });
+CacheFactory.session = CacheFactory({ type: 'session' });
 
-export default cache;
+export default CacheFactory;
