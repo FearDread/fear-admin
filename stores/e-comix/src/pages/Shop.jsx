@@ -1,6 +1,6 @@
 import React, {useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, Link } from "react-router-dom";
 import BannerSub from "../components/Banner/BannerSub"
 import DetailedItem from "../components/Product/DetailedItem";
 import SuperItem from "../components/Product/SuperItem";
@@ -98,42 +98,42 @@ const Shop = (props) => {
                         <div className="accordion-body">
                           <div className="form-check corm-check">
                             <input className="form-check-input" type="checkbox" value="" id="flexCheckDefault" />
-                              <label className="form-check-label" for="flexCheckDefault">
+                              <label className="form-check-label" htmlFor="flexCheckDefault">
                                 Action & Adventure
                               </label>
                           </div>
 
                           <div className="form-check corm-check">
                             <input className="form-check-input" type="checkbox" value="" id="flexCheckDefault2" />
-                              <label className="form-check-label" for="flexCheckDefault2">
+                              <label className="form-check-label" htmlFor="flexCheckDefault2">
                                 Art of Comics
                               </label>
                           </div>
 
                           <div className="form-check corm-check">
                             <input className="form-check-input" type="checkbox" value="" id="flexCheckDefault3" />
-                              <label className="form-check-label" for="flexCheckDefault3">
+                              <label className="form-check-label" htmlFor="flexCheckDefault3">
                                 Biographies & History
                               </label>
                           </div>
 
                           <div className="form-check corm-check">
                             <input className="form-check-input" type="checkbox" value="" id="flexCheckDefault4" />
-                              <label className="form-check-label" for="flexCheckDefault4">
+                              <label className="form-check-label" htmlFor="flexCheckDefault4">
                                 Fantasy Novels
                               </label>
                           </div>
 
                           <div className="form-check corm-check">
                             <input className="form-check-input" type="checkbox" value="" id="flexCheckDefault5" />
-                              <label className="form-check-label" for="flexCheckDefault5">
+                              <label className="form-check-label" htmlFor="flexCheckDefault5">
                                 Science Fiction
                               </label>
                           </div>
 
                           <div className="form-check corm-check">
                             <input className="form-check-input" type="checkbox" value="" id="flexCheckDefault6" />
-                              <label className="form-check-label" for="flexCheckDefault6">
+                              <label className="form-check-label" htmlFor="flexCheckDefault6">
                                 Superhero Comics
                               </label>
                           </div>
@@ -180,7 +180,7 @@ const Shop = (props) => {
                         <div className="accordion-body">
                           <div className="form-check">
                             <input className="form-check-input" type="checkbox" value="" id="flexCheckDefault11" />
-                              <label className="form-check-label rt-icon" for="flexCheckDefault11">
+                              <label className="form-check-label rt-icon" htmlFor="flexCheckDefault11">
                                 <i className="fas fa-star"></i> <i className="fas fa-star"></i> <i className="fas fa-star"></i>
                                 <i className="fas fa-star"></i> <i className="fas fa-star"></i>
                               </label>
@@ -188,7 +188,7 @@ const Shop = (props) => {
 
                           <div className="form-check">
                             <input className="form-check-input" type="checkbox" value="" id="flexCheckDefault12" />
-                              <label className="form-check-label rt-icon" for="flexCheckDefault8">
+                              <label className="form-check-label rt-icon" htmlFor="flexCheckDefault8">
                                 <i className="fas fa-star"></i> <i className="fas fa-star"></i> <i className="fas fa-star"></i>
                                 <i className="fas fa-star"></i> <i className="far fa-star"></i>
                               </label>
@@ -196,7 +196,7 @@ const Shop = (props) => {
 
                           <div className="form-check">
                             <input className="form-check-input" type="checkbox" value="" id="flexCheckDefault13" />
-                              <label className="form-check-label rt-icon" for="flexCheckDefault13">
+                              <label className="form-check-label rt-icon" htmlFor="flexCheckDefault13">
                                 <i className="fas fa-star"></i> <i className="fas fa-star"></i> <i className="fas fa-star"></i>
                                 <i className="far fa-star"></i> <i className="far fa-star"></i>
                               </label>
@@ -204,7 +204,7 @@ const Shop = (props) => {
 
                           <div className="form-check">
                             <input className="form-check-input" type="checkbox" value="" id="flexCheckDefault14" />
-                              <label className="form-check-label rt-icon" for="flexCheckDefault14">
+                              <label className="form-check-label rt-icon" htmlFor="flexCheckDefault14">
                                 <i className="fas fa-star"></i> <i className="fas fa-star"></i> <i className="far fa-star"></i>
                                 <i className="far fa-star"></i> <i className="far fa-star"></i>
                               </label>
@@ -219,7 +219,7 @@ const Shop = (props) => {
                       <h2 className="accordion-header">
                         <button className="accordion-button " type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapsesix">
 
-                          Popular Tag
+                        Top Brands
                         </button>
                       </h2>
                       <div id="panelsStayOpen-collapsesix" className="accordion-collapse collapse show">
@@ -227,25 +227,21 @@ const Shop = (props) => {
 
                           <ul className="d-flex pol-btn align-items-center">
                             <li>
-                              <a href="shop.html#" className="btn"> Batman </a>
-                              <a href="shop.html#" className="btn"> Binzz </a>
-                              <a href="shop.html#" className="btn"> DargonbalZ </a>
-                              <a href="shop.html#" className="btn"> Super Mario </a>
-
-                              <a href="shop.html#" className="btn"> Haulk </a>
+                              <Link to="/shop?brand=topps" className="btn"> Topps </Link>
+                               <Link to="/shop?brand=upper&decks" className="btn"> Upper Decks </Link>
+                                <Link to="/shop?brand=topps" className="btn"> Topps </Link>
+                                 <Link to="/shop?brand=topps" className="btn"> Topps </Link>
+                                  <Link to="/shop?brand=topps" className="btn"> Topps </Link>
+                                   <Link to="/shop?brand=topps" className="btn"> Topps </Link>
                             </li>
                           </ul>
 
                         </div>
                       </div>
                     </div>
-
-
-
                     <input type="submit" className="btn submit-btn" value="Filter" />
                   </div>
                 </div>
-
                 <div className="col-lg-9 mt-5 mt-lg-0">
                   <div className="d-flex justify-content-between align-items-center righty">
                     <h6 className="ashow">Showing<b> 1–12 </b>  of <b>41</b>Results </h6>
@@ -266,9 +262,9 @@ const Shop = (props) => {
                   <div id="products" className="mt-4 righty">
                     <div className="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-lg-5">
                       
-                      {productState && productState.slice(0, 9).map((item) => {
+                      {productState && productState.slice(0, 9).map((item, idx) => {
                         return (
-                          <DetailedItem {...item} />
+                          <DetailedItem {...item} key={idx} />
                         )
                       })}
                     

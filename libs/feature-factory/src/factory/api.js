@@ -1,6 +1,6 @@
 import axios from "axios";
 import qs from "qs";
-import cache from "./cache";
+import CacheFactory from "./cache";
 
 
 const API_BASE_URL = (process.env.NODE_ENV === "production")
@@ -26,7 +26,7 @@ const instance = axios.create({
 
 instance.interceptors.request.use(
     (config) => {
-        const isAuth = cache.local.get("auth") ? cache.local.get("auth") : null;
+        const isAuth = CacheFactory.local.get("auth") ? CacheFactory.local.get("auth") : null;
         let token = isAuth !== null ? isAuth.token : "";
     
         config.headers = {
@@ -55,7 +55,7 @@ instance.interceptors.response.use(
         console.log("API ERROR :: ", error);
         if (error.response) {
             if (error.response.status === 401) {
-                cache.local.remove("auth");
+                CacheFactory.local.remove("auth");
                 return Promise.reject(error.response);
             }
             if (error.response.status === 500) {

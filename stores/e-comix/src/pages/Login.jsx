@@ -10,6 +10,7 @@ const Login = () => {
     const navigate = useNavigate();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [showModal, setShowModal] = useState(false);
     const loginSucess = useSelector(state => state.user.success );
     const userState = useSelector(state => state.user.data );
     //const { success, user } = useSelector((state) => state.user.user)
@@ -25,11 +26,12 @@ const Login = () => {
     }
 
     useEffect(() => {
-        if ( loginSucess ) {
+        if ( userState.token ) {
             store.local.set("auth", userState);
-            navigate('/cart');
+            setShowModal(false)
+            navigate("/profile")
         }
-    }, []);
+    }, [userState]);
 
     return (
         <>
@@ -38,7 +40,7 @@ const Login = () => {
                 <section class="cart-page-div pt-5 d-inline-block w-100">
                     <div class="container">
                         <div class="row gx-lg-5">
-                            <form action="index.html" method="get">
+                            <form>
                                 <div id="login-td-div" className="com-div-md">
                                     <h5 className="text-center mb-3"> Login </h5>
                                     <button type="button" className="close" data-bs-dismiss="modal">
@@ -56,7 +58,6 @@ const Login = () => {
                                                     type="email"
                                                     placeholder="Email address *"
                                                     required />
-
                                             </div>
                                             <div className="phone-div">
                                                 <input
@@ -66,7 +67,6 @@ const Login = () => {
                                                     type="password"
                                                     placeholder="Password *"
                                                     required />
-
                                             </div>
                                         </div>
                                         <button
