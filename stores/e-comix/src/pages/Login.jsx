@@ -28,8 +28,8 @@ const Login = () => {
     useEffect(() => {
         if ( userState.token ) {
             store.local.set("auth", userState);
-            setShowModal(false)
-            navigate("/profile")
+            setShowModal(false);
+            navigate("/profile");
         }
     }, [userState]);
 

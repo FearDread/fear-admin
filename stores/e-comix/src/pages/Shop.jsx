@@ -1,13 +1,15 @@
 import React, {useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams, Link } from "react-router-dom";
+import { toast } from "react-toastify";
 import BannerSub from "../components/Banner/BannerSub"
 import DetailedItem from "../components/Product/DetailedItem";
-import SuperItem from "../components/Product/SuperItem";
 import Loader from "../components/Loader/Loader";
-import { Product } from "../features/products/slice";
+import CategoryCheck from "../components/Common/CategoryCheck";
 import { store } from "../features/store";
+import { Product } from "../features/products/slice";
 import { Category } from "../features/categories/slice";
+import { Brand } from "../features/brands/slice";
 
 const Shop = (props) => {
   const dispatch = useDispatch();
@@ -28,7 +30,9 @@ const Shop = (props) => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const { data, loading } = useSelector( state => state.product );
-  const productState = useSelector( state => state.product.data);
+  const productState = useSelector( state => state.product.data );
+  const brandState = useSelector( state => state.brand.data );
+  const categoryState = useSelector( state => state.category.data );
   //const loading = true;
 
   const getProducts = () => {
@@ -38,15 +42,24 @@ const Shop = (props) => {
       params[prop] = value;
     })
 
-
     if (params && params !== undefined) {
       store.dispatch(Product.search(params));
-    } 
+    }
   };
+  const getCategories = () => {
+    store.dispatch(Category.fetch());
+  }
+  const getBrands = () => {
+    store.dispatch(Brand.fetch());
+  }
+  const filterHandler = (e) => {
+    toast('filter here');
+  }
 
   useEffect(() => {
     getProducts();
-    //store.dispatch(Product.fetch());
+    getCategories();
+    getBrands();
   }, [])
 
   useEffect(() => {
@@ -96,51 +109,11 @@ const Shop = (props) => {
                       </h2>
                       <div id="panelsStayOpen-collapseOne" className="accordion-collapse collapse show">
                         <div className="accordion-body">
-                          <div className="form-check corm-check">
-                            <input className="form-check-input" type="checkbox" value="" id="flexCheckDefault" />
-                              <label className="form-check-label" htmlFor="flexCheckDefault">
-                                Action & Adventure
-                              </label>
-                          </div>
-
-                          <div className="form-check corm-check">
-                            <input className="form-check-input" type="checkbox" value="" id="flexCheckDefault2" />
-                              <label className="form-check-label" htmlFor="flexCheckDefault2">
-                                Art of Comics
-                              </label>
-                          </div>
-
-                          <div className="form-check corm-check">
-                            <input className="form-check-input" type="checkbox" value="" id="flexCheckDefault3" />
-                              <label className="form-check-label" htmlFor="flexCheckDefault3">
-                                Biographies & History
-                              </label>
-                          </div>
-
-                          <div className="form-check corm-check">
-                            <input className="form-check-input" type="checkbox" value="" id="flexCheckDefault4" />
-                              <label className="form-check-label" htmlFor="flexCheckDefault4">
-                                Fantasy Novels
-                              </label>
-                          </div>
-
-                          <div className="form-check corm-check">
-                            <input className="form-check-input" type="checkbox" value="" id="flexCheckDefault5" />
-                              <label className="form-check-label" htmlFor="flexCheckDefault5">
-                                Science Fiction
-                              </label>
-                          </div>
-
-                          <div className="form-check corm-check">
-                            <input className="form-check-input" type="checkbox" value="" id="flexCheckDefault6" />
-                              <label className="form-check-label" htmlFor="flexCheckDefault6">
-                                Superhero Comics
-                              </label>
-                          </div>
-
-
-
-
+                          { categoryState && categoryState.map((item) => {
+                            return (
+                              <CategoryCheck {...item} key={item._id} />
+                            )
+                          })}
                         </div>
                       </div>
                     </div>
@@ -226,20 +199,18 @@ const Shop = (props) => {
                         <div className="accordion-body">
 
                           <ul className="d-flex pol-btn align-items-center">
-                            <li>
-                              <Link to="/shop?brand=topps" className="btn"> Topps </Link>
-                               <Link to="/shop?brand=upper&decks" className="btn"> Upper Decks </Link>
-                                <Link to="/shop?brand=topps" className="btn"> Topps </Link>
-                                 <Link to="/shop?brand=topps" className="btn"> Topps </Link>
-                                  <Link to="/shop?brand=topps" className="btn"> Topps </Link>
-                                   <Link to="/shop?brand=topps" className="btn"> Topps </Link>
-                            </li>
+                          <li key="brands">
+                           { brandState && brandState.slice(0, 6).map((item) => {
+                                return (
+                                    <Link key={item._id} to={"/shop?brand=" + encodeURIComponent(item.title)} className="btn" onClick={getProducts}>{item.title}</Link>
+                                )
+                              })}
+                              </li>
                           </ul>
-
                         </div>
                       </div>
                     </div>
-                    <input type="submit" className="btn submit-btn" value="Filter" />
+                    <input type="submit" className="btn submit-btn" value="Filter" onClick={filterHandler}/>
                   </div>
                 </div>
                 <div className="col-lg-9 mt-5 mt-lg-0">

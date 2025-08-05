@@ -2,6 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import { userSlice } from "./user/slice";
 import { productSlice } from "./products/slice";
 import { brandSlice } from "./brands/slice";
+import { categorySlice } from "./categories/slice";
 import { cartSlice } from "./cart/slice";
 import { blogSlice } from "./blogs/slice";
 import { CacheFactory } from "@feardread/feature-factory";
@@ -13,6 +14,7 @@ export const store = configureStore({
     brand: brandSlice.reducer,
     cart: cartSlice.reducer,
     blog: blogSlice.reducer,
+    category: categorySlice.reducer
   }
 });
 

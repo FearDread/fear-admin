@@ -78,12 +78,8 @@ const UserCart = (props) => {
                 </div>
 
                 <div className="reconded-procuts d-inline-block w-100 py-5">
-                  <h2>  Recommended  </h2>
+                  <Recommended />
 
-
-                  <div className="like-slide owl-carousel owl-theme mt-4">
-                    <Recommended />
-                  </div>
                 </div>
             </div>
 
