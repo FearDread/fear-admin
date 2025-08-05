@@ -7,11 +7,12 @@ import BannerSub from "../components/Banner/BannerSub"
 import Recommended from "../components/Carousel/Recommended";
 import { Product } from "../features/products/slice";
 import { store } from "../features/store";
+import ReactImageZoom from "react-image-zoom";
 //import ReactImageZoom from "react-image-zoom";
 //import ReactStars from "react-rating-stars-component"
 //import { toast } from "react-toastify";
 //ddProdToCart, getCart } from "../features/user/service";
-//import defaultProdImg from "../assets/images/abstract_banner_1.jpg";
+import defaultProdImg from "../assets/images/abstract_banner_1.jpg";
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -25,6 +26,15 @@ const ProductDetails = () => {
   const getProductDetails = () => {
     store.dispatch(Product.fetchOne({id}));
   }
+
+  const props = {
+    width: 594,
+    height: 600,
+    zoomWidth: 600,
+    img: activeProduct?.images
+      ? activeProduct?.images[0].url
+      : defaultProdImg
+  };
 
   useEffect(() => {
 
@@ -76,11 +86,12 @@ const ProductDetails = () => {
                     <div className="col-lg-6">
                       <div className="main-product-image products-slide-1">
                         <div>
+                          <ReactImageZoom {...props} />
                           {/*<ReactImageZoom props={{width: 400, height: 250, zoomWidth: 500, img: product?.images[0]?.url}} /> */}
                         </div>
                       </div>
                       <div className="other-product-images thum-pic-slide d-flex flex-wrap gap-15">
-                        {product?.images && product.images?.map((item) => {
+                        {activeProduct?.images && activeProduct.images?.map((item) => {
                           return (
                             <div className="item">
                               <figure className="main-ppic ">

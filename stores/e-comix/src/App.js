@@ -22,12 +22,12 @@ import Register from "./pages/Register";
 import Wishlist from './pages/Wishlist';
 
 //import UserOrder from "./pages/admin/UserOrder";
-//import Checkout from "./pages/admin/Checkout"
+
 //import Wishlist from "./pages/Wishlist";
 //import ForgotPassword from "./pages/Forgotpassword";
 import UserCart from "./pages/admin/UserCart";
 import Profile from "./pages/admin/Profile";
-
+import Checkout from "./pages/admin/Checkout"
 import { PrivateRoutes } from "./routes/PrivateRoutes";
 import { OpenRoutes } from "./routes/OpenRoutes";
 
@@ -100,6 +100,13 @@ function App() {
                 element={
                   <PrivateRoutes>
                     <Profile />
+                  </PrivateRoutes>
+                } /> 
+              <Route
+                path='checkout'
+                element={
+                  <PrivateRoutes>
+                    <Checkout />
                   </PrivateRoutes>
                 } /> 
            {/*

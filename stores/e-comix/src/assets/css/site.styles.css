@@ -17,7 +17,7 @@ body {
         45deg,
         rgba(0, 110, 193, 0.3),
         rgba(0, 115, 138, 0.1)
-      ) no-repeat fixed center, url('../images/ekomix/_main_background.jpg') no-repeat fixed
+      ) no-repeat fixed center, url('../images/ekomix/_explode_bg_1.jpg') no-repeat fixed
       center;
   background-size: cover;
   background-position: fixed;
@@ -2481,6 +2481,7 @@ footer .items-footer-div li a span:first-child {
   border: solid 4px var(--secondcolor);
   padding: 30px;
   border-radius: 20px;
+  background: white;
 }
 .ceck-out-right-div h2 {
   font-style: normal;
@@ -2829,6 +2830,11 @@ footer .items-footer-div li a span:first-child {
 }
 .checkout-page-main-div {
   margin-bottom: 150px !important;
+}
+.checkout-left-div {
+  background: white;
+  border: 3px solid black;
+  border-radius: 10px;
 }
 .com-div-md {
   background: #fff;
