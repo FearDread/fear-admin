@@ -3,11 +3,10 @@ import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { User } from "../../features/user/slice";
 import { store } from "../../features/store";
-import cache from "../../features/factory/cache";
-
 
 
 const LoginModal = () => {
+    const navigate = useNavigate();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showModal, setShowModal] = useState(false);
@@ -28,7 +27,8 @@ const LoginModal = () => {
     useEffect(() => {
         if ( userState.token ) {
             store.local.set("auth", userState);
-            handleClose()
+            setShowModal(false)
+            navigate("/profile")
         }
       }, [userState])
 
@@ -41,7 +41,7 @@ const LoginModal = () => {
                         <div className="modal-header">
                         </div>
                         <div className="modal-body">
-                            <form action="index.html" method="get">
+                            <form>
                                 <div id="login-td-div" className="com-div-md">
                                     <h5 className="text-center mb-3"> Login </h5>
                                     <button onClick={handleClose} type="button" className="close" data-bs-dismiss="modal">
@@ -89,7 +89,6 @@ const LoginModal = () => {
                             </form>
 
                         </div>
-
                     </div>
                 </div>
             </div>

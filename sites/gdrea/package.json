@@ -1,12 +1,18 @@
 {
   "name": "gdrea",
   "version": "1.0.0",
-  "description": "Portfolio / Resume One page Site",
-  "main": "index.js",
+  "main": "server.js",
+  "description": "single page application using jQuery for resume site",
   "author": "FearDread",
   "license": "MIT",
   "private": false,
   "dependencies": {
     "express": "^5.1.0"
-  }
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "FearDread",
+  "license": "MIT"
 }
