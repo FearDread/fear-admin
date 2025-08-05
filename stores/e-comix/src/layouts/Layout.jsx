@@ -13,8 +13,6 @@ import AOS from "aos";
 import { ToastContainer } from "react-toastify";
 import { store } from "../features/store";
 import { Cart } from "../features/cart/slice";
-import { Auth } from "../features/user/slice";
-import { Product } from "../features/products/slice";
 
 import "react-toastify/dist/ReactToastify.css";
 
