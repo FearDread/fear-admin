@@ -1,19 +1,25 @@
-import Message from "../../components/Message";
-import Loader from "../../components/Loader";
+import { useSelector } from "react-redux";
+import Loader from "../../components/Loader/Loader";
 import { Link } from "react-router-dom";
-import { useGetMyOrdersQuery } from "../../redux/api/orderApiSlice";
+import BannerSub from "../../components/Banner/BannerSub";
+import { store } from "../../features/store";
+import { Order } from "../../features/orders/slice";
+//import { Link } from "react-router-dom";
+//import { useGetMyOrdersQuery } from "../../redux/api/orderApiSlice";
 
 const UserOrder = () => {
-  const { data: orders, isLoading, error } = useGetMyOrdersQuery();
+  const { data: orders, loading, success, error } = useSelector( state => state.order.data );
 
   return (
+    <>
+    <BannerSub />
     <div className="container mx-auto">
       <h2 className="text-2xl font-semibold mb-4">My Orders </h2>
 
-      {isLoading ? (
+      {loading ? (
         <Loader />
       ) : error ? (
-        <Message variant="danger">{error?.data?.error || error.error}</Message>
+        <div> error </div>
       ) : (
         <table className="w-full">
           <thead>
@@ -29,7 +35,7 @@ const UserOrder = () => {
           </thead>
 
           <tbody>
-            {orders.map((order) => (
+            {orders?.map((order) => (
               <tr key={order._id}>
                 <img
                   src={order.orderItems[0].image}
@@ -78,6 +84,7 @@ const UserOrder = () => {
         </table>
       )}
     </div>
+    </>
   );
 };
 

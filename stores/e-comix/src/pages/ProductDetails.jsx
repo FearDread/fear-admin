@@ -18,7 +18,7 @@ const ProductDetails = () => {
   const { id } = useParams();
   const [quantity, setQuantity] = useState(1);
   const [alreadyAdded, setAlreadyAdded] = useState(false);
-  const { product, loading } = useSelector(state => state.product );
+  const { data, loading } = useSelector(state => state.product.data );
   const isLoading = useSelector(state => state.product.loading );
   const activeProduct = useSelector(state => state.product.product );
   const [searchParams, setSearchParams] = useSearchParams();
@@ -26,19 +26,19 @@ const ProductDetails = () => {
   const getProductDetails = () => {
     store.dispatch(Product.fetchOne({id}));
   }
-
   const props = {
     width: 594,
     height: 600,
     zoomWidth: 600,
     img: activeProduct?.images
-      ? activeProduct?.images[0].url
+      ? activeProduct?.images[0]?.url
       : defaultProdImg
   };
-
+  
   useEffect(() => {
 
     getProductDetails() 
+
 
   }, []);
 
@@ -86,7 +86,11 @@ const ProductDetails = () => {
                     <div className="col-lg-6">
                       <div className="main-product-image products-slide-1">
                         <div>
-                          <ReactImageZoom {...props} />
+                          { (activeProduct) ? (
+                            <ReactImageZoom {...props} />
+                          ) : (
+                            <div></div>
+                          )}
                           {/*<ReactImageZoom props={{width: 400, height: 250, zoomWidth: 500, img: product?.images[0]?.url}} /> */}
                         </div>
                       </div>
@@ -229,21 +233,10 @@ const ProductDetails = () => {
                         </ul>
                       </div>
                           */}
-                      <h3 className="mt-5"> Storyline </h3>
-                      <p className="mt-3"> Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap
-                        into electronic typesetting, remaining essentially unchanged.</p>
 
-                      <h5> Packaging & Delivery </h5>
-                      <p className="mt-2"> Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap
-                        into electronic typesetting, remaining essentially unchanged.</p>
-
-                      <h5> Other Ingredients</h5>
-                      <p className="mt-2"> Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap
-                        into electronic typesetting, remaining essentially unchanged.</p>
 
                     </div>
                   </div>
-                  { /*
                   <div className="tab-pane fade" id="profile" role="tabpanel"
                     aria-labelledby="profile-tab">
                     <div className="listing-paage-divb">
@@ -312,9 +305,6 @@ const ProductDetails = () => {
                                 <span> Submit </span></button>
 
                             </div>
-
-
-
                           </div>
                         </form>
                       </div>
@@ -340,7 +330,6 @@ const ProductDetails = () => {
 
                     </div>
                   </div>
-                  */ }
                 </div>
               </div>
 

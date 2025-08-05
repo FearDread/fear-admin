@@ -20,14 +20,10 @@ import RefundPolicy from "./pages/PrivacyPolicy";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Wishlist from './pages/Wishlist';
-
-//import UserOrder from "./pages/admin/UserOrder";
-
-//import Wishlist from "./pages/Wishlist";
-//import ForgotPassword from "./pages/Forgotpassword";
 import UserCart from "./pages/admin/UserCart";
 import Profile from "./pages/admin/Profile";
-import Checkout from "./pages/admin/Checkout"
+import Checkout from "./pages/admin/Checkout";
+import UserOrder from "./pages/admin/UserOrder";
 import { PrivateRoutes } from "./routes/PrivateRoutes";
 import { OpenRoutes } from "./routes/OpenRoutes";
 
@@ -85,6 +81,13 @@ function App() {
                 element={
                   <PrivateRoutes>
                     <UserCart />
+                  </PrivateRoutes>
+                } />  
+                              <Route
+                path="order"
+                element={
+                  <PrivateRoutes>
+                    <UserOrder />
                   </PrivateRoutes>
                 } />    
               <Route

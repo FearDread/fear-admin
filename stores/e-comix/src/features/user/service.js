@@ -1,42 +1,14 @@
 import ApiFactory from "../factory/service";
 
-const authService = ApiFactory('auth').create({
-  endpoints: (builder) => ({
-    login: builder.mutation({
-      query: (data) => ({
-        url: `auth/login`,
-        method: "POST",
-        body: data,
-      }),
-    }),
-    register: builder.mutation({
-      query: (data) => ({
-        url: `auth/register`,
-        method: "POST",
-        body: data,
-      }),
-    }),
-    logout: builder.mutation({
-      query: () => ({
-        url: `auth/logout`,
-        method: "POST",
-      }),
-    }),
-    profile: builder.mutation({
-      query: (data) => ({
-        url: `user/profile`,
-        method: "PUT",
-        body: data,
-      }),
-    })
-  })
-});
+const userService = ApiFactory('user').create()
+userService.inject('login', 'auth/login', 'post');
+userService.inject('register', 'auth/register', 'post');
+
+
 
 export const {
   useLoginMutation,
   useRegisterMutation,
-  useLogoutMutation,
-  useProfileMutation
-} = authService;
+} = userService;
 
 export default authService;
