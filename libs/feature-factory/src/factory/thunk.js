@@ -18,9 +18,9 @@ export const ThunkFactory = {
           if ( prefix == 'one' ) url = `${entity}/${params.id}`
 
           return API.get(url, (prefix == 'search') ? {params} : {})                           
-            
-            .then((response) => response.data.result )
-            
+            .then((response) => {
+		return response.data.result
+	    })
             .catch((error) => thunkApi.rejectWithValue(error.message) )
         }
       )
@@ -36,13 +36,10 @@ export const ThunkFactory = {
         async ( data, thunkApi ) => {
           
           return API.post(`${entity}/${prefix}`, data)
-            
             .then((response) => {
-
               return response.data.result;
 
             })
-            
             .catch((error) => thunkApi.rejectWithValue(error.message) )
         }
       )
