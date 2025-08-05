@@ -1,0 +1,12 @@
+{
+  "name": "gdrea",
+  "version": "1.0.0",
+  "description": "Portfolio / Resume One page Site",
+  "main": "index.js",
+  "author": "FearDread",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
