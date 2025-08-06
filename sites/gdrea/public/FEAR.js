@@ -1,10 +1,9 @@
 
-window.FEAR = (async ($, window ) => {
+window.FEAR = (async ($, window) => {
 
     const _this = {
         start: async () => {
             _this.bind_events();
-
             _this.plugins.headline();
             //  _this.waves = _this.plugins.waves;
 
@@ -26,6 +25,7 @@ window.FEAR = (async ($, window ) => {
             }
         },
         bind_events: () => {
+
             $(document).ready(() => {
                 _this.picker();
                 _this.modal();
@@ -40,12 +40,12 @@ window.FEAR = (async ($, window ) => {
                 _this.get_location();
 
                 Object.keys(_this.popups).forEach(key => {
-                    if (typeof _this.popups[key] == 'function') {
+                    if (typeof _this.popups[key] === 'function') {
                         _this.popups[key]();
                     }
                 })
                 Object.keys(_this.switchers).forEach(key => {
-                    if (typeof _this.switchers[key] == 'function') {
+                    if (typeof _this.switchers[key] === 'function') {
                         _this.switchers[key]();
                     }
                 });
@@ -61,7 +61,7 @@ window.FEAR = (async ($, window ) => {
                 var routes = page.substring(0, page.lastIndexOf('.'));//remove file extension that shows up in the url bar.
 
                 window.history.pushState(null, null, routes);//assign new url to address bar and add page in browser history without reloading the page.
-                this.render(page);
+                _this.render(page);
             });
             /*
             $(window).on('popstate', () => {
@@ -262,7 +262,9 @@ window.FEAR = (async ($, window ) => {
             button.on('click', function () {
                 var element = $(this);
                 var href = element.attr('href');
-
+                console.log('href = ', href);
+                //_this.router.loadPage(href);
+                //$(window).trigger('hashchange', {data: href});
                 if (element.parent().hasClass('fear_button')) {
 
                     $('.menu .transition_link a[href="' + href + '"]').trigger('click');
@@ -419,87 +421,92 @@ window.FEAR = (async ($, window ) => {
         },
         router: {
             routes: {
-                "#": (url) => {
+                "#home": (url) => {
                     console.log('home was called...');
-                    _this.router.renderPageTemplate("#home-page-template");
+                    _this.router.loadPage('#home')
                 },
                 "#about": (url) => {
                     console.log('about was called...');
-                    _this.router.renderPageTemplate("#about-page-template");
+                    _this.router.loadPage('#about')
+                },
+                "#works": (url) => {
+                    console.log('contact was called...');
+                    _this.router.loadPage("#works");
                 },
                 "#contact": (url) => {
                     console.log('contact was called...');
-                    _this.router.renderPageTemplate("#contact-page-template");
+                    _this.router.loadPage("#contact-page");
                 }
             },
             init: function () {
                 console.log('router was created...');
+
                 this.bindEvents();
 
-                // Manually trigger a hashchange to start the router.
-                // This make the render function look for the route called "" (empty string)
-                // and call it"s function
                 $(window).trigger("hashchange");
             },
             bindEvents: function () {
-
-                // Event handler that calls the render function on every hashchange.
-                // The render function will look up the route and call the function
-                // that is mapped to the route name in the route map.
-                // .bind(this) changes the scope of the function to the
-                // current object rather than the element the event is bound to.
                 console.log('router hit ', _this.router);
                 //$(window).on("hashchange", _this.router.render.bind(this));
             },
-            render: (page) => {
+            check: (hash) => {
+                if (!hash) hash = window.location.hash;
 
+                if (hash != lastUrl) {
+                    lastUrl = hash;
+                    _this.router.loadPage(hash);
+                }
+            },
+
+            loadPage: (path) => {
+                console.log('load path' + path.replace('#', ''));
+                path = path.replace('#', '');
+                var source;
+                var template;
+
+                $.ajax({
+                    url: 'js/fragments/' + path + '.html', // e.g., 'templates/myTemplate.handlebars'
+                    cache: true, // Optional: set to false to prevent caching
+                    success: (data) => {
+                        source = data; // The raw template string from the server
+                        //template = Handlebars.compile(source); // Compile the template
+                        _this.router.renderTemplate(source);
+                        // Now you can use the compiled template
+                        // Example: Render with data and append to an element
+                        // $('#targetElement').html(template(yourData)); 
+                    },
+                    error: (jqXHR, textStatus, errorThrown) => {
+                        console.error("Error loading template:", textStatus, errorThrown);
+                    }
+                });
+            },
+            render: (href) => {
+                console.log('keyname = ', href);
                 // Get the keyword from the url.
                 var keyName = window.location.hash.split("/")[0];
 
-                // Grab anything after the hash
-                var url = window.location.hash;
 
-                // Hide whatever page is currently shown.
-                $("#fear_container")
-                    .find(".active")
-                    .hide()
-                    .removeClass("active");
                 // Call the the function
                 // by key name
                 if (_this.router.routes[keyName]) {
-                    const page = _this.router.routes[keyName]
-                    page(url);
-
-                    // Render the error page if the 
-                    // keyword is not found in routes.
+                    _this.router.routes[keyName]();
                 } else {
-                    _this.router.pageNotFoundError();
+                    _this.router.renderError();
                 }
+                _this.page_transition();
             },
-            // Finds a handlebars template by id.
-            // Populates it with the passed in data
-            // Appends the generated html to div#order-page-container
-            renderPageTemplate: function (templateId, data) {
+            renderTemplate: (source, data) => {
                 var _data = data || {};
-                var templateScript = $(templateId).html();
+                var templateScript = $(source).html();
                 var template = Handlebars.compile(templateScript);
-
-
                 // Empty the container and append new content
-                $("#page-container").empty();
-
+                $("#fear_container").empty();
                 // Empty the container and append new content
-                $("#page-container").append(template(_data));
+                $("#fear_container").append(template(_data));
             },
-
-            // If a hash can not be found in routes
-            // then this function gets called to show the 404 error page
-            pageNotFoundError: function () {
-
-                var data = {
-                    errorMessage: "404 - Page Not Found"
-                };
-                this.renderPageTemplate("#error-page-template", data);
+            renderError: () => {
+                var data = { errorMessage: "404 - Page Not Found" };
+                _this.router.renderTemplate("#error-page-template", data);
             },
         },
         utils: {
@@ -662,8 +669,8 @@ window.FEAR = (async ($, window ) => {
                     modalBox.find('.description_wrap').html(content);
                     modalBox.find('.news_popup_details').prepend('<div class="top_image"><img src="img/thumbs/4-2.jpg" alt="" /><div class="main" data-img-url="' + image + '"></div></div>');
                     modalBox.find('.news_popup_details .top_image').after('<div class="news_main_title"><h3>' + title + '</h3><span>' + category + '</span><div>');
-                    
-                    
+
+
                     _this.data_images();
                     return false;
                 });
