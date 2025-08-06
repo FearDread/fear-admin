@@ -1,10 +1,10 @@
 .ellipsel-bg {
     background: #0F141C;
-    background-image: url('../images/noice-img.png');
+    background-image: url('../public/img/noise_bg_1.jpg');
     background-size: cover;
     background-position: center;
     height: 100vh;
-    position: relative;
+    background-attachment: fixed;
     overflow: hidden;
     z-index: 0;
     background-blend-mode: soft-light;

@@ -18,8 +18,6 @@ const Layout = (props) => {
         ...fonts
       )}
     >   
-
-      
       <ThemeSwitcher setTheme={setTheme} />
       <div className="fixed bottom-0 left-0 z-50 hidden w-full bg-black md:block lg:h-4 xl:h-8"></div>
       <div className="fixed top-0 left-0 z-50 hidden w-full bg-black md:block lg:h-4 xl:h-8"></div>
@@ -34,8 +32,10 @@ const Layout = (props) => {
           </div>
         </main>
       </div>
-      <Menu />
+      <Menu />    
+
     </div>
+    
   )
 }
 
