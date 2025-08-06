@@ -14,9 +14,9 @@ require("dotenv").config();
 
         FEAR.log.warn(FEAR.logo);
 
-        FEAR.app.use(express.static(path.join(__dirname1, "/dashboard/build")));
+        FEAR.app.use(express.static(path.join(__dirname1, "/backend/dashboard/build")));
         FEAR.app.get("*", (req, res) =>
-            res.sendFile(path.resolve(__dirname1, "dashboard", "build", "index.html"))
+            res.sendFile(path.resolve(__dirname1, "backend", "dashboard", "build", "index.html"))
         );
 
         FEAR.db.run(FEAR.env, () => {
