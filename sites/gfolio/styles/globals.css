@@ -23,7 +23,7 @@
   h5 {
     @apply text-xl font-bold md:text-2xl;
   }
-  h6 {
+  h6 {  
     @apply text-lg font-bold md:text-xl;
   }
   p {
@@ -61,7 +61,7 @@
 }
 
 .bg-black {
-  background: url("../public/img/_binary_grey_bg.jpg");
+  background: url("../public/img/binary_bg.png");
   background-size: 100% 100%;
   background-color: black;
   background-attachment: fixed
