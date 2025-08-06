@@ -1,0 +1,54 @@
+!!!
+html
+  head
+    meta(charset='UTF-8')  
+    meta(http-equiv='X-UA-Compatible', content='IE=edge')  
+    meta(name='viewport', content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no')
+
+    title Garrett Haptonstall | ghap.me 
+    link(rel='shortcut icon', href='img/favicon.ico')
+
+    link(rel='stylesheet', href='/font-awesome/css/font-awesome.min.css')
+    link(rel='stylesheet', href='/css/animate.min.css')
+    link(rel='stylesheet', href='/css/bootstrap.min.css')
+    link(rel='stylesheet', href='/lib/magnific-popup/magnific-popup.css')
+    link(rel='stylesheet', href='/lib/owl-carousel/owl.carousel.css')
+    link(rel='stylesheet', href='/lib/owl-carousel/owl.theme.css')
+    //- custom css
+    link(rel='stylesheet', href='/css/site.css')
+    link(rel='stylesheet', href='/css/responsive.css')
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    script(src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js")
+    script(src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js")
+    <![endif]-->
+
+    script(src='/js/modernizr.js')
+
+  body
+    include loader
+
+    .page-container
+      block content
+
+      a.page-close(href='#') Close
+      a.page-scroll(href='#') Scroll
+
+    //- maps
+    script(src='https://maps.googleapis.com/maps/api/js')
+    //- libraries 
+    script(src='/js/jquery/jquery.min.js')
+    script(src='/js/bootstrap/bootstrap.min.js')
+    script(src='/js/guerrilla/guerrilla-ui.js')
+    //- plugins
+    script(src='lib/mixitup/jquery.mixitup.js')
+    script(src='lib/owl-carousel/owl.carousel.min.js')
+    script(src='lib/nice-scroll/jquery.nicescroll.js')
+    script(src='lib/nice-scroll/jquery.nicescroll.plus.js')
+    script(src='lib/magnific-popup/jquery.magnific-popup.js')
+    //- main application script
+    script(src='/js/app.js')
+
+    block js
+              
