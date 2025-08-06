@@ -13,12 +13,15 @@ export const ThunkFactory = {
         `${entity}/${prefix}`,
 
         async ( params, thunkApi ) => {
+
           let url = `${entity}/${prefix}`;
 
           if ( prefix == 'one' ) url = `${entity}/${params.id}`
 
-          return API.get(url, (prefix == 'search') ? {params} : {})                           
+          return API.get(url, (prefix == 'search') ? {params} : {})   
+
             .then((response) => {
+
 		          return response.data.result
 	          })
             .catch((error) => thunkApi.rejectWithValue(error.message) )
@@ -28,7 +31,9 @@ export const ThunkFactory = {
   },
 
   post: (entity, prefix) => {
+
     return ( 
+
       createAsyncThunk(
         
         `${entity}/${prefix}`,
@@ -36,7 +41,9 @@ export const ThunkFactory = {
         async ( data, thunkApi ) => {
           
           return API.post(`${entity}/${prefix}`, data)
+
             .then((response) => {
+
               return response.data.result;
             })
             .catch((error) => thunkApi.rejectWithValue(error.message) )
