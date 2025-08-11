@@ -155,11 +155,11 @@ window.FEAR = (async ($, window) => {
                     templateScript = $(source.html).html(),
                     template = Handlebars.compile(templateScript);
 
-                $container.fadeOut(500, () => {
+                $container.fadeOut(200, () => {
                     $container.empty()
                     $container.html(template(source.data));
                     
-                    $container.fadeIn(500, () => {
+                    $container.fadeIn(200, () => {
                         source.after(() => {
                             App.run();
                         });

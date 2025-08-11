@@ -1,95 +1,44 @@
-/* GHAP.com */
-var server,
-    host,
-    port,
-    fs,
-    path,
-    express,
-    routes,
-    mongoStr,
-    passport,
-    less,
-    utapi,
-    app,
-    pub,
-    bodyParser,
-    mongo,
-    flash,
-    ultimate,
-    assert;
-
-/* MODS */
-fs = require('fs');
-path = require('path');
-assert = require('assert');
-flash = require('connect-flash');
-express = require('express');
-session = require('express-session');
-less = require('less-middleware');
-mongo = require('mongoose');
-passport = require('passport');
-bodyParser = require('body-parser');
-
-/* APIs */
-routes = require('./routes');
-ultimate = require('./routes/api/ultimate');
-
-/* Tools */
-utils = require('./src/utils');
-config = require('./src/config');
-require('./src/passport')(passport);
-
-/* APP */
-app = express();
-
-const GHAP = (( app ) => {
-	pub = __dirname;
-
-	app.use(bodyParser.urlencoded({ extended: true }));
-	app.use(bodyParser.json());
-
-	app.set('views', pub + '/public/views');
-	app.set('view engine', 'jade');
-
-	app.use(less(path.join(pub, '/src', 'less'), {
-	    dest: path.join(pub, '/public', 'css')
-	}));
-
-	app.use(express.static(path.join(pub, '/public')));
-	app.use(session({ secret: config.secret })); 
-
-	app.use(passport.initialize());
-	app.use(passport.session()); 
-	app.use(flash()); 
-
-	routes.add(app);
-	ultimate.add(app, passport);
-
-	mongo.connect(config.db, function (err) {
-	  if (err) {
-	      console.log('Error connecting: ', err);
-	      //assert.equal(err, null);
-	  }
-	  console.log('MongoDB connected at ' + config.db);
-	  
-	  server = app.listen(5000, function () {
-	      host = server.address().address;
-	      port = server.address().port;
-
-	      console.log('GHAP.com listening at http://%s:%s', host, port);
-	  });
-	});
-
-})( express() );
+const FEAR = require('../../backend/src/FEAR'),
+	express = require('express'),
+	path = require('path'),
+	less = require('less-middleware');
 
 
 (async () => {
 
 	async function start() {
-		GHAP();
 
+		const port = 3001;
+		const routes = require('./routes');
+		const ultimate = require('./routes/api/ultimate');
+		const pub = __dirname;
+
+		FEAR.app.engine('pug', require('pug').__express)
+		FEAR.app.set('view engine', 'pug');
+		FEAR.app.set('views', pub + '/public/views');
+
+
+		FEAR.app.use(less(path.join(pub, '/src', 'less'), {
+			dest: path.join(pub, '/public', 'css')
+		}));
+
+		FEAR.app.use(express.static(path.join(pub, '/public')));
+
+		routes.add(FEAR.app);
+		FEAR.db.run(FEAR.env, () => {
+			FEAR.app.listen(port, (err) => {
+				if (err) return;
+				FEAR.log.info(`GHAP API Initialized :: Port ${port}`);
+			});
+		});
+		
+		process.on("unhandledRejection", FEAR.shutdown);
+		process.on("uncaughtException", FEAR.shutdown);
+
+		process.on('SIGTERM', FEAR.shutdown);
+		process.on('SIGINT', FEAR.shutdown);
 	}
 
 	await start();
 
-})( GHAP );
+})(FEAR)
