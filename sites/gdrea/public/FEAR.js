@@ -4,8 +4,8 @@ window.FEAR = (async ($, window) => {
     const App = {
         start: async () => {
             App.bindEvents();
-            App.modal();
-            App.run();
+
+            App.run();  
 
             return App;
         },
@@ -34,6 +34,8 @@ window.FEAR = (async ($, window) => {
         bindEvents: () => {
 
             $(document).ready(() => {
+                App.modal();
+                App.mobile();
                 App.load(() => {
                     App.router.init();
                     App.methods.imgtosvg();
@@ -74,6 +76,30 @@ window.FEAR = (async ($, window) => {
         },
         modal: () => {
                 $('.fear_all_wrap').prepend('<div class="fear_modalbox"><div class="box_inner"><div class="close"><a href="#"><i class="icon-cancel"></i></a></div><div class="description_wrap"></div></div></div>')
+        },
+        mobile: () => {
+                var hamburger = $('.fear_topbar .trigger .hamburger');
+                var mobileMenu = $('.fear_mobile_menu');
+                var mobileMenuList = $('.fear_mobile_menu ul li a');
+
+                hamburger.on('click', function () {
+                    var element = $(this);
+
+                    if (element.hasClass('is-active')) {
+                        element.removeClass('is-active');
+                        mobileMenu.removeClass('opened');
+                    } else {
+                        element.addClass('is-active');
+                        mobileMenu.addClass('opened');
+                    }
+                    return true;
+                });
+
+                mobileMenuList.on('click', function () {
+                    $('.fear_topbar .trigger .hamburger').removeClass('is-active');
+                    mobileMenu.removeClass('opened');
+                    return true;
+                });
         },
         router: {
             routes: {
@@ -187,30 +213,6 @@ window.FEAR = (async ($, window) => {
                     return false;
                 });
             },
-            menu: () => {
-                var hamburger = $('.fear_topbar .trigger .hamburger');
-                var mobileMenu = $('.fear_mobile_menu');
-                var mobileMenuList = $('.fear_mobile_menu ul li a');
-
-                hamburger.on('click', function () {
-                    var element = $(this);
-
-                    if (element.hasClass('is-active')) {
-                        element.removeClass('is-active');
-                        mobileMenu.removeClass('opened');
-                    } else {
-                        element.addClass('is-active');
-                        mobileMenu.addClass('opened');
-                    }
-                    return false;
-                });
-
-                mobileMenuList.on('click', function () {
-                    $('.fear_topbar .trigger .hamburger').removeClass('is-active');
-                    mobileMenu.removeClass('opened');
-                    return false;
-                });
-            },
             cursor: () => {
 
                 var myCursor = $('.mouse-cursor');
@@ -266,37 +268,6 @@ window.FEAR = (async ($, window) => {
                         });
                     }
                     return false;
-                });
-            },
-            galleries: () => {
-                $('.gallery_zoom').each(function () { // the containers for all your galleries
-                    $(this).magnificPopup({
-                        delegate: 'a.zoom', // the selector for gallery item
-                        type: 'image',
-                        gallery: {
-                            enabled: true
-                        },
-                        removalDelay: 300,
-                        mainClass: 'mfp-fade'
-                    });
-
-                });
-                $('.popup-youtube, .popup-vimeo').each(function () { // the containers for all your galleries
-                    $(this).magnificPopup({
-                        disableOn: 700,
-                        type: 'iframe',
-                        mainClass: 'mfp-fade',
-                        removalDelay: 160,
-                        preloader: false,
-                        fixedContentPos: false
-                    });
-                });
-
-                $('.soundcloude_link').magnificPopup({
-                    type: 'image',
-                    gallery: {
-                        enabled: true,
-                    },
                 });
             },
             about: () => {
@@ -601,28 +572,6 @@ window.FEAR = (async ($, window) => {
             },
             menu: () => {
 
-                var hamburger = $('.fear_topbar .trigger .hamburger');
-                var mobileMenu = $('.fear_mobile_menu');
-                var mobileMenuList = $('.fear_mobile_menu ul li a');
-
-                hamburger.on('click', function () {
-                    var element = $(this);
-
-                    if (element.hasClass('is-active')) {
-                        element.removeClass('is-active');
-                        mobileMenu.removeClass('opened');
-                    } else {
-                        element.addClass('is-active');
-                        mobileMenu.addClass('opened');
-                    }
-                    return false;
-                });
-
-                mobileMenuList.on('click', function () {
-                    $('.fear_topbar .trigger .hamburger').removeClass('is-active');
-                    mobileMenu.removeClass('opened');
-                    return false;
-                });
             },
             swiper: () => {
                 $('.swiper-section').each(function () {
