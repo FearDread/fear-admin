@@ -49,17 +49,7 @@ window.FEAR = (async ($, window) => {
                 window.history.pushState(null, null, routes);//assign new url to address bar and add page in browser history without reloading the page.
                 App.router.render(page);
             });
-            /*
-            $(window).on('popstate', () => {
 
-                var url = window.location.href;
-                var routes = url.substring(url.lastIndexOf('/') + 1);//return page route from url.
-                var page = routes != '' ? url + ".html" : "home.html";//if route is empty assign home.html to page to ajax load the default content.
-
-                console.log(page);
-                App.router.route(page);
-            });
-            */
         },
         run: () => {
             Object.keys(App).forEach(prop => {
@@ -77,197 +67,12 @@ window.FEAR = (async ($, window) => {
             })
         },
 
-        /*
-        router: {
-            templates: {},
-            routes: ['#home', '#about', '#works', '#contact'],
-
-            init: () => {
-                console.log('router was created...');
-                App.router.bindEvents();
-
-                $(window).trigger("hashchange");
-            },
-            bindEvents: () => {
-                console.log('router hit ', App.router);
-                //App.router.transition();
-                $(window).on("hashchange", App.router.route.bind(this));
-            },
-            checkRoute: (hash) => {
-                return App.router.routes.includes(hash);
-            },
-            fetch: (path) => {
-                if (!App.router.checkRoute(path)) return false;
-                path = path.replace("#", "");
-                var source;
-                console.log('fetch path =', path);
-
-                $.ajax({
-                    url: 'js/fragments/' + path + '.html',
-                    cache: true,
-                    success: (data) => {
-                        source = data;
-                        App.router.templates[path] = source;
-                        App.router.renderTemplate(source, {page: path});
-                    },
-                    error: (jqXHR, textStatus, errorThrown) => {
-                        console.error("Error loading template:", textStatus, errorThrown);
-                    }
-                });
-            },
-            transition: () => {
-                var section = $('.fear_section');
-                var allLi = $('.transition_link li');
-                var button = $('.transition_link a');
-                var wrapper = $('.fear_all_wrap');
-                var enter = wrapper.data('enter');
-                var exit = wrapper.data('exit');
-
-                button.on('click', function () {
-                    var element = $(this);
-                    var href = element.attr('href');
-                    console.log('href = ', href);
-                    //_this.router.loadPage(href);
-                    //$(window).trigger('hashchange', {data: href});
-                    $(window).trigger('hashchange', {data: href});
-                    if (element.parent().hasClass('fear_button')) {
-
-                        $('.menu .transition_link a[href="' + href + '"]').trigger('click');
-                        //App.router.hashtag();
-
-                        return false;
-                    }
-
-                    var sectionID = $(href);
-                    var parent = element.closest('li');
-
-                    if (!parent.hasClass('active')) {
-                        allLi.removeClass('active');
-                        wrapper.find(section).removeClass('animated ' + enter);
-
-                        if (wrapper.hasClass('opened')) {
-                            wrapper.find(section).addClass('animated ' + exit);
-                        }
-
-                        parent.addClass('active');
-                        wrapper.addClass('opened');
-
-                        wrapper.find(sectionID).removeClass('animated ' + exit).addClass('animated ' + enter);
-
-                        $(section).addClass('hidden');
-                        $(sectionID).removeClass('hidden').addClass('active');
-                    }
-                    return false;
-                });
-            },
-            hashtag: () => {
-
-                var ccc = $('.fear_header .menu .ccc');
-                var element = $('.fear_header .menu .active a');
-
-                $('.fear_header .menu a').on('mouseenter', function () {
-                    var e = $(this);
-                    App.router.link(ccc, e);
-                });
-
-                $('.fear_header .menu').on('mouseleave', function () {
-                    element = $('.fear_header .menu .active a');
-                    App.router.link(ccc, element);
-                    element.parent().siblings().removeClass('mleave');
-                });
-
-            },
-            link: (ccc, ele) => {
-                if (!ele && !ele.length) { return false; }
-
-                var left = ele.offset().left;
-                var width = ele.outerWidth();
-                var menuleft = $('.fear_header .menu').offset().left;
-
-                ele.parent().removeClass('mleave');
-                ele.parent().siblings().addClass('mleave');
-
-                ccc.css({ left: (left - menuleft) + 'px', width: width + 'px' });
-            },
-            route: () => {
-                var keyName = window.location.hash.split("/")[0];
-                if (keyName == "") keyName = "#home";
-                var href = keyName.replace("#", "");
-
-                if (App.router.routes.includes(keyName)) {
-
-                    if (App.router.templates[href]) {
-                                        
-                        App.router.renderTemplate(App.router.templates[href])
-                        App.run();
-                    } else {
-                        App.router.fetch(keyName)
-                    }
-                } else {
-                    App.router.renderError();
-                }
-            },
-            renderTemplate: (source, data = {}) => {
-                var button = $('.transition_link a');
-                var wrapper = $('.fear_all_wrap');
-                var enter = wrapper.data('enter');
-                var exit = wrapper.data('exit');
-                var templateScript = $(source).html();
-                var template = Handlebars.compile(templateScript);
-                var container = $('.fear_container');
-
-                $(container).empty();
-                $(container).append(template(data));
-
-                var sectionID = $(template);
-                var section = $('.fear_section');
-
-                $(section).addClass('hidden');
-                $(sectionID).removeClass('hidden').addClass('active');
-                return false;
-            },
-            renderError: () => {
-                var data = { errorMessage: "404 - Page Not Found" };
-                App.router.renderTemplate("#error-page-template", data);
-            },
-        },
-        */
         router: {
             routes: {   
-                home: {
-                    template: 'home.html',
-                    html: null,
-                    bind: () => {
-                        console.log('add dom events');
-                        App.utils.data_images();
-                        App.plugins.headline();
-                        App.methods.galleries();
-                    }
-                },
-                about: {
-                    template: 'about.html',
-                    html: null,
-                    bind: () => {
-                        App.utils.data_images();
-                        App.methods.about();
-                    }
-                },
-                works: {
-                    template: 'works.html',
-                    html: null,
-                    bind: () => {
-                        App.utils.data_images();
-                        App.methods.news();
-                        App.plugins.swiper();
-                    }
-                },
-                contact: {
-                    template: 'contact.html',
-                    html: null,
-                    bind: () => {
-                        App.methods.contact();
-                    }
-                }
+                home: { name: 'home', html: null, after: (callback) => callback()},
+                about: { name: 'about', html: null, after: (callback) => callback()},
+                works: { name: 'works', html: null, after: (callback) => callback() },
+                contact: { name: 'contact', html: null, after: (callback) => callback()}
             },
             templates: {},
             init: () => {
@@ -277,9 +82,11 @@ window.FEAR = (async ($, window) => {
                 $(window).trigger("hashchange");
             },
             bindEvents: () => {
-                console.log('router events ', App.router);
-                //App.router.transition();
+
                 $(window).on("hashchange", App.router.route);
+
+                $(window).on('popstate', App.router.route);
+
             },
             checkRoute: (hash) => {
                 return App.router.routes.includes(hash);
@@ -288,8 +95,7 @@ window.FEAR = (async ($, window) => {
                 var loc = window.location.hash.replace("#", "");
                 if ( loc == '' ) loc = 'home';
 
-                var route = App.router.routes[loc] || App.router.routes['404']
-                console.log('route = ', route);
+                var route = App.router.routes[loc] || App.router.routes['404'];
                 if ( route.html != null ) {
                     App.router.render(route);
                 } else {
@@ -300,7 +106,7 @@ window.FEAR = (async ($, window) => {
                 var source;
 
                 $.ajax({
-                    url: 'js/fragments/' + route.template,
+                    url: 'js/fragments/' + route.name + '.html',
                     cache: true,
                     success: (data) => {
                         source = data;
@@ -319,14 +125,17 @@ window.FEAR = (async ($, window) => {
                     templateScript = $(source.html).html(),
                     template = Handlebars.compile(templateScript);
 
-                    $container.fadeOut(500, () => {
-                        $container.empty()
-                                     $container.html(template(source.data));
-                                     $container.fadeIn(500, () => {
-                                        
-                                        source.bind();
-                                     })
+                $container.fadeOut(500, () => {
+                    $container.empty()
+                    $container.html(template(source.data));
+                    $container.fadeIn(500, () => {
+
+                        source.after(() => {
+                            console.log('re-running app run()');
+                            App.run();
+                        });
                     })
+                })
             }
 
         },
