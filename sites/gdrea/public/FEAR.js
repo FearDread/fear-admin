@@ -4,12 +4,9 @@ window.FEAR = (async ($, window) => {
     const App = {
         start: async () => {
             App.bindEvents();
-
-            App.run();  
-
+            App.run();
             return App;
         },
-
         load: (callback) => {
             var speed = 500;
             setTimeout(() => {
@@ -570,9 +567,6 @@ window.FEAR = (async ($, window) => {
                     setTimeout(function () { element.circleProgress('value', value); }, 1400);
                 });
             },
-            menu: () => {
-
-            },
             swiper: () => {
                 $('.swiper-section').each(function () {
                     var element = $(this);
@@ -633,3 +627,8 @@ window.FEAR = (async ($, window) => {
     await App.start();
 
 })(jQuery, window);
+
+window.FEAR
+    .then(() => { console.log("FEAR SPA INIT")})
+    .catch(() => { console.log("Error Loading FEAR")})
+    .finally(() => { console.log('FEAR SPA LOADED')});
