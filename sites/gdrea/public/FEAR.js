@@ -36,6 +36,7 @@ window.FEAR = (async ($, window) => {
 
                 App.load(() => {
                     App.router.init();
+                    App.utils.imgtosvg
                 });
             });
 
@@ -48,6 +49,7 @@ window.FEAR = (async ($, window) => {
                 window.history.pushState(null, null, routes);//assign new url to address bar and add page in browser history without reloading the page.
                 App.router.render(page);
             });
+            /*
             $(window).on('popstate', () => {
 
                 var url = window.location.href;
@@ -57,6 +59,7 @@ window.FEAR = (async ($, window) => {
                 console.log(page);
                 App.router.route(page);
             });
+            */
         },
         run: () => {
             Object.keys(App).forEach(prop => {
@@ -74,51 +77,7 @@ window.FEAR = (async ($, window) => {
             })
         },
 
-        _legacy_page_transition: () => {
-            var section = $('.fear_section');
-            var allLi = $('.transition_link li');
-            var button = $('.transition_link a');
-            var wrapper = $('.fear_all_wrap');
-            var enter = wrapper.data('enter');
-            var exit = wrapper.data('exit');
-
-            button.on('click', function () {
-                var element = $(this);
-                var href = element.attr('href');
-                console.log('href = ', href);
-                //_this.router.loadPage(href);
-                //$(window).trigger('hashchange', {data: href});
-                if (element.parent().hasClass('fear_button')) {
-
-                    $('.menu .transition_link a[href="' + href + '"]').trigger('click');
-                    App.router.hashtag();
-
-                    return false;
-                }
-
-                var sectionID = $(href);
-                var parent = element.closest('li');
-
-                if (!parent.hasClass('active')) {
-                    allLi.removeClass('active');
-                    wrapper.find(section).removeClass('animated ' + enter);
-
-                    if (wrapper.hasClass('opened')) {
-                        wrapper.find(section).addClass('animated ' + exit);
-                    }
-
-                    parent.addClass('active');
-                    wrapper.addClass('opened');
-
-                    wrapper.find(sectionID).removeClass('animated ' + exit).addClass('animated ' + enter);
-
-                    $(section).addClass('hidden');
-                    $(sectionID).removeClass('hidden').addClass('active');
-                }
-                return false;
-            });
-        },
-
+        /*
         router: {
             templates: {},
             routes: ['#home', '#about', '#works', '#contact'],
@@ -131,11 +90,11 @@ window.FEAR = (async ($, window) => {
             },
             bindEvents: () => {
                 console.log('router hit ', App.router);
+                //App.router.transition();
                 $(window).on("hashchange", App.router.route.bind(this));
             },
             checkRoute: (hash) => {
                 return App.router.routes.includes(hash);
-
             },
             fetch: (path) => {
                 if (!App.router.checkRoute(path)) return false;
@@ -149,11 +108,56 @@ window.FEAR = (async ($, window) => {
                     success: (data) => {
                         source = data;
                         App.router.templates[path] = source;
-                        App.router.renderTemplate(path, source);
+                        App.router.renderTemplate(source, {page: path});
                     },
                     error: (jqXHR, textStatus, errorThrown) => {
                         console.error("Error loading template:", textStatus, errorThrown);
                     }
+                });
+            },
+            transition: () => {
+                var section = $('.fear_section');
+                var allLi = $('.transition_link li');
+                var button = $('.transition_link a');
+                var wrapper = $('.fear_all_wrap');
+                var enter = wrapper.data('enter');
+                var exit = wrapper.data('exit');
+
+                button.on('click', function () {
+                    var element = $(this);
+                    var href = element.attr('href');
+                    console.log('href = ', href);
+                    //_this.router.loadPage(href);
+                    //$(window).trigger('hashchange', {data: href});
+                    $(window).trigger('hashchange', {data: href});
+                    if (element.parent().hasClass('fear_button')) {
+
+                        $('.menu .transition_link a[href="' + href + '"]').trigger('click');
+                        //App.router.hashtag();
+
+                        return false;
+                    }
+
+                    var sectionID = $(href);
+                    var parent = element.closest('li');
+
+                    if (!parent.hasClass('active')) {
+                        allLi.removeClass('active');
+                        wrapper.find(section).removeClass('animated ' + enter);
+
+                        if (wrapper.hasClass('opened')) {
+                            wrapper.find(section).addClass('animated ' + exit);
+                        }
+
+                        parent.addClass('active');
+                        wrapper.addClass('opened');
+
+                        wrapper.find(sectionID).removeClass('animated ' + exit).addClass('animated ' + enter);
+
+                        $(section).addClass('hidden');
+                        $(sectionID).removeClass('hidden').addClass('active');
+                    }
+                    return false;
                 });
             },
             hashtag: () => {
@@ -185,47 +189,38 @@ window.FEAR = (async ($, window) => {
 
                 ccc.css({ left: (left - menuleft) + 'px', width: width + 'px' });
             },
-            route: (href) => {
+            route: () => {
                 var keyName = window.location.hash.split("/")[0];
-
                 if (keyName == "") keyName = "#home";
-                if (!href) href = keyName.replace("#", "");
+                var href = keyName.replace("#", "");
 
                 if (App.router.routes.includes(keyName)) {
-                    if (App.router.templates.hasOwnProperty(href)) {
-                        App.router.renderTemplate(keyName, App.router.templates[href])
+
+                    if (App.router.templates[href]) {
+                                        
+                        App.router.renderTemplate(App.router.templates[href])
+                        App.run();
+                    } else {
+                        App.router.fetch(keyName)
                     }
-                    App.router.fetch(keyName)
                 } else {
                     App.router.renderError();
                 }
             },
-            renderTemplate: (href, source) => {
-                var _data = {};
-                var templateScript = $(source).html();
-                var template = Handlebars.compile(templateScript);
-
-                var container = $('.fear_container');
-                var section = $('.fear_section');
+            renderTemplate: (source, data = {}) => {
+                var button = $('.transition_link a');
                 var wrapper = $('.fear_all_wrap');
-
                 var enter = wrapper.data('enter');
                 var exit = wrapper.data('exit');
-
-                var sectionID = $(href);
+                var templateScript = $(source).html();
+                var template = Handlebars.compile(templateScript);
+                var container = $('.fear_container');
 
                 $(container).empty();
-                $(container).append(template(_data));
+                $(container).append(template(data));
 
-                wrapper.find(section).removeClass('animated ' + enter);
-
-                if (wrapper.hasClass('opened')) {
-                    wrapper.find(section).addClass('animated ' + exit);
-                }
-
-                wrapper.addClass('opened');
-
-                wrapper.find(sectionID).removeClass('animated ' + exit).addClass('animated ' + enter);
+                var sectionID = $(template);
+                var section = $('.fear_section');
 
                 $(section).addClass('hidden');
                 $(sectionID).removeClass('hidden').addClass('active');
@@ -235,6 +230,105 @@ window.FEAR = (async ($, window) => {
                 var data = { errorMessage: "404 - Page Not Found" };
                 App.router.renderTemplate("#error-page-template", data);
             },
+        },
+        */
+        router: {
+            routes: {   
+                home: {
+                    template: 'home.html',
+                    html: null,
+                    bind: () => {
+                        console.log('add dom events');
+                        App.utils.data_images();
+                        App.plugins.headline();
+                        App.methods.galleries();
+                    }
+                },
+                about: {
+                    template: 'about.html',
+                    html: null,
+                    bind: () => {
+                        App.utils.data_images();
+                        App.methods.about();
+                    }
+                },
+                works: {
+                    template: 'works.html',
+                    html: null,
+                    bind: () => {
+                        App.utils.data_images();
+                        App.methods.news();
+                        App.plugins.swiper();
+                    }
+                },
+                contact: {
+                    template: 'contact.html',
+                    html: null,
+                    bind: () => {
+                        App.methods.contact();
+                    }
+                }
+            },
+            templates: {},
+            init: () => {
+                console.log('router was created...');
+                App.router.bindEvents();
+
+                $(window).trigger("hashchange");
+            },
+            bindEvents: () => {
+                console.log('router events ', App.router);
+                //App.router.transition();
+                $(window).on("hashchange", App.router.route);
+            },
+            checkRoute: (hash) => {
+                return App.router.routes.includes(hash);
+            },
+            route: async () => {
+                var loc = window.location.hash.replace("#", "");
+                if ( loc == '' ) loc = 'home';
+
+                var route = App.router.routes[loc] || App.router.routes['404']
+                console.log('route = ', route);
+                if ( route.html != null ) {
+                    App.router.render(route);
+                } else {
+                    App.router.fetch(route);
+                }
+            },
+            fetch: (route) => {
+                var source;
+
+                $.ajax({
+                    url: 'js/fragments/' + route.template,
+                    cache: true,
+                    success: (data) => {
+                        source = data;
+                        route.html = source;
+                        App.router.render(route);
+                    },
+                    error: (jqXHR, textStatus, errorThrown) => {
+                        console.error("Error loading template:", textStatus, errorThrown);
+                    }
+                });
+            },
+            render: (source) => {
+                var $wrapper = $('.fear_all_wrap'),
+                    $container = $('.fear_container'),
+
+                    templateScript = $(source.html).html(),
+                    template = Handlebars.compile(templateScript);
+
+                    $container.fadeOut(500, () => {
+                        $container.empty()
+                                     $container.html(template(source.data));
+                                     $container.fadeIn(500, () => {
+                                        
+                                        source.bind();
+                                     })
+                    })
+            }
+
         },
 
         utils: {
@@ -289,6 +383,30 @@ window.FEAR = (async ($, window) => {
         },
 
         methods: {
+            menu: () => {
+                var hamburger = $('.fear_topbar .trigger .hamburger');
+                var mobileMenu = $('.fear_mobile_menu');
+                var mobileMenuList = $('.fear_mobile_menu ul li a');
+
+                hamburger.on('click', function () {
+                    var element = $(this);
+
+                    if (element.hasClass('is-active')) {
+                        element.removeClass('is-active');
+                        mobileMenu.removeClass('opened');
+                    } else {
+                        element.addClass('is-active');
+                        mobileMenu.addClass('opened');
+                    }
+                    return false;
+                });
+
+                mobileMenuList.on('click', function () {
+                    $('.fear_topbar .trigger .hamburger').removeClass('is-active');
+                    mobileMenu.removeClass('opened');
+                    return false;
+                });
+            },
             cursor: () => {
 
                 var myCursor = $('.mouse-cursor');
@@ -386,14 +504,15 @@ window.FEAR = (async ($, window) => {
                 var modalBox = $('.fear_modalbox');
                 var hiddenContent = $('.fear_hidden_content').html();
 
-                button.on('click', function () {
+                button.on('click', function (e) {
+                    e.preventDefault();
                     modalBox.addClass('opened');
                     modalBox.find('.description_wrap').html(hiddenContent);
 
                     App.utils.data_images();
-                    App.plugins.my_progress();
-                    App.plugins.circular_progress();
-                    App.plugins.my_carousel();
+                    App.plugins.progress();
+                    App.plugins.circular();
+                    App.plugins.carousel();
                     App.utils.get_location();
                 });
                 close.on('click', function () {
