@@ -4,10 +4,12 @@ window.FEAR = (async ($, window) => {
     const App = {
         start: async () => {
             App.bindEvents();
+            App.modal();
             App.run();
 
             return App;
         },
+
         load: (callback) => {
             var speed = 500;
             setTimeout(() => {
@@ -32,24 +34,28 @@ window.FEAR = (async ($, window) => {
         bindEvents: () => {
 
             $(document).ready(() => {
-                //App._legacy_page_transition();
-
                 App.load(() => {
                     App.router.init();
-                    App.utils.imgtosvg
+                    App.methods.imgtosvg();
                 });
             });
 
-            $(document).on('click', '[data-link]', (e) => {
-                e.preventDefault();//prevent anchor click default behaviour.
+            // Nav Links 
+            var $button = $('.transition_link a');
+            var $li = $('.transition_link li');
+            //var $li = $('.transition_link').closest('li');
 
-                var page = $(this).attr('href');//get url from clicked link.
-                var routes = page.substring(0, page.lastIndexOf('.'));//remove file extension that shows up in the url bar.
+            $button.on('click', () => {
+                var $element = $(this);
+                var href = $element.attr('href');
+                var $parent = $element.closest('li');
 
-                window.history.pushState(null, null, routes);//assign new url to address bar and add page in browser history without reloading the page.
-                App.router.render(page);
+
+                if (!$parent.hasClass('active')) {
+                    $li.removeClass('active');
+                    $parent.addClass('active');
+                }
             });
-
         },
         run: () => {
             Object.keys(App).forEach(prop => {
@@ -66,15 +72,16 @@ window.FEAR = (async ($, window) => {
                 }
             })
         },
-
+        modal: () => {
+                $('.fear_all_wrap').prepend('<div class="fear_modalbox"><div class="box_inner"><div class="close"><a href="#"><i class="icon-cancel"></i></a></div><div class="description_wrap"></div></div></div>')
+        },
         router: {
-            routes: {   
-                home: { name: 'home', html: null, after: (callback) => callback()},
-                about: { name: 'about', html: null, after: (callback) => callback()},
+            routes: {
+                home: { name: 'home', html: null, after: (callback) => callback() },
+                about: { name: 'about', html: null, after: (callback) => callback() },
                 works: { name: 'works', html: null, after: (callback) => callback() },
-                contact: { name: 'contact', html: null, after: (callback) => callback()}
+                contact: { name: 'contact', html: null, after: (callback) => callback() }
             },
-            templates: {},
             init: () => {
                 console.log('router was created...');
                 App.router.bindEvents();
@@ -93,10 +100,10 @@ window.FEAR = (async ($, window) => {
             },
             route: async () => {
                 var loc = window.location.hash.replace("#", "");
-                if ( loc == '' ) loc = 'home';
+                if (loc == '') loc = 'home';
 
                 var route = App.router.routes[loc] || App.router.routes['404'];
-                if ( route.html != null ) {
+                if (route.html != null) {
                     App.router.render(route);
                 } else {
                     App.router.fetch(route);
@@ -128,47 +135,38 @@ window.FEAR = (async ($, window) => {
                 $container.fadeOut(500, () => {
                     $container.empty()
                     $container.html(template(source.data));
+                    
                     $container.fadeIn(500, () => {
-
                         source.after(() => {
-                            console.log('re-running app run()');
                             App.run();
                         });
                     })
                 })
             }
-
         },
 
-        utils: {
+        methods: {
             imgtosvg: () => {
 
-                $('img.html').each(function () {
-
+                $('img.html').each(() => {
                     var $img = $(this);
                     var imgClass = $img.attr('class');
                     var imgURL = $img.attr('src');
 
-                    $.get(imgURL, function (data) {
+                    $.get(imgURL, (data) => {
                         // Get the SVG tag, ignore the rest
                         var $svg = $(data).find('svg');
-
-                        // Add replaced image's classes to the new SVG
                         if (typeof imgClass !== 'undefined') {
                             $svg = $svg.attr('class', imgClass + ' replaced-svg');
                         }
-
-                        // Remove any invalid XML tags as per http://validator.w3.org
                         $svg = $svg.removeAttr('xmlns:a');
-
-                        // Replace image with new SVG
                         $img.replaceWith($svg);
 
                     }, 'xml');
 
                 });
             },
-            data_images: () => {
+            images: () => {
 
                 var data = $('*[data-img-url]');
 
@@ -178,7 +176,7 @@ window.FEAR = (async ($, window) => {
                     element.css({ backgroundImage: 'url(' + url + ')' });
                 });
             },
-            get_location: () => {
+            location: () => {
                 var button = $('.href_location');
                 button.on('click', function () {
                     var element = $(this);
@@ -189,9 +187,6 @@ window.FEAR = (async ($, window) => {
                     return false;
                 });
             },
-        },
-
-        methods: {
             menu: () => {
                 var hamburger = $('.fear_topbar .trigger .hamburger');
                 var mobileMenu = $('.fear_mobile_menu');
@@ -273,9 +268,6 @@ window.FEAR = (async ($, window) => {
                     return false;
                 });
             },
-            modal: () => {
-                $('.fear_all_wrap').prepend('<div class="fear_modalbox"><div class="box_inner"><div class="close"><a href="#"><i class="icon-cancel"></i></a></div><div class="description_wrap"></div></div></div>')
-            },
             galleries: () => {
                 $('.gallery_zoom').each(function () { // the containers for all your galleries
                     $(this).magnificPopup({
@@ -318,11 +310,12 @@ window.FEAR = (async ($, window) => {
                     modalBox.addClass('opened');
                     modalBox.find('.description_wrap').html(hiddenContent);
 
-                    App.utils.data_images();
+                    App.methods.images();
+                    App.methods.location();
                     App.plugins.progress();
                     App.plugins.circular();
                     App.plugins.carousel();
-                    App.utils.get_location();
+
                 });
                 close.on('click', function () {
                     modalBox.removeClass('opened');
@@ -347,8 +340,8 @@ window.FEAR = (async ($, window) => {
                     modalBox.find('.portfolio_popup_details').prepend('<div class="top_image"><img src="img/thumbs/4-2.jpg" alt="" /><div class="main" data-img-url="' + image + '"></div></div>');
                     modalBox.find('.portfolio_popup_details .top_image').after('<div class="portfolio_main_title"><h3>' + title + '</h3><span><a href="#">' + category + '</a></span><div>');
 
-                    App.utils.data_images();
-                    App.plugins.popup();
+                    App.methods.images();
+                    // App.plugins.popup();
 
                     return false;
                 });
@@ -378,7 +371,7 @@ window.FEAR = (async ($, window) => {
                     modalBox.find('.news_popup_details .top_image').after('<div class="news_main_title"><h3>' + title + '</h3><span>' + category + '</span><div>');
 
 
-                    App.utils.data_images();
+                    App.methods.images();
                     return false;
                 });
                 closePopup.on('click', function () {
@@ -683,7 +676,7 @@ window.FEAR = (async ($, window) => {
                     });
                 });
 
-                App.utils.imgtosvg();
+                App.methods.imgtosvg();
             },
         }
     };
