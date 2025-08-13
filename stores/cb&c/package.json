@@ -1,0 +1,11 @@
+{
+  "name": "cbnc",
+  "version": "1.0.0",
+  "description": "Comic Books and Cards e-commerce site",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "FearDread",
+  "license": "MIT"
+}
