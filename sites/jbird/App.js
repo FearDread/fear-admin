@@ -15,7 +15,7 @@ const FEAR = require('../../backend/src/FEAR.js'),
         FEAR.app.listen(4001, (err) => {
             FEAR.log.warn('J-Bird Gallary Initialized');
         })
-
+     
         process.on("unhandledRejection", FEAR.shutdown);
         process.on("uncaughtException", FEAR.shutdown);
 

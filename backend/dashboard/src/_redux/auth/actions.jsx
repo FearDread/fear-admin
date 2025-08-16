@@ -8,11 +8,10 @@ export const login = (email, password) => async (dispatch) => {
       
   await API.post("auth/login", { email, password }, config )
     .then((response) => {
-      storePersist.set("auth", { user: response.data.user, 
-          token: response.data.token, 
-          isLoggedIn: true 
-        });
-      dispatch({ type: actionTypes.LOGIN_SUCCESS, payload: response.data.user });
+      const data = response.data.result;
+      
+      storePersist.set("auth", { user: data, token: data,  isLoggedIn: true });
+      dispatch({ type: actionTypes.LOGIN_SUCCESS, payload: data });
     })
     .catch((error) => { dispatch({ type: actionTypes.LOGIN_FAIL, payload: error }); });
 }
@@ -20,8 +19,12 @@ export const login = (email, password) => async (dispatch) => {
 export const logout = () => async(dispatch) => {
   storePersist.remove("auth");
 
-  await API.get(`auth/logout`)
-    .then((response) => { dispatch({ type: actionTypes.LOGOUT_SUCCESS }); })
+  await API.post(`auth/logout`)
+    .then((response) => { 
+      if ( !response.success ) {
+        dispatch({ type: actionTypes.LOGOUT_FAIL }) 
+      }
+      dispatch({ type: actionTypes.LOGOUT_SUCCESS }); })
     .catch((error) => { dispatch({ type: actionTypes.LOGOUT_FAIL, payload: error.message }); });
 }
 

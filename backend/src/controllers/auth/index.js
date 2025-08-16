@@ -27,7 +27,7 @@ exports.login = async (req, res) => {
 }
 
 exports.logout = async (req, res, next) => {
-  res.cookie("jwt", "");
+  return res.status(200).cookie("jwt", "").json({success: true});
 }
 
 exports.register = async (req, res) => {
