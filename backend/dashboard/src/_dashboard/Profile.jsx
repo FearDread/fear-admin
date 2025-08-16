@@ -22,7 +22,7 @@ import logo from "assets/img/FEAR/logo.png";
 const Profile = () => {
     const dispatch = useDispatch();
     const history = useHistory();
-    const { user } = useSelector((state) => state.auth);
+    const { user } = useSelector((state) => state.auth.user);
 
     //dispatch(loadProfile());
   
@@ -32,10 +32,9 @@ const Profile = () => {
     }
 
     useEffect(() => {
-      if (user) {
-        console.log("User Data :: ", user);
-      }
-    }, [history, user]);
+          console.log("User Data :: ", user);
+
+    }, []);
 
   return (
     <>
@@ -68,7 +67,7 @@ const Profile = () => {
                     <Col className="pl-md-1" md="4">
                       <FormGroup>
                         <label>Email address</label>
-                        <Input placeholder="mike@email.com" type="email" />
+                        <Input placeholder="mike@email.com" type="email" defaultValue={user.email}/>
                       </FormGroup>
                     </Col>
                   </Row>
@@ -76,13 +75,13 @@ const Profile = () => {
                     <Col className="pr-md-1" md="6">
                       <FormGroup>
                         <label>Full Name</label>
-                        <Input defaultValue="Mike" value={user.name} type="text" />
+                        <Input  value={user.name} type="text" placeholder="John Doe" />
                       </FormGroup>
                     </Col>
                     <Col className="pl-md-1" md="6">
                       <FormGroup>
                         <label>Username</label>
-                        <Input defaultValue="Andrew" value={user.name} type="text" />
+                        <Input value={user.name} type="text" />
                       </FormGroup>
                     </Col>
                   </Row>
@@ -148,7 +147,7 @@ const Profile = () => {
                     <img
                       alt="..."
                       className="avatar"
-                      src={(user.avatar.url === "") ? logo : user.avatar.url}
+                      src={logo}  
                     />
                     <h5 className="title">{user.name}</h5>
                   </a>
