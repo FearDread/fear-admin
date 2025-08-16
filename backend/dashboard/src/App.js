@@ -3,9 +3,9 @@ import { useHistory, useLocation, Route, Switch, Redirect } from 'react-router-d
 import AuthLayout from "layouts/Auth/Auth.js";
 import AdminLayout from "layouts/Admin/Admin.js";
 import { useSelector, useDispatch } from "react-redux";
-
+ 
 function App(props) {
-  const location = useLocation();
+  const locaion = useLocation();
   const history = useHistory();
   const dispatch = useDispatch();
   const { isLoggedIn } = useSelector((state) => state.auth);
@@ -25,7 +25,7 @@ function App(props) {
           isLoggedIn ? <AdminLayout {...props} />
         : <Redirect to={{ pathname: '/auth/login', state: { from: props.location } }} />
         <Redirect from="/" to="/admin" />
-      </Switch>
+      </Switch>    
   );
 }
 

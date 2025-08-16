@@ -60,13 +60,9 @@ const Brandlist = () => {
   }
 
   return (
-      <>
-      {loading ? (
-        <>
-          <div className="content">
-            <Loader />
-          </div>
-        </>
+    <>
+    {loading ? (
+      <Loader />
       ) : (
       <>
         <div className="content">

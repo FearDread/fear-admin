@@ -16,7 +16,6 @@ import "assets/css/style.css";
 
 export const App = () => {
 
-
     return (
         <BrowserRouter>
             <Suspense >
@@ -25,6 +24,9 @@ export const App = () => {
                     <Route path="/" element={<Layout />}>
 
                         <Route index element={<Home />} />
+                        <Route path="/about" element={<About />} />
+                        <Route path="/shop" element={<Shop />} />
+                        <Route path="/contact" element={<Contact />} />
 
                     </Route>
                 </Routes>
