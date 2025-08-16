@@ -91,7 +91,7 @@ function ProductList() {
             }),
             (() => {
               console.log("remove product :: ", item);
-              setAlert(confirmDelete(item._id, "product", deleteProductHandler, hideAlert));
+              confirmDelete(item._id, "product", deleteProductHandler, hideAlert);
               //confirmDelete(item._id);
             })
           ))

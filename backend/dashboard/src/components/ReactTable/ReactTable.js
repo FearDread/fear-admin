@@ -214,7 +214,7 @@ function Table({ columns, data }) {
             {page.map((row, i) => {
               prepareRow(row);
               return (
-                <tr
+                <tr key={i}
                   {...row.getRowProps()}
                   className={classNames(
                     "rt-tr",

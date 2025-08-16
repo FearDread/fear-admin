@@ -37,7 +37,7 @@ function NewProduct() {
   const fileInputRef = useRef();
   const { user } = useSelector((state) => state.auth);
   const { loading, success } = useSelector((state) => state.product);
-  const { categories } = useSelector((state) => state.cat);
+  const categories = useSelector((state) => state.cat.categories);
   const { brands } = useSelector((state) => state.brand);
 
   const handleCategoryChange = (e) => {
@@ -206,7 +206,7 @@ function NewProduct() {
                               type="select"
                               name="category"
                               placeholder="Choose Category"
-                              value={categories}
+                              value={category}
                               onChange={handleCategoryChange} >
                               {categories.map((cate, key) => (
                                 <option key={cate._id} value={cate.title}>
