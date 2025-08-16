@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { toast } from "react-toastify";
+import ReactBSAlert from "react-bootstrap-sweetalert";
 import {
   Button,
   Card,
@@ -22,6 +23,7 @@ import Loader from "components/Loader/Loading.js";
 const CategoryNew = () => {
   const dispatch = useDispatch();
   const history = useHistory();
+  const [ alert, setAlert ] = useState(null);
   const [title, setTitle] = useState("");
   const { success, loading } = useSelector((state) => state.cat);
 
@@ -32,13 +34,32 @@ const CategoryNew = () => {
 
     dispatch(CatActions.create(myForm));
   }
+  const successAlert = () => {
+    setAlert(
+      <ReactBSAlert
+        success
+        style={{ display: "block", marginTop: "-100px" }}
+        title="Success!"
+        onConfirm={() => {
+          dispatch({ type: NEW_CATEGORY_RESET });
+          history.push("/admin/products");
+        }}
+        onCancel={() => hideAlert()}
+        confirmBtnBsStyle="success"
+        btnSize="" >
+         Added Category!
+      </ReactBSAlert>
+    );
+  };
+
+  const hideAlert = () => { setAlert(null); };
 
   useEffect(() => {
-    if( success ) {
-      dispatch({type: NEW_CATEGORY_RESET});
-      history.push('/admin/categories');
+    dispatch({type: NEW_CATEGORY_RESET});
+    if ( success ) {
+      successAlert();
     }
-  }, [success, history]);
+  }, [success]);
 
   return (
     <>
@@ -46,6 +67,7 @@ const CategoryNew = () => {
         <Loader />
       ) : ( 
         <>
+          {alert}
           <div className="content">
             <Row>
               <Col md="12">

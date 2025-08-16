@@ -12,10 +12,44 @@ import ReactTable from "components/ReactTable/ReactTable.js";
 import ReactTableActions from "components/ReactTable/ReactTableActions.js";
 import Loader from "components/Loader/Loading.js";
 import * as Category from "_redux/category/actions";
+import * as CategoryTypes from "_redux/category/types";
+import ReactBSAlert from "react-bootstrap-sweetalert";
 
 function CategoryList () {
+  const history = useHistory();
   const dispatch = useDispatch();
+  const [ alert, setAlert ] = useState(null);
   const { categories, loading } = useSelector((state) => state.cat);
+
+
+    const deleteCategoryHandler = (id) => {
+      dispatch(Category.remove(id));
+      dispatch({type: CategoryTypes.DELETE_CATEGORY_RESET});
+      hideAlert()
+    };
+  
+    const confirmDelete = (_id) => {
+      setAlert( 
+        <ReactBSAlert
+          warning
+          style={{ display: "block", marginTop: "-100px" }}
+          title="Are you sure?"
+          onConfirm={() => deleteCategoryHandler(_id)}
+          onCancel={() => hideAlert()}
+          confirmBtnBsStyle="success"
+          cancelBtnBsStyle="danger"
+          confirmBtnText="Yes, delete it!"
+          cancelBtnText="Cancel"
+          showCancel
+          btnSize="">
+          Your sure you want to delete this category?
+        </ReactBSAlert>
+      );
+    };
+  
+    const hideAlert = () => {
+      setAlert(null);
+    };
 
   useEffect(() => {
     dispatch(Category.list());
@@ -32,7 +66,18 @@ function CategoryList () {
     categories && categories.forEach((item, key) => {
       dataTable.push({
         title: item.title,
-        actions: ( ReactTableActions(item, key, 'category') ) 
+                  actions: ( 
+                    ReactTableActions( key, (() => {
+                      console.log("edit category ::", item);
+                      history.push("/admin/category/edit/" + item._id);
+        
+                    }),
+                    (() => {
+                      console.log("remove category :: ", item);
+                      confirmDelete(item._id, "category", deleteCategoryHandler, hideAlert);
+                      //confirmDelete(item._id);
+                    })
+                  ))
       })
     })
     return dataTable;
@@ -45,6 +90,7 @@ function CategoryList () {
       ) : (
       <>
         <div className="content">
+          {alert}
           <Row>
             <Col className="mb-5" md="12">
               <Card>
