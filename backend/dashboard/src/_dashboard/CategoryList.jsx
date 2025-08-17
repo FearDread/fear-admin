@@ -68,14 +68,10 @@ function CategoryList () {
         title: item.title,
                   actions: ( 
                     ReactTableActions( key, (() => {
-                      console.log("edit category ::", item);
                       history.push("/admin/category/edit/" + item._id);
-        
                     }),
                     (() => {
-                      console.log("remove category :: ", item);
                       confirmDelete(item._id, "category", deleteCategoryHandler, hideAlert);
-                      //confirmDelete(item._id);
                     })
                   ))
       })
