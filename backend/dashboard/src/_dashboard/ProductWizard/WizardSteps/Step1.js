@@ -1,4 +1,4 @@
-import React, { useImperativeHandle, useState, useRef } from "react";
+import React, { useImperativeHandle, useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import classnames from "classnames";
@@ -13,8 +13,6 @@ import {
 import { verifyEmail, verifyNumber, verifyLength } from "../../../_utils/validation";
 
 const Step1 = React.forwardRef((props, ref) => {
-  const dispatch = useDispatch();
-  const history = useHistory();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
@@ -25,7 +23,6 @@ const Step1 = React.forwardRef((props, ref) => {
   const handleCategoryChange = (e) => {
     setCategory(e.target.value);
   };
-
   const handleBrandChange = (e) => {
     setBrand(e.target.value);
   };
@@ -40,9 +37,7 @@ const Step1 = React.forwardRef((props, ref) => {
   
   useImperativeHandle(ref, () => ({
     isValidated: undefined,
-    state: {
-      myform,
-    },
+    state: { myform },
   }));
   return (
     <>
@@ -76,7 +71,6 @@ const Step1 = React.forwardRef((props, ref) => {
               type="select"
               name="category"
               placeholder="Choose Category"
-              value={category}
               onChange={handleCategoryChange} >
               {categories.map((cate, key) => (
                 <option key={cate._id} value={cate.title}>
