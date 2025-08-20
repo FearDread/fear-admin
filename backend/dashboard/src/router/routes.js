@@ -3,7 +3,7 @@ import Notifications from "views/pages/Notification.js";
 import SweetAlert from "views/components/SweetAlert.js";
 import Grid from "views/components/Grid.js";
 import RegularForms from "views/components/forms/RegularForms.js";
-import Wizard from "views/components/forms/Wizard.js";
+import Wizard from "_dashboard/ProductWizard/Wizard.js";
 import Widgits from "views/pages/Widgets.js";
 /* ------------------------------------ */
 import Dashboard from "views/Dashboard.jsx";

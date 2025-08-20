@@ -1,23 +1,26 @@
 
-import React from "react";
+import React, { useState } from "react";
 // react plugin used to create DropdownMenu for selecting items
 import Select from "react-select";
 
 // reactstrap components
-import { FormGroup, Input, Row, Col } from "reactstrap";
+import { FormGroup, Input, Row, Col, InputGroup, InputGroupAddon, InputGroupText } from "reactstrap";
 
 const Step3 = React.forwardRef((props, ref) => {
   const [step3Select, setstep3Select] = React.useState(null);
   const [price, setPrice] = useState(0);
     const [quantity, setQuantity] = useState(0);
       const [alert, setAlert] = React.useState(null);
-  const formData = new FormData();
+  const myform = new FormData();
 
-  formData.set('title', title);
-  formData.set("description", description);
+  myform.set('quantity', quantity);
+  myform.set("price", price);
 
   React.useImperativeHandle(ref, () => ({
-    isValidated: undefined
+    isValidated: undefined, 
+    state: {
+      myform
+    }
   }));
   return (
     <>

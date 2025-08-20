@@ -1,20 +1,4 @@
-/*!
-
-=========================================================
-* Black Dashboard PRO React - v1.2.1
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/black-dashboard-pro-react
-* Copyright 2022 Creative Tim (https://www.creative-tim.com)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
-import React from "react";
+import React, { useState } from "react";
 // used for making the prop types of this component
 import PropTypes from "prop-types";
 
@@ -31,13 +15,34 @@ const ImageUpload = ({
   changeBtnClasses,
   removeBtnColor,
   removeBtnClasses,
-  submit
+  submit,
+  sendImages
 }) => {
   const [file, setFile] = React.useState(null);
+  const [images, setImages] = useState([]);
+  const [imagesPreview, setImagesPreview] = useState([]);
   const [imagePreviewUrl, setImagePreviewUrl] = React.useState(
     avatar ? defaultAvatar : defaultImage
   );
   const fileInput = React.useRef(null);
+  const createProductImagesChange = (e) => {
+    const files = Array.from(e.target.files);
+    setImages([]);
+    setImagesPreview([]);
+
+    files.forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (reader.readyState === 2) {
+          setImagesPreview((old) => [...old, reader.result]);
+          setImages((old) => [...old, reader.result]);
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+    sendImages(images)
+  };
+
   const handleImageChange = (e) => {
     e.preventDefault();
     let reader = new FileReader();
@@ -65,9 +70,17 @@ const ImageUpload = ({
   };
   return (
     <div className="fileinput text-center">
-      <input type="file" onChange={handleImageChange} ref={fileInput} />
+      <input type="file" multiple onChange={createProductImagesChange} ref={fileInput} />
       <div className={"thumbnail" + (avatar ? " img-circle" : "")}>
-        <img src={imagePreviewUrl} alt="..." />
+        {imagesPreview && imagesPreview.map((image, index) => (
+          <img
+            key={index}
+            src={image}
+            className="add-product-img"
+            alt="Product Preview"
+          />
+        ))}
+
       </div>
       <div>
         {file === null ? (
