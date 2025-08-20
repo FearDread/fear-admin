@@ -141,7 +141,7 @@ function ProductEdit() {
         <Loader />
       ) : ( 
         <>
-        {alert}
+        {alert  }
           <div className="content">
             <Row>
               <Col md="12">
