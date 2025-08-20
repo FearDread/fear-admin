@@ -96,9 +96,10 @@ const routes = [
         path: "/product/new",
         name: "+ Product",
         mini: "+",
-        component: NewProduct,
+        component: Wizard,
         layout: "/admin",
       },
+      /*
       {
         path: "/product/reviews",
         name: "+ Review",
@@ -106,6 +107,7 @@ const routes = [
         component: Wizard,
         layout: "/admin"
       },
+      */
     ]
   },
       {
