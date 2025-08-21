@@ -41,9 +41,10 @@ const Wizard = () => {
     const formData = new FormData();
 
     formData.set('title', state['info'].myform.get('title'))
-    formData.set("slug", state['info'].myform.get('title').toLowerCase());
+    formData.set("slug", state['info'].myform.get('title').toLowerCase().replace(" ", "-"));
     formData.set("description", state['info'].myform.get('description'));
     formData.set("category", state['info'].myform.get('category'));
+    formData.set("tags", state['info'].myform.get('category'));
     formData.set("brand", state['info'].myform.get('brand'));
 
     formData.set("images", state['images'].myform.get('images'));
@@ -77,7 +78,7 @@ const Wizard = () => {
       successAlert();
     }
 
-  }, []);
+  }, [success]);
 
   useEffect(() => {
     dispatch({ type: NEW_PRODUCT_RESET })
