@@ -1,8 +1,8 @@
 //onst imap = require("../workers/imap");
 //const Contacts = require("../models/contact");
-const smtp = require("../libs/workers/smtp");
 const router = require("express").Router();
-const mailinfo = require("../libs/workers/info"); 
+const smtp = require("../libs/emailer/smtp");
+const mailinfo = require("../libs/emailer/info"); 
 const mailer = new smtp(mailinfo);
 
 router.get('/', (req, res) => {
@@ -22,26 +22,6 @@ router.post("/project", (req, res) => {
         .then((response) => res.json({ success: true, message: response.message }))
         .catch((error) => res.status(500).json({ success: false, message: error.message }))
 })
-
-exports.add = ( app ) => {
-    app.get('/', (req, res) => {
-        mailer.sendEmail()
-            .then((response) => res.send(response.message))
-            .catch((error) => res.status(500).send(error.message));
-    });
-    
-    app.post('/contact', (req, res) => {
-        mailer.sendContactEmail(req.body)
-            .then((response) => res.json({ success: true, message: response.message }))
-            .catch((error) => res.status(500).json({ success: false, message: error.message }))
-    });
-    
-    app.post("/project", (req, res) => {
-        mailer.sendProjectEmail(req.body)
-            .then((response) => res.json({ success: true, message: response.message }))
-            .catch((error) => res.status(500).json({ success: false, message: error.message }))
-    })
-}
 
 module.exports = router;
 
