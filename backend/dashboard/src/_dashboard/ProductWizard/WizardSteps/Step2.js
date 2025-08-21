@@ -10,20 +10,31 @@ const Step2 = React.forwardRef((props, ref) => {
   const [images, setImages] = useState([]);
   const [imagesPreview, setImagesPreview] = useState([]);
 
-  const myform = new FormData();
-  const handleImages = (images) => {
-    setImages(images);
-  }
 
+  const handleImages = (files) => {
+    setImages([]);
+    setImagesPreview([]);
+
+    files.forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (reader.readyState === 2) {
+          setImagesPreview((old) => [...old, reader.result]);
+          setImages((old) => [...old, reader.result]);
+        }
+      };
+
+      reader.readAsDataURL(file);
+    });
+  }
+  const myform = new FormData();
   images && images.forEach((currImg) => {
     myform.append("images", currImg);
   });
 
   useImperativeHandle(ref, () => ({
     isValidated: undefined,
-    state: {
-      myform
-    }
+    state: { myform }
   }));
 
   return (

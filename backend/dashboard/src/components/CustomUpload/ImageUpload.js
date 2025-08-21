@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 // used for making the prop types of this component
 import PropTypes from "prop-types";
 
-import { Button } from "reactstrap";
+import { Button, Input } from "reactstrap";
 
 import defaultImage from "assets/img/image_placeholder.jpg";
 import defaultAvatar from "assets/img/placeholder.jpg";
@@ -18,29 +18,15 @@ const ImageUpload = ({
   submit,
   sendImages
 }) => {
-  const [file, setFile] = React.useState(null);
-  const [images, setImages] = useState([]);
-  const [imagesPreview, setImagesPreview] = useState([]);
+  const [files, setFiles] = useState(null);
   const [imagePreviewUrl, setImagePreviewUrl] = React.useState(
     avatar ? defaultAvatar : defaultImage
   );
-  const fileInput = React.useRef(null);
+  const fileInputRef = useRef();
   const createProductImagesChange = (e) => {
     const files = Array.from(e.target.files);
-    setImages([]);
-    setImagesPreview([]);
-
-    files.forEach((file) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        if (reader.readyState === 2) {
-          setImagesPreview((old) => [...old, reader.result]);
-          setImages((old) => [...old, reader.result]);
-        }
-      };
-      reader.readAsDataURL(file);
-    });
-    sendImages(images)
+    setFiles(files);
+    sendImages(files);
   };
 
   const handleImageChange = (e) => {
@@ -48,10 +34,10 @@ const ImageUpload = ({
     let reader = new FileReader();
     let file = e.target.files[0];
     reader.onloadend = () => {
-      setFile(file);
       setImagePreviewUrl(reader.result);
     };
     reader.readAsDataURL(file);
+
   };
   // eslint-disable-next-line
   const handleSubmit = (e) => {
@@ -59,31 +45,28 @@ const ImageUpload = ({
     // file is the file/image uploaded
     // in this function you can save the image (file) on form submit
     // you have to call it yourself
+
   };
   const handleClick = () => {
-    fileInput.current.click();
+    fileInputRef.current.click();
   };
   const handleRemove = () => {
-    setFile(null);
+    setFiles(null);
     setImagePreviewUrl(avatar ? defaultAvatar : defaultImage);
-    fileInput.current.value = null;
+    fileInputRef.current.value = null;
   };
   return (
     <div className="fileinput text-center">
-      <input type="file" multiple onChange={createProductImagesChange} ref={fileInput} />
+      <input
+        type="file"
+        accept="image/*"
+        onChange={createProductImagesChange}
+        multiple
+        ref={fileInputRef} />
       <div className={"thumbnail" + (avatar ? " img-circle" : "")}>
-        {imagesPreview && imagesPreview.map((image, index) => (
-          <img
-            key={index}
-            src={image}
-            className="add-product-img"
-            alt="Product Preview"
-          />
-        ))}
-
       </div>
       <div>
-        {file === null ? (
+        {files === null ? (
           <Button
             color={addBtnColor}
             className={addBtnClasses}
