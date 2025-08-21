@@ -18,9 +18,7 @@ const Step3 = React.forwardRef((props, ref) => {
 
   React.useImperativeHandle(ref, () => ({
     isValidated: undefined,
-    state: {
-      myform
-    }
+    state: { myform }
   }));
   return (
     <>

@@ -3,7 +3,8 @@ import React, { useState, useImperativeHandle } from "react";
 // reactstrap components
 import { Row, Col, Input } from "reactstrap";
 
-// core components
+import defaultImage from "assets/img/image_placeholder.jpg";
+import defaultAvatar from "assets/img/placeholder.jpg";
 import ImageUpload from "components/CustomUpload/ImageUpload.js";
 
 const Step2 = React.forwardRef((props, ref) => {
@@ -42,14 +43,6 @@ const Step2 = React.forwardRef((props, ref) => {
       <h5 className="info-text">Upload Product Media (Fileinput)</h5>
       <Row className="justify-content-center">
         <Col className="text-center" lg="10">
-          {imagesPreview && imagesPreview.map((image, index) => (
-            <img
-              key={index}
-              src={image}
-              className="add-product-img"
-              alt="Product Preview"
-            />
-          ))}
           <ImageUpload
             changeBtnClasses="btn-simple"
             addBtnClasses="btn-simple"

@@ -23,21 +23,27 @@ const ImageUpload = ({
     avatar ? defaultAvatar : defaultImage
   );
   const fileInputRef = useRef();
-  const createProductImagesChange = (e) => {
-    const files = Array.from(e.target.files);
-    setFiles(files);
-    sendImages(files);
-  };
 
   const handleImageChange = (e) => {
     e.preventDefault();
-    let reader = new FileReader();
-    let file = e.target.files[0];
-    reader.onloadend = () => {
-      setImagePreviewUrl(reader.result);
-    };
-    reader.readAsDataURL(file);
+    const files = Array.from(e.target.files);
+    setFiles(files);
+    if (sendImages !== undefined) {
+      sendImages(files);
+    }
 
+    files.forEach((file) => {
+      let reader = new FileReader();
+      reader.onload = () => {
+        if (reader.readyState === 2) {
+          setImagePreviewUrl(reader.resul);
+        }
+      };
+      reader.onloadend = () => {
+        setImagePreviewUrl(reader.result);
+      }
+      reader.readAsDataURL(file);
+    });
   };
   // eslint-disable-next-line
   const handleSubmit = (e) => {
@@ -52,7 +58,7 @@ const ImageUpload = ({
   };
   const handleRemove = () => {
     setFiles(null);
-    setImagePreviewUrl(avatar ? defaultAvatar : defaultImage);
+    setImagePreviewUrl(defaultImage);
     fileInputRef.current.value = null;
   };
   return (
@@ -60,10 +66,11 @@ const ImageUpload = ({
       <input
         type="file"
         accept="image/*"
-        onChange={createProductImagesChange}
+        onChange={handleImageChange}
         multiple
         ref={fileInputRef} />
       <div className={"thumbnail" + (avatar ? " img-circle" : "")}>
+        <img src={imagePreviewUrl ? imagePreviewUrl : defaultImage} alt="" />
       </div>
       <div>
         {files === null ? (
