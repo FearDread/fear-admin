@@ -26,8 +26,14 @@ require("dotenv").config();
             });
         });
 
-        process.on("unhandledRejection", FEAR.shutdown);
-        process.on("uncaughtException", FEAR.shutdown);
+        process.on("unhandledRejection", (err) => {
+            FEAR.log.error(err)
+            FEAR.shutdown()
+        });
+        process.on("uncaughtException", (err) => {
+            FEAR.log.error(err)
+            FEAR.shutdown()
+        });
         
         process.on('SIGTERM', FEAR.shutdown);
         process.on('SIGINT', FEAR.shutdown);

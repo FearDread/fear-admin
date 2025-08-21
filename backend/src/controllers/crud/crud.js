@@ -48,6 +48,7 @@ exports.read = tryCatch(async (Model, req, res) => {
  *  @returns {string} Message
  */
 exports.create = tryCatch(async (Model, req, res) => {
+  console.log('Create Prod::', req.body);
   if (req.body.images) {
     const links = await cloud.uploadImages(req.body.images);
     req.body.images = links;
