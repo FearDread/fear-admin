@@ -2,17 +2,21 @@ import React, { Suspense, useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useSelector } from "react-redux";
 
-import Layout from "./layout/layout";
-import Home from "./pages/home.jsx";
+import Layout from "./layout/Layout.jsx";
+import Home from "./pages/Home.jsx";
+import About from "./pages/About.jsx";
+import Login from "./pages/Login.jsx";
+import Register from "./pages/Register.jsx";
+import Shop from "./pages/Shop.jsx";
 
 import store from "./features/store";
 
-import "assets/css/bootstrap.min.css"
-import "assets/css/all.min.css";
-import 'assets/css/swiper-bundle.min.css';
-import "assets/css/animate.css";
-import "assets/css/nice-select.css";
-import "assets/css/style.css";
+import "./assets/css/bootstrap.min.css"
+import "./assets/css/all.min.css";
+import './assets/css/swiper-bundle.min.css';
+import "./assets/css/animate.css";
+import "./assets/css/nice-select.css";
+import "./assets/css/style.css";
 
 export const App = () => {
 
@@ -27,6 +31,8 @@ export const App = () => {
                         <Route path="/about" element={<About />} />
                         <Route path="/shop" element={<Shop />} />
                         <Route path="/contact" element={<Contact />} />
+                        <Route path="/login" element={<Login />} />
+                        <Route path="/register" element={<Register />} />
 
                     </Route>
                 </Routes>
