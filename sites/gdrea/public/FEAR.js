@@ -59,7 +59,7 @@ window.FEAR = (async ($, window) => {
         run: () => {
             Object.keys(App).forEach(prop => {
 
-                if (prop == 'utils' || prop == 'methods' || prop == 'plugins') {
+                if (prop == 'methods' || prop == 'plugins') {
 
                     for (const func in App[prop]) {
 
@@ -72,7 +72,7 @@ window.FEAR = (async ($, window) => {
             })
         },
         modal: () => {
-                $('.fear_all_wrap').prepend('<div class="fear_modalbox"><div class="box_inner"><div class="close"><a href="#"><i class="icon-cancel"></i></a></div><div class="description_wrap"></div></div></div>')
+            $('.fear_all_wrap').prepend('<div class="fear_modalbox"><div class="box_inner"><div class="close"><a href="#"><i class="icon-cancel"></i></a></div><div class="description_wrap"></div></div></div>')
         },
         mobile: () => {
                 var hamburger = $('.fear_topbar .trigger .hamburger');
@@ -103,6 +103,7 @@ window.FEAR = (async ($, window) => {
                 home: { name: 'home', html: null, after: (callback) => callback() },
                 about: { name: 'about', html: null, after: (callback) => callback() },
                 works: { name: 'works', html: null, after: (callback) => callback() },
+                github: { name: 'github', html: null, after: (callback) => callback() },
                 contact: { name: 'contact', html: null, after: (callback) => callback() }
             },
             init: () => {
@@ -147,6 +148,16 @@ window.FEAR = (async ($, window) => {
                         console.error("Error loading template:", textStatus, errorThrown);
                     }
                 });
+            },
+            fetchGitProfile: () => {
+                $.ajax({
+                    url: 'https://api.github.com/users/FearDread',
+                    success: (data) => {
+                        console.log('github data = ', data);
+                    },
+                    error: (qXHR, textStatus, errorThrown) => {
+                        console.error("Error loading github:", textStatus, errorThrown);
+                    }})
             },
             render: (source) => {
                 var $wrapper = $('.fear_all_wrap'),
@@ -248,7 +259,9 @@ window.FEAR = (async ($, window) => {
                     }
                     else {
                         // Returns successful data submission message when the entered information is stored in database.
-                        $.post("modal/contact.html", { ajax_name: name, ajax_email: email, ajax_message: message, ajax_subject: subject }, function (data) {
+                        $.post("http://fear.master.com/fear/api/mail/contact",
+                             { ajax_name: name, ajax_email: email, ajax_message: message, ajax_subject: subject, ajax_source: "gdrea.fear@gmail.com" },
+                             (data) => {
 
                             $(".contact_form .returnmessage").append(data);//Append returned message to message paragraph
                             if ($(".contact_form .returnmessage span.contact_error").length) {
