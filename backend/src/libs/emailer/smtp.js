@@ -56,20 +56,20 @@ module.exports = class Worker {
     sendContactEmail = async (data) => {
         return new Promise((resolve, reject) => {
             let transport = nodemailer.createTransport(this.mailinfo.smtp);
-            const { $subject, email, message } = data;
+            const { $subject, $email, $message, $source } = data;
 
             const options = {
-                from: this.email,
+                from: $source,
                 to: this.email,
-                subject:"Contact Form Submission from " + email,
-                text: message,
+                subject:"Contact Form :: " + $email,
+                text: $message,
             }
 
-            transport.sendMail(options, function(error, info) {
-                if (error) {
-                    console.log(error);
-                    return reject({ message: `An error has occured: ${error}`});
-                }
+            transport.sendMail(options, (error, info) => {
+                console.log('send contact email resp :: ', info);
+                
+                if (error) return reject({ message: `An error has occured: ${error}`});
+                
                 return resolve({ message: 'Email sent succesfully!'})
             })
         })
