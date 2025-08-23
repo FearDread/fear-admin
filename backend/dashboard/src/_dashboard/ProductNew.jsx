@@ -23,7 +23,7 @@ import * as BrandActions from "_redux/brand/actions";
 import { NEW_PRODUCT_RESET } from "_redux/product/types";
 
 function NewProduct() {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch(); 
   const history = useHistory();
   const [title, setTitle] = useState("");
   const [price, setPrice] = useState(0);
