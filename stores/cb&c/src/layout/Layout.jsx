@@ -3,10 +3,8 @@ import { Outlet } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { ToastContainer } from "react-toastify";
 
-import Header from "../components/header";
-import Footer from "../components/footer";
-
-import AOS from "aos";
+import Header from "../components/header/Header";
+import Footer from "../components/footer/Footer";
 
 export const Layout = () => {
 
@@ -33,3 +31,5 @@ export const Layout = () => {
             </>
     )
 }
+
+export default Layout;

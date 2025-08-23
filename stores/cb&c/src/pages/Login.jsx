@@ -126,6 +126,7 @@ export default function RegisterLoginSection() {
   };
 
   return (
+    <>
     <section className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 py-20">
       <div className="max-w-7xl mx-auto px-4">
         <div className="bg-white/10 backdrop-blur-lg rounded-3xl shadow-2xl overflow-hidden">
@@ -395,15 +396,16 @@ export default function RegisterLoginSection() {
                       <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
                         <span className="text-white text-xs font-bold">f</span>
                       </div>
-                      <span className="text-gray-700 font-medium">Continue with Facebook</span>
+                      <span className="text-gray-700 font-medium">Continue with Facebook</span></button>
                     </div>
+           
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
     </section>
+    </>
   );
 }

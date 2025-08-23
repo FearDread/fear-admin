@@ -348,15 +348,16 @@ export default function LoginSection() {
                       <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center">
                         <span className="text-white text-xs font-bold">f</span>
                       </div>
-                      <span className="text-gray-700">Continue with Facebook</span>
+                      <span className="text-gray-700">Continue with Facebook</span>          </button>
                     </div>
+          
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+
     </section>
     </>
   );
