@@ -2,21 +2,17 @@ import React, { Suspense, useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useSelector } from "react-redux";
 
-import Layout from "./layout/Layout.jsx";
-import Home from "./pages/Home.jsx";
-import About from "./pages/About.jsx";
-import Login from "./pages/Login.jsx";
-import Register from "./pages/Register.jsx";
-import Shop from "./pages/Shop.jsx";
+import Layout from "./layout/Layout";
+import Home from "./pages/Home";
+import About from "./pages/About";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Shop from "./pages/Shop";
+import Contact from "./pages/Contact";
 
 import store from "./features/store";
 
-import "./assets/css/bootstrap.min.css"
-import "./assets/css/all.min.css";
-import './assets/css/swiper-bundle.min.css';
-import "./assets/css/animate.css";
-import "./assets/css/nice-select.css";
-import "./assets/css/style.css";
+
 
 export const App = () => {
 
@@ -41,3 +37,5 @@ export const App = () => {
 
     )
 }
+
+export default App;

@@ -8,9 +8,9 @@ import {
      ChevronRight, 
      Heart, 
      Star,
-     Fire 
+     LucideBone 
 } from 'lucide-react';
-import Header from "../components/header/header";
+import Header from "../components/header/Header";
 
 
 const Home = () => {
@@ -141,7 +141,7 @@ const Home = () => {
           <div className="relative container mx-auto px-4 h-full flex items-center">
             <div className="max-w-2xl">
               <h4 className="flex items-center gap-2 text-lg mb-4 animate-fade-in">
-                <Fire className="w-5 h-5 text-orange-500" />
+                <LucideBone className="w-5 h-5 text-orange-500" />
                 GET <span className="text-purple-400">25% OFF</span> NOW
               </h4>
               <h1 className="text-6xl font-bold mb-6 leading-tight animate-slide-up">
@@ -231,7 +231,7 @@ const Home = () => {
                     Shop Now
                   </button>
                   <div className="flex items-center gap-2 text-orange-400">
-                    <Fire className="w-5 h-5" />
+                    <LucideBone className="w-5 h-5" />
                     GET <span className="text-purple-400">25% OFF</span> NOW
                   </div>
                 </div>
@@ -358,7 +358,7 @@ const Home = () => {
                   </button>
                 </div>
                 <div className="flex items-center gap-2 text-orange-400">
-                  <Fire className="w-5 h-5" />
+                  <LucideBone className="w-5 h-5" />
                   GET <span className="text-purple-400">25% OFF</span> NOW
                 </div>
               </div>
@@ -372,7 +372,7 @@ const Home = () => {
             <div className="grid xl:grid-cols-2 gap-12 items-center">
               <div>
                 <h4 className="flex items-center gap-2 text-lg mb-6">
-                  <Fire className="w-5 h-5 text-orange-500" />
+                  <LucideBone className="w-5 h-5 text-orange-500" />
                   GET <span className="text-purple-400">25% OFF</span> NOW
                 </h4>
                 <div className="flex items-center gap-4 mb-6">
@@ -506,65 +506,7 @@ const Home = () => {
           </div>
         </section>
       </main>
-
-
-
-      {/* Custom Styles */}
-      <style jsx>{`
-        @keyframes marquee {
-          0% {
-            transform: translateX(100%);
-          }
-          100% {
-            transform: translateX(-100%);
-          }
-        }
-
-        @keyframes fade-in {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
-        }
-
-        @keyframes slide-up {
-          from {
-            transform: translateY(30px);
-            opacity: 0;
-          }
-          to {
-            transform: translateY(0);
-            opacity: 1;
-          }
-        }
-
-        .animate-marquee {
-          animation: marquee 20s linear infinite;
-        }
-
-        .animate-fade-in {
-          animation: fade-in 1s ease-out;
-        }
-
-        .animate-slide-up {
-          animation: slide-up 1s ease-out;
-        }
-
-        .delay-200 {
-          animation-delay: 0.2s;
-        }
-
-        .delay-300 {
-          animation-delay: 0.3s;
-        }
-
-        .delay-400 {
-          animation-delay: 0.4s;
-        }
-      `}</style>
-    </div>
+    </>
   );
 };
 
