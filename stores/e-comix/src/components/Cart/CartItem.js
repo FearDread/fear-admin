@@ -12,7 +12,7 @@ const CartItem = ({ data }) => {
                 <div className="d-flex align-items-center justify-content-between">
                     <Link to={linkref} className="products-sm-pic">
                         <div className="imo-caty">
-                            <img src={data.images[0].url} alt="bn" />
+                            <img src={data.images && data.images[0].url} alt="bn" />
                         </div>
                     </Link>
                     <div className="cart-ps-details">
