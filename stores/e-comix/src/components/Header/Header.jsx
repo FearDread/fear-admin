@@ -4,7 +4,7 @@ import CartBasket from "../Cart/CartBasket";
 import store from "../../features/store";
 import "./Header.css";
 
-const Header = ({ cart }) => {
+const Header = ({ cartData }) => {
  
   const user = (store.local.has('auth')) ? store.local.get('auth') : undefined;
   const { data: userState, success } = useSelector(state => state.user);
@@ -16,8 +16,8 @@ const Header = ({ cart }) => {
   }
 
   useEffect(() => {
-
-  }, []);
+    console.log('cart  = ', cartData);
+  }, [cartData]);
 
   return (
     <>
@@ -83,7 +83,7 @@ const Header = ({ cart }) => {
                     <span className="nubn">1</span>
                   </button>
 
-                  <CartBasket {...cart} />
+                  <CartBasket {...cartData} />
 
                 </li> 
                 </>
