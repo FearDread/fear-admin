@@ -66,7 +66,7 @@ module.exports = class Worker {
             }
 
             transport.sendMail(options, (error, info) => {
-                console.log('send contact email resp :: ', info);
+                console.log('send contact email resp :: ', error);
                 
                 if (error) return reject({ message: `An error has occured: ${error}`});
                 
