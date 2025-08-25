@@ -98,7 +98,7 @@ class ServerManager {
   async initializeDatabase() {
     return new Promise((resolve, reject) => {
       try {
-        this.fearApp.getDatabase().run(this.fearApp.getEnvironment(), (err) => {
+        this.fearApp.getDatabase().connect(this.fearApp.getEnvironment(), (err) => {
           if (err) {
             this.fearApp.getLogger().error('Database initialization failed:', err);
             reject(err);
