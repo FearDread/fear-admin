@@ -5,7 +5,7 @@
   "description": "",
   "main": "backend/src/FEAR.js",
   "scripts": {
-    "dev": "node backend/server.js",
+    "dev": "node backend/server_class.js",
     "start": "node backend/server.js",
     "test": "mocha test/**/*.js",
     "apidoc": "apidoc -i routes/ -o public/apidoc"
