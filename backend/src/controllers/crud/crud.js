@@ -1,160 +1,579 @@
 const { tryCatch } = require("../../libs/handler/error");
 const cloud = require("../../libs/cloud");
 const SearchFeatures = require("../../libs/features/api");
+
 /**
- * {get} /all Documents for requested Model
- *  @returns {boolean} Sucess
- *  @returns {string} Message
- *  @returns {Array} Result: Array of found Documents
+ * Generic CRUD operations for any Mongoose Model
+ * All methods use then/catch pattern for consistency
+ */
+
+/**
+ * Get all documents for requested Model
+ * @param {mongoose.Model} Model - Mongoose model
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @returns {boolean} Success
+ * @returns {string} Message
+ * @returns {Array} Result: Array of found Documents
  */
 exports.all = tryCatch(async (Model, req, res) => {
-  //const featured = api(Model.find(), req.query).paginate();
-
-  await Model.find()
-    .sort({ category: "asc" })
-    .populate()
+  const { sort = 'category', order = 'asc', populate = true } = req.query;
+  let query = Model.find();
+  // Apply sorting
+  const sortOrder = order === 'desc' ? 'desc' : 'asc';
+  query = query.sort({ [sort]: sortOrder });
+  // Apply population if requested
+  if (populate && populate !== 'false') {
+    query = query.populate();
+  }
+  return query
     .then((result) => {
-       return res.status(200).json(
-        { result, success: true, message: "All Documents found" }
-      );
+      if (!result || result.length === 0) {
+        return res.status(200).json({ result: [],success: true,message: "No documents found", count: 0});
+      }  
+      return res.status(200).json({
+        result, success: true, message: `Found ${result.length} documents`, count: result.length
+      });
     })
-    .catch((error) => { 
-      return res.status(400).json(
-        { result: null, success: false, message: "No docs found." }
-      ); 
+    .catch((error) => {
+      console.error('Error in all method:', error);
+      return res.status(500).json({result: null,success: false, message: "Error retrieving documents", error: error.message});
     });
 });
 
 /**
- *  Retrieves a single document by id.
- *  @param {string} req.params.id
- *  @returns {Document} Single Document
+ * Retrieves a single document by id
+ * @param {mongoose.Model} Model - Mongoose model
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @param {string} req.params.id - Document ID
+ * @returns {Document} Single Document
  */
 exports.read = tryCatch(async (Model, req, res) => {
-
-  if (!req.params) throw new Error("No ID Params");
-
-  const _id  = req.params.id;
- //const { prodId } = req.params.productId;
-
-  await Model.find({_id})
-    .then((result) => { return res.status(200).json({ result, success: true, message: "Found Doc"}); })
-    .catch((error) => { return res.status(404).json({ result: error, success: false, message: "No Doc Found"}); })
-});
-
-/**
- *  Creates a Single document by giving all necessary req.body fields
- *  @param {object} req.body
- *  @returns {string} Message
- */
-exports.create = tryCatch(async (Model, req, res) => {
-  console.log('Create Prod::', req.body);
-  if (req.body.images) {
-    const links = await cloud.uploadImages(req.body.images);
-    req.body.images = links;
+  if (!req.params || !req.params.id) {
+    return res.status(400).json({
+      result: null,
+      success: false,
+      message: "Document ID is required"
+    });
   }
-  await new Model(req.body)
-    .save()
-    .then((result) => { 
-      if (!result) throw new Error("Error saving document");
-      return res.status(200).json({ result, success: true, message: "Successfully Created the document in Model " });
-    }) 
-    .catch((error) => {
-      if (error.name == "ValidationError") {
-        return res.status(400).json({ result: error, success: false, message: "Required fields are not supplied" });
-      } else {
-        throw new Error("Internal Server Error");
+
+  const { id } = req.params;
+  const { populate = true } = req.query;
+
+  // Validate ObjectId format
+  if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+    return res.status(400).json({
+      result: null,
+      success: false,
+      message: "Invalid document ID format"
+    });
+  }
+
+  let query = Model.findById(id);
+  
+  // Apply population if requested
+  if (populate && populate !== 'false') {
+    query = query.populate();
+  }
+
+  return query
+    .then((result) => {
+      if (!result) {
+        return res.status(404).json({
+          result: null,
+          success: false,
+          message: `Document with ID ${id} not found`
+        });
       }
+      
+      return res.status(200).json({
+        result,
+        success: true,
+        message: "Document found successfully"
+      });
+    })
+    .catch((error) => {
+      console.error('Error in read method:', error);
+      return res.status(500).json({
+        result: null,
+        success: false,
+        message: "Error retrieving document",
+        error: error.message
+      });
     });
 });
 
 /**
- *  Updates a Single document
- *  @param {object, string} (req.body, req.params.id)
- *  @returns {Document} Returns updated document
+ * Creates a single document with all necessary req.body fields
+ * @param {mongoose.Model} Model - Mongoose model
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @param {Object} req.body - Document data
+ * @returns {string} Message
  */
-exports.update = tryCatch(async (Model, req, res) => {
-  const { _id } = req.params.id;
-
-  if (req.body.images) {
-    let links = await cloud.uploadImages(req.body.images);
-    req.body.images = links;
+exports.create = tryCatch(async (Model, req, res) => {
+  console.log('Creating document:', req.body);
+  
+  const documentData = { ...req.body };
+  
+  // Handle image uploads if present
+  if (documentData.images && Array.isArray(documentData.images)) {
+    return cloud.uploadImages(documentData.images)
+      .then((uploadedImages) => {
+        documentData.images = uploadedImages;
+        
+        // Create new document with uploaded images
+        return new Model(documentData).save();
+      })
+      .then((result) => {
+        if (!result) {
+          throw new Error("Failed to save document");
+        }
+        return res.status(201).json({
+          result, success: true, message: `Document created successfully in ${Model.modelName} collection`
+        });
+      })
+      .catch((error) => {
+        console.error('Error in create method with images:', error);
+        
+        if (error.name === "ValidationError") {
+          return res.status(400).json({
+            result: null,
+            success: false,
+            message: "Validation failed: Required fields are missing or invalid",
+            errors: error.errors
+          });
+        }
+        
+        return res.status(500).json({
+          result: null,
+          success: false,
+          message: "Internal server error during document creation",
+          error: error.message
+        });
+      });
   }
 
-  await Model.findOneAndUpdate({ _id }, req.body,
-      { new: true, runValidators: true })
-      .exec()
-      .then((result) => {
-        return res.status(200).json({ result, success: true, message: "we update this document by this id: " + req.params.id });
-      })
-      .catch((err) => {
-        if (err.name == "ValidationError") {
-          return res.status(400).json({ success: false, result: null, message: "Required fields are not supplied" });
-        }
-        throw new Error("Internal Server Error");
-      })
+  // Create document without image uploads
+  return new Model(documentData)
+    .save()
+    .then((result) => {
+      if (!result) {
+        throw new Error("Failed to save document");
+      }
+      
+      return res.status(201).json({
+        result,
+        success: true,
+        message: `Document created successfully in ${Model.modelName} collection`
+      });
+    })
+    .catch((error) => {
+      console.error('Error in create method:', error);
+      
+      if (error.name === "ValidationError") {
+        return res.status(400).json({
+          result: null,
+          success: false,
+          message: "Validation failed: Required fields are missing or invalid",
+          errors: error.errors
+        });
+      }
+      
+      if (error.code === 11000) {
+        return res.status(409).json({
+          result: null,
+          success: false,
+          message: "Document already exists with provided unique fields",
+          error: error.message
+        });
+      }
+      
+      return res.status(500).json({
+        result: null,
+        success: false,
+        message: "Internal server error during document creation",
+        error: error.message
+      });
+    });
 });
 
 /**
- *  Delete a Single document
- *  @param {string} req.params.id
- *  @returns {string} Message response
+ * Updates a single document
+ * @param {mongoose.Model} Model - Mongoose model
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @param {Object} req.body - Updated document data
+ * @param {string} req.params.id - Document ID
+ * @returns {Document} Returns updated document
+ */
+exports.update = tryCatch(async (Model, req, res) => {
+  if (!req.params || !req.params.id) {
+    return res.status(400).json({
+      result: null,
+      success: false,
+      message: "Document ID is required"
+    });
+  }
+
+  const { id } = req.params;
+  const updateData = { ...req.body };
+  
+  // Remove undefined values
+  Object.keys(updateData).forEach(key => {
+    if (updateData[key] === undefined) {
+      delete updateData[key];
+    }
+  });
+
+  // Validate ObjectId format
+  if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+    return res.status(400).json({
+      result: null,
+      success: false,
+      message: "Invalid document ID format"
+    });
+  }
+
+  // Handle image uploads if present
+  if (updateData.images && Array.isArray(updateData.images)) {
+    return cloud.uploadImages(updateData.images)
+      .then((uploadedImages) => {
+        updateData.images = uploadedImages;
+        
+        // Update document with uploaded images
+        return Model.findOneAndUpdate(
+          { _id: id },
+          updateData,
+          { new: true, runValidators: true }
+        ).exec();
+      })
+      .then((result) => {
+        if (!result) {
+          return res.status(404).json({
+            result: null,
+            success: false,
+            message: `Document with ID ${id} not found`
+          });
+        }
+        
+        return res.status(200).json({
+          result,
+          success: true,
+          message: `Document updated successfully with ID: ${id}`
+        });
+      })
+      .catch((error) => {
+        console.error('Error in update method with images:', error);
+        
+        if (error.name === "ValidationError") {
+          return res.status(400).json({
+            result: null,
+            success: false,
+            message: "Validation failed: Invalid field values provided",
+            errors: error.errors
+          });
+        }
+        
+        return res.status(500).json({
+          result: null,
+          success: false,
+          message: "Internal server error during document update",
+          error: error.message
+        });
+      });
+  }
+
+  // Update document without image uploads
+  return Model.findOneAndUpdate(
+    { _id: id },
+    updateData,
+    { new: true, runValidators: true }
+  )
+    .exec()
+    .then((result) => {
+      if (!result) {
+        return res.status(404).json({
+          result: null,
+          success: false,
+          message: `Document with ID ${id} not found`
+        });
+      }
+      
+      return res.status(200).json({
+        result,
+        success: true,
+        message: `Document updated successfully with ID: ${id}`
+      });
+    })
+    .catch((error) => {
+      console.error('Error in update method:', error);
+      
+      if (error.name === "ValidationError") {
+        return res.status(400).json({
+          result: null,
+          success: false,
+          message: "Validation failed: Invalid field values provided",
+          errors: error.errors
+        });
+      }
+      
+      if (error.code === 11000) {
+        return res.status(409).json({
+          result: null,
+          success: false,
+          message: "Update failed: Duplicate value for unique field",
+          error: error.message
+        });
+      }
+      
+      return res.status(500).json({
+        result: null,
+        success: false,
+        message: "Internal server error during document update",
+        error: error.message
+      });
+    });
+});
+
+/**
+ * Delete a single document
+ * @param {mongoose.Model} Model - Mongoose model
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @param {string} req.params.id - Document ID
+ * @returns {string} Message response
  */
 exports.delete = tryCatch(async (Model, req, res) => {
+  if (!req.params || !req.params.id) {
+    return res.status(400).json({
+      result: null,
+      success: false,
+      message: "Document ID is required"
+    });
+  }
+
   const { id } = req.params;
 
-  await Model.findOneAndDelete({ _id: id }).exec()
-    .then((result) => { return res.status(200).json({ result, success: true, message: "Successfully Deleted the document by id: " + id}); })
-    .catch((error) => { return res.status(404).json({ success: false, result: null, message: error.message }); });
+  // Validate ObjectId format
+  if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+    return res.status(400).json({
+      result: null,
+      success: false,
+      message: "Invalid document ID format"
+    });
+  }
+
+  return Model.findOneAndDelete({ _id: id })
+    .exec()
+    .then((result) => {
+      if (!result) {
+        return res.status(404).json({
+          result: null,
+          success: false,
+          message: `Document with ID ${id} not found`
+        });
+      }
+      
+      // TODO: Clean up associated images if they exist
+      if (result.images && Array.isArray(result.images)) {
+        // Could add cloud.deleteImages(result.images) here
+        console.log('Document had images that should be cleaned up:', result.images);
+      }
+      
+      return res.status(200).json({
+        result,
+        success: true,
+        message: `Document deleted successfully with ID: ${id}`
+      });
+    })
+    .catch((error) => {
+      console.error('Error in delete method:', error);
+      return res.status(500).json({
+        result: null,
+        success: false,
+        message: "Error deleting document",
+        error: error.message
+      });
+    });
 });
 
 /**
- *  Get all documents of a Model
- *  @param {Object} req.params
- *  @returns {Object} Results with pagination
+ * Get paginated list of documents
+ * @param {mongoose.Model} Model - Mongoose model
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @param {Object} req.query - Query parameters
+ * @returns {Object} Results with pagination
  */
 exports.list = tryCatch(async (Model, req, res) => {
-  const page = req.query.page || 1;
+  const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.items) || 10;
-  const skip = page * limit - limit;
+  const skip = (page - 1) * limit;
+  const { sort = 'createdAt', order = 'desc', populate = true } = req.query;
 
-  const countPromise = Model.count();
-  const resultsPromise = Model.find()
-      .skip(skip)
-      .limit(limit)
-      .sort({ created: "desc" })
-      .populate();
+  // Limit maximum items per page
+  const maxLimit = Math.min(limit, 100);
+  const sortOrder = order === 'asc' ? 1 : -1;
 
-  await Promise.all([resultsPromise, countPromise])
-    .then((result, count) => {
-      const pages = Math.ceil(count / limit);
-      const pagination = { page, pages, items: count };
+  // Create count and results promises
+  const countPromise = Model.countDocuments();
+  
+  let resultsQuery = Model.find()
+    .skip(skip)
+    .limit(maxLimit)
+    .sort({ [sort]: sortOrder });
+    
+  // Apply population if requested
+  if (populate && populate !== 'false') {
+    resultsQuery = resultsQuery.populate();
+  }
 
-      if ( count > 0 ) {
-        return res.status(200).json(
-          { result, success: true, pagination, message: "Successfully found all Docs" }
-        );
+  const resultsPromise = resultsQuery.exec();
+
+  return Promise.all([resultsPromise, countPromise])
+    .then(([result, count]) => {
+      const totalPages = Math.ceil(count / maxLimit);
+      const pagination = {
+        currentPage: page,
+        totalPages,
+        totalItems: count,
+        itemsPerPage: maxLimit,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1
+      };
+
+      if (count > 0) {
+        return res.status(200).json({
+          result,
+          success: true,
+          pagination,
+          message: `Found ${result.length} of ${count} documents`
+        });
       } else {
-        return res.status(203).json(
-          { result: [], success: false, pagination, message: "Collection is Empty" }
-        );
+        return res.status(200).json({
+          result: [],
+          success: true,
+          pagination,
+          message: "Collection is empty"
+        });
       }
     })
-    .catch((error) => { return res.status(400).json({ success: false, result: error })}); 
+    .catch((error) => {
+      console.error('Error in list method:', error);
+      return res.status(500).json({
+        result: null,
+        success: false,
+        message: "Error retrieving document list",
+        error: error.message
+      });
+    });
 });
+
 /**
- *  Searching documents with specific properties
- *  @param {Object} req.query
- *  @returns {Array} List of Documents
-*/
-exports.search = tryCatch( async (Model, req, res) => {
-  const searchFeature = new SearchFeatures(Model, req.query)
-    .search()
-    .paginate(10);
+ * Search documents with specific properties
+ * @param {mongoose.Model} Model - Mongoose model
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @param {Object} req.query - Query parameters
+ * @returns {Array} List of Documents
+ */
+exports.search = tryCatch(async (Model, req, res) => {
+  const { limit = 10, sort, fields, populate } = req.query;
+  
+  try {
+    const searchFeatures = new SearchFeatures(Model, req.query, {
+      defaultSort: sort ? { [sort]: -1 } : { createdAt: -1 }
+    });
 
-  await searchFeature.query
-    .then((result) => { return res.status(200).json({ success: true, result }); })
-    .catch((error) => { return res.status(500).json({ success: false, result: error }); });;
+    // Build search query
+    let searchQuery = searchFeatures
+      .search()
+      .filter()
+      .sort()
+      .paginate(parseInt(limit));
+
+    // Apply field selection if specified
+    if (fields) {
+      searchQuery = searchQuery.selectFields(fields);
+    }
+
+    // Apply population if specified
+    if (populate && populate !== 'false') {
+      searchQuery = searchQuery.populate(populate === 'true' ? undefined : populate);
+    }
+
+    // Execute the search
+    return searchQuery.execute()
+      .then((searchResult) => {
+        return res.status(200).json({
+          success: true,
+          result: searchResult.data,
+          meta: searchResult.meta,
+          message: `Found ${searchResult.data.length} matching documents`
+        });
+      })
+      .catch((searchError) => {
+        console.error('Search execution failed:', searchError);
+        throw searchError;
+      });
+      
+  } catch (searchFeatureError) {
+    console.error('Search feature initialization failed:', searchFeatureError);
+    
+    // Fallback to basic search if SearchFeatures fails
+    const { keyword } = req.query;
+    const limit = parseInt(req.query.limit) || 10;
+    
+    if (!keyword) {
+      return res.status(400).json({
+        success: false,
+        result: null,
+        message: "Search keyword is required"
+      });
+    }
+
+    return Model.find({
+      $or: [
+        { name: { $regex: keyword, $options: 'i' } },
+        { description: { $regex: keyword, $options: 'i' } }
+      ]
+    })
+      .limit(limit)
+      .sort({ createdAt: -1 })
+      .then((result) => {
+        return res.status(200).json({
+          success: true,
+          result,
+          message: `Found ${result.length} documents using basic search`
+        });
+      })
+      .catch((error) => {
+        console.error('Basic search failed:', error);
+        return res.status(500).json({
+          success: false,
+          result: null,
+          message: "Search operation failed",
+          error: error.message
+        });
+      });
+  }
 });
 
-
+/**
+ * Create a controller object with all CRUD methods bound to a specific Model
+ * @param {mongoose.Model} Model - Mongoose model
+ * @returns {Object} Controller object with all CRUD methods
+ */
+exports.crudController = (Model) => {
+  return {
+    all: (req, res) => exports.all(Model, req, res),
+    read: (req, res) => exports.read(Model, req, res),
+    create: (req, res) => exports.create(Model, req, res),
+    update: (req, res) => exports.update(Model, req, res),
+    delete: (req, res) => exports.delete(Model, req, res),
+    list: (req, res) => exports.list(Model, req, res),
+    search: (req, res) => exports.search(Model, req, res)
+  };
+};
