@@ -126,7 +126,7 @@ export function FeatureFactory(entity, reducers = {}, endpoints = null) {
    * @param {Object} options.initialState - Custom initial state
    * @returns {Object} Created slice and async actions
    */
-  const createSlice = (options = {}) => {
+  const createFactorySlice = (options = {}) => {
     const { service = null, initialState = null } = options;
     const sliceName = entity;
     
@@ -175,7 +175,7 @@ export function FeatureFactory(entity, reducers = {}, endpoints = null) {
     adapter,
     manager: createReducerManager,
     inject: mergeObjects,
-    create: createSlice,
+    create: createFactorySlice,
     
     // Utility methods
     getEntityName: () => entity,
