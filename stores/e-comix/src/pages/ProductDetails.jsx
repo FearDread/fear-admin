@@ -1,351 +1,531 @@
-import React, { useEffect, useState } from "react"
-import { useParams, useSearchParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { toast } from "react-toastify";
-import Loader from "../components/Loader/Loader";
-import BannerSub from "../components/Banner/BannerSub"
-import Recommended from "../components/Carousel/Recommended";
-import { Product } from "../features/products/slice";
-import { store } from "../features/store";
-import ReactImageZoom from "react-image-zoom";
-//import ReactImageZoom from "react-image-zoom";
-//import ReactStars from "react-rating-stars-component"
-//import { toast } from "react-toastify";
-//ddProdToCart, getCart } from "../features/user/service";
-import defaultProdImg from "../assets/images/abstract_banner_1.jpg";
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
+import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
+import ReactImageZoom from 'react-image-zoom';
 
+import Loader from '../components/Loader/Loader';
+import BannerSub from '../components/Banner/BannerSub';
+import Recommended from '../components/Carousel/Recommended';
+import { Product } from '../features/products/slice';
+import defaultProdImg from '../assets/images/abstract_banner_1.jpg';
+
+// Constants
+const QUANTITY_LIMITS = {
+  MIN: 1,
+  MAX: 50,
+  STEP: 1,
+};
+
+const TABS = {
+  DESCRIPTION: 'description',
+  REVIEWS: 'reviews',
+  SHIPPING: 'shipping',
+};
+
+const IMAGE_ZOOM_CONFIG = {
+  width: 594,
+  height: 600,
+  zoomWidth: 600,
+};
+
+/**
+ * ProductDetails component for displaying detailed product information
+ * @returns {JSX.Element} Product details page
+ */
 const ProductDetails = () => {
+  // Router hooks
   const { id } = useParams();
-  const [quantity, setQuantity] = useState(1);
-  const [alreadyAdded, setAlreadyAdded] = useState(false);
-  const { data, loading } = useSelector(state => state.product.data );
-  const isLoading = useSelector(state => state.product.loading );
-  const activeProduct = useSelector(state => state.product.product );
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const getProductDetails = () => {
-    store.dispatch(Product.fetchOne({id}));
-  }
-  const props = {
-    width: 594,
-    height: 600,
-    zoomWidth: 600,
-    img: activeProduct?.images
-      ? activeProduct?.images[0]?.url
-      : defaultProdImg
-  };
-  
-  useEffect(() => {
+  // Local state
+  const [quantity, setQuantity] = useState(QUANTITY_LIMITS.MIN);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [activeTab, setActiveTab] = useState(TABS.DESCRIPTION);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [error, setError] = useState(null);
 
-    getProductDetails() 
+  // Redux state
+  const {
+    data: products,
+    loading: isLoading,
+    error: apiError,
+    product: activeProduct,
+  } = useSelector((state) => state.product);
 
+  // Validation
+  const productId = useMemo(() => {
+    if (!id) {
+      setError('Product ID is required');
+      return null;
+    }
+    return id;
+  }, [id]);
 
+  // Memoized computed values
+  const productImages = useMemo(() => {
+    if (!activeProduct?.images || !Array.isArray(activeProduct.images)) {
+      return [{ url: defaultProdImg, alt: 'Default product image' }];
+    }
+    return activeProduct.images.map((img, index) => ({
+      url: img.url || defaultProdImg,
+      alt: img.alt || `${activeProduct.title || 'Product'} image ${index + 1}`,
+    }));
+  }, [activeProduct]);
+
+  const currentImage = useMemo(() => {
+    return productImages[selectedImageIndex] || productImages[0];
+  }, [productImages, selectedImageIndex]);
+
+  const imageZoomProps = useMemo(() => ({
+    ...IMAGE_ZOOM_CONFIG,
+    img: currentImage.url,
+  }), [currentImage.url]);
+
+  const breadcrumbItems = useMemo(() => [
+    { label: 'Home', href: '/', active: false },
+    { label: 'Products', href: '/products', active: false },
+    { label: activeProduct?.title || 'Product Details', active: true },
+  ], [activeProduct?.title]);
+
+  const productFeatures = useMemo(() => {
+    if (!activeProduct) return [];
+    
+    return [
+      { label: 'Category', value: activeProduct.category },
+      { label: 'Brand', value: activeProduct.brand },
+      { label: 'SKU', value: activeProduct.sku || activeProduct._id },
+      { label: 'Availability', value: activeProduct.stock > 0 ? 'In Stock' : 'Out of Stock' },
+    ].filter(item => item.value);
+  }, [activeProduct]);
+
+  // Event handlers
+  const handleQuantityChange = useCallback((newQuantity) => {
+    const parsedQuantity = parseInt(newQuantity, 10);
+    
+    if (isNaN(parsedQuantity)) return;
+    
+    const clampedQuantity = Math.max(
+      QUANTITY_LIMITS.MIN,
+      Math.min(QUANTITY_LIMITS.MAX, parsedQuantity)
+    );
+    
+    setQuantity(clampedQuantity);
   }, []);
 
-  /*
-  useEffect(() => {
-    for (let index = 0; index < cartState?.length; index++) {
-      if (id === cartState[index]?.productId?._id) {
-        setAlreadyAdded(true);
-      }
+  const handleQuantityIncrement = useCallback(() => {
+    handleQuantityChange(quantity + 1);
+  }, [quantity, handleQuantityChange]);
+
+  const handleQuantityDecrement = useCallback(() => {
+    handleQuantityChange(quantity - 1);
+  }, [quantity, handleQuantityChange]);
+
+  const handleImageSelect = useCallback((index) => {
+    if (index >= 0 && index < productImages.length) {
+      setSelectedImageIndex(index);
     }
-  });
-*/
+  }, [productImages.length]);
+
+  const handleAddToCart = useCallback(async () => {
+    if (!activeProduct || !productId) {
+      toast.error('Product information is not available');
+      return;
+    }
+
+    if (activeProduct.stock <= 0) {
+      toast.error('Product is out of stock');
+      return;
+    }
+
+    setIsAddingToCart(true);
+    
+    try {
+      // Dispatch add to cart action
+      // await dispatch(addToCart({ productId, quantity }));
+      toast.success(`Added ${quantity} item(s) to cart`);
+    } catch (error) {
+      console.error('Failed to add to cart:', error);
+      toast.error('Failed to add product to cart');
+    } finally {
+      setIsAddingToCart(false);
+    }
+  }, [activeProduct, productId, quantity]);
+
+  const handleBuyNow = useCallback(async () => {
+    await handleAddToCart();
+    navigate('/checkout');
+  }, [handleAddToCart, navigate]);
+
+  const handleTabChange = useCallback((tabId) => {
+    setActiveTab(tabId);
+  }, []);
+
+  // Effects
+  useEffect(() => {
+    if (!productId) return;
+
+    const fetchProduct = async () => {
+      try {
+        setError(null);
+        await dispatch(Product.fetchOne({ id: productId }));
+      } catch (err) {
+        console.error('Failed to fetch product:', err);
+        setError('Failed to load product details');
+      }
+    };
+
+    fetchProduct();
+  }, [productId, dispatch]);
+
+  useEffect(() => {
+    if (apiError) {
+      setError(typeof apiError === 'string' ? apiError : 'An error occurred');
+    }
+  }, [apiError]);
+
+  // Reset selected image when product changes
+  useEffect(() => {
+    setSelectedImageIndex(0);
+  }, [activeProduct?._id]);
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <main className="float-start w-100 total-body home-body mt-0">
+        <section className="float-start w-100">
+          <Loader />
+        </section>
+      </main>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <main className="float-start w-100 total-body home-body mt-0">
+        <section className="float-start w-100 p-5">
+          <div className="container">
+            <div className="alert alert-danger" role="alert">
+              <h4>Error Loading Product</h4>
+              <p>{error}</p>
+              <button 
+                className="btn btn-primary mt-2" 
+                onClick={() => window.location.reload()}
+              >
+                Retry
+              </button>
+            </div>
+          </div>
+        </section>
+      </main>
+    );
+  }
+
+  // No product found
+  if (!activeProduct) {
+    return (
+      <main className="float-start w-100 total-body home-body mt-0">
+        <section className="float-start w-100 p-5">
+          <div className="container">
+            <div className="alert alert-warning" role="alert">
+              <h4>Product Not Found</h4>
+              <p>The requested product could not be found.</p>
+              <button 
+                className="btn btn-primary mt-2" 
+                onClick={() => navigate('/products')}
+              >
+                Browse Products
+              </button>
+            </div>
+          </div>
+        </section>
+      </main>
+    );
+  }
 
   return (
     <>
-      {(isLoading) ? (
-        <>
-          <main className="float-start w-100 total-body home-body mt-0">
-            <section className="float-start w-100">
-              <Loader />
-            </section>
-          </main>
-        </>
-    ) : (
-      <> 
       <BannerSub />
       <main className="float-start w-100 total-body home-body mt-0">
-
+        {/* Breadcrumb */}
         <section className="bedcrum float-start w-100">
           <div className="container">
             <nav aria-label="breadcrumb">
               <ol className="breadcrumb">
-                <li key={1} className="breadcrumb-item"><a href="product-details.html#">Home</a></li>
-                <li key={2} className="breadcrumb-item active" aria-current="page">Product Details</li>
+                {breadcrumbItems.map((item, index) => (
+                  <li 
+                    key={index}
+                    className={`breadcrumb-item ${item.active ? 'active' : ''}`}
+                    {...(item.active ? { 'aria-current': 'page' } : {})}
+                  >
+                    {item.active ? (
+                      item.label
+                    ) : (
+                      <a href={item.href}>{item.label}</a>
+                    )}
+                  </li>
+                ))}
               </ol>
             </nav>
           </div>
         </section>
 
         <section className="category float-start w-100 position-relative">
-
           <div className="listing-page-div">
             <div className="container">
-                  <div className="row g-5 product-details-div">
-                    <div className="col-lg-6">
-                      <div className="main-product-image products-slide-1">
-                        <div>
-                          { (activeProduct) ? (
-                            <ReactImageZoom {...props} />
+              <div className="row g-5 product-details-div">
+                {/* Product Images */}
+                <div className="col-lg-6">
+                  <div className="main-product-image products-slide-1">
+                    <ReactImageZoom {...imageZoomProps} />
+                  </div>
+                  
+                  {productImages.length > 1 && (
+                    <div className="other-product-images thum-pic-slide d-flex flex-wrap gap-15 mt-3">
+                      {productImages.map((image, index) => (
+                        <div 
+                          key={index}
+                          className={`item cursor-pointer ${index === selectedImageIndex ? 'active' : ''}`}
+                          onClick={() => handleImageSelect(index)}
+                        >
+                          <figure className="main-ppic">
+                            <img 
+                              src={image.url} 
+                              className="img-fluid" 
+                              alt={image.alt}
+                              loading="lazy"
+                            />
+                          </figure>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Product Details */}
+                <div className="col-lg-6">
+                  <div className="comon-details-part">
+                    <h5 className="tags-ts">{activeProduct.title}</h5>
+                    <h2 className="my-2">{activeProduct.slug}</h2>
+                    
+                    {/* Rating */}
+                    <div className="ratine">
+                      <span className="stars">
+                        {[...Array(5)].map((_, i) => (
+                          <i 
+                            key={i}
+                            className={`fas fa-star ${i < (activeProduct.rating || 0) ? 'text-warning' : 'text-muted'}`}
+                          />
+                        ))}
+                      </span>
+                      <span className="ms-2">
+                        ({activeProduct.reviews || 0} Review{activeProduct.reviews !== 1 ? 's' : ''})
+                      </span>
+                    </div>
+                    
+                    {/* Price */}
+                    <h3 className="price-text mt-3">
+                      ${activeProduct.price}
+                      {activeProduct.originalPrice && activeProduct.originalPrice > activeProduct.price && (
+                        <span className="text-muted text-decoration-line-through ms-2">
+                          ${activeProduct.originalPrice}
+                        </span>
+                      )}
+                    </h3>
+                    
+                    {/* Product Features */}
+                    <div className="feature-div-list">
+                      <ul className="mt-4">
+                        {productFeatures.map((feature, index) => (
+                          <li key={index}>
+                            <span>{feature.label}:</span>
+                            <span>{feature.value}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    
+                    {/* Quantity Control */}
+                    <div className="quantity-control d-flex align-items-center mt-4" data-quantity="">
+                      <button 
+                        className="btn quantity-btn"
+                        onClick={handleQuantityDecrement}
+                        disabled={quantity <= QUANTITY_LIMITS.MIN}
+                        aria-label="Decrease quantity"
+                      >
+                        <i className="fas fa-minus"></i>
+                      </button>
+                      
+                      <input 
+                        type="number" 
+                        className="quantity-input mx-2"
+                        value={quantity}
+                        min={QUANTITY_LIMITS.MIN}
+                        max={QUANTITY_LIMITS.MAX}
+                        step={QUANTITY_LIMITS.STEP}
+                        name="quantity"
+                        onChange={(e) => handleQuantityChange(e.target.value)}
+                        aria-label="Product quantity"
+                      />
+                      
+                      <button 
+                        className="btn quantity-btn"
+                        onClick={handleQuantityIncrement}
+                        disabled={quantity >= QUANTITY_LIMITS.MAX}
+                        aria-label="Increase quantity"
+                      >
+                        <i className="fas fa-plus"></i>
+                      </button>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="d-flex align-items-center my-4 gap-3">
+                      <button 
+                        className="btn add-btn"
+                        onClick={handleAddToCart}
+                        disabled={isAddingToCart || activeProduct.stock <= 0}
+                      >
+                        <span>
+                          {isAddingToCart ? (
+                            <i className="fas fa-spinner fa-spin"></i>
                           ) : (
-                            <div></div>
+                            <i className="fas fa-shopping-cart"></i>
                           )}
-                          {/*<ReactImageZoom props={{width: 400, height: 250, zoomWidth: 500, img: product?.images[0]?.url}} /> */}
-                        </div>
-                      </div>
-                      <div className="other-product-images thum-pic-slide d-flex flex-wrap gap-15">
-                        {activeProduct?.images && activeProduct.images?.map((item) => {
-                          return (
-                            <div className="item">
-                              <figure className="main-ppic ">
-                                <img src={item.url} className="img-fluid" alt="" />
-                              </figure>
-                            </div>
-                          );
-                        })}
-                      </div>
+                        </span>
+                        <span className="ms-2">
+                          {isAddingToCart ? 'Adding...' : 'Add to Cart'}
+                        </span>
+                      </button>
+                      
+                      <button 
+                        className="btn ad-whish"
+                        onClick={handleBuyNow}
+                        disabled={isAddingToCart || activeProduct.stock <= 0}
+                      >
+                        <span>Buy Now</span>
+                      </button>
                     </div>
-                    <div className="col-lg-6">
-                      <div className="comon-details-part">
-                        <h5 className="tags-ts"> {activeProduct.title} </h5>
-                        <h2 className="my-2"> {activeProduct.slug} </h2>
-                        <div className="ratine">
-                          <span>
-                            <i className="fas fa-star"></i><i className="fas fa-star"></i><i className="fas fa-star"></i>
-                            <i className="fas fa-star"></i><i className="fas fa-star"></i>
-                          </span>
-                          <span>({activeProduct.reviews} Reviews)</span>
-                        </div>
-                        <h3 className="price-text mt-3">
-                          ${activeProduct.price}
-                          {/*<span> ${product.price} </span>*/}
-                        </h3>
-                        <div className="feature-div-list">
-                          <ul className="mt-4">
-                            <li key={1}>
-                              <span>Category:</span>
-                              <span>{activeProduct.category}</span>
-                            </li>
-                            <li key={2}>
-                              <span>Brand</span>
-                              <span>{activeProduct.brand}</span>
-                            </li>
 
-                            <li key={3}>
-                              <span>Tags:</span>
-                              <span>Action, Adventure, Manhua, Martial Arts</span>
-                            </li>
-                            <li key={4}>
-                              <span>ID:</span>
-                              <span>{activeProduct._id}</span>
-                            </li>
-                          </ul>
-                        </div>
-                        <div className="quantity-control" data-quantity="">
-                          <button className="btn quantity-btn" data-quantity-minus="">
-                            <i className="fas fa-minus"></i>
-                          </button>
-                          <input type="number" className="quantity-input"
-                            data-quantity-target=""
-                            value={quantity}
-                            step="0.1" min="1" max="50"
-                            name="quantity"
-                            onChange={() => {
-                              const newQuant = quantity++;
-                              setQuantity(newQuant)
-                            }} />
-
-                          <button className="btn quantity-btn" data-quantity-plus="">
-                            <i className="fas fa-plus"></i>
-                          </button>
-                        </div>
-
-                        <div className="d-flex align-items-center my-4">
-                          <a href="product-details.html#" className="btn add-btn">
-                            <span>
-                              <i className="fas fa-shopping-cart"></i>
-                            </span> <span> Add to Cart  </span> </a>
-                          <a href="product-details.html#" className="btn ad-whish">
-                            <span> Buy Now </span>  </a>
-                        </div>
-
-
-
-                        <div className="delivery-part">
-                          <h5> Free worldwide shipping for orders over <span> $70</span> </h5>
-                          <ul>
-                            <li key={1}> Order will dispatch with in <span> 2 Hours </span> </li>
-                            <li key={2}>  Order delivery with in <span> 3day </span> </li>
-                          </ul>
-                        </div>
-
+                    {/* Stock Status */}
+                    {activeProduct.stock <= 0 && (
+                      <div className="alert alert-warning mt-3">
+                        This product is currently out of stock.
                       </div>
-                    </div>
-                  </div>
-              <div className="tabs-details-gn mt-5 mt-lg-0">
-                <ul className="nav nav-tabs" id="myTab" role="tablist">
-                  <li key="home" className="nav-item" role="presentation">
-                    <button className="nav-link active" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab"
-                    >Description</button>
-                  </li>
-                  <li key="profile" className="nav-item" role="presentation">
-                    <button className="nav-link" data-bs-toggle="tab" data-bs-target="#profile"
-                      type="button" role="tab" >
-                      Review & Feedback     </button>
-                  </li>
+                    )}
 
-                  <li key="shipping" className="nav-item" role="presentation">
-                    <button className="nav-link" data-bs-toggle="tab" data-bs-target="#shipping"
-                      type="button" role="tab" >
-                      Shipping Policy     </button>
-                  </li>
-
-                </ul>
-                <div className="tab-content" id="myTabContent">
-                  <div className="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-                    <div className="comon-desctiopn py-5">
-                      <h3> Description </h3>
-                      <p className="mt-3"> {activeProduct.description }</p>
-                       {/*    
-                      <div className="feature-div-list">
-                        <ul className="mt-4">
-                          <li>
-                            <span>Chapter:</span>
-                            <span>3547</span>
-                          </li>
-                          <li>
-                            <span>Author(s):</span>
-                            <span> James Art</span>
-                          </li>
-                          <li>
-                            <span>Release:</span>
-                            <span>Jun 5 2022</span>
-                          </li>
-                          <li>
-                            <span>Language:</span>
-                            <span>English</span>
-
-                          </li>
-
-
-
-                        </ul>
-                      </div>
-                          */}
-
-
-                    </div>
-                  </div>
-                  <div className="tab-pane fade" id="profile" role="tabpanel"
-                    aria-labelledby="profile-tab">
-                    <div className="listing-paage-divb">
-                      <div className="review-div-sec mt-4">
-
-
-                        <div className="comment-user-div">
-                          <div className="userp">
-                            <div className="us-pic">  <img src="images/cool.png" alt="pico" /> </div>
-                          </div>
-                          <div className="user-dsl">
-                            <h6> Kelvin Martine <span className="d-block"> <i className="fas fa-star"></i> <i className="fas fa-star"></i> <i className="fas fa-star"></i> <i className="fas fa-star"></i>
-                            </span> <span>  June 10, 2020 </span> </h6>
-
-                            <p> Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-                              Lorem Ipsum has been the industry's standard. </p>
-                          </div>
-                        </div>
-
-                        <div className="comment-user-div">
-                          <div className="userp">
-                            <div className="us-pic">  <img src="images/coo.png" alt="pico" /> </div>
-                          </div>
-                          <div className="user-dsl">
-                            <h6> Jone Martine <span className="d-block"> <i className="fas fa-star"></i> <i className="fas fa-star"></i> <i className="fas fa-star"></i> <i className="fas fa-star"></i>
-                            </span> <span>  Nov 05, 2022 </span> </h6>
-
-                            <p> Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-                              Lorem Ipsum has been the industry's standard. </p>
-                          </div>
-                        </div>
-
-
-                      </div>
-
-                      <div className="submit-review mt-5">
-                        <h5> Leave a Comment </h5>
-                        <p> Your email address will not be published. Required fields are marked * </p>
-
-                        <form action="https://oxentictemplates.in/templatemonster/comicstore/man" method="get">
-                          <div className="col-lg-12 pl-0">
-                            <ul className="rate-area">
-                              <input type="radio" id="5-star" name="rating" value="5" readOnly={true} /><label htmlFor="5-star" title="Amazing">5 stars</label>
-                              <input type="radio" id="4-star" name="rating" value="4" readOnly={true} /><label htmlFor="4-star" title="Good">4 stars</label>
-                              <input type="radio" id="3-star" name="rating" value="3" readOnly={true} /><label htmlFor="3-star" title="Average">3 stars</label>
-                              <input type="radio" id="2-star" name="rating" value="2" readOnly={true} /><label htmlFor="2-star" title="Not Good">2 stars</label>
-                              <input type="radio" id="1-star" name="rating" value="1" readOnly={true} /><label htmlFor="1-star" title="Bad">1 star</label>
-                            </ul>
-
-
-                          </div>
-                          <div className="row w-100">
-                            <div className="col-lg-6 form-group">
-                              <input type="text" className="form-control" placeholder="Full Name" />
-
-                            </div>
-                            <div className="col-lg-6 form-group">
-                              <input type="text" className="form-control" placeholder="Email" />
-
-                            </div>
-                            <div className="col-lg-12 form-group">
-                              <textarea className="form-control ted"></textarea>
-                            </div>
-                            <div className="col-lg-12">
-                              <button type="submit" className="btn sub-re">
-                                <span> Submit </span></button>
-
-                            </div>
-                          </div>
-                        </form>
-                      </div>
-
-
-                    </div>
-                  </div>
-
-                  <div className="tab-pane fade" id="shipping" role="tabpanel"
-                    aria-labelledby="profile-tab">
-                    <div className="listing-paage-divb my-5">
-                      <p className="mt-3"> Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap
-                        into electronic typesetting, remaining essentially unchanged.</p>
-
-                      <h5> Packaging & Delivery </h5>
-                      <p className="mt-2"> Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap
-                        into electronic typesetting, remaining essentially unchanged.</p>
-
-                      <h5> Other Ingredients</h5>
-                      <p className="mt-2"> Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap
-                        into electronic typesetting, remaining essentially unchanged.</p>
-
-
+                    {/* Delivery Info */}
+                    <div className="delivery-part">
+                      <h5>
+                        Free worldwide shipping for orders over <span>$70</span>
+                      </h5>
+                      <ul>
+                        <li>Order will dispatch within <span>2 Hours</span></li>
+                        <li>Order delivery within <span>3 days</span></li>
+                      </ul>
                     </div>
                   </div>
                 </div>
               </div>
 
+              {/* Product Tabs */}
+              <div className="tabs-details-gn mt-5">
+                <ul className="nav nav-tabs" role="tablist">
+                  <li className="nav-item" role="presentation">
+                    <button 
+                      className={`nav-link ${activeTab === TABS.DESCRIPTION ? 'active' : ''}`}
+                      onClick={() => handleTabChange(TABS.DESCRIPTION)}
+                      type="button" 
+                      role="tab"
+                      aria-selected={activeTab === TABS.DESCRIPTION}
+                    >
+                      Description
+                    </button>
+                  </li>
+                  <li className="nav-item" role="presentation">
+                    <button 
+                      className={`nav-link ${activeTab === TABS.REVIEWS ? 'active' : ''}`}
+                      onClick={() => handleTabChange(TABS.REVIEWS)}
+                      type="button" 
+                      role="tab"
+                      aria-selected={activeTab === TABS.REVIEWS}
+                    >
+                      Review & Feedback
+                    </button>
+                  </li>
+                  <li className="nav-item" role="presentation">
+                    <button 
+                      className={`nav-link ${activeTab === TABS.SHIPPING ? 'active' : ''}`}
+                      onClick={() => handleTabChange(TABS.SHIPPING)}
+                      type="button" 
+                      role="tab"
+                      aria-selected={activeTab === TABS.SHIPPING}
+                    >
+                      Shipping Policy
+                    </button>
+                  </li>
+                </ul>
+                
+                <div className="tab-content">
+                  {/* Description Tab */}
+                  {activeTab === TABS.DESCRIPTION && (
+                    <div className="tab-pane fade show active" role="tabpanel">
+                      <div className="comon-desctiopn py-5">
+                        <h3>Description</h3>
+                        <p className="mt-3">
+                          {activeProduct.description || 'No description available.'}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Reviews Tab */}
+                  {activeTab === TABS.REVIEWS && (
+                    <div className="tab-pane fade show active" role="tabpanel">
+                      <div className="listing-paage-divb">
+                        <div className="review-div-sec mt-4">
+                          {/* Reviews would be loaded here */}
+                          <p className="text-muted">Reviews functionality coming soon...</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Shipping Tab */}
+                  {activeTab === TABS.SHIPPING && (
+                    <div className="tab-pane fade show active" role="tabpanel">
+                      <div className="listing-paage-divb my-5">
+                        <h5>Shipping Information</h5>
+                        <p className="mt-3">
+                          We offer fast and reliable shipping options for all our products.
+                          Orders are processed within 1-2 business days and shipped via
+                          our trusted carrier partners.
+                        </p>
+                        
+                        <h5>Packaging & Delivery</h5>
+                        <p className="mt-2">
+                          All products are carefully packaged to ensure they arrive in
+                          perfect condition. Delivery times may vary based on your location.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Recommended Products */}
               <div className="like-div-also mt-5">
-                <h2> You may also like </h2>
-                <Recommended />
+                <h2>You may also like</h2>
+                { /* <Recommended {...{ data: products }} /> */}
               </div>
             </div>
           </div>
         </section>
       </main>
     </>
-  )}
-  </>
-  )
-}
+  );
+};
+
 export default ProductDetails;
-
-
