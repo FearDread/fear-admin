@@ -1,27 +1,25 @@
-const FEAR = require('../../backend/src/FEAR'),
-      express = require('express'),
-      path = require('path');
+const FearServer = require('../../backend/src/FEARServer');
 
-(async () => {
+async function main() {
+    const server = new FearServer();
 
-    async function start() {
+    try {
 
-        FEAR.app.use(express.static(path.join(__dirname, '/public'))); // Assuming your SPA files are in a 'public' folder
-        FEAR.app.get('/', (req, res) => {
-            res.sendFile(path.join(__dirname, 'public', 'index.html')); // Send the main HTML file
+        await server.initialize({
+            root: __dirname,
+            app: '/public',
+            build: 'public'
         });
+        await server.startServer();
 
-        FEAR.app.listen(5000, (err) => {
-            FEAR.log.warn('Fear Dread Initialized');
-        })
-
-        process.on("unhandledRejection", FEAR.shutdown);
-        process.on("uncaughtException", FEAR.shutdown);
-        
-        process.on('SIGTERM', FEAR.shutdown);
-        process.on('SIGINT', FEAR.shutdown);
+    } catch (error) {
+        console.error('Failed to start application:', error);
+        process.exit(1);
     }
+}
 
-    await start();
-
-})(FEAR);
+// Handle top-level errors
+main().catch((error) => {
+    console.error('Unhandled error in main:', error);
+    process.exit(1);
+});
