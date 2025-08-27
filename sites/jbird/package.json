@@ -4,6 +4,7 @@
   "description": "Single page Art Portfolio Site ",
   "main": "App.js",
   "scripts": {
+    "start": "node App.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "FearDread",

@@ -1,51 +1,27 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 
-  
-<!-- Mirrored from mixdesign.dev/themeforest/ignite/index-fullscreen-portfolio-kenburns.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 12 Aug 2025 13:59:28 GMT -->
-<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=utf-8" /><!-- /Added by HTTrack -->
+<meta http-equiv="content-type" content="text/html;charset=utf-8" />
 <head>
     <meta charset="utf-8">
+    <title>Fear - Portfolio and Landing Page Template</title>
 
-    <!-- Page Title-->
-    <title>Ignite - Portfolio and Landing Page Template</title>
-
-    <!-- Meta Tags-->
-    <meta name="description" content="Ignite - functional and beautifully designed portfolio and landing page template to kick-start your project">
-    <meta name="keywords" content="ignite, coming soon, under construction, template, coming soon page, html5, css3, fashion, elegant">
-    <meta name="author" content="mix_design">
-
-    <!-- Viewport Meta-->
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-    <!-- Template Favicon & Icons Start -->
     <link rel="icon" href="img/favicon/favicon.ico" sizes="any">
     <link rel="icon" href="img/favicon/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="img/favicon/apple-touch-icon.png">
     <link rel="manifest" href="img/favicon/manifest.webmanifest">
-    <!-- Template Favicon & Icons End -->
 
-    <!-- Facebook Metadata Start -->
-    <meta property="og:image:height" content="1200">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:title" content="Ignite - Portfolio and Landing Page Template">
-    <meta property="og:description" content="Ignite - functional and beautifully designed portfolio and landing page template to kick-start your project">
-    <meta property="og:url" content="index.html">
-    <meta property="og:image" content="favicon/og-image.html">
-    <!-- Facebook Metadata End -->
-
-    <!-- Template Styles Start -->
     <link rel="stylesheet" type="text/css" href="css/loaders/loader.css">
     <link rel="stylesheet" type="text/css" href="css/plugins.css">
     <link rel="stylesheet" type="text/css" href="css/main.css">
-    <!-- Template Styles End -->
 
-    <!-- Custom Browser Color Start -->
     <meta name="theme-color" content="#0c0c0c">
     <meta name="msapplication-navbutton-color" content="#0c0c0c">
     <meta name="apple-mobile-web-app-status-bar-style" content="#0c0c0c">
-    <!-- Custom Browser Color End -->
+
   </head>
 
   <body>
@@ -55,7 +31,8 @@
       <div class="loader">
         <div class="loader__content">
           <div class="loader__logo">
-            <img src="img/logo.svg" alt="Ignite - Portfolio and Landing Page Template">
+            <a href="/" class="loader__logo">FEAR</a>
+            <!--<img src="img/logo.svg" alt="FEAR - Portfolio and Landing Page Template"> -->
           </div>
         </div>
       </div>
@@ -107,7 +84,8 @@
 
             <!-- Logo Start -->
             <div class="logo">
-              <img src="img/logo.svg" alt="Ignite - Portfolio and Landing Page Template">
+              <a href="/" class="header-logo logo">FEAR</a>
+             <!-- <img src="img/logo.svg" alt="Ignite - Portfolio and Landing Page Template"> -->
             </div>
             <!-- Logo End -->
 
@@ -144,7 +122,8 @@
         <!-- Fullscreen Background Start-->
         <div class="fullscreen-bg">
           <!-- kenburns background -->
-          <div id="bgndKenburnsFull"></div>
+          <!-- <div id="bgndKenburnsFull"></div> -->
+          <div class="triangles-js" id="triangles-js"></div>
           <!-- Dark gradient cover layer -->
           <div class="color-layer layer-dark-03"></div>
         </div>
@@ -165,10 +144,10 @@
                   <div id="headline" class="headline centered-mobile">
                     <span class="headline__subtitle">Let's meet</span>
                     <h1 class="headline__title animated-headline">
-                      I'm Alex Walker
+                      I'm Robert Hall
                       <br>
                       <span id="typed-strings">
-                        <b>Web Designer</b>
+                        <b>Graphic Designer</b>
                         <b>3D Artist</b>
                         <b>Illustrator</b>
                       </span>
@@ -227,7 +206,7 @@
                         <div class="col-6 text-end footer-mobile__copyright">
                           <p class="copyright bright">
                             <i class="fa-regular fa-copyright"></i>
-                            <a class="contact-link" href="https://1.envato.market/EKA9WD" target="_blank">Mix Design</a>,
+                            <a class="contact-link" href="http://fear.master.com" target="_blank">FEAR - Admin</a>,
                             2025
                           </p>
                         </div>
@@ -651,7 +630,7 @@
             <div class="container-desktop fullheight d-flex justify-content-end align-items-center">
               <p class="copyright bright">
                 <i class="fa-regular fa-copyright"></i>
-                <a class="contact-link" href="https://1.envato.market/EKA9WD" target="_blank">Mix Design</a>,
+                <a class="contact-link" href="https://fear.master.com" target="_blank">FEAR - Admin</a>,
                 2025
               </p>
             </div>
@@ -851,13 +830,23 @@
     </div>
 
     <!-- Load Scripts Start -->
-    <script src="js/libs.min.js"></script>
-    <script src="js/gallery-init.js"></script>
-    <script src="js/custom.js"></script>
+     <!-- Include jQuery -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+<!-- Include required plugins (optional based on your needs) 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.12/typed.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/8.4.5/swiper-bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+-->
+<script src="/js/libs.min.js"></script>
+<script src="/js/gallery-init.js"></script>
+<!-- Include Ignite Plugin -->
+<script src="/js/fear-plugin.js"></script>
+<script src="/js/custom.js"></script>
     <!-- Load Scripts End -->
 
   </body>
 
 
-<!-- Mirrored from mixdesign.dev/themeforest/ignite/index-fullscreen-portfolio-kenburns.html by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 12 Aug 2025 13:59:35 GMT -->
 </html>
