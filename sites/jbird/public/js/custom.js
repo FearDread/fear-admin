@@ -1,35 +1,42 @@
-// ------------------------------------------------
-// Project Name: Ignite - Portfolio and Landing Page Template
-// Project Description: Ignite - functional and beautifully designed portfolio and landing page template to kick-start your project
-// Tags: mix_design, coming soon, under construction, template, landing page, portfolio, one page, responsive, html5, css3, creative, clean, agency, personal page
-// Version: 1.0.3
-// Build Date: May 2023
-// Last Update: July 2025
-// This product is available exclusively on Themeforest
-// Author: mix_design
-// Author URI: https://themeforest.net/user/mix_design
-// File name: custom.js
-// ------------------------------------------------
 
-// ------------------------------------------------
-// Table of Contents
-// ------------------------------------------------
-//
-//  1. Loader & Loading Animation
-//  2. Typed.js Plugin Settings
-//  3. Swiper Slider
-//  4. Typed.js Plugin Settings
-//  5. Magnific Popup Video
-//  6. KBW-Countdown
-//  7. Vegas Kenburns
-//  8. Skillbars
-//  9. Mailchimp Notify Form
-//  10. Say Hello Form
-//  11. ParticlesJS Background
-//
-// ------------------------------------------------
-// Table of Contents End
-// ------------------------------------------------
+$('body').Fear({
+    // Disable specific features
+    countdown: {
+        enabled: false
+    },
+    vegas: {
+        enabled: true
+    },
+    
+    // Custom particles config
+    particles: {
+        enabled: true,
+        config: {
+            particles: {
+                number: {
+                    value: 50
+                },
+                color: {
+                    value: "#ff0000"
+                }
+            }
+        }
+    },
+    
+    // Custom callbacks
+    onInit: function() {
+        console.log('Ignite plugin initialized!');
+    },
+    onLoadComplete: function() {
+        console.log('All loading complete!');
+        // Custom post-load logic here
+    },
+    onDestroy: function() {
+        console.log('Plugin destroyed');
+    }
+});
+
+/*
 
 $(window).on("load", function() {
    
@@ -44,7 +51,7 @@ $(window).on("load", function() {
     $(".loader").addClass('loaded');
     $("#main").addClass('active animate-in');
     $('#home-trigger').addClass('active-link');
-  }, 300);
+  }, 800);
  
   setTimeout(function(){
     $("body").addClass('loaded');
@@ -260,7 +267,7 @@ $(function() {
     particlesJS('triangles-js', {
       "particles": {
         "number": {
-          "value": 33,
+          "value": 53,
           "density": {
             "enable": true,
             "value_area": 1420.4657549380909
@@ -280,8 +287,8 @@ $(function() {
           },
           "image": {
             "src": "img/github.svg",
-            "width": 100,
-            "height": 100
+            "width": 50,
+            "height": 50
           }
         },
         "opacity": {
@@ -295,7 +302,7 @@ $(function() {
           }
         },
         "size": {
-          "value": 11.83721462448409,
+          "value": 9.83721462448409,
           "random": true,
           "anim": {
             "enable": false,
@@ -373,3 +380,4 @@ $(function() {
   // --------------------------------------------- //
 
 });
+*/

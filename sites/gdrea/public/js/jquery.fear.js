@@ -21,7 +21,7 @@
   };
 
   // Main plugin constructor
-  function FearApp(element, options) {
+  function Fear(element, options) {
     this.element = element;
     this.$element = $(element);
     this.settings = $.extend(true, {}, defaults, options);
@@ -35,7 +35,7 @@
   }
 
   // Plugin prototype methods
-  FearApp.prototype = {
+  Fear.prototype = {
     
     // Initialize the plugin
     init: function() {
@@ -597,7 +597,7 @@
   $.fn[PLUGIN_NAME] = function(options) {
     return this.each(function() {
       if (!$.data(this, DATA_KEY)) {
-        $.data(this, DATA_KEY, new FearApp(this, options));
+        $.data(this, DATA_KEY, new Fear(this, options));
       }
     });
   };
