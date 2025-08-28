@@ -603,7 +603,7 @@
   };
 
   // Global access
-  $.fn[PLUGIN_NAME].Constructor = FearApp;
+  $.fn[PLUGIN_NAME].Constructor = Fear;
   $.fn[PLUGIN_NAME].defaults = defaults;
 
   // Auto-initialize if element exists
