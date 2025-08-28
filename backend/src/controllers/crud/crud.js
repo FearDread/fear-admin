@@ -506,17 +506,15 @@ exports.search = tryCatch(async (Model, req, res) => {
 
     // Execute the search
     return searchQuery.execute()
-      .then((searchResult) => {
+      .then((result) => {
         return res.status(200).json({
-          success: true,
-          result: searchResult.data,
-          meta: searchResult.meta,
-          message: `Found ${searchResult.data.length} matching documents`
+          success: true, result: result.data, meta: result.meta, 
+          message: `Found ${result.data.length} matching documents`
         });
       })
-      .catch((searchError) => {
-        console.error('Search execution failed:', searchError);
-        throw searchError;
+      .catch((error) => {
+        console.error('Search execution failed:', error);
+        throw error;
       });
       
   } catch (searchFeatureError) {
@@ -528,9 +526,7 @@ exports.search = tryCatch(async (Model, req, res) => {
     
     if (!keyword) {
       return res.status(400).json({
-        success: false,
-        result: null,
-        message: "Search keyword is required"
+        success: false, result: null, message: "Search keyword is required"
       });
     }
 
@@ -538,24 +534,17 @@ exports.search = tryCatch(async (Model, req, res) => {
       $or: [
         { name: { $regex: keyword, $options: 'i' } },
         { description: { $regex: keyword, $options: 'i' } }
-      ]
-    })
+      ]})
       .limit(limit)
       .sort({ createdAt: -1 })
       .then((result) => {
         return res.status(200).json({
-          success: true,
-          result,
-          message: `Found ${result.length} documents using basic search`
+          success: true, result, message: `Found ${result.length} documents using basic search`
         });
       })
       .catch((error) => {
-        console.error('Basic search failed:', error);
         return res.status(500).json({
-          success: false,
-          result: null,
-          message: "Search operation failed",
-          error: error.message
+          success: false, result: null, message: "Search operation failed", error: error.message
         });
       });
   }

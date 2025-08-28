@@ -1,260 +1,225 @@
-import React, {useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useSearchParams, Link } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import BannerSub from "../components/Banner/BannerSub"
-import DetailedItem from "../components/Product/DetailedItem";
+import BannerSub from "../components/Banner/BannerSub";
 import Loader from "../components/Loader/Loader";
-import CategoryCheck from "../components/Common/CategoryCheck";
-import { store } from "../features/store";
+
+import CategoryFilter from "../components/Filters/Category";
+import PriceFilter from "../components/Filters/Price";
+import RatingFilter from "../components/Filters/Rating";
+import BrandFilter from "../components/Filters/Brand";
+import SortDropdown from "../components/Filters/Sort";
+import ProductGrid from "../components/Product/Grid";
+
 import { Product } from "../features/products/slice";
 import { Category } from "../features/categories/slice";
 import { Brand } from "../features/brands/slice";
 
-const Shop = (props) => {
-  const dispatch = useDispatch();
-  const [grid, setGrid] = useState(4);
-  const [brands, setBrands] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [tags, setTags] = useState([]);
+// Constants
+const INITIAL_FILTER_STATE = {
+  tag: null,
+  keyword: null,
+  currentCategory: null,
+  brand: null,
+  minPrice: null,
+  maxPrice: null,
+  sort: null,
+};
 
-  //filter state
-  const [tag, setTag] = useState(null);
-  const [keyword, setKeyword] = useState(null);
-  const [currentCategory, setCurrentCategory] = useState(null);
-  const [brand, setBrand] = useState(null);
-  const [minPrice, setminPrice] = useState(null);
-  const [maxPrice, setmaxPrice] = useState(null);
-  const [sort, setSort] = useState(null);
+const GRID_SIZE = 4;
+const PRODUCTS_PER_PAGE = 9;
+const MAX_BRANDS_DISPLAY = 6;
+
+// Custom hook for filter management
+const useFilters = () => {
+  const [filters, setFilters] = useState(INITIAL_FILTER_STATE);
   
-  const [searchParams, setSearchParams] = useSearchParams();
-
-  const { data, loading } = useSelector( state => state.product );
-  const productState = useSelector( state => state.product.data );
-  const brandState = useSelector( state => state.brand.data );
-  const categoryState = useSelector( state => state.category.data );
-  //const loading = true;
-
-  const getProducts = () => {
-    let params = {};
-
-    searchParams.forEach((value, prop) => {
-      params[prop] = value;
-    })
-
-    if (params && params !== undefined) {
-      store.dispatch(Product.search(params));
-    }
-  };
-  const getCategories = () => {
-    store.dispatch(Category.fetch());
-  }
-  const getBrands = () => {
-    store.dispatch(Brand.fetch());
-  }
-  const filterHandler = (e) => {
-    toast('filter here');
-  }
-
-  useEffect(() => {
-    getProducts();
-    getCategories();
-    getBrands();
-  }, [])
-
-  useEffect(() => {
-    let newBrands = [];
-    let category = [];
-    let newtags = [];
-
-    for (let index = 0; index < productState?.result?.length; index++) {
-      const item = productState?.result[index];
-
-      newBrands.push(item.brand);
-      category.push(item.category);
-      newtags.push(item.tags);
-    }
-
-    setBrands(newBrands);
-    setCategories(category);
-    setTags(newtags);
+  const updateFilter = useCallback((key, value) => {
+    setFilters(prev => ({ ...prev, [key]: value }));
   }, []);
+
+  const resetFilters = useCallback(() => {
+    setFilters(INITIAL_FILTER_STATE);
+  }, []);
+
+  return { filters, updateFilter, resetFilters };
+};
+
+// Custom hook for data fetching
+const useShopData = (searchParams) => {
+  const dispatch = useDispatch();
+  
+  const fetchProducts = useCallback(() => {
+    const params = Object.fromEntries(searchParams.entries());
+    if (Object.keys(params).length > 0) {
+      dispatch(Product.search(params));
+    } else {
+      dispatch(Product.fetch());
+    }
+  }, [dispatch, searchParams]);
+
+  const fetchCategories = useCallback(() => {
+    dispatch(Category.fetch());
+  }, [dispatch]);
+
+  const fetchBrands = useCallback(() => {
+    dispatch(Brand.fetch());
+  }, [dispatch]);
+
+  return { fetchProducts, fetchCategories, fetchBrands };
+};
+
+const Shop = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { filters, updateFilter, resetFilters } = useFilters();
+  
+  // Redux selectors
+  const { data: productData, loading } = useSelector(state => state.product);
+  const { data: brandData } = useSelector(state => state.brand);
+  const { data: categoryData } = useSelector(state => state.category);
+
+  // Data fetching hooks
+  const { fetchProducts, fetchCategories, fetchBrands } = useShopData(searchParams);
+
+  // Memoized computed values
+  const products = useMemo(() => {
+    return productData?.result || [];
+  }, [productData]);
+
+  const displayedProducts = useMemo(() => {
+    return products.slice(0, PRODUCTS_PER_PAGE);
+  }, [products]);
+
+  const displayedBrands = useMemo(() => {
+    return brandData?.slice(0, MAX_BRANDS_DISPLAY) || [];
+  }, [brandData]);
+
+  const totalResults = useMemo(() => {
+    return products.length;
+  }, [products]);
+
+  // Event handlers
+  const handleFilterSubmit = useCallback((e) => {
+    e.preventDefault();
+    const params = new URLSearchParams();
+    
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value !== null && value !== '') {
+        params.set(key, value);
+      }
+    });
+    
+    setSearchParams(params);
+    toast.success('Filters applied successfully!');
+  }, [filters, setSearchParams]);
+
+  const handleSortChange = useCallback((sortValue) => {
+    updateFilter('sort', sortValue);
+  }, [updateFilter]);
+
+  const handlePriceRangeChange = useCallback((min, max) => {
+    updateFilter('minPrice', min);
+    updateFilter('maxPrice', max);
+  }, [updateFilter]);
+
+  // Effects
+  useEffect(() => {
+    fetchProducts();
+    fetchCategories();
+    fetchBrands();
+  }, [fetchProducts, fetchCategories, fetchBrands]);
+
+  useEffect(() => {
+    fetchProducts();
+  }, [searchParams, fetchProducts]);
+
+  if (loading) {
+    return (
+      <main className="float-start w-100 total-body home-body mt-0">
+        <section className="float-start w-100">
+          <Loader />
+        </section>
+      </main>
+    );
+  }
 
   return (
     <>
-      {(loading) ? (
-        <>
-          <main className="float-start w-100 total-body home-body mt-0">
-            <section className="float-start w-100">
-              <Loader />
-            </section>
-          </main>
-        </>
-    ) : (
-      <>  
       <BannerSub />
       <main className="float-start w-100 total-body home-body mt-0">
-
         <section className="shop-page float-start w-100">
           <div className="listing-page-div">
             <div className="container">
               <div className="row gx-lg-5">
+                {/* Filters Sidebar */}
                 <div className="col-lg-3">
-                  <div className="accordion mt-4 list-serach-acd" id="accordionPanelsStayOpenExample">
-                    <div className="accordion-item">
-                      <h2 className="accordion-header" >
-                        <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
-                          <span> Categoires </span>
-                        </button>
-                      </h2>
-                      <div id="panelsStayOpen-collapseOne" className="accordion-collapse collapse show">
-                        <div className="accordion-body">
-                          { categoryState && categoryState.map((item) => {
-                            return (
-                              <CategoryCheck {...item} key={item._id} />
-                            )
-                          })}
-                        </div>
-                      </div>
+                  <form onSubmit={handleFilterSubmit}>
+                    <div className="accordion mt-4 list-serach-acd" id="accordionPanelsStayOpenExample">
+                      <CategoryFilter
+                        categories={categoryData}
+                        selectedCategory={filters.currentCategory}
+                        onCategoryChange={(category) => updateFilter('currentCategory', category)}
+                      />
+                      
+                      <PriceFilter
+                        minPrice={filters.minPrice}
+                        maxPrice={filters.maxPrice}
+                        onPriceChange={handlePriceRangeChange}
+                      />
+                      
+                      <RatingFilter
+                        selectedRating={filters.rating}
+                        onRatingChange={(rating) => updateFilter('rating', rating)}
+                      />
+                      
+                      <BrandFilter
+                        brands={displayedBrands}
+                        selectedBrand={filters.brand}
+                        onBrandChange={(brand) => updateFilter('brand', brand)}
+                      />
                     </div>
-                    <div className="accordion-item">
-                      <h2 className="accordion-header" >
-                        <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo">
-                          Price
-                        </button>
-                      </h2>
-                      <div id="panelsStayOpen-collapseTwo" className="accordion-collapse collapse show">
-                        <div className="accordion-body">
-                          <div className="row row-cols-1 row-cols-lg-2">
-                            <div className="col">
-                              <div className="form-group po">
-                                <input type="text" className="form-control" placeholder="Min" />
-                              </div>
-                            </div>
-                            <div className="col">
-                              <div className="form-group po">
-                                <input type="text" className="form-control" placeholder="Max" />
-                              </div>
-                            </div>
-                          </div>
-
-                        </div>
-                      </div>
+                    
+                    <div className="mt-3 d-flex gap-2">
+                      <button type="submit" className="btn submit-btn flex-grow-1">
+                        Apply Filters
+                      </button>
+                      <button 
+                        type="button" 
+                        className="btn btn-outline-secondary"
+                        onClick={resetFilters}
+                      >
+                        Reset
+                      </button>
                     </div>
-
-
-                    <div className="accordion-item mt-4">
-                      <h2 className="accordion-header">
-                        <button className="accordion-button " type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapsefour">
-                          Customer Ratings
-                        </button>
-                      </h2>
-                      <div id="panelsStayOpen-collapsefour" className="accordion-collapse collapse show">
-                        <div className="accordion-body">
-                          <div className="form-check">
-                            <input className="form-check-input" type="checkbox" value="" id="flexCheckDefault11" />
-                              <label className="form-check-label rt-icon" htmlFor="flexCheckDefault11">
-                                <i className="fas fa-star"></i> <i className="fas fa-star"></i> <i className="fas fa-star"></i>
-                                <i className="fas fa-star"></i> <i className="fas fa-star"></i>
-                              </label>
-                          </div>
-
-                          <div className="form-check">
-                            <input className="form-check-input" type="checkbox" value="" id="flexCheckDefault12" />
-                              <label className="form-check-label rt-icon" htmlFor="flexCheckDefault8">
-                                <i className="fas fa-star"></i> <i className="fas fa-star"></i> <i className="fas fa-star"></i>
-                                <i className="fas fa-star"></i> <i className="far fa-star"></i>
-                              </label>
-                          </div>
-
-                          <div className="form-check">
-                            <input className="form-check-input" type="checkbox" value="" id="flexCheckDefault13" />
-                              <label className="form-check-label rt-icon" htmlFor="flexCheckDefault13">
-                                <i className="fas fa-star"></i> <i className="fas fa-star"></i> <i className="fas fa-star"></i>
-                                <i className="far fa-star"></i> <i className="far fa-star"></i>
-                              </label>
-                          </div>
-
-                          <div className="form-check">
-                            <input className="form-check-input" type="checkbox" value="" id="flexCheckDefault14" />
-                              <label className="form-check-label rt-icon" htmlFor="flexCheckDefault14">
-                                <i className="fas fa-star"></i> <i className="fas fa-star"></i> <i className="far fa-star"></i>
-                                <i className="far fa-star"></i> <i className="far fa-star"></i>
-                              </label>
-                          </div>
-
-                        </div>
-                      </div>
-                    </div>
-
-
-                    <div className="accordion-item mt-4">
-                      <h2 className="accordion-header">
-                        <button className="accordion-button " type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapsesix">
-
-                        Top Brands
-                        </button>
-                      </h2>
-                      <div id="panelsStayOpen-collapsesix" className="accordion-collapse collapse show">
-                        <div className="accordion-body">
-
-                          <ul className="d-flex pol-btn align-items-center">
-                          <li key="brands">
-                           { brandState && brandState.slice(0, 6).map((item) => {
-                                return (
-                                    <Link key={item._id} to={"/shop?brand=" + encodeURIComponent(item.title)} className="btn" onClick={getProducts}>{item.title}</Link>
-                                )
-                              })}
-                              </li>
-                          </ul>
-                        </div>
-                      </div>
-                    </div>
-                    <input type="submit" className="btn submit-btn" value="Filter" onClick={filterHandler}/>
-                  </div>
+                  </form>
                 </div>
+
+                {/* Products Section */}
                 <div className="col-lg-9 mt-5 mt-lg-0">
                   <div className="d-flex justify-content-between align-items-center righty">
-                    <h6 className="ashow">Showing<b> 1–12 </b>  of <b>41</b>Results </h6>
-                    <div className="right-section-btn d-flex align-items-center">
-                      <div className="dropdown">
-                        <button className="btn  dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                          Default sorting
-                        </button>
-                        <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                          <li><a className="dropdown-item" href="shop.html#">popularity</a></li>
-                          <li><a className="dropdown-item" href="shop.html#">latest</a></li>
-                          <li><a className="dropdown-item" href="shop.html#">low to high</a></li>
-                          <li><a className="dropdown-item" href="shop.html#">high to low</a></li>
-                        </ul>
-                      </div>
-                    </div>
+                    <h6 className="ashow">
+                      Showing <b>1–{Math.min(PRODUCTS_PER_PAGE, totalResults)}</b> of <b>{totalResults}</b> Results
+                    </h6>
+                    <SortDropdown
+                      currentSort={filters.sort}
+                      onSortChange={handleSortChange}
+                    />
                   </div>
-                  <div id="products" className="mt-4 righty">
-                    <div className="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-lg-5">
-                      
-                      {productState && productState.slice(0, 9).map((item, idx) => {
-                        return (
-                          <DetailedItem {...item} key={idx} />
-                        )
-                      })}
-                    
-                    </div>
-                  </div>
+                  
+                  <ProductGrid
+                    products={displayedProducts}
+                    gridSize={GRID_SIZE}
+                    className="mt-4 righty"
+                  />
                 </div>
               </div>
             </div>
           </div>
         </section>
-
       </main>
     </>
-  )}
-  </>
-  )
-}
+  );
+};
 
 export default Shop;
-
-
-

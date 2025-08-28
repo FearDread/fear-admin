@@ -24,8 +24,8 @@ const CartBasket = (cart) => {
 
     let items = cartState?.length;
     setCartItems(items);
-    console.log('cart  =', cart);
-  }, [cart  ])
+
+  }, [cart])
 
   return (
     <>
@@ -38,8 +38,6 @@ const CartBasket = (cart) => {
         </li>
         <li>
           <div className='cart-basket-items'>
-
-
             {cartItems > 0 && cartState.map((item) => {
               if (item.productId) {
                 return (
@@ -50,7 +48,6 @@ const CartBasket = (cart) => {
                   <div> No Items </div>
                 )
               }
-
             })}
 
           </div>
