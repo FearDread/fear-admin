@@ -8,7 +8,7 @@ import CacheFactory from './cache';
 const CONFIG = {
   // API Base URLs
   baseUrls: {
-    production: process.env.REACT_APP_API_BASE_URL_PROD || 'https://fear.master.com/fear/api/',
+    production: process.env.REACT_APP_API_BASE_URL_PROD || 'http://fear.master.com/fear/api/',
     development: process.env.REACT_APP_API_BASE_URL_DEV || 'http://localhost:4000/fear/api/',
     test: process.env.REACT_APP_API_BASE_URL_TEST || 'http://localhost:3001/fear/api/',
   },
