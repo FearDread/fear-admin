@@ -1,46 +1,4 @@
-/*! ------------------------------------------------
- * Project Name: Name: Ignite - Portfolio and Landing Page Template
- * Project Description: Ignite - functional and beautifully designed portfolio and landing page template to kick-start your project
- * Tags: mix_design, coming soon, under construction, template, landing page, portfolio, one page, responsive, html5, css3, creative, clean, agency, personal page
- * Version: 1.0.3
- * Build Date: May 2023
- * Last Update: July 2025
- * This product is available exclusively on Themeforest
- * Author: mix_design
- * Author URI: https://themeforest.net/user/mix_design */
-/*! File name: main.css
- * ------------------------------------------------
- *
- * ------------------------------------------------
- * Table of Contents
- * ------------------------------------------------
- *  1. Template Backgrounds
- *  2. Fonts
- *  3. Base CSS Styles
- *  4. Transitions
- *  5. Typography
- *  6. Buttons & Controls
- *  7. Forms and Forms Reply Groups
- *  8. Animated Backgrounds
- *  9. Header
- *  10. Footer
- *  11. Main Section
- *  12. Menu
- *  13. Socials
- *  14. Countdown
- *  15. Swiper Slider
- *  16. Popup Dialogs
- *  17. Inner Sections
- *  18. Skillbars
- *  19. Features
- *  20. Contact Data
- *  21. Gallery
- * ------------------------------------------------
- * Table of Contents End
- * ------------------------------------------------ */
-/* ------------------------------------------------*/
-/* Template Backgrounds Start */
-/* ------------------------------------------------*/
+
 @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&amp;display=swap");
 .media-image-1 {
   background-image: url("../img/backgrounds/960x1080-media-1.webp");
@@ -79,25 +37,13 @@
 }
 
 .about-image {
-  background-image: url("../img/backgrounds/960x1080-inner-1.webp");
+  background-image: url("../img/jbird/jbird_2.jpg");
 }
 
 .contact-image {
-  background-image: url("../img/backgrounds/960x1080-inner-2.webp");
+  background-image: url("../img/jbird/pexels_bg.webp");
 }
 
-/* ------------------------------------------------*/
-/* Template Backgrounds End */
-/* ------------------------------------------------*/
-/* ------------------------------------------------*/
-/* Fonts Start */
-/* ------------------------------------------------*/
-/* ------------------------------------------------*/
-/* Fonts End */
-/* ------------------------------------------------*/
-/* ------------------------------------------------*/
-/* Base CSS Styles Start */
-/* ------------------------------------------------*/
 *, *::before, *::after {
   -webkit-box-sizing: border-box;
      -moz-box-sizing: border-box;
@@ -2214,7 +2160,7 @@ background-repeat: no-repeat;
   background-position: bottom center;
   -moz-background-size: 100%;
        background-size: 100%;
-  background-image: url("../img/joker_bg.png");
+  background-image: url("../img/jbird/dark_bg.jpg");
 }
 @media only screen and (min-width: 1200px) {
   .nav__background {
