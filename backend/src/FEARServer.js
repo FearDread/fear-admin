@@ -15,7 +15,7 @@ class FearServer {
   async initialize(paths = {
     root: this.rootDir,
     app: '/backend/dashboard/build',
-    build: '/backend/dashboard/build'
+    build: 'backend/dashboard/build'
   }) {
     try {
       // Import FEAR after dotenv is configured
