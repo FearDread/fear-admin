@@ -168,7 +168,7 @@ export const ThunkFactory = {
    * @param {string} prefix - The operation prefix
    * @returns {Function} The created async thunk
    */
-  create: (entity, prefix, apiUrl = API_URL) => {
+  create: (entity, prefix, apiUrl = ThunkFactory.API_URL) => {
     validateThunkParams(entity, prefix);
     
     const operation = STANDARD_OPERATIONS[prefix];
