@@ -1,12 +1,31 @@
-import { FeatureFactory, ThunkFactory } from "@feardread/feature-factory";
+import { FeatureFactory, ThunkFactory, StateFactory } from "@feardread/feature-factory";
 
-export const login = ThunkFactory.post('user', 'login');
-export const logout = ThunkFactory.post('user', 'logout');
-export const register = ThunkFactory.post('user', 'register');
-export const updateProfile = ThunkFactory.post('user', 'profile');
+const initialState = StateFactory.forList('user');
 
-export const { slice: userSlice, asyncActions: User } = FeatureFactory('user').create({
-    service: { login, logout, register, updateProfile }
+const service = {
+    login: ThunkFactory.post('user', 'login'),
+    logout: ThunkFactory.post('user', 'logout'),
+    register: ThunkFactory.post('user', 'register'),
+    fetchProfile: ThunkFactory.create('user', 'profile'),
+    updateProfile: ThunkFactory.put('user', 'update-profile'),
+    changePassword: ThunkFactory.post('user', 'change-password')
+};
+
+const userFeature = FeatureFactory('user', {
+  setActiveUser: (state, action) => {
+    state.activeUser = action.payload;
+  },
+  clearUsers: (state) => {
+    state.data = [];
+    state.usersList = [];
+  }
+});
+
+// Generate the complete feature
+export const { slice: userSlice, asyncActions: User } = userFeature.create({
+  service,
+  initialState
 });
 
 export default { userSlice, User };
+

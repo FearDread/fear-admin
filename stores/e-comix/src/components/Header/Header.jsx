@@ -1,23 +1,32 @@
-import { useEffect } from "react";
+import { useEffect,   useState } from "react";
 import { useSelector } from "react-redux";
 import CartBasket from "../Cart/CartBasket";
+   
 import store from "../../features/store";
+import { User } from "../../features/user/slice";
+
 import "./Header.css";
 
 const Header = ({ cartData }) => {
- 
+  const [ isLoggedIn, setIsLoggedIn ] = useState(false);
+  const { data, success, loading } = useSelector(state => state.user);
   const user = (store.local.has('auth')) ? store.local.get('auth') : undefined;
-  const { data: userState, success } = useSelector(state => state.user);
-
-
-  const logoutHandler = () => {
+  
+  const logoutHandler = (e) => {
+    e.preventDefault();
+    setIsLoggedIn(false);
+    
     store.local.remove('auth');
-    //User.logout();
+    store.dispatch(User.logout());
   }
 
   useEffect(() => {
-    console.log('cart  = ', cartData);
-  }, [cartData]);
+
+    if ( user !== undefined ) {
+      setIsLoggedIn(true);
+    }
+
+  }, [user, isLoggedIn])
 
   return (
     <>
@@ -71,7 +80,7 @@ const Header = ({ cartData }) => {
             <div className="right-sction">
 
               <ul className="d-flex align-items-center">
-              { user ? (
+              { isLoggedIn ? (
                 <>
                 <li>
                   <a className="right-menu btn logout submit-btn" onClick={logoutHandler}> Logout </a>

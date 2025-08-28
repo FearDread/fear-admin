@@ -1,11 +1,14 @@
-import { FeatureFactory } from "@feardread/feature-factory";
-import { ThunkFactory } from "@feardread/feature-factory";
+import { FeatureFactory, ThunkFactory } from "@feardread/feature-factory";
 
-export const addToCart = ThunkFactory.post('cart', 'new');
-export const getUserCart = ThunkFactory.post('cart', 'user');
+const service = {
+    addToCart: ThunkFactory.post('cart', 'new'),
+    getUserCart: ThunkFactory.post('cart', 'user')
+}
 
-export const { slice: cartSlice, asyncActions: Cart } = FeatureFactory('cart').create({ 
-    service: { addToCart, getUserCart }
-});
+const cartFeature = FeatureFactory('cart', {
+    //TO DO:: Add cart state mutation methods
+})
+
+export const { slice: cartSlice, asyncActions: Cart } = cartFeature.create({service});
 
 export default { cartSlice, Cart };

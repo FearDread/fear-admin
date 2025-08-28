@@ -24,7 +24,7 @@ class SearchFeatures {
       searchFields: [], // Specific fields to search in
       excludeFields: ["keyword", "page", "limit", "sort", "fields"], // Fields to exclude from filtering
       caseSensitive: false, // Case sensitivity for search
-      fuzzySearch: false, // Enable fuzzy matching
+      fuzzySearch: true, // Enable fuzzy matching
       ...options
     };
     
