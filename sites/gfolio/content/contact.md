@@ -14,11 +14,11 @@ seo:
   ### _Let's talk about your project_
 </PageTitle>
 
-Thinking about a new project, a problem to solve, or just want to connect? Let's do it!
+Thinking about a new project, a problem to solve, or just want to connect? Let's do it together!
 
-Need some help with your business network?  Having network security problems?  Contact me for a free consultation.
+Let's Connect
+Interested in discussing a project or opportunity? I'd love to hear from you. Reach out by phone or email—I'm always happy to chat about potential collaborations.
 
-Use the form on this page or get in touch by other means.
 
 <Sep size="12" />
 

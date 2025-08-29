@@ -29,15 +29,15 @@ exports.all = tryCatch(async (Model, req, res) => {
   return query
     .then((result) => {
       if (!result || result.length === 0) {
-        return res.status(200).json({ result: [],success: true,message: "No documents found", count: 0});
-      }  
+        return res.status(200).json({ result: [], success: true, message: "No documents found", count: 0 });
+      }
       return res.status(200).json({
         result, success: true, message: `Found ${result.length} documents`, count: result.length
       });
     })
     .catch((error) => {
       console.error('Error in all method:', error);
-      return res.status(500).json({result: null,success: false, message: "Error retrieving documents", error: error.message});
+      return res.status(500).json({ result: null, success: false, message: "Error retrieving documents", error: error.message });
     });
 });
 
@@ -71,7 +71,7 @@ exports.read = tryCatch(async (Model, req, res) => {
   }
 
   let query = Model.findById(id);
-  
+
   // Apply population if requested
   if (populate && populate !== 'false') {
     query = query.populate();
@@ -86,7 +86,7 @@ exports.read = tryCatch(async (Model, req, res) => {
           message: `Document with ID ${id} not found`
         });
       }
-      
+
       return res.status(200).json({
         result,
         success: true,
@@ -114,15 +114,15 @@ exports.read = tryCatch(async (Model, req, res) => {
  */
 exports.create = tryCatch(async (Model, req, res) => {
   console.log('Creating document:', req.body);
-  
+
   const documentData = { ...req.body };
-  
+
   // Handle image uploads if present
   if (documentData.images && Array.isArray(documentData.images)) {
     return cloud.uploadImages(documentData.images)
       .then((uploadedImages) => {
         documentData.images = uploadedImages;
-        
+
         // Create new document with uploaded images
         return new Model(documentData).save();
       })
@@ -136,7 +136,7 @@ exports.create = tryCatch(async (Model, req, res) => {
       })
       .catch((error) => {
         console.error('Error in create method with images:', error);
-        
+
         if (error.name === "ValidationError") {
           return res.status(400).json({
             result: null,
@@ -145,7 +145,7 @@ exports.create = tryCatch(async (Model, req, res) => {
             errors: error.errors
           });
         }
-        
+
         return res.status(500).json({
           result: null,
           success: false,
@@ -162,7 +162,7 @@ exports.create = tryCatch(async (Model, req, res) => {
       if (!result) {
         throw new Error("Failed to save document");
       }
-      
+
       return res.status(201).json({
         result,
         success: true,
@@ -171,7 +171,7 @@ exports.create = tryCatch(async (Model, req, res) => {
     })
     .catch((error) => {
       console.error('Error in create method:', error);
-      
+
       if (error.name === "ValidationError") {
         return res.status(400).json({
           result: null,
@@ -180,7 +180,7 @@ exports.create = tryCatch(async (Model, req, res) => {
           errors: error.errors
         });
       }
-      
+
       if (error.code === 11000) {
         return res.status(409).json({
           result: null,
@@ -189,7 +189,7 @@ exports.create = tryCatch(async (Model, req, res) => {
           error: error.message
         });
       }
-      
+
       return res.status(500).json({
         result: null,
         success: false,
@@ -219,7 +219,7 @@ exports.update = tryCatch(async (Model, req, res) => {
 
   const { id } = req.params;
   const updateData = { ...req.body };
-  
+
   // Remove undefined values
   Object.keys(updateData).forEach(key => {
     if (updateData[key] === undefined) {
@@ -241,7 +241,7 @@ exports.update = tryCatch(async (Model, req, res) => {
     return cloud.uploadImages(updateData.images)
       .then((uploadedImages) => {
         updateData.images = uploadedImages;
-        
+
         // Update document with uploaded images
         return Model.findOneAndUpdate(
           { _id: id },
@@ -257,7 +257,7 @@ exports.update = tryCatch(async (Model, req, res) => {
             message: `Document with ID ${id} not found`
           });
         }
-        
+
         return res.status(200).json({
           result,
           success: true,
@@ -266,7 +266,7 @@ exports.update = tryCatch(async (Model, req, res) => {
       })
       .catch((error) => {
         console.error('Error in update method with images:', error);
-        
+
         if (error.name === "ValidationError") {
           return res.status(400).json({
             result: null,
@@ -275,7 +275,7 @@ exports.update = tryCatch(async (Model, req, res) => {
             errors: error.errors
           });
         }
-        
+
         return res.status(500).json({
           result: null,
           success: false,
@@ -300,7 +300,7 @@ exports.update = tryCatch(async (Model, req, res) => {
           message: `Document with ID ${id} not found`
         });
       }
-      
+
       return res.status(200).json({
         result,
         success: true,
@@ -309,7 +309,7 @@ exports.update = tryCatch(async (Model, req, res) => {
     })
     .catch((error) => {
       console.error('Error in update method:', error);
-      
+
       if (error.name === "ValidationError") {
         return res.status(400).json({
           result: null,
@@ -318,7 +318,7 @@ exports.update = tryCatch(async (Model, req, res) => {
           errors: error.errors
         });
       }
-      
+
       if (error.code === 11000) {
         return res.status(409).json({
           result: null,
@@ -327,7 +327,7 @@ exports.update = tryCatch(async (Model, req, res) => {
           error: error.message
         });
       }
-      
+
       return res.status(500).json({
         result: null,
         success: false,
@@ -375,13 +375,13 @@ exports.delete = tryCatch(async (Model, req, res) => {
           message: `Document with ID ${id} not found`
         });
       }
-      
+
       // TODO: Clean up associated images if they exist
       if (result.images && Array.isArray(result.images)) {
         // Could add cloud.deleteImages(result.images) here
         console.log('Document had images that should be cleaned up:', result.images);
       }
-      
+
       return res.status(200).json({
         result,
         success: true,
@@ -419,12 +419,12 @@ exports.list = tryCatch(async (Model, req, res) => {
 
   // Create count and results promises
   const countPromise = Model.countDocuments();
-  
+
   let resultsQuery = Model.find()
     .skip(skip)
     .limit(maxLimit)
     .sort({ [sort]: sortOrder });
-    
+
   // Apply population if requested
   if (populate && populate !== 'false') {
     resultsQuery = resultsQuery.populate();
@@ -481,74 +481,75 @@ exports.list = tryCatch(async (Model, req, res) => {
  */
 exports.search = tryCatch(async (Model, req, res) => {
   const { limit = 10, sort, fields, populate } = req.query;
-  
-  try {
-    const searchFeatures = new SearchFeatures(Model, req.query, {
-      defaultSort: sort ? { [sort]: -1 } : { createdAt: -1 }
+
+  const searchFeatures = new SearchFeatures(Model, req.query, {
+    defaultSort: sort ? { [sort]: -1 } : { createdAt: -1 }
+  });
+
+  // Build search query
+  let searchQuery = searchFeatures
+    .search()
+    .filter()
+    .sort()
+    .paginate(parseInt(limit));
+
+  // Apply field selection if specified
+  if (fields) searchQuery = searchQuery.selectFields(fields);
+
+  // Apply population if specified
+  if (populate && populate !== 'false') {
+    searchQuery = searchQuery.populate(populate === 'true' ? undefined : populate);
+  }
+
+  // Execute the search
+  return searchQuery.execute()
+    .then((result) => {
+      return res.status(200).json({
+        success: true, result: result.data, meta: result.meta,
+        message: `Found ${result.data.length} matching documents`
+      });
+    })
+    .catch((error) => {
+      console.error('Search execution failed:', error);
+
+      return searchFeatures.safeSearch()
+        .sort()
+        .execute()
+        .then((result) => {
+          return res.status(200).json({
+            success: true, result, message: `Found ${result.length} documents using basic search`
+          });
+        })
+        .catch((error) => {
+          return res.status(500).json({
+            success: false, result: null, message: "Search operation failed", error: error.message
+          });
+        });
     });
 
-    // Build search query
-    let searchQuery = searchFeatures
-      .search()
-      .filter()
-      .sort()
-      .paginate(parseInt(limit));
-
-    // Apply field selection if specified
-    if (fields) {
-      searchQuery = searchQuery.selectFields(fields);
-    }
-
-    // Apply population if specified
-    if (populate && populate !== 'false') {
-      searchQuery = searchQuery.populate(populate === 'true' ? undefined : populate);
-    }
-
-    // Execute the search
-    return searchQuery.execute()
-      .then((result) => {
-        return res.status(200).json({
-          success: true, result: result.data, meta: result.meta, 
-          message: `Found ${result.data.length} matching documents`
-        });
-      })
-      .catch((error) => {
-        console.error('Search execution failed:', error);
-        throw error;
-      });
-      
-  } catch (searchFeatureError) {
-    console.error('Search feature initialization failed:', searchFeatureError);
-    
-    // Fallback to basic search if SearchFeatures fails
-    const { keyword } = req.query;
-    const limit = parseInt(req.query.limit) || 10;
-    
-    if (!keyword) {
-      return res.status(400).json({
-        success: false, result: null, message: "Search keyword is required"
-      });
-    }
-
-    return Model.find({
-      $or: [
-        { name: { $regex: keyword, $options: 'i' } },
-        { description: { $regex: keyword, $options: 'i' } }
-      ]})
-      .limit(limit)
-      .sort({ createdAt: -1 })
-      .then((result) => {
-        return res.status(200).json({
-          success: true, result, message: `Found ${result.length} documents using basic search`
-        });
-      })
-      .catch((error) => {
-        return res.status(500).json({
-          success: false, result: null, message: "Search operation failed", error: error.message
-        });
-      });
-  }
 });
+/*
+// Fallback to basic search if SearchFeatures fails
+const { keyword } = req.query;
+const limit = parseInt(req.query.limit) || 10;
+ 
+if (!keyword) {
+  return res.status(400).json({
+    success: false, result: null, message: "Search keyword is required"
+  });
+}
+
+return Model.find({
+  $or: [
+    { name: { $regex: keyword, $options: 'i' } },
+    { description: { $regex: keyword, $options: 'i' } }
+  ]})
+  .limit(limit)
+  .sort({ createdAt: -1 })
+
+  });
+  */
+
 
 /**
  * Create a controller object with all CRUD methods bound to a specific Model

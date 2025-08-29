@@ -359,6 +359,28 @@ class SearchFeatures {
       throw new Error(`Text search failed: ${error.message}`);
     }
   }
+
+  safeSearch(obj) {
+        // Fallback to basic search if SearchFeatures fails
+    const { keyword } = this.queryObj || obj; 
+    const limit = parseInt(this.queryObj.limit) || 10;
+    
+    if (!keyword) {
+      return res.status(400).json({
+        success: false, result: null, message: "Search keyword is required"
+      });
+    }
+
+    this.query = this.query.find({
+      $or: [
+        { name: { $regex: keyword, $options: 'i' } },
+        { description: { $regex: keyword, $options: 'i' } }
+      ]})
+      .limit(limit)
+      .sort({ createdAt: -1 });
+      
+      return this;
+  }
 }
 
 module.exports = SearchFeatures;
