@@ -20,7 +20,7 @@ images:
 
 # *Full Stack Developer* <span>&</span> *Systems Administrator*
 
-I have worked with many open source and private enterprise software's. My experience goes from basic technical support, systems administration, programming and development, on to network engineering and IT / project management. I am a "hands on", very diverse, all around IT professional and am always looking to expand my knowledge on doing what I love to do! 
+Experienced IT professional with comprehensive expertise in open-source and enterprise software environments. My background spans technical support through project management, with a hands-on approach and genuine passion for expanding my knowledge in the ever-evolving world of technology.
 
 ```js {2-4} showLineNumbers
 const services = [

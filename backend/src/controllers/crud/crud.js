@@ -6,7 +6,6 @@ const SearchFeatures = require("../../libs/features/api");
  * Generic CRUD operations for any Mongoose Model
  * All methods use then/catch pattern for consistency
  */
-
 /**
  * Get all documents for requested Model
  * @param {mongoose.Model} Model - Mongoose model
@@ -494,7 +493,7 @@ exports.search = tryCatch(async (Model, req, res) => {
     .paginate(parseInt(limit));
 
   // Apply field selection if specified
-  if (fields) searchQuery = searchQuery.selectFields(fields);
+  if (fields)  searchQuery = searchQuery.selectFields(fields);
 
   // Apply population if specified
   if (populate && populate !== 'false') {
