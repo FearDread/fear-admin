@@ -6,6 +6,7 @@ const router = express.Router();
 
 router.get("/", Product.list)
       .get("/all", Product.all)
+      .get("/one", Product.read)
       .post("/new", Product.create)
       .get("/search", Product.search)
       .post("/review/:id", Product.review)
@@ -18,6 +19,5 @@ router.route("/:id")
         .get(tryCatch(Product.read))
         .put(tryCatch(Product.update))
         .delete(tryCatch(Product.delete));
-
 
 module.exports = router;
