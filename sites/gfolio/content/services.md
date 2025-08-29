@@ -17,8 +17,7 @@ seo:
 </PageTitle>
 
 ###### Solving problems
-
-I design products that are more than pretty. I make them shippable and usable within alotted times and deadlines.  I am dedicated to seeing any project or idea all the way through to its final stage, and make sure to set my standards above the bar.
+With extensive experience across open-source and enterprise environments, I've built a career that spans every layer of technology operations. Whether it's troubleshooting complex systems, developing custom solutions, architecting networks, or leading DevOps initiatives, I thrive on solving technical problems at any scale.
 
 ###### What you can expect
 
@@ -35,7 +34,7 @@ I design products that are more than pretty. I make them shippable and usable wi
 <Sep size="12" />
 
 <Button href="/contact" variant="white" size="sm">
-  Get In Touch Now!
+  Contact Me!
 </Button>
 
 
@@ -47,7 +46,7 @@ icon:
 ---
 
 <small>
-  Every aspect of the development process is of no stranger to me, and I easily keep up with the latest frameworks and technology on the web.  
+From concept to deployment, I navigate the entire development process with ease while continuously adapting to the latest frameworks and cutting-edge web technologies
 
     - <strong>Database Design and Management</strong>
     - <strong>Hosting and Systems Setup</strong>
@@ -81,7 +80,7 @@ icon:
 ---
 
 <small>
-  I stay up to date with the latest security standards when it comes to designing and administrating virtually and sized network infastructure.
+My approach to network design and administration incorporates the latest security standards, whether working with small-scale setups or enterprise-level infrastructure.
 
     - <strong>Network Design Strategy.</strong>
     - <strong>Cisco Routing and Switches.</strong>
@@ -97,8 +96,7 @@ icon:
 ---
 
 <small>
-  Defining the problem, identifying the scope and finally, organizing. Et tempor non mollit dolor et
-  do aute voluptate ea ullamco culpa pariatur.
+Whether tackling technical challenges or leading projects, I focus on three fundamentals: understanding the real problem, defining realistic scope, and organizing for success.
 
   - <strong>Project Managament </strong>
   - <strong>Architectural planning</strong>

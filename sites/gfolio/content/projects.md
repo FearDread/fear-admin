@@ -19,8 +19,8 @@ seo:
 <PageTitle>
   ### My Open-Source Projects
 </PageTitle>
-
-Discover my most popular open-source projects on Github.  I have transformed ideas into remarkable digital products.
+Check out my most popular GitHub repositories to see how I turn concepts into impactful digital solutions that make a difference.
+Browse my featured open-source projects on GitHub, showcasing my ability to develop ideas into polished, widely-used digital products.
 
 ---projects
 collection:

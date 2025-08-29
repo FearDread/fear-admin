@@ -25,12 +25,12 @@ const ImageUpload = ({
   const fileInputRef = useRef();
 
   const handleImageChange = (e) => {
-    e.preventDefault();
     const files = Array.from(e.target.files);
-    setFiles(files);
     if (sendImages !== undefined) {
       sendImages(files);
     }
+    setFiles(files);
+
 
     files.forEach((file) => {
       let reader = new FileReader();

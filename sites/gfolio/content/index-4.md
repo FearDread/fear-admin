@@ -16,8 +16,7 @@ slogan: Face Everything and Rise
 ##### <span>Based in Central TX</span>
  
 <Sep size={6} line className='max-w-sm mx-auto' />
-
-Gfolio will show you my resume with details on the mentioned skill sets and work history. I really look forward to receiving your input, and possibly scheduling a meeting to discuss this position further. Please feel free to contact me directly by phone or email, and again thank you for your time and consideration.
+My technology journey encompasses both open-source and private enterprise environments, with hands-on experience in technical support, systems administration, development, network engineering, and project management. I'm a versatile IT professional who loves the continuous evolution of technology and the opportunity to grow with it.
 
   ```js  {4-7} showLineNumbers
   import FEAR from './FEAR.js';

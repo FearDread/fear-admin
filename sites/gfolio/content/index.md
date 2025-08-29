@@ -17,7 +17,9 @@ slogan: Face Everything and Rise
  
 <Sep size={6} line className='max-w-sm mx-auto' />
 
-Gfolio will show you my resume with details on the mentioned skill sets and work history. I really look forward to receiving your input, and possibly scheduling a meeting to discuss this position further. Please feel free to contact me directly by phone or email, and again thank you for your time and consideration.
+Welcome! Explore my portfolio to discover my skills, experience, and passion for the Tech industry. I'm always excited to connect with like-minded professionals and explore new opportunities.
+
+From open-source innovations to enterprise solutions, I've built my career across the full technology spectrum. Whether it's troubleshooting systems, developing applications, engineering networks, or managing IT projects, I thrive on the diversity of challenges that technology brings. I'm always eager to expand my skills and dive into what I'm passionate about
 
   ```js  {4-7} showLineNumbers
   import FEAR from './FEAR.js';

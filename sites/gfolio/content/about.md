@@ -13,19 +13,16 @@ images:
 ---
 ##### <span>01.</span> About me
 xx
-Greetings!  Let me tell you what sets me above in the digital age, my excellent interpersonal communication skills and ability to work well with a wide range of personalities.  Combine that with a huge passion for all things in the Tech world.  Im always looking for a challanging opportunity with room to grow! I have dedicated most of my life to discovering, building, and innovating in the IT industry.  My work ethic keeps me motivated and Information Technology is what I love! Computers are my Passion!  
+Welcome! What sets me apart in today's digital landscape is my combination of strong interpersonal skills and technical expertise. I excel at collaborating with diverse teams and personalities while maintaining a deep passion for all things technology. I'm always seeking challenging opportunities that offer growth potential and align with my lifelong dedication to discovering, building, and innovating in IT. My strong work ethic and genuine love for technology drive everything I do 
 
 ##### <span>02.</span> Interests and Hobbies
 
-So let me just say I am your typical Nerd, but I can say I make Nerdyness look good.  I love video games, PC, PS, XBOX, ESL etc.  When im not in the digital world I love to fish, travel, rock climb, sports and skydiving. I enjoy meeting new people all over the world and discovering their culture and getting to know my fellow Human.  My greatest hope is that I can somehow contribute to uniting all of us in a common goal to better not just ourselves but the Human race as a whole.    
+I'm proudly a tech enthusiast who brings passion to everything I do—whether it's gaming across PC, PlayStation, Xbox, or following esports. When I step away from screens, you'll find me fishing, traveling, rock climbing, playing sports, or skydiving. I love connecting with people from different cultures around the world, learning their stories and perspectives. Ultimately, I believe technology should bring us together and help us build a better future for everyone.    
 
 ##### <span>03.</span> Frameworks and Technology
 
-Although I am very adapative and love to learn new technologies, I would love to share my personal favorites.  
- - M.E.A.N Stacks are my ideal frameworks for Node development.
- - APACHE2 / Nginx for my Web servers.
- - Intel / Nvidia when it comes to PC's and Gaming
- - Ubuntu, SUSE, Debian are my best Linux distros.
+While I'm highly adaptable and eager to learn new technologies, here are some of my go-to tools and platforms that I'm particularly passionate about:
+I favor M.E.A.N stack frameworks for Node.js development, rely on Apache2 and Nginx for web server solutions, prefer Intel and Nvidia components for high-performance computing and gaming systems, and gravitate toward Ubuntu, SUSE, and Debian as my preferred Linux distributions.
 
 ---cta
 ---
@@ -47,8 +44,6 @@ list:
   - Network Security
   - Systems Engineering & Administration
 ---
-
-
 
 ---skills[0]
 title: Full Stack Development

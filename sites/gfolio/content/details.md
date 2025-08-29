@@ -18,13 +18,13 @@ images:
 # *Web* Wizard
 <Sep size={6} />
 
-I have worked with many open source and private enterprise software's. My experience goes from multi-tier technical support, systems administration, programming and development, on to network engineering and IT / DevOps management.  
+I bring comprehensive technology expertise spanning the full IT spectrum—from hands-on technical support and systems administration to software development, network engineering, and DevOps leadership. My experience with both open-source and enterprise solutions gives me the versatility to tackle diverse technical challenges.
 
 ```js {2-4} showLineNumbers
 const services = [
   'Network Security'
-  'Full Stack'
-  'Mobile App Development'
+  'Full Stack Dev'
+  'Mobile App Dev'
 ]
 if (have_a_project) navigate('/contact')
 
