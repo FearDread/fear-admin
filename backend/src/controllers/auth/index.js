@@ -34,10 +34,9 @@ exports.login = (req, res) => {
             return res.status(401).json({ success: false, error: 'Invalid credentials' });
           }
 
-          res = this.getJWTToken(res, user);
+          const token = this.getJWTToken(res, user);
           return res.status(200).json({ success: true, result: { user, token }});
-        })
-        .catch((error) => { throw error; });
+        })  
     })
     .catch((error) => {
       return res.status(500).json({ error, success: false, message: "Login Error"});
