@@ -276,7 +276,7 @@ const legacyAPI = {
    */
   async close(callback) {
     console.warn('⚠️  Warning: close() is deprecated. Use disconnect() instead.');
-    return await dbManager.close(callback);
+    return await dbManager.disconnect(callback);
   },
 
   /**

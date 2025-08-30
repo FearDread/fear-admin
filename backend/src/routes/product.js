@@ -5,14 +5,12 @@ const { isAdmin, isAuthorized } = require("../controllers/auth");
 const router = express.Router();
 
 router.get("/", Product.list)
-      .get("/all", Product.all)
+      .get("/all", Product.productSearch)
       .post("/new", Product.create)
-      .get("/search", Product.search)
       .post("/review/:id", Product.review)
       .get("/edit/:id", Product.read);
 
-router.route("/rating").put(tryCatch(Product.rating));
-router.route("/trendy").get(tryCatch(Product.trending));   
+router.route("/search", Product.search) 
 router.route("/one").get(tryCatch(Product.read));
 router.route("/:id")
         .get(tryCatch(Product.read))
