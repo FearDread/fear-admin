@@ -7,7 +7,6 @@ const router = express.Router();
 router.get("/", Product.list)
       .get("/all", Product.productSearch)
       .post("/new", Product.create)
-      .post("/review/:id", Product.review)
       .get("/edit/:id", Product.read);
 
 router.route("/search", Product.search) 

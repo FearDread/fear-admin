@@ -103,11 +103,11 @@ class FEAR {
           this.app.use(routePath, cors(corsConfig), routeModule);
           this.logger.info(`Route added :: ${routePath}`);
         } catch (error) {
-          this.logger.error(`Failed to load route ${file}:`, error.message);
+          this.logger.error(`Failed to load route ${file}:`, error);
         }
       });
     } catch (error) {
-      this.logger.error(`Failed to read routes directory:`, error.message);
+      this.logger.error(`Failed to read routes directory:`, error);
     }
   }
 
