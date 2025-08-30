@@ -1,6 +1,6 @@
 const { tryCatch } = require("../../libs/handler/error");
 const cloud = require("../../libs/cloud");
-const SearchFeatures = require("../../libs/features/api");
+const iSearch = require("../../libs/search/features");
 
 /**
  * Generic CRUD operations for any Mongoose Model
@@ -479,75 +479,11 @@ exports.list = tryCatch(async (Model, req, res) => {
  * @returns {Array} List of Documents
  */
 exports.search = tryCatch(async (Model, req, res) => {
-  const { limit = 10, sort, fields, populate } = req.query;
-
-  const searchFeatures = new SearchFeatures(Model, req.query, {
-    defaultSort: sort ? { [sort]: -1 } : { createdAt: -1 }
-  });
-
-  // Build search query
-  let searchQuery = searchFeatures
-    .search()
-    .filter()
-    .sort()
-    .paginate(parseInt(limit));
-
-  // Apply field selection if specified
-  if (fields)  searchQuery = searchQuery.selectFields(fields);
-
-  // Apply population if specified
-  if (populate && populate !== 'false') {
-    searchQuery = searchQuery.populate(populate === 'true' ? undefined : populate);
-  }
-
-  // Execute the search
-  return searchQuery.execute()
-    .then((result) => {
-      return res.status(200).json({
-        success: true, result: result.data, meta: result.meta,
-        message: `Found ${result.data.length} matching documents`
-      });
-    })
-    .catch((error) => {
-      console.error('Search execution failed:', error);
-
-      return searchFeatures.safeSearch()
-        .sort()
-        .execute()
-        .then((result) => {
-          return res.status(200).json({
-            success: true, result, message: `Found ${result.length} documents using basic search`
-          });
-        })
-        .catch((error) => {
-          return res.status(500).json({
-            success: false, result: null, message: "Search operation failed", error: error.message
-          });
-        });
-    });
-
+  
+  return await iSearch.standardSearch(req.query, Model)
+    .then((result) => { return res.status(200).json({ success: true, ...result }); })
+    .catch((error) => { return res.status(500).json({ success: false, message: error.message }); })
 });
-/*
-// Fallback to basic search if SearchFeatures fails
-const { keyword } = req.query;
-const limit = parseInt(req.query.limit) || 10;
- 
-if (!keyword) {
-  return res.status(400).json({
-    success: false, result: null, message: "Search keyword is required"
-  });
-}
-
-return Model.find({
-  $or: [
-    { name: { $regex: keyword, $options: 'i' } },
-    { description: { $regex: keyword, $options: 'i' } }
-  ]})
-  .limit(limit)
-  .sort({ createdAt: -1 })
-
-  });
-  */
 
 
 /**

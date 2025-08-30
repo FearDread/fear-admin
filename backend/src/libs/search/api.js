@@ -4,7 +4,7 @@ const logger = require("../logger");
  * Advanced search, filter, and pagination features for Mongoose models
  * Provides chainable methods for building complex database queries
  */
-class SearchFeatures {
+module.exports = class SearchApi {
   /**
    * Initialize SearchFeatures with model and query parameters
    * @param {mongoose.Model} Model - Mongoose model to query
@@ -35,7 +35,7 @@ class SearchFeatures {
   /**
    * Perform text search across specified fields or all string fields
    * @param {string[]} [searchFields] - Specific fields to search in
-   * @returns {SearchFeatures} Chainable instance
+   * @returns {SearchApi} Chainable instance
    */
   search(searchFields = null) {
     try {
@@ -382,5 +382,3 @@ class SearchFeatures {
       return this;
   }
 }
-
-module.exports = SearchFeatures;

@@ -160,8 +160,8 @@ shutdown = async () => {
 
   async closeDatabase() {
     return new Promise((resolve, reject) => {
-      if (this.db && typeof this.db.close === 'function') {
-        this.db.close((err) => {
+      if (this.db && typeof this.db.disconnect === 'function') {
+        this.db.disconnect((err) => {
           if (err) {
             reject(err);
           } else {
