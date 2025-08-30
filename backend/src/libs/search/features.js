@@ -53,7 +53,6 @@ exports.textSearch = async (searchText, Model = currentModel) => {
 };
 
 exports.standardSearch = async (query, Model = currentModel ) => {
-    try {
         const Search = new SearchApi(Model, query, {
             searchFields: ['title', 'description', 'brand'],
             defaultSort: { createdAt: -1 }
@@ -67,16 +66,12 @@ exports.standardSearch = async (query, Model = currentModel ) => {
             .paginate()
             .execute();
 
-        return res.status(200).json({ success: true, ...results });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
-    }
+        return results;
+
+    
 };
 
-exports.productSearch = async (req, Product) => {
+exports.productSearch = async (query, Product) => {
     const {
         keyword,
         category,
@@ -87,7 +82,7 @@ exports.productSearch = async (req, Product) => {
         sortBy = 'popularity',
         page = 1,
         limit = 24
-    } = req.query;
+    } = query;
 
     // Build query object
     const queryObj = { page, limit };

@@ -128,7 +128,15 @@ exports.getProductStats = tryCatch(async (req, res) => {
   });
 });
 
-exports.productSearch = tryCatch(productSearch);
+exports.productSearch = tryCatch(async (req, res) => {
+  return await productSearch(req.query, Product)
+    .then((result) => {
+      return res.status(200).json({ success: true, result });
+    })
+    .catch((error) => {
+      return res.status(500).json({ success: false, error });
+    });
+});
 
 // Extend with CRUD methods
 const crud = methods.crudController(Product);

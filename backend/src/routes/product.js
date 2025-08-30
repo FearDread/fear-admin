@@ -5,7 +5,7 @@ const { isAdmin, isAuthorized } = require("../controllers/auth");
 const router = express.Router();
 
 router.get("/", Product.list)
-      .get("/all", Product.productSearch)
+      .get("/all", Product.all)
       .post("/new", Product.create)
       .get("/edit/:id", Product.read);
 
