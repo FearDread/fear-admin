@@ -17,10 +17,7 @@ exports.login = (req, res) => {
   
   // Validate required fields
   if (!email || !password) {
-    return res.status(400).json({ 
-      success: false, 
-      error: 'Email and password are required' 
-    });
+    return res.status(400).json({ success: false, error: 'Email and password are required' });
   }
 
   console.log('Logging in user:', email);
@@ -28,34 +25,22 @@ exports.login = (req, res) => {
   User.findOne({ email })
     .then((user) => {
       if (!user) {
-        return res.status(401).json({ 
-          success: false, 
-          error: 'Invalid credentials' 
-        });
+        return res.status(401).json({ success: false, error: 'Invalid credentials' });
       }
 
       return user.compare(password)
         .then((isPasswordValid) => {
           if (!isPasswordValid) {
-            return res.status(401).json({ 
-              success: false, 
-              error: 'Invalid credentials' 
-            });
+            return res.status(401).json({ success: false, error: 'Invalid credentials' });
           }
 
-          const token = this.getJWTToken(res, user);
-          return res.status(200).json({ 
-            success: true,
-            result: { user, token }
-          });
-        });
+          res = this.getJWTToken(res, user);
+          return res.status(200).json({ success: true, result: { user, token }});
+        })
+        .catch((error) => { throw error; });
     })
     .catch((error) => {
-      console.error('Login error:', error);
-      return res.status(500).json({ 
-        success: false, 
-        error: 'Internal server error' 
-      });
+      return res.status(500).json({ error, success: false, message: "Login Error"});
     });
 };
 
@@ -281,7 +266,8 @@ exports.getJWTToken = (res, user) => {
   };
 
   res.cookie("jwt", token, cookieOptions);
-  return token;
+  res.token = token;
+  return res;
 };
 
 /**

@@ -66,7 +66,7 @@ module.exports = class SearchApi {
               !this.options.excludeFields.includes(prop)) {
             searchTerms[prop] = {
               $regex: this.queryObj[prop],
-              $options: this.options.caseSensitive ? "" : "i"
+              $options: this.options.caseSensitive ? "" : "$i"
             };
           }
         });
