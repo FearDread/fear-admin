@@ -19,6 +19,7 @@ const STANDARD_OPERATIONS = {
   all: { method: HTTP_METHODS.GET, useParams: false },
   one: { method: HTTP_METHODS.GET, useParams: false, useIdInUrl: true },
   search: { method: HTTP_METHODS.GET, useParams: true },
+  new: { method: HTTP_METHODS.POST, useParams: false },
   create: { method: HTTP_METHODS.POST, useParams: false },
   update: { method: HTTP_METHODS.PUT, useParams: false, useIdInUrl: true },
   patch: { method: HTTP_METHODS.PATCH, useParams: false, useIdInUrl: true },
