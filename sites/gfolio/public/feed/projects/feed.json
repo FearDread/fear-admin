@@ -2,7 +2,7 @@
     "version": "https://jsonfeed.org/version/1",
     "title": "G-Haps Personal Site",
     "home_page_url": "http://localhost:3001",
-    "feed_url": "C:\\__Workspace\\_git\\fear-admin\\sites\\gfolio\\public\\feed\\projects/feed.json",
+    "feed_url": "/home/feardread/_workspace/_git/fear-admin/sites/gfolio/public/feed/projects/feed.json",
     "description": "The jack of all things Information Technology",
     "icon": "http://localhost:3001/favicon.ico",
     "author": {
