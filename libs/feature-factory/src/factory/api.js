@@ -237,6 +237,7 @@ const responseInterceptor = (response) => {
   if (process.env.NODE_ENV === 'development') {
     console.log(`✅ API Success [${response.status}]:`, {
       url: response.config.url,
+      data: response.data,
       method: response.config.method?.toUpperCase(),
       responseTime: response.metadata.responseTime,
       requestId: response.metadata.requestId,
@@ -278,6 +279,7 @@ const responseErrorInterceptor = async (error) => {
   if (process.env.NODE_ENV === 'development') {
     console.error(`❌ API Error [${formattedError.status}]:`, {
       url: originalRequest?.url,
+      error: formattedError,
       method: originalRequest?.method?.toUpperCase(),
       message: formattedError.message,
       requestId: originalRequest?.headers['X-Request-ID'],
