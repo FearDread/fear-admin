@@ -38,8 +38,8 @@ const CONFIG = {
  */
 const getBaseUrl = () => {
   const env = process.env.NODE_ENV || 'development';
-  const uri = 'production';
-  return CONFIG.baseUrls[uri] || CONFIG.baseUrls.development;
+  //const uri = 'production';
+  return CONFIG.baseUrls[env] || CONFIG.baseUrls.development;
 };
 
 /**

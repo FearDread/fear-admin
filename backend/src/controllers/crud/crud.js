@@ -479,8 +479,9 @@ exports.list = tryCatch(async (Model, req, res) => {
  * @returns {Array} List of Documents
  */
 exports.search = tryCatch(async (Model, req, res) => {
+  console.log('crud serach req:: ', req);
   
-  return await iSearch.standardSearch(req.query, Model)
+  return await iSearch.standardSearch(Model, req.query)
     .then((result) => { return res.status(200).json({ success: true, ...result }); })
     .catch((error) => { return res.status(500).json({ success: false, message: error.message }); })
 });
