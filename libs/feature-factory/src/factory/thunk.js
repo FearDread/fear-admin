@@ -171,7 +171,7 @@ export const ThunkFactory = {
     
     const operation = STANDARD_OPERATIONS[prefix];
     if (operation) {
-      return createGenericThunk(entity, prefix, options);
+      return createGenericThunk(entity, prefix);
     }
     
     // Fallback to original behavior for custom prefixes
