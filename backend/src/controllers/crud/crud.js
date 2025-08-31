@@ -1,6 +1,6 @@
 const { tryCatch } = require("../../libs/handler/error");
 const cloud = require("../../libs/cloud");
-const iSearch = require("../../libs/search/features");
+const SearchApi = require("../../libs/search/api");
 
 /**
  * Generic CRUD operations for any Mongoose Model
@@ -479,11 +479,54 @@ exports.list = tryCatch(async (Model, req, res) => {
  * @returns {Array} List of Documents
  */
 exports.search = tryCatch(async (Model, req, res) => {
-  console.log('crud serach req:: ', req);
-  
-  await iSearch.standardSearch(Model, req.query)
-    .then((result) => { return res.status(200).json({ success: true, ...result }); })
-    .catch((error) => { return res.status(500).json({ success: false, message: error.message }); })
+  console.log('crud serach req:: ', req.query);
+      const {
+        keyword,
+        category,
+        brand,
+        minPrice,
+        maxPrice,
+        rating,
+        sortBy = 'popularity',
+        page = 1,
+        limit = 24
+    } = req.query;
+
+    // Build query object
+    const queryObj = { page, limit };
+    if (keyword) queryObj.keyword = keyword;
+    if (category) queryObj.category = category;
+    if (brand) queryObj.brand = { in: brand }; // Support multiple brands
+    if (minPrice || maxPrice) {
+        queryObj.price = {};
+        if (minPrice) queryObj.price.gte = minPrice;
+        if (maxPrice) queryObj.price.lte = maxPrice;
+    }
+    if (rating) queryObj.rating = { gte: rating };
+
+    const sortOptions = {
+        popularity: { popularity: -1 },
+        newest: { createdAt: -1 },
+        'price-low': { price: 1 },
+        'price-high': { price: -1 },
+        rating: { rating: -1 }
+    };
+
+    const Search = new SearchApi(Model, queryObj, {
+        searchFields: ['name', 'description', 'tags'],
+        defaultSort: sortOptions[sortBy] || sortOptions.popularity
+    });
+
+    return await Search
+        .search(['name', 'description', 'brand', 'tags'])
+        .filter()
+        .sort()
+        .selectFields('-__v,-updatedAt')
+        .populate('reviews')
+        .paginate(limit, 50) // Max 50 items per page
+        .execute()
+        .then((result) => { return res.status(200).json({ success: true, ...result }); })
+        .catch((error) => { return res.status(500).json({ success: false, message: error.message }); })
 });
 
 
