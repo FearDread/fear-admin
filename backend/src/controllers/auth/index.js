@@ -1,322 +1,289 @@
 const User = require("../../models/user");
-const jwt = require("jsonwebtoken");
+const TokenService = require('./token');
+const Validation = require("./validation");
+const { tryCatch } = require("../../libs/handler/error");
+
+
+/**
+ * Authentication response helper
+ */
+const response = {
+  /**
+   * Send successful authentication response
+   * @param {object} res - Express response object
+   * @param {object} user - User object
+   * @param {string} token - JWT token
+   * @param {number} statusCode - HTTP status code
+   * @param {string} message - Success message
+   */
+  success: (res, user, token, statusCode = 200, message = "Authentication successful") => {
+    // Remove sensitive data from user object
+    const userResponse = {
+      _id: user._id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt
+    };
+
+    return res
+      .status(statusCode)
+      .cookie("jwt", token, TokenService.getCookieOptions())
+      .json({
+        success: true,
+        message,
+        data: {
+          user: userResponse,
+          token
+        }
+      });
+  },
+
+  /**
+   * Send error response
+   * @param {object} res - Express response object
+   * @param {number} statusCode - HTTP status code
+   * @param {string} message - Error message
+   * @param {string} error - Detailed error (optional)
+   */
+  error: (res, statusCode, message, error = null) => {
+    const response = {
+      success: false,
+      message
+    };
+
+    if (error && process.env.NODE_ENV === "development") {
+      response.error = error;
+    }
+
+    return res.status(statusCode).json(response);
+  }
+}
+
 
 /**
  * POST /fear/api/auth/login
  * @summary Authenticate user and generate JWT token
  * @description Validates user credentials (email/password) and returns JWT token for authenticated user
  * @tags authentication
- * @param {object} req.body - User credentials
- * @param {string} req.body.email - User email address
- * @param {string} req.body.password - User password
- * @returns {object} 200 - Authentication successful
- * @returns {object} 400 - Invalid request (missing email/password)
-*/
-exports.login = (req, res) => {
+ */
+exports.login = tryCatch(async (req, res) => {
   const { email, password } = req.body;
-  
-  // Validate required fields
-  if (!email || !password) {
-    return res.status(400).json({ success: false, error: 'Email and password are required' });
+
+  // Validate input
+  const validation = Validation.validateLoginInput({ email, password });
+  if (!validation.isValid) {
+    return response.sendError(res, 400, validation.message);
   }
 
-  console.log('Logging in user:', email);
+  console.log('Authentication attempt for:', email);
 
-  User.findOne({ email })
-    .then((user) => {
-      if (!user) {
-        return res.status(401).json({ success: false, error: 'Invalid credentials' });
-      }
+  try {
+    // Find user by email
+    const user = await User.findOne({ email }).select('+password');
+    if (!user) {
+      return response.error(res, 401, "Invalid credentials");
+    }
 
-      return user.compare(password)
-        .then((isPasswordValid) => {
-          if (!isPasswordValid) {
-            return res.status(401).json({ success: false, error: 'Invalid credentials' });
-          }
+    // Verify password
+    const isPasswordValid = await user.compare(password);
+    if (!isPasswordValid) {
+      return response.error(res, 401, "Invalid credentials");
+    }
 
-          const token = this.getJWTToken(res, user);
-          return res.status(200).json({ success: true, result: { user, token }});
-        })  
-    })
-    .catch((error) => {
-      return res.status(500).json({ error, success: false, message: "Login Error"});
-    });
-};
+    // Generate token and send response
+    const token = TokenService.generateToken(user);
+    return response.success(res, user, token, 200, "Login successful");
 
-/**
- * POST /fear/api/auth/logout
- * @summary Log out user and clear JWT cookie
- * @description Clears the JWT token cookie to log out the authenticated user
- * @tags authentication
- * @returns {object} 200 - Logout successful
- * @returns {object} 500 - Internal server error
- * @example
- * // Success response
- * {
- *   "success": true
- * }
- */
-exports.logout = (req, res) => {
-  Promise.resolve()
-    .then(() => {
-      return res.status(200)
-        .clearCookie('jwt', {
-          httpOnly: true,
-          secure: process.env.NODE_ENV !== "development",
-          sameSite: "strict"
-        })
-        .json({ success: true });
-    })
-    .catch((error) => {
-      console.error('Logout error:', error);
-      return res.status(500).json({ 
-        success: false, 
-        error: 'Internal server error' 
-      });
-    });
-};
+  } catch (error) {
+    console.error('Login error:', error);
+    return response.error(res, 500, "Authentication failed", error.message);
+  }
+});
 
 /**
  * POST /fear/api/auth/register
  * @summary Register a new user account
  * @description Creates a new user account with provided information and returns JWT token
  * @tags authentication
- * @param {object} req.body - User registration data
- * @param {string} req.body.email - User email address (required)
- * @param {string} [req.body.firstname] - User first name
- * @param {string} [req.body.lastname] - User last name
- * @param {string} [req.body.name] - Full name (used if firstname/lastname not provided)
- * @returns {object} 201 - User created successfully
- * @returns {object} 400 - Invalid request (missing required fields)
- * @returns {object} 409 - User already exists
- * @returns {object} 500 - Internal server error
- * @example
- * // Request body
- * {
- *   "email": "newuser@example.com",
- *   "firstname": "John",
- *   "lastname": "Doe",
- *   "password": "securepassword"
- * }
- * 
- * // Success response
- * {
- *   "success": true,
- *   "user": {...},
- *   "token": "jwt.token.here"
- * }
  */
-exports.register = (req, res) => {
-  const { email, firstname, lastname, name: providedName, ...otherFields } = req.body;
+exports.register = tryCatch(async (req, res) => {
+  const { email, firstname, lastname, name: providedName, password, ...otherFields } = req.body;
+
+  // Validate input
+  const validation = Validation.validateRegistrationInput({
+    email, firstname, lastname, name: providedName, password
+  });
   
-  // Validate required fields
-  if (!email) {
-    return res.status(400).json({ 
-      success: false, 
-      error: 'Email is required' 
-    });
+  if (!validation.isValid) {
+    return response.error(res, 400, validation.message);
   }
 
-  // Construct full name
-  const name = firstname && lastname 
-    ? `${firstname} ${lastname}` 
-    : providedName;
+  try {
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return response.error(res, 409, "User with this email already exists");
+    }
 
-  if (!name) {
-    return res.status(400).json({ 
-      success: false, 
-      error: 'Name is required' 
-    });
+    // Create new user
+    const userData = {
+      ...otherFields,
+      email: email.toLowerCase(),
+      name: validation.name,
+      password,
+      role: otherFields.role || 'user' // Default role
+    };
+
+    const user = await User.create(userData);
+    
+    // Generate token and send response
+    const token = TokenService.generateToken(user);
+    return response.success(res, user, token, 201, "Registration successful");
+
+  } catch (error) {
+    console.error('Registration error:', error);
+    
+    // Handle duplicate key error (in case of race condition)
+    if (error.code === 11000) {
+      return response.error(res, 409, "User with this email already exists");
+    }
+    
+    return response.error(res, 500, "Registration failed", error.message);
   }
+});
 
-  User.findOne({ email })
-    .then((existingUser) => {
-      if (existingUser) {
-        return res.status(409).json({ 
-          success: false, 
-          error: 'User already exists' 
-        });
-      }
-
-      const userData = { ...otherFields, email, name };
-      return User.create(userData)
-        .then((user) => {
-          const token = this.getJWTToken(res, user);
-          return res.status(201).json({ 
-            success: true, 
-            user, 
-            token 
-          });
-        });
+/**
+ * POST /fear/api/auth/logout
+ * @summary Log out user and clear JWT cookie
+ * @description Clears the JWT token cookie to log out the authenticated user
+ * @tags authentication
+ */
+exports.logout = tryCatch(async (req, res) => {
+  return res
+    .status(200)
+    .clearCookie('jwt', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict"
     })
-    .catch((error) => {
-      console.error('Registration error:', error);
-      return res.status(500).json({ 
-        success: false, 
-        error: 'Internal server error' 
-      });
+    .json({
+      success: true,
+      message: "Logout successful"
     });
-};
+});
+
+/**
+ * GET /fear/api/auth/me
+ * @summary Get current authenticated user profile
+ * @description Returns the current user's profile information
+ * @tags authentication
+ */
+exports.getCurrentUser = tryCatch(async (req, res) => {
+  // req.user is set by isAuthorized middleware
+  const user = req.user;
+  
+  const userResponse = {
+    _id: user._id,
+    email: user.email,
+    name: user.name,
+    role: user.role,
+    createdAt: user.createdAt,
+    updatedAt: user.updatedAt
+  };
+
+  return res.status(200).json({
+    success: true,
+    data: { user: userResponse }
+  });
+});
+
+/**
+ * PUT /fear/api/auth/refresh-token
+ * @summary Refresh JWT token
+ * @description Generates a new JWT token for authenticated user
+ * @tags authentication
+ */
+exports.refreshToken = tryCatch(async (req, res) => {
+  const user = req.user; // Set by isAuthorized middleware
+  
+  const newToken = TokenService.generateToken(user);
+  return response.success(res, user, newToken, 200, "Token refreshed successfully");
+});
 
 /**
  * Middleware: Verify JWT token and authenticate user
- * @summary Checks if user has valid JWT token in cookies
- * @description Validates JWT token from cookies and attaches user object to request
+ * @summary Checks if user has valid JWT token in cookies or Authorization header
+ * @description Validates JWT token and attaches user object to request
  * @tags middleware, authentication
- * @param {object} req - Express request object
- * @param {object} req.cookies - Request cookies containing JWT token
- * @param {object} res - Express response object
- * @param {function} next - Express next function
- * @returns {void} Calls next() on success, sends error response on failure
- * @throws {401} No token provided
- * @throws {401} Invalid or expired token
- * @throws {401} User not found
- * @throws {500} Internal server error
- * @example
- * // Usage in route
- * router.get('/protected', isAuthorized, (req, res) => {
- *   // req.user is now available
- *   res.json({ user: req.user });
- * });
  */
-exports.isAuthorized = (req, res, next) => {
-  console.log("Checking Authorization:", req.cookies);
-  
-  const token = req.cookies?.jwt;
-  if (!token) {
-    return res.status(401).json({
-      success: false, 
-      message: "Access denied. No token provided."
-    });
+exports.isAuthorized = tryCatch(async (req, res, next) => {
+  let token;
+
+  // Check for token in cookies first, then Authorization header
+  if (req.cookies?.jwt) {
+    token = req.cookies.jwt;
+  } else if (req.headers.authorization?.startsWith('Bearer ')) {
+    token = req.headers.authorization.split(' ')[1];
   }
 
-  Promise.resolve()
-    .then(() => {
-      // Verify JWT token
-      const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-      return decodedToken;
-    })
-    .then((decodedToken) => {
-      return User.findById(decodedToken.id);
-    })
-    .then((user) => {
-      if (!user) {
-        return res.status(401).json({
-          success: false, 
-          message: "Invalid token. User not found."
-        });
-      }
+  if (!token) {
+    return response.error(res, 401, "Access denied. Authentication required.");
+  }
 
-      req.user = user;
-      next();
-    })
-    .catch((error) => {
-      console.error('Authorization error:', error);
-      
-      if (error.name === 'JsonWebTokenError') {
-        return res.status(401).json({
-          success: false, 
-          message: "Invalid token."
-        });
-      }
-      
-      if (error.name === 'TokenExpiredError') {
-        return res.status(401).json({
-          success: false, 
-          message: "Token expired."
-        });
-      }
+  try {
+    // Verify token
+    const decodedToken = TokenService.verifyToken(token);
+    
+    // Get user from database
+    const user = await User.findById(decodedToken.id);
+    if (!user) {
+      return response.error(res, 401, "Invalid token. User not found.");
+    }
 
-      return res.status(500).json({ 
-        success: false, 
-        error: 'Internal server error' 
-      });
-    });
-};
+    // Check if user is still active (optional)
+    if (user.isActive === false) {
+      return response.error(res, 401, "Account has been deactivated.");
+    }
 
-/**
- * Generate JWT token and set HTTP-only cookie
- * @summary Creates signed JWT token and sets secure cookie
- * @description Generates JWT token with user ID and expiration, sets it as HTTP-only cookie
- * @param {object} res - Express response object for setting cookie
- * @param {object} user - User object containing user data
- * @param {string} user._id - User ID to include in token payload
- * @returns {string} Generated JWT token
- * @example
- * const token = getJWTToken(res, user);
- * // Cookie is automatically set on response
- * // Token can be returned in response body if needed
- */
-exports.getJWTToken = (res, user) => {
-  const token = jwt.sign(
-    {
-      exp: Math.floor(Date.now() / 1000) + (60 * 60 * 24), // 24 hours
-      id: user._id,
-    }, 
-    process.env.JWT_SECRET
-  );
+    // Attach user to request
+    req.user = user;
+    req.token = token;
+    next();
 
-  // Set cookie options
-  const cookieOptions = {
-    httpOnly: true,
-    secure: process.env.NODE_ENV !== "development",
-    sameSite: "strict",
-    maxAge: 24 * 60 * 60 * 1000, // 24 hours in milliseconds
-  };
+  } catch (error) {
+    console.error('Authorization error:', error);
 
-  res.cookie("jwt", token, cookieOptions);
-  res.token = token;
-  return res;
-};
+    if (error.name === 'JsonWebTokenError') {
+      return response.error(res, 401, "Invalid token.");
+    }
+
+    if (error.name === 'TokenExpiredError') {
+      return response.error(res, 401, "Token has expired. Please login again.");
+    }
+
+    return response.error(res, 500, "Authentication failed", error.message);
+  }
+});
 
 /**
  * Middleware: Check if user has admin role
  * @summary Verifies that authenticated user has admin privileges
  * @description Checks if req.user.role equals 'admin'. Must be used after isAuthorized middleware
  * @tags middleware, authorization
- * @param {object} req - Express request object
- * @param {object} req.user - User object (attached by isAuthorized middleware)
- * @param {string} req.user.role - User role to check
- * @param {object} res - Express response object
- * @param {function} next - Express next function
- * @returns {void} Calls next() if user is admin, sends error response otherwise
- * @throws {401} User not authenticated
- * @throws {403} User is not admin
- * @throws {500} Internal server error
- * @example
- * // Usage in route (must come after isAuthorized)
- * router.delete('/admin/users/:id', isAuthorized, isAdmin, (req, res) => {
- *   // Only admin users can access this route
- * });
  */
-exports.isAdmin = (req, res, next) => {
-  Promise.resolve()
-    .then(() => {
-      // User should already be attached to req from isAuthorized middleware
-      if (!req.user) {
-        return res.status(401).json({
-          success: false,
-          error: "User not authenticated"
-        });
-      }
+exports.isAdmin = tryCatch(async (req, res, next) => {
+  if (!req.user) {
+    return response.error(res, 401, "Authentication required");
+  }
 
-      if (req.user.role !== "admin") {
-        return res.status(403).json({
-          success: false,
-          error: "Access denied. Admin role required."
-        });
-      }
+  if (req.user.role !== "admin") {
+    return response.error(res, 403, "Access denied. Admin privileges required.");
+  }
 
-      next();
-    })
-    .catch((error) => {
-      console.error('Admin check error:', error);
-      return res.status(500).json({ 
-        success: false, 
-        error: 'Internal server error' 
-      });
-    });
-};
+  next();
+});
 
 /**
  * Middleware factory: Check if user has required role(s)
@@ -325,33 +292,59 @@ exports.isAdmin = (req, res, next) => {
  * @tags middleware, authorization
  * @param {...string} roles - Allowed roles (e.g., 'admin', 'moderator', 'user')
  * @returns {function} Express middleware function
- **/
+ */
 exports.authorizeRoles = (...roles) => {
-  return (req, res, next) => {
-    Promise.resolve()
-      .then(() => {
-        if (!req.user) {
-          return res.status(401).json({
-            success: false,
-            error: "User not authenticated"
-          });
-        }
+  return tryCatch(async (req, res, next) => {
+    if (!req.user) {
+      return response.error(res, 401, "Authentication required");
+    }
 
-        if (!roles.includes(req.user.role)) {
-          return res.status(403).json({
-            success: false,
-            error: `Access denied. Role '${req.user.role}' is not authorized to access this resource.`
-          });
-        }
+    if (!roles.includes(req.user.role)) {
+      return response.error(
+        res, 
+        403, 
+        `Access denied. Required roles: ${roles.join(', ')}. Your role: ${req.user.role}`
+      );
+    }
 
-        next();
-      })
-      .catch((error) => {
-        console.error('Role authorization error:', error);
-        return res.status(500).json({ 
-          success: false, 
-          error: 'Internal server error' 
-        });
-      });
-  };
+    next();
+  });
 };
+
+/**
+ * Middleware: Optional authentication
+ * @summary Attempts to authenticate user but doesn't fail if no token provided
+ * @description Useful for routes that behave differently for authenticated vs anonymous users
+ * @tags middleware, authentication
+ */
+exports.optionalAuth = tryCatch(async (req, res, next) => {
+  let token;
+
+  if (req.cookies?.jwt) {
+    token = req.cookies.jwt;
+  } else if (req.headers.authorization?.startsWith('Bearer ')) {
+    token = req.headers.authorization.split(' ')[1];
+  }
+
+  if (!token) {
+    return next();
+  }
+
+  try {
+    const decodedToken = TokenService.verifyToken(token);
+    const user = await User.findById(decodedToken.id);
+    
+    if (user && user.isActive !== false) {
+      req.user = user;
+      req.token = token;
+    }
+  } catch (error) {
+    // Silently fail for optional auth
+    console.log('Optional auth failed:', error.message);
+  }
+
+  next();
+});
+
+// Export TokenService and other utilities for use in other modules
+exports.AuthResponse = response;

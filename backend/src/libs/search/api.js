@@ -281,7 +281,7 @@ module.exports = class SearchApi {
       this.isExecuted = true;
       
       return {
-        data: results,
+        result: results,
         meta: {
           total: totalDocuments,
           count: results.length,
