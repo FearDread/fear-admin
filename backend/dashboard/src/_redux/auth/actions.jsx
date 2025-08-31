@@ -1,6 +1,6 @@
 import * as actionTypes from "./types";
 import storePersist from "../storePersist.js";
-import API from "../api/instance";
+import API from "@feardread/feature-factory";
 
 export const login = (email, password) => async (dispatch) => {
   const config = { headers: { "Content-Type": "multipart/form-data" }};

@@ -52,7 +52,7 @@ exports.textSearch = async (searchText, Model = currentModel) => {
     return results;
 };
 
-exports.standardSearch = async (query, Model = currentModel ) => {
+exports.standardSearch = async (Model, query) => {
         const Search = new SearchApi(Model, query, {
             searchFields: ['title', 'description', 'brand'],
             defaultSort: { createdAt: -1 }
@@ -67,8 +67,6 @@ exports.standardSearch = async (query, Model = currentModel ) => {
             .execute();
 
         return results;
-
-    
 };
 
 exports.productSearch = async (query, Product) => {

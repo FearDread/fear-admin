@@ -9,7 +9,7 @@ router.get("/", Product.list)
       .post("/new", Product.create)
       .get("/edit/:id", Product.read);
 
-router.route("/search").get(Product.search);
+router.route("/search").post(Product.search);
 router.route('/search/all').get(Product.productSearch);
 router.route("/one").get(tryCatch(Product.read));
 router.route("/:id")

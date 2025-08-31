@@ -1,4 +1,4 @@
-import API from "../api/instance";
+import API from "@feardread/feature-factory";
 import * as Types from "./types";
 
 export const list = () => async (dispatch) => {

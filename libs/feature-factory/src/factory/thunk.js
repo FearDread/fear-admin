@@ -51,6 +51,10 @@ const validateThunkParams = (entity, prefix) => {
  */
 const buildUrl = (entity, prefix, params = {}, useIdInUrl = false) => {
   let url = `${entity}`;
+
+  if( prefix === 'one') {
+    url += `/${params.id}`;
+  }
   
   if (useIdInUrl && params?.id) {
     url += `/${params.id}`;
@@ -68,8 +72,6 @@ const buildUrl = (entity, prefix, params = {}, useIdInUrl = false) => {
  */
 const handleResponse = (response) => {
   // Handle different response structures
-  console.log('resp = ', response)
-  return response.data;
   if (response?.data?.result !== undefined) {
     return response.data.result;
   }
@@ -176,7 +178,7 @@ export const ThunkFactory = {
     
     // Fallback to original behavior for custom prefixes
     const useParams = prefix === 'search';
-    const useIdInUrl = prefix === 'one';
+    //const useIdInUrl = prefix === 'one';
     
     return createGenericThunk(entity, prefix, {
       method: HTTP_METHODS.GET,

@@ -1,4 +1,7 @@
-// axios.js
+/* This API Module is Deprecated, -- move to @feardread/feature-factory API
+    *
+    *
+*/
 import axios from "axios";
 import qs from "qs";
 import storePersist from "../storePersist";
@@ -63,7 +66,6 @@ instance.interceptors.response.use(
         return Promise.reject(error);
     }
 );
-
-export const API = instance;
+*/
 
 export default API;
