@@ -51,7 +51,9 @@ const useShopData = (searchParams) => {
   const dispatch = useDispatch();
   
   const fetchProducts = useCallback(() => {
+
     const params = Object.fromEntries(searchParams.entries());
+    console.log('params = ', params);
     if (Object.keys(params).length > 0) {
       dispatch(Product.search(params));
     } else {

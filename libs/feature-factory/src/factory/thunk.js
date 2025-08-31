@@ -68,6 +68,8 @@ const buildUrl = (entity, prefix, params = {}, useIdInUrl = false) => {
  */
 const handleResponse = (response) => {
   // Handle different response structures
+  console.log('resp = ', response)
+  return response.data;
   if (response?.data?.result !== undefined) {
     return response.data.result;
   }
@@ -120,14 +122,10 @@ const createGenericThunk = (entity, prefix, options = {}) => {
     `${entity}/${prefix}`,
     async (payload = {}, thunkApi) => {
       try {
-        const url = config.customUrl || buildUrl(entity, prefix, payload, config.useIdInUrl);
+        const url = buildUrl(entity, prefix, payload, config.useIdInUrl);
         
         let apiCall;
         const apiConfig = config.useParams ? { params: payload } : {};
-
-        if ( config.customApiUrl !== null ) {
-          API.instance.defaults.baseURL = config.customApiUrl;
-        }
 
         switch (config.method) {
           case HTTP_METHODS.GET:
@@ -162,18 +160,16 @@ const createGenericThunk = (entity, prefix, options = {}) => {
  * Factory for creating Redux async thunks with standardized patterns
  */
 export const ThunkFactory = {
-  API_URL: null,
   /**
    * Creates a GET request thunk (legacy method for backward compatibility)
    * @param {string} entity - The entity name
    * @param {string} prefix - The operation prefix
    * @returns {Function} The created async thunk
    */
-  create: (entity, prefix, apiUrl = ThunkFactory.API_URL) => {
+  create: (entity, prefix) => {
     validateThunkParams(entity, prefix);
     
     const operation = STANDARD_OPERATIONS[prefix];
-    const options = {operation, customApiUrl: apiUrl};
     if (operation) {
       return createGenericThunk(entity, prefix, options);
     }
