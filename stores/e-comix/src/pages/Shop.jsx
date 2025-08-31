@@ -86,7 +86,7 @@ const Shop = () => {
 
   // Memoized computed values
   const products = useMemo(() => {
-    return productData?.result || [];
+    return productData || [];
   }, [productData]);
 
   const displayedProducts = useMemo(() => {
