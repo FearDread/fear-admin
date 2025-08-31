@@ -83,7 +83,7 @@ export function FeatureFactory(entity, reducers = {}, endpoints = null) {
   const createStandardThunks = (sliceName) => ({
     fetch: ThunkFactory.create(sliceName, 'all'),
     fetchOne: ThunkFactory.create(sliceName, 'one'),
-    search: ThunkFactory.create(sliceName, 'search'),
+    search: ThunkFactory.post(sliceName, 'search'),
   });
 
   /**
@@ -102,13 +102,13 @@ export function FeatureFactory(entity, reducers = {}, endpoints = null) {
         .addCase(action.fulfilled, (state, actionPayload) => {
           state.loading = false;
           state.success = true;
-          state.data = actionPayload.payload;
+          state.data = actionPayload.payload.result;
           
           // Handle single item for fetchOne operation
           if (key === 'fetchOne' && Array.isArray(actionPayload.payload)) {
-            state[sliceName] = actionPayload.payload[0];
+            state[sliceName] = actionPayload.payload[0].result;
           } else if (Array.isArray(actionPayload.payload) && actionPayload.payload.length > 0) {
-            state[sliceName] = actionPayload.payload[0];
+            state[sliceName] = actionPayload.payload[0].result;
           }
         })
         .addCase(action.rejected, (state, actionPayload) => {
