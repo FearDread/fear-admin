@@ -112,19 +112,20 @@ exports.read = tryCatch(async (Model, req, res) => {
  * @returns {string} Message
  */
 exports.create = tryCatch(async (Model, req, res) => {
-  console.log('Creating document:', req.body);
-
   const documentData = { ...req.body };
 
   // Handle image uploads if present
-  if (documentData.images && Array.isArray(documentData.images)) {
-    return cloud.uploadImages(documentData.images)
-      .then((uploadedImages) => {
-        documentData.images = uploadedImages;
+  if (documentData.images) {
+    documentData.images.split(',').map(item => item.trim());
 
-        // Create new document with uploaded images
-        return new Model(documentData).save();
-      })
+    if ( Array.isArray(documentData.images )) {
+      let imageLinks = cloud.uploadImages(documentData.images);
+
+      if (imageLinks) documentData.images = imageLinks;
+    }
+  }
+  console.log('Creating document:', documentData);
+  return new Model(documentData).save()
       .then((result) => {
         if (!result) {
           throw new Error("Failed to save document");
@@ -152,51 +153,7 @@ exports.create = tryCatch(async (Model, req, res) => {
           error: error.message
         });
       });
-  }
-
-  // Create document without image uploads
-  return new Model(documentData)
-    .save()
-    .then((result) => {
-      if (!result) {
-        throw new Error("Failed to save document");
-      }
-
-      return res.status(201).json({
-        result,
-        success: true,
-        message: `Document created successfully in ${Model.modelName} collection`
-      });
-    })
-    .catch((error) => {
-      console.error('Error in create method:', error);
-
-      if (error.name === "ValidationError") {
-        return res.status(400).json({
-          result: null,
-          success: false,
-          message: "Validation failed: Required fields are missing or invalid",
-          errors: error.errors
-        });
-      }
-
-      if (error.code === 11000) {
-        return res.status(409).json({
-          result: null,
-          success: false,
-          message: "Document already exists with provided unique fields",
-          error: error.message
-        });
-      }
-
-      return res.status(500).json({
-        result: null,
-        success: false,
-        message: "Internal server error during document creation",
-        error: error.message
-      });
-    });
-});
+  });
 
 /**
  * Updates a single document
