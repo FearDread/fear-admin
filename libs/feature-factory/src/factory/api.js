@@ -37,8 +37,7 @@ const CONFIG = {
  * @returns {string} Base URL
  */
 const getBaseUrl = () => {
-  const env = process.env.NODE_ENV || 'development';
-  //const uri = 'production';
+  const env = 'production'; //process.env.NODE_ENV || 'development';
   return CONFIG.baseUrls[env] || CONFIG.baseUrls.development;
 };
 
