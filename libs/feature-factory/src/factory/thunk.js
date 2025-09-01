@@ -18,7 +18,7 @@ const HTTP_METHODS = {
 const STANDARD_OPERATIONS = {
   all: { method: HTTP_METHODS.GET, useParams: false },
   one: { method: HTTP_METHODS.GET, useParams: false, useIdInUrl: true },
-  search: { method: HTTP_METHODS.GET, useParams: true },
+  search: { method: HTTP_METHODS.POST, useParams: true },
   new: { method: HTTP_METHODS.POST, useParams: false },
   create: { method: HTTP_METHODS.POST, useParams: false },
   update: { method: HTTP_METHODS.PUT, useParams: false, useIdInUrl: true },
@@ -196,7 +196,7 @@ export const ThunkFactory = {
   post: (entity, prefix) => {
     return createGenericThunk(entity, prefix, {
       method: HTTP_METHODS.POST,
-      useParams: false,
+      useParams: true,
     });
   },
 
