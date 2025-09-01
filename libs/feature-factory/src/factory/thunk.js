@@ -52,10 +52,6 @@ const validateThunkParams = (entity, prefix) => {
 const buildUrl = (entity, prefix, params = {}, useIdInUrl = false) => {
   let url = `${entity}`;
 
-  if( prefix === 'one') {
-    url += `/${params.id}`;
-  }
-  
   if (useIdInUrl && params?.id) {
     url += `/${params.id}`;
   } else if (!useIdInUrl || prefix !== 'one') {

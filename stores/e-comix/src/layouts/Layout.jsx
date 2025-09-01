@@ -1,63 +1,82 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { Outlet } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { ToastContainer } from "react-toastify";
+import AOS from "aos";
+// Components
 import Footer from "../components/Footer/Footer";
 import Header from "../components/Header/Header";
-import BannerMain from "../components/Banner/BannerMain";
 import Subscribe from "../components/Subscribe/Subscribe"; 
 import LoginModal from "../components/Modals/LoginModal";
 import RegisterModal from "../components/Modals/RegisterModal";
 import OffCanvasModal from "../components/Modals/OffCanvasModal";
-import AOS from "aos";
-
-import { ToastContainer } from "react-toastify";
+// Store and actions
 import { store } from "../features/store";
 import { Cart } from "../features/cart/slice";
-
+// Styles
 import "react-toastify/dist/ReactToastify.css";
 
-const Layout = (props) => {
+// Constants
+const AOS_CONFIG = {
+  offset: 100,
+  easing: 'ease',
+  delay: 0,
+  duration: 800
+};
 
-  const localData = store.local.has("auth") ? store.local.get("auth") : undefined;
-  const cartData = useSelector( state => state.cart.data );
+const TOAST_CONFIG = {
+  position: "top-right",
+  autoClose: 5000,
+  hideProgressBar: false,
+  newestOnTop: false,
+  closeOnClick: true,
+  rtl: false,
+  pauseOnFocusLoss: true,
+  draggable: true,
+  pauseOnHover: true,
+  theme: "light"
+};
 
-  useEffect(() => {
+const Layout = (productData) => {
+  const dispatch = useDispatch();
   
-    AOS.init({
-      offset: 100,
-      easing: 'ease',
-      delay: 0,
-      duration: 800
-    });
+  // Memoize auth data to prevent unnecessary re-renders
+  const authData = useMemo(() => {
+    return store.local.has("auth") ? store.local.get("auth") : null;
+  }, []);
+  
+  const cartData = useSelector(state => state.cart.data);
+  const user = authData?.user || null;
 
+  // Initialize AOS animation library
+  useEffect(() => {
+    AOS.init(AOS_CONFIG);
   }, []);
 
+  // Load user cart if authenticated
   useEffect(() => {
+    console.log('productData = ', productData);
+    if (authData?.token && authData?.user?._id) {
+      dispatch(Cart.getUserCart({ id: authData.user._id }));
+    }
+  }, [authData, dispatch]);
 
-    if ( localData && localData.token ) store.dispatch(Cart.getUserCart({id: localData.user._id}));
-
-  }, [])
   return (
     <>
-      <Header {...cartData} user={localData && localData.user} />
-      <Outlet />
+      <Header {...cartData} {...user} />
+      <main>
+        <Outlet  {...productData} />
+      </main>
       <Subscribe />
       <Footer />
+      
+      {/* Modals */}
       <LoginModal />
       <RegisterModal />
-      <OffCanvasModal />   
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="light"
-      />
+      <OffCanvasModal />
+      
+      {/* Toast Notifications */}
+      <ToastContainer {...TOAST_CONFIG} />
     </>
   );
 };

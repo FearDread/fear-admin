@@ -13,7 +13,7 @@ const Checkout = () => {
 
           <div className="container">
             <div className="form-wizard">
-              <form action="https://oxentictemplates.in/templatemonster/comicstore/hj" method="post" role="form">
+              <form onSubmit={checkoutHandler} method="post" role="form">
                 <div className="form-wizard-header">
 
                   <ul className="list-unstyled form-wizard-steps clearfix d-none">

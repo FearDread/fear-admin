@@ -17,7 +17,7 @@ import {
   Col
 } from "reactstrap";
 import { logout } from "_redux/auth/actions";
-import logo from "assets/img/FEAR/logo.png"; 
+import logo from "assets/img/FEAR/logo.png";
 
 const Profile = () => {
     const dispatch = useDispatch();
