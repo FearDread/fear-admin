@@ -67,4 +67,5 @@ instance.interceptors.response.use(
     }
 );
 
+export const API = instance;
 export default API;
