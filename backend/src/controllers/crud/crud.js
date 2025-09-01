@@ -115,17 +115,16 @@ exports.create = tryCatch(async (Model, req, res) => {
   const documentData = { ...req.body };
 
   // Handle image uploads if present
-  if (documentData.images) {
+  if (documentData.images)  {
+    console.log('image files present');
     documentData.images.split(',').map(item => item.trim());
 
-    if ( Array.isArray(documentData.images )) {
       let imageLinks = cloud.uploadImages(documentData.images);
-
+      console.log('images links = ', imageLinks);
       if (imageLinks) documentData.images = imageLinks;
-    }
   }
-  console.log('Creating document:', documentData);
-  return new Model(documentData).save()
+  console.log('Creating modified document:', documentData);
+  await new Model(documentData).save()
       .then((result) => {
         if (!result) {
           throw new Error("Failed to save document");
