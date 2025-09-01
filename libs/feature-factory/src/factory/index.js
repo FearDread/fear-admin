@@ -102,13 +102,13 @@ export function FeatureFactory(entity, reducers = {}, endpoints = null) {
         .addCase(action.fulfilled, (state, actionPayload) => {
           state.loading = false;
           state.success = true;
-          state.data = actionPayload.payload.result;
+          state.data = actionPayload.payload;
           
           // Handle single item for fetchOne operation
           if (key === 'fetchOne' && Array.isArray(actionPayload.payload)) {
-            state[sliceName] = actionPayload.payload[0].result;
+            state[sliceName] = actionPayload.payload[0];
           } else if (Array.isArray(actionPayload.payload) && actionPayload.payload.length > 0) {
-            state[sliceName] = actionPayload.payload[0].result;
+            state[sliceName] = actionPayload.payload[0];
           }
         })
         .addCase(action.rejected, (state, actionPayload) => {
