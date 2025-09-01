@@ -5,7 +5,7 @@
   "author": "FearDread",
   "description": "Store front using FEAR backend and new feature factory",
   "dependencies": {
-    "@feardread/feature-factory": "^5.0.0",
+    "@feardread/feature-factory": "^5.0.1",
     "@reduxjs/toolkit": "^1.9.5",
     "@rollup/plugin-inject": "^5.0.5",
     "aos": "^2.3.4",
