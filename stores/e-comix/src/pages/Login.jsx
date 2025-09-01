@@ -1,95 +1,235 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { User } from "../features/user/slice";
 import BannerSub from "../components/Banner/BannerSub";
 import { store } from "../features/store";
 
+// Loading spinner component
+const LoadingSpinner = () => (
+  <div className="spinner-border spinner-border-sm me-2" role="status">
+    <span className="visually-hidden">Loading...</span>
+  </div>
+);
+
+// Form validation helper
+const validateForm = (email, password) => {
+  const errors = {};
+  
+  if (!email.trim()) {
+    errors.email = "Email is required";
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    errors.email = "Please enter a valid email address";
+  }
+  
+  if (!password.trim()) {
+    errors.password = "Password is required";
+  } else if (password.length < 6) {
+    errors.password = "Password must be at least 6 characters long";
+  }
+  
+  return errors;
+};
 
 const Login = () => {
-    const navigate = useNavigate();
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [showModal, setShowModal] = useState(false);
-    const loginSucess = useSelector(state => state.user.success );
-    const userState = useSelector(state => state.user.data );
-    //const { success, user } = useSelector((state) => state.user.user)
-
-    const loginHandler = (e) => {
-        e.preventDefault();
-        const myForm = new FormData();
-
-        myForm.set("email", email);
-        myForm.set("password", password);
-
-        store.dispatch(User.login(myForm));  
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  
+  // Form state
+  const [formData, setFormData] = useState({
+    email: "",
+    password: ""
+  });
+  const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Redux state
+  const { data: userState, success: loginSuccess, loading, error } = useSelector(state => state.user);
+  
+  // Handle input changes
+  const handleInputChange = useCallback((e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    
+    // Clear specific field error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({
+        ...prev,
+        [name]: ""
+      }));
     }
+  }, [errors]);
+  
+  // Handle form submission
+  const handleSubmit = useCallback(async (e) => {
+    e.preventDefault();
+    
+    // Validate form
+    const formErrors = validateForm(formData.email, formData.password);
+    if (Object.keys(formErrors).length > 0) {
+      setErrors(formErrors);
+      return;
+    }
+    
+    setIsSubmitting(true);
+    setErrors({});
+    
+    try {
+      const loginData = new FormData();
+      loginData.set("email", formData.email.trim());
+      loginData.set("password", formData.password);
+      
+      await dispatch(User.login(loginData));
+    } catch (err) {
+      console.error("Login error:", err);
+    } finally {
+      setIsSubmitting(false);
+    }
+  }, [formData, dispatch]);
+  
 
-    useEffect(() => {
-        if ( userState.token ) {
-            store.local.set("auth", userState);
-            setShowModal(false);
-            navigate("/profile");
-        }
-    }, [userState]);
+  useEffect(() => {
+    if (userState?.token) {
+      store.local.set("auth", userState);
+      navigate("/profile", { replace: true });
+    }
+  }, [userState, navigate]);
+  
+  useEffect(() => {
+    if (error) {
+      setErrors({ general: error.message || "Login failed. Please try again." });
+    }
+  }, [error]);
+  
+  // Check if user is already logged in
+  useEffect(() => {
+    const existingAuth = store.local.get("auth");
+    if (existingAuth?.token) {
+      navigate("/profile", { replace: true });
+    }
+  }, [navigate]);
 
-    return (
-        <>
-        <BannerSub />
-            <main class="float-start w-100 total-body home-body mt-0">
-                <section class="cart-page-div pt-5 d-inline-block w-100">
-                    <div class="container">
-                        <div class="row gx-lg-5">
-                            <form>
-                                <div id="login-td-div" className="com-div-md">
-                                    <h5 className="text-center mb-3"> Login </h5>
-                                    <button type="button" className="close" data-bs-dismiss="modal">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-x" viewBox="0 0 16 16">
-                                            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
-                                        </svg>
-                                    </button>
-                                    <div className="login-modal-pn">
-                                        <div className="cm-select-login mt-3">
-                                            <div className="country-dp">
-                                                <input
-                                                    name="email"
-                                                    className="form-control"
-                                                    onChange={(e) => setEmail(e.target.value)}
-                                                    type="email"
-                                                    placeholder="Email address *"
-                                                    required />
-                                            </div>
-                                            <div className="phone-div">
-                                                <input
-                                                    name="password"
-                                                    className="form-control"
-                                                    onChange={(e) => setPassword(e.target.value)}
-                                                    type="password"
-                                                    placeholder="Password *"
-                                                    required />
-                                            </div>
-                                        </div>
-                                        <button
-                                            type="submit" 
-                                            name="submit" 
-                                            className="btn continue-bn"
-                                            onClick={loginHandler} >
-                                            <i className="fas fa-lock"></i> 
-                                            SIGN IN 
-                                        </button>
-                                    </div>
-                                    <p className="text-center  mt-3">
-                                        <a data-bs-toggle="modal" className="regster-bn" data-bs-target="#lostpsModal" data-bs-dismiss="modal"> Lost Password ? </a>  </p>
-                                    <p className="text-center  mt-3"> Do not have an account?
-                                        <a data-bs-toggle="modal" className="regster-bn" data-bs-target="#registerModal" data-bs-dismiss="modal"> Register </a>  </p>
+  return (
+    <>
+      <BannerSub />
+      <main className="float-start w-100 total-body home-body mt-0">
+        <section className="cart-page-div pt-5 d-inline-block w-100">
+          <div className="container">
+            <div className="row justify-content-center">
+              <div className="col-lg-6 col-md-8">
+                <div className="card shadow-sm">
+                  <div className="card-body p-4">
+                    <form onSubmit={handleSubmit} noValidate>
+                      <div className="com-div-md">
+                        <h2 className="text-center mb-4">Welcome Back</h2>
+                        <p className="text-center text-muted mb-4">
+                          Please sign in to your account
+                        </p>
+                        
+                        {/* General Error Message */}
+                        {errors.general && (
+                          <div className="alert alert-danger" role="alert">
+                            <i className="fas fa-exclamation-triangle me-2"></i>
+                            {errors.general}
+                          </div>
+                        )}
+                        
+                        <div className="login-modal-pn">
+                          <div className="cm-select-login">
+                            {/* Email Field */}
+                            <div className="mb-3">
+                              <label htmlFor="email" className="form-label">
+                                Email Address *
+                              </label>
+                              <input
+                                id="email"
+                                name="email"
+                                type="email"
+                                className={`form-control ${errors.email ? 'is-invalid' : ''}`}
+                                placeholder="Enter your email address"
+                                value={formData.email}
+                                onChange={handleInputChange}
+                                required
+                                autoComplete="email"
+                                disabled={isSubmitting || loading}
+                              />
+                              {errors.email && (
+                                <div className="invalid-feedback">
+                                  {errors.email}
                                 </div>
-                            </form>
+                              )}
+                            </div>
+                            
+                            {/* Password Field */}
+                            <div className="mb-3">
+                              <label htmlFor="password" className="form-label">
+                                Password *
+                              </label>
+                              <input
+                                id="password"
+                                name="password"
+                                type="password"
+                                className={`form-control ${errors.password ? 'is-invalid' : ''}`}
+                                placeholder="Enter your password"
+                                value={formData.password}
+                                onChange={handleInputChange}
+                                required
+                                autoComplete="current-password"
+                                disabled={isSubmitting || loading}
+                              />
+                              {errors.password && (
+                                <div className="invalid-feedback">
+                                  {errors.password}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                          
+                          {/* Submit Button */}
+                          <button
+                            type="submit"
+                            className="btn continue-bn w-100 mt-3"
+                            disabled={isSubmitting || loading}
+                          >
+                            {(isSubmitting || loading) && <LoadingSpinner />}
+                            <i className="fas fa-lock me-2"></i>
+                            {(isSubmitting || loading) ? 'Signing In...' : 'Sign In'}
+                          </button>
                         </div>
-                    </div>
-                </section>
-            </main>
-        </>
-    )
-}
+                        
+                        {/* Additional Links */}
+                        <div className="text-center mt-4">
+                          <Link 
+                            to="/forgot-password" 
+                            className="text-decoration-none"
+                          >
+                            Lost Password?
+                          </Link>
+                        </div>
+                        
+                        <div className="text-center mt-3">
+                          <span className="text-muted">Don't have an account? </span>
+                          <Link 
+                            to="/register" 
+                            className="text-decoration-none fw-bold"
+                          >
+                            Register
+                          </Link>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </>
+  );
+};
 
 export default Login;

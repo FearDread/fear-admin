@@ -10,7 +10,7 @@
   "author": "FearDread",
   "license": "MIT",
   "dependencies": {
-    "@feardread/feature-factory": "^3.0.2",
+    "@feardread/feature-factory": "^5.0.5",
     "aos": "^2.3.4",
     "lucide-react": "^0.540.0",
     "react": "^19.1.1",
