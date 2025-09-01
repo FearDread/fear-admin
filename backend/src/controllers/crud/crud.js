@@ -116,12 +116,11 @@ exports.create = tryCatch(async (Model, req, res) => {
 
   // Handle image uploads if present
   if (documentData.images)  {
-    console.log('image files present');
-    documentData.images.split(',').map(item => item.trim());
+      documentData.images.split(',').map(item => item.trim());
 
-      let imageLinks = cloud.uploadImages(documentData.images);
-      console.log('images links = ', imageLinks);
-      if (imageLinks) documentData.images = imageLinks;
+      const imageLinks = await cloud.uploadImages(documentData.images);
+      if ( imageLinks ) documentData.images = imageLinks;
+      console.log('Added Images:', imageLinks);
   }
   console.log('Creating modified document:', documentData);
   await new Model(documentData).save()
@@ -152,6 +151,7 @@ exports.create = tryCatch(async (Model, req, res) => {
           error: error.message
         });
       });
+
   });
 
 /**
