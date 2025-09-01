@@ -1,6 +1,6 @@
 {
   "name": "@feardread/feature-factory",
-  "version": "5.0.1",
+  "version": "5.0.2",
   "description": "Library to interact with redux toolkit and reduce boilerplate / repeated code",
   "main": "dist/index.js",
   "scripts": {

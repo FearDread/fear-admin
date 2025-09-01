@@ -178,7 +178,7 @@ export const ThunkFactory = {
     
     // Fallback to original behavior for custom prefixes
     const useParams = prefix === 'search';
-    //const useIdInUrl = prefix === 'one';
+    const useIdInUrl = (prefix === 'one') ? true : false;
     
     return createGenericThunk(entity, prefix, {
       method: HTTP_METHODS.GET,
