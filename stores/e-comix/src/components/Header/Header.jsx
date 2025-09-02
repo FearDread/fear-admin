@@ -215,7 +215,6 @@ const Header = ({ user: propUser }) => {
       console.error('Logout error:', error);
     }
   }, []);
-  
   // Update login state based on user data
   useEffect(() => {
     const hasValidAuth = currentUser && (currentUser.token || currentUser._id);
@@ -249,15 +248,12 @@ const Header = ({ user: propUser }) => {
                 onLogout={handleLogout}
               />
               
-              {/* Cart (only show when logged in) */}
               {isLoggedIn && (
                 <li className="dropdown position-relative mx-3">
                   <CartIcon itemCount={cartItemCount} />
                   <CartBasket cartData={cartData} />
                 </li>
               )}
-              
-              {/* Mobile Menu Toggle */}
               <MobileMenuToggle />
             </ul>
           </div>

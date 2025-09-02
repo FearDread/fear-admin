@@ -1,833 +1,628 @@
-import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import BannerSub from "../../components/Banner/BannerSub";
 import { store } from "../../features/store";
+import { Order } from "../../features/orders/slice";
+
+// Country data
+const COUNTRIES = [
+  { code: "US", name: "United States" },
+  { code: "CA", name: "Canada" },
+  { code: "GB", name: "United Kingdom" },
+];
+
+// Form validation helper
+const validateForm = (formData) => {
+  const errors = {};
+  
+  // Billing address validation
+  if (!formData.billing.fullName.trim()) errors.billingFullName = "Full name is required";
+  if (!formData.billing.country) errors.billingCountry = "Country is required";
+  if (!formData.billing.city.trim()) errors.billingCity = "City is required";
+  if (!formData.billing.postalCode.trim()) errors.billingPostalCode = "Postal code is required";
+  if (!formData.billing.houseNumber.trim()) errors.billingHouseNumber = "House number is required";
+  if (!formData.billing.address.trim()) errors.billingAddress = "Address is required";
+  if (!formData.billing.phone.trim()) errors.billingPhone = "Phone is required";
+  
+  // If shipping is different, validate shipping address
+  if (!formData.sameAsShipping) {
+    if (!formData.shipping.fullName.trim()) errors.shippingFullName = "Full name is required";
+    if (!formData.shipping.country) errors.shippingCountry = "Country is required";
+    if (!formData.shipping.city.trim()) errors.shippingCity = "City is required";
+    if (!formData.shipping.postalCode.trim()) errors.shippingPostalCode = "Postal code is required";
+    if (!formData.shipping.houseNumber.trim()) errors.shippingHouseNumber = "House number is required";
+    if (!formData.shipping.address.trim()) errors.shippingAddress = "Address is required";
+    if (!formData.shipping.phone.trim()) errors.shippingPhone = "Phone is required";
+  }
+  
+  // Payment validation
+  if (formData.paymentMethod === 'card') {
+    if (!formData.payment.cardholderName.trim()) errors.cardholderName = "Cardholder name is required";
+    if (!formData.payment.cardNumber.trim()) errors.cardNumber = "Card number is required";
+    if (!formData.payment.expiryMonth) errors.expiryMonth = "Expiry month is required";
+    if (!formData.payment.expiryYear) errors.expiryYear = "Expiry year is required";
+    if (!formData.payment.cvv.trim()) errors.cvv = "CVV is required";
+  } else if (formData.paymentMethod === 'banking') {
+    if (!formData.payment.bank) errors.bank = "Bank selection is required";
+  }
+  
+  return errors;
+};
+
+// Order Summary Component
+const OrderSummary = ({ cartData, totals }) => {
+  if (!cartData || cartData.length === 0) {
+    return (
+      <div className="text-center py-4">
+        <p className="text-muted">No items in cart</p>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <div className="oder-summary-item mt-4">
+        <table className="table checkout-table">
+          <thead>
+            <tr>
+              <th scope="col">Product</th>
+              <th scope="col">Quantity</th>
+              <th scope="col">Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            {cartData.map((item) => (
+              <tr key={item._id}>
+                <td>{item.productId?.name || 'Unknown Product'}</td>
+                <td>x {item.quantity || 1}</td>
+                <td>${((item.productId?.price || 0) * (item.quantity || 1)).toFixed(2)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="oder-right-details-new">
+        <div className="price-sec-order">
+          <p className="price-am">
+            Subtotal <span>${totals.subtotal}</span>
+          </p>
+          <p className="delivery-am">
+            Delivery charges <span>{totals.deliveryCharges === '0.00' ? 'Free' : `$${totals.deliveryCharges}`}</span>
+          </p>
+          <p className="discount-am">
+            Discount <span>-${totals.discount}</span>
+          </p>
+          <div className="total-price p-0">
+            <p className="discount-am mb-lg-0">
+              Total Amount <span>${totals.total}</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
+
+// Address Form Component
+const AddressForm = ({ data, onChange, errors, prefix, title }) => (
+  <div className="comon-steps-div mt-5">
+    <h2 className="page-haeding m-0">{title}</h2>
+    <div className="row mt-4">
+      <div className="col-lg-12">
+        <div className="form-group">
+          <label htmlFor={`${prefix}FullName`}>Full Name *</label>
+          <input
+            id={`${prefix}FullName`}
+            type="text"
+            className={`form-control ${errors[`${prefix}FullName`] ? 'is-invalid' : ''}`}
+            value={data.fullName}
+            onChange={(e) => onChange(`${prefix}.fullName`, e.target.value)}
+          />
+          {errors[`${prefix}FullName`] && (
+            <div className="invalid-feedback">{errors[`${prefix}FullName`]}</div>
+          )}
+        </div>
+      </div>
+
+      <div className="col-lg-6">
+        <div className="form-group">
+          <label htmlFor={`${prefix}Country`}>Select Country *</label>
+          <select
+            id={`${prefix}Country`}
+            className={`form-select ${errors[`${prefix}Country`] ? 'is-invalid' : ''}`}
+            value={data.country}
+            onChange={(e) => onChange(`${prefix}.country`, e.target.value)}
+          >
+            <option value="">Select Country</option>
+            {COUNTRIES.map((country) => (
+              <option key={country.code} value={country.code}>
+                {country.name}
+              </option>
+            ))}
+          </select>
+          {errors[`${prefix}Country`] && (
+            <div className="invalid-feedback">{errors[`${prefix}Country`]}</div>
+          )}
+        </div>
+      </div>
+
+      <div className="col-lg-6">
+        <div className="form-group">
+          <label htmlFor={`${prefix}State`}>State / Region</label>
+          <input
+            id={`${prefix}State`}
+            type="text"
+            className="form-control"
+            placeholder="Enter state or region"
+            value={data.state}
+            onChange={(e) => onChange(`${prefix}.state`, e.target.value)}
+          />
+        </div>
+      </div>
+
+      <div className="col-lg-6">
+        <div className="form-group">
+          <label htmlFor={`${prefix}City`}>Town / City *</label>
+          <input
+            id={`${prefix}City`}
+            type="text"
+            className={`form-control ${errors[`${prefix}City`] ? 'is-invalid' : ''}`}
+            value={data.city}
+            onChange={(e) => onChange(`${prefix}.city`, e.target.value)}
+          />
+          {errors[`${prefix}City`] && (
+            <div className="invalid-feedback">{errors[`${prefix}City`]}</div>
+          )}
+        </div>
+      </div>
+
+      <div className="col-lg-6">
+        <div className="form-group">
+          <label htmlFor={`${prefix}PostalCode`}>Postal Code / Zipcode *</label>
+          <input
+            id={`${prefix}PostalCode`}
+            type="text"
+            className={`form-control ${errors[`${prefix}PostalCode`] ? 'is-invalid' : ''}`}
+            value={data.postalCode}
+            onChange={(e) => onChange(`${prefix}.postalCode`, e.target.value)}
+          />
+          {errors[`${prefix}PostalCode`] && (
+            <div className="invalid-feedback">{errors[`${prefix}PostalCode`]}</div>
+          )}
+        </div>
+      </div>
+
+      <div className="col-lg-6">
+        <div className="form-group">
+          <label htmlFor={`${prefix}HouseNumber`}>House Number *</label>
+          <input
+            id={`${prefix}HouseNumber`}
+            type="text"
+            className={`form-control ${errors[`${prefix}HouseNumber`] ? 'is-invalid' : ''}`}
+            value={data.houseNumber}
+            onChange={(e) => onChange(`${prefix}.houseNumber`, e.target.value)}
+          />
+          {errors[`${prefix}HouseNumber`] && (
+            <div className="invalid-feedback">{errors[`${prefix}HouseNumber`]}</div>
+          )}
+        </div>
+      </div>
+
+      <div className="col-lg-6">
+        <div className="form-group">
+          <label htmlFor={`${prefix}Phone`}>Phone *</label>
+          <input
+            id={`${prefix}Phone`}
+            type="tel"
+            className={`form-control ${errors[`${prefix}Phone`] ? 'is-invalid' : ''}`}
+            value={data.phone}
+            onChange={(e) => onChange(`${prefix}.phone`, e.target.value)}
+          />
+          {errors[`${prefix}Phone`] && (
+            <div className="invalid-feedback">{errors[`${prefix}Phone`]}</div>
+          )}
+        </div>
+      </div>
+
+      <div className="col-lg-12">
+        <div className="form-group">
+          <label htmlFor={`${prefix}Address`}>Address 1 *</label>
+          <input
+            id={`${prefix}Address`}
+            type="text"
+            className={`form-control ${errors[`${prefix}Address`] ? 'is-invalid' : ''}`}
+            value={data.address}
+            onChange={(e) => onChange(`${prefix}.address`, e.target.value)}
+          />
+          {errors[`${prefix}Address`] && (
+            <div className="invalid-feedback">{errors[`${prefix}Address`]}</div>
+          )}
+        </div>
+      </div>
+    </div>
+  </div>
+);
 
 const Checkout = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   
+  // Redux state
+  const cartData = useSelector(state => state.cart.data);
+  const { data: userData } = useSelector(state => state.user);
+  const { data, success, loading } = useSelector(state => state.order);
+  
+  // Form state
+  const [formData, setFormData] = useState({
+    billing: {
+      fullName: "",
+      country: "",
+      state: "",
+      city: "",
+      postalCode: "",
+      houseNumber: "",
+      phone: "",
+      address: ""
+    },
+    shipping: {
+      fullName: "",
+      country: "",
+      state: "",
+      city: "",
+      postalCode: "",
+      houseNumber: "",
+      phone: "",
+      address: ""
+    },
+    sameAsShipping: false,
+    paymentMethod: 'card',
+    payment: {
+      cardholderName: "",
+      cardNumber: "",
+      expiryMonth: "",
+      expiryYear: "",
+      cvv: "",
+      bank: ""
+    }
+  });
+  
+  const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Calculate cart totals
+  const cartTotals = useMemo(() => {
+    if (!cartData || cartData.length === 0) {
+      return {
+        subtotal: '0.00',
+        deliveryCharges: '0.00',
+        discount: '0.00',
+        total: '0.00'
+      };
+    }
+    
+    const subtotal = cartData.reduce((sum, item) => {
+      const price = item.productId?.price || 0;
+      const quantity = item.quantity || 1;
+      return sum + (price * quantity);
+    }, 0);
+    
+    const deliveryCharges = subtotal > 50 ? 0 : 10; // Free shipping over $50
+    const discount = 0; // TODO: Implement discount logic
+    const total = subtotal + deliveryCharges - discount;
+    
+    return {
+      subtotal: subtotal.toFixed(2),
+      deliveryCharges: deliveryCharges.toFixed(2),
+      discount: discount.toFixed(2),
+      total: total.toFixed(2)
+    };
+  }, [cartData]);
+  
+  // Handle form field changes
+  const handleFieldChange = useCallback((fieldPath, value) => {
+    const keys = fieldPath.split('.');
+    setFormData(prev => {
+      const newData = { ...prev };
+      let current = newData;
+      
+      for (let i = 0; i < keys.length - 1; i++) {
+        current = current[keys[i]];
+      }
+      current[keys[keys.length - 1]] = value;
+      
+      return newData;
+    });
+    
+    // Clear error when user starts typing
+    if (errors[fieldPath.replace('.', '')]) {
+      setErrors(prev => ({
+        ...prev,
+        [fieldPath.replace('.', '')]: ""
+      }));
+    }
+  }, [errors]);
+  
+  // Handle same as shipping checkbox
+  const handleSameAsShipping = (e) => {
+    const checked = e.target.checked;
+    setFormData(prev => ({
+      ...prev,
+      sameAsShipping: checked,
+      ...(checked && { shipping: { ...prev.billing } })
+    }));
+  };
+  
+  // Handle form submission
+  const handleSubmit = useCallback(async (e) => {
+    e.preventDefault();
+    const orderData = { formData, cartData, totals: cartTotals }
+    const formErrors = validateForm(formData);
+    if (Object.keys(formErrors).length > 0) {
+      setErrors(formErrors);
+      return;
+    }
+    setIsSubmitting(true);
+    setErrors({});
+  
+    console.log('Processing checkout:', orderData);
+    try {
+      dispatch(Order.process(orderData))
+    } catch (error) {
+      console.error('Checkout error:', error);
+      setErrors({ general: 'Payment processing failed. Please try again.' });
+    } finally {
+      setIsSubmitting(false);
+    }
+  }, [formData, cartData, cartTotals, navigate]);
+  
+  // Redirect if cart is empty
+  useEffect(() => {
+    if (!cartData || cartData.length === 0) {
+      navigate('/cart');
+    }
+  }, [cartData, navigate]);
+  
+  useEffect(() => {
+    if (success) navigate('/order-success');
+  }, [success])
   return (
     <>
       <BannerSub />
       <main className="float-start w-100 total-body home-body mt-0">
         <section className="checkout-page-main-div my-5">
-
           <div className="container">
             <div className="form-wizard">
-              <form onSubmit={checkoutHandler} method="post" role="form">
-                <div className="form-wizard-header">
-
-                  <ul className="list-unstyled form-wizard-steps clearfix d-none">
-                    <li className="active">
-                      <small className="d-block mb-3"> Checkout </small>
-                      <span>1</span>
-                    </li>
-                    <li>
-                      <small className="d-block mb-3"> Finished </small>
-                      <span>4</span>
-                    </li>
-
-                  </ul>
-
-                </div>
+              <form onSubmit={handleSubmit} method="post" role="form" noValidate>
                 <fieldset className="wizard-fieldset show">
                   <div className="row g-lg-5">
-
                     <div className="col-lg-8 checkout-left-div">
-                      <div className="ad-fm ">
-                        <div className="comon-steps-div">
-                          <h2 className="page-haeding m-0"> Billing Address </h2>
-                          <div className="row mt-4">
-                            <div className="col-lg-12">
-                              <div className="form-group">
-                                <label> Full Name </label>
-                                <input type="text" className="form-control wizard-required" />
-                                <div className="wizard-form-error"></div>
-
-                              </div>
-                            </div>
-
-                            <div className="col-lg-6">
-                              <div className="form-group">
-                                <label>Select Country</label>
-                                <select id='country_select' name='country' className="form-select">
-                                  <option value="AF">Afghanistan</option>
-                                  <option value="AX">Åland Islands</option>
-                                  <option value="AL">Albania</option>
-                                  <option value="DZ">Algeria</option>
-                                  <option value="AS">American Samoa</option>
-                                  <option value="AD">Andorra</option>
-                                  <option value="AO">Angola</option>
-                                  <option value="AI">Anguilla</option>
-                                  <option value="AQ">Antarctica</option>
-                                  <option value="AG">Antigua and Barbuda</option>
-                                  <option value="AR">Argentina</option>
-                                  <option value="AM">Armenia</option>
-                                  <option value="AW">Aruba</option>
-                                  <option value="AU">Australia</option>
-                                  <option value="AT">Austria</option>
-                                  <option value="AZ">Azerbaijan</option>
-                                  <option value="BS">Bahamas</option>
-                                  <option value="BH">Bahrain</option>
-                                  <option value="BD">Bangladesh</option>
-                                  <option value="BB">Barbados</option>
-                                  <option value="BY">Belarus</option>
-                                  <option value="BE">Belgium</option>
-                                  <option value="BZ">Belize</option>
-                                  <option value="BJ">Benin</option>
-                                  <option value="BM">Bermuda</option>
-                                  <option value="BT">Bhutan</option>
-                                  <option value="BO">Bolivia, Plurinational State of</option>
-                                  <option value="BQ">Bonaire, Sint Eustatius and Saba</option>
-                                  <option value="BA">Bosnia and Herzegovina</option>
-                                  <option value="BW">Botswana</option>
-                                  <option value="BV">Bouvet Island</option>
-                                  <option value="BR">Brazil</option>
-                                  <option value="IO">British Indian Ocean Territory</option>
-                                  <option value="BN">Brunei Darussalam</option>
-                                  <option value="BG">Bulgaria</option>
-                                  <option value="BF">Burkina Faso</option>
-                                  <option value="BI">Burundi</option>
-                                  <option value="KH">Cambodia</option>
-                                  <option value="CM">Cameroon</option>
-                                  <option value="CA">Canada</option>
-                                  <option value="CV">Cape Verde</option>
-                                  <option value="KY">Cayman Islands</option>
-                                  <option value="CF">Central African Republic</option>
-                                  <option value="TD">Chad</option>
-                                  <option value="CL">Chile</option>
-                                  <option value="CN">China</option>
-                                  <option value="CX">Christmas Island</option>
-                                  <option value="CC">Cocos (Keeling) Islands</option>
-                                  <option value="CO">Colombia</option>
-                                  <option value="KM">Comoros</option>
-                                  <option value="CG">Congo</option>
-                                  <option value="CD">Congo, the Democratic Republic of the</option>
-                                  <option value="CK">Cook Islands</option>
-                                  <option value="CR">Costa Rica</option>
-                                  <option value="CI">Côte d'Ivoire</option>
-                                  <option value="HR">Croatia</option>
-                                  <option value="CU">Cuba</option>
-                                  <option value="CW">Curaçao</option>
-                                  <option value="CY">Cyprus</option>
-                                  <option value="CZ">Czech Republic</option>
-                                  <option value="DK">Denmark</option>
-                                  <option value="DJ">Djibouti</option>
-                                  <option value="DM">Dominica</option>
-                                  <option value="DO">Dominican Republic</option>
-                                  <option value="EC">Ecuador</option>
-                                  <option value="EG">Egypt</option>
-                                  <option value="SV">El Salvador</option>
-                                  <option value="GQ">Equatorial Guinea</option>
-                                  <option value="ER">Eritrea</option>
-                                  <option value="EE">Estonia</option>
-                                  <option value="ET">Ethiopia</option>
-                                  <option value="FK">Falkland Islands (Malvinas)</option>
-                                  <option value="FO">Faroe Islands</option>
-                                  <option value="FJ">Fiji</option>
-                                  <option value="FI">Finland</option>
-                                  <option value="FR">France</option>
-                                  <option value="GF">French Guiana</option>
-                                  <option value="PF">French Polynesia</option>
-                                  <option value="TF">French Southern Territories</option>
-                                  <option value="GA">Gabon</option>
-                                  <option value="GM">Gambia</option>
-                                  <option value="GE">Georgia</option>
-                                  <option value="DE">Germany</option>
-                                  <option value="GH">Ghana</option>
-                                  <option value="GI">Gibraltar</option>
-                                  <option value="GR">Greece</option>
-                                  <option value="GL">Greenland</option>
-                                  <option value="GD">Grenada</option>
-                                  <option value="GP">Guadeloupe</option>
-                                  <option value="GU">Guam</option>
-                                  <option value="GT">Guatemala</option>
-                                  <option value="GG">Guernsey</option>
-                                  <option value="GN">Guinea</option>
-                                  <option value="GW">Guinea-Bissau</option>
-                                  <option value="GY">Guyana</option>
-                                  <option value="HT">Haiti</option>
-                                  <option value="HM">Heard Island and McDonald Islands</option>
-                                  <option value="VA">Holy See (Vatican City State)</option>
-                                  <option value="HN">Honduras</option>
-                                  <option value="HK">Hong Kong</option>
-                                  <option value="HU">Hungary</option>
-                                  <option value="IS">Iceland</option>
-                                  <option value="IN">India</option>
-                                  <option value="ID">Indonesia</option>
-                                  <option value="IR">Iran, Islamic Republic of</option>
-                                  <option value="IQ">Iraq</option>
-                                  <option value="IE">Ireland</option>
-                                  <option value="IM">Isle of Man</option>
-                                  <option value="IL">Israel</option>
-                                  <option value="IT">Italy</option>
-                                  <option value="JM">Jamaica</option>
-                                  <option value="JP">Japan</option>
-                                  <option value="JE">Jersey</option>
-                                  <option value="JO">Jordan</option>
-                                  <option value="KZ">Kazakhstan</option>
-                                  <option value="KE">Kenya</option>
-                                  <option value="KI">Kiribati</option>
-                                  <option value="KP">Korea, Democratic People's Republic of</option>
-                                  <option value="KR">Korea, Republic of</option>
-                                  <option value="KW">Kuwait</option>
-                                  <option value="KG">Kyrgyzstan</option>
-                                  <option value="LA">Lao People's Democratic Republic</option>
-                                  <option value="LV">Latvia</option>
-                                  <option value="LB">Lebanon</option>
-                                  <option value="LS">Lesotho</option>
-                                  <option value="LR">Liberia</option>
-                                  <option value="LY">Libya</option>
-                                  <option value="LI">Liechtenstein</option>
-                                  <option value="LT">Lithuania</option>
-                                  <option value="LU">Luxembourg</option>
-                                  <option value="MO">Macao</option>
-                                  <option value="MK">Macedonia, the former Yugoslav Republic of</option>
-                                  <option value="MG">Madagascar</option>
-                                  <option value="MW">Malawi</option>
-                                  <option value="MY">Malaysia</option>
-                                  <option value="MV">Maldives</option>
-                                  <option value="ML">Mali</option>
-                                  <option value="MT">Malta</option>
-                                  <option value="MH">Marshall Islands</option>
-                                  <option value="MQ">Martinique</option>
-                                  <option value="MR">Mauritania</option>
-                                  <option value="MU">Mauritius</option>
-                                  <option value="YT">Mayotte</option>
-                                  <option value="MX">Mexico</option>
-                                  <option value="FM">Micronesia, Federated States of</option>
-                                  <option value="MD">Moldova, Republic of</option>
-                                  <option value="MC">Monaco</option>
-                                  <option value="MN">Mongolia</option>
-                                  <option value="ME">Montenegro</option>
-                                  <option value="MS">Montserrat</option>
-                                  <option value="MA">Morocco</option>
-                                  <option value="MZ">Mozambique</option>
-                                  <option value="MM">Myanmar</option>
-                                  <option value="NA">Namibia</option>
-                                  <option value="NR">Nauru</option>
-                                  <option value="NP">Nepal</option>
-                                  <option value="NL">Netherlands</option>
-                                  <option value="NC">New Caledonia</option>
-                                  <option value="NZ">New Zealand</option>
-                                  <option value="NI">Nicaragua</option>
-                                  <option value="NE">Niger</option>
-                                  <option value="NG">Nigeria</option>
-                                  <option value="NU">Niue</option>
-                                  <option value="NF">Norfolk Island</option>
-                                  <option value="MP">Northern Mariana Islands</option>
-                                  <option value="NO">Norway</option>
-                                  <option value="OM">Oman</option>
-                                  <option value="PK">Pakistan</option>
-                                  <option value="PW">Palau</option>
-                                  <option value="PS">Palestinian Territory, Occupied</option>
-                                  <option value="PA">Panama</option>
-                                  <option value="PG">Papua New Guinea</option>
-                                  <option value="PY">Paraguay</option>
-                                  <option value="PE">Peru</option>
-                                  <option value="PH">Philippines</option>
-                                  <option value="PN">Pitcairn</option>
-                                  <option value="PL">Poland</option>
-                                  <option value="PT">Portugal</option>
-                                  <option value="PR">Puerto Rico</option>
-                                  <option value="QA">Qatar</option>
-                                  <option value="RE">Réunion</option>
-                                  <option value="RO">Romania</option>
-                                  <option value="RU">Russian Federation</option>
-                                  <option value="RW">Rwanda</option>
-                                  <option value="BL">Saint Barthélemy</option>
-                                  <option value="SH">Saint Helena, Ascension and Tristan da Cunha</option>
-                                  <option value="KN">Saint Kitts and Nevis</option>
-                                  <option value="LC">Saint Lucia</option>
-                                  <option value="MF">Saint Martin (French part)</option>
-                                  <option value="PM">Saint Pierre and Miquelon</option>
-                                  <option value="VC">Saint Vincent and the Grenadines</option>
-                                  <option value="WS">Samoa</option>
-                                  <option value="SM">San Marino</option>
-                                  <option value="ST">Sao Tome and Principe</option>
-                                  <option value="SA">Saudi Arabia</option>
-                                  <option value="SN">Senegal</option>
-                                  <option value="RS">Serbia</option>
-                                  <option value="SC">Seychelles</option>
-                                  <option value="SL">Sierra Leone</option>
-                                  <option value="SG">Singapore</option>
-                                  <option value="SX">Sint Maarten (Dutch part)</option>
-                                  <option value="SK">Slovakia</option>
-                                  <option value="SI">Slovenia</option>
-                                  <option value="SB">Solomon Islands</option>
-                                  <option value="SO">Somalia</option>
-                                  <option value="ZA">South Africa</option>
-                                  <option value="GS">South Georgia and the South Sandwich Islands</option>
-                                  <option value="SS">South Sudan</option>
-                                  <option value="ES">Spain</option>
-                                  <option value="LK">Sri Lanka</option>
-                                  <option value="SD">Sudan</option>
-                                  <option value="SR">Suriname</option>
-                                  <option value="SJ">Svalbard and Jan Mayen</option>
-                                  <option value="SZ">Swaziland</option>
-                                  <option value="SE">Sweden</option>
-                                  <option value="CH">Switzerland</option>
-                                  <option value="SY">Syrian Arab Republic</option>
-                                  <option value="TW">Taiwan, Province of China</option>
-                                  <option value="TJ">Tajikistan</option>
-                                  <option value="TZ">Tanzania, United Republic of</option>
-                                  <option value="TH">Thailand</option>
-                                  <option value="TL">Timor-Leste</option>
-                                  <option value="TG">Togo</option>
-                                  <option value="TK">Tokelau</option>
-                                  <option value="TO">Tonga</option>
-                                  <option value="TT">Trinidad and Tobago</option>
-                                  <option value="TN">Tunisia</option>
-                                  <option value="TR">Turkey</option>
-                                  <option value="TM">Turkmenistan</option>
-                                  <option value="TC">Turks and Caicos Islands</option>
-                                  <option value="TV">Tuvalu</option>
-                                  <option value="UG">Uganda</option>
-                                  <option value="UA">Ukraine</option>
-                                  <option value="AE">United Arab Emirates</option>
-                                  <option value="GB">United Kingdom</option>
-                                  <option value="US">United States</option>
-                                  <option value="UM">United States Minor Outlying Islands</option>
-                                  <option value="UY">Uruguay</option>
-                                  <option value="UZ">Uzbekistan</option>
-                                  <option value="VU">Vanuatu</option>
-                                  <option value="VE">Venezuela, Bolivarian Republic of</option>
-                                  <option value="VN">Viet Nam</option>
-                                  <option value="VG">Virgin Islands, British</option>
-                                  <option value="VI">Virgin Islands, U.S.</option>
-                                  <option value="WF">Wallis and Futuna</option>
-                                  <option value="EH">Western Sahara</option>
-                                  <option value="YE">Yemen</option>
-                                  <option value="ZM">Zambia</option>
-                                  <option value="ZW">Zimbabwe</option>
-                                </select>
-
-                              </div>
-                            </div>
-
-                            <div className="col-lg-6">
-                              <div className="form-group">
-                                <label>State / Country  </label>
-                                <select className="form-select">
-                                  <option selected>select State</option>
-                                  <option value="1">Option 1</option>
-                                  <option value="2">Option 2</option>
-                                  <option value="3">Option 3</option>
-                                </select>
-                              </div>
-                            </div>
-
-                            <div className="col-lg-6">
-                              <div className="form-group">
-                                <label> Town / City  </label>
-                                <input type="text" className="form-control" />
-                              </div>
-                            </div>
-                            <div className="col-lg-6">
-                              <div className="form-group">
-                                <label> Postal Code  / Zipcode  </label>
-                                <input type="text" className="form-control" />
-                              </div>
-                            </div>
-
-                            <div className="col-lg-6">
-                              <div className="form-group">
-                                <label> House Number </label>
-                                <input type="text" className="form-control wizard-required" />
-                                <div className="wizard-form-error"></div>
-
-                              </div>
-                            </div>
-
-
-                            <div className="col-lg-6">
-                              <div className="form-group">
-                                <label> Phone </label>
-                                <input type="text" className="form-control" />
-                              </div>
-                            </div>
-
-                            <div className="col-lg-12">
-                              <div className="form-group">
-                                <label> Address 1 </label>
-                                <input type="text" className="form-control wizard-required" />
-                                <div className="wizard-form-error"></div>
-
-                              </div>
-                            </div>
-
-
+                      <div className="ad-fm">
+                        {/* General Error */}
+                        {errors.general && (
+                          <div className="alert alert-danger mb-4">
+                            {errors.general}
                           </div>
-                        </div>
+                        )}
+                        
+                        {/* Billing Address */}
+                        <AddressForm
+                          data={formData.billing}
+                          onChange={handleFieldChange}
+                          errors={errors}
+                          prefix="billing"
+                          title="Billing Address"
+                        />
+                        
+                        {/* Same as Shipping Checkbox */}
                         <div className="form-check mt-3">
-                          <input className="form-check-input" type="checkbox" value="" id="flexCheckDefault" />
-                          <label className="form-check-label" for="flexCheckDefault">
-                            If Address same Please Check
+                          <input
+                            className="form-check-input"
+                            type="checkbox"
+                            id="sameAsShipping"
+                            checked={formData.sameAsShipping}
+                            onChange={handleSameAsShipping}
+                          />
+                          <label className="form-check-label" htmlFor="sameAsShipping">
+                            Shipping address same as billing address
                           </label>
                         </div>
-                        <div className="comon-steps-div mt-5">
-                          <h2 className="page-haeding m-0"> Shipping Address </h2>
-                          <div className="row mt-3">
-                            <div className="col-lg-12">
-                              <div className="form-group">
-                                <label> Full Name </label>
-                                <input type="text" className="form-control wizard-required" />
-                                <div className="wizard-form-error"></div>
-
-                              </div>
-                            </div>
-
-                            <div className="col-lg-6">
-                              <div className="form-group">
-                                <label>Select Country</label>
-                                <select id='scountry_select' name='country' className="form-select">
-                                  <option value="AF">Afghanistan</option>
-                                  <option value="AX">Åland Islands</option>
-                                  <option value="AL">Albania</option>
-                                  <option value="DZ">Algeria</option>
-                                  <option value="AS">American Samoa</option>
-                                  <option value="AD">Andorra</option>
-                                  <option value="AO">Angola</option>
-                                  <option value="AI">Anguilla</option>
-                                  <option value="AQ">Antarctica</option>
-                                  <option value="AG">Antigua and Barbuda</option>
-                                  <option value="AR">Argentina</option>
-                                  <option value="AM">Armenia</option>
-                                  <option value="AW">Aruba</option>
-                                  <option value="AU">Australia</option>
-                                  <option value="AT">Austria</option>
-                                  <option value="AZ">Azerbaijan</option>
-                                  <option value="BS">Bahamas</option>
-                                  <option value="BH">Bahrain</option>
-                                  <option value="BD">Bangladesh</option>
-                                  <option value="BB">Barbados</option>
-                                  <option value="BY">Belarus</option>
-                                  <option value="BE">Belgium</option>
-                                  <option value="BZ">Belize</option>
-                                  <option value="BJ">Benin</option>
-                                  <option value="BM">Bermuda</option>
-                                  <option value="BT">Bhutan</option>
-                                  <option value="BO">Bolivia, Plurinational State of</option>
-                                  <option value="BQ">Bonaire, Sint Eustatius and Saba</option>
-                                  <option value="BA">Bosnia and Herzegovina</option>
-                                  <option value="BW">Botswana</option>
-                                  <option value="BV">Bouvet Island</option>
-                                  <option value="BR">Brazil</option>
-                                  <option value="IO">British Indian Ocean Territory</option>
-                                  <option value="BN">Brunei Darussalam</option>
-                                  <option value="BG">Bulgaria</option>
-                                  <option value="BF">Burkina Faso</option>
-                                  <option value="BI">Burundi</option>
-                                  <option value="KH">Cambodia</option>
-                                  <option value="CM">Cameroon</option>
-                                  <option value="CA">Canada</option>
-                                  <option value="CV">Cape Verde</option>
-                                  <option value="KY">Cayman Islands</option>
-                                  <option value="CF">Central African Republic</option>
-                                  <option value="TD">Chad</option>
-                                  <option value="CL">Chile</option>
-                                  <option value="CN">China</option>
-                                  <option value="CX">Christmas Island</option>
-                                  <option value="CC">Cocos (Keeling) Islands</option>
-                                  <option value="CO">Colombia</option>
-                                  <option value="KM">Comoros</option>
-                                  <option value="CG">Congo</option>
-                                  <option value="CD">Congo, the Democratic Republic of the</option>
-                                  <option value="CK">Cook Islands</option>
-                                  <option value="CR">Costa Rica</option>
-                                  <option value="CI">Côte d'Ivoire</option>
-                                  <option value="HR">Croatia</option>
-                                  <option value="CU">Cuba</option>
-                                  <option value="CW">Curaçao</option>
-                                  <option value="CY">Cyprus</option>
-                                  <option value="CZ">Czech Republic</option>
-                                  <option value="DK">Denmark</option>
-                                  <option value="DJ">Djibouti</option>
-                                  <option value="DM">Dominica</option>
-                                  <option value="DO">Dominican Republic</option>
-                                  <option value="EC">Ecuador</option>
-                                  <option value="EG">Egypt</option>
-                                  <option value="SV">El Salvador</option>
-                                  <option value="GQ">Equatorial Guinea</option>
-                                  <option value="ER">Eritrea</option>
-                                  <option value="EE">Estonia</option>
-                                  <option value="ET">Ethiopia</option>
-                                  <option value="FK">Falkland Islands (Malvinas)</option>
-                                  <option value="FO">Faroe Islands</option>
-                                  <option value="FJ">Fiji</option>
-                                  <option value="FI">Finland</option>
-                                  <option value="FR">France</option>
-                                  <option value="GF">French Guiana</option>
-                                  <option value="PF">French Polynesia</option>
-                                  <option value="TF">French Southern Territories</option>
-                                  <option value="GA">Gabon</option>
-                                  <option value="GM">Gambia</option>
-                                  <option value="GE">Georgia</option>
-                                  <option value="DE">Germany</option>
-                                  <option value="GH">Ghana</option>
-                                  <option value="GI">Gibraltar</option>
-                                  <option value="GR">Greece</option>
-                                  <option value="GL">Greenland</option>
-                                  <option value="GD">Grenada</option>
-                                  <option value="GP">Guadeloupe</option>
-                                  <option value="GU">Guam</option>
-                                  <option value="GT">Guatemala</option>
-                                  <option value="GG">Guernsey</option>
-                                  <option value="GN">Guinea</option>
-                                  <option value="GW">Guinea-Bissau</option>
-                                  <option value="GY">Guyana</option>
-                                  <option value="HT">Haiti</option>
-                                  <option value="HM">Heard Island and McDonald Islands</option>
-                                  <option value="VA">Holy See (Vatican City State)</option>
-                                  <option value="HN">Honduras</option>
-                                  <option value="HK">Hong Kong</option>
-                                  <option value="HU">Hungary</option>
-                                  <option value="IS">Iceland</option>
-                                  <option value="IN">India</option>
-                                  <option value="ID">Indonesia</option>
-                                  <option value="IR">Iran, Islamic Republic of</option>
-                                  <option value="IQ">Iraq</option>
-                                  <option value="IE">Ireland</option>
-                                  <option value="IM">Isle of Man</option>
-                                  <option value="IL">Israel</option>
-                                  <option value="IT">Italy</option>
-                                  <option value="JM">Jamaica</option>
-                                  <option value="JP">Japan</option>
-                                  <option value="JE">Jersey</option>
-                                  <option value="JO">Jordan</option>
-                                  <option value="KZ">Kazakhstan</option>
-                                  <option value="KE">Kenya</option>
-                                  <option value="KI">Kiribati</option>
-                                  <option value="KP">Korea, Democratic People's Republic of</option>
-                                  <option value="KR">Korea, Republic of</option>
-                                  <option value="KW">Kuwait</option>
-                                  <option value="KG">Kyrgyzstan</option>
-                                  <option value="LA">Lao People's Democratic Republic</option>
-                                  <option value="LV">Latvia</option>
-                                  <option value="LB">Lebanon</option>
-                                  <option value="LS">Lesotho</option>
-                                  <option value="LR">Liberia</option>
-                                  <option value="LY">Libya</option>
-                                  <option value="LI">Liechtenstein</option>
-                                  <option value="LT">Lithuania</option>
-                                  <option value="LU">Luxembourg</option>
-                                  <option value="MO">Macao</option>
-                                  <option value="MK">Macedonia, the former Yugoslav Republic of</option>
-                                  <option value="MG">Madagascar</option>
-                                  <option value="MW">Malawi</option>
-                                  <option value="MY">Malaysia</option>
-                                  <option value="MV">Maldives</option>
-                                  <option value="ML">Mali</option>
-                                  <option value="MT">Malta</option>
-                                  <option value="MH">Marshall Islands</option>
-                                  <option value="MQ">Martinique</option>
-                                  <option value="MR">Mauritania</option>
-                                  <option value="MU">Mauritius</option>
-                                  <option value="YT">Mayotte</option>
-                                  <option value="MX">Mexico</option>
-                                  <option value="FM">Micronesia, Federated States of</option>
-                                  <option value="MD">Moldova, Republic of</option>
-                                  <option value="MC">Monaco</option>
-                                  <option value="MN">Mongolia</option>
-                                  <option value="ME">Montenegro</option>
-                                  <option value="MS">Montserrat</option>
-                                  <option value="MA">Morocco</option>
-                                  <option value="MZ">Mozambique</option>
-                                  <option value="MM">Myanmar</option>
-                                  <option value="NA">Namibia</option>
-                                  <option value="NR">Nauru</option>
-                                  <option value="NP">Nepal</option>
-                                  <option value="NL">Netherlands</option>
-                                  <option value="NC">New Caledonia</option>
-                                  <option value="NZ">New Zealand</option>
-                                  <option value="NI">Nicaragua</option>
-                                  <option value="NE">Niger</option>
-                                  <option value="NG">Nigeria</option>
-                                  <option value="NU">Niue</option>
-                                  <option value="NF">Norfolk Island</option>
-                                  <option value="MP">Northern Mariana Islands</option>
-                                  <option value="NO">Norway</option>
-                                  <option value="OM">Oman</option>
-                                  <option value="PK">Pakistan</option>
-                                  <option value="PW">Palau</option>
-                                  <option value="PS">Palestinian Territory, Occupied</option>
-                                  <option value="PA">Panama</option>
-                                  <option value="PG">Papua New Guinea</option>
-                                  <option value="PY">Paraguay</option>
-                                  <option value="PE">Peru</option>
-                                  <option value="PH">Philippines</option>
-                                  <option value="PN">Pitcairn</option>
-                                  <option value="PL">Poland</option>
-                                  <option value="PT">Portugal</option>
-                                  <option value="PR">Puerto Rico</option>
-                                  <option value="QA">Qatar</option>
-                                  <option value="RE">Réunion</option>
-                                  <option value="RO">Romania</option>
-                                  <option value="RU">Russian Federation</option>
-                                  <option value="RW">Rwanda</option>
-                                  <option value="BL">Saint Barthélemy</option>
-                                  <option value="SH">Saint Helena, Ascension and Tristan da Cunha</option>
-                                  <option value="KN">Saint Kitts and Nevis</option>
-                                  <option value="LC">Saint Lucia</option>
-                                  <option value="MF">Saint Martin (French part)</option>
-                                  <option value="PM">Saint Pierre and Miquelon</option>
-                                  <option value="VC">Saint Vincent and the Grenadines</option>
-                                  <option value="WS">Samoa</option>
-                                  <option value="SM">San Marino</option>
-                                  <option value="ST">Sao Tome and Principe</option>
-                                  <option value="SA">Saudi Arabia</option>
-                                  <option value="SN">Senegal</option>
-                                  <option value="RS">Serbia</option>
-                                  <option value="SC">Seychelles</option>
-                                  <option value="SL">Sierra Leone</option>
-                                  <option value="SG">Singapore</option>
-                                  <option value="SX">Sint Maarten (Dutch part)</option>
-                                  <option value="SK">Slovakia</option>
-                                  <option value="SI">Slovenia</option>
-                                  <option value="SB">Solomon Islands</option>
-                                  <option value="SO">Somalia</option>
-                                  <option value="ZA">South Africa</option>
-                                  <option value="GS">South Georgia and the South Sandwich Islands</option>
-                                  <option value="SS">South Sudan</option>
-                                  <option value="ES">Spain</option>
-                                  <option value="LK">Sri Lanka</option>
-                                  <option value="SD">Sudan</option>
-                                  <option value="SR">Suriname</option>
-                                  <option value="SJ">Svalbard and Jan Mayen</option>
-                                  <option value="SZ">Swaziland</option>
-                                  <option value="SE">Sweden</option>
-                                  <option value="CH">Switzerland</option>
-                                  <option value="SY">Syrian Arab Republic</option>
-                                  <option value="TW">Taiwan, Province of China</option>
-                                  <option value="TJ">Tajikistan</option>
-                                  <option value="TZ">Tanzania, United Republic of</option>
-                                  <option value="TH">Thailand</option>
-                                  <option value="TL">Timor-Leste</option>
-                                  <option value="TG">Togo</option>
-                                  <option value="TK">Tokelau</option>
-                                  <option value="TO">Tonga</option>
-                                  <option value="TT">Trinidad and Tobago</option>
-                                  <option value="TN">Tunisia</option>
-                                  <option value="TR">Turkey</option>
-                                  <option value="TM">Turkmenistan</option>
-                                  <option value="TC">Turks and Caicos Islands</option>
-                                  <option value="TV">Tuvalu</option>
-                                  <option value="UG">Uganda</option>
-                                  <option value="UA">Ukraine</option>
-                                  <option value="AE">United Arab Emirates</option>
-                                  <option value="GB">United Kingdom</option>
-                                  <option value="US">United States</option>
-                                  <option value="UM">United States Minor Outlying Islands</option>
-                                  <option value="UY">Uruguay</option>
-                                  <option value="UZ">Uzbekistan</option>
-                                  <option value="VU">Vanuatu</option>
-                                  <option value="VE">Venezuela, Bolivarian Republic of</option>
-                                  <option value="VN">Viet Nam</option>
-                                  <option value="VG">Virgin Islands, British</option>
-                                  <option value="VI">Virgin Islands, U.S.</option>
-                                  <option value="WF">Wallis and Futuna</option>
-                                  <option value="EH">Western Sahara</option>
-                                  <option value="YE">Yemen</option>
-                                  <option value="ZM">Zambia</option>
-                                  <option value="ZW">Zimbabwe</option>
-                                </select>
-
-                              </div>
-                            </div>
-
-                            <div className="col-lg-6">
-                              <div className="form-group">
-                                <label>State / Country  </label>
-                                <select className="form-select">
-                                  <option selected>select State</option>
-                                  <option value="1">Option 1</option>
-                                  <option value="2">Option 2</option>
-                                  <option value="3">Option 3</option>
-                                </select>
-                              </div>
-                            </div>
-
-                            <div className="col-lg-6">
-                              <div className="form-group">
-                                <label> Town / City  </label>
-                                <input type="text" className="form-control" />
-                              </div>
-                            </div>
-                            <div className="col-lg-6">
-                              <div className="form-group">
-                                <label> Postal Code  / Zipcode  </label>
-                                <input type="text" className="form-control" />
-                              </div>
-                            </div>
-
-                            <div className="col-lg-6">
-                              <div className="form-group">
-                                <label> House Number </label>
-                                <input type="text" className="form-control wizard-required" />
-                                <div className="wizard-form-error"></div>
-
-                              </div>
-                            </div>
-
-
-                            <div className="col-lg-6">
-                              <div className="form-group">
-                                <label> Phone </label>
-                                <input type="text" className="form-control" />
-                              </div>
-                            </div>
-
-                            <div className="col-lg-12">
-                              <div className="form-group">
-                                <label> Address 1 </label>
-                                <input type="text" className="form-control wizard-required" />
-                                <div className="wizard-form-error"></div>
-
-                              </div>
-                            </div>
-                          </div>
-                        </div>
+                        
+                        {/* Shipping Address */}
+                        {!formData.sameAsShipping && (
+                          <AddressForm
+                            data={formData.shipping}
+                            onChange={handleFieldChange}
+                            errors={errors}
+                            prefix="shipping"
+                            title="Shipping Address"
+                          />
+                        )}
+                        
+                        {/* Payment Method */}
                         <div className="paymeny comon-steps-div mt-5">
-
-                          <h2 className="page-haeding m-0"> Payment method  </h2>
+                          <h2 className="page-haeding m-0">Payment Method</h2>
+                          
+                          {/* Credit Card Option */}
                           <div className="d-flex align-items-center justify-content-between mt-4">
-                            <div className="custom-control custom-radio ">
-                              <input type="radio" id="customRadio1" name="customRadio" className="custom-control-input" checked />
-                              <label className="custom-control-label" for="customRadio1">Credit Crads /
-                                Debit Card </label>
+                            <div className="form-check">
+                              <input
+                                className="form-check-input"
+                                type="radio"
+                                name="paymentMethod"
+                                id="creditCard"
+                                value="card"
+                                checked={formData.paymentMethod === 'card'}
+                                onChange={(e) => handleFieldChange('paymentMethod', e.target.value)}
+                              />
+                              <label className="form-check-label" htmlFor="creditCard">
+                                Credit Cards / Debit Card
+                              </label>
                             </div>
                             <figure className="m-0">
-                              <img src="images/visag01.jpg" alt="bnm" />
+                              <img src="images/visag01.jpg" alt="Payment cards" />
                             </figure>
                           </div>
-
-
-                          <div className="account-page-n" id="ac-1">
-
-
-                            <div className="row row-cols-1 row-cols-lg-1">
-                              <div className="col">
-                                <div className="form-group mt-3">
-                                  <label> Cardholder Name </label>
-                                  <input type="text" className="form-control" />
+                          
+                          {/* Credit Card Form */}
+                          {formData.paymentMethod === 'card' && (
+                            <div className="account-page-n mt-3">
+                              <div className="row">
+                                <div className="col-12">
+                                  <div className="form-group">
+                                    <label htmlFor="cardholderName">Cardholder Name *</label>
+                                    <input
+                                      id="cardholderName"
+                                      type="text"
+                                      className={`form-control ${errors.cardholderName ? 'is-invalid' : ''}`}
+                                      value={formData.payment.cardholderName}
+                                      onChange={(e) => handleFieldChange('payment.cardholderName', e.target.value)}
+                                    />
+                                    {errors.cardholderName && (
+                                      <div className="invalid-feedback">{errors.cardholderName}</div>
+                                    )}
+                                  </div>
+                                </div>
+                                
+                                <div className="col-12">
+                                  <div className="form-group mt-3">
+                                    <label htmlFor="cardNumber">Card Number *</label>
+                                    <input
+                                      id="cardNumber"
+                                      type="text"
+                                      className={`form-control ${errors.cardNumber ? 'is-invalid' : ''}`}
+                                      placeholder="1234 5678 9012 3456"
+                                      value={formData.payment.cardNumber}
+                                      onChange={(e) => handleFieldChange('payment.cardNumber', e.target.value)}
+                                    />
+                                    {errors.cardNumber && (
+                                      <div className="invalid-feedback">{errors.cardNumber}</div>
+                                    )}
+                                  </div>
                                 </div>
                               </div>
-                              <div className="col">
-                                <div className="form-group mt-3">
-                                  <label> Card Number </label>
-                                  <input type="text" className="form-control" />
+                              
+                              <div className="d-flex mt-3 gap-3">
+                                <div className="flex-grow-1">
+                                  <h6>Expiry Date</h6>
+                                  <div className="d-flex gap-2">
+                                    <select
+                                      className={`form-select ${errors.expiryMonth ? 'is-invalid' : ''}`}
+                                      value={formData.payment.expiryMonth}
+                                      onChange={(e) => handleFieldChange('payment.expiryMonth', e.target.value)}
+                                    >
+                                      <option value="">MM</option>
+                                      {Array.from({ length: 12 }, (_, i) => (
+                                        <option key={i + 1} value={String(i + 1).padStart(2, '0')}>
+                                          {String(i + 1).padStart(2, '0')}
+                                        </option>
+                                      ))}
+                                    </select>
+                                    
+                                    <select
+                                      className={`form-select ${errors.expiryYear ? 'is-invalid' : ''}`}
+                                      value={formData.payment.expiryYear}
+                                      onChange={(e) => handleFieldChange('payment.expiryYear', e.target.value)}
+                                    >
+                                      <option value="">YYYY</option>
+                                      {Array.from({ length: 10 }, (_, i) => {
+                                        const year = new Date().getFullYear() + i;
+                                        return (
+                                          <option key={year} value={year}>
+                                            {year}
+                                          </option>
+                                        );
+                                      })}
+                                    </select>
+                                  </div>
+                                </div>
+                                
+                                <div>
+                                  <h6>CVV</h6>
+                                  <div className="d-flex align-items-center gap-2">
+                                    <input
+                                      type="text"
+                                      className={`form-control ${errors.cvv ? 'is-invalid' : ''}`}
+                                      placeholder="123"
+                                      maxLength="4"
+                                      value={formData.payment.cvv}
+                                      onChange={(e) => handleFieldChange('payment.cvv', e.target.value)}
+                                    />
+                                    <span className="text-muted small">
+                                      <i className="fas fa-info-circle"></i> 3-4 digits
+                                    </span>
+                                  </div>
+                                  {errors.cvv && (
+                                    <div className="invalid-feedback d-block">{errors.cvv}</div>
+                                  )}
                                 </div>
                               </div>
                             </div>
-
-
-                            <div className="d-flex mt-3">
-
-                              <div className="left-sec-d1">
-                                <h4> End Date </h4>
-                                <div className="end-date">
-                                  <select className="form-select">
-                                    <option selected>MM</option>
-                                    <option value="1">Option 1</option>
-                                    <option value="2">Option 2</option>
-                                    <option value="3">Option 3</option>
-                                  </select>
-
-                                  <select className="form-select">
-                                    <option selected>YYYY</option>
-                                    <option value="1">Option 1</option>
-                                    <option value="2">Option 2</option>
-                                    <option value="3">Option 3</option>
-                                  </select>
-                                </div>
-                              </div>
-
-                              <div className="left-sec-d2">
-                                <h4> CVV</h4>
-                                <div className="cvv">
-                                  <input type="text" className="form-control" />
-                                  <span> <i className="fas fa-exclamation-circle"></i> 3 digits</span>
-                                </div>
+                          )}
+                          
+                          {/* Online Banking Option */}
+                          <div className="form-check mt-3">
+                            <input
+                              className="form-check-input"
+                              type="radio"
+                              name="paymentMethod"
+                              id="onlineBanking"
+                              value="banking"
+                              checked={formData.paymentMethod === 'banking'}
+                              onChange={(e) => handleFieldChange('paymentMethod', e.target.value)}
+                            />
+                            <label className="form-check-label" htmlFor="onlineBanking">
+                              Online Banking
+                            </label>
+                          </div>
+                          
+                          {formData.paymentMethod === 'banking' && (
+                            <div className="account-page-n mt-3">
+                              <div className="form-group">
+                                <label htmlFor="bankSelect">Select Bank *</label>
+                                <select
+                                  id="bankSelect"
+                                  className={`form-select ${errors.bank ? 'is-invalid' : ''}`}
+                                  value={formData.payment.bank}
+                                  onChange={(e) => handleFieldChange('payment.bank', e.target.value)}
+                                >
+                                  <option value="">Select your bank</option>
+                                  <option value="chase">Chase Bank</option>
+                                  <option value="wells">Wells Fargo</option>
+                                  <option value="bofa">Bank of America</option>
+                                  <option value="citi">Citibank</option>
+                                </select>
+                                {errors.bank && (
+                                  <div className="invalid-feedback">{errors.bank}</div>
+                                )}
                               </div>
                             </div>
-
-                          </div>
-
-                          <div className="custom-control custom-radio mt-3">
-                            <input type="radio" id="customRadio2" name="customRadio" className="custom-control-input" />
-                            <label className="custom-control-label" for="customRadio2">Online Banking</label>
-                          </div>
-
-                          <div className="account-page-n" id="ac-2">
-
-                            <div className="form-group">
-                              <label> Select Bank </label>
-                              <select className="form-select">
-                                <option selected>This is a select menu</option>
-                                <option value="1">Option 1</option>
-                                <option value="2">Option 2</option>
-                                <option value="3">Option 3</option>
-                              </select>
-                            </div>
-                          </div>
+                          )}
                         </div>
                       </div>
                     </div>
-
+                    
+                    {/* Order Summary */}
                     <div className="col-lg-4 checkout-right-div">
                       <div className="ceck-out-right-div new-checkout mt-5 mt-lg-0">
                         <div className="d-flex justify-content-between align-items-center">
-                          <h2 className="page-haeding m-0"> Your Order </h2>
+                          <h2 className="page-haeding m-0">Your Order</h2>
                         </div>
-                        <div className="oder-summary-item mt-4">
-                          <table className="table checkout-table">
-                            <thead>
-                              <tr>
-                                <th scope="col"> Product </th>
-                                <th scope="col">Quantity</th>
-                                <th scope="col">amount</th>
-
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <tr>
-                                <td>
-                                  Shoes
-                                </td>
-                                <td>x 1</td>
-                                <td>$15</td>
-
-                              </tr>
-                              <tr>
-                                <td>T-shirt</td>
-                                <td>x 1</td>
-                                <td>$15</td>
-
-                              </tr>
-
-                            </tbody>
-                          </table>
-                        </div>
-
-                        <div className="oder-right-details-new">
-
-                          <div className="price-sec-order">
-                            <p className="price-am"> Price <span> $150 </span></p>
-                            <p className="delivery-am"> Delivery charges <span> Free </span></p>
-                            <p className="discount-am"> Discount price <span> $ 10 </span></p>
-                            <div className="total-price p-0">
-                              <p className="discount-am mb-lg-0"> Total Amount <span> $ 220 </span></p>
-                            </div>
-                          </div>
-                        </div>
+                        
+                        <OrderSummary cartData={cartData} totals={cartTotals} />
                       </div>
-                      <a href="checkout.html#" className="comon-button btn text-center mt-5">
-                        <span> Payment now </span>
-                      </a>
-
+                      
+                      <button
+                        type="submit"
+                        className="comon-button btn text-center mt-5 w-100"
+                        disabled={isSubmitting || !cartData || cartData.length === 0}
+                      >
+                        <span>
+                          {isSubmitting ? 'Processing...' : `Pay Now - $${cartTotals.total}`}
+                        </span>
+                      </button>
                     </div>
-
-                  </div>
-                  <div className="form-group d-lg-flex clearfix">
                   </div>
                 </fieldset>
               </form>
@@ -836,7 +631,7 @@ const Checkout = () => {
         </section>
       </main>
     </>
-  )
-}
+  );
+};
 
 export default Checkout;
