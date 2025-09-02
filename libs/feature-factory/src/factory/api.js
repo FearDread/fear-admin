@@ -6,39 +6,39 @@ import CacheFactory from './cache';
  * Environment-based configuration
  */
 const CONFIG = {
+  BASE_URL: null,
   // API Base URLs
   baseUrls: {
     production: process.env.REACT_APP_API_BASE_URL_PROD || 'http://fear.master.com/fear/api/',
     development: process.env.REACT_APP_API_BASE_URL_DEV || 'http://localhost:4000/fear/api/',
     test: process.env.REACT_APP_API_BASE_URL_TEST || 'http://localhost:3001/fear/api/',
   },
-  
-  // Token configuration
   tokenNames: {
     bearer: 'Authorization',
     custom: process.env.REACT_APP_JWT_TOKEN_HEADER || 'x-token',
   },
-  
-  // Cache keys
   cacheKeys: {
     auth: 'auth',
     refreshToken: 'refresh_token',
     userPrefs: 'user_preferences',
   },
-  
-  // Request configuration
   timeout: parseInt(process.env.REACT_APP_API_TIMEOUT) || 30000,
   retryAttempts: parseInt(process.env.REACT_APP_API_RETRY_ATTEMPTS) || 3,
   retryDelay: parseInt(process.env.REACT_APP_API_RETRY_DELAY) || 1000,
 };
 
+const setBaseUrl = (uri) => {
+  CONFIG.BASE_URL = uri || CONFIG.baseUrls['development'];
+  getBaseUrl();
+};
 /**
  * Gets the appropriate base URL for the current environment
  * @returns {string} Base URL
  */
 const getBaseUrl = () => {
-  const env = 'production'; //process.env.NODE_ENV || 'development';
-  return CONFIG.baseUrls[env] || CONFIG.baseUrls.development;
+  const env = process.env.NODE_ENV || 'development';
+  if (!CONFIG.BASE_URL) CONFIG.BASE_URL = CONFIG.baseUrls[env] || CONFIG.baseUrls.development
+  return CONFIG.BASE_URL;
 };
 
 /**
@@ -525,6 +525,7 @@ const API = {
   // Configuration access
   config: CONFIG,
   getBaseUrl,
+  setBaseUrl
 };
 
 // Add event listener for auth failures (optional)

@@ -176,7 +176,6 @@ export function FeatureFactory(entity, reducers = {}, endpoints = null) {
     manager: createReducerManager,
     inject: mergeObjects,
     create: createFactorySlice,
-    
     // Utility methods
     getEntityName: () => entity,
     getAdapter: () => adapter,
