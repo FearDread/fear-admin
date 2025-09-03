@@ -255,13 +255,13 @@ export const ThunkFactory = {
     validateThunkParams(entity, 'crud');
     
     return {
-      fetchAll: ThunkFactory.create(entity, 'all'),
-      fetchOne: ThunkFactory.create(entity, 'one'),
+      fetch: ThunkFactory.create(entity, 'all'),
+      read: ThunkFactory.create(entity, 'one'),
       create: ThunkFactory.post(entity, 'create'),
       update: ThunkFactory.put(entity, 'update'),
       patch: ThunkFactory.patch(entity, 'patch'),
       delete: ThunkFactory.delete(entity, 'delete'),
-      search: ThunkFactory.create(entity, 'search'),
+      search: ThunkFactory.post(entity, 'search'),
     };
   },
 
@@ -276,8 +276,8 @@ export const ThunkFactory = {
    * @returns {Object} Standard operations object
    */
   getStandardOperations: () => ({ ...STANDARD_OPERATIONS }),
+  setApiUrl: (url) => { ThunkFactory.API_URL = url; ThunkFactory.getApiUrl(); },
   getApiUrl: () => { return ThunkFactory.API_URL },
-  setApiUrl: (url) => { ThunkFactory.API_URL = url }
 };
 
 export default ThunkFactory;

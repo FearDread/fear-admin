@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import BreadCrumb from "../components/Common/BreadCrumb";
+import BreadCrumb from "../components/Common/BreadCrumbs";
 import Meta from "../components/Meta/Meta";
 //import Container from "../components/Common/Container";
 import { useDispatch, useSelector } from "react-redux";
