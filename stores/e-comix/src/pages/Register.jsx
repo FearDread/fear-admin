@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import BannerSub from "../components/Banner/BannerSub";
-import Breadcrumbs from "../components/Common/BreadCrumb";
+import Breadcrumbs from "../components/Common/BreadCrumbs";
 import { User } from "../features/user/slice";
 import { store } from "../features/store";
 import { toast } from "react-toastify";

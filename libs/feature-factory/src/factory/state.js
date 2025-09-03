@@ -219,7 +219,7 @@ export const StateFactory = (namespace, options = {}) => {
     ...optionalStates,
     ...config.customFields,
   };
-
+  console.log('Initial State :: ', initialState);
   return initialState;
 };
 

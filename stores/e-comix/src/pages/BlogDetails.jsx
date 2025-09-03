@@ -1,13 +1,13 @@
 import React from "react";
 
-import Breadcrumb from "../components/Common/Breadcrumbs";
+import BreadCrumbs from "../components/Common/BreadCrumbs";
 
 const BlogDetails = (props) => {
 
   return (
     <>
       <main className="float-start w-100 total-body home-body mt-0">
-        <Breadcrumb />
+        { /*( <Breadcrumb /> */}
 
         <section className="blogs-info-div d-inline-block w-100">
           <div className="container">

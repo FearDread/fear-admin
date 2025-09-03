@@ -13,10 +13,15 @@ const service = {
 // 3. Create the feature
 const productFeature = FeatureFactory('product', {
   favorite: (state, action) => {
-    const product = state.products.find(p => p.id === action.payload);
+    const product = state.product.data.find(p => p.id === action.payload);
     if (product) {
       product.isFavorite = !product.isFavorite;
     }
+  },
+  setActive: (state, action) => {
+    state.product.data.find((p) => {
+      if ( p.id === action.payload ) state.product.current = p;
+    });
   }
 });
 

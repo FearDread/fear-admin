@@ -36,17 +36,12 @@ const Login = () => {
   const dispatch = useDispatch();
   
   // Form state
-  const [formData, setFormData] = useState({
-    email: "",
-    password: ""
-  });
+  const [formData, setFormData] = useState({ email: "", password: ""});
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
-  // Redux state
   const { data: userState, success: loginSuccess, loading, error } = useSelector(state => state.user);
-  
-  // Handle input changes
+  const success = useSelector(state => state.user.success);
+
   const handleInputChange = useCallback((e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -66,9 +61,9 @@ const Login = () => {
   // Handle form submission
   const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
-    
-    // Validate form
+    const loginData = new FormData();
     const formErrors = validateForm(formData.email, formData.password);
+    
     if (Object.keys(formErrors).length > 0) {
       setErrors(formErrors);
       return;
@@ -76,18 +71,12 @@ const Login = () => {
     
     setIsSubmitting(true);
     setErrors({});
-    
-    try {
-      const loginData = new FormData();
-      loginData.set("email", formData.email.trim());
-      loginData.set("password", formData.password);
+
+    loginData.set("email", formData.email.trim());
+    loginData.set("password", formData.password);
       
-      await dispatch(User.login(loginData));
-    } catch (err) {
-      console.error("Login error:", err);
-    } finally {
-      setIsSubmitting(false);
-    }
+    dispatch(User.login(loginData));
+  
   }, [formData, dispatch]);
   
 
@@ -99,10 +88,14 @@ const Login = () => {
   }, [userState, navigate]);
   
   useEffect(() => {
+    if (success) {
+      store.local.set("auth", userState);
+      navigate("/profile", { replace: true });
+    }
     if (error) {
       setErrors({ general: error.message || "Login failed. Please try again." });
     }
-  }, [error]);
+  }, [error, success]);
   
   // Check if user is already logged in
   useEffect(() => {
