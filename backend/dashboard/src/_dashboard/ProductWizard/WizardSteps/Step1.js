@@ -35,6 +35,9 @@ const Step1 = React.forwardRef((props, ref) => {
   myform.set("brand", brand);
   myform.set("tags", tags);
   
+  useEffect(() => {
+
+  }, [])
   useImperativeHandle(ref, () => ({
     isValidated: undefined,
     state: { myform },
