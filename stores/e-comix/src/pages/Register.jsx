@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import BannerSub from "../components/Banner/BannerSub";
-import Breadcrumbs from "../components/Common/BreadCrumbs";
+import BreadCrumbs from "../components/Common/BreadCrumbs";
 import { User } from "../features/user/slice";
 import { store } from "../features/store";
 import { toast } from "react-toastify";
@@ -45,10 +45,11 @@ const Register = () => {
         <>
             <BannerSub />
             <main class="float-start w-100 total-body home-body mt-0">
-                <Breadcrumbs crumbs={{ link: "/", crumb: "Privacy Policy" }} />
-                <section class="cart-page-div pt-5 d-inline-block w-100">
+                <BreadCrumbs breadcrumbs={{ link: "/", crumb: "Privacy Policy" }} />
+                <section class="register-page-div pt-5 d-inline-block w-100">
                     <div class="container">
                         <div class="row gx-lg-5">
+
                                 <form action="" method="get">
                                     <div className="com-div-md">
 
@@ -92,7 +93,7 @@ const Register = () => {
                                                     <label className="form-check-label" htmlFor="exampleCheck1"> By clicking Register, you agree to our
                                                         Terms of Use
                                                         and
-                                                        Cookie Policy</label>
+                                                        Cookie Polic y</label>
                                                     <input type="checkbox" className="form-check-input" id="exampleCheck1" />
                                                 </div>
                                             </div>
