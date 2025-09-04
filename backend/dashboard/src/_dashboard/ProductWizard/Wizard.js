@@ -47,6 +47,7 @@ const Wizard = () => {
     formData.set("tags", state['info'].myform.get('category'));
     formData.set("brand", state['info'].myform.get('brand'));
 
+    const images = 
     formData.set("images", state['images'].myform.get('images'));
 
     formData.set("quantity", state['pricing'].myform.get('quantity'));

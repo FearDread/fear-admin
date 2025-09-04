@@ -4,7 +4,7 @@ const path = require('path');
 const express = require('express');
 require("dotenv").config();
 
-class FearServer {
+module.exports = class FearServer {
   constructor() {
     this.fear = null;
     this.server = null;
@@ -174,5 +174,3 @@ class FearServer {
     }
   }
 }
-
-module.exports = FearServer;
