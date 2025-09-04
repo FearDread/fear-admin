@@ -248,13 +248,9 @@ const AddressForm = ({ data, onChange, errors, prefix, title }) => (
 const Checkout = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  
-  // Redux state
   const cartData = useSelector(state => state.cart.data);
   const { data: userData } = useSelector(state => state.user);
   const { data, success, loading } = useSelector(state => state.order);
-  
-  // Form state
   const [formData, setFormData] = useState({
     billing: {
       fullName: "",
@@ -290,8 +286,6 @@ const Checkout = () => {
   
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
-  // Calculate cart totals
   const cartTotals = useMemo(() => {
     if (!cartData || cartData.length === 0) {
       return {
@@ -319,8 +313,6 @@ const Checkout = () => {
       total: total.toFixed(2)
     };
   }, [cartData]);
-  
-  // Handle form field changes
   const handleFieldChange = useCallback((fieldPath, value) => {
     const keys = fieldPath.split('.');
     setFormData(prev => {
@@ -343,8 +335,6 @@ const Checkout = () => {
       }));
     }
   }, [errors]);
-  
-  // Handle same as shipping checkbox
   const handleSameAsShipping = (e) => {
     const checked = e.target.checked;
     setFormData(prev => ({
@@ -353,8 +343,6 @@ const Checkout = () => {
       ...(checked && { shipping: { ...prev.billing } })
     }));
   };
-  
-  // Handle form submission
   const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
     const orderData = { formData, cartData, totals: cartTotals }
@@ -377,7 +365,6 @@ const Checkout = () => {
     }
   }, [formData, cartData, cartTotals, navigate]);
   
-  // Redirect if cart is empty
   useEffect(() => {
     if (!cartData || cartData.length === 0) {
       navigate('/cart');

@@ -1,18 +1,11 @@
-import React, { useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux";
-
 import Loader from "../components/Loader/Loader";
 import BannerMain from "../components/Banner/BannerMain";
 import ShopItem from "../components/Product/ShopItem";
 import SuperItem from "../components/Product/SuperItem";
 import Services from "../components/Services/Services";
 import Brands from "../components/Brands/Brands";
-
-//import { Blog } from "../features/blogs/factory";
-import { Product } from "../features/products/slice";
-import { store } from "../features/store";
-//import { addToWishlist } from "../features/products/slice";
 
 
 const Home = ( productData ) => {

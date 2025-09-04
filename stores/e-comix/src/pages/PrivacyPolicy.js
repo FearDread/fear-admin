@@ -263,8 +263,6 @@ const PrivacyPolicyPage = () => {
       <main className="float-start w-100 total-body home-body mt-0">
         <section className="top-sectionk mt-5 float-start w-100">
           <div className="container standard-container privacy-page text-centered">
-
-
             {/* Header */}
             <div className="bg-white shadow-sm ">
               <div className="max-w-4xl mx-auto px-6 py-8">
