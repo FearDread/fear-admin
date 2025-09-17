@@ -8,8 +8,6 @@ class DatabaseManager {
   constructor() {
     this.isConnected = false;
     this.currentDbName = null;
-    
-    // Setup connection event listeners
     this._setupEventListeners();
   }
 
@@ -314,16 +312,8 @@ module.exports = {
   disconnect: (callback) => dbManager.close(callback),
   getConnectionStatus: () => dbManager.getConnectionStatus(),
   waitForConnection: (timeout) => dbManager.waitForConnection(timeout),
-  
-  // ObjectId utilities
   ObjectId: ObjectIdUtils,
-  
-  // Database manager instance (for advanced usage)
   dbManager,
-  
-  // Mongoose instance (for direct access if needed)
   mongoose,
-  
-  // Legacy API (backwards compatibility)
   ...legacyAPI
 };      

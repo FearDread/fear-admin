@@ -2,6 +2,8 @@ const User = require("../../models/user");
 const TokenService = require('./token');
 const Validation = require("./validation");
 const { tryCatch } = require("../../libs/handler/error");
+const handler = require('../../libs/handler');
+const validator = require('../../libs/validator');
 
 
 /**
@@ -38,7 +40,7 @@ const response = {
           token
         }
       });
-  },
+  }, 
 
   /**
    * Send error response
@@ -48,14 +50,9 @@ const response = {
    * @param {string} error - Detailed error (optional)
    */
   error: (res, statusCode, message, error = null) => {
-    const response = {
-      success: false,
-      message
-    };
+    const response = { success: false, message };
 
-    if (error && process.env.NODE_ENV === "development") {
-      response.error = error;
-    }
+    if (error && process.env.NODE_ENV === "development") response.error = error;
 
     return res.status(statusCode).json(response);
   }
