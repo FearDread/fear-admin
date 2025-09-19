@@ -49,6 +49,8 @@ exports.all = tryCatch(async (Model, req, res) => {
  * @returns {Document} Single Document
  */
 exports.read = tryCatch(async (Model, req, res) => {
+  console.log('crud read id = ', req.params);
+  /*
   if (!req.params || !req.params.id) {
     return res.status(400).json({
       result: null,
@@ -56,10 +58,11 @@ exports.read = tryCatch(async (Model, req, res) => {
       message: "Document ID is required"
     });
   }
-
-  const { id } = req.params;
+*/
+  const { id } = req.query;
   const { populate = true } = req.query;
 
+  /*
   // Validate ObjectId format
   if (!id.match(/^[0-9a-fA-F]{24}$/)) {
     return res.status(400).json({
@@ -68,7 +71,7 @@ exports.read = tryCatch(async (Model, req, res) => {
       message: "Invalid document ID format"
     });
   }
-
+*/
   let query = Model.findById(id);
 
   // Apply population if requested
@@ -469,12 +472,12 @@ exports.search = tryCatch(async (Model, req, res) => {
     };
 
     const Search = new SearchApi(Model, queryObj, {
-        searchFields: ['name', 'description', 'tags'],
+        searchFields: ['_id', 'id', 'price', 'name', 'description', 'tags'],
         defaultSort: sortOptions[sortBy] || sortOptions.popularity
     });
 
     return await Search
-        .search(['name', 'description', 'brand', 'tags'])
+        .search(['_id', 'id', 'price', 'name', 'description', 'brand', 'tags'])
         .filter()
         .sort()
         .selectFields('-__v,-updatedAt')

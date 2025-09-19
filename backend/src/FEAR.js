@@ -70,6 +70,7 @@ class FEAR {
           return callback(null, true);
         }
         
+        this.logger.warn('origins = ', this.origins);
         if (this.origins.includes(origin)) {
           callback(null, true);
         } else {
