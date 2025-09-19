@@ -9,9 +9,9 @@ const CONFIG = {
   BASE_URL: null,
   // API Base URLs
   baseUrls: {
-    production: process.env.REACT_APP_API_BASE_URL_PROD || 'http://fear.master.com/fear/api/',
-    development: process.env.REACT_APP_API_BASE_URL_DEV || 'http://localhost:4000/fear/api/',
-    test: process.env.REACT_APP_API_BASE_URL_TEST || 'https://fear.dedyn.io/fear/api/',
+    production: process.env.API_BASE_URL_PROD || 'http://fear.master.com/fear/api/',
+    development: process.env.API_BASE_URL_DEV || 'http://localhost:4000/fear/api/',
+    test: process.env.API_BASE_URL_TEST || 'https://fear.dedyn.io/fear/api/',
   },
   tokenNames: {
     bearer: 'Authorization',
@@ -231,6 +231,8 @@ const responseInterceptor = (response) => {
     responseTime: Date.now() - (response.config.metadata?.startTime || Date.now()),
     requestId: response.config.headers['X-Request-ID'],
   };
+
+  console.log('Loaded Env = ', process.env);
 
   // Log successful responses in development
   if (process.env.NODE_ENV === 'development') {
