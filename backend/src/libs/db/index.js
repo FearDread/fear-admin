@@ -305,7 +305,6 @@ const legacyAPI = {
   }
 };
 
-// Export both new API and legacy API for backwards compatibility
 module.exports = {
   // New recommended API
   connect: (env, callback, options) => dbManager.connect(env, callback, options),
