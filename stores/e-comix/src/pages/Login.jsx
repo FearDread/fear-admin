@@ -40,7 +40,6 @@ const Login = () => {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { data: userState, success: loginSuccess, loading, error } = useSelector(state => state.user);
-  const success = useSelector(state => state.user.success);
 
   const handleInputChange = useCallback((e) => {
     const { name, value } = e.target;
@@ -57,6 +56,27 @@ const Login = () => {
       }));
     }
   }, [errors]);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const loginData = new FormData();
+    const formErrors = validateForm(formData.email, formData.password);
+    
+    if (Object.keys(formErrors).length > 0) {
+      setErrors(formErrors);
+      return;
+    }
+    
+    setIsSubmitting(true);
+    setErrors({});
+
+    loginData.set("email", formData.email.trim());
+    loginData.set("password", formData.password);
+      
+    dispatch(User.login(loginData));
+  
+  };
+  /*
   
   // Handle form submission
   const handleSubmit = useCallback(async (e) => {
@@ -78,8 +98,8 @@ const Login = () => {
     dispatch(User.login(loginData));
   
   }, [formData, dispatch]);
-  
-
+  */
+/*
   useEffect(() => {
     if (userState?.token) {
       store.local.set("auth", userState);
@@ -87,24 +107,24 @@ const Login = () => {
     }
   }, [userState, navigate]);
   
+  // Check if user is already logged in
   useEffect(() => {
-    if (success) {
+    const existingAuth = store.local.get("auth");
+    if (userState?.token) {
+      navigate("/profile", { replace: true });
+    }
+  }, [userState]);
+ */
+    useEffect(() => {
+    if (loginSuccess) {
       store.local.set("auth", userState);
       navigate("/profile", { replace: true });
     }
     if (error) {
       setErrors({ general: error.message || "Login failed. Please try again." });
     }
-  }, [error, success]);
+  }, []);
   
-  // Check if user is already logged in
-  useEffect(() => {
-    const existingAuth = store.local.get("auth");
-    if (existingAuth?.token) {
-      navigate("/profile", { replace: true });
-    }
-  }, [navigate]);
-
   return (
     <>
       <BannerSub />

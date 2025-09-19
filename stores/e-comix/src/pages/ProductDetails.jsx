@@ -154,19 +154,23 @@ const handleTabChange = useCallback((tabId) => {
   setActiveTab(tabId);
 }, []);
 
+
+  const fetchProduct = () => {
+
+      setError(null);
+      dispatch(Product.fetchOne({ id: productId }));
+
+      /*
+      console.error('Failed to fetch product:', err);
+      setError('Failed to load product details');\
+      */
+
+  };
+
 // Effects
 useEffect(() => {
   if (!productId) return;
 
-  const fetchProduct = async () => {
-    try {
-      setError(null);
-      await dispatch(Product.fetchOne({ id: productId }));
-    } catch (err) {
-      console.error('Failed to fetch product:', err);
-      setError('Failed to load product details');
-    }
-  };
 
   fetchProduct();
 }, [productId, dispatch]);
