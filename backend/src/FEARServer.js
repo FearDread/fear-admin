@@ -19,8 +19,8 @@ module.exports = class FearServer {
   }) {
     try {
       // Import FEAR after dotenv is configured
-      const createFearApp = require("./FEAR");
-      this.fear = createFearApp();
+      const FearFactory = require("./FEAR");
+      this.fear = new FearFactory();
 
       this.setupStaticFiles(paths.root, paths.app, paths.build);
       this.setupProcessHandlers();
