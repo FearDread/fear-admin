@@ -1,9 +1,10 @@
 const User = require("../../models/user");
 const TokenService = require('./token');
 const Validation = require("./validation");
-const { tryCatch } = require("../../libs/handler/error");
+const { handler.async } = require("../../libs/handler/error");
 const handler = require('../../libs/handler');
 const validator = require('../../libs/validator');
+const logger = require('../../libs/logger');
 
 
 /**
@@ -40,7 +41,7 @@ const response = {
           token
         }
       });
-  }, 
+  },
 
   /**
    * Send error response
@@ -65,38 +66,37 @@ const response = {
  * @description Validates user credentials (email/password) and returns JWT token for authenticated user
  * @tags authentication
  */
-exports.login = tryCatch(async (req, res) => {
+exports.login = handler.async(async (req, res) => {
   const { email, password } = req.body;
 
   // Validate input
-  const validation = Validation.validateLoginInput({ email, password });
+  const validation = validator.input.login({ email, password });
   if (!validation.isValid) {
     return response.sendError(res, 400, validation.message);
   }
 
   console.log('Authentication attempt for:', email);
+  await User.findOne({ email }).select('+password')
+    .then((user) => {
+      if (!user) return response.error(res, 401, "Invalid credentials");
 
-  try {
-    // Find user by email
-    const user = await User.findOne({ email }).select('+password');
-    if (!user) {
-      return response.error(res, 401, "Invalid credentials");
-    }
+      // Verify password
+      user.compare(password)
+        .then((isPasswordValid) => {
+          if (!isPasswordValid) {
+            return response.error(res, 401, "Invalid credentials");
+          }
 
-    // Verify password
-    const isPasswordValid = await user.compare(password);
-    if (!isPasswordValid) {
-      return response.error(res, 401, "Invalid credentials");
-    }
+          const token = TokenService.generateToken(user);
+          return response.success(res, user, token, 200, "Login successful");
+        })
+        .catch(err => response.error(res, 500, 'Server Error'))
 
-    // Generate token and send response
-    const token = TokenService.generateToken(user);
-    return response.success(res, user, token, 200, "Login successful");
-
-  } catch (error) {
-    console.error('Login error:', error);
-    return response.error(res, 500, "Authentication failed", error.message);
-  }
+    })
+    .catch((error) => {
+      logger.error('Login error:', error);
+      return response.error(res, 500, "Authentication failed", error.message);
+    });
 });
 
 /**
@@ -105,14 +105,14 @@ exports.login = tryCatch(async (req, res) => {
  * @description Creates a new user account with provided information and returns JWT token
  * @tags authentication
  */
-exports.register = tryCatch(async (req, res) => {
+exports.register = handler.async(async (req, res) => {
   const { email, firstname, lastname, name: providedName, password, ...otherFields } = req.body;
 
   // Validate input
-  const validation = Validation.validateRegistrationInput({
+  const validation = validator.input.register({
     email, firstname, lastname, name: providedName, password
   });
-  
+
   if (!validation.isValid) {
     return response.error(res, 400, validation.message);
   }
@@ -134,19 +134,19 @@ exports.register = tryCatch(async (req, res) => {
     };
 
     const user = await User.create(userData);
-    
+
     // Generate token and send response
     const token = TokenService.generateToken(user);
     return response.success(res, user, token, 201, "Registration successful");
 
   } catch (error) {
     console.error('Registration error:', error);
-    
+
     // Handle duplicate key error (in case of race condition)
     if (error.code === 11000) {
       return response.error(res, 409, "User with this email already exists");
     }
-    
+
     return response.error(res, 500, "Registration failed", error.message);
   }
 });
@@ -157,7 +157,7 @@ exports.register = tryCatch(async (req, res) => {
  * @description Clears the JWT token cookie to log out the authenticated user
  * @tags authentication
  */
-exports.logout = tryCatch(async (req, res) => {
+exports.logout = handler.async(async (req, res) => {
   return res
     .status(200)
     .clearCookie('jwt', {
@@ -177,10 +177,10 @@ exports.logout = tryCatch(async (req, res) => {
  * @description Returns the current user's profile information
  * @tags authentication
  */
-exports.getCurrentUser = tryCatch(async (req, res) => {
+exports.getCurrentUser = handler.async(async (req, res) => {
   // req.user is set by isAuthorized middleware
   const user = req.user;
-  
+
   const userResponse = {
     _id: user._id,
     email: user.email,
@@ -202,9 +202,9 @@ exports.getCurrentUser = tryCatch(async (req, res) => {
  * @description Generates a new JWT token for authenticated user
  * @tags authentication
  */
-exports.refreshToken = tryCatch(async (req, res) => {
+exports.refreshToken = handler.async(async (req, res) => {
   const user = req.user; // Set by isAuthorized middleware
-  
+
   const newToken = TokenService.generateToken(user);
   return response.success(res, user, newToken, 200, "Token refreshed successfully");
 });
@@ -215,7 +215,7 @@ exports.refreshToken = tryCatch(async (req, res) => {
  * @description Validates JWT token and attaches user object to request
  * @tags middleware, authentication
  */
-exports.isAuthorized = tryCatch(async (req, res, next) => {
+exports.isAuthorized = handler.async(async (req, res, next) => {
   let token;
 
   // Check for token in cookies first, then Authorization header
@@ -232,7 +232,7 @@ exports.isAuthorized = tryCatch(async (req, res, next) => {
   try {
     // Verify token
     const decodedToken = TokenService.verifyToken(token);
-    
+
     // Get user from database
     const user = await User.findById(decodedToken.id);
     if (!user) {
@@ -270,7 +270,7 @@ exports.isAuthorized = tryCatch(async (req, res, next) => {
  * @description Checks if req.user.role equals 'admin'. Must be used after isAuthorized middleware
  * @tags middleware, authorization
  */
-exports.isAdmin = tryCatch(async (req, res, next) => {
+exports.isAdmin = handler.async(async (req, res, next) => {
   if (!req.user) {
     return response.error(res, 401, "Authentication required");
   }
@@ -291,15 +291,15 @@ exports.isAdmin = tryCatch(async (req, res, next) => {
  * @returns {function} Express middleware function
  */
 exports.authorizeRoles = (...roles) => {
-  return tryCatch(async (req, res, next) => {
+  return handler.async(async (req, res, next) => {
     if (!req.user) {
       return response.error(res, 401, "Authentication required");
     }
 
     if (!roles.includes(req.user.role)) {
       return response.error(
-        res, 
-        403, 
+        res,
+        403,
         `Access denied. Required roles: ${roles.join(', ')}. Your role: ${req.user.role}`
       );
     }
@@ -314,7 +314,7 @@ exports.authorizeRoles = (...roles) => {
  * @description Useful for routes that behave differently for authenticated vs anonymous users
  * @tags middleware, authentication
  */
-exports.optionalAuth = tryCatch(async (req, res, next) => {
+exports.optionalAuth = handler.async(async (req, res, next) => {
   let token;
 
   if (req.cookies?.jwt) {
@@ -330,7 +330,7 @@ exports.optionalAuth = tryCatch(async (req, res, next) => {
   try {
     const decodedToken = TokenService.verifyToken(token);
     const user = await User.findById(decodedToken.id);
-    
+
     if (user && user.isActive !== false) {
       req.user = user;
       req.token = token;

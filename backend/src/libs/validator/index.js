@@ -4,6 +4,69 @@ const { body, param, query } = require('express-validator');
 const { validationResult } = require('express-validator');
 
 
+/**
+ * Input validation utilities
+ */
+exports.input = {
+
+  /**
+   * Validate email format
+   * @param {string} email - Email to validate
+   * @returns {boolean} Is email valid
+   */
+  email: (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  },
+
+  /**
+   * Validate password strength
+   * @param {string} password - Password to validate
+   * @returns {object} Validation result
+   */
+  password: (password) => {
+    if (!password) {
+      return { isValid: false, message: "Password is required" };
+    }
+    if (password.length < 6) {
+      return { isValid: false, message: "Password must be at least 6 characters long" };
+    }
+    return { isValid: true };
+  },
+
+  /**
+   * Validate login input
+   * @param {object} data - Login data
+   * @returns {object} Validation result
+   */
+  login: ({ email, password }) => {
+    if (!email || !password) return { isValid: false, message: "Email and password are required" };
+    if (!expots.input.email(email)) return { isValid: false, message: "Please provide a valid email address" };
+
+    return { isValid: true };
+  },
+
+  /**
+   * Validate registration input
+   * @param {object} data - Registration data
+   * @returns {object} Validation result
+   */
+  register: (data) => {
+    const { email, password, firstname, lastname, name } = data;
+
+    if (!email) return { isValid: false, message: "Email is required" };
+    if (!exports.input.email(email)) return { isValid: false, message: "Please provide a valid email address" };
+  
+    const passwordValidation = exports.input.password(password);
+    if (!passwordValidation.isValid) return passwordValidation;
+
+    const fullName = firstname && lastname ? `${firstname} ${lastname}` : name;
+    if (!fullName) return { isValid: false, message: "Name is required" };
+
+    return { isValid: true, name: fullName };
+  }
+}
+
 
 /**
  * Basic validation middleware for express-validator
@@ -11,7 +74,7 @@ const { validationResult } = require('express-validator');
  */
 exports.request = (req, res, next) => {
   const errors = validationResult(req);
-  
+
   if (!errors.isEmpty()) {
     const formattedErrors = errors.array().reduce((acc, error) => {
       const field = error.path || error.param;
@@ -31,7 +94,7 @@ exports.request = (req, res, next) => {
 
     return res.status(400).json(errorResponse);
   }
-  
+
   next();
 }
 
@@ -113,13 +176,13 @@ exports.buildValidation = (schema) => {
 exports.sanitizers = {
   trimAndEscape: (field) =>
     body(field).trim().escape(),
-    
+
   normalizeEmail: (field = 'email') =>
     body(field).normalizeEmail(),
-    
+
   toLowerCase: (field) =>
     body(field).toLowerCase(),
-    
+
   toBoolean: (field) =>
     body(field).toBoolean()
 };
@@ -137,14 +200,14 @@ exports.factory = (options = {}) => {
 
   return (req, res, next) => {
     const errors = validationResult(req);
-    
+
     if (!errors.isEmpty()) {
       if (firstOnly) {
         const firstError = errors.array()[0];
-        const message = location 
+        const message = location
           ? `${firstError.path}: ${firstError.msg}`
           : firstError.msg;
-        
+
         throw new handler.error(message, 400);
       }
 
@@ -170,21 +233,22 @@ exports.factory = (options = {}) => {
       }
 
       // Default: simple error list
-      const errorMessages = errors.array().map(error => 
+      const errorMessages = errors.array().map(error =>
         includeLocation ? `${error.path}: ${error.msg}` : error.msg
       );
-      
+
       throw new handler.error(errorMessages.join(', '), 400);
     }
-    
+
     next();
   };
 };
 
 module.exports = {
-    request: exports.request,
-    schemas: exports.schemas,
-    builder: exports.buildValidation,
-    factory: exports.factory,
-    sanitizers: exports.sanitizers,
+  input: exports.input,
+  request: exports.request,
+  schemas: exports.schemas,
+  builder: exports.buildValidation,
+  factory: exports.factory,
+  sanitizers: exports.sanitizers,
 }
