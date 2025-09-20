@@ -6,7 +6,7 @@ const cookieParser = require("cookie-parser");
 const fileUpload = require("express-fileupload");
 const cors = require("cors");
 
-class FEAR {
+module.exports = class FearFactory {
   constructor() {
     this.app = express();
     this.server = null;
@@ -66,11 +66,7 @@ class FEAR {
       credentials: true,
       origin: (origin, callback) => {
         // Allow requests with no origin (like mobile apps or curl requests)
-        if (!origin) {
-          return callback(null, true);
-        }
-        
-        this.logger.warn('origins = ', this.origins);
+        if (!origin) return callback(null, true);
         if (this.origins.includes(origin)) {
           callback(null, true);
         } else {
@@ -197,12 +193,10 @@ shutdown = async () => {
   }
 }
 
-// Factory function to maintain backward compatibility
-function createFearApp() {
-  return new FEAR();
+const FearFactory = () => {
+  return new FearFactory();
 }
 
-module.exports = createFearApp;
+exports.createFearApp = FearFactory;
 
-// For backward compatibility, also export the class
-module.exports.FEAR = FEAR;
+exports.FearFactory = FearFactory;
