@@ -1,7 +1,5 @@
 const User = require("../../models/user");
 const TokenService = require('./token');
-const Validation = require("./validation");
-const { handler.async } = require("../../libs/handler/error");
 const handler = require('../../libs/handler');
 const validator = require('../../libs/validator');
 const logger = require('../../libs/logger');

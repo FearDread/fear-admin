@@ -41,7 +41,7 @@ exports.input = {
    */
   login: ({ email, password }) => {
     if (!email || !password) return { isValid: false, message: "Email and password are required" };
-    if (!expots.input.email(email)) return { isValid: false, message: "Please provide a valid email address" };
+    if (!exports.input.email(email)) return { isValid: false, message: "Please provide a valid email address" };
 
     return { isValid: true };
   },
