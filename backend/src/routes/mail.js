@@ -1,29 +1,30 @@
-//onst imap = require("../workers/imap");
-//const Contacts = require("../models/contact");
-const router = require("express").Router();
 const smtp = require("../libs/emailer/smtp");
-const mailinfo = require("../libs/emailer/info"); 
-const mailer = new smtp(mailinfo);
+const mailinfo = require("../libs/emailer/info");
+const Mail = new smtp(mailinfo);
 
-router.get('/', (req, res) => {
-    mailer.sendEmail()
-        .then((response) => res.send(response.message))
-        .catch((error) => res.status(500).send(error.message));
-});
+module.exports = ( fear ) => {
+    const router = fear.createRouter();
 
-router.post('/contact', (req, res) => {
-    mailer.sendContactEmail(req.body)
-        .then((response) => res.json({ success: true, message: response.message }))
-        .catch((error) => res.status(500).json({ success: false, message: error.message }))
-});
+    router.get('/', (req, res) => {
+        Mail.sendEmail()
+            .then((response) => res.send(response.message))
+            .catch((error) => res.status(500).send(error.message));
+    });
 
-router.post("/project", (req, res) => {
-    mailer.sendProjectEmail(req.body)
-        .then((response) => res.json({ success: true, message: response.message }))
-        .catch((error) => res.status(500).json({ success: false, message: error.message }))
-})
+    router.post('/contact', (req, res) => {
+        Mail.sendContactEmail(req.body)
+            .then((response) => res.json({ success: true, message: response.message }))
+            .catch((error) => res.status(500).json({ success: false, message: error.message }))
+    });
 
-module.exports = router;
+    router.post("/project", (req, res) => {
+        Mail.sendProjectEmail(req.body)
+            .then((response) => res.json({ success: true, message: response.message }))
+            .catch((error) => res.status(500).json({ success: false, message: error.message }))
+    })
+
+    return router;
+};
 
 /*
 router.get("/mailboxes", async (req, res) => {

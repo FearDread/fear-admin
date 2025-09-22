@@ -1,17 +1,19 @@
-const express = require("express");
 const Blog = require("../controllers/blog");
-const router = express.Router();
 
-router.get("/all", Blog.all);
-router.post("/new",  Blog.create);
+module.exports = (fear) => {
+      const router = fear.createRouter();
+      const handler = fear.getHandler();
 
-router.put("/likes", Blog.likes);
-router.put("/dislikes", Blog.dislikes);
-router.get("/sections", Blog.sections);
+      router.get("/all", handler.async(Blog.all));
+      router.post("/new", handler.async(Blog.create));
+      router.put("/likes", handler.async(Blog.likes));
+      router.put("/dislikes", handler.async(Blog.dislikes));
+      router.get("/sections", handler.async(Blog.sections));
 
-router.route("/:id")
-      .get(Blog.read)
-      .put(Blog.update)
-      .delete(Blog.delete);
+      router.route("/:id")
+            .get(Blog.read)
+            .put(Blog.update)
+            .delete(Blog.delete);
 
-module.exports = router;
+      return router;
+}

@@ -6,19 +6,21 @@ const cookieParser = require("cookie-parser");
 const fileUpload = require("express-fileupload");
 const cors = require("cors");
 
-module.exports = class FearFactory {
+module.exports = class FEAR {
   constructor() {
     this.app = express();
     this.Router = express.Router;
     this.server = null;
     this.registeredRouters = [];
-    this.initializeEnvironment();
-    this.initializeDependencies();
+    
+    this.initEnv();
+    this.initDeps();
+    
     this.setupMiddleware();
     this.setupRoutes();
   }
 
-  initializeEnvironment() {
+  initEnv() {
     const envResult = require("dotenv").config({ path: ".env" });
     if (!envResult || envResult.error) {
       throw new Error(`Environment configuration error: ${envResult?.error?.message || 'Unknown error'}`);
@@ -26,11 +28,13 @@ module.exports = class FearFactory {
     this.env = envResult.parsed;
   }
 
-  initializeDependencies() {
+  initDeps() {
     this.logger = require("./libs/logger");
     this.morgan = require("./libs/logger/morgan");
     this.cloud = require("./libs/cloud");
     this.db = require("./libs/db");
+    this.handler = require("./libs/handler");
+    this.validator = require("./libs/validator");
     
     this.logo = this.env.FEAR_LOGO;
     this.origins = this.parseAllowedOrigins();
@@ -143,6 +147,8 @@ module.exports = class FearFactory {
     router.getDatabase = () => this.db;
     router.getCloud = () => this.cloud;
     router.getEnvironment = () => this.env;
+    router.getHandler = () => this.handler;
+    router.getValidator = () => this.validator;
     
     return router;
   }
@@ -166,9 +172,9 @@ module.exports = class FearFactory {
           const routeName = file.replace(/\.js$/, '');
           const routeModule = require(`./routes/${file}`);
           const routePath = `/fear/api/${routeName}`;
-          
-          this.app.use(routePath, cors(corsConfig), routeModule);
-          this.logger.info(`Route added :: ${routePath}`);
+
+          this.useRouter(routeModule(this), routePath);
+
         } catch (error) {
           this.logger.error(`Failed to load route ${file}:`, error);
         }
@@ -251,6 +257,29 @@ module.exports = class FearFactory {
     });
   }
 
+  /**
+   * Set this instance as the global router factory
+   * Allows route files to access createRouter() globally
+   */
+  setAsGlobal() {
+    global.FearRouter = {
+      createRouter: () => this.createRouter(),
+      getLogger: () => this.getLogger(),
+      getDatabase: () => this.getDatabase(),
+      getEnvironment: () => this.getEnvironment(),
+      getCloud: () => this.getCloud()
+    };
+    return this;
+  }
+
+  /**
+   * Clear global router factory
+   */
+  clearGlobal() {
+    delete global.FearRouter;
+    return this;
+  }
+
   // Getter methods for accessing application components
   getApp() {
     return this.app;
@@ -275,10 +304,18 @@ module.exports = class FearFactory {
   getRouter() {
     return this.Router;
   }
+
+  getValidator() {
+    return this.validator;
+  }
+
+  getHandler() {
+    return this.handler;
+  }
 }
 
 const FearFactory = () => {
-  return new FearFactory();
+  return new FEAR();
 }
 
 exports.createFearApp = FearFactory;

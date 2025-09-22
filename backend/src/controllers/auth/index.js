@@ -64,7 +64,7 @@ const response = {
  * @description Validates user credentials (email/password) and returns JWT token for authenticated user
  * @tags authentication
  */
-exports.login = handler.async(async (req, res) => {
+exports.login = async (req, res) => {
   const { email, password } = req.body;
 
   // Validate input
@@ -95,7 +95,7 @@ exports.login = handler.async(async (req, res) => {
       logger.error('Login error:', error);
       return response.error(res, 500, "Authentication failed", error.message);
     });
-});
+};
 
 /**
  * POST /fear/api/auth/register
@@ -103,7 +103,7 @@ exports.login = handler.async(async (req, res) => {
  * @description Creates a new user account with provided information and returns JWT token
  * @tags authentication
  */
-exports.register = handler.async(async (req, res) => {
+exports.register = async (req, res) => {
   const { email, firstname, lastname, name: providedName, password, ...otherFields } = req.body;
 
   // Validate input
@@ -147,7 +147,7 @@ exports.register = handler.async(async (req, res) => {
 
     return response.error(res, 500, "Registration failed", error.message);
   }
-});
+};
 
 /**
  * POST /fear/api/auth/logout
@@ -155,7 +155,7 @@ exports.register = handler.async(async (req, res) => {
  * @description Clears the JWT token cookie to log out the authenticated user
  * @tags authentication
  */
-exports.logout = handler.async(async (req, res) => {
+exports.logout = async (req, res) => {
   return res
     .status(200)
     .clearCookie('jwt', {
@@ -167,7 +167,7 @@ exports.logout = handler.async(async (req, res) => {
       success: true,
       message: "Logout successful"
     });
-});
+};
 
 /**
  * GET /fear/api/auth/me
@@ -175,7 +175,7 @@ exports.logout = handler.async(async (req, res) => {
  * @description Returns the current user's profile information
  * @tags authentication
  */
-exports.getCurrentUser = handler.async(async (req, res) => {
+exports.getCurrentUser = async (req, res) => {
   // req.user is set by isAuthorized middleware
   const user = req.user;
 
@@ -192,7 +192,7 @@ exports.getCurrentUser = handler.async(async (req, res) => {
     success: true,
     data: { user: userResponse }
   });
-});
+};
 
 /**
  * PUT /fear/api/auth/refresh-token
@@ -200,12 +200,12 @@ exports.getCurrentUser = handler.async(async (req, res) => {
  * @description Generates a new JWT token for authenticated user
  * @tags authentication
  */
-exports.refreshToken = handler.async(async (req, res) => {
+exports.refreshToken = async (req, res) => {
   const user = req.user; // Set by isAuthorized middleware
 
   const newToken = TokenService.generateToken(user);
   return response.success(res, user, newToken, 200, "Token refreshed successfully");
-});
+};
 
 /**
  * Middleware: Verify JWT token and authenticate user
@@ -213,7 +213,7 @@ exports.refreshToken = handler.async(async (req, res) => {
  * @description Validates JWT token and attaches user object to request
  * @tags middleware, authentication
  */
-exports.isAuthorized = handler.async(async (req, res, next) => {
+exports.isAuthorized = async (req, res, next) => {
   let token;
 
   // Check for token in cookies first, then Authorization header
@@ -260,7 +260,7 @@ exports.isAuthorized = handler.async(async (req, res, next) => {
 
     return response.error(res, 500, "Authentication failed", error.message);
   }
-});
+};
 
 /**
  * Middleware: Check if user has admin role
@@ -268,7 +268,7 @@ exports.isAuthorized = handler.async(async (req, res, next) => {
  * @description Checks if req.user.role equals 'admin'. Must be used after isAuthorized middleware
  * @tags middleware, authorization
  */
-exports.isAdmin = handler.async(async (req, res, next) => {
+exports.isAdmin = async (req, res, next) => {
   if (!req.user) {
     return response.error(res, 401, "Authentication required");
   }
@@ -278,7 +278,7 @@ exports.isAdmin = handler.async(async (req, res, next) => {
   }
 
   next();
-});
+};
 
 /**
  * Middleware factory: Check if user has required role(s)
@@ -312,7 +312,7 @@ exports.authorizeRoles = (...roles) => {
  * @description Useful for routes that behave differently for authenticated vs anonymous users
  * @tags middleware, authentication
  */
-exports.optionalAuth = handler.async(async (req, res, next) => {
+exports.optionalAuth = async (req, res, next) => {
   let token;
 
   if (req.cookies?.jwt) {
@@ -339,7 +339,7 @@ exports.optionalAuth = handler.async(async (req, res, next) => {
   }
 
   next();
-});
+};
 
 // Export TokenService and other utilities for use in other modules
 exports.AuthResponse = response;

@@ -1,17 +1,14 @@
-const express = require("express");
-const enquiry= require("../controllers/enquiry");
-const { isAuthorized, isAdmin } = require("../controllers/auth");
-const router = express.Router();
+const Enquiry = require("../controllers/enquiry");
 
-/*
-router.post("/", createEnquiry);
-router.put("/:id", authMiddleware, isAdmin, updateEnquiry);
-router.delete("/:id", authMiddleware, isAdmin, deleteEnquiry);
-router.get("/:id", getEnquiry);
-router.get("/", getallEnquiry);
-*/
+module.exports = (fear) => {
+    const router = fear.createRouter();
 
-module.exports = router;
-module.exports = ( app ) => {
-    
+    /*
+    router.post("/", createEnquiry);
+    router.put("/:id", authMiddleware, isAdmin, updateEnquiry);
+    router.delete("/:id", authMiddleware, isAdmin, deleteEnquiry);
+    router.get("/:id", getEnquiry);
+    router.get("/", getallEnquiry);
+    */
+    return router;
 }
