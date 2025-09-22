@@ -7,13 +7,13 @@ const userSchema = new mongoose.Schema({
     lastname: { type: String, required: false },
     email: { type: String, required: true, unique: true },
     username: { type: String, required: false, unique: true },
-    mobile: { type: String, required: true, unique: true },
+    mobile: { type: String, required: false, unique: true },
     password: { type: String, required: true },
     avatar: { type: Object, required: false, default: {
       public_id: '',
       secure_url: ''
     }},
-    role: { type: String, default: "user" },
+    role: { type: String, default: "customer" },
     isBlocked: { type: Boolean, default: false },
     address: { type: String },
     shipping: { type: String },
