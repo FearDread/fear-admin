@@ -1,6 +1,7 @@
 const { tryCatch } = require("../libs/handler/error");
 const router = require('express').Router();
 const User = require("../controllers/user");
+const handler = require('../libs/handler');
 const { login, logout, register } = require("../controllers/auth");
 
 router.post("/login", tryCatch(login));

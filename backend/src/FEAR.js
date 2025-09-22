@@ -9,7 +9,9 @@ const cors = require("cors");
 module.exports = class FearFactory {
   constructor() {
     this.app = express();
+    this.Router = express.Router;
     this.server = null;
+    this.registeredRouters = [];
     this.initializeEnvironment();
     this.initializeDependencies();
     this.setupMiddleware();
@@ -77,6 +79,74 @@ module.exports = class FearFactory {
     };
   }
 
+  /**
+   * Register a single router with optional path and CORS configuration
+   * @param {express.Router} router - Express router instance
+   * @param {string} routePath - Optional path prefix (defaults to '/fear/api')
+   * @param {Object} corsOptions - Optional CORS configuration (defaults to class CORS config)
+   */
+  useRouter(router, routePath = '/fear/api', corsOptions = null) {
+    if (!router || typeof router !== 'function') {
+      throw new Error('Router must be a valid Express router instance');
+    }
+
+    const corsConfig = corsOptions || this.getCorsConfig();
+    
+    // Store router info for tracking
+    const routerInfo = {
+      router,
+      path: routePath,
+      corsConfig
+    };
+    
+    this.registeredRouters.push(routerInfo);
+    
+    // Apply the router to the app
+    this.app.use(routePath, cors(corsConfig), router);
+    this.logger.info(`Single router registered :: ${routePath}`);
+    
+    return this; // Allow chaining
+  }
+
+  /**
+   * Register multiple routers at once
+   * @param {Array} routers - Array of router configurations [{router, path?, cors?}]
+   */
+  useRouters(routers) {
+    if (!Array.isArray(routers)) {
+      throw new Error('Routers must be an array');
+    }
+
+    routers.forEach(config => {
+      if (typeof config === 'function') {
+        // Simple router function
+        this.useRouter(config);
+      } else if (config && config.router) {
+        // Router configuration object
+        this.useRouter(config.router, config.path, config.cors);
+      } else {
+        throw new Error('Invalid router configuration');
+      }
+    });
+
+    return this;
+  }
+
+  /**
+   * Create and return a new router instance with access to FearFactory context
+   */
+  createRouter() {
+    const router = express.Router();
+    
+    // Add context methods to router for easy access to FearFactory components
+    router.getLogger = () => this.logger;
+    router.getDatabase = () => this.db;
+    router.getCloud = () => this.cloud;
+    router.getEnvironment = () => this.env;
+    
+    return router;
+  }
+
   setupRoutes() {
     const routesDir = path.join(__dirname, "routes");
     
@@ -108,7 +178,17 @@ module.exports = class FearFactory {
     }
   }
 
-start = async (port = null) => {
+  /**
+   * Get information about all registered routers
+   */
+  getRegisteredRouters() {
+    return this.registeredRouters.map(info => ({
+      path: info.path,
+      corsEnabled: !!info.corsConfig
+    }));
+  }
+
+  start = async (port = null) => {
     const serverPort = port || this.app.get("PORT") || 4000;
     
     return new Promise((resolve, reject) => {
@@ -124,7 +204,7 @@ start = async (port = null) => {
     });
   }
 
-shutdown = async () => {
+  shutdown = async () => {
     this.logger.info('Initiating graceful shutdown...');
 
     return new Promise((resolve) => {
@@ -191,6 +271,10 @@ shutdown = async () => {
   getCloud() {
     return this.cloud;
   }
+
+  getRouter() {
+    return this.Router;
+  }
 }
 
 const FearFactory = () => {
@@ -198,5 +282,4 @@ const FearFactory = () => {
 }
 
 exports.createFearApp = FearFactory;
-
 exports.FearFactory = FearFactory;

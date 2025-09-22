@@ -8,6 +8,7 @@ module.exports = class FearServer {
   constructor() {
     this.fear = null;
     this.server = null;
+    this.Router = null;
     this.isShuttingDown = false;
     this.rootDir = path.resolve();
   }
@@ -21,7 +22,7 @@ module.exports = class FearServer {
       // Import FEAR after dotenv is configured
       const FearFactory = require("./FEAR");
       this.fear = new FearFactory();
-
+      this.Router = this.fear.Router;
       this.setupStaticFiles(paths.root, paths.app, paths.build);
       this.setupProcessHandlers();
       
