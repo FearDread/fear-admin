@@ -1,23 +1,15 @@
-const express = require("express");
 const Coupon = require("../controllers/coupon");
-const { authMiddleware, isAdmin } = require("../controllers/auth");
-const router = express.Router();
 
-/*
-const {
-  createCoupon,
-  getAllCoupons,
-  updateCoupon,
-  deleteCoupon,
-  getCoupon,
-} = require("../controller/couponCtrl");
-
-
-router.post("/", authMiddleware, isAdmin, createCoupon);
-router.get("/", authMiddleware, isAdmin, getAllCoupons);
-router.get("/:id", authMiddleware, isAdmin, getCoupon);
-router.put("/:id", authMiddleware, isAdmin, updateCoupon);
-router.delete("/:id", authMiddleware, isAdmin, deleteCoupon);
-*/
-
-module.exports = router;
+module.exports = (fear) => {
+  const router = fear.createRouter();
+  const validator = fear.getValidator();
+  const handler = fear.getHandler();
+  /*
+  router.post("/", Coupon.createCoupon);
+  router.get("/", Coupon.getAllCoupons);
+  router.get("/:id", Coupon.getCoupon);
+  router.put("/:id", Coupon.updateCoupon);
+  router.delete("/:id", Coupon.deleteCoupon);
+  */
+  return router;
+};

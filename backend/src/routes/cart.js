@@ -1,14 +1,18 @@
-const router = require("express").Router();
-const validator = require("../libs/validator");
-const handler = require('../libs/handler');
 const Cart = require("../controllers/cart");
 
-router.post("/new", validator.request, handler.async(Cart.createCartItem));
-router.post("/user", validator.request, handler.async(Cart.getUserCart));
-router.delete("/empty", validator.request, handler.async(Cart.emptyUserCart));
-router.patch("/quantity/:id", validator.request, handler.async(Cart.updateQuantity))
+module.exports = (fear) => {
+  const router = fear.createRouter();
+  const validator = fear.getValidator();
+  const handler = fear.getHandler();
 
-module.exports = router;
+
+  router.post("/new", validator.request, handler.async(Cart.createCartItem));
+  router.post("/user", validator.request, handler.async(Cart.getUserCart));
+  router.delete("/empty", validator.request, handler.async(Cart.emptyUserCart));
+  router.patch("/quantity/:id", validator.request, handler.async(Cart.updateQuantity))
+
+  return router;
+};
 
 /**
  * GET /api/cart

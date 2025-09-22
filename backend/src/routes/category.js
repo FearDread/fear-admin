@@ -1,12 +1,16 @@
-const router = require("express").Router();
 const Category = require("../controllers/category");
-const { authMiddleware, isAdmin } = require("../controllers/auth");
 
-router.get("/all", Category.all);
-router.post("/new", Category.create);
-router.route("/:id")
-      .get(Category.read)
-      .put(Category.update)
-      .delete(Category.delete);
+module.exports = (fear) => {
+      const router = fear.createRouter();
+      const validator = fear.getValidator();
+      const handler = fear.getHandler();
 
-module.exports = router;
+      router.get("/all", Category.all);
+      router.post("/new", Category.create);
+      router.route("/:id")
+            .get(Category.read)
+            .put(Category.update)
+            .delete(Category.delete);
+
+      return router;
+};
