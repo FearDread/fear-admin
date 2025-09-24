@@ -31,6 +31,7 @@ const setBaseUrl = (uri) => {
   CONFIG.BASE_URL = uri || CONFIG.baseUrls['development'];
   getBaseUrl();
 };
+
 /**
  * Gets the appropriate base URL for the current environment
  * @returns {string} Base URL
@@ -45,9 +46,9 @@ const getBaseUrl = () => {
  * Gets authentication data from cache
  * @returns {Object|null} Auth data or null
  */
-const getAuthData = async () => {
+const getAuthData = () => {
   try {
-    const authData = await CacheFactory.local.get(CONFIG.cacheKeys.auth);
+    const authData = CacheFactory.local.get(CONFIG.cacheKeys.auth);
     return authData && typeof authData === 'object' ? authData : null;
   } catch (error) {
     console.warn('Failed to retrieve auth data:', error);
@@ -78,8 +79,8 @@ const isTokenExpired = (token) => {
  */
 const refreshAuthToken = async () => {
   try {
-    const authData = await getAuthData();
-    const refreshToken = authData?.refreshToken || await CacheFactory.local.get(CONFIG.cacheKeys.refreshToken);
+    const authData = getAuthData();
+    const refreshToken = authData?.refreshToken || CacheFactory.local.get(CONFIG.cacheKeys.refreshToken);
     
     if (!refreshToken) {
       throw new Error('No refresh token available');
@@ -96,11 +97,11 @@ const refreshAuthToken = async () => {
       expiresAt: response.data.expiresAt,
     };
 
-    await CacheFactory.local.set(CONFIG.cacheKeys.auth, newAuthData);
+    CacheFactory.local.set(CONFIG.cacheKeys.auth, newAuthData);
     return newAuthData.token;
   } catch (error) {
     console.error('Token refresh failed:', error);
-    await clearAuthData();
+    clearAuthData();
     return null;
   }
 };
@@ -108,12 +109,10 @@ const refreshAuthToken = async () => {
 /**
  * Clears authentication data from cache
  */
-const clearAuthData = async () => {
+const clearAuthData = () => {
   try {
-    await Promise.all([
-      CacheFactory.local.remove(CONFIG.cacheKeys.auth),
-      CacheFactory.local.remove(CONFIG.cacheKeys.refreshToken),
-    ]);
+    CacheFactory.local.remove(CONFIG.cacheKeys.auth);
+    CacheFactory.local.remove(CONFIG.cacheKeys.refreshToken);
   } catch (error) {
     console.warn('Failed to clear auth data:', error);
   }
@@ -182,7 +181,7 @@ const requestInterceptor = async (config) => {
     config._retry = config._retry || 0;
 
     // Get authentication data
-    const authData = await getAuthData();
+    const authData = getAuthData();
     let token = authData?.token;
 
     // Check if token needs refresh
@@ -304,7 +303,7 @@ const responseErrorInterceptor = async (error) => {
     }
     
     // Clear auth data and redirect to login
-    await clearAuthData();
+    clearAuthData();
     
     // Dispatch auth failure event
     if (typeof window !== 'undefined') {
@@ -425,9 +424,9 @@ const API = {
    * Sets authentication token
    * @param {string} token - Auth token
    * @param {Object} userData - User data
-   * @returns {Promise<boolean>} Success status
+   * @returns {boolean} Success status
    */
-  setAuth: async (token, userData = {}) => {
+  setAuth: (token, userData = {}) => {
     try {
       const authData = {
         token,
@@ -436,8 +435,7 @@ const API = {
         expiresAt: userData.expiresAt,
       };
       
-      await CacheFactory.local.set(CONFIG.cacheKeys.auth, authData);
-      return true;
+      return CacheFactory.local.set(CONFIG.cacheKeys.auth, authData);
     } catch (error) {
       console.error('Failed to set auth:', error);
       return false;
@@ -446,11 +444,11 @@ const API = {
 
   /**
    * Clears authentication
-   * @returns {Promise<boolean>} Success status
+   * @returns {boolean} Success status
    */
-  clearAuth: async () => {
+  clearAuth: () => {
     try {
-      await clearAuthData();
+      clearAuthData();
       return true;
     } catch (error) {
       console.error('Failed to clear auth:', error);
@@ -460,10 +458,10 @@ const API = {
 
   /**
    * Gets current auth status
-   * @returns {Promise<Object>} Auth status
+   * @returns {Object} Auth status
    */
-  getAuthStatus: async () => {
-    const authData = await getAuthData();
+  getAuthStatus: () => {
+    const authData = getAuthData();
     const isAuthenticated = !!(authData?.token && !isTokenExpired(authData.token));
     
     return {
@@ -522,6 +520,84 @@ const API = {
         }
       },
     });
+  },
+
+  // Cache utility methods
+  /**
+   * Gets cached data
+   * @param {string} key - Cache key
+   * @param {any} defaultValue - Default value if not found
+   * @returns {any} Cached data or default value
+   */
+  getCached: (key, defaultValue = null) => {
+    return CacheFactory.local.get(key, defaultValue);
+  },
+
+  /**
+   * Sets cached data
+   * @param {string} key - Cache key
+   * @param {any} value - Value to cache
+   * @returns {boolean} Success status
+   */
+  setCached: (key, value) => {
+    return CacheFactory.local.set(key, value);
+  },
+
+  /**
+   * Removes cached data
+   * @param {string} key - Cache key
+   * @returns {boolean} Success status
+   */
+  removeCached: (key) => {
+    return CacheFactory.local.remove(key);
+  },
+
+  /**
+   * Clears all cached data
+   * @returns {boolean} Success status
+   */
+  clearCache: () => {
+    return CacheFactory.local.clear();
+  },
+
+  /**
+   * Gets cache statistics
+   * @returns {Object} Cache stats
+   */
+  getCacheStats: () => {
+    return CacheFactory.local.getStats();
+  },
+
+  /**
+   * Bulk cache operations
+   */
+  cache: {
+    /**
+     * Gets multiple cached items
+     * @param {string[]} keys - Cache keys
+     * @returns {Object} Key-value pairs
+     */
+    getMultiple: (keys) => {
+      return CacheFactory.local.bulk.get(keys);
+    },
+
+    /**
+     * Sets multiple cached items
+     * @param {Object} items - Key-value pairs
+     * @returns {Object} Success status for each key
+     */
+    setMultiple: (items) => {
+      return CacheFactory.local.bulk.set(items);
+    },
+
+    /**
+     * Removes multiple cached items
+     * @param {string[]} keys - Cache keys
+     * @returns {Object} Success status for each key
+     */
+    removeMultiple: (keys) => {
+      return CacheFactory.local.bulk.remove(keys);
+    },
   },
 
   // Configuration access

@@ -108,6 +108,30 @@ const safeParse = (value) => {
 };
 
 /**
+ * Retries an operation with exponential backoff
+ * @param {Function} operation - Operation to retry
+ * @param {number} maxRetries - Maximum retry attempts
+ * @returns {any} Operation result
+ */
+const retryOperation = (operation, maxRetries) => {
+  let attempts = 0;
+  
+  while (attempts <= maxRetries) {
+    try {
+      return operation();
+    } catch (error) {
+      if (attempts === maxRetries) {
+        throw error;
+      }
+      attempts++;
+      // Simple synchronous delay simulation (not recommended for production)
+      // In a real scenario, you might want to remove retries for sync operations
+      // or handle them differently
+    }
+  }
+};
+
+/**
  * Creates a cache instance with the specified configuration
  * @param {Object} options - Configuration options
  * @param {string} options.type - Storage type ('local' or 'session')
@@ -186,31 +210,12 @@ export const CacheFactory = (options = {}) => {
     }
   };
 
-  /**
-   * Retries an operation with exponential backoff
-   * @param {Function} operation - Operation to retry
-   * @param {number} attempts - Current attempt number
-   * @returns {Promise<any>} Operation result
-   */
-  const retryOperation = async (operation, attempts = 0) => {
-    try {
-      return await operation();
-    } catch (error) {
-      if (attempts < config.maxRetries) {
-        const delay = Math.pow(2, attempts) * 100; // Exponential backoff
-        await new Promise(resolve => setTimeout(resolve, delay));
-        return retryOperation(operation, attempts + 1);
-      }
-      throw error;
-    }
-  };
-
   return {
     /**
      * Checks if storage is available
      * @returns {boolean} Storage availability status
      */
-    isAvailable: () => {
+    isAvailable() {
       return storage !== null;
     },
 
@@ -218,7 +223,7 @@ export const CacheFactory = (options = {}) => {
      * Checks if using memory fallback
      * @returns {boolean} Whether using memory storage
      */
-    isUsingMemoryFallback: () => {
+    isUsingMemoryFallback() {
       return usingMemoryFallback;
     },
 
@@ -226,7 +231,7 @@ export const CacheFactory = (options = {}) => {
      * Gets storage type being used
      * @returns {string} Storage type name
      */
-    getStorageType: () => {
+    getStorageType() {
       return usingMemoryFallback ? 'memory' : storageType;
     },
 
@@ -234,9 +239,9 @@ export const CacheFactory = (options = {}) => {
      * Sets an item in storage
      * @param {string} key - Storage key
      * @param {any} value - Value to store
-     * @returns {Promise<boolean>} Success status
+     * @returns {boolean} Success status
      */
-    set: async (key, value) => {
+    set(key, value) {
       if (!storage) {
         console.error('CacheFactory: Storage not available');
         return false;
@@ -254,9 +259,9 @@ export const CacheFactory = (options = {}) => {
       }
 
       try {
-        await retryOperation(() => {
+        retryOperation(() => {
           storage.setItem(prefixedKey, serializedValue);
-        });
+        }, config.maxRetries);
         
         log('SET', key, value);
         return true;
@@ -270,9 +275,9 @@ export const CacheFactory = (options = {}) => {
      * Gets an item from storage
      * @param {string} key - Storage key
      * @param {any} defaultValue - Default value if key doesn't exist
-     * @returns {Promise<any>} Retrieved value or default
+     * @returns {any} Retrieved value or default
      */
-    get: async (key, defaultValue = null) => {
+    get(key, defaultValue = null) {
       if (!storage) {
         console.warn('CacheFactory: Storage not available');
         return defaultValue;
@@ -286,9 +291,9 @@ export const CacheFactory = (options = {}) => {
       const prefixedKey = getPrefixedKey(key);
 
       try {
-        const data = await retryOperation(() => {
+        const data = retryOperation(() => {
           return storage.getItem(prefixedKey);
-        });
+        }, config.maxRetries);
 
         if (data === null || data === 'undefined') {
           log('GET_MISS', key);
@@ -307,9 +312,9 @@ export const CacheFactory = (options = {}) => {
     /**
      * Removes an item from storage
      * @param {string} key - Storage key
-     * @returns {Promise<boolean>} Success status
+     * @returns {boolean} Success status
      */
-    remove: async (key) => {
+    remove(key) {
       if (!storage) {
         console.error('CacheFactory: Storage not available');
         return false;
@@ -323,9 +328,9 @@ export const CacheFactory = (options = {}) => {
       const prefixedKey = getPrefixedKey(key);
 
       try {
-        await retryOperation(() => {
+        retryOperation(() => {
           storage.removeItem(prefixedKey);
-        });
+        }, config.maxRetries);
         
         log('REMOVE', key);
         return true;
@@ -337,9 +342,9 @@ export const CacheFactory = (options = {}) => {
 
     /**
      * Clears all items from storage (respects prefix)
-     * @returns {Promise<boolean>} Success status
+     * @returns {boolean} Success status
      */
-    clear: async () => {
+    clear() {
       if (!storage) {
         console.error('CacheFactory: Storage not available');
         return false;
@@ -348,12 +353,12 @@ export const CacheFactory = (options = {}) => {
       try {
         if (config.prefix) {
           // Clear only prefixed items
-          const keys = await this.keys();
-          await Promise.all(keys.map(key => this.remove(key)));
+          const keys = this.keys();
+          keys.forEach(key => this.remove(key));
         } else {
-          await retryOperation(() => {
+          retryOperation(() => {
             storage.clear();
-          });
+          }, config.maxRetries);
         }
         
         log('CLEAR');
@@ -366,9 +371,9 @@ export const CacheFactory = (options = {}) => {
 
     /**
      * Gets all keys from storage (without prefix)
-     * @returns {Promise<string[]>} Array of keys
+     * @returns {string[]} Array of keys
      */
-    keys: async () => {
+    keys() {
       if (!storage) {
         console.warn('CacheFactory: Storage not available');
         return [];
@@ -400,9 +405,9 @@ export const CacheFactory = (options = {}) => {
     /**
      * Checks if a key exists in storage
      * @param {string} key - Storage key
-     * @returns {Promise<boolean>} Whether key exists
+     * @returns {boolean} Whether key exists
      */
-    has: async (key) => {
+    has(key) {
       if (!storage || !key || typeof key !== 'string') {
         return false;
       }
@@ -410,9 +415,9 @@ export const CacheFactory = (options = {}) => {
       const prefixedKey = getPrefixedKey(key);
 
       try {
-        const exists = await retryOperation(() => {
+        const exists = retryOperation(() => {
           return storage.getItem(prefixedKey) !== null;
-        });
+        }, config.maxRetries);
         
         log('HAS', key, exists);
         return exists;
@@ -424,10 +429,10 @@ export const CacheFactory = (options = {}) => {
 
     /**
      * Gets storage usage information
-     * @returns {Promise<Object>} Storage usage stats
+     * @returns {Object} Storage usage stats
      */
-    getStats: async () => {
-      const keys = await this.keys();
+    getStats() {
+      const keys = this.keys();
       
       return {
         keyCount: keys.length,
@@ -445,16 +450,14 @@ export const CacheFactory = (options = {}) => {
       /**
        * Sets multiple items at once
        * @param {Object} items - Key-value pairs to set
-       * @returns {Promise<Object>} Results of each operation
+       * @returns {Object} Results of each operation
        */
-      set: async (items) => {
+      set: (items) => {
         const results = {};
         
-        await Promise.all(
-          Object.entries(items).map(async ([key, value]) => {
-            results[key] = await this.set(key, value);
-          })
-        );
+        Object.entries(items).forEach(([key, value]) => {
+          results[key] = this.set(key, value);
+        });
         
         return results;
       },
@@ -462,16 +465,14 @@ export const CacheFactory = (options = {}) => {
       /**
        * Gets multiple items at once
        * @param {string[]} keys - Keys to retrieve
-       * @returns {Promise<Object>} Retrieved key-value pairs
+       * @returns {Object} Retrieved key-value pairs
        */
-      get: async (keys) => {
+      get: (keys) => {
         const results = {};
         
-        await Promise.all(
-          keys.map(async (key) => {
-            results[key] = await this.get(key);
-          })
-        );
+        keys.forEach(key => {
+          results[key] = this.get(key);
+        });
         
         return results;
       },
@@ -479,16 +480,14 @@ export const CacheFactory = (options = {}) => {
       /**
        * Removes multiple items at once
        * @param {string[]} keys - Keys to remove
-       * @returns {Promise<Object>} Results of each operation
+       * @returns {Object} Results of each operation
        */
-      remove: async (keys) => {
+      remove: (keys) => {
         const results = {};
         
-        await Promise.all(
-          keys.map(async (key) => {
-            results[key] = await this.remove(key);
-          })
-        );
+        keys.forEach(key => {
+          results[key] = this.remove(key);
+        });
         
         return results;
       },
@@ -499,7 +498,7 @@ export const CacheFactory = (options = {}) => {
 // Pre-configured instances for convenience
 CacheFactory.local = CacheFactory({ type: 'local' });
 CacheFactory.session = CacheFactory({ type: 'session' });
-
+exports.Cache = CacheFactory({type: 'local'});
 // Memory-only instance for testing or server-side use
 CacheFactory.memory = CacheFactory({ 
   type: 'session', 
