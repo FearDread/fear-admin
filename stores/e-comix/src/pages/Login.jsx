@@ -1,9 +1,10 @@
+// components/Login.jsx - Refactored Login Component
 import React, { useEffect, useState, useCallback } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
-import { User } from "../features/user/slice";
 import BannerSub from "../components/Banner/BannerSub";
-import { store } from "../features/store";
+import { User } from "../features/user/slice";
+import { authUtils } from "../features/user/auth";
 
 // Loading spinner component
 const LoadingSpinner = () => (
@@ -36,10 +37,38 @@ const Login = () => {
   const dispatch = useDispatch();
   
   // Form state
-  const [formData, setFormData] = useState({ email: "", password: ""});
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { data: userState, success: loginSuccess, loading, error } = useSelector(state => state.user);
+  const [authCheckComplete, setAuthCheckComplete] = useState(false);
+  
+  const { success: loginSuccess, loading, error } = useSelector(state => state.user.data);
+  const userState = useSelector(state => state.user.data);
+  
+  // Check if user is already authenticated on component mount
+  useEffect(() => {
+    const checkExistingAuth = () => {
+      try {
+        // Use synchronous auth check
+        const isAuth = authUtils.isAuthenticated();
+        if (isAuth) {
+          const authData = authUtils.getAuth();
+          if (authData?.user) {
+            // Update Redux store with cached user data if needed
+            // dispatch(User.setUser(authData));
+            navigate("/profile", { replace: true });
+            return;
+          }
+        }
+      } catch (error) {
+        console.error('Auth check failed:', error);
+      } finally {
+        setAuthCheckComplete(true);
+      }
+    };
+
+    checkExistingAuth();
+  }, [dispatch, navigate]);
 
   const handleInputChange = useCallback((e) => {
     const { name, value } = e.target;
@@ -47,21 +76,29 @@ const Login = () => {
       ...prev,
       [name]: value
     }));
-    
-    // Clear specific field error when user starts typing
+
+    // Clear field-specific error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({
         ...prev,
         [name]: ""
       }));
     }
+
+    // Clear general error when user interacts with form
+    if (errors.general) {
+      setErrors(prev => ({
+        ...prev,
+        general: ""
+      }));
+    }
   }, [errors]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const loginData = new FormData();
-    const formErrors = validateForm(formData.email, formData.password);
     
+    // Validate form
+    const formErrors = validateForm(formData.email, formData.password);
     if (Object.keys(formErrors).length > 0) {
       setErrors(formErrors);
       return;
@@ -70,60 +107,83 @@ const Login = () => {
     setIsSubmitting(true);
     setErrors({});
 
-    loginData.set("email", formData.email.trim());
-    loginData.set("password", formData.password);
+    try {
+      const loginData = new FormData();
+      loginData.set("email", formData.email.trim());
+      loginData.set("password", formData.password);
+        
+      // Dispatch login action
+      const result = await dispatch(User.login(loginData));
       
-    dispatch(User.login(loginData));
-  
+      // Handle the result based on your Redux setup
+      if (result.type.endsWith('/fulfilled')) {
+        // Login successful - data should be in result.payload
+        const authData = result.payload;
+        
+        // Save to cache synchronously
+        const saved = authUtils.saveAuth({
+          token: authData.token,
+          user: authData.user,
+          refreshToken: authData.refreshToken,
+          expiresAt: authData.expiresAt
+        });
+
+        if (saved) {
+          console.log('Auth data saved successfully');
+          navigate("/profile", { replace: true });
+        } else {
+          setErrors({ general: "Failed to save authentication data" });
+        }
+      }
+    } catch (error) {
+      console.error('Login submission error:', error);
+      setErrors({ general: "An unexpected error occurred. Please try again." });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
-  /*
-  
-  // Handle form submission
-  const handleSubmit = useCallback(async (e) => {
-    e.preventDefault();
-    const loginData = new FormData();
-    const formErrors = validateForm(formData.email, formData.password);
-    
-    if (Object.keys(formErrors).length > 0) {
-      setErrors(formErrors);
-      return;
-    }
-    
-    setIsSubmitting(true);
-    setErrors({});
-
-    loginData.set("email", formData.email.trim());
-    loginData.set("password", formData.password);
-      
-    dispatch(User.login(loginData));
-  
-  }, [formData, dispatch]);
-  */
-/*
+   
+  // Handle Redux state changes
   useEffect(() => {
-    if (userState?.token) {
-      store.local.set("auth", userState);
-      navigate("/profile", { replace: true });
-    }
-  }, [userState, navigate]);
-  
-  // Check if user is already logged in
-  useEffect(() => {
-    const existingAuth = store.local.get("auth");
-    if (userState?.token) {
-      navigate("/profile", { replace: true });
-    }
-  }, [userState]);
- */
-    useEffect(() => {
     if (loginSuccess) {
-      store.local.set("auth", userState);
-      navigate("/profile", { replace: true });
+      // This effect will run when Redux state indicates success
+      try {
+        const saved = authUtils.saveAuth({
+          token: userState.token,
+          user: userState.user,
+          refreshToken: userState.refreshToken,
+          expiresAt: userState.expiresAt
+        });
+
+        if (saved) {
+          console.log('Auth data cached successfully');
+          navigate("/profile", { replace: true });
+        } else {
+          setErrors({ general: "Failed to save authentication data" });
+        }
+      } catch (error) {
+        console.error('Error saving auth data:', error);
+        setErrors({ general: "Failed to save authentication data" });
+      }
     }
+
     if (error) {
-      setErrors({ general: error.message || "Login failed. Please try again." });
+      setErrors({ 
+        general: typeof error === 'string' ? error : (error?.message || "Login failed. Please try again.")
+      });
+      setIsSubmitting(false);
     }
-  }, []);
+  }, [loginSuccess, userState, error, navigate]);
+
+  // Show loading while checking existing auth
+  if (!authCheckComplete) {
+    return (
+      <div className="d-flex justify-content-center align-items-center" style={{ height: '50vh' }}>
+        <LoadingSpinner />
+        <span className="ms-2">Checking authentication...</span>
+      </div>
+    );
+  }
   
   return (
     <>

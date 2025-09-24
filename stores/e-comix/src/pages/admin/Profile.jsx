@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
-import Loader from "../../components/Loader/Loader";
 import CartItem from "../../components/Cart/CartItem";
 import BannerSub from "../../components/Banner/BannerSub";
 import { store } from "../../features/store";
@@ -40,6 +39,7 @@ const Profile = () => {
       toast.success("Profile updated successfully");
     }
   };
+
   useEffect(() => {
     let totalSum = 0;
     for (let index = 0; index < cartData?.length; index++) {
@@ -56,6 +56,7 @@ const Profile = () => {
     setCartItems(items);
 
   }, [cartData])
+
   useEffect(() => {
 
     setUserName(userData.user.username);
