@@ -3,9 +3,9 @@ import { FeatureFactory, ThunkFactory, StateFactory } from "@feardread/feature-f
 const initialState = StateFactory.forList('user');
 
 const service = {
-    login: ThunkFactory.post('user', 'login'),
-    logout: ThunkFactory.post('user', 'logout'),
-    register: ThunkFactory.post('user', 'register'),
+    login: ThunkFactory.post('auth', 'login'),
+    logout: ThunkFactory.post('auth', 'logout'),
+    register: ThunkFactory.post('auth', 'register'),
     fetchProfile: ThunkFactory.create('user', 'profile'),
     updateProfile: ThunkFactory.put('user', 'update-profile'),
     changePassword: ThunkFactory.post('user', 'change-password')
