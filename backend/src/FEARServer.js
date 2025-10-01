@@ -4,8 +4,18 @@ const path = require('path');
 const express = require('express');
 require("dotenv").config();
 
-module.exports = class FearServer {
-  constructor() {
+const FearServer = (() => {
+  // Private constants in closure scope
+  const defaultPaths = {
+    root: path.resolve(),
+    app: '/backend/dashboard/build',
+    build: 'backend/dashboard/build'
+  };
+
+  const SHUTDOWN_TIMEOUT = 10000; // 10 seconds
+
+  // Constructor function
+  function FearServer() {
     this.fear = null;
     this.server = null;
     this.Router = null;
@@ -13,28 +23,9 @@ module.exports = class FearServer {
     this.rootDir = path.resolve();
   }
 
-  async initialize(paths = {
-    root: this.rootDir,
-    app: '/backend/dashboard/build',
-    build: 'backend/dashboard/build'
-  }) {
-    try {
-      // Import FEAR after dotenv is configured
-      const FearFactory = require("./FEAR");
-      this.fear = new FearFactory();
-      this.Router = this.fear.Router;
-      this.setupStaticFiles(paths.root, paths.app, paths.build);
-      this.setupProcessHandlers();
-      
-      return this.fear;
-    } catch (error) {
-      console.error('Failed to initialize FEAR application:', error);
-      process.exit(1);
-    }
-  }
-
-  setupStaticFiles(root, app, build) {
-    this.rootDir = (root) ? root : path.resolve();
+  // Private methods on prototype
+  FearServer.prototype.setupStaticFiles = function(root, app, build) {
+    this.rootDir = root || path.resolve();
 
     const buildPath = path.join(this.rootDir, app);
     const indexPath = path.resolve(this.rootDir, build, "index.html");
@@ -51,35 +42,129 @@ module.exports = class FearServer {
         }
       });
     });
-  }
+  };
 
-  setupProcessHandlers() {
+  FearServer.prototype.setupProcessHandlers = function() {
+    const self = this;
+
     // Handle unhandled promise rejections
     process.on("unhandledRejection", (reason, promise) => {
       console.log(reason);
-      this.fear.getLogger().error('Unhandled Rejection at:', promise, 'reason:', reason);
-      this.gracefulShutdown('unhandledRejection');
+      self.fear.getLogger().error('Unhandled Rejection at:', promise, 'reason:', reason);
+      self.gracefulShutdown('unhandledRejection');
     });
 
     // Handle uncaught exceptions
     process.on("uncaughtException", (err) => {
-      this.fear.getLogger().error('Uncaught Exception:', err);
-      this.gracefulShutdown('uncaughtException');
+      self.fear.getLogger().error('Uncaught Exception:', err);
+      self.gracefulShutdown('uncaughtException');
     });
 
     // Handle process termination signals
     process.on('SIGTERM', () => {
-      this.fear.getLogger().info('SIGTERM received, starting graceful shutdown');
-      this.gracefulShutdown('SIGTERM');
+      self.fear.getLogger().info('SIGTERM received, starting graceful shutdown');
+      self.gracefulShutdown('SIGTERM');
     });
 
     process.on('SIGINT', () => {
-      this.fear.getLogger().info('SIGINT received, starting graceful shutdown');
-      this.gracefulShutdown('SIGINT');
+      self.fear.getLogger().info('SIGINT received, starting graceful shutdown');
+      self.gracefulShutdown('SIGINT');
     });
-  }
+  };
 
-  async startServer() {
+  FearServer.prototype.initializeDatabase = function() {
+    const self = this;
+    return new Promise((resolve, reject) => {
+      try {
+        self.fear.getDatabase().connect(self.fear.getEnvironment(), (err) => {
+          if (err) {
+            self.fear.getLogger().error('Database initialization failed:', err);
+            reject(err);
+          } else {
+            self.fear.getLogger().info('Database initialized successfully');
+            resolve();
+          }
+        });
+      } catch (error) {
+        self.fear.getLogger().error('Database setup error:', error);
+        reject(error);
+      }
+    });
+  };
+
+  FearServer.prototype.startHttpServer = function(port) {
+    const self = this;
+    return new Promise((resolve, reject) => {
+      const server = self.fear.getApp().listen(port, (err) => {
+        if (err) {
+          self.fear.getLogger().error(`Failed to start server on port ${port}:`, err);
+          reject(err);
+        } else {
+          resolve(server);
+        }
+      });
+
+      server.on('error', (err) => {
+        if (err.code === 'EADDRINUSE') {
+          self.fear.getLogger().error(`Port ${port} is already in use`);
+        } else {
+          self.fear.getLogger().error('Server error:', err);
+        }
+        reject(err);
+      });
+    });
+  };
+
+  FearServer.prototype.gracefulShutdown = async function(signal) {
+    if (this.isShuttingDown) {
+      this.fear.getLogger().warn('Shutdown already in progress...');
+      return;
+    }
+
+    this.isShuttingDown = true;
+    this.fear.getLogger().info(`Graceful shutdown initiated by: ${signal}`);
+
+    try {
+      // Set a timeout for forceful shutdown
+      const forceShutdownTimeout = setTimeout(() => {
+        this.fear.getLogger().error('Forced shutdown after timeout');
+        process.exit(1);
+      }, SHUTDOWN_TIMEOUT);
+
+      // Perform graceful shutdown
+      if (this.fear && typeof this.fear.shutdown === 'function') {
+        await this.fear.shutdown();
+      }
+
+      clearTimeout(forceShutdownTimeout);
+      this.fear.getLogger().info('Graceful shutdown completed');
+      process.exit(0);
+
+    } catch (error) {
+      this.fear.getLogger().error('Error during shutdown:', error);
+      process.exit(1);
+    }
+  };
+
+  // Public methods
+  FearServer.prototype.initialize = async function(paths = defaultPaths) {
+    try {
+      // Import FEAR after dotenv is configured
+      const FearFactory = require("./FEAR");
+      this.fear = new FearFactory();
+      this.Router = this.fear.Router;
+      
+      this.setupStaticFiles(paths.root, paths.app, paths.build);
+      this.setupProcessHandlers();
+      
+      return this.fear;
+    } catch (error) {
+      console.error('Failed to initialize FEAR application:', error);
+      process.exit(1);
+    }
+  };
+
+  FearServer.prototype.startServer = async function() {
     try {
       const port = this.fear.getApp().get("PORT") || 4000;
       
@@ -101,77 +186,30 @@ module.exports = class FearServer {
       this.fear.getLogger().error('Failed to start server:', error);
       throw error;
     }
-  }
+  };
 
-  async initializeDatabase() {
-    return new Promise((resolve, reject) => {
-      try {
-        this.fear.getDatabase().connect(this.fear.getEnvironment(), (err) => {
-          if (err) {
-            this.fear.getLogger().error('Database initialization failed:', err);
-            reject(err);
-          } else {
-            this.fear.getLogger().info('Database initialized successfully');
-            resolve();
-          }
-        });
-      } catch (error) {
-        this.fear.getLogger().error('Database setup error:', error);
-        reject(error);
-      }
-    });
-  }
+  // Getter methods
+  FearServer.prototype.getFear = function() {
+    return this.fear;
+  };
 
-  async startHttpServer(port) {
-    return new Promise((resolve, reject) => {
-      const server = this.fear.getApp().listen(port, (err) => {
-        if (err) {
-          this.fear.getLogger().error(`Failed to start server on port ${port}:`, err);
-          reject(err);
-        } else {
-          resolve(server);
-        }
-      });
+  FearServer.prototype.getServer = function() {
+    return this.server;
+  };
 
-      server.on('error', (err) => {
-        if (err.code === 'EADDRINUSE') {
-          this.fear.getLogger().error(`Port ${port} is already in use`);
-        } else {
-          this.fear.getLogger().error('Server error:', err);
-        }
-        reject(err);
-      });
-    });
-  }
+  FearServer.prototype.getRouter = function() {
+    return this.Router;
+  };
 
-  async gracefulShutdown(signal) {
-    if (this.isShuttingDown) {
-      this.fear.getLogger().warn('Shutdown already in progress...');
-      return;
-    }
+  FearServer.prototype.getIsShuttingDown = function() {
+    return this.isShuttingDown;
+  };
 
-    this.isShuttingDown = true;
-    this.fear.getLogger().info(`Graceful shutdown initiated by: ${signal}`);
+  FearServer.prototype.getRootDir = function() {
+    return this.rootDir;
+  };
 
-    try {
-      // Set a timeout for forceful shutdown
-      const forceShutdownTimeout = setTimeout(() => {
-        this.fear.getLogger().error('Forced shutdown after timeout');
-        process.exit(1);
-      }, 10000); // 10 seconds
+  return FearServer;
+})();
 
-      // Perform graceful shutdown
-      if (this.fear && typeof this.fear.shutdown === 'function') {
-        await this.fear.shutdown();
-      }
-
-      clearTimeout(forceShutdownTimeout);
-      this.fear.getLogger().info('Graceful shutdown completed');
-      process.exit(0);
-
-    } catch (error) {
-      this.fear.getLogger().error('Error during shutdown:', error);
-      process.exit(1);
-    }
-  }
-}
+module.exports = FearServer;
