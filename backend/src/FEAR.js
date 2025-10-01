@@ -6,162 +6,109 @@ const cookieParser = require("cookie-parser");
 const fileUpload = require("express-fileupload");
 const cors = require("cors");
 
-module.exports = class FEAR {
-  constructor() {
+module.exports = FEAR = (() => {
+  // Private constants
+  const DEFAULT_PORT = 4000;
+  const DEFAULT_JSON_LIMIT = '10mb';
+  const DEFAULT_ROUTE_PATH = '/fear/api';
+
+  // Constructor function
+  function FEAR() {
     this.app = express();
     this.Router = express.Router;
     this.server = null;
     this.registeredRouters = [];
-    
-    this.initEnv();
-    this.initDeps();
-    
+    this.env = null;
+    this.logger = null;
+    this.morgan = null;
+    this.cloud = null;
+    this.db = null;
+    this.handler = null;
+    this.validator = null;
+    this.logo = null;
+    this.origins = [];
+    this.corsConfig = null;
+
+    // Initialize
+    this.setupEnvironment();
+    this.setupDependencies();
     this.setupMiddleware();
+    this.corsConfig = this.getCorsConfig();
     this.setupRoutes();
   }
 
-  initEnv() {
+  // Prototype methods for setup
+  FEAR.prototype.setupEnvironment = function() {
     const envResult = require("dotenv").config({ path: ".env" });
+
     if (!envResult || envResult.error) {
       throw new Error(`Environment configuration error: ${envResult?.error?.message || 'Unknown error'}`);
     }
-    this.env = envResult.parsed;
-  }
 
-  initDeps() {
+    this.env = envResult.parsed;
+  };
+
+  FEAR.prototype.setupDependencies = function() {
     this.logger = require("./libs/logger");
     this.morgan = require("./libs/logger/morgan");
     this.cloud = require("./libs/cloud");
     this.db = require("./libs/db");
     this.handler = require("./libs/handler");
     this.validator = require("./libs/validator");
-    
     this.logo = this.env.FEAR_LOGO;
-    this.origins = this.parseAllowedOrigins();
-  }
+    this.origins = this.getAllowedOrigins();
+  };
 
-  parseAllowedOrigins() {
-    if (!this.env.ALLOWED_ORIGINS) {
-      return [];
-    }
+  FEAR.prototype.setupMiddleware = function() {
+    this.app.set("PORT", this.env.NODE_PORT || DEFAULT_PORT);
+
+    this.app.use(this.morgan);
+    this.app.use(express.json({ limit: DEFAULT_JSON_LIMIT }));
+    this.app.use(compression());
+    this.app.use(fileUpload());
+    this.app.use(cookieParser());
+
+    const self = this;
+    this.app.use((req, res, next) => {
+      self.logger.info(`FEAR API Query :: ${req.url}`);
+      res.locals.user = req.user;
+      next();
+    });
+  };
+
+  FEAR.prototype.getAllowedOrigins = function() {
+    if (!this.env.ALLOWED_ORIGINS) return [];
+
     return this.env.ALLOWED_ORIGINS
       .split(',')
       .map(origin => origin.trim())
       .filter(origin => origin.length > 0);
-  }
+  };
 
-  setupMiddleware() {
-    this.app.set("PORT", this.env.NODE_PORT || 4000);
-    
-    this.app.use(this.morgan);
-    this.app.use(express.json({ limit: '10mb' }));
-    this.app.use(compression());
-    this.app.use(fileUpload());
-    this.app.use(cookieParser());
-    
-    // Request logging middleware
-    this.app.use((req, res, next) => {
-      this.logger.info(`FEAR API Query :: ${req.url}`);
-      res.locals.user = req.user;
-      next();
-    });
-  }
-
-  getCorsConfig() {
+  FEAR.prototype.getCorsConfig = function() {
+    const self = this;
     return {
       credentials: true,
       origin: (origin, callback) => {
-        // Allow requests with no origin (like mobile apps or curl requests)
         if (!origin) return callback(null, true);
-        if (this.origins.includes(origin)) {
+
+        if (self.origins.includes(origin)) {
           callback(null, true);
         } else {
-          this.logger.error(`Origin :: ${origin} :: Not allowed by CORS`);
+          self.logger.error(`Origin :: ${origin} :: Not allowed by CORS`);
           callback(new Error("Not allowed by CORS"));
         }
       }
     };
-  }
+  };
 
-  /**
-   * Register a single router with optional path and CORS configuration
-   * @param {express.Router} router - Express router instance
-   * @param {string} routePath - Optional path prefix (defaults to '/fear/api')
-   * @param {Object} corsOptions - Optional CORS configuration (defaults to class CORS config)
-   */
-  useRouter(router, routePath = '/fear/api', corsOptions = null) {
-    if (!router || typeof router !== 'function') {
-      throw new Error('Router must be a valid Express router instance');
-    }
-
-    const corsConfig = corsOptions || this.getCorsConfig();
-    
-    // Store router info for tracking
-    const routerInfo = {
-      router,
-      path: routePath,
-      corsConfig
-    };
-    
-    this.registeredRouters.push(routerInfo);
-    
-    // Apply the router to the app
-    this.app.use(routePath, cors(corsConfig), router);
-    this.logger.info(`Single router registered :: ${routePath}`);
-    
-    return this; // Allow chaining
-  }
-
-  /**
-   * Register multiple routers at once
-   * @param {Array} routers - Array of router configurations [{router, path?, cors?}]
-   */
-  useRouters(routers) {
-    if (!Array.isArray(routers)) {
-      throw new Error('Routers must be an array');
-    }
-
-    routers.forEach(config => {
-      if (typeof config === 'function') {
-        // Simple router function
-        this.useRouter(config);
-      } else if (config && config.router) {
-        // Router configuration object
-        this.useRouter(config.router, config.path, config.cors);
-      } else {
-        throw new Error('Invalid router configuration');
-      }
-    });
-
-    return this;
-  }
-
-  /**
-   * Create and return a new router instance with access to FearFactory context
-   */
-  createRouter() {
-    const router = express.Router();
-    
-    // Add context methods to router for easy access to FearFactory components
-    router.getLogger = () => this.logger;
-    router.getDatabase = () => this.db;
-    router.getCloud = () => this.cloud;
-    router.getEnvironment = () => this.env;
-    router.getHandler = () => this.handler;
-    router.getValidator = () => this.validator;
-    
-    return router;
-  }
-
-  setupRoutes() {
+  FEAR.prototype.setupRoutes = function() {
     const routesDir = path.join(__dirname, "routes");
-    
+
     if (!fs.existsSync(routesDir)) {
       this.logger.warn(`Routes directory does not exist: ${routesDir}`);
       return;
     }
-
-    const corsConfig = this.getCorsConfig();
 
     try {
       const routeFiles = fs.readdirSync(routesDir)
@@ -171,7 +118,7 @@ module.exports = class FEAR {
         try {
           const routeName = file.replace(/\.js$/, '');
           const routeModule = require(`./routes/${file}`);
-          const routePath = `/fear/api/${routeName}`;
+          const routePath = `${DEFAULT_ROUTE_PATH}/${routeName}`;
 
           this.useRouter(routeModule(this), routePath);
 
@@ -182,69 +129,121 @@ module.exports = class FEAR {
     } catch (error) {
       this.logger.error(`Failed to read routes directory:`, error);
     }
-  }
+  };
 
-  /**
-   * Get information about all registered routers
-   */
-  getRegisteredRouters() {
+  // Router management methods
+  FEAR.prototype.useRouter = function(router, routePath = DEFAULT_ROUTE_PATH, corsOptions = null) {
+    if (!router || typeof router !== 'function') {
+      throw new Error('Router must be a valid Express router instance');
+    }
+
+    const corsConfig = corsOptions || this.corsConfig;
+
+    const routerInfo = {
+      router,
+      path: routePath,
+      corsConfig
+    };
+
+    this.registeredRouters.push(routerInfo);
+    this.app.use(routePath, cors(corsConfig), router);
+    this.logger.info(`Single router registered :: ${routePath}`);
+
+    return this;
+  };
+
+  FEAR.prototype.useRouters = function(routers) {
+    if (!Array.isArray(routers)) {
+      throw new Error('Routers must be an array');
+    }
+
+    routers.forEach(config => {
+      if (typeof config === 'function') {
+        this.useRouter(config);
+      } else if (config && config.router) {
+        this.useRouter(config.router, config.path, config.cors);
+      } else {
+        throw new Error('Invalid router configuration');
+      }
+    });
+
+    return this;
+  };
+
+  FEAR.prototype.createRouter = function() {
+    const router = express.Router();
+    const self = this;
+
+    router.getLogger = () => self.logger;
+    router.getDatabase = () => self.db;
+    router.getCloud = () => self.cloud;
+    router.getEnvironment = () => self.env;
+    router.getHandler = () => self.handler;
+    router.getValidator = () => self.validator;
+
+    return router;
+  };
+
+  FEAR.prototype.getRegisteredRouters = function() {
     return this.registeredRouters.map(info => ({
       path: info.path,
       corsEnabled: !!info.corsConfig
     }));
-  }
+  };
 
-  start = async (port = null) => {
-    const serverPort = port || this.app.get("PORT") || 4000;
-    
+  // Server lifecycle methods
+  FEAR.prototype.start = async function(port = null) {
+    const self = this;
+    const serverPort = port || this.app.get("PORT") || DEFAULT_PORT;
+
     return new Promise((resolve, reject) => {
-      this.server = this.app.listen(serverPort, (err) => {
+      self.server = self.app.listen(serverPort, (err) => {
         if (err) {
-          this.logger.error(`Failed to start server on port ${serverPort}:`, err);
+          self.logger.error(`Failed to start server on port ${serverPort}:`, err);
           reject(err);
         } else {
-          this.logger.info(`FEAR server started on port ${serverPort}`);
-          resolve(this.server);
+          self.logger.info(`FEAR server started on port ${serverPort}`);
+          resolve(self.server);
         }
       });
     });
-  }
+  };
 
-  shutdown = async () => {
+  FEAR.prototype.shutdown = async function() {
+    const self = this;
     this.logger.info('Initiating graceful shutdown...');
 
     return new Promise((resolve) => {
-      // Stop accepting new connections
-      if (this.server) {
-        this.server.close(async (err) => {
+      if (self.server) {
+        self.server.close(async (err) => {
           if (err) {
-            this.logger.error('Error closing HTTP server:', err);
+            self.logger.error('Error closing HTTP server:', err);
           } else {
-            this.logger.info('HTTP server closed.');
+            self.logger.info('HTTP server closed.');
           }
 
-          // Close database connections
           try {
-            await this.closeDatabase();
-            this.logger.info('Database connections closed.');
+            await self.closeDatabase();
+            self.logger.info('Database connections closed.');
           } catch (error) {
-            this.logger.error('Error closing database:', error);
+            self.logger.error('Error closing database:', error);
           }
 
-          this.logger.info('Graceful shutdown completed.');
+          self.logger.info('Graceful shutdown completed.');
           resolve();
         });
       } else {
-        this.logger.warn('No server instance to close.');
+        self.logger.warn('No server instance to close.');
         resolve();
       }
     });
-  }
+  };
 
-  async closeDatabase() {
+  FEAR.prototype.closeDatabase = async function() {
+    const self = this;
     return new Promise((resolve, reject) => {
-      if (this.db && typeof this.db.disconnect === 'function') {
-        this.db.disconnect((err) => {
+      if (self.db && typeof self.db.disconnect === 'function') {
+        self.db.disconnect((err) => {
           if (err) {
             reject(err);
           } else {
@@ -255,68 +254,66 @@ module.exports = class FEAR {
         resolve();
       }
     });
-  }
+  };
 
-  /**
-   * Set this instance as the global router factory
-   * Allows route files to access createRouter() globally
-   */
-  setAsGlobal() {
+  // Global methods
+  FEAR.prototype.setAsGlobal = function() {
+    const self = this;
     global.FearRouter = {
-      createRouter: () => this.createRouter(),
-      getLogger: () => this.getLogger(),
-      getDatabase: () => this.getDatabase(),
-      getEnvironment: () => this.getEnvironment(),
-      getCloud: () => this.getCloud()
+      createRouter: () => self.createRouter(),
+      getLogger: () => self.logger,
+      getDatabase: () => self.db,
+      getEnvironment: () => self.env,
+      getCloud: () => self.cloud
     };
     return this;
-  }
+  };
 
-  /**
-   * Clear global router factory
-   */
-  clearGlobal() {
+  FEAR.prototype.clearGlobal = function() {
     delete global.FearRouter;
     return this;
-  }
+  };
 
-  // Getter methods for accessing application components
-  getApp() {
+  // Getter methods
+  FEAR.prototype.getApp = function() {
     return this.app;
-  }
+  };
 
-  getLogger() {
+  FEAR.prototype.getLogger = function() {
     return this.logger;
-  }
+  };
 
-  getDatabase() {
+  FEAR.prototype.getDatabase = function() {
     return this.db;
-  }
+  };
 
-  getEnvironment() {
+  FEAR.prototype.getEnvironment = function() {
     return this.env;
-  }
+  };
 
-  getCloud() {
+  FEAR.prototype.getCloud = function() {
     return this.cloud;
-  }
+  };
 
-  getRouter() {
+  FEAR.prototype.getRouter = function() {
     return this.Router;
-  }
+  };
 
-  getValidator() {
+  FEAR.prototype.getValidator = function() {
     return this.validator;
-  }
+  };
 
-  getHandler() {
+  FEAR.prototype.getHandler = function() {
     return this.handler;
-  }
-}
+  };
 
-const FearFactory = () => {
+  FEAR.prototype.getCorsConfigValue = function() {
+    return this.corsConfig;
+  };
+
+  return FEAR;
+})();
+
+exports.FearFactory = () => {
   return new FEAR();
-}
-
-exports.createFearApp = FearFactory;
-exports.FearFactory = FearFactory;
+};
