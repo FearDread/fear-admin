@@ -10,7 +10,7 @@
   'use strict';
 
   // Plugin name and defaults
-  const pluginName = 'Fear';
+  const pluginName = 'Ignite';
   const defaults = {
     // Loader settings
     loader: {
@@ -251,7 +251,7 @@
   };
 
   // Plugin constructor
-  function Fear(element, options) {
+  function FEAR(element, options) {
     this.element = element;
     this.$element = $(element);
     this.options = $.extend(true, {}, defaults, options);
@@ -262,7 +262,7 @@
   }
 
   // Plugin prototype
-  $.extend(Fear.prototype, {
+  $.extend(FEAR.prototype, {
     
     init: () => {
       var self = this;
@@ -627,7 +627,7 @@
   });
 
   // Plugin wrapper
-  $.fn[pluginName] = function(options) {
+  $.fn['FEAR'][pluginName] = function(options) {
     var args = arguments;
     
     return this.each(function() {
@@ -648,6 +648,7 @@
   // Default options access
   $.fn[pluginName].defaults = defaults;
 
+  $.FEAR = $.fn['FEAR'][pluginName];
 })(jQuery, window, document);
 
 
