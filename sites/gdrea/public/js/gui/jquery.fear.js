@@ -1,1 +1,2426 @@
-function e(e,t){(null==t||t>e.length)&&(t=e.length);for(var n=0,r=Array(t);n<t;n++)r[n]=e[n];return r}function t(e,t,n){return(t=function(e){var t=function(e,t){if("object"!=typeof e||!e)return e;var n=e[Symbol.toPrimitive];if(void 0!==n){var r=n.call(e,t);if("object"!=typeof r)return r;throw new TypeError("@@toPrimitive must return a primitive value.")}return("string"===t?String:Number)(e)}(e,"string");return"symbol"==typeof t?t:t+""}(t))in e?Object.defineProperty(e,t,{value:n,enumerable:!0,configurable:!0,writable:!0}):e[t]=n,e}function n(e,t){var n=Object.keys(e);if(Object.getOwnPropertySymbols){var r=Object.getOwnPropertySymbols(e);t&&(r=r.filter(function(t){return Object.getOwnPropertyDescriptor(e,t).enumerable})),n.push.apply(n,r)}return n}function r(e){for(var r=1;r<arguments.length;r++){var o=null!=arguments[r]?arguments[r]:{};r%2?n(Object(o),!0).forEach(function(n){t(e,n,o[n])}):Object.getOwnPropertyDescriptors?Object.defineProperties(e,Object.getOwnPropertyDescriptors(o)):n(Object(o)).forEach(function(t){Object.defineProperty(e,t,Object.getOwnPropertyDescriptor(o,t))})}return e}function o(e,t){return function(e){if(Array.isArray(e))return e}(e)||function(e,t){var n=null==e?null:"undefined"!=typeof Symbol&&e[Symbol.iterator]||e["@@iterator"];if(null!=n){var r,o,i,a,u=[],c=!0,s=!1;try{if(i=(n=n.call(e)).next,0===t);else for(;!(c=(r=i.call(n)).done)&&(u.push(r.value),u.length!==t);c=!0);}catch(e){s=!0,o=e}finally{try{if(!c&&null!=n.return&&(a=n.return(),Object(a)!==a))return}finally{if(s)throw o}}return u}}(e,t)||u(e,t)||function(){throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}()}function i(t){return function(t){if(Array.isArray(t))return e(t)}(t)||function(e){if("undefined"!=typeof Symbol&&null!=e[Symbol.iterator]||null!=e["@@iterator"])return Array.from(e)}(t)||u(t)||function(){throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}()}function a(e){return a="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(e){return typeof e}:function(e){return e&&"function"==typeof Symbol&&e.constructor===Symbol&&e!==Symbol.prototype?"symbol":typeof e},a(e)}function u(t,n){if(t){if("string"==typeof t)return e(t,n);var r={}.toString.call(t).slice(8,-1);return"Object"===r&&t.constructor&&(r=t.constructor.name),"Map"===r||"Set"===r?Array.from(t):"Arguments"===r||/^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(r)?e(t,n):void 0}}var c=void 0,l={merge:$.extend,fnRgx:/ [^(]*\(([^)]*)\)/,argRgx:/([^\s,]+)/g,each:function(e,t,n){var r,o,i;if(e)if(is(e))for(r in e)"prototype"==r||"length"==r||"name"==r||e.hasOwnProperty&&!e.hasOwnProperty(r)||t.call(n,e[r],r,e);else if(isArray(e)||isArrayLike(e))for(i="object"!==a(e),r=0,o=e.length;r<o;r++)(i||r in e)&&t.call(n,e[r],r,e);else if(e.forEach&&e.forEach!==forEach)e.forEach(t,n,e);else if(isBlankObject(e))for(r in e)t.call(n,e[r],r,e);else if(" "==typeof e.hasOwnProperty)for(r in e)e.hasOwnProperty(r)&&t.call(n,e[r],r,e);else for(r in e)hasOwnProperty.call(e,r)&&t.call(n,e[r],r,e);return e},hasProp:{}.hasOwnProperty,slice:[].slice,extend:function(e,t){var n;for(n in t)utils.hasProp.call(t,n)&&(e[n]=t[n]);function r(){this.constructor=e}return r.prototype=t.prototype,e.prototype=new r,e.__super__=t.prototype,e},hasArgs:function(e,t){return t&&null!==t||(t=1),c.args(e).length>=t},isObj:function(e){return $.isPlainObject(e)},isArr:function(e){return $.isArray(e)},isFunc:function(e){return!!(e&&e.constructor&&e.call&&e.apply)},isType:function(e,t,n){if(a(t)!==e)return"Error :: "+n+" must be of type "+e},isStr:function(e){return"string"==typeof e},isRetina:function(){return window.retina||window.devicePixelRatio>1},isMobile:function(e){return/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(e)},getObjectSize:function(e){var t,n=0;for(t in e)e.hasOwnProperty(t)&&(n+=1);return n},getPxValue:function(e,t){var n;switch(t){case"em":n=c.convertToEm(e);break;case"pt":n=c.convertToPt(e);break;default:n=e}return n},rand:function(e,t){return Math.floor(Math.random()*(t-e+1))+e},args:function(e){var t;return((null!==e&&null!==(t=e.toString().match(utils.fnRgx))?t[1]:void 0)||"").match(utils.argRgx)||[]},resize:function(e){e.height||(e=$(e)),$(function(){$(window).resize(function(){e.height($(window).height())}),$(window).resize()})},slugify:function(e){return e.toString().toLowerCase().replace(/\s+/g,"-").replace(/[^\w\-]+/g,"").replace(/\-\-+/g,"-").replace(/^-+/,"").replace(/-+$/,"")},clone:function(e){var t,n,r;if(e instanceof Array)t=function(){var t,n,o;for(o=[],t=0,n=e.length;t<n;t++)r=e[t],o.push(r);return o}();else for(n in t={},e)r=e[n],t[n]=r;return t},convertToEm:function(e){return e*c.getFontsize()},convertToPt:function(e){},convertBase:function(){var e=document.createElement(),t=e.getAttribute("style");return e.setAttribute("style",t+";font-size:1em !important"),base=c.getFontsize(),e.setAttribute("style",t),base},mix:function(e,t,n){var r,o,i;if(!0===n){for(r in o=[],e)i=e[r],o.push(t[r]=i);return o}for(r in e)i=e[r],t.hasOwnProperty(r)||o.push(t[r]=i);return o},mixin:function(e,t,n){switch(n&&null!==n||(n=!1),a(t)+"-"+a(e)){case" - ":return this.mix(t.prototype,e.prototype,n);case" -object":return this.mix(t.prototype,e,n);case"object-object":return this.mix(t,e,n);case"object- ":return this.mix(t,e.prototype,n)}},unique:function(e){var t="";for(e&&null!==e||(e=8);t.length<e;)t+=Math.random().toString(36).substr(2);return t.substr(0,e)}},f=function(){function e(e,t){this.cascade=!!t,this.channels={},l.isObj(e)?this.install(e):!0===e&&(this.cascade=!0)}return e.prototype.bind=function(e,t){return function(){for(var n=arguments.length,r=new Array(n),o=0;o<n;o++)r[o]=arguments[o];return e.apply(t,r)}},e.prototype.add=function(e,t,n){var r=this;n&&null!==n||(n=this),this.channels[e]||(this.channels[e]=[]);var o={event:e,context:n,callback:t||function(){}};return{listen:function(){return r.channels[e].push(o),this},ignore:function(){return r.remove(e,t,n),this}}.listen()},e.prototype.remove=function(t,n,r){switch(a(t)){case"string":"function"==typeof n?e._delete(this,t,n,r):void 0===n&&e._delete(this,t);break;case"function":for(var o in this.channels)e._delete(this,o,t);break;case"undefined":for(var i in this.channels)e._delete(this,i);break;case"object":for(var u in this.channels)e._delete(this,u,null,t)}return this},e.prototype.fire=function(e,t){if("string"!=typeof e)return Promise.reject(new Error("Channel must be a string"));"function"==typeof t&&(t=void 0);var n=this._setup(t,e,e,this);return 0===n.length?Promise.resolve(null):l.run.first(n).catch(function(e){if(Array.isArray(e)){var t=e.filter(function(e){return null!=e}).map(function(e){return e.message||String(e)}),n=new Error(t.join("; "));throw n.originalErrors=e,n}throw e})},e.prototype.emit=function(e,t,n){var r=this;if(n&&null!==n||(n=e),t&&l.isFunc(t)&&(t=void 0),"string"!=typeof e)return Promise.reject(new Error("Channel must be a string"));var o=this._setup(t,e,n,this),i=l.run.series(o).catch(function(e){if(Array.isArray(e)){var t=e.filter(function(e){return null!=e}).map(function(e){return e.message||String(e)}),n=new Error(t.join("; "));throw n.originalErrors=e,n}throw e});if(this.cascade){var a=e.split("/");if(a.length>1){var u=a.slice(0,-1).join("/"),c=this.fireOrigin?n:u;return i.then(function(e){return r.emit(u,t,c).then(function(){return e})})}}return i},e.prototype.install=function(e,t){if(l.isObj(e))for(var n in this){var r=this[n];"function"==typeof r&&(!t&&e[n]||(e[n]=r.bind(this)))}return this},e._delete=function(e,t,n,r){return e.channels[t]?(e.channels[t]=e.channels[t].filter(function(t){return(!n||t.callback!==n)&&((!r||t.context!==r)&&!(!n&&!r&&t.context===e))}),e.channels[t]):[]},e.prototype._setup=function(e,t,n,r){return(r.channels[t]||[]).map(function(t){return function(){return new Promise(function(r,o){try{if(l.hasArgs(t.callback,3))t.callback.call(t.context,e,n,function(e,t){e?o(e):r(t)});else{var i=t.callback.call(t.context,e,n);i&&"function"==typeof i.then?i.then(r,o):r(i)}}catch(e){o(e)}})}})},e.prototype.pipe=function(t,n,r){return n instanceof e&&(r=n,n=t),r?(r===this&&t===n||this.add(t,function(){for(var e,t=arguments.length,o=new Array(t),i=0;i<t;i++)o[i]=arguments[i];return(e=r).fire.apply(e,[n].concat(o))}),this):this.pipe(t,n,this)},e.prototype.once=function(e,t,n){var r=this,o=!1,i=function(){if(!o){o=!0,r.remove(e,i);for(var n=arguments.length,a=new Array(n),u=0;u<n;u++)a[u]=arguments[u];return t.apply(this,a)}};return this.add(e,i,n)},e.prototype.waitFor=function(e,t){var n=this;return new Promise(function(r,o){var i;t&&t>0&&(i=setTimeout(function(){n.remove(e,a),o(new Error("Timeout waiting for event '".concat(e,"' after ").concat(t,"ms")))},t));var a=function(t,o){i&&clearTimeout(i),n.remove(e,a),r({data:t,origin:o,channel:e})};n.add(e,a)})},e.prototype.getChannels=function(){var e=this;return Object.keys(this.channels).filter(function(t){return e.channels[t]&&e.channels[t].length>0})},e.prototype.getSubscriberCount=function(e){return this.channels[e]?this.channels[e].length:0},e.prototype.clear=function(){return this.channels={},this},e.prototype.namespace=function(e){var t=this,n="/";return{add:function(r,o,i){return t.add(e+n+r,o,i)},remove:function(r,o,i){return t.remove(e+n+r,o,i)},fire:function(r,o){return t.fire(e+n+r,o)},emit:function(r,o,i){return t.emit(e+n+r,o,i)},once:function(r,o,i){return t.once(e+n+r,o,i)},waitFor:function(r,o){return t.waitFor(e+n+r,o)},pipe:function(r,o,i){return t.pipe(e+n+r,e+n+o,i)},getSubscriberCount:function(r){return t.getSubscriberCount(e+n+r)}}},e}(),h=function(){s;return{create:function(e,t,n,o){var i={id:t,module:o,options:n||{}};return e._broker.install(i),i.broker=e._broker,i.Utils=l,i.fetch=function(e){var t=arguments.length>1&&void 0!==arguments[1]?arguments[1]:{};return new Promise(function(n,o){var i=r(r({},t),{},{success:function(e,t,r){n({data:e,textStatus:t,jqXHR:r})},error:function(e,t,n){var r=new Error(t||"Ajax request failed");r.jqXHR=e,r.textStatus=t,r.errorThrown=n,o(r)}});"string"==typeof e?i.url=e:"object"===a(e)&&Object.assign(i,e),$.ajax(i)})},i.data=$.data,i.deferred=function(){return $.Deferred()},i.animation=$.Animation,h.libs={},i.ui={},i.dom={},i.net={},i.query=function(e,t){var n;n=t&&t.find?t.find(e):$(e);var r=Object.create(n);return Object.setPrototypeOf(r,n),r.length=n.length,r.query=function(e){return i.query(e,n)},r.create=function(e){return l.isStr(e)?document.createElement(e):(i.warn("Error :: Element must be type String."),!1)},r.size=function(){return parseFloat(window.getComputedStyle(n[0]||n).fontSize)},r.animateAsync=function(e,t,o){return new Promise(function(i,a){try{n.animate(e,{duration:t,easing:o,complete:function(){return i(r)},fail:function(e){return a(e)}})}catch(e){a(e)}})},r.onAsync=function(e,t){return new Promise(function(r){var o=function(i){n.off(e,t,o),r(i)};t?n.on(e,t,o):n.on(e,o)})},r},i.$=i.query,i.each=$.each,i.timeout=function(e,t){return new Promise(function(n){setTimeout(function(){if(t&&"function"==typeof t){var e=t();n(e)}else n()},e)})},i.interval=function(e,t,n){var r,o=0,i=!1;return{stop:function(){i=!0,r&&clearInterval(r)},promise:new Promise(function(a,u){r=setInterval(function(){if(i)return clearInterval(r),void a(o);try{e(),o++,n&&o>=n&&(clearInterval(r),a(o))}catch(e){clearInterval(r),u(e)}},t)})}},i.log=function(){var t;return(t=e.debug).log.apply(t,arguments)},i.warn=function(){var t;return(t=e.debug).warn.apply(t,arguments)},i.getLocation=function(){var t=e.config.win;return t&&t.location},i.hitch=function(e){for(var t=arguments.length,n=new Array(t>1?t-1:0),r=1;r<t;r++)n[r-1]=arguments[r];return function(){for(var t=arguments.length,r=new Array(t),o=0;o<t;o++)r[o]=arguments[o];var i=n.concat(r);return e.apply(this,i)}},i.memoize=function(e,t,n){return t=t||{},function(){for(var r=arguments.length,o=new Array(r),i=0;i<r;i++)o[i]=arguments[i];var a=o.length>1?o.join("__"):String(o[0]||"");if(!(a in t)||n&&t[a]===n){var u=e.apply(e,o);u&&"function"==typeof u.then?t[a]=u.catch(function(e){throw delete t[a],e}):t[a]=u}return t[a]}},i.loadResources=function(e){var t=(Array.isArray(e)?e:[e]).map(function(e){if("string"==typeof e){var t=e;switch(t.split(".").pop().toLowerCase()){case"css":return i.loadCSS(t);case"js":return i.loadScript(t);case"json":return i.fetch(t).then(function(e){return e.data});default:return i.fetch(t)}}else if(e&&e.type&&e.url)switch(e.type){case"css":return i.loadCSS(e.url);case"script":return i.loadScript(e.url);case"json":return i.fetch(e.url).then(function(e){return e.data});default:return i.fetch(e.url)}return Promise.reject(new Error("Invalid resource format"))});return Promise.all(t)},i.loadCSS=function(e){return new Promise(function(t,n){var r=document.createElement("link");r.rel="stylesheet",r.type="text/css",r.href=e,r.onload=function(){return t(r)},r.onerror=function(){return n(new Error("Failed to load CSS: ".concat(e)))},document.head.appendChild(r)})},i.loadScript=function(e){return new Promise(function(t,n){var r=document.createElement("script");r.type="text/javascript",r.src=e,r.onload=function(){return t(r)},r.onerror=function(){return n(new Error("Failed to load script: ".concat(e)))},document.head.appendChild(r)})},i.ready=function(){return new Promise(function(e){"complete"===document.readyState||"interactive"===document.readyState?e():$(document).ready(e)})},i.loaded=function(){return new Promise(function(e){"complete"===document.readyState?e():$(window).on("load",e)})},i}}}(),d="undefined"==typeof arguments?void 0:arguments,v=void 0,p=function(e){if(null==e)throw new Error("FEAR GUI requires jQuery library.");function t(){var e=this;this.config={logLevel:0,name:"FEAR_GUI",mode:"single",version:"1.0.1",jquery:!0,animations:!1},this._modules={},this._plugins=[],this._instances={},this._sandboxes={},this._running={},this._imports=[],this._broker=new f(this),this.Broker=f,this.attach=function(e){console.log("Dynamic async module loading."),console.log("Imports:",e)},this.configure=function(t){t&&l.isObj(t)&&(e.config=l.merge(e.config,t),e.debug.level=e.config.logLevel||0)}}return t.prototype.debug={level:0,history:[],timeout:5e3,warn:function(e){if(this.level<2){var t,n,r,o=["WARN:"].concat(Array.prototype.slice.call(arguments));"undefined"!=typeof window&&null!==(t=window.console)&&void 0!==t&&t.warn?this._logger("warn",o):null!==(n=window.console)&&void 0!==n&&n.log?this._logger("log",o):null!==(r=window.opera)&&void 0!==r&&r.postError&&window.opera.postError("WARNING: ".concat(e))}},log:function(e){var t,n;if(this.level<1)if(null!==(t=window.console)&&void 0!==t&&t.log){var r=["Debug:"].concat(Array.prototype.slice.call(arguments));this._logger("log",r)}else null!==(n=window.opera)&&void 0!==n&&n.postError&&window.opera.postError("DEBUG: ".concat(e))},_logger:function(e,t){var n;this.history.push({type:e,args:t}),null!==(n=console[e])&&void 0!==n&&n.apply?console[e].apply(console,t):console[e](t)},_stackTrace:function(){this.log(this.history)}},t.prototype.create=function(e,t){var n=arguments.length>2&&void 0!==arguments[2]?arguments[2]:{},r=l.isType("string",e,"module ID")||l.isType("function",t,"creator")||l.isType("object",n,"option parameter");return r?(v.debug.warn("could not register module '".concat(e,"': ").concat(r)),v):e in v._modules?(v.debug.log("module ".concat(e," was already registered")),v):(v._modules[e]={id:e,creator:t,options:n},v)},t.prototype.start=function(e){var t=arguments.length>1&&void 0!==arguments[1]?arguments[1]:{};if(0===d.length)return v._startAll();if(e instanceof Array)return v._startAll(e);if("function"==typeof e)return v._startAll();var n=t.instanceId||e,r=l.isType("string",e,"module ID")||l.isType("object",t,"second parameter")||(v._modules[e]?void 0:"module doesn't exist");return r?Promise.reject(new Error(r)):!0===v._running[n]?Promise.reject(new Error("module was already started")):v.boot().then(function(){return v._createInstance(e,t)}).then(function(e){var t=e.instance,r=e.options;if(t.load&&"function"==typeof t.load){var o=t.load(r);return o&&"function"==typeof o.then?o.then(function(){v._running[n]=!0}):(v._running[n]=!0,Promise.resolve())}return v._running[n]=!0,Promise.resolve()}).catch(function(e){throw v.debug.warn(e),new Error("could not start module: "+e.message)})},t.prototype.use=function(e,t){if(l.isArr(e))e.forEach(function(e){"function"==typeof e?v.use(e):"object"===a(e)&&v.use(e.plugin,e.options)});else{if(!l.isFunc(e))return v;v._plugins.push({creator:e,options:t})}return v},t.prototype.stop=function(e){var t=this;if(0===arguments.length||"function"==typeof e){var n=Object.keys(this._instances);return this._run.all(n.map(function(e){return function(){return t.stop(e)}}))}var r=this._instances[e];return r?(delete this._instances[e],this._broker.off(r),this._runSandboxPlugins("unload",this._sandboxes[e]).then(function(){if(r.unload&&"function"==typeof r.unload){var e=r.unload();if(e&&"function"==typeof e.then)return e}return Promise.resolve()}).then(function(){delete t._running[e]})):Promise.resolve()},t.prototype.plugin=function(t,n){t.fn&&l.isFunc(t.fn)?e.fn[n.toLowerCase()]=function(e){return new t.fn(this,e)}:v.debug.log("Error :: Missing "+t+" fn() method.")},t.prototype.boot=function(){var e=v,t=v._plugins.filter(function(e){return!0!==e.booted}).map(function(t){return function(){return new Promise(function(n,r){try{l.hasArgs(t.creator,3)?t.creator(e,t.options,function(e){e?r(e):(t.booted=!0,n())}):(t.plugin=t.creator(e,t.options),t.booted=!0,n())}catch(e){r(e)}})}});return v._run.series(t)},t.prototype._run={all:function(){var e=(arguments.length>0&&void 0!==arguments[0]?arguments[0]:[]).map(function(e){return function(){return Promise.resolve(e)}});return v.parallel(e)},parallel:function(){var e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:[];if(0===e.length)return Promise.resolve([]);var t=e.map(function(e,t){try{var n=e();return Promise.resolve(n).catch(function(e){return{error:e,index:t}})}catch(e){return Promise.resolve({error:e,index:t})}});return Promise.all(t).then(function(e){var t=[],n=[];if(e.forEach(function(e,r){e&&e.error?t[r]=e.error:n[r]=e}),t.some(function(e){return void 0!==e})){var r=new Error("Some tasks failed");throw r.errors=t,r.results=n,r}return n})},series:function(){var e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:[];return 0===e.length?Promise.resolve([]):e.reduce(function(e,t,n){return e.then(function(e){try{var r=t();return Promise.resolve(r).then(function(t){return[].concat(i(e),[t])}).catch(function(e){var t=new Error("Task ".concat(n," failed"));throw t.originalError=e,t.taskIndex=n,t})}catch(e){var o=new Error("Task ".concat(n," failed"));throw o.originalError=e,o.taskIndex=n,o}})},Promise.resolve([]))},first:function(){var e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:[];return 0===e.length?Promise.reject(new Error("No tasks provided")):e.reduce(function(t,n,r){return t.catch(function(){try{return Promise.resolve(n())}catch(t){if(r===e.length-1)throw t;return Promise.reject(t)}})},Promise.reject())},waterfall:function(){var e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:[];return 0===e.length?Promise.resolve():e.reduce(function(e,t){return e.then(function(e){try{return Promise.resolve(t(e))}catch(e){return Promise.reject(e)}})},Promise.resolve())}},t.prototype._startAll=function(e){e&&null!==e||(e=Object.keys(v._modules));var t=e.map(function(e){return function(){return v.start(e,v._modules[e].options).catch(function(t){var n=new Error("Failed to start module '".concat(e,"': ").concat(t.message));throw n.moduleId=e,n.originalError=t,n})}});return v._run.parallel(t).catch(function(t){if(t.errors){var n={},r=[];t.errors.forEach(function(t,o){if(t){var i=e[o];n[i]=t,r.push("'".concat(i,"'"))}});var o=new Error("errors occurred in the following modules: ".concat(r.join(", ")));throw o.moduleErrors=n,o}throw t})},t.prototype._createInstance=function(e,t){var n=t.options,o=t.instanceId||e,i=v._modules[e];if(v._instances[o])return Promise.resolve({instance:v._instances[o],options:n});var a=r(r({},i.options),n),u=(new h).create(v,o,a,e);return v.config&&(u.config=v.config),v._runSandboxPlugins("load",u).then(function(){var e=new i.creator(u);if("function"!=typeof e.load){if(e.fn&&"function"==typeof e.fn)return v.plugin(e,o),{instance:e,options:a};throw new Error("module has no 'load' or 'fn' method")}return v._instances[o]=e,v._sandboxes[o]=u,{instance:e,options:a}})},t.prototype._runSandboxPlugins=function(e,t){var n=v._plugins.filter(function(t){var n;return"function"==typeof(null===(n=t.plugin)||void 0===n?void 0:n[e])}).map(function(n){return function(){var r=n.plugin[e];return new Promise(function(e,o){try{if(l.hasArgs(r,3))r(t,n.options,function(t){t?o(t):e()});else{var i=r(t,n.options);i&&"function"==typeof i.then?i.then(e,o):e()}}catch(e){o(e)}})}});return v._run.series(n)},t}(jQuery);GUI=p;var m=function(){function e(e){var t="gui_storage_test";try{if("undefined"==typeof window||!window[e])return!1;var n=window[e];return n.setItem(t,t),n.removeItem(t),!0}catch(e){return!1}}function t(e){if(null==e)return e;try{return JSON.parse(e)}catch(t){return e}}function n(e){if("string"==typeof e)return e;try{return JSON.stringify(e)}catch(t){return String(e)}}function r(e){for(var t=[],n=0;n<e.length;n++)t.push(e.key(n));return t}function i(e){return null==e||("string"==typeof e||Array.isArray(e)?0===e.length:"object"===a(e)&&0===Object.keys(e).length)}function u(e,u){var c=window[e],s=new Map;return{get:function(){for(var e=arguments.length,n=new Array(e),r=0;r<e;r++)n[r]=arguments[r];return new Promise(function(e,r){try{if(0===n.length)return void r(new Error("At least one key must be provided"));var o=n[0],i=n.slice(1);if(Array.isArray(o)){var u={};return o.forEach(function(e){var n=c.getItem(e);u[e]=t(n)}),void e(u)}var s=c.getItem(o);if(null===s)return void e(null);var l=t(s);if(i.length>0){for(var f=0;f<i.length-1;f++){var h=i[f];if(!l||"object"!==a(l))return void e(void 0);l=l[h]}var d=i[i.length-1];if(Array.isArray(d)){var v={};d.forEach(function(e){v[e]=l&&l[e]}),e(v)}else e(l&&l[d])}else e(l)}catch(e){r(e)}})},set:function(e,r){for(var i=arguments.length,u=new Array(i>2?i-2:0),s=2;s<i;s++)u[s-2]=arguments[s];return new Promise(function(i,s){try{if("object"===a(e)&&null!==e)return Object.entries(e).forEach(function(e){var t=o(e,2),r=t[0],i=t[1];c.setItem(r,n(i))}),void i(e);if("string"!=typeof e)return void s(new Error("Key must be a string or object"));if(0===u.length)return c.setItem(e,n(r)),void i(r);var l;try{l=t(c.getItem(e))||{}}catch(e){l={}}for(var f=l,h=0;h<u.length-1;h++){var d=u[h];f[d]&&"object"===a(f[d])||(f[d]={}),f=f[d]}f[u[u.length-1]]=r,c.setItem(e,n(l)),i(l)}catch(e){s(e)}})},isSet:function(){for(var e=arguments.length,t=new Array(e),n=0;n<e;n++)t[n]=arguments[n];return this.get.apply(this,t).then(function(e){return Array.isArray(t[0])||t.length>1&&Array.isArray(t[t.length-1])?"object"===a(e)&&null!==e&&Object.values(e).every(function(e){return null!=e}):null!=e}).catch(function(){return!1})},isEmpty:function(){for(var e=arguments.length,t=new Array(e),n=0;n<e;n++)t[n]=arguments[n];return 0===t.length?Promise.resolve(0===c.length):this.get.apply(this,t).then(function(e){return(Array.isArray(t[0])||t.length>1&&Array.isArray(t[t.length-1]))&&"object"===a(e)&&null!==e?Object.values(e).every(function(e){return i(e)}):i(e)}).catch(function(){return!0})},remove:function(e){for(var r=arguments.length,o=new Array(r>1?r-1:0),i=1;i<r;i++)o[i-1]=arguments[i];return new Promise(function(r,i){try{if(Array.isArray(e))return e.forEach(function(e){return c.removeItem(e)}),void r(!0);if("string"!=typeof e)return void i(new Error("Key must be a string or array"));if(0===o.length)return c.removeItem(e),void r(!0);var u=t(c.getItem(e));if(!u||"object"!==a(u))return void i(new Error("Key '".concat(e,"' does not exist or is not an object")));for(var s=u,l=0;l<o.length-1;l++){var f=o[l];if(!s[f])return void i(new Error("Nested key path does not exist"));s=s[f]}var h=o[o.length-1];Array.isArray(h)?h.forEach(function(e){return delete s[e]}):delete s[h],c.setItem(e,n(u)),r(!0)}catch(e){i(e)}})},removeAll:function(){return new Promise(function(e){try{c.clear(),e(!0)}catch(t){e(!1)}})},keys:function(e){return e?this.get(e).then(function(e){return e&&"object"===a(e)?Object.keys(e):[]}).catch(function(){return[]}):Promise.resolve(r(c))},size:function(){return new Promise(function(e){try{var t=r(c),n=0;t.forEach(function(e){var t=c.getItem(e);t&&(n+=e.length+t.length)}),e({keys:t.length,bytes:n,kb:Math.round(n/1024*100)/100})}catch(t){e({keys:0,bytes:0,kb:0})}})},clearCache:function(){return new Promise(function(e){s.clear(),e(!0)})}}}return{load:function(t){var n=e("localStorage"),r=e("sessionStorage");if(!n&&!r){var o=new Error("This browser does not support web storage");return t.warn("Storage plugin: Browser storage not supported"),Promise.reject(o)}return Promise.resolve().then(function(){var e,o,i,a;return n||t.warn("Storage plugin: localStorage not supported"),r||t.warn("Storage plugin: sessionStorage not supported"),t.cellar=(t.Utils,e=u("localStorage"),o=u("sessionStorage"),i="localStorage",a=function(){return"localStorage"===i?e:o},{type:function(e){return"localStorage"!==e&&"sessionStorage"!==e||(i=e),this},get:function(){var e;return(e=a()).get.apply(e,arguments)},set:function(){var e;return(e=a()).set.apply(e,arguments)},isSet:function(){var e;return(e=a()).isSet.apply(e,arguments)},isEmpty:function(){var e;return(e=a()).isEmpty.apply(e,arguments)},remove:function(){var e;return(e=a()).remove.apply(e,arguments)},removeAll:function(){return a().removeAll()},keys:function(){var e;return(e=a()).keys.apply(e,arguments)},size:function(){return a().size()},clearCache:function(){return a().clearCache()},local:function(){return e},session:function(){return o},localStorage:e,sessionStorage:o,ls:e,ss:o}),t.cellar}).catch(function(e){throw t.warn("Storage plugin: Failed to initialize -",e.message),e})},unload:function(e){return e.cellar?Promise.all([e.cellar.localStorage.clearCache().catch(function(){}),e.cellar.sessionStorage.clearCache().catch(function(){})]).then(function(){delete e.cellar}).catch(function(){delete e.cellar}):Promise.resolve()}}}(),y=function(){function e(){this._observers=new Map,this._onceHandlers=new WeakSet}return e.prototype.isMobile=function(e){return e||(e=navigator.userAgent||""),/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(e)},e.prototype.create=function(e){var t=arguments.length>1&&void 0!==arguments[1]?arguments[1]:{},n=t.bubbles,r=void 0!==n&&n,o=t.cancelable,i=void 0!==o&&o,a=t.detail,u=void 0===a?null:a;if("function"==typeof CustomEvent)return new CustomEvent(e,{bubbles:r,cancelable:i,detail:u});if(document.createEvent){var c=document.createEvent("CustomEvent");return c.initCustomEvent(e,r,i,u),c}if(document.createEventObject){var s=document.createEventObject();return s.eventType=e,s.bubbles=r,s.cancelable=i,s.detail=u,s}return{type:e,eventName:e,bubbles:r,cancelable:i,detail:u,timeStamp:Date.now()}},e.prototype.fire=function(e,t,n){var r=this;return new Promise(function(o,i){try{if(!e)return void i(new Error("Element is required"));var a;if(!(a="string"==typeof t?r.create(t,{detail:n}):t))return void i(new Error("Invalid event"));if(e.dispatchEvent)o(e.dispatchEvent(a));else if(e.fireEvent&&a.eventType){o(e.fireEvent("on"+a.eventType,a))}else if(a.type||a.eventName){var u=a.type||a.eventName;e[u]?(e[u](),o(!0)):e["on"+u]?(e["on"+u](),o(!0)):o(!1)}else o(!1)}catch(e){i(e)}})},e.prototype.add=function(t,n,r){var o=this,i=arguments.length>3&&void 0!==arguments[3]?arguments[3]:{};return new Promise(function(a,u){try{if(!t||!n||!r)return void u(new Error("Element, event name, and handler are required"));var c=i.passive,s=void 0!==c&&c,l=i.once,f=void 0!==l&&l,h=i.capture,d=void 0!==h&&h,v=r;if(f&&!t.addEventListener&&(v=function(){for(var o=arguments.length,i=new Array(o),a=0;a<o;a++)i[a]=arguments[a];var u=r.apply(this,i);return e.prototype.remove.call(this,t,n,v),u},o._onceHandlers.add(v)),t.addEventListener){var p="boolean"==typeof i?d:{passive:s,once:f,capture:d};t.addEventListener(n,v,p)}else t.attachEvent?t.attachEvent("on"+n,v):t["on"+n]=v;var m="".concat(n,"_").concat(r.toString());o._observers.has(t)||o._observers.set(t,new Map),o._observers.get(t).set(m,{handler:v,eventName:n}),a({remove:function(){return o.remove(t,n,v)},element:t,eventName:n,handler:v})}catch(e){u(e)}})},e.prototype.remove=function(e,t,n){var r=this;return new Promise(function(o){try{if(!e||!t)return void o(!1);if(e.removeEventListener?e.removeEventListener(t,n,!1):e.detachEvent?e.detachEvent("on"+t,n):delete e["on"+t],r._observers.has(e)){var i=r._observers.get(e),a="".concat(t,"_").concat(n.toString());i.delete(a),0===i.size&&r._observers.delete(e)}o(!0)}catch(e){o(!1)}})},e.prototype.once=function(e,t,n){var r=this;return new Promise(function(o,i){var a=function(u){r.remove(e,t,a).then(function(){try{var e=n?n(u):u;o(e)}catch(e){i(e)}})};r.add(e,t,a).catch(i)})},e.prototype.waitFor=function(e,t,n){var r=this;return new Promise(function(o,i){var a;n&&n>0&&(a=setTimeout(function(){i(new Error("Timeout waiting for '".concat(t,"' event after ").concat(n,"ms")))},n)),r.once(e,t,function(e){a&&clearTimeout(a),o(e)}).catch(i)})},e.prototype.innerHeight=function(){return"number"==typeof window.innerHeight?window.innerHeight:document.documentElement&&"number"==typeof document.documentElement.clientHeight?document.documentElement.clientHeight:document.body&&"number"==typeof document.body.clientHeight?document.body.clientHeight:0},e.prototype.innerWidth=function(){return"number"==typeof window.innerWidth?window.innerWidth:document.documentElement&&"number"==typeof document.documentElement.clientWidth?document.documentElement.clientWidth:document.body&&"number"==typeof document.body.clientWidth?document.body.clientWidth:0},e.prototype.getComputedStyle=function(e,t){return new Promise(function(n,r){try{if(!e)return void r(new Error("Element is required"));if(window.getComputedStyle){var o=window.getComputedStyle(e);n(o.getPropertyValue(t)||o[t])}else e.currentStyle?n(e.currentStyle[t]):n(e.style[t]||"")}catch(e){r(e)}})},e.prototype.animate=function(e,t){var n=arguments.length>2&&void 0!==arguments[2]?arguments[2]:300,r=arguments.length>3&&void 0!==arguments[3]?arguments[3]:"ease";return new Promise(function(o,i){try{if(!e)return void i(new Error("Element is required"));if("transition"in e.style||"webkitTransition"in e.style||"mozTransition"in e.style||"oTransition"in e.style){var a=Object.keys(t).join(", ");e.style.transition="".concat(a," ").concat(n,"ms ").concat(r),Object.keys(t).forEach(function(n){e.style[n]=t[n]});var u=function(){e.style.transition="",e.removeEventListener("transitionend",c),e.removeEventListener("transitioncancel",s)},c=function(){u(),o(e)},s=function(){u(),i(new Error("Animation was cancelled"))};e.addEventListener("transitionend",c,{once:!0}),e.addEventListener("transitioncancel",s,{once:!0}),setTimeout(function(){u(),o(e)},n+50)}else Object.keys(t).forEach(function(n){e.style[n]=t[n]}),setTimeout(function(){return o(e)},n)}catch(e){i(e)}})},e.prototype.removeAll=function(e){var t=this;return new Promise(function(n){try{if(t._observers.has(e)){var r=t._observers.get(e),o=[];r.forEach(function(n){o.push(t.remove(e,n.eventName,n.handler))}),Promise.all(o).then(function(){return n(!0)}).catch(function(){return n(!1)})}else n(!0)}catch(e){n(!1)}})},{load:function(t){return t.dom||(t.dom={}),t.dom.Event=new e,t.on=function(e,n,r,o){return t.dom.Event.add(e,n,r,o)},t.off=function(e,n,r){return t.dom.Event.remove(e,n,r)},t.once=function(e,n,r){return t.dom.Event.once(e,n,r)},t.fire=function(e,n,r){return t.dom.Event.fire(e,n,r)},t.waitFor=function(e,n,r){return t.dom.Event.waitFor(e,n,r)},t.animate=function(e,n,r,o){return t.dom.Event.animate(e,n,r,o)},Promise.resolve()},unload:function(e){if(e.dom&&e.dom.Event&&e.dom.Event.removeAll){var t=[];return e.dom.Event._observers&&e.dom.Event._observers.forEach(function(n,r){t.push(e.dom.Event.removeAll(r))}),Promise.all(t).then(function(){delete e.dom.Event,delete e.on,delete e.off,delete e.once,delete e.fire,delete e.waitFor,delete e.animate})}return Promise.resolve()}}}(),g=function(){var e=function(){return{routes:[],mode:null,root:"/",interval:null,config:function(e){e=e||{};var t=!(!history||!history.pushState);return this.mode="history"===e.mode&&t?"history":"hash",e.root?this.root="/"+this.clearSlashes(e.root)+"/":this.root="/",this},getFragment:function(){var e,t="";return"history"===this.mode?(t=(t=this.clearSlashes(decodeURI(location.pathname+location.search))).replace(/\?(.*)$/,""),"/"!==this.root&&(t=t.replace(new RegExp("^"+this.escapeRegex(this.root.slice(1,-1))),""))):t=(e=window.location.href.match(/#(.*)$/))?e[1]:"",this.clearSlashes(t)},clearSlashes:function(e){return e?e.toString().replace(/\/$/,"").replace(/^\//,""):""},escapeRegex:function(e){return e.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")},add:function(e,t){if("function"==typeof e&&(t=e,e=""),"function"!=typeof t)throw new Error("Route handler must be a function");return"string"==typeof e&&(e=new RegExp("^"+e.replace(/:\w+/g,"([^/]+)")+"$")),this.routes.push({re:e,handler:t,original:arguments[0]}),this},remove:function(e){if(!e)return this;for(var t=this.routes.length-1;t>=0;t--){var n=this.routes[t];(n.handler===e||n.original===e||n.re&&n.re.toString()===e.toString())&&this.routes.splice(t,1)}return this},flush:function(){return this.routes=[],this.mode=null,this.root="/",this.interval&&(clearInterval(this.interval),this.interval=null),this},check:function(e){for(var t,n=void 0!==e?e:this.getFragment(),r=0;r<this.routes.length;r++)if(t=n.match(this.routes[r].re)){t.shift();try{this.routes[r].handler.apply({},t)}catch(e){console.error("Router: Error executing route handler:",e)}return this}return this},listen:function(e){var t=this,n=t.getFragment(),r=e||50,o=function(){var e=t.getFragment();n!==e&&(n=e,t.check(n))};return this.interval&&clearInterval(this.interval),"history"===this.mode&&window.addEventListener?window.addEventListener("popstate",o,!1):"hash"===this.mode&&window.addEventListener&&window.addEventListener("hashchange",o,!1),this.interval=setInterval(o,r),this},stop:function(){this.interval&&(clearInterval(this.interval),this.interval=null);var e=function(){};return window.removeEventListener&&(window.removeEventListener("popstate",e,!1),window.removeEventListener("hashchange",e,!1)),this},navigate:function(e,t){if(e=e||"",t=!1!==t,"history"===this.mode){var n=this.root+this.clearSlashes(e);try{history.pushState(null,null,n)}catch(e){return window.location.href=n,this}}else{var r=window.location.href.replace(/#(.*)$/,"");window.location.href=r+"#"+e}return t&&this.check(),this}}};return{load:function(t){t.Router||(t.Router=new e)},unload:function(e){e.Router&&(e.Router.flush(),delete e.Router)}}}();window.FEAR=p,window.Broker=f,window.Utils=l,window.SandBox=h,window.FEARPlugins={Cellar:m,Events:y,Router:g},function(e){e.FEAR=function(e){var t=new p;return e?(Array.isArray(e)?t.use(e):"object"===a(e)&&t.configure(e),t):t},e.fn.fear=function(t){return this.each(function(){var n=e(this),r=e.data(this,"fear");if(!r){var o=e.FEAR(t);return o.config.element=this,o.config.$element=n,e.data(this,"fear",o),o}return r})},e.FEAR.GUI=p,e.FEAR.Broker=f,e.FEAR.Utils=l,e.FEAR.Plugins=window.FEARPlugins,e(function(){e("[data-fear]").each(function(){var t=e(this),n=t.data("fear"),r=t.data("fear-options")||{};n&&t.fear(r)})})}(jQuery);
+const Utils = {
+    /* jQuery $.extend pointer */
+    merge: $.extend,
+    /*   Regex */
+    fnRgx: / [^(]*\(([^)]*)\)/,
+    /* Argument Regex */
+    argRgx: /([^\s,]+)/g,
+
+    each: (obj, iterator, context) => {
+        var key, length, isPrimitive;
+
+        if (obj) {
+            if (is (obj)) {
+
+                for (key in obj) {
+                    if (key != 'prototype' && key != 'length' && key != 'name' && (!obj.hasOwnProperty || obj.hasOwnProperty(key))) {
+                        iterator.call(context, obj[key], key, obj);
+                    }
+                }
+            } else if (isArray(obj) || isArrayLike(obj)) {
+                isPrimitive = typeof obj !== 'object';
+
+                for (key = 0, length = obj.length; key < length; key++) {
+                    if (isPrimitive || key in obj) {
+
+                        iterator.call(context, obj[key], key, obj);
+                    }
+                }
+
+            } else if (obj.forEach && obj.forEach !== forEach) {
+
+                obj.forEach(iterator, context, obj);
+
+            } else if (isBlankObject(obj)) {
+                for (key in obj) {
+
+                    iterator.call(context, obj[key], key, obj);
+                }
+
+            } else if (typeof obj.hasOwnProperty === ' ') {
+
+                for (key in obj) {
+                    if (obj.hasOwnProperty(key)) {
+
+                        iterator.call(context, obj[key], key, obj);
+                    }
+                }
+            } else {
+                for (key in obj) {
+                    if (hasOwnProperty.call(obj, key)) {
+
+                        iterator.call(context, obj[key], key, obj);
+                    }
+                }
+            }
+        }
+
+        return obj;
+    },
+
+    /* Shorthand reference to Object.prototype.hasOwnProperty */
+    hasProp: {}.hasOwnProperty,
+    /* Array.prototype.slice */
+    slice: [].slice,
+
+    /**
+     * Attach child object prototype to parent object prototype 
+     *
+     * @param child {object} - object to merge prototype 
+     * @param parent {object} - parent object prototype 
+     * @return child {object} - combined child & parent prototypes 
+    **/
+    extend: (child, parent) => {
+        var key;
+
+        for (key in parent) { 
+
+            if (utils.hasProp.call(parent, key)) {
+                child[key] = parent[key]; 
+            } 
+        }
+
+          function ctor() { 
+            this.constructor = child; 
+            }
+
+        ctor.prototype = parent.prototype;
+
+        child.prototype = new ctor();
+        child.__super__ = parent.prototype;
+
+        return child;
+    },
+
+    /**
+     * Check number of arguments passed to   / method
+     *
+     * @param fn { } -   to test
+     * @param idx {int} - number of arguments to check for
+     * @return argument length {int} - number of arguments actually passed to  
+    **/
+    hasArgs: (fn, idx) => {
+        if (!idx || idx === null) {
+            idx = 1;
+        }
+
+        return this.args(fn).length >= idx;
+    },
+
+    /**
+    * Check if passed object is instance of Object
+    *
+    * @param obj {object} - object to check
+    * @return boolean
+    **/
+    isObj: (obj) => {
+        return $.isPlainObject(obj);
+    },
+
+    /**
+    * Check if passed value is Array 
+    *
+    * @param arr {array} - array to check
+    * @return boolean
+    **/
+    isArr: (arr) => {
+        return $.isArray(arr); 
+    },
+
+    /**
+    * Check if passed   is indeed type  
+    *
+    * @param obj {object} -   to check
+    * @return boolean
+    **/
+    isFunc: (obj) => {
+        return !!(obj && obj.constructor && obj.call && obj.apply);
+    },
+
+    /**
+    * Check typeof of passed value to name 
+    *
+    * @param type {string} - string type to check against 
+    * @return boolean
+    **/
+    isType: (type, val, name) => {
+        if (typeof val !== type) {
+            return 'Error :: ' + name + " must be of type " + type;
+        }
+    },
+
+    /**
+    * Check if valid string
+    *
+    * @param object - string to check
+    * @return boolean
+    **/
+    isStr: (str) => {
+        return (typeof str === 'string');
+    },
+
+    /**
+    * Check for retina display on device 
+    *
+    * @return boolean
+    **/
+    isRetina: () => {
+      return (window.retina || window.devicePixelRatio > 1);
+    },
+
+    /**
+    * Check if user agent is mobile device 
+    *
+    * @param agent {string} - user agent
+    * @return {boolean} 
+    **/
+    isMobile: (agent) => {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(agent);
+    },
+
+    /**
+    * Return number of keys in first level of object
+    *
+    * @param object - object to size
+    * @return int
+    **/
+    getObjectSize: (obj) => {
+        var total = 0, key;
+
+        for (key in obj) {
+
+            if (obj.hasOwnProperty(key)) {
+                total += 1;
+            }
+        }
+
+        return total;
+    },
+
+    /**
+    * Convert passed unit to its equiv value in pixles 
+    *
+    * @param width {number} - size of the element to convert 
+    * @param unit {string} - the unit to convert to pixels
+    * @return {number} 
+    **/
+    getPxValue: (width, unit) => {
+        var value;
+
+        switch(unit){
+            case "em":
+                value = this.convertToEm(width);
+                break;
+
+            case "pt":
+                value = this.convertToPt(width);
+                break;
+
+            default:
+                value = width;
+        }
+
+        return value;
+    },
+
+    /**
+    * Returns a random number between min (inclusive) and max (exclusive)
+    *
+    * @param min - int min number of range
+    * @param max - int max number of range
+    * @return int
+    **/
+    rand:  (min, max) => {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    },
+
+    /**
+    * Returns list of argument names from   
+    *
+    * @param fn { } - the   to get arguments from 
+    * @return {array}  
+    **/
+    args:  (fn) => {
+        var ref;
+
+        return ((fn !== null ? (ref = fn.toString().match(utils.fnRgx)) !== null ? ref[1] : void 0 : void 0) || '').match(utils.argRgx) || [];
+    },
+                
+    /**
+    * Use to resize elemen to match window size 
+    *
+    * @param $el {object} - jQuery wrapped element to resize 
+    * @return void
+    **/
+    resize: ($el) => {
+        if (!$el.height) {
+            $el = $($el);
+        }
+        $(() => {
+
+            $(window).resize(() => {
+
+                $el.height($(window).height());
+
+            });
+
+            $(window).resize();
+        });
+    },
+
+    /**
+    * Called in controllers to add to turn strings into slugs for image upload
+    *
+    * @param event title - of title to turn to string for insertion into URI
+    * @return void
+    **/
+    slugify: (text) => {
+        return text.toString().toLowerCase()
+            .replace(/\s+/g, '-')           // Replace spaces with -
+            .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
+            .replace(/\-\-+/g, '-')         // Replace multiple - with single -
+            .replace(/^-+/, '')             // Trim - from start of text
+            .replace(/-+$/, '');            // Trim - from end of text
+    },
+
+    /**
+    * Copy an Array or Object and return new instance 
+    *
+    * @param data {various} - the array / object to clone (copy) 
+    * @return copy {various} - the new array / object 
+    **/
+    clone: (data) => {
+        var copy, k, v;
+
+        if (data instanceof Array) {
+
+            copy = ( () => {
+                var i, len, results;
+
+                results = [];
+                for (i = 0, len = data.length; i < len; i++) {
+  
+                    v = data[i];
+                    results.push(v);
+                }
+
+                return results;
+
+            })();
+
+        } else {
+            copy = {};
+
+            for (k in data) {
+                v = data[k];
+                copy[k] = v;
+            }
+        }
+
+        return copy;
+    },
+
+    /**
+    * Compute passed value to em 
+    *
+    * @return {number} - computed em value 
+    **/
+    convertToEm:(value) => {
+        return value * this.getFontsize();
+    },
+
+    /**
+    * Compute passed value to point 
+    *
+    * @return {number} - computed point value 
+    **/
+    convertToPt:(value) => {
+    
+    },
+
+    /**
+    * Get computed fontsize from created element in pixels
+    *
+    * @return base {number} - computed fontsize
+    **/
+    convertBase:() => {
+        var elem = document.createElement(), 
+            style = elem.getAttribute('style');
+
+        elem.setAttribute('style', style + ';font-size:1em !important');
+
+        base = this.getFontsize();
+
+        elem.setAttribute('style', style);
+
+        return base;
+    },
+
+    /**
+    * Mix properties of two objects, optional to override property names 
+    *
+    * @param giv {object} - object to give properties
+    * @param rec {object} - object to recieve givers properties
+    * @param override {boolean} - optional arg to replace existing property keys
+    * @return results {array} - new array of mixed object properties and values 
+    **/
+    mix:(giv, rec, override) => {
+        var k, results, v;
+
+        if (override === true) {
+            results = [];
+
+            for (k in giv) {
+                v = giv[k];
+                results.push(rec[k] = v);
+            }
+
+            return results;
+
+        } else {
+
+            for (k in giv) {
+                v = giv[k];
+
+                if (!rec.hasOwnProperty(k)) {
+                    results.push(rec[k] = v);
+                }
+            }
+
+            return results;
+        }
+    },
+
+    /**
+    * Mix various object /   combinations 
+    *
+    * @param input {various} - input class to give properties 
+    * @param output {various} - receiving class to retain mixed properties 
+    * @param override {boolean} - override property names with new values
+    * @return { } - mix 
+    **/
+    mixin: function(input, output, override) {
+        if (!override || override === null) {
+            override = false;
+        }
+
+        switch ((typeof output) + "-" + (typeof input)) {
+            case " - ":
+                return this.mix(output.prototype, input.prototype, override);
+
+            case " -object":
+                return this.mix(output.prototype, input, override);
+
+            case "object-object":
+                return this.mix(output, input, override);
+
+            case "object- ":
+                return this.mix(output, input.prototype, override);
+        }
+    },
+    
+    /**
+    * Generate random unique identifier string
+    *
+    * @param length {number} - how long the random string should be
+    * @return id {string} - unique identifier 
+    **/
+    unique: (length) => {
+        var id = '';
+
+        if (!length || length === null) {
+            length = 8;
+        }
+
+        while (id.length < length) {
+            id += Math.random().toString(36).substr(2);
+        }
+
+        return id.substr(0, length);
+    }
+};
+
+const Broker = (() => {
+
+    function Broker(obj, cascade) {
+        this.cascade = (cascade) ? true : false;
+        this.channels = {};
+
+        if (Utils.isObj(obj)) {
+            this.install(obj);
+        } else if (obj === true) {
+            this.cascade = true;
+        }
+    }
+
+    /**
+     * Bind function to specific context
+     * @param {Function} fn - function to bind
+     * @param {Object} me - context to bind to
+     * @return {Function} - bound function
+     */
+    Broker.prototype.bind = (fn, me) => {
+        return (...args) => {
+            return fn.apply(me, args);
+        };
+    };
+
+    /**
+     * Add subscription to a channel
+     * @param {String} channel - channel name
+     * @param {Function} fn - callback function
+     * @param {Object} context - execution context
+     * @return {Object} - subscription object with listen/ignore methods
+     */
+    Broker.prototype.add = function(channel, fn, context) {
+        const _this = this;
+
+        if (!context || context === null) context = this;
+        if (!this.channels[channel]) this.channels[channel] = [];
+        
+        const subscription = {
+            event: channel,
+            context: context,
+            callback: fn || function(){}
+        };
+      
+        return {
+            listen() {
+                _this.channels[channel].push(subscription);
+                return this;
+            },
+            ignore() {
+                _this.remove(channel, fn, context);
+                return this;
+            }
+        }.listen();
+    };
+
+    /**
+     * Remove subscriptions from channels
+     * @param {String|Function|Object} channel - channel name, callback function, or context object
+     * @param {Function} cb - optional callback to remove
+     * @param {Object} context - optional context to remove
+     * @return {Broker} - this broker instance
+     */
+    Broker.prototype.remove = function(channel, cb, context) {
+        switch (typeof channel) {
+            case "string":
+                if (typeof cb === "function") {
+                    Broker._delete(this, channel, cb, context);
+                } else if (typeof cb === "undefined") {
+                    Broker._delete(this, channel);
+                }
+                break;
+
+            case "function":
+                for (const id in this.channels) {
+                    Broker._delete(this, id, channel);
+                }
+                break;
+
+            case "undefined":
+                for (const id in this.channels) {
+                    Broker._delete(this, id);
+                }
+                break;
+
+            case "object":
+                for (const id in this.channels) {
+                    Broker._delete(this, id, null, channel);
+                }
+        }
+
+        return this;
+    };
+
+    /**
+     * Fire event on channel (first successful handler wins)
+     * @param {String} channel - channel name
+     * @param {*} data - data to pass to handlers
+     * @return {Promise} - resolves with first successful result
+     */
+    Broker.prototype.fire = function(channel, data) {
+        if (typeof channel !== "string") {
+            return Promise.reject(new Error("Channel must be a string"));
+        }
+
+        if (typeof data === "function") data = undefined;
+
+        const tasks = this._setup(data, channel, channel, this);
+
+        if (tasks.length === 0) {
+            return Promise.resolve(null);
+        }
+
+        return Utils.run.first(tasks)
+            .catch(errors => {
+                if (Utils.isArr(errors)) {
+                    const errorMessages = errors
+                        .filter(x => x !== null && x !== undefined)
+                        .map(x => x.message || String(x));
+                    
+                    const error = new Error(errorMessages.join('; '));
+                    error.originalErrors = errors;
+                    throw error;
+                }
+                throw errors;
+            });
+    };
+        
+    /**
+     * Emit event on channel (all handlers execute in series)
+     * @param {String} channel - channel name
+     * @param {*} data - data to pass to handlers
+     * @param {String} origin - optional origin channel for cascade
+     * @return {Promise} - resolves when all handlers complete
+     */
+    Broker.prototype.emit = function(channel, data, origin) {
+        if (!origin || origin === null) origin = channel;
+
+        if (data && Utils.isFunc(data)) data = undefined;
+
+        if (typeof channel !== "string") {
+            return Promise.reject(new Error("Channel must be a string"));
+        }
+
+        const tasks = this._setup(data, channel, origin, this);
+
+        const emitPromise = Utils.run.series(tasks)
+            .catch(errors => {
+                if (Utils.isArr(errors)) {
+                    const errorMessages = errors
+                        .filter(x => x !== null && x !== undefined)
+                        .map(x => x.message || String(x));
+                    
+                    const error = new Error(errorMessages.join('; '));
+                    error.originalErrors = errors;
+                    throw error;
+                }
+                throw errors;
+            });
+
+        // Handle cascading
+        if (this.cascade) {
+            const channels = channel.split('/');
+            if (channels.length > 1) {
+                const parentChannel = channels.slice(0, -1).join('/');
+                const originToUse = this.fireOrigin ? origin : parentChannel;
+                
+                return emitPromise.then(result => {
+                    return this.emit(parentChannel, data, originToUse)
+                        .then(() => result);
+                });
+            }
+        }
+
+        return emitPromise;
+    };
+
+    /**
+     * Install broker methods on target object
+     * @param {Object} obj - target object
+     * @param {Boolean} forced - whether to override existing properties
+     * @return {Broker} - this broker instance
+     */
+    Broker.prototype.install = function(obj, forced) {
+        if (Utils.isObj(obj)) {
+            for (const key in this) {
+                const value = this[key];
+                
+                if (typeof value === 'function') {
+                    if (forced || !obj[key]) {
+                        obj[key] = value.bind(this);
+                    }
+                }
+            }
+        }
+
+        return this;
+    };
+
+    /**
+     * Remove specific subscriptions from a channel
+     * @param {Object} obj - broker instance
+     * @param {String} channel - channel name
+     * @param {Function} cb - callback to remove
+     * @param {Object} context - context to remove
+     * @return {Array} - remaining subscriptions
+     */
+    Broker._delete = function(obj, channel, cb, context) {
+        if (!obj.channels[channel]) {
+            return [];
+        }
+
+        obj.channels[channel] = obj.channels[channel].filter(subscription => {
+            // Keep subscription if none of the removal criteria match
+            if (cb && subscription.callback === cb) return false;
+            if (context && subscription.context === context) return false;
+            if (!cb && !context && subscription.context === obj) return false;
+            return true;
+        });
+
+        return obj.channels[channel];
+    };
+
+    /**
+     * Setup tasks for event execution
+     * @param {*} data - data to pass to handlers
+     * @param {String} channel - channel name
+     * @param {String} origin - origin channel
+     * @param {Object} context - broker context
+     * @return {Array} - array of task functions
+     */
+    Broker.prototype._setup = function(data, channel, origin, context) {
+        const subscribers = context.channels[channel] || [];
+        
+        return subscribers.map(sub => {
+            return () => {
+                return new Promise((resolve, reject) => {
+                    try {
+                        // Check if callback expects a callback parameter (async style)
+                        if (Utils.hasArgs(sub.callback, 3)) {
+                            sub.callback.call(sub.context, data, origin, (err, result) => {
+                                if (err) {
+                                    reject(err);
+                                } else {
+                                    resolve(result);
+                                }
+                            });
+                        } else {
+                            // Synchronous callback or returns a promise
+                            const result = sub.callback.call(sub.context, data, origin);
+                            
+                            // If result is a promise, use it directly
+                            if (result && typeof result.then === 'function') {
+                                result.then(resolve, reject);
+                            } else {
+                                resolve(result);
+                            }
+                        }
+                    } catch (error) {
+                        reject(error);
+                    }
+                });
+            };
+        });
+    };
+
+    /**
+     * Pipe events from one channel to another
+     * @param {String} src - source channel
+     * @param {String} target - target channel
+     * @param {Broker} broker - broker to pipe to (defaults to this)
+     * @return {Broker} - this broker instance
+     */
+    Broker.prototype.pipe = function(src, target, broker) {
+        // Handle parameter variations
+        if (target instanceof Broker) {
+            broker = target;
+            target = src;
+        }
+
+        if (!broker) {
+            return this.pipe(src, target, this);
+        }
+
+        if (broker === this && src === target) {
+            return this;
+        }
+
+        this.add(src, (...args) => {
+            return broker.fire(target, ...args);
+        });
+
+        return this;
+    };
+
+    /**
+     * Create a channel that only fires once
+     * @param {String} channel - channel name
+     * @param {Function} fn - callback function
+     * @param {Object} context - execution context
+     * @return {Object} - subscription object
+     */
+    Broker.prototype.once = function(channel, fn, context) {
+        const _this = this;
+        let fired = false;
+
+        const onceWrapper = function(...args) {
+            if (!fired) {
+                fired = true;
+                _this.remove(channel, onceWrapper);
+                return fn.apply(this, args);
+            }
+        };
+
+        return this.add(channel, onceWrapper, context);
+    };
+
+    /**
+     * Wait for an event to be fired
+     * @param {String} channel - channel name
+     * @param {Number} timeout - optional timeout in milliseconds
+     * @return {Promise} - resolves when event fires or rejects on timeout
+     */
+    Broker.prototype.waitFor = function(channel, timeout) {
+        return new Promise((resolve, reject) => {
+            let timeoutId;
+
+            const cleanup = () => {
+                if (timeoutId) {
+                    clearTimeout(timeoutId);
+                }
+            };
+
+            // Set up timeout if specified
+            if (timeout && timeout > 0) {
+                timeoutId = setTimeout(() => {
+                    this.remove(channel, handler);
+                    reject(new Error(`Timeout waiting for event '${channel}' after ${timeout}ms`));
+                }, timeout);
+            }
+
+            // Set up event handler
+            const handler = (data, origin) => {
+                cleanup();
+                this.remove(channel, handler);
+                resolve({ data, origin, channel });
+            };
+
+            this.add(channel, handler);
+        });
+    };
+
+    /**
+     * Get all active channels
+     * @return {Array} - array of channel names
+     */
+    Broker.prototype.getChannels = function() {
+        return Object.keys(this.channels).filter(channel => 
+            this.channels[channel] && this.channels[channel].length > 0
+        );
+    };
+
+    /**
+     * Get subscriber count for a channel
+     * @param {String} channel - channel name
+     * @return {Number} - number of subscribers
+     */
+    Broker.prototype.getSubscriberCount = function(channel) {
+        return this.channels[channel] ? this.channels[channel].length : 0;
+    };
+
+    /**
+     * Clear all subscriptions from all channels
+     * @return {Broker} - this broker instance
+     */
+    Broker.prototype.clear = function() {
+        this.channels = {};
+        return this;
+    };
+
+    /**
+     * Create a namespaced broker that prefixes all channel names
+     * @param {String} namespace - namespace prefix
+     * @return {Object} - namespaced broker interface
+     */
+    Broker.prototype.namespace = function(namespace) {
+        const _this = this;
+        const separator = '/';
+
+        return {
+            add: (channel, fn, context) => _this.add(namespace + separator + channel, fn, context),
+            remove: (channel, cb, context) => _this.remove(namespace + separator + channel, cb, context),
+            fire: (channel, data) => _this.fire(namespace + separator + channel, data),
+            emit: (channel, data, origin) => _this.emit(namespace + separator + channel, data, origin),
+            once: (channel, fn, context) => _this.once(namespace + separator + channel, fn, context),
+            waitFor: (channel, timeout) => _this.waitFor(namespace + separator + channel, timeout),
+            pipe: (src, target, broker) => _this.pipe(namespace + separator + src, namespace + separator + target, broker),
+            getSubscriberCount: (channel) => _this.getSubscriberCount(namespace + separator + channel)
+        };
+    };
+
+    return Broker;
+
+})();
+
+const SandBox = (() => {
+    const DELIM = '__';
+
+    return function() {
+        return {
+        // create new API sandbox instance
+        create: ($gui, instance, options, module) => {
+            const sandbox = {
+                id: instance,
+                module: module,
+                options: options || {}
+            };
+
+            /* Attach Broker methods to sandbox api */ 
+            $gui._broker.install(sandbox);
+            sandbox.broker = $gui._broker;
+            sandbox.Event = $gui.Event;
+            /* Add Utils object to sandbox api */
+            sandbox.Utils = $gui.Utils;
+
+             
+            /* jQuery wrappers - converted to Promise-based */
+            sandbox.fetch = (url, settings = {}) => {
+                return new Promise((resolve, reject) => {
+                    const ajaxSettings = {
+                        ...settings,
+                        success: (data, textStatus, jqXHR) => {
+                            resolve({ data, textStatus, jqXHR });
+                        },
+                        error: (jqXHR, textStatus, errorThrown) => {
+                            const error = new Error(textStatus || 'Ajax request failed');
+                            error.jqXHR = jqXHR;
+                            error.textStatus = textStatus;
+                            error.errorThrown = errorThrown;
+                            reject(error);
+                        }
+                    };
+
+                    if (typeof url === 'string') {
+                        ajaxSettings.url = url;
+                    } else if (typeof url === 'object') {
+                        Object.assign(ajaxSettings, url);
+                    }
+
+                    $.ajax(ajaxSettings);
+                });
+            };
+
+            sandbox.data = $.data;
+            sandbox.deferred = () => $.Deferred();
+            sandbox.animation = $.Animation;
+
+            /* Module Namespaces */ 
+            SandBox.Event = $gui.Event;
+            sandbox.ui = {};
+            sandbox.dom = {};
+            sandbox.net = {};
+
+            /**
+             * Search DOM for selector and wrap with both native and jQuery helper methods 
+             *
+             * @param selector {string} - the element to scan DOM for
+             * @param context {object} - optional context object to be applied to returned object wrapper
+             * @return {object} - enhanced jQuery wrapped element DOM object 
+            **/
+            sandbox.query = (selector, context) => {
+                let $el;
+                
+                // check for applied context
+                if (context && context.find) {
+                    // use dom find
+                    $el = context.find(selector);
+                } else {
+                    // wrap with jQuery
+                    $el = $(selector);
+                }
+
+                // Enhanced jQuery object with additional methods
+                const enhancedEl = Object.create($el);
+                
+                // Copy jQuery properties and methods
+                Object.setPrototypeOf(enhancedEl, $el);
+                enhancedEl.length = $el.length;
+
+                // Add custom methods
+                enhancedEl.query = (sel) => {
+                    return sandbox.query(sel, $el);
+                };
+
+                enhancedEl.create = (el) => {
+                    if (!Utils.isStr(el)) {
+                        sandbox.warn('Error :: Element must be type String.');
+                        return false;
+                    }
+
+                    return document.createElement(el);
+                };
+
+                enhancedEl.size = () => {
+                    return parseFloat(
+                        window.getComputedStyle($el[0] || $el).fontSize
+                    );
+                };
+
+                // Promise-based animation helper
+                enhancedEl.animateAsync = (properties, duration, easing) => {
+                    return new Promise((resolve, reject) => {
+                        try {
+                            $el.animate(properties, {
+                                duration: duration,
+                                easing: easing,
+                                complete: () => resolve(enhancedEl),
+                                fail: (error) => reject(error)
+                            });
+                        } catch (error) {
+                            reject(error);
+                        }
+                    });
+                };
+
+                // Promise-based event handling
+                enhancedEl.onAsync = (event, selector) => {
+                    return new Promise((resolve) => {
+                        const handler = (e) => {
+                            $el.off(event, selector, handler);
+                            resolve(e);
+                        };
+                        
+                        if (selector) {
+                            $el.on(event, selector, handler);
+                        } else {
+                            $el.on(event, handler);
+                        }
+                    });
+                };
+
+                return enhancedEl;
+            };
+
+            /**
+             * Assign $ as shorthand query method 
+            **/
+            sandbox.$ = sandbox.query;
+
+            /**
+             * Reference Utils / jQuery each method 
+            **/
+            sandbox.each = $.each;
+
+            /**
+             * Promise-based timeout method 
+             *
+             * @param ms {number} - milliseconds to wait
+             * @param fn {function} - optional function to execute after timeout
+             * @return {Promise} - resolves after the specified time
+            **/
+            sandbox.timeout = (ms, fn) => {
+                return new Promise((resolve) => {
+                    setTimeout(() => {
+                        if (fn && typeof fn === 'function') {
+                            const result = fn();
+                            resolve(result);
+                        } else {
+                            resolve();
+                        }
+                    }, ms);
+                });
+            };
+
+            /**
+             * Promise-based interval method that can be cancelled
+             *
+             * @param fn {function} - function to execute on each interval
+             * @param ms {number} - milliseconds between executions
+             * @param maxRuns {number} - optional maximum number of runs
+             * @return {object} - object with stop method and promise that resolves when done
+            **/
+            sandbox.interval = (fn, ms, maxRuns) => {
+                let intervalId;
+                let runCount = 0;
+                let stopped = false;
+
+                const promise = new Promise((resolve, reject) => {
+                    intervalId = setInterval(() => {
+                        if (stopped) {
+                            clearInterval(intervalId);
+                            resolve(runCount);
+                            return;
+                        }
+
+                        try {
+                            fn();
+                            runCount++;
+
+                            if (maxRuns && runCount >= maxRuns) {
+                                clearInterval(intervalId);
+                                resolve(runCount);
+                            }
+                        } catch (error) {
+                            clearInterval(intervalId);
+                            reject(error);
+                        }
+                    }, ms);
+                });
+
+                return {
+                    stop: () => {
+                        stopped = true;
+                        if (intervalId) {
+                            clearInterval(intervalId);
+                        }
+                    },
+                    promise: promise
+                };
+            };
+
+            /**
+             * Reference $gui core log method 
+             *
+             * @return {function} 
+            **/
+            sandbox.log = (...args) => {
+                return $gui.debug.log(...args);
+            };
+
+            /**
+             * Reference $gui core warn method 
+             *
+             * @return {function}
+            **/
+            sandbox.warn = (...args) => {
+                return $gui.debug.warn(...args);
+            };
+
+            /**
+             * Get location with stored reference to window object 
+             *
+             * @return {object} - specific window reference location 
+            **/
+            sandbox.getLocation = () => {
+                const win = $gui.config.win;
+                return win && win.location;
+            };
+
+            /**
+             * Take function and apply new context when executed 
+             * 
+             * @param fn {function} - the function to swap contexts 
+             * @return {function} - executes fn 
+            **/
+            sandbox.hitch = (fn, ...initialArgs) => {
+                return function(...args) {
+                    const allArgs = initialArgs.concat(args);
+                    return fn.apply(this, allArgs);
+                };
+            };
+
+            /**
+             * Cache the results of a function call with Promise support
+             * 
+             * @param source {function} - the function to execute and store 
+             * @param cache {object} - optional store to keep cached results 
+             * @param refetch {string} - optional key to update in cache
+             * @return {function} - memoized function that returns cached results 
+            **/
+            sandbox.memoize = (source, cache, refetch) => {
+                cache = cache || {};
+
+                return (...args) => {
+                    const key = args.length > 1 ? args.join(DELIM) : String(args[0] || '');
+
+                    if (!(key in cache) || (refetch && cache[key] === refetch)) {
+                        const result = source.apply(source, args);
+                        
+                        // If the result is a promise, cache the promise
+                        if (result && typeof result.then === 'function') {
+                            cache[key] = result.catch(error => {
+                                // Remove failed promises from cache so they can be retried
+                                delete cache[key];
+                                throw error;
+                            });
+                        } else {
+                            cache[key] = result;
+                        }
+                    }
+                    
+                    return cache[key];
+                };
+            };
+
+            /**
+             * Promise-based resource loader
+             *
+             * @param resources {array|string} - URLs or resource objects to load
+             * @param options {object} - loading options
+             * @return {Promise} - resolves when all resources are loaded
+            **/
+            sandbox.loadResources = (resources, options = {}) => {
+                const resourceArray = Array.isArray(resources) ? resources : [resources];
+                
+                const loadPromises = resourceArray.map(resource => {
+                    if (typeof resource === 'string') {
+                        // Determine resource type by extension or explicit type
+                        const url = resource;
+                        const extension = url.split('.').pop().toLowerCase();
+                        
+                        switch (extension) {
+                            case 'css':
+                                return sandbox.loadCSS(url);
+                            case 'js':
+                                return sandbox.loadScript(url);
+                            case 'json':
+                                return sandbox.fetch(url).then(response => response.data);
+                            default:
+                                return sandbox.fetch(url);
+                        }
+                    } else if (resource && resource.type && resource.url) {
+                        switch (resource.type) {
+                            case 'css':
+                                return sandbox.loadCSS(resource.url);
+                            case 'script':
+                                return sandbox.loadScript(resource.url);
+                            case 'json':
+                                return sandbox.fetch(resource.url).then(response => response.data);
+                            default:
+                                return sandbox.fetch(resource.url);
+                        }
+                    }
+                    
+                    return Promise.reject(new Error('Invalid resource format'));
+                });
+
+                return Promise.all(loadPromises);
+            };
+
+            /**
+             * Load CSS file dynamically
+             *
+             * @param url {string} - CSS file URL
+             * @return {Promise} - resolves when CSS is loaded
+            **/
+            sandbox.loadCSS = (url) => {
+                return new Promise((resolve, reject) => {
+                    const link = document.createElement('link');
+                    link.rel = 'stylesheet';
+                    link.type = 'text/css';
+                    link.href = url;
+                    
+                    link.onload = () => resolve(link);
+                    link.onerror = () => reject(new Error(`Failed to load CSS: ${url}`));
+                    
+                    document.head.appendChild(link);
+                });
+            };
+
+            /**
+             * Load JavaScript file dynamically
+             *
+             * @param url {string} - JavaScript file URL
+             * @return {Promise} - resolves when script is loaded
+            **/
+            sandbox.loadScript = (url) => {
+                return new Promise((resolve, reject) => {
+                    const script = document.createElement('script');
+                    script.type = 'text/javascript';
+                    script.src = url;
+                    
+                    script.onload = () => resolve(script);
+                    script.onerror = () => reject(new Error(`Failed to load script: ${url}`));
+                    
+                    document.head.appendChild(script);
+                });
+            };
+
+            /**
+             * Wait for DOM ready state
+             *
+             * @return {Promise} - resolves when DOM is ready
+            **/
+            sandbox.ready = () => {
+                return new Promise((resolve) => {
+                    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+                        resolve();
+                    } else {
+                        $(document).ready(resolve);
+                    }
+                });
+            };
+
+            /**
+             * Wait for window load event
+             *
+             * @return {Promise} - resolves when window is fully loaded
+            **/
+            sandbox.loaded = () => {
+                return new Promise((resolve) => {
+                    if (document.readyState === 'complete') {
+                        resolve();
+                    } else {
+                        $(window).on('load', resolve);
+                    }
+                });
+            };
+
+            return sandbox;
+        }
+    };
+}
+})();
+
+const Event = (() => {
+
+    function Event() {
+        this._observers = new Map();
+        this._onceHandlers = new WeakSet();
+    }
+
+    /**
+     * Determine if current device is mobile based on user agent
+     * @param {string} agent - the user agent string (defaults to navigator.userAgent)
+     * @return {boolean} true if mobile device detected
+     */
+    Event.prototype.isMobile = function (agent) {
+        if (!agent) {
+            agent = navigator.userAgent || '';
+        }
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(agent);
+    };
+
+    /**
+     * Create new custom event with modern GUI support
+     * @param {string} eventName - name of the event
+     * @param {object} options - event configuration
+     * @param {boolean} options.bubbles - whether event should bubble (default: false)
+     * @param {boolean} options.cancelable - whether event is cancelable (default: false)
+     * @param {*} options.detail - optional data payload (default: null)
+     * @return {Event} new custom event
+     */
+    Event.prototype.create = function (eventName, options = {}) {
+        const {
+            bubbles = false,
+            cancelable = false,
+            detail = null
+        } = options;
+
+        // Modern browsers with CustomEvent constructor
+        if (typeof CustomEvent === 'function') {
+            return new CustomEvent(eventName, {
+                bubbles,
+                cancelable,
+                detail
+            });
+        }
+        // Fallback for older browsers
+        else if (document.createEvent) {
+            const customEvent = document.createEvent('CustomEvent');
+            customEvent.initCustomEvent(eventName, bubbles, cancelable, detail);
+            return customEvent;
+        }
+        // IE 8 and below
+        else if (document.createEventObject) {
+            const customEvent = document.createEventObject();
+            customEvent.eventType = eventName;
+            customEvent.bubbles = bubbles;
+            customEvent.cancelable = cancelable;
+            customEvent.detail = detail;
+            return customEvent;
+        }
+        // Ultimate fallback
+        else {
+            return {
+                type: eventName,
+                eventName: eventName,
+                bubbles: bubbles,
+                cancelable: cancelable,
+                detail: detail,
+                timeStamp: Date.now()
+            };
+        }
+    };
+
+    /**
+     * Fire event on element with Promise support
+     * @param {Element} elem - the DOM element
+     * @param {Event|string} event - the event object or event name
+     * @param {object} detail - optional event detail data
+     * @return {Promise<boolean>} resolves with dispatch result
+     */
+    Event.prototype.fire = function (elem, event, detail) {
+        return new Promise((resolve, reject) => {
+            try {
+                if (!elem) {
+                    reject(new Error('Element is required'));
+                    return;
+                }
+
+                let eventObj;
+
+                // If event is a string, create the event
+                if (typeof event === 'string') {
+                    eventObj = this.create(event, { detail });
+                } else {
+                    eventObj = event;
+                }
+
+                if (!eventObj) {
+                    reject(new Error('Invalid event'));
+                    return;
+                }
+
+                // Modern browsers
+                if (elem.dispatchEvent) {
+                    const result = elem.dispatchEvent(eventObj);
+                    resolve(result);
+                }
+                // IE 8 and below
+                else if (elem.fireEvent && eventObj.eventType) {
+                    const result = elem.fireEvent('on' + eventObj.eventType, eventObj);
+                    resolve(result);
+                }
+                // Direct property access fallback
+                else if (eventObj.type || eventObj.eventName) {
+                    const eventName = eventObj.type || eventObj.eventName;
+                    if (elem[eventName]) {
+                        elem[eventName]();
+                        resolve(true);
+                    } else if (elem['on' + eventName]) {
+                        elem['on' + eventName]();
+                        resolve(true);
+                    } else {
+                        resolve(false);
+                    }
+                }
+                else {
+                    resolve(false);
+                }
+            } catch (error) {
+                reject(error);
+            }
+        });
+    };
+
+    /**
+     * Add event listener with Promise-based handling
+     * @param {Element} elem - the DOM element
+     * @param {string} eventName - event name (without 'on' prefix)
+     * @param {function} handler - event handler function
+     * @param {object} options - event listener options
+     * @return {Promise<object>} resolves with removal function
+     */
+    Event.prototype.add = function (elem, eventName, handler, options = {}) {
+        return new Promise((resolve, reject) => {
+            try {
+                if (!elem || !eventName || !handler) {
+                    reject(new Error('Element, event name, and handler are required'));
+                    return;
+                }
+
+                const { passive = false, once = false, capture = false } = options;
+
+                let wrappedHandler = handler;
+
+                // Handle once option manually for older browsers
+                if (once && !elem.addEventListener) {
+                    wrappedHandler = function (...args) {
+                        const result = handler.apply(this, args);
+                        Event.prototype.remove.call(this, elem, eventName, wrappedHandler);
+                        return result;
+                    };
+                    this._onceHandlers.add(wrappedHandler);
+                }
+
+                // Modern browsers
+                if (elem.addEventListener) {
+                    const listenerOptions = typeof options === 'boolean' ? capture : {
+                        passive,
+                        once,
+                        capture
+                    };
+
+                    elem.addEventListener(eventName, wrappedHandler, listenerOptions);
+                }
+                // IE 8 and below
+                else if (elem.attachEvent) {
+                    elem.attachEvent('on' + eventName, wrappedHandler);
+                }
+                // Direct property assignment fallback
+                else {
+                    elem['on' + eventName] = wrappedHandler;
+                }
+
+                // Store observer for tracking
+                const observerKey = `${eventName}_${handler.toString()}`;
+                if (!this._observers.has(elem)) {
+                    this._observers.set(elem, new Map());
+                }
+                this._observers.get(elem).set(observerKey, { handler: wrappedHandler, eventName });
+
+                // Return removal function
+                resolve({
+                    remove: () => this.remove(elem, eventName, wrappedHandler),
+                    element: elem,
+                    eventName: eventName,
+                    handler: wrappedHandler
+                });
+
+            } catch (error) {
+                reject(error);
+            }
+        });
+    };
+
+    /**
+     * Remove event listener
+     * @param {Element} elem - the DOM element
+     * @param {string} eventName - event name (without 'on' prefix)
+     * @param {function} handler - event handler function to remove
+     * @return {Promise<boolean>} resolves with success status
+     */
+    Event.prototype.remove = function (elem, eventName, handler) {
+        return new Promise((resolve) => {
+            try {
+                if (!elem || !eventName) {
+                    resolve(false);
+                    return;
+                }
+
+                // Modern browsers
+                if (elem.removeEventListener) {
+                    elem.removeEventListener(eventName, handler, false);
+                }
+                // IE 8 and below
+                else if (elem.detachEvent) {
+                    elem.detachEvent('on' + eventName, handler);
+                }
+                // Direct property removal fallback
+                else {
+                    delete elem['on' + eventName];
+                }
+
+                // Clean up tracking
+                if (this._observers.has(elem)) {
+                    const elemObservers = this._observers.get(elem);
+                    const observerKey = `${eventName}_${handler.toString()}`;
+                    elemObservers.delete(observerKey);
+
+                    if (elemObservers.size === 0) {
+                        this._observers.delete(elem);
+                    }
+                }
+
+                resolve(true);
+
+            } catch (error) {
+                resolve(false);
+            }
+        });
+    };
+
+    /**
+     * Add event listener that only fires once
+     * @param {Element} elem - the DOM element
+     * @param {string} eventName - event name
+     * @param {function} handler - event handler function
+     * @return {Promise<object>} resolves with event data when fired
+     */
+    Event.prototype.once = function (elem, eventName, handler) {
+        return new Promise((resolve, reject) => {
+            const onceHandler = (event) => {
+                this.remove(elem, eventName, onceHandler)
+                    .then(() => {
+                        try {
+                            const result = handler ? handler(event) : event;
+                            resolve(result);
+                        } catch (error) {
+                            reject(error);
+                        }
+                    });
+            };
+
+            this.add(elem, eventName, onceHandler)
+                .catch(reject);
+        });
+    };
+
+    /**
+     * Wait for an event to occur
+     * @param {Element} elem - the DOM element
+     * @param {string} eventName - event name to wait for
+     * @param {number} timeout - optional timeout in milliseconds
+     * @return {Promise<Event>} resolves with event when fired
+     */
+    Event.prototype.waitFor = function (elem, eventName, timeout) {
+        return new Promise((resolve, reject) => {
+            let timeoutId;
+
+            if (timeout && timeout > 0) {
+                timeoutId = setTimeout(() => {
+                    reject(new Error(`Timeout waiting for '${eventName}' event after ${timeout}ms`));
+                }, timeout);
+            }
+
+            this.once(elem, eventName, (event) => {
+                if (timeoutId) {
+                    clearTimeout(timeoutId);
+                }
+                resolve(event);
+            }).catch(reject);
+        });
+    };
+
+    /**
+     * Get viewport inner height cross-browser
+     * @return {number} viewport height in pixels
+     */
+    Event.prototype.innerHeight = function () {
+        // Modern browsers
+        if (typeof window.innerHeight === 'number') {
+            return window.innerHeight;
+        }
+        // IE 6-8 in standards mode
+        else if (document.documentElement && typeof document.documentElement.clientHeight === 'number') {
+            return document.documentElement.clientHeight;
+        }
+        // IE 6 in quirks mode
+        else if (document.body && typeof document.body.clientHeight === 'number') {
+            return document.body.clientHeight;
+        }
+
+        return 0;
+    };
+
+    /**
+     * Get viewport inner width cross-browser
+     * @return {number} viewport width in pixels
+     */
+    Event.prototype.innerWidth = function () {
+        // Modern browsers
+        if (typeof window.innerWidth === 'number') {
+            return window.innerWidth;
+        }
+        // IE 6-8 in standards mode
+        else if (document.documentElement && typeof document.documentElement.clientWidth === 'number') {
+            return document.documentElement.clientWidth;
+        }
+        // IE 6 in quirks mode
+        else if (document.body && typeof document.body.clientWidth === 'number') {
+            return document.body.clientWidth;
+        }
+
+        return 0;
+    };
+
+    /**
+     * Get element's computed style property
+     * @param {Element} elem - the DOM element
+     * @param {string} property - CSS property name
+     * @return {Promise<string>} resolves with computed style value
+     */
+    Event.prototype.getComputedStyle = function (elem, property) {
+        return new Promise((resolve, reject) => {
+            try {
+                if (!elem) {
+                    reject(new Error('Element is required'));
+                    return;
+                }
+
+                // Modern browsers
+                if (window.getComputedStyle) {
+                    const computed = window.getComputedStyle(elem);
+                    resolve(computed.getPropertyValue(property) || computed[property]);
+                }
+                // IE 8 and below
+                else if (elem.currentStyle) {
+                    resolve(elem.currentStyle[property]);
+                }
+                else {
+                    resolve(elem.style[property] || '');
+                }
+            } catch (error) {
+                reject(error);
+            }
+        });
+    };
+
+    /**
+     * Animate element property changes
+     * @param {Element} elem - the DOM element
+     * @param {object} properties - CSS properties to animate
+     * @param {number} duration - animation duration in milliseconds
+     * @param {string} easing - easing function (default: 'ease')
+     * @return {Promise} resolves when animation completes
+     */
+    Event.prototype.animate = function (elem, properties, duration = 300, easing = 'ease') {
+        return new Promise((resolve, reject) => {
+            try {
+                if (!elem) {
+                    reject(new Error('Element is required'));
+                    return;
+                }
+
+                // Check for CSS Transitions support
+                const supportsTransitions = 'transition' in elem.style ||
+                    'webkitTransition' in elem.style ||
+                    'mozTransition' in elem.style ||
+                    'oTransition' in elem.style;
+
+                if (supportsTransitions) {
+                    // Set up transition
+                    const transitionProperty = Object.keys(properties).join(', ');
+                    elem.style.transition = `${transitionProperty} ${duration}ms ${easing}`;
+
+                    // Apply properties
+                    Object.keys(properties).forEach(prop => {
+                        elem.style[prop] = properties[prop];
+                    });
+
+                    // Wait for transition to complete
+                    const cleanup = () => {
+                        elem.style.transition = '';
+                        elem.removeEventListener('transitionend', onTransitionEnd);
+                        elem.removeEventListener('transitioncancel', onTransitionCancel);
+                    };
+
+                    const onTransitionEnd = () => {
+                        cleanup();
+                        resolve(elem);
+                    };
+
+                    const onTransitionCancel = () => {
+                        cleanup();
+                        reject(new Error('Animation was cancelled'));
+                    };
+
+                    elem.addEventListener('transitionend', onTransitionEnd, { once: true });
+                    elem.addEventListener('transitioncancel', onTransitionCancel, { once: true });
+
+                    // Fallback timeout
+                    setTimeout(() => {
+                        cleanup();
+                        resolve(elem);
+                    }, duration + 50);
+
+                } else {
+                    // Fallback for browsers without transition support
+                    Object.keys(properties).forEach(prop => {
+                        elem.style[prop] = properties[prop];
+                    });
+
+                    setTimeout(() => resolve(elem), duration);
+                }
+
+            } catch (error) {
+                reject(error);
+            }
+        });
+    };
+
+    /**
+     * Remove all event listeners from an element
+     * @param {Element} elem - the DOM element
+     * @return {Promise<boolean>} resolves when all listeners are removed
+     */
+    Event.prototype.removeAll = function (elem) {
+        return new Promise((resolve) => {
+            try {
+                if (this._observers.has(elem)) {
+                    const elemObservers = this._observers.get(elem);
+                    const removePromises = [];
+
+                    elemObservers.forEach((observer) => {
+                        removePromises.push(
+                            this.remove(elem, observer.eventName, observer.handler)
+                        );
+                    });
+
+                    Promise.all(removePromises)
+                        .then(() => resolve(true))
+                        .catch(() => resolve(false));
+                } else {
+                    resolve(true);
+                }
+            } catch (error) {
+                resolve(false);
+            }
+        });
+    };
+
+    Event.on = (elem, event, handler, options) => Event.add(elem, event, handler, options);
+    Event.off = (elem, event, handler) => Event.remove(elem, event, handler);
+    Event.once = (elem, event, handler) => Event.once(elem, event, handler);
+    Event.fire = (elem, event, detail) => Event.fire(elem, event, detail);
+    Event.waitFor = (elem, event, timeout) => Event.waitFor(elem, event, timeout);
+    Event.animate = (elem, props, duration, easing) => Event.animate(elem, props, duration, easing);
+
+    return Event;
+
+})();
+
+const FEAR = (($) => {
+
+    // Make sure we have jQuery
+    if (typeof $ === 'undefined' || $ === null) {
+        throw new Error('FEAR GUI requires jQuery library.');
+    }
+
+    // GUI Constructor
+    function GUI() {
+        // Default configuration
+        this.config = {
+            logLevel: 0,
+            name: 'FEAR_GUI',
+            mode: 'single',
+            version: '1.0.1',
+            jquery: true,
+            animations: false
+        };
+
+        // Private objects & arrays for tracking
+        this._modules = {};
+        this._plugins = [];
+        this._instances = {};
+        this._sandboxes = {};
+        this._running = {};
+        this._imports = [];
+
+        // Add broker and router to core object
+        this._broker = new Broker(this);
+        this._event = new Event();
+
+
+        // Public access to classes
+        this.Broker = Broker;
+        this.Event = new Event();
+          this.Event.on = (elem, event, handler, options) => this.Event.add(elem, event, handler, options);
+        this.Event.off = (elem, event, handler) => this.Event.remove(elem, event, handler);
+        // Dynamic async module loading
+        this.attach = async (imports) => {
+            console.log('Dynamic async module loading.');
+            console.log('Imports:', imports);
+        };
+
+        // Configuration method
+        this.configure = (options) => {
+            if (options && Utils.isObj(options)) {
+                // Set custom config options
+                this.config = Utils.merge(this.config, options);
+
+                // Set logging verbosity
+                this.debug.level = this.config.logLevel || 0;
+            }
+        };
+
+        this.debug.warn('GUI = ', this);
+        return this;
+    }
+
+    // console log wrapper
+    GUI.prototype.debug = {
+        level: 0,
+        history: [],
+        timeout: 5000,
+
+        /**
+         * Adds a warning message to the console.
+         * @param {String} out the message
+         */
+        warn(out) {
+            if (this.level < 2) {
+                const args = ['WARN:', ...arguments];
+
+                if (typeof window !== 'undefined' && window.console?.warn) {
+                    this._logger("warn", args);
+                } else if (window.console?.log) {
+                    this._logger("log", args);
+                } else if (window.opera?.postError) {
+                    window.opera.postError(`WARNING: ${out}`);
+                }
+            }
+        },
+
+        /**
+         * Adds a message to the console.
+         * @param {String} out the message
+         */
+        log(out) {
+            if (this.level < 1) {
+                if (window.console?.log) {
+                    const args = ['Debug:', ...arguments];
+                    this._logger("log", args);
+                } else if (window.opera?.postError) {
+                    window.opera.postError(`DEBUG: ${out}`);
+                }
+            }
+        },
+
+        _logger(type, arr) {
+            this.history.push({ type, args: arr });
+
+            if (console[type]?.apply) {
+                console[type].apply(console, arr);
+            } else {
+                console[type](arr);
+            }
+        },
+
+        _stackTrace() {
+            this.log(this.history);
+        }
+    };
+
+    /* Public Methods */
+    /******************/
+
+    /** 
+     * Create new GUI module 
+     *
+     * @param id {string} - module identifier
+     * @param creator {function}  logic to execute inside module namespace
+     * @param options {object} - optional object of extra parameters that will be passed to load() 
+     * @return this {object}
+    **/
+    GUI.prototype.create = function(id, creator, options = {}) {
+        // Validate input parameters
+        const error = Utils.isType("string", id, "module ID") ||
+            Utils.isType("function", creator, "creator") ||
+            Utils.isType("object", options, "option parameter");
+
+        if (error) {
+            this.debug.warn(`could not register module '${id}': ${error}`);
+            return this;
+        }
+
+        // Check if module is already registered
+        if (this._modules[id]) {
+            this.debug.log(`module ${id} was already registered`);
+            return this;
+        }
+
+        // Register the module
+        this._modules[id] = {
+            id,
+            creator,
+            options
+        };
+
+        return this;
+    };
+
+    /** 
+     * Starts module with new sandbox instance 
+     *
+     * @param moduleId {string} - module name or identifier
+     * @param opt {object} - optional options object
+     * @return Promise - resolves when module is started
+    **/
+    GUI.prototype.start = function(moduleId, opt = {}) {
+        // Handle different parameter combinations
+        if (arguments.length === 0) {
+            return this._startAll();
+        }
+
+        if (moduleId instanceof Array) {
+            return this._startAll(moduleId);
+        }
+
+        if (typeof moduleId === "function") {
+            return this._startAll();
+        }
+
+        const id = opt.instanceId || moduleId;
+
+        // Validate parameters
+        const error = Utils.isType("string", moduleId, "module ID") ||
+            Utils.isType("object", opt, "second parameter") ||
+            (!this._modules[moduleId] ? "module doesn't exist" : undefined);
+
+        if (error) {
+            return Promise.reject(new Error(error));
+        }
+
+        if (this._running[id] === true) {
+            return Promise.reject(new Error("module was already started"));
+        }
+
+        // Boot and create instance
+        return this.boot()
+            .then(() => this._createInstance(moduleId, opt))
+            .then(({ instance, options }) => {
+                // Check if load method expects a callback or returns a promise
+                if (instance.load && typeof instance.load === 'function') {
+                    const loadResult = instance.load(options);
+                    
+                    // If load returns a promise, use it
+                    if (loadResult && typeof loadResult.then === 'function') {
+                        return loadResult.then(() => {
+                            this._running[id] = true;
+                        });
+                    } else {
+                        // Synchronous load
+                        this._running[id] = true;
+                        return Promise.resolve();
+                    }
+                } else {
+                    this._running[id] = true;
+                    return Promise.resolve();
+                }
+            })
+            .catch(err => {
+                this.debug.warn(err);
+                throw new Error("could not start module: " + err.message);
+            });
+    };
+
+    /** 
+     * Loads plugin to Sandbox or Core classes 
+     *
+     * @param plugin {function} - method with plugin logic 
+     * @param opt {object} - optional options object to be accessed in plugin 
+     * @return this {object}
+    **/
+    GUI.prototype.use = function(plugin, opt) {
+        if (Utils.isArr(plugin)) {
+            // Handle array of plugins
+            plugin.forEach(p => {
+                if (typeof p === "function") {
+                    this.use(p);
+                } else if (typeof p === "object") {
+                    this.use(p.plugin, p.options);
+                }
+            });
+        } else {
+            // Must be a function
+            if (!Utils.isFunc(plugin)) {
+                return this;
+            }
+
+            // Add to _plugins array
+            this._plugins.push({
+                creator: plugin,
+                options: opt
+            });
+        }
+
+        return this;
+    };
+
+    /** 
+     * Stops all running instances 
+     *
+     * @param id {string} - module identifier 
+     * @return Promise - resolves when module is stopped
+    **/
+    GUI.prototype.stop = function (id) {
+        if (arguments.length === 0 || typeof id === "function") {
+            const moduleIds = Object.keys(this._instances);
+            return this._run.all(moduleIds.map(moduleId => () => this.stop(moduleId)));
+        }
+
+        const instance = this._instances[id];
+        
+        if (!instance) {
+            return Promise.resolve();
+        }
+
+        // remove instance from instances cache
+        delete this._instances[id];
+
+        // disable any events registered by module
+        this._broker.off(instance);
+
+        // run unload method in stopped modules
+        return this._runSandboxPlugins('unload', this._sandboxes[id])
+            .then(() => {
+                if (instance.unload && typeof instance.unload === 'function') {
+                    const unloadResult = instance.unload();
+                    
+                    // If unload returns a promise, use it
+                    if (unloadResult && typeof unloadResult.then === 'function') {
+                        return unloadResult;
+                    }
+                }
+                return Promise.resolve();
+            })
+            .then(() => {
+                delete this._running[id];
+            });
+    };
+
+    /** 
+     * Register jQuery plugins to $ nameSpace 
+     *
+     * @param plugin {object} - plugin object with all logic 
+     * @param module {string} - identifier for jQuery plugin 
+     * @return {function} - initialized jQuery plugin 
+    **/
+    GUI.prototype.plugin = function(plugin, module) {
+        if (plugin.fn && Utils.isFunc(plugin.fn)) {
+            $.fn[module.toLowerCase()] = function (options) {
+                return new plugin.fn(this, options);
+            };
+        } else {
+            this.debug.log('Error :: Missing ' + plugin + ' fn() method.');
+        }
+    };
+
+    /** 
+     * Load single or all available core plugins 
+     *
+     * @return Promise - resolves when plugins are loaded
+    **/
+    GUI.prototype.boot = function() {
+        const core = this;
+
+        const tasks = this._plugins
+            .filter(plugin => plugin.booted !== true)
+            .map(plugin => () => {
+                return new Promise((resolve, reject) => {
+                    try {
+                        // Check if creator expects a callback (3 parameters: core, options, next)
+                        if (Utils.hasArgs(plugin.creator, 3)) {
+                            plugin.creator(core, plugin.options, (err) => {
+                                if (err) {
+                                    reject(err);
+                                } else {
+                                    plugin.booted = true;
+                                    resolve();
+                                }
+                            });
+                        } else {
+                            plugin.plugin = plugin.creator(core, plugin.options);
+                            plugin.booted = true;
+                            resolve();
+                        }
+                    } catch (err) {
+                        reject(err);
+                    }
+                });
+            });
+
+        return this._run.series(tasks);
+    };
+
+    /* Private Methods */
+    /*******************/
+    /* Run methods for async loading of modules and plugins */
+    GUI.prototype._run = {
+        /**
+        * Run all modules one after another 
+        *
+        * @param args {array} - arguments list 
+        * @return Promise
+        **/
+        all: (args = []) => {
+            const tasks = args.map(a => () => Promise.resolve(a));
+            return this.parallel(tasks);
+        },
+
+        /**
+        * Run asynchronous tasks in parallel 
+        *
+        * @param tasks {array} - array of functions that return promises
+        * @return Promise
+        **/
+        parallel: (tasks = []) => {
+            if (tasks.length === 0) {
+                return Promise.resolve([]);
+            }
+
+            const promises = tasks.map((task, index) => {
+                try {
+                    const result = task();
+                    // Ensure it's a promise
+                    return Promise.resolve(result).catch(err => ({ error: err, index }));
+                } catch (err) {
+                    return Promise.resolve({ error: err, index });
+                }
+            });
+
+            return Promise.all(promises)
+                .then(results => {
+                    const errors = [];
+                    const validResults = [];
+                    
+                    results.forEach((result, index) => {
+                        if (result && result.error) {
+                            errors[index] = result.error;
+                        } else {
+                            validResults[index] = result;
+                        }
+                    });
+
+                    if (errors.some(err => err !== undefined)) {
+                        const error = new Error('Some tasks failed');
+                        error.errors = errors;
+                        error.results = validResults;
+                        throw error;
+                    }
+
+                    return validResults;
+                });
+        },
+
+        /**
+        * Run asynchronous tasks one after another 
+        *
+        * @param tasks {array} - array of functions that return promises
+        * @return Promise
+        **/
+        series: (tasks = []) => {
+            if (tasks.length === 0) {
+                return Promise.resolve([]);
+            }
+
+            return tasks.reduce((promise, task, index) => {
+                return promise.then(results => {
+                    try {
+                        const result = task();
+                        return Promise.resolve(result)
+                            .then(taskResult => [...results, taskResult])
+                            .catch(err => {
+                                const error = new Error(`Task ${index} failed`);
+                                error.originalError = err;
+                                error.taskIndex = index;
+                                throw error;
+                            });
+                    } catch (err) {
+                        const error = new Error(`Task ${index} failed`);
+                        error.originalError = err;
+                        error.taskIndex = index;
+                        throw error;
+                    }
+                });
+            }, Promise.resolve([]));
+        },
+
+        /**
+        * Run first task that succeeds
+        *
+        * @param tasks {array} - array of functions that return promises
+        * @return Promise
+        **/
+        first: (tasks = []) => {
+            if (tasks.length === 0) {
+                return Promise.reject(new Error('No tasks provided'));
+            }
+
+            return tasks.reduce((promise, task, index) => {
+                return promise.catch(() => {
+                    try {
+                        return Promise.resolve(task());
+                    } catch (err) {
+                        if (index === tasks.length - 1) {
+                            throw err;
+                        }
+                        return Promise.reject(err);
+                    }
+                });
+            }, Promise.reject());
+        },
+
+        /**
+        * Run asynchronous tasks one after another
+        * and pass the result to the next task
+        *
+        * @param tasks {array} - array of functions that accept previous result and return promises
+        * @return Promise
+        **/
+        waterfall: (tasks = []) => {
+            if (tasks.length === 0) {
+                return Promise.resolve();
+            }
+
+            return tasks.reduce((promise, task) => {
+                return promise.then(result => {
+                    try {
+                        return Promise.resolve(task(result));
+                    } catch (err) {
+                        return Promise.reject(err);
+                    }
+                });
+            }, Promise.resolve());
+        }
+    };
+
+    /** 
+      * Called when starting all modules
+      *
+      * @param mods {array} - array of module IDs to start 
+      * @return Promise
+    **/
+    GUI.prototype._startAll = function(mods) {
+        // start all stored modules
+        if (!mods || mods === null) {
+            mods = Object.keys(this._modules);
+        }
+
+        const startTasks = mods.map(moduleId => () => 
+            this.start(moduleId, this._modules[moduleId].options)
+                .catch(err => {
+                    // Store error with module ID for reporting
+                    const moduleError = new Error(`Failed to start module '${moduleId}': ${err.message}`);
+                    moduleError.moduleId = moduleId;
+                    moduleError.originalError = err;
+                    throw moduleError;
+                })
+        );
+
+        return this._run.parallel(startTasks)
+            .catch(error => {
+                if (error.errors) {
+                    const moduleErrors = {};
+                    const failedModules = [];
+                    
+                    error.errors.forEach((err, index) => {
+                        if (err) {
+                            const moduleId = mods[index];
+                            moduleErrors[moduleId] = err;
+                            failedModules.push(`'${moduleId}'`);
+                        }
+                    });
+
+                    const aggregatedError = new Error(`errors occurred in the following modules: ${failedModules.join(', ')}`);
+                    aggregatedError.moduleErrors = moduleErrors;
+                    throw aggregatedError;
+                }
+                throw error;
+            });
+    };
+
+    /** 
+      * Create new sandbox instance and attach to module 
+      *
+      * @param moduleId {string} - the module to create sandbox instance for 
+      * @param o {object} - options object 
+      * @return Promise - resolves with {instance, options}
+    **/
+    GUI.prototype._createInstance = function(moduleId, o) {
+        const { options: opt } = o;
+        const id = o.instanceId || moduleId;
+        const module = this._modules[moduleId];
+
+        // Return existing instance if it exists
+        if (this._instances[id]) {
+            return Promise.resolve({ instance: this._instances[id], options: opt });
+        }
+
+        // Merge options with module defaults (module options have lower priority)
+        const iOpts = {
+            ...module.options,
+            ...opt
+        };
+
+        // Create new API Sandbox
+        const sb = SandBox().create(this, id, iOpts, moduleId);
+
+        // Add config object if available
+        if (this.config) {
+            sb.config = this.config;
+        }
+
+        // Run sandboxed instance load method
+        return this._runSandboxPlugins('load', sb)
+            .then(() => {
+                const instance = new module.creator(sb);
+
+                // Check if module has required methods
+                if (typeof instance.load !== "function") {
+                    // Check if it's a jQuery plugin
+                    if (instance.fn && typeof instance.fn === 'function') {
+                        this.plugin(instance, id);
+                        return { instance, options: iOpts };
+                    }
+                    throw new Error("module has no 'load' or 'fn' method");
+                }
+
+                // Store instance and sandbox
+                this._instances[id] = instance;
+                this._sandboxes[id] = sb;
+
+                return { instance, options: iOpts };
+            });
+    };
+
+    /** 
+      * Sets up needed tasks for module initializations 
+      *
+      * @param ev {string} - check module for load / unload methods 
+      * @param sb {object} - the sandbox instance 
+      * @return Promise
+    **/
+    GUI.prototype._runSandboxPlugins = function(ev, sb) {
+        // Filter plugins that have the specified event handler
+        const tasks = this._plugins
+            .filter(plugin => typeof plugin.plugin?.[ev] === "function")
+            .map(plugin => () => {
+                const eventHandler = plugin.plugin[ev];
+                
+                return new Promise((resolve, reject) => {
+                    try {
+                        // Check if the handler expects a callback (3 parameters: sb, options, next)
+                        if (Utils.hasArgs(eventHandler, 3)) {
+                            eventHandler(sb, plugin.options, (err) => {
+                                if (err) {
+                                    reject(err);
+                                } else {
+                                    resolve();
+                                }
+                            });
+                        } else {
+                            // Handler doesn't use callback, call it synchronously
+                            const result = eventHandler(sb, plugin.options);
+                            
+                            // If handler returns a promise, use it
+                            if (result && typeof result.then === 'function') {
+                                result.then(resolve, reject);
+                            } else {
+                                resolve();
+                            }
+                        }
+                    } catch (err) {
+                        reject(err);
+                    }
+                });
+            });
+
+        return this._run.series(tasks);
+    };
+
+    return GUI;
+
+})(jQuery);
+
+GUI = FEAR;
+
+window.FEAR = FEAR;
+window.Broker = Broker;
+window.Utils = Utils;
+window.SandBox = SandBox;
+
+(function($) {
+  
+  var $GUI = new FEAR();
+
+  // Main FEAR function
+  $.FEAR = function() {
+    var argc = Array.prototype.slice.call(arguments);
+    var options = argc[0] || null;
+    
+    if (options && options !== null) {
+      if (Utils.isArr(options)) {
+        $GUI.attach(options);
+      } else if (Utils.isObj(options)) {
+        $GUI.configure(options);
+      }
+    }
+    
+    return $GUI;
+  };
+
+  // jQuery plugin method
+  $.fn.FEAR = function(options) {
+    return this.each(function() {
+      $(this);
+      
+      if (!$.data(this, 'fear')) {
+        $.data(this, 'fear', new $.FEAR().create(this, options));
+      } else {
+        return new $.FEAR().create(this, options);
+      }
+    });
+  };
+
+})(
+  // Dependency injection - works with different module systems
+  typeof jQuery !== 'undefined' ? jQuery : 
+  typeof $ !== 'undefined' ? $ : 
+  (function() { throw new Error('jQuery is required'); })(),
+);
