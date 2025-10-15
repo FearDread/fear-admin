@@ -188,6 +188,10 @@ const FearServer = (() => {
     }
   };
 
+  FearServer.prototype.getLogger = function() {
+    return this.fear.getLogger();
+  }
+
   // Getter methods
   FearServer.prototype.getFear = function() {
     return this.fear;
