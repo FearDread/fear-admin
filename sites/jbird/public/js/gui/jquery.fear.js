@@ -1,3 +1,4 @@
+
 const utils = {
     /* jQuery $.extend pointer */
     merge: $.extend,
@@ -1106,7 +1107,7 @@ const SandBox = function() {
 const GUI = function() {
   const gui = this;
 
-  this.config = { logLevel: 0, name: 'FEAR_GUI', version: '2.0.0' };
+  this.config = { logLevel: 0, name: 'FEAR$1_GUI', version: '2.0.0' };
 
   this.debug = {
     history: [],
@@ -1311,7 +1312,7 @@ const GUI = function() {
 
   this.plugin = function(plugin, module) {
     if (plugin.fn && utils.isFunc(plugin.fn)) {
-      $.fn[module.toLowerCase()] = function(options) {
+      $$1.fn[module.toLowerCase()] = function(options) {
         return new plugin.fn(this, options);
       };
     } else {
@@ -1363,6 +1364,7 @@ const GUI = function() {
 
 const createGUI = () => new GUI();
 const FEAR$1 = new GUI();
+var FEAR$2 = { FEAR: FEAR$1, createGUI };
 
 /**
  * Router Plugin
@@ -1418,7 +1420,7 @@ const Router = function(options = {}) {
   };
 
   // Merge options with defaults
-  this.options = FEAR.utils.merge({}, DEFAULTS, options);
+  this.options = FEAR$1.utils.merge({}, DEFAULTS, options);
 
   // Private state
   this.routes = this.options.routes;
@@ -1481,7 +1483,7 @@ const Router = function(options = {}) {
 
     this.isNavigating = true;
 
-    return FEAR.broker.emit('route:start', { path: routeName })
+    return FEAR$1.broker.emit('route:start', { path: routeName })
       .then(() => {
         if (this.options.callbacks.beforeRouteChange) {
           return Promise.resolve(
@@ -1512,7 +1514,7 @@ const Router = function(options = {}) {
       })
       .then(() => {
         console.log(`Route "${routeName}" loaded successfully`);
-        return FEAR.broker.emit('route:complete', { path: routeName });
+        return FEAR$1.broker.emit('route:complete', { path: routeName });
       })
       .catch(error => {
         this._handleError(`Failed to load route "${routeName}": ${error.message}`, error);
@@ -1527,12 +1529,12 @@ const Router = function(options = {}) {
   this._fetchRoute = function(route) {
     const cached = this._getCachedRoute(route.name);
     if (cached) {
-      FEAR.broker.emit('cache:hit');
+      FEAR$1.broker.emit('cache:hit');
       route.html = cached;
       return this._renderRoute(route);
     }
 
-    FEAR.broker.emit('cache:miss');
+    FEAR$1.broker.emit('cache:miss');
 
     // Check if already loading
     if (this.loadingPromises.has(route.name)) {
@@ -1608,7 +1610,7 @@ const Router = function(options = {}) {
             }
           })
           .then(() => {
-            return FEAR.broker.emit('router:rendered', { route: route.name });
+            return FEAR$1.broker.emit('router:rendered', { route: route.name });
           })
           .then(() => resolve())
           .catch(error => {
@@ -1705,7 +1707,7 @@ const Router = function(options = {}) {
 
   this._initComponents = function() {
     // Re-initialize components in the new content
-    FEAR.broker.emit('components:init', { container: this.$container });
+    FEAR$1.broker.emit('components:init', { container: this.$container });
   };
 
   this._handleAccessibility = function(route) {
@@ -1738,7 +1740,7 @@ const Router = function(options = {}) {
 
   this._handleError = function(message, error) {
     console.error(message, error);
-    FEAR.broker.emit('error', { message, error });
+    FEAR$1.broker.emit('error', { message, error });
 
     if (this.options.callbacks.onError) {
       this.options.callbacks.onError.call(this, error);
@@ -1782,14 +1784,14 @@ const Router = function(options = {}) {
 
     // Bind event listeners
     if (this.options.hashNavigation) {
-      $(window).on('hashchange.fear-router', this._handleHashChange);
+      $(window).on('hashchange.FEAR$1-router', this._handleHashChange);
     }
 
     if (this.options.pushState) {
-      $(window).on('popstate.fear-router', this._handlePopState);
+      $(window).on('popstate.FEAR$1-router', this._handlePopState);
     }
 
-    $(document).on('click.fear-router', 'a[href^="#"]', this._handleLinkClick);
+    $(document).on('click.FEAR$1-router', 'a[href^="#"]', this._handleLinkClick);
 
     this.initialized = true;
 
@@ -1802,7 +1804,7 @@ const Router = function(options = {}) {
     }
 
     console.log('Router initialized');
-    FEAR.broker.emit('router:ready');
+    FEAR$1.broker.emit('router:ready');
 
     return this;
   };
@@ -1842,7 +1844,7 @@ const Router = function(options = {}) {
     };
 
     console.log(`Route "${name}" added`);
-    FEAR.broker.emit('router:route-added', { name, config });
+    FEAR$1.broker.emit('router:route-added', { name, config });
     return this;
   };
 
@@ -1852,7 +1854,7 @@ const Router = function(options = {}) {
       this.cache.delete(name);
       this.cacheTimestamps.delete(name);
       console.log(`Route "${name}" removed`);
-      FEAR.broker.emit('router:route-removed', { name });
+      FEAR$1.broker.emit('router:route-removed', { name });
     }
     return this;
   };
@@ -1894,8 +1896,8 @@ const Router = function(options = {}) {
     console.log('Destroying router instance');
 
     // Remove event listeners
-    $(window).off('.fear-router');
-    $(document).off('.fear-router');
+    $(window).off('.FEAR$1-router');
+    $(document).off('.FEAR$1-router');
 
     // Clear caches and promises
     this.cache.clear();
@@ -1913,7 +1915,7 @@ const Router = function(options = {}) {
       this.options.callbacks.onDestroy.call(this);
     }
 
-    FEAR.broker.emit('router:destroy');
+    FEAR$1.broker.emit('router:destroy');
 
     this.initialized = false;
 
@@ -1924,11 +1926,11 @@ const Router = function(options = {}) {
   this.fn = function($element, options) {
     return $element.each(function() {
       const $this = $(this);
-      let instance = $this.data('fear-router');
+      let instance = $this.data('FEAR$1-router');
 
       if (!instance) {
         instance = new Router({ ...options, container: this });
-        $this.data('fear-router', instance);
+        $this.data('FEAR$1-router', instance);
         instance.init();
       }
 
@@ -2403,7 +2405,7 @@ const createController = (gui, options) => new Controller(gui, options);
 /**
  * MVC Plugin for GUI
  */
-const MVCPlugin = function(fear, options) {
+const MVCPlugin = function(FEAR$1, options) {
   const plugin = {};
 
   /**
@@ -2446,6 +2448,8 @@ const MVCPlugin = function(fear, options) {
   return plugin;
 };
 
+FEAR$1.use(MVCPlugin);
+
 var MVCPlugin$1 = { 
     Model, 
     View, 
@@ -2460,7 +2464,7 @@ var MVCPlugin$1 = {
  * Performance Metrics Module
  * Monitors route loading times, cache performance, and module lifecycle events
  */
-const Metrics = FEAR$1.create('Metrics', function(fear, options) {
+const Metrics = FEAR$1.create('Metrics', function(FEAR$1, options) {
   const metrics = this;
   
   // Private state
@@ -2804,34 +2808,31 @@ const Metrics = FEAR$1.create('Metrics', function(fear, options) {
   updateInterval: 5000
 });
 
-// example-usage.js - How to use the refactored FEAR GUI framework
+// example-usage.js - How to use the refactored FEAR$1 GUI framework
 
-
-FEAR$1.use(MVCPlugin$1);
 // Register as GUI plugin
-FEAR$1.use(function (fear, options) {
-  console.log('gui in plugin', fear);
-  fear.Router = Router;
+FEAR$1.use(function (FEAR$1, options) {
+  FEAR$1.Router = Router;
 
   // Add router helper to sandbox
   return {
     load: function (gui) {
-      console.log('sandbox in plugin ', gui);
       gui.router = function (config) {
         return new Router(config);
       };
     }
   };
 });
+FEAR$1.use(MVCPlugin$1);
 
-$.FEAR = function (options) {
-  const instance = createGUI();
+$.FEAR$1 = function (options) {
+  const instance = FEAR$1;
   if (options) instance.configure(options);
   instance.metrics = Metrics;
   return instance;
 };
 
-$.fear = $.FEAR();
+$.FEAR$1 = FEAR$1;
 window.FEAR = FEAR$1;
 /*
 // ============================================
