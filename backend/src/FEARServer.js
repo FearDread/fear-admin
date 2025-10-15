@@ -4,7 +4,7 @@ const path = require('path');
 const express = require('express');
 require("dotenv").config();
 
-const FearServer = (() => {
+const FearServer = (function() {
   // Private constants in closure scope
   const defaultPaths = {
     root: path.resolve(),

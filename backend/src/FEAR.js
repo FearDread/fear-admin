@@ -41,10 +41,10 @@ module.exports = FEAR = (() => {
 
   FEAR.prototype = {
     setupAiAgent() {
-      const Agent = require("./libs/agent");
+      const { getInstance } = require("./libs/agent");
 
       if (!this.agentService) {
-        this.agentService = new Agent();
+        this.agentService = getInstance();
       }
     },
 
@@ -245,7 +245,7 @@ module.exports = FEAR = (() => {
       }));
     },
 
-    start = async function (port = null) {
+    async start(port = null) {
       const self = this;
       const serverPort = port || this.app.get("PORT") || DEFAULT_PORT;
 
@@ -262,7 +262,7 @@ module.exports = FEAR = (() => {
       });
     },
 
-    shutdown = async function () {
+    async shutdown() {
       const self = this;
       this.logger.info('Initiating graceful shutdown...');
 
@@ -292,7 +292,7 @@ module.exports = FEAR = (() => {
       });
     },
 
-    closeDatabase = async function () {
+    async closeDatabase() {
       const self = this;
       return new Promise((resolve, reject) => {
         if (self.db && typeof self.db.disconnect === 'function') {
