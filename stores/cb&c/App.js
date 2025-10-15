@@ -14,7 +14,7 @@ async function main() {
             
             const debug = server.getLogger();
             
-            debug.info('Started GDrea FearServer !');
+            debug.info('Started CB Store FearServer !');
         })
         .catch((error) => {
             debug.error('Failed to start application:', error);
