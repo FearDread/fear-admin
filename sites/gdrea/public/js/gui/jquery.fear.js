@@ -343,6 +343,7 @@ const utils = {
                     Promise.resolve(task())
                         .then(r => [...results, r])
                         .catch(err => {
+                            console.log('task error = ', err);
                             const error = new Error(`Task ${idx} failed`);
                             error.originalError = err;
                             throw error;
@@ -2062,11 +2063,11 @@ const Model = function(data = {}) {
    * Fetch data from remote source
    */
   this.fetch = function(url, options = {}) {
-    if (!model.gui) {
-      return Promise.reject(new Error('gui not available for fetch'));
+    if (!model.$GUI) {
+      return Promise.reject(new Error('$GUI not available for fetch'));
     }
 
-    return model.gui.fetch(url, options)
+    return model.$GUI.fetch(url, options)
       .then(response => {
         if (options.parse && typeof model.parse === 'function') {
           return model.parse(response.data);
@@ -2082,8 +2083,8 @@ const Model = function(data = {}) {
    * Save model data to remote source
    */
   this.save = function(url, options = {}) {
-    if (!model.gui) {
-      return Promise.reject(new Error('gui not available for save'));
+    if (!model.$GUI) {
+      return Promise.reject(new Error('$GUI not available for save'));
     }
 
     const data = model.toJSON();
@@ -2094,7 +2095,7 @@ const Model = function(data = {}) {
       ...options
     };
 
-    return model.gui.fetch(url, settings)
+    return model.$GUI.fetch(url, settings)
       .then(response => response.data);
   };
 
@@ -2107,9 +2108,9 @@ const Model = function(data = {}) {
 const View = function(gui, options = {}) {
   const view = this;
   
-  this.gui = gui;
+  this.$gui = gui;
   this.options = options;
-  this.el = options.el ? gui.$(options.el) : null;
+  this.el = options.el ? $GUI.$(options.el) : null;
   this.template = options.template || null;
   this.events = options.events || {};
   this._boundEvents = [];
@@ -2167,7 +2168,7 @@ const View = function(gui, options = {}) {
       const method = typeof handler === 'string' ? view[handler] : handler;
 
       if (!method) {
-        view.gui.warn(`Event handler ${handler} not found`);
+        view.$GUI.warn(`Event handler ${handler} not found`);
         return;
       }
 
@@ -2274,7 +2275,7 @@ const View = function(gui, options = {}) {
 const Controller = function(gui, options = {}) {
   const controller = this;
   
-  this.gui = gui;
+  this.$gui = gui;
   this.options = options;
   this.model = options.model || null;
   this.view = options.view || null;
@@ -2352,7 +2353,7 @@ const Controller = function(gui, options = {}) {
       return Promise.reject(new Error('Model not available'));
     }
 
-    const form = controller.gui.$(formSelector);
+    const form = controller.$GUI.$(formSelector);
     if (!form.length) {
       return Promise.reject(new Error(`Form not found: ${formSelector}`));
     }
@@ -2401,32 +2402,34 @@ const createView = (gui, options) => new View(gui, options);
 const createController = (gui, options) => new Controller(gui, options);
 
 /**
- * MVC Plugin for GUI
+ * MVC Plugin for $GUI
  */
-const MVCPlugin = function(fear, options) {
+const MVCPlugin = function(gui, options) {
   const plugin = {};
+  console.log('mvc gui =', gui);
 
   /**
-   * Load hook - extend gui with MVC factories
+   * Load hook - extend $GUI with MVC factories
    */
-  plugin.load = function(gui) {
-    // Add MVC factories to gui
-    gui.Model = (data) => {
+  plugin.load = function($GUI) {
+    // Add MVC factories to $GUI
+    console.log("mvc sandbox = ", $GUI);
+    $GUI.Model = (data) => {
       const model = new Model(data);
-      model.gui = gui;
+      model.$GUI = $GUI;
       return model;
     };
 
-    gui.View = (opts) => new View(gui, opts);
+    $GUI.View = (opts) => new View($GUI, opts);
 
-    gui.Controller = (opts) => new Controller(gui, opts);
+    $GUI.Controller = (opts) => new Controller($GUI, opts);
 
     // Convenience method to create complete MVC setup
-    gui.createMVC = (config = {}) => {
-      const model = config.modelData ? gui.Model(config.modelData) : null;
-      const view = config.viewOptions ? gui.View(config.viewOptions) : null;
+    $GUI.createMVC = (config = {}) => {
+      const model = config.modelData ? $GUI.Model(config.modelData) : null;
+      const view = config.viewOptions ? $GUI.View(config.viewOptions) : null;
       
-      const controller = gui.Controller({
+      const controller = $GUI.Controller({
         model,
         view,
         routes: config.routes || {},
@@ -2460,7 +2463,7 @@ var MVCPlugin$1 = {
  * Performance Metrics Module
  * Monitors route loading times, cache performance, and module lifecycle events
  */
-const Metrics = FEAR$1.create('Metrics', function(fear, options) {
+const Metrics = FEAR$1.create('Metrics', function(GUI) {
   const metrics = this;
   
   // Private state
@@ -2527,7 +2530,7 @@ const Metrics = FEAR$1.create('Metrics', function(fear, options) {
       recordError: (error) => {
         if (state.enabled) {
           state.metrics.errors++;
-          gui.log('Error recorded:', error);
+          GUI.log('Error recorded:', error);
         }
       },
 
@@ -2651,65 +2654,65 @@ const Metrics = FEAR$1.create('Metrics', function(fear, options) {
     /**
      * Initialize the metrics module
      */
-    load: function(gui, options = {}) {
+    load: function(options = {}) {
       return Promise.resolve()
         .then(() => {
-          gui.log('Metrics module loading with options:', options);
+          GUI.log('Metrics module loading with options:', options);
 
           // Create performance monitor
           metrics.monitor = createPerformanceMonitor(options.enabled !== false);
 
           // Set up event listeners for performance tracking
-          gui.add('route:start', (data) => {
+          GUI.add('route:start', (data) => {
             const routeKey = `route:${data.path || 'unknown'}`;
             metrics.monitor.startTiming(routeKey);
-            gui.log('Route started:', routeKey);
+            GUI.log('Route started:', routeKey);
           });
 
-          gui.add('route:complete', (data) => {
+          GUI.add('route:complete', (data) => {
             const routeKey = `route:${data.path || 'unknown'}`;
             const duration = metrics.monitor.endTiming(routeKey);
-            gui.log(`Route completed: ${routeKey} in ${duration}ms`);
+            GUI.log(`Route completed: ${routeKey} in ${duration}ms`);
             
             // Emit metrics update
-            return gui.emit('metrics:updated', metrics.monitor.getMetrics());
+            return GUI.emit('metrics:updated', metrics.monitor.getMetrics());
           });
 
-          gui.add('module:start', (data) => {
+          GUI.add('module:start', (data) => {
             const moduleKey = `module:${data.name || 'unknown'}`;
             metrics.monitor.startTiming(moduleKey);
-            gui.log('Module started:', moduleKey);
+            GUI.log('Module started:', moduleKey);
           });
 
-          gui.add('module:complete', (data) => {
+          GUI.add('module:complete', (data) => {
             const moduleKey = `module:${data.name || 'unknown'}`;
             const duration = metrics.monitor.endTiming(moduleKey);
-            gui.log(`Module loaded: ${moduleKey} in ${duration}ms`);
+            GUI.log(`Module loaded: ${moduleKey} in ${duration}ms`);
             
             // Emit metrics update
-            return gui.emit('metrics:updated', metrics.monitor.getMetrics());
+            return GUI.emit('metrics:updated', metrics.monitor.getMetrics());
           });
 
-          gui.add('cache:hit', () => {
+          GUI.add('cache:hit', () => {
             metrics.monitor.recordCacheHit();
           });
 
-          gui.add('cache:miss', () => {
+          GUI.add('cache:miss', () => {
             metrics.monitor.recordCacheMiss();
           });
 
-          gui.add('error', (error) => {
+          GUI.add('error', (error) => {
             metrics.monitor.recordError(error);
           });
 
           // Optional UI display
           if (options.displayMetrics) {
-            metrics.$metricsDisplay = gui.$('#metrics-display');
+            metrics.$metricsDisplay = GUI.$('#metrics-display');
             
             if (metrics.$metricsDisplay.length === 0) {
               // Create metrics display if it doesn't exist
-              metrics.$metricsDisplay = gui.$('<div id="metrics-display"></div>');
-              gui.$('body').append(metrics.$metricsDisplay);
+              metrics.$metricsDisplay = GUI.$('<div id="metrics-display"></div>');
+              GUI.$('body').append(metrics.$metricsDisplay);
             }
 
             // Update display periodically
@@ -2719,8 +2722,8 @@ const Metrics = FEAR$1.create('Metrics', function(fear, options) {
             }, updateInterval);
           }
 
-          // Expose public API on gui
-          gui.metrics = {
+          // Expose public API on GUI
+          GUI.metrics = {
             start: (key) => metrics.monitor.startTiming(key),
             end: (key) => metrics.monitor.endTiming(key),
             cacheHit: () => metrics.monitor.recordCacheHit(),
@@ -2730,7 +2733,7 @@ const Metrics = FEAR$1.create('Metrics', function(fear, options) {
             reset: () => metrics.monitor.reset()
           };
 
-          gui.log('Metrics module loaded successfully');
+          GUI.log('Metrics module loaded successfully');
         });
     },
 
@@ -2740,7 +2743,7 @@ const Metrics = FEAR$1.create('Metrics', function(fear, options) {
     unload: function() {
       return Promise.resolve()
         .then(() => {
-          gui.log('Metrics module unloading');
+          GUI.log('Metrics module unloading');
 
           // Clear interval
           if (metrics.metricsInterval) {
@@ -2754,8 +2757,8 @@ const Metrics = FEAR$1.create('Metrics', function(fear, options) {
             metrics.$metricsDisplay = null;
           }
 
-          // Clean up gui API
-          delete gui.metrics;
+          // Clean up GUI API
+          delete GUI.metrics;
         });
     },
 
@@ -2765,7 +2768,7 @@ const Metrics = FEAR$1.create('Metrics', function(fear, options) {
     destroy: function() {
       return Promise.resolve()
         .then(() => {
-          gui.log('Metrics module destroying');
+          GUI.log('Metrics module destroying');
           
           if (metrics.monitor) {
             metrics.monitor.reset();
@@ -2789,11 +2792,11 @@ const Metrics = FEAR$1.create('Metrics', function(fear, options) {
         .then(() => {
           if (metrics.monitor) {
             metrics.monitor.reset();
-            return gui.emit('metrics:reset');
+            return GUI.emit('metrics:reset');
           }
         })
         .then(() => {
-          gui.log('Metrics reset');
+          GUI.log('Metrics reset');
         });
     }
   };
@@ -2809,15 +2812,15 @@ const Metrics = FEAR$1.create('Metrics', function(fear, options) {
 
 FEAR$1.use(MVCPlugin$1);
 // Register as GUI plugin
-FEAR$1.use(function (fear, options) {
-  console.log('gui in plugin', fear);
-  fear.Router = Router;
+FEAR$1.use(function (GUI) {
+  console.log('gui outside load func router', GUI);
+  GUI.Router = Router;
 
   // Add router helper to sandbox
   return {
-    load: function (gui) {
-      console.log('sandbox in plugin ', gui);
-      gui.router = function (config) {
+    load: function (options) {
+      console.log('Sanbox in Router plugin ', options);
+      GUI.router = function (config) {
         return new Router(config);
       };
     }
@@ -2825,288 +2828,13 @@ FEAR$1.use(function (fear, options) {
 });
 
 $.FEAR = function (options) {
-  const instance = createGUI();
-  if (options) instance.configure(options);
+  const instance = options.instance ? createGUI() : options.instance;
+  if (options && options.config) instance.configure(options.config);
+
   instance.metrics = Metrics;
   return instance;
 };
 
-$.fear = $.FEAR();
+$.fear = $.FEAR({instance: FEAR$1, config: {name: "GDREA - SPA"}});
+
 window.FEAR = FEAR$1;
-/*
-// ============================================
-// 1. Initialize the GUI
-// ============================================
-const gui = createGUI(jQuery);
-
-// Configure the GUI
-gui.configure({
-logLevel: 1,
-name: 'MyApp',
-animations: true
-});
-
-// ============================================
-// 2. Create a simple module
-// ============================================
-gui.create('myModule', (sandbox) => {
-return {
-  load: (options) => {
-    sandbox.log('Module loading with options:', options);
-    
-    // Use sandbox utilities
-    const $button = sandbox.$('#myButton');
-    
-    // Add event listeners via broker
-    sandbox.add('button:click', (data) => {
-      sandbox.log('Button clicked with data:', data);
-    });
-    
-    // Set up DOM interaction
-    $button.on('click', () => {
-      sandbox.emit('button:click', { timestamp: Date.now() });
-    });
-    
-    return Promise.resolve();
-  },
-  
-  unload: () => {
-    sandbox.log('Module unloading');
-    return Promise.resolve();
-  }
-};
-}, { defaultColor: 'blue' });
-
-// ============================================
-// 3. Create a module with async loading
-// ============================================
-gui.create('asyncModule', (sandbox) => {
-return {
-  load: async (options) => {
-    // Load external resources
-    await sandbox.loadResources([
-      'https://example.com/styles.css',
-      { type: 'script', url: 'https://example.com/lib.js' }
-    ]);
-    
-    // Fetch data
-    const response = await sandbox.fetch('/api/data');
-    sandbox.log('Data loaded:', response.data);
-    
-    // Use memoized function
-    const expensiveOperation = sandbox.memoize((x) => {
-      return x * x * x;
-    });
-    
-    const result1 = expensiveOperation(5); // Calculated
-    const result2 = expensiveOperation(5); // Cached
-    
-    return Promise.resolve();
-  },
-  
-  unload: () => {
-    sandbox.log('Async module unloading');
-  }
-};
-});
-
-// ============================================
-// 4. Create a plugin
-// ============================================
-const myPlugin = (gui, options) => {
-gui.debug.log('Plugin initialized with options:', options);
- 
-return {
-  load: (sandbox, pluginOptions) => {
-    // Add custom methods to sandbox
-    sandbox.customMethod = () => {
-      sandbox.log('Custom plugin method called');
-    };
-  },
-  
-  unload: (sandbox) => {
-    delete sandbox.customMethod;
-  }
-};
-};
-
-gui.use(myPlugin, { setting: 'value' });
-
-// ============================================
-// 5. Use the event broker
-// ============================================
-
-// Subscribe to events
-gui.broker.add('app:ready', (data) => {
-console.log('App is ready!', data);
-});
-
-// Create namespaced broker
-const userEvents = gui.broker.namespace('user');
-
-userEvents.add('login', (userData) => {
-console.log('User logged in:', userData);
-});
-
-userEvents.add('logout', () => {
-console.log('User logged out');
-});
-
-// Emit events
-gui.broker.emit('app:ready', { version: '1.0.0' });
-userEvents.emit('login', { id: 123, name: 'John' });
-
-// Wait for an event with timeout
-gui.broker.waitFor('data:loaded', 5000)
-.then(({ data, channel }) => {
-  console.log('Data loaded:', data);
-})
-.catch((err) => {
-  console.error('Timeout:', err.message);
-});
-
-// ============================================
-// 6. Use the registry for module management
-// ============================================
-const registry = createRegistry({ appName: 'MyApp' });
-
-// Register modules
-registry.register('userService', {
-getUser: (id) => fetch(`/api/users/${id}`),
-createUser: (data) => fetch('/api/users', { method: 'POST', body: JSON.stringify(data) }),
-destroy: () => console.log('User service destroyed')
-});
-
-// Listen to registry events
-registry.on('module:registered', ({ name, instance }) => {
-console.log(`Module registered: ${name}`);
-});
-
-// Get a registered module
-const userService = registry.get('userService');
-await userService.getUser(123);
-
-// List all modules
-const allModules = registry.list();
-console.log('Registered modules:', allModules);
-
-// ============================================
-// 7. Start modules
-// ============================================
-
-// Start a single module
-await gui.start('myModule', { color: 'red' });
-
-// Start multiple modules
-await gui.start(['myModule', 'asyncModule']);
-
-// Start all registered modules
-await gui.start();
-
-// ============================================
-// 8. Stop modules
-// ============================================
-
-// Stop a specific module
-await gui.stop('myModule');
-
-// Stop all modules
-await gui.stop();
-
-// ============================================
-// 9. Advanced: Piping events between brokers
-// ============================================
-const broker1 = gui.Broker();
-const broker2 = gui.Broker();
-
-// Pipe events from broker1 to broker2
-broker1.pipe('source:event', 'target:event', broker2);
-
-broker2.add('target:event', (data) => {
-console.log('Received piped event:', data);
-});
-
-broker1.emit('source:event', { message: 'Hello' });
-
-// ============================================
-// 10. Utility functions
-// ============================================
-
-// Use Utils for common operations
-const uniqueId = Utils.unique(12);
-const slug = Utils.slugify('Hello World 123');
-const randomNum = Utils.rand(1, 100);
-const clonedObj = Utils.clone({ a: 1, b: 2 });
-
-// Run async tasks
-const tasks = [
-() => Promise.resolve(1),
-() => Promise.resolve(2),
-() => Promise.resolve(3)
-];
-
-// Run in series
-const seriesResults = await Utils.run.series(tasks);
-console.log('Series:', seriesResults); // [1, 2, 3]
-
-// Run in parallel
-const parallelResults = await Utils.run.parallel(tasks);
-console.log('Parallel:', parallelResults); // [1, 2, 3]
-
-// Run first successful
-const firstResult = await Utils.run.first(tasks);
-console.log('First:', firstResult); // 1
-
-// ============================================
-// 11. Complete example with all features
-// ============================================
-gui.create('completeExample', (sandbox) => {
-let intervalController;
- 
-return {
-  load: async (options) => {
-    // Wait for DOM ready
-    await sandbox.ready();
-    
-    // Query DOM elements
-    const $container = sandbox.$('#app-container');
-    const $button = $container.query('.action-button');
-    
-    // Add event broker listeners
-    sandbox.add('data:update', (newData) => {
-      sandbox.log('Data updated:', newData);
-      $container.html(`<p>Data: ${newData.value}</p>`);
-    });
-    
-    // Set up interval with promise
-    intervalController = sandbox.interval(() => {
-      sandbox.emit('tick', { time: Date.now() });
-    }, 1000, 10); // Run 10 times
-    
-    // Wait for animation complete
-    await $button.animateAsync({ opacity: 1 }, 300);
-    
-    // Set up one-time event listener
-    await $button.onAsync('click');
-    sandbox.log('Button was clicked!');
-    
-    // Fetch data with timeout
-    await sandbox.timeout(1000);
-    const response = await sandbox.fetch('/api/init');
-    
-    return Promise.resolve();
-  },
-  
-  unload: () => {
-    // Clean up
-    if (intervalController) {
-      intervalController.stop();
-    }
-    return Promise.resolve();
-  }
-};
-});
-
-// Start the complete example
-await gui.start('completeExample');
-*/
