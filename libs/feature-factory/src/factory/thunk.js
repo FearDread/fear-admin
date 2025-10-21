@@ -17,7 +17,7 @@ const HTTP_METHODS = {
  */
 const STANDARD_OPERATIONS = {
   all: { method: HTTP_METHODS.GET, useParams: false },
-  one: { method: HTTP_METHODS.GET, useParams: false, useIdInUrl: true },
+  one: { method: HTTP_METHODS.GET, useParams: true, useIdInUrl: true },
   search: { method: HTTP_METHODS.POST, useParams: true },
   new: { method: HTTP_METHODS.POST, useParams: false },
   create: { method: HTTP_METHODS.POST, useParams: false },
@@ -52,7 +52,7 @@ const validateThunkParams = (entity, prefix) => {
 const buildUrl = (entity, prefix, params = {}, useIdInUrl = false) => {
   let url = `${entity}`;
 
-  if (params?.id) {
+  if (params?.id || useIdInUrl) {
     url += `/${params.id}`;
   } else {
     url += `/${prefix}`;
