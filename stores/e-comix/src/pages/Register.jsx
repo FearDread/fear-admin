@@ -93,7 +93,8 @@ const Register = () => {
 
         try {
             const formdata = new FormData();
-            formdata.set("fullname", formData.name);
+            formdata.set("name", formData.name);
+            formdata.set("username", formData.email)
             formdata.set("email", formData.email);
             formdata.set("mobile", formData.mobile);
             formdata.set("password", formData.password);
