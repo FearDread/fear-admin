@@ -24,7 +24,7 @@ const jsconfig = [{
 				format: 'iife',
 				name: 'version',
 				plugins: [terser()]
-			}
+			},
 		],
 		plugins: [
 			peerDepsExternal(),
@@ -35,7 +35,8 @@ const jsconfig = [{
 			commonjs(),
       		json(),
 			terser()
-		]
+		],
+		context: "this",
 	},  
 ];
 
