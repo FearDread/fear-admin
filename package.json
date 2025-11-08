@@ -55,9 +55,6 @@
     "uniqid": "^5.4.0",
     "validator": "^13.9.0"
   },
-  "engines": {
-    "node": "^24.8.0"
-  },
   "devDependencies": {
     "apidoc": "^1.2.0",
     "chai": "^3.5.0",
