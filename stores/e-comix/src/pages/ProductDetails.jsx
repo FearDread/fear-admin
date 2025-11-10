@@ -158,7 +158,7 @@ const handleTabChange = useCallback((tabId) => {
   const fetchProduct = () => {
 
       setError(null);
-      dispatch(Product.fetchOne({ id: productId }));
+      dispatch(Product.getProductDetails(productId));
 
       /*
       console.error('Failed to fetch product:', err);

@@ -25,6 +25,10 @@ import UserCart from "./pages/admin/UserCart";
 import Profile from "./pages/admin/Profile";
 import Checkout from "./pages/admin/Checkout";
 import UserOrder from "./pages/admin/UserOrder";
+
+import Payment from "./pages/admin/Payment";
+import Completion from "./pages/admin/Completion";
+import CheckoutForm from "./pages/admin/CheckoutForm";
 // Route Components
 import { PrivateRoutes } from "./routes/PrivateRoutes";
 import { OpenRoutes } from "./routes/OpenRoutes";
@@ -64,6 +68,8 @@ function App() {
   // Redux selectors
   const productData = useSelector(state => state.product.data);
   const userData = useSelector(state => state.user.data);
+  const [ stripePromise, setStripePromise ] = useState(null);
+  
 
   // Sync local storage with Redux state
   useEffect(() => {
@@ -71,6 +77,13 @@ function App() {
       store.local.set('auth', userData);
     }
   }, [userData, user]);
+
+    useEffect(() => {
+      fetch("/api/config").then(async (r) => {
+        const { publishableKey } = await r.json();
+        setStripePromise(loadStripe(publishableKey));
+      });
+    }, []);
 
   return (
     <BrowserRouter>
@@ -136,6 +149,8 @@ function App() {
               } 
             />
           </Route>
+          <Route path="/payment" element={<Payment stripePromise={stripePromise} />} />
+          <Route path="/completion" element={<Completion stripePromise={stripePromise} />} />
         </Routes>
       </Suspense>
       
