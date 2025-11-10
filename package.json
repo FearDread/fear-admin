@@ -13,7 +13,7 @@
   "author": "Garrett Haptonstall (FearDread)",
   "license": "MIT",
   "dependencies": {
-    "@feardread/fear-ai-agent": "^1.0.3",
+    "@feardread/fear-ai-agent": "^2.0.1",
     "axios": "^1.6.7",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
@@ -54,9 +54,6 @@
     "swipe": "^1.7.7",
     "uniqid": "^5.4.0",
     "validator": "^13.9.0"
-  },
-  "engines": {
-    "node": "^24.8.0"
   },
   "devDependencies": {
     "apidoc": "^1.2.0",

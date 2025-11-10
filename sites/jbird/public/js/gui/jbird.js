@@ -300,6 +300,15 @@
       });
     };
 
+    const initParticles = async () => {
+      const { selector, config } = defaults.particles;
+      const $container = $GUI.$(selector);
+      
+      if ($container.length && window.particlesJS) {
+        particlesJS(selector.replace('#', ''), config);
+      }
+    }
+
     // ==================== MODULE: MAGNIFIC POPUP ====================
     const initMagnificPopup = async () => {
       const cfg = config.magnificPopup;
@@ -469,6 +478,7 @@
         config = $GUI.utils.merge({}, defaults, options);
 
         const domModules = [];
+        if (config.modules.particles) domModules.push(initParticles());
         if (config.modules.swiper) domModules.push(initSwiper());
         if (config.modules.magnificPopup) domModules.push(initMagnificPopup());
         if (config.modules.skillbars) domModules.push(initSkillbars());

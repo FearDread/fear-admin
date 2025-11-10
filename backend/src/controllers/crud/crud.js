@@ -494,7 +494,8 @@ exports.search = tryCatch(async (Model, req, res) => {
  * @param {mongoose.Model} Model - Mongoose model
  * @returns {Object} Controller object with all CRUD methods
  */
-exports.crudController = (Model) => {
+module.exports = ( Model ) => {
+
   return {
     all: (req, res) => exports.all(Model, req, res),
     read: (req, res) => exports.read(Model, req, res),
@@ -502,6 +503,6 @@ exports.crudController = (Model) => {
     update: (req, res) => exports.update(Model, req, res),
     delete: (req, res) => exports.delete(Model, req, res),
     list: (req, res) => exports.list(Model, req, res),
-    search: (req, res) => exports.search(Model, req, res)
+    search: (req, res) => exports.search(Model, req, res),
   };
 };
