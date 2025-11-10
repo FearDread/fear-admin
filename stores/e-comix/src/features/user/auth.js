@@ -15,6 +15,7 @@ export const authCache = CacheFactory({
 export const authUtils = {
   // Save authentication data
   saveAuth: (authData) => {
+    console.log('save auth data = ', authData);
     try {
       const dataToSave = {
         token: authData.token,
@@ -42,19 +43,18 @@ export const authUtils = {
 
   // Get authentication data
   getAuth: () => {
-    try {
-      const authData = authCache.get('auth');
-      console.log('auth data = ', authData);
-      
-      if (!authData || !authData.token || !authData.user) {
+    return authCache.get('auth')
+      .then((authData) => {
+        console.log('auth data = ', authData);
+        if (!authData || !authData.token || !authData.user) {
+          return null;
+        }  
+        return authData;
+      })
+      .catch((error) => {
+        console.error('Failed to get auth data:', error);
         return null;
-      }
-      
-      return authData;
-    } catch (error) {
-      console.error('Failed to get auth data:', error);
-      return null;
-    }
+      });
   },
 
   // Check if token is expired
