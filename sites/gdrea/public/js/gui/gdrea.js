@@ -33,10 +33,8 @@ FEAR.create('Preloader', function (GUI) {
  * Modal Module
  */
 FEAR.create('Modal', function (GUI) {
-    const modal = this;
-
-    this._setupDOM = () => {
-        const modalHTML = `
+    const modal = GUI.$('.fear_modalbox');
+    const modalHTML = `
       <div class="fear_modalbox">
         <div class="box_inner">
           <div class="close">
@@ -46,15 +44,92 @@ FEAR.create('Modal', function (GUI) {
         </div>
       </div>
     `;
-        GUI.$('.fear_all_wrap').prepend(modalHTML);
-    };
+    modal.about = () => {
+	var button			= jQuery('.fear_about .fear_button a');
+	var close			= jQuery('.fear_modalbox .close');
+	var hiddenContent	= jQuery('.fear_hidden_content').html();
+	
+	button.on('click', function(){
+		modal.addClass('opened');
+		modal.find('.description_wrap').html(hiddenContent);
+		GUI.ui.methods.imgToSvg();
+		GUI.ui.methods.progress();
+		GUI.ui.methods.circular_progress();
 
+	});
+	close.on('click',function(){
+		modal.removeClass('opened');
+		modal.find('.description_wrap').html('');
+	});
+}
+
+// -------------------------------------------------
+// -----------  PORTFOLIO POPUP  -------------------
+// -------------------------------------------------
+
+modal.portfolio = () => {
+	var button			= GUI.$('.fear_portfolio .portfolio_popup');
+	var closePopup		= modal.find('.close');
+	
+	button.off().on('click', function(){
+		var element 	= GUI.$(this);
+		var parent 		= element.closest('.list_inner');
+		var content 	= parent.find('.fear_hidden_content').html();
+		var image		= parent.find('.image .main').data('img-url');
+		var title		= parent.find('.details h3').text();
+		var category	= parent.find('.details span').text();
+		modalBox.addClass('opened');
+		modalBox.find('.description_wrap').html(content);
+		modalBox.find('.portfolio_popup_details').prepend('<div class="top_image"><img src="img/thumbs/4-2.jpg" alt="" /><div class="main" data-img-url="'+image+'"></div></div>');
+		modalBox.find('.portfolio_popup_details .top_image').after('<div class="portfolio_main_title"><h3>'+title+'</h3><span><a href="#">'+category+'</a></span><div>');
+		fear_data_images();
+		fear_popup();
+		return false;
+	});
+	closePopup.on('click',function(){
+		modalBox.removeClass('opened');
+		modalBox.find('.description_wrap').html('');
+		return false;
+	});
+
+}
+
+// -------------------------------------------------
+// ----------------  NEWS POPUP  -------------------
+// -------------------------------------------------
+
+function fear_news_popup(){
+	
+	"use strict";
+	
+	var modalBox		= jQuery('.fear_modalbox');
+	var button			= jQuery('.fear_news .news_popup,.fear_news .news_list h3 a');
+	var closePopup		= modalBox.find('.close');
+	
+	button.off().on('click',function(){
+		var element 	= jQuery(this);
+		var parent 		= element.closest('.list_inner');
+		var content 	= parent.find('.fear_hidden_content').html();
+		var image		= parent.find('.image .main').data('img-url');
+		var title		= parent.find('.details h3 a').text();
+		var category	= parent.find('.details span').html();
+		modalBox.addClass('opened');
+		modalBox.find('.description_wrap').html(content);
+		modalBox.find('.news_popup_details').prepend('<div class="top_image"><img src="img/thumbs/4-2.jpg" alt="" /><div class="main" data-img-url="'+image+'"></div></div>');
+		modalBox.find('.news_popup_details .top_image').after('<div class="news_main_title"><h3>'+title+'</h3><span>'+category+'</span><div>');
+		fear_data_images();
+		return false;
+	});
+	closePopup.on('click',function(){
+		modalBox.removeClass('opened');
+		modalBox.find('.description_wrap').html('');
+		return false;
+	});
+}
     return {
         load: function (options = {}) {
             GUI.log('Modal module loading');
-
-            modal._setupDOM();
-
+            GUI.$('.fear_all_wrap').prepend(modalHTML);
             // Set up event handlers
             GUI.$('.fear_modalbox .close').on('click', function (e) {
                 e.preventDefault();
@@ -309,6 +384,10 @@ FEAR.create('UIMethods', function (GUI) {
             cursorOuter.style.visibility = 'visible';
         }
     };
+
+    methods.mycarousel = () => {
+
+    }
 
     return {
         load: function (options = {}) {

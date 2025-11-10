@@ -367,6 +367,265 @@ const utils = {
                 throw new Error('All tasks failed');
             });
         }
+    },
+
+    /**
+    * Debounce function execution - delays invoking func until after wait milliseconds
+    *
+    * @param func {function} - function to debounce
+    * @param wait {number} - milliseconds to wait
+    * @param immediate {boolean} - trigger on leading edge instead of trailing
+    * @return {function} - debounced function
+    **/
+    debounce: (func, wait, immediate = false) => {
+        let timeout;
+        return function executedFunction(...args) {
+            const context = this;
+            const later = () => {
+                timeout = null;
+                if (!immediate) func.apply(context, args);
+            };
+            const callNow = immediate && !timeout;
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+            if (callNow) func.apply(context, args);
+        };
+    },
+
+    /**
+    * Throttle function execution - ensures func is called at most once per specified time period
+    *
+    * @param func {function} - function to throttle
+    * @param limit {number} - milliseconds between allowed calls
+    * @return {function} - throttled function
+    **/
+    throttle: (func, limit) => {
+        let inThrottle;
+        return function(...args) {
+            const context = this;
+            if (!inThrottle) {
+                func.apply(context, args);
+                inThrottle = true;
+                setTimeout(() => inThrottle = false, limit);
+            }
+        };
+    },
+
+    /**
+    * Deep clone an object or array (handles nested objects)
+    *
+    * @param obj {various} - the object/array to deep clone
+    * @return {various} - deeply cloned copy
+    **/
+    deepClone: (obj) => {
+        if (obj === null || typeof obj !== 'object') return obj;
+        if (obj instanceof Date) return new Date(obj.getTime());
+        if (obj instanceof Array) return obj.map(item => utils.deepClone(item));
+        if (obj instanceof Object) {
+            const clonedObj = {};
+            for (const key in obj) {
+                if (obj.hasOwnProperty(key)) {
+                    clonedObj[key] = utils.deepClone(obj[key]);
+                }
+            }
+            return clonedObj;
+        }
+    },
+
+    /**
+    * Check if two values are deeply equal
+    *
+    * @param a {various} - first value
+    * @param b {various} - second value
+    * @return {boolean} - true if deeply equal
+    **/
+    deepEqual: (a, b) => {
+        if (a === b) return true;
+        if (a == null || b == null) return false;
+        if (typeof a !== 'object' || typeof b !== 'object') return false;
+        
+        const keysA = Object.keys(a);
+        const keysB = Object.keys(b);
+        
+        if (keysA.length !== keysB.length) return false;
+        
+        for (const key of keysA) {
+            if (!keysB.includes(key)) return false;
+            if (!utils.deepEqual(a[key], b[key])) return false;
+        }
+        
+        return true;
+    },
+
+    /**
+    * Get a nested property from an object using dot notation
+    *
+    * @param obj {object} - object to traverse
+    * @param path {string} - dot notation path (e.g., 'user.profile.name')
+    * @param defaultValue {various} - default value if path not found
+    * @return {various} - value at path or default
+    **/
+    get: (obj, path, defaultValue = undefined) => {
+        const keys = path.split('.');
+        let result = obj;
+        
+        for (const key of keys) {
+            if (result == null) return defaultValue;
+            result = result[key];
+        }
+        
+        return result !== undefined ? result : defaultValue;
+    },
+
+    /**
+    * Set a nested property in an object using dot notation
+    *
+    * @param obj {object} - object to modify
+    * @param path {string} - dot notation path
+    * @param value {various} - value to set
+    * @return {object} - modified object
+    **/
+    set: (obj, path, value) => {
+        const keys = path.split('.');
+        const lastKey = keys.pop();
+        let current = obj;
+        
+        for (const key of keys) {
+            if (!(key in current) || typeof current[key] !== 'object') {
+                current[key] = {};
+            }
+            current = current[key];
+        }
+        
+        current[lastKey] = value;
+        return obj;
+    },
+
+    /**
+    * Flatten a nested array
+    *
+    * @param arr {array} - array to flatten
+    * @param depth {number} - depth to flatten (default: Infinity)
+    * @return {array} - flattened array
+    **/
+    flatten: (arr, depth = Infinity) => {
+        if (depth < 1) return arr.slice();
+        return arr.reduce((acc, val) => 
+            acc.concat(Array.isArray(val) ? utils.flatten(val, depth - 1) : val), 
+        []);
+    },
+
+    /**
+    * Remove duplicate values from an array
+    *
+    * @param arr {array} - array to deduplicate
+    * @return {array} - array with unique values
+    **/
+    unique: (arr) => {
+        return [...new Set(arr)];
+    },
+
+    /**
+    * Group array items by a key or function
+    *
+    * @param arr {array} - array to group
+    * @param key {string|function} - property name or function to group by
+    * @return {object} - grouped object
+    **/
+    groupBy: (arr, key) => {
+        return arr.reduce((result, item) => {
+            const group = typeof key === 'function' ? key(item) : item[key];
+            (result[group] = result[group] || []).push(item);
+            return result;
+        }, {});
+    },
+
+    /**
+    * Pick specified properties from an object
+    *
+    * @param obj {object} - source object
+    * @param keys {array} - array of keys to pick
+    * @return {object} - new object with picked properties
+    **/
+    pick: (obj, keys) => {
+        return keys.reduce((result, key) => {
+            if (key in obj) result[key] = obj[key];
+            return result;
+        }, {});
+    },
+
+    /**
+    * Omit specified properties from an object
+    *
+    * @param obj {object} - source object
+    * @param keys {array} - array of keys to omit
+    * @return {object} - new object without omitted properties
+    **/
+    omit: (obj, keys) => {
+        const result = { ...obj };
+        keys.forEach(key => delete result[key]);
+        return result;
+    },
+
+    /**
+    * Capitalize first letter of a string
+    *
+    * @param str {string} - string to capitalize
+    * @return {string} - capitalized string
+    **/
+    capitalize: (str) => {
+        return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+    },
+
+    /**
+    * Convert string to camelCase
+    *
+    * @param str {string} - string to convert
+    * @return {string} - camelCase string
+    **/
+    camelCase: (str) => {
+        return str.replace(/[-_\s]+(.)?/g, (_, c) => c ? c.toUpperCase() : '');
+    },
+
+    /**
+    * Truncate string to specified length
+    *
+    * @param str {string} - string to truncate
+    * @param length {number} - max length
+    * @param ending {string} - ending to append (default: '...')
+    * @return {string} - truncated string
+    **/
+    truncate: (str, length, ending = '...') => {
+        if (str.length <= length) return str;
+        return str.substring(0, length - ending.length) + ending;
+    },
+
+    /**
+    * Wait for specified milliseconds (async/await friendly)
+    *
+    * @param ms {number} - milliseconds to wait
+    * @return {Promise} - promise that resolves after delay
+    **/
+    sleep: (ms) => {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    },
+
+    /**
+    * Retry a function multiple times with delay
+    *
+    * @param fn {function} - async function to retry
+    * @param retries {number} - number of retry attempts
+    * @param delay {number} - delay between retries in ms
+    * @return {Promise} - resolves with result or rejects after all retries
+    **/
+    retry: async (fn, retries = 3, delay = 1000) => {
+        try {
+            return await fn();
+        } catch (error) {
+            if (retries <= 0) throw error;
+            await utils.sleep(delay);
+            return utils.retry(fn, retries - 1, delay);
+        }
     }
 };
 
@@ -402,7 +661,7 @@ const Broker = function(options = {}) {
 
     const removed = originalLength - this.channels[channel].length;
     if (removed > 0) {
-      utils.log(`Removed ${removed} subscription(s) from '${channel}'`);
+      console.log(`Removed ${removed} subscription(s) from '${channel}'`);
     }
 
     return this.channels[channel];
@@ -543,7 +802,7 @@ const Broker = function(options = {}) {
    */
   this.clear = function() {
     Object.keys(this.channels).forEach(k => delete this.channels[k]);
-    utils.log('All channels cleared');
+    console.log('All channels cleared');
     return this;
   };
 
