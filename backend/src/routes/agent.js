@@ -1,5 +1,5 @@
 // routes/agent.js - API routes for Security Agent
-const Agent = require('../libs/agent');
+const Agent = require('../libs/agent/interface');
 
 module.exports = (fear) => {
   const router = fear.createRouter();
