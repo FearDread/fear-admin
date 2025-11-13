@@ -11,6 +11,7 @@ module.exports = FEAR = (() => {
   const DEFAULT_PORT = 4000;
   const DEFAULT_JSON_LIMIT = '10mb';
   const DEFAULT_ROUTE_PATH = '/fear/api';
+  const AGENT_ROUTE_PATH = '/fear/api/agent';
 
   // Constructor function
   const FEAR = function() {
@@ -23,6 +24,7 @@ module.exports = FEAR = (() => {
     this.morgan = null;
     this.cloud = null;
     this.agentService = null;
+    this.agentWebInterface = null;
     this.db = null;
     this.handler = null;
     this.validator = null;
@@ -37,6 +39,7 @@ module.exports = FEAR = (() => {
     this.corsConfig = this.getCorsConfig();
     this.setupRoutes();
     this.setupAiAgent();
+    this.setupAgentWebInterface();
   };
 
   // Consolidated prototype
@@ -47,12 +50,32 @@ module.exports = FEAR = (() => {
      * Initialize AI Agent service
      */
     setupAiAgent() {
-      const AgentInterface = require("./libs/agent");
+      const { getInstance } = require("./libs/agent");
 
+      if (!this.agentService) {
+        this.agentService = getInstance();
+      }
+    },
 
-      if (!this.agent) {
-        this.agent = AgentInterface.create(this);
-        this.useRouter(this.agent.getRouter(), '/fear/api/agent');
+    /**
+     * Initialize Agent Web Interface
+     */
+    setupAgentWebInterface() {
+      try {
+        const AgentWebInterface = require("./libs/agent/interface");
+        
+        this.agentWebInterface = new AgentWebInterface(this);
+        
+        // Register agent routes
+        this.useRouter(
+          this.agentWebInterface.getRouter(), 
+          AGENT_ROUTE_PATH
+        );
+        
+        this.logger.info(`Agent Web Interface initialized at ${AGENT_ROUTE_PATH}`);
+      } catch (error) {
+        this.logger.error("Failed to initialize Agent Web Interface:", error);
+        this.logger.warn("Agent Web Interface will not be available");
       }
     },
 
@@ -61,6 +84,13 @@ module.exports = FEAR = (() => {
      */
     getAiAgent() {
       return this.agentService;
+    },
+
+    /**
+     * Get Agent Web Interface instance
+     */
+    getAgentWebInterface() {
+      return this.agentWebInterface;
     },
 
     /**
@@ -300,6 +330,8 @@ module.exports = FEAR = (() => {
       router.getEnvironment = () => this.env;
       router.getHandler = () => this.handler;
       router.getValidator = () => this.validator;
+      router.getAiAgent = () => this.agentService;
+      router.getAgentWebInterface = () => this.agentWebInterface;
 
       return router;
     },
@@ -328,6 +360,12 @@ module.exports = FEAR = (() => {
           }
           
           this.logger.info(`FEAR server started on port ${serverPort}`);
+          
+          // Log agent interface status
+          if (this.agentWebInterface) {
+            this.logger.info(`Agent Web Interface available at ${AGENT_ROUTE_PATH}`);
+          }
+          
           resolve(this.server);
         });
       });
@@ -352,14 +390,23 @@ module.exports = FEAR = (() => {
             this.logger.info('HTTP server closed.');
           }
 
-          this.closeDatabase()
+          // Shutdown agent web interface
+          const agentShutdown = this.agentWebInterface && 
+            typeof this.agentWebInterface.shutdown === 'function' ?
+            this.agentWebInterface.shutdown() :
+            Promise.resolve();
+
+          agentShutdown
+            .then(() => {
+              return this.closeDatabase();
+            })
             .then(() => {
               this.logger.info('Database connections closed.');
               this.logger.info('Graceful shutdown completed.');
               resolve();
             })
             .catch((error) => {
-              this.logger.error('Error closing database:', error);
+              this.logger.error('Error during shutdown:', error);
               resolve();
             });
         });
@@ -393,7 +440,9 @@ module.exports = FEAR = (() => {
         getLogger: () => this.logger,
         getDatabase: () => this.db,
         getEnvironment: () => this.env,
-        getCloud: () => this.cloud
+        getCloud: () => this.cloud,
+        getAiAgent: () => this.agentService,
+        getAgentWebInterface: () => this.agentWebInterface
       };
       return this;
     }
