@@ -47,10 +47,12 @@ module.exports = FEAR = (() => {
      * Initialize AI Agent service
      */
     setupAiAgent() {
-      const { getInstance } = require("./libs/agent");
+      const AgentInterface = require("./libs/agent");
 
-      if (!this.agentService) {
-        this.agentService = getInstance();
+
+      if (!this.agent) {
+        this.agent = AgentInterface.create(this);
+        this.useRouter(this.agent.getRouter(), '/fear/api/agent');
       }
     },
 
