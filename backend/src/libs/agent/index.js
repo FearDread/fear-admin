@@ -1,7 +1,7 @@
 // libs/agentService.js - Service layer for Security Agent
 const SecurityAgent = require('@feardread/fear-ai-agent');
 
-module.exports = class AgentService {
+class AgentService {
   constructor() {
     this.agent = null;
     this.isInitialized = false;
