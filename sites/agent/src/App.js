@@ -2,18 +2,21 @@ import React, { Suspense, useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useSelector } from "react-redux";
 
-import AgentTerminal from "./interfaces/terminal";
-import AgentWebInterface from "./interfaces/chat"
+import TerminalAgent from "./interfaces/terminal";
+import AIChatInterface from "./interfaces/chat"
+
+import "./assets/css/main.css";
+
 
 export const App = () => {
 
     return (
         <BrowserRouter>
-            <Suspense >
+            <Suspense>
                 <Routes>
 
-	    		<Route path="/terminal" element={<AgentTerminal/>} />
-			<Route path="/chat" element={<AgentWebInterface/>} />
+	    		<Route path="/" element={<TerminalAgent/>} />
+			    <Route path="/chat" element={<AIChatInterface/>} />
                 </Routes>
             </Suspense>
         </BrowserRouter>

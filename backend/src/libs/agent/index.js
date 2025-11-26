@@ -1,5 +1,5 @@
 // libs/agentService.js - Service layer for Security Agent
-const SecurityAgent = require('../agent');
+const SecurityAgent = require('@feardread/fear-ai-agent');
 
 class AgentService {
   constructor() {
@@ -18,8 +18,9 @@ class AgentService {
     }
 
     try {
-      this.agent = new SecurityAgent();
+      this.agent = SecurityAgent;
       this.isInitialized = true;
+      console.log('init agent :: ', this.agent);
       return { 
         success: true, 
         message: 'Agent initialized successfully',
