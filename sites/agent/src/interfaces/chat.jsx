@@ -46,7 +46,7 @@ export default function AIChatInterface() {
 
   return (
     <>
-    <div className="flex flex-col h-screen bg-gray-900 text-gray-100">
+    <div className="chat-container">
       {/* Header */}
       <div className="bg-gray-800 border-b border-gray-700 p-4">
         <div className="flex items-center gap-3">

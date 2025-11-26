@@ -7,7 +7,6 @@ import App from "./App";
 const container = document.getElementById("root");
 const root = createRoot(container);
 
-store.dispatch(Product.fetch());
 root.render(
     <React.StrictMode>
             <App />

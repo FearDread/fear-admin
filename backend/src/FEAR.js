@@ -39,7 +39,7 @@ module.exports = FEAR = (() => {
     this.corsConfig = this.getCorsConfig();
     this.setupRoutes();
     this.setupAiAgent();
-    this.setupAgentWebInterface();
+    //this.setupAgentWebInterface();
   };
 
   // Consolidated prototype
@@ -62,7 +62,7 @@ module.exports = FEAR = (() => {
      */
     setupAgentWebInterface() {
       try {
-        const AgentWebInterface = require("./libs/agent/interface");
+        const AgentWebInterface = require("./libs/agent");
         
         this.agentWebInterface = new AgentWebInterface(this);
         
@@ -331,7 +331,7 @@ module.exports = FEAR = (() => {
       router.getHandler = () => this.handler;
       router.getValidator = () => this.validator;
       router.getAiAgent = () => this.agentService;
-      router.getAgentWebInterface = () => this.agentWebInterface;
+      //router.getAgentWebInterface = () => this.agentWebInterface;
 
       return router;
     },

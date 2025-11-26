@@ -1,5 +1,5 @@
 // routes/agent.js - API routes for Security Agent
-const Agent = require('../libs/agent/interface');
+const Agent = require('../libs/agent');
 
 module.exports = (fear) => {
   const router = fear.createRouter();
@@ -13,8 +13,9 @@ module.exports = (fear) => {
    * @access Public
    */
   router.post('/initialize', async (req, res) => {
-      const agentService = new Agent();
+      const agentService = router.getAiAgent();
       const result = agentService.initialize();
+      console.log('agent result = ', result);
 
       if (result.success) {
         logger.info('Agent initialized via API');
