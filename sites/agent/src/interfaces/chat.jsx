@@ -46,14 +46,14 @@ export default function AIChatInterface() {
 
   return (
     <>
-    <div className="chat-container">
+    <div className="ollama-chat-container">
       {/* Header */}
-      <div className="bg-gray-800 border-b border-gray-700 p-4">
-        <div className="flex items-center gap-3">
+      <div className="ollama-chat-header">
+        <div className="ollama-chat-header-content">
           <Bot className="w-8 h-8 text-blue-400" />
           <div>
-            <h1 className="text-xl font-semibold">AI Assistant</h1>
-            <p className="text-sm text-gray-400">Always here to help</p>
+            <h1 className="ollama-chat-title ">AI Assistant</h1>
+            <p className="ollama-chat-subtitle">Always here to help</p>
           </div>
         </div>
       </div>
