@@ -1,5 +1,5 @@
-// routes/agent.js - API routes for Security Agent
-const Agent = require('../libs/agent');
+// routes/agent.js - API routes for Security Agent (Updated)
+const agentController = require('../controllers/agent');
 
 module.exports = (fear) => {
   const router = fear.createRouter();
@@ -13,22 +13,7 @@ module.exports = (fear) => {
    * @access Public
    */
   router.post('/initialize', async (req, res) => {
-      const agentService = router.getAiAgent();
-      const result = agentService.initialize();
-      console.log('agent result = ', result);
-
-      if (result.success) {
-        logger.info('Agent initialized via API');
-        return handler.success(req, result);
-
-      } else {
-        logger.error('Agent initialization failed:', result.error);
-        return handler.error(res, result.message, 500);
-      }
-
-      logger.error('Agent initialization error:', error);
-      return handler.error(res, 'Failed to initialize agent', 500);
-
+    return agentController.initialize(req, res, handler, logger);
   });
 
   /**
@@ -37,31 +22,7 @@ module.exports = (fear) => {
    * @access Public
    */
   router.post('/execute', async (req, res) => {
-    try {
-      const { command, args } = req.body;
-
-      if (!command) {
-        return handler.error(res, 'Command is required', 400);
-      }
-
-      const agentService = getInstance();
-      
-      if (!agentService.isInitialized) {
-        agentService.initialize();
-      }
-
-      const result = await agentService.executeCommand(
-        command, 
-        Array.isArray(args) ? args : (args ? [args] : [])
-      );
-
-      logger.info(`Agent command executed: ${command}`);
-      return handler.success(res, result);
-
-    } catch (error) {
-      logger.error('Agent command execution error:', error);
-      return handler.error(res, error.message || 'Command execution failed', 500);
-    }
+    return agentController.executeCommand(req, res, handler, logger);
   });
 
   /**
@@ -70,28 +31,7 @@ module.exports = (fear) => {
    * @access Public
    */
   router.post('/batch', async (req, res) => {
-    try {
-      const { commands } = req.body;
-
-      if (!Array.isArray(commands) || commands.length === 0) {
-        return handler.error(res, 'Commands array is required', 400);
-      }
-
-      const agentService = getInstance();
-      
-      if (!agentService.isInitialized) {
-        agentService.initialize();
-      }
-
-      const result = await agentService.executeBatch(commands);
-
-      logger.info(`Agent batch execution: ${commands.length} commands`);
-      return handler.success(res, result);
-
-    } catch (error) {
-      logger.error('Agent batch execution error:', error);
-      return handler.error(res, error.message || 'Batch execution failed', 500);
-    }
+    return agentController.executeBatch(req, res, handler, logger);
   });
 
   /**
@@ -100,24 +40,7 @@ module.exports = (fear) => {
    * @access Public
    */
   router.get('/commands', async (req, res) => {
-    try {
-      const agentService = getInstance();
-      
-      if (!agentService.isInitialized) {
-        agentService.initialize();
-      }
-
-      const commands = agentService.getAvailableCommands();
-
-      return handler.success(res, {
-        success: true,
-        commands
-      });
-
-    } catch (error) {
-      logger.error('Error fetching commands:', error);
-      return handler.error(res, 'Failed to fetch commands', 500);
-    }
+    return agentController.getCommands(req, res, handler, logger);
   });
 
   /**
@@ -126,26 +49,7 @@ module.exports = (fear) => {
    * @access Public
    */
   router.get('/commands/:command', async (req, res) => {
-    try {
-      const { command } = req.params;
-      const agentService = getInstance();
-      
-      if (!agentService.isInitialized) {
-        agentService.initialize();
-      }
-
-      const exists = agentService.commandExists(command);
-
-      return handler.success(res, {
-        success: true,
-        command,
-        exists
-      });
-
-    } catch (error) {
-      logger.error('Error checking command:', error);
-      return handler.error(res, 'Failed to check command', 500);
-    }
+    return agentController.checkCommand(req, res, handler, logger);
   });
 
   /**
@@ -154,31 +58,7 @@ module.exports = (fear) => {
    * @access Public
    */
   router.get('/status', async (req, res) => {
-    try {
-      const agentService = getInstance();
-      
-      if (!agentService.isInitialized) {
-        return handler.success(res, {
-          success: true,
-          initialized: false,
-          message: 'Agent not initialized'
-        });
-      }
-
-      const modules = agentService.getModuleStatus();
-      const version = agentService.getVersionInfo();
-
-      return handler.success(res, {
-        success: true,
-        initialized: true,
-        version,
-        modules
-      });
-
-    } catch (error) {
-      logger.error('Error fetching agent status:', error);
-      return handler.error(res, 'Failed to fetch status', 500);
-    }
+    return agentController.getStatus(req, res, handler, logger);
   });
 
   /**
@@ -187,31 +67,7 @@ module.exports = (fear) => {
    * @access Public
    */
   router.get('/history', async (req, res) => {
-    try {
-      const { limit } = req.query;
-      const agentService = getInstance();
-      
-      if (!agentService.isInitialized) {
-        return handler.success(res, {
-          success: true,
-          history: [],
-          message: 'Agent not initialized'
-        });
-      }
-
-      const history = agentService.getCommandHistory(
-        limit ? parseInt(limit) : 20
-      );
-
-      return handler.success(res, {
-        success: true,
-        history
-      });
-
-    } catch (error) {
-      logger.error('Error fetching history:', error);
-      return handler.error(res, 'Failed to fetch history', 500);
-    }
+    return agentController.getHistory(req, res, handler, logger);
   });
 
   /**
@@ -220,19 +76,7 @@ module.exports = (fear) => {
    * @access Public
    */
   router.get('/version', async (req, res) => {
-    try {
-      const agentService = getInstance();
-      const version = agentService.getVersionInfo();
-
-      return handler.success(res, {
-        success: true,
-        ...version
-      });
-
-    } catch (error) {
-      logger.error('Error fetching version:', error);
-      return handler.error(res, 'Failed to fetch version', 500);
-    }
+    return agentController.getVersion(req, res, handler, logger);
   });
 
   /**
@@ -241,22 +85,12 @@ module.exports = (fear) => {
    * @access Public
    */
   router.post('/shutdown', async (req, res) => {
-    try {
-      const agentService = getInstance();
-      const result = agentService.shutdown();
-
-      if (result.success) {
-        logger.info('Agent shutdown via API');
-        return handler.success(res, result);
-      } else {
-        return handler.error(res, result.message, 500);
-      }
-
-    } catch (error) {
-      logger.error('Agent shutdown error:', error);
-      return handler.error(res, 'Failed to shutdown agent', 500);
-    }
+    return agentController.shutdown(req, res, handler, logger);
   });
+
+  // ============================================
+  // MODULE-SPECIFIC ROUTES
+  // ============================================
 
   /**
    * @route POST /fear/api/agent/ai/setup
@@ -271,21 +105,61 @@ module.exports = (fear) => {
         return handler.error(res, 'Provider and API key are required', 400);
       }
 
-      const agentService = getInstance();
-      
-      if (!agentService.isInitialized) {
-        agentService.initialize();
-      }
+      const result = await agentController.executeCommand(
+        { body: { command: 'ai-setup', args: [provider, apiKey] } },
+        res,
+        handler,
+        logger
+      );
 
-      const result = await agentService.executeCommand('ai-setup', [provider, apiKey]);
-
-      logger.info(`AI provider configured: ${provider}`);
-      return handler.success(res, result);
+      return result;
 
     } catch (error) {
       logger.error('AI setup error:', error);
       return handler.error(res, error.message || 'AI setup failed', 500);
     }
+  });
+
+  /**
+   * @route POST /fear/api/agent/ai/provider
+   * @desc Switch AI provider
+   * @access Public
+   */
+  router.post('/ai/provider', async (req, res) => {
+    try {
+      const { provider } = req.body;
+
+      if (!provider) {
+        return handler.error(res, 'Provider is required', 400);
+      }
+
+      const result = await agentController.executeCommand(
+        { body: { command: 'ai-provider', args: [provider] } },
+        res,
+        handler,
+        logger
+      );
+
+      return result;
+
+    } catch (error) {
+      logger.error('AI provider switch error:', error);
+      return handler.error(res, error.message || 'Provider switch failed', 500);
+    }
+  });
+
+  /**
+   * @route GET /fear/api/agent/ai/status
+   * @desc Get AI module status
+   * @access Public
+   */
+  router.get('/ai/status', async (req, res) => {
+    return agentController.executeCommand(
+      { body: { command: 'ai-status', args: [] } },
+      res,
+      handler,
+      logger
+    );
   });
 
   /**
@@ -301,17 +175,16 @@ module.exports = (fear) => {
         return handler.error(res, 'Target is required', 400);
       }
 
-      const agentService = getInstance();
-      
-      if (!agentService.isInitialized) {
-        agentService.initialize();
-      }
-
       const args = ports ? [target, ports] : [target];
-      const result = await agentService.executeCommand('scan-ports', args);
+      
+      const result = await agentController.executeCommand(
+        { body: { command: 'scan-ports', args } },
+        res,
+        handler,
+        logger
+      );
 
-      logger.info(`Port scan executed: ${target}`);
-      return handler.success(res, result);
+      return result;
 
     } catch (error) {
       logger.error('Port scan error:', error);
@@ -332,17 +205,16 @@ module.exports = (fear) => {
         return handler.error(res, 'Path is required', 400);
       }
 
-      const agentService = getInstance();
-      
-      if (!agentService.isInitialized) {
-        agentService.initialize();
-      }
-
       const command = type === 'project' ? 'analyze-project' : 'analyze-code';
-      const result = await agentService.executeCommand(command, [path]);
+      
+      const result = await agentController.executeCommand(
+        { body: { command, args: [path] } },
+        res,
+        handler,
+        logger
+      );
 
-      logger.info(`Code analysis executed: ${path}`);
-      return handler.success(res, result);
+      return result;
 
     } catch (error) {
       logger.error('Code analysis error:', error);
@@ -363,20 +235,378 @@ module.exports = (fear) => {
         return handler.error(res, 'Search query is required', 400);
       }
 
-      const agentService = getInstance();
-      
-      if (!agentService.isInitialized) {
-        agentService.initialize();
-      }
+      const result = await agentController.executeCommand(
+        { body: { command: 'search-cve', args: [query] } },
+        res,
+        handler,
+        logger
+      );
 
-      const result = await agentService.executeCommand('search-cve', [query]);
-
-      logger.info(`CVE search executed: ${query}`);
-      return handler.success(res, result);
+      return result;
 
     } catch (error) {
       logger.error('CVE search error:', error);
       return handler.error(res, error.message || 'CVE search failed', 500);
+    }
+  });
+
+  /**
+   * @route POST /fear/api/agent/chat
+   * @desc Start or send message to AI chat session
+   * @access Public
+   */
+  router.post('/chat', async (req, res) => {
+    try {
+      const { message, sessionId } = req.body;
+
+      if (!message) {
+        return handler.error(res, 'Message is required', 400);
+      }
+
+      const args = sessionId ? [message, sessionId] : [message];
+      
+      const result = await agentController.executeCommand(
+        { body: { command: 'chat-quick', args } },
+        res,
+        handler,
+        logger
+      );
+
+      return result;
+
+    } catch (error) {
+      logger.error('Chat error:', error);
+      return handler.error(res, error.message || 'Chat failed', 500);
+    }
+  });
+
+  /**
+   * @route GET /fear/api/agent/chat/history
+   * @desc Get chat history
+   * @access Public
+   */
+  router.get('/chat/history', async (req, res) => {
+    return agentController.executeCommand(
+      { body: { command: 'chat-history', args: [] } },
+      res,
+      handler,
+      logger
+    );
+  });
+
+  /**
+   * @route POST /fear/api/agent/chat/clear
+   * @desc Clear chat history
+   * @access Public
+   */
+  router.post('/chat/clear', async (req, res) => {
+    return agentController.executeCommand(
+      { body: { command: 'chat-clear', args: [] } },
+      res,
+      handler,
+      logger
+    );
+  });
+
+  /**
+   * @route POST /fear/api/agent/service/start
+   * @desc Start a background service
+   * @access Public
+   */
+  router.post('/service/start', async (req, res) => {
+    try {
+      const { service } = req.body;
+
+      if (!service) {
+        return handler.error(res, 'Service name is required', 400);
+      }
+
+      const result = await agentController.executeCommand(
+        { body: { command: 'service-start', args: [service] } },
+        res,
+        handler,
+        logger
+      );
+
+      return result;
+
+    } catch (error) {
+      logger.error('Service start error:', error);
+      return handler.error(res, error.message || 'Service start failed', 500);
+    }
+  });
+
+  /**
+   * @route POST /fear/api/agent/service/stop
+   * @desc Stop a background service
+   * @access Public
+   */
+  router.post('/service/stop', async (req, res) => {
+    try {
+      const { service } = req.body;
+
+      if (!service) {
+        return handler.error(res, 'Service name is required', 400);
+      }
+
+      const result = await agentController.executeCommand(
+        { body: { command: 'service-stop', args: [service] } },
+        res,
+        handler,
+        logger
+      );
+
+      return result;
+
+    } catch (error) {
+      logger.error('Service stop error:', error);
+      return handler.error(res, error.message || 'Service stop failed', 500);
+    }
+  });
+
+  /**
+   * @route GET /fear/api/agent/service/status
+   * @desc Get status of all services
+   * @access Public
+   */
+  router.get('/service/status', async (req, res) => {
+    return agentController.executeCommand(
+      { body: { command: 'service-status', args: [] } },
+      res,
+      handler,
+      logger
+    );
+  });
+
+  /**
+   * @route GET /fear/api/agent/service/list
+   * @desc List all available services
+   * @access Public
+   */
+  router.get('/service/list', async (req, res) => {
+    return agentController.executeCommand(
+      { body: { command: 'service-list', args: [] } },
+      res,
+      handler,
+      logger
+    );
+  });
+
+  /**
+   * @route POST /fear/api/agent/proxy/configure
+   * @desc Configure proxy settings
+   * @access Public
+   */
+  router.post('/proxy/configure', async (req, res) => {
+    try {
+      const { provider, apiKey, username, password } = req.body;
+
+      if (!provider) {
+        return handler.error(res, 'Provider is required', 400);
+      }
+
+      let command, args;
+      
+      if (provider === 'proxifly') {
+        if (!apiKey) {
+          return handler.error(res, 'API key is required for Proxifly', 400);
+        }
+        command = 'configure-proxifly';
+        args = [apiKey];
+      } else if (provider === 'proxy5') {
+        if (!username || !password) {
+          return handler.error(res, 'Username and password are required for Proxy5', 400);
+        }
+        command = 'configure-proxy5';
+        args = [username, password];
+      } else {
+        return handler.error(res, 'Invalid provider. Use "proxifly" or "proxy5"', 400);
+      }
+
+      const result = await agentController.executeCommand(
+        { body: { command, args } },
+        res,
+        handler,
+        logger
+      );
+
+      return result;
+
+    } catch (error) {
+      logger.error('Proxy configuration error:', error);
+      return handler.error(res, error.message || 'Proxy configuration failed', 500);
+    }
+  });
+
+  /**
+   * @route GET /fear/api/agent/proxy/list
+   * @desc List available proxies
+   * @access Public
+   */
+  router.get('/proxy/list', async (req, res) => {
+    return agentController.executeCommand(
+      { body: { command: 'list-proxies', args: [] } },
+      res,
+      handler,
+      logger
+    );
+  });
+
+  /**
+   * @route POST /fear/api/agent/proxy/select
+   * @desc Select and activate a proxy
+   * @access Public
+   */
+  router.post('/proxy/select', async (req, res) => {
+    try {
+      const { proxyId } = req.body;
+
+      if (!proxyId) {
+        return handler.error(res, 'Proxy ID is required', 400);
+      }
+
+      const result = await agentController.executeCommand(
+        { body: { command: 'select-proxy', args: [proxyId] } },
+        res,
+        handler,
+        logger
+      );
+
+      return result;
+
+    } catch (error) {
+      logger.error('Proxy selection error:', error);
+      return handler.error(res, error.message || 'Proxy selection failed', 500);
+    }
+  });
+
+  /**
+   * @route GET /fear/api/agent/proxy/status
+   * @desc Get current proxy status
+   * @access Public
+   */
+  router.get('/proxy/status', async (req, res) => {
+    return agentController.executeCommand(
+      { body: { command: 'proxy-status', args: [] } },
+      res,
+      handler,
+      logger
+    );
+  });
+
+  /**
+   * @route POST /fear/api/agent/card/validate
+   * @desc Validate credit card number
+   * @access Public
+   */
+  router.post('/card/validate', async (req, res) => {
+    try {
+      const { cardNumber } = req.body;
+
+      if (!cardNumber) {
+        return handler.error(res, 'Card number is required', 400);
+      }
+
+      const result = await agentController.executeCommand(
+        { body: { command: 'validate-card', args: [cardNumber] } },
+        res,
+        handler,
+        logger
+      );
+
+      return result;
+
+    } catch (error) {
+      logger.error('Card validation error:', error);
+      return handler.error(res, error.message || 'Card validation failed', 500);
+    }
+  });
+
+  /**
+   * @route POST /fear/api/agent/card/check-status
+   * @desc Check card payment status
+   * @access Public
+   */
+  router.post('/card/check-status', async (req, res) => {
+    try {
+      const { cardNumber, expiry, cvv } = req.body;
+
+      if (!cardNumber) {
+        return handler.error(res, 'Card number is required', 400);
+      }
+
+      const args = [cardNumber];
+      if (expiry) args.push(expiry);
+      if (cvv) args.push(cvv);
+
+      const result = await agentController.executeCommand(
+        { body: { command: 'check-card-status', args } },
+        res,
+        handler,
+        logger
+      );
+
+      return result;
+
+    } catch (error) {
+      logger.error('Card status check error:', error);
+      return handler.error(res, error.message || 'Card status check failed', 500);
+    }
+  });
+
+  /**
+   * @route GET /fear/api/agent/crypto/price
+   * @desc Get cryptocurrency price
+   * @access Public
+   */
+  router.get('/crypto/price/:symbol', async (req, res) => {
+    try {
+      const { symbol } = req.params;
+
+      if (!symbol) {
+        return handler.error(res, 'Cryptocurrency symbol is required', 400);
+      }
+
+      const result = await agentController.executeCommand(
+        { body: { command: 'crypto-price', args: [symbol] } },
+        res,
+        handler,
+        logger
+      );
+
+      return result;
+
+    } catch (error) {
+      logger.error('Crypto price error:', error);
+      return handler.error(res, error.message || 'Crypto price fetch failed', 500);
+    }
+  });
+
+  /**
+   * @route POST /fear/api/agent/crypto/convert
+   * @desc Convert between cryptocurrencies
+   * @access Public
+   */
+  router.post('/crypto/convert', async (req, res) => {
+    try {
+      const { from, to, amount } = req.body;
+
+      if (!from || !to || !amount) {
+        return handler.error(res, 'From, to, and amount are required', 400);
+      }
+
+      const result = await agentController.executeCommand(
+        { body: { command: 'crypto-convert', args: [from, to, amount] } },
+        res,
+        handler,
+        logger
+      );
+
+      return result;
+
+    } catch (error) {
+      logger.error('Crypto conversion error:', error);
+      return handler.error(res, error.message || 'Crypto conversion failed', 500);
     }
   });
 
