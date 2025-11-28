@@ -38,7 +38,7 @@ module.exports = FEAR = (() => {
     this.setupMiddleware();
     this.corsConfig = this.getCorsConfig();
     this.setupRoutes();
-    this.setupAiAgent();
+    //this.setupAiAgent();
     //this.setupAgentWebInterface();
   };
 
