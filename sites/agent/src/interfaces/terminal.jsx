@@ -150,8 +150,8 @@ export default function SecurityAgentTerminal() {
           if (result.success) {
             let output = 'SYSTEM STATUS\n\n';
             if (result.modules) {
-              Object.entries(result.modules).forEach(([name, status]) => {
-                output += `${name.padEnd(25)} [${status.toUpperCase()}]\n`;
+              Object.entries(result.modules).forEach(([name, module]) => {
+                output += `${name.padEnd(25)} [${module.status.toUpperCase()}]\n`;
               });
             }
             if (result.version) {
@@ -302,9 +302,11 @@ API URL: ${apiBaseUrl}`;
             args: args
           });
 
+                      console.log('result = ', result);
           if (result.success) {
-            if (result.data && result.data.output) {
-              const lines = result.data.output.split('\n');
+
+            if (result.output) {
+              const lines = result.output.split('\n');
               for (let line of lines) {
                 await new Promise(resolve => setTimeout(resolve, 50));
                 addOutput(line);
