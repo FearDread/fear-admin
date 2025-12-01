@@ -1,0 +1,16 @@
+{
+  "stripe": {
+    "secretKey": "sk_test_your_key_here",
+    "testMode": true
+  },
+  "paypal": {
+    "clientId": "your_client_id",
+    "clientSecret": "your_client_secret",
+    "testMode": true
+  },
+  "authorizenet": {
+    "apiLogin": "your_api_login",
+    "transactionKey": "your_transaction_key",
+    "testMode": true
+  }
+}

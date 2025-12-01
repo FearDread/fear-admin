@@ -34,6 +34,16 @@ const notFoundHandler = (req, res, next) => {
   next(error);
 };
 
+const successResponse = (res, obj) => {3
+  const strip = (text) => text.replace(/\x1b\[[0-9;]*m/g, '')
+
+  if (obj.output) {
+    obj.output = strip(obj.output);
+  }
+
+  return res.status(200).json(obj);
+
+}
 /**
  * Development Error Handler
  * Provides detailed error information for debugging
@@ -142,6 +152,7 @@ const globalErrorHandler = (err, req, res, next) => {
 
 module.exports = {
   error: AppError,
+  success: successResponse,
   global: globalErrorHandler,
   production: productionErrorHandler,
   development: developmentErrorHandler,
