@@ -210,6 +210,7 @@ SecurityAgent.prototype = {
     console.log(colorizer.dim('Loading modules...'));
 
     this.definitions.forEach(moduleDef => {
+      let output = '';
       try {
         const ModuleClass = require(moduleDef.file);
         this.modules[moduleDef.name] = new ModuleClass(this);

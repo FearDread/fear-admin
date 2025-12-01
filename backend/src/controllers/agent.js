@@ -37,7 +37,7 @@ class AgentController {
 
       logger.info('Agent initialized via API');
       
-      return res.status(200).json({
+      return handler.success(res, {
         success: true,
         message: 'Agent initialized successfully',
         initialized: true,
