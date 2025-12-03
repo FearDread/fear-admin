@@ -151,7 +151,7 @@ const globalErrorHandler = (err, req, res, next) => {
 };
 
 module.exports = {
-  error: AppError,
+  error: () => new AppError,
   success: successResponse,
   global: globalErrorHandler,
   production: productionErrorHandler,
