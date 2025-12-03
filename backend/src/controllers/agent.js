@@ -47,7 +47,7 @@ class AgentController {
 
     } catch (error) {
       logger.error('Agent initialization error:', error);
-      return handler.error(res, error.message || 'Failed to initialize agent', 500);
+      return new handler.error(res, error.message || 'Failed to initialize agent', 500);
     }
   }
 
@@ -92,7 +92,7 @@ class AgentController {
 
     } catch (error) {
       logger.error('Agent command execution error:', error);
-      return handler.error(res, error.message || 'Command execution failed', 500);
+      return new handler.error(res, error.message || 'Command execution failed', 500);
     }
   }
 

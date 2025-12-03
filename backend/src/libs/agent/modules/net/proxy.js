@@ -3,7 +3,6 @@ const { HttpsProxyAgent } = require('https-proxy-agent');
 const colorizer = require('../utils/colorizer');
 
 const ProxyManager = function() {
-  constructor() {
     this.currentProxy = null;
     this.proxyList = [];
     this.proxiflyApiKey = process.env.PROXIFLY_API_KEY || null;
@@ -13,7 +12,6 @@ const ProxyManager = function() {
     };
     this.publicIp = null;
     this.lastChecked = null;
-  }
 }
 
 ProxyManager.prototype = {

@@ -81,7 +81,7 @@ function App() {
     useEffect(() => {
       fetch("/api/config").then(async (r) => {
         const { publishableKey } = await r.json();
-        setStripePromise(loadStripe(publishableKey));
+        //setStripePromise(loadStripe(publishableKey));
       });
     }, []);
 

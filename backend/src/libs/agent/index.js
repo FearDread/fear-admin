@@ -38,7 +38,7 @@ const SecurityAgent = function () {
     { name: 'cryptoChecker', file: './modules/crypto/exchange', displayName: 'Crypto Exchange' },
     // Utils Services
     { name: 'fileBrowser', file: './modules/utils/browser', displayName: 'File Browser' },
-    { name: 'proxyManager', file: './modules/network/proxy', displayName: 'Proxy Manager' },
+    { name: 'proxyManager', file: './modules/net/proxy', displayName: 'Proxy Manager' },
     { name: 'serviceManager', file: './modules/utils/manager', displayName: 'Service Manager' }
   ];
 
