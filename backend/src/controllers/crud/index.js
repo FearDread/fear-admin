@@ -2,33 +2,34 @@ const crud = require("./crud");
 
 exports.crudController = ( Model ) => {
   let methods = {};
+  const controller = crud(Model);
   
   methods.all = async (req, res) => {
-    crud.all(Model, req, res);
+    controller.all(req, res);
   };
 
   methods.create = async (req, res) => {
-    crud.create(Model, req, res);
+    controller.create(req, res);
   };
 
   methods.read = async (req, res) => {
-    crud.read(Model, req, res);
+    controller.read(req, res);
   };
 
   methods.update = async (req, res) => {
-    crud.update(Model, req, res);
+    controller.update(req, res);
   };
 
   methods.delete = async (req, res) => {
-    crud.delete(Model, req, res);
+    controller.delete(req, res);
   };
 
   methods.list = async (req, res) => {
-    crud.list(Model, req, res);
+    controller.list(req, res);
   };
 
   methods.search = async (req, res) => {
-    crud.search(Model, req, res);
+    controller.search(req, res);
   };
   
   return methods;

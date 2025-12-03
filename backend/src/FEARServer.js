@@ -56,8 +56,9 @@ const FearServer = (function() {
     setupProcessHandlers() {
       // Handle unhandled promise rejections
       process.on("unhandledRejection", (reason, promise) => {
+        console.log('Unhandled Rejection at:', promise, 'reason:', reason);
         this.fear.getLogger().error('Unhandled Rejection at:', promise, 'reason:', reason);
-        this.gracefulShutdown('unhandledRejection');
+        //this.gracefulShutdown('unhandledRejection');
       });
 
       // Handle uncaught exceptions
