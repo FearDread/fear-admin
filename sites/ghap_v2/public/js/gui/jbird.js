@@ -1,7 +1,7 @@
 
 (($, window, undefined) => {
   // ==================== PORTFOLIO MODULE ====================
-  const GHAP = FEAR.create('FearPortfolio', ($GUI) => {
+  const jbird = FEAR.create('FearPortfolio', ($GUI) => {
     const PLUGIN_NAME = 'fearPortfolio';
     const VERSION = '2.0.0';
 
@@ -234,7 +234,41 @@
         $GUI.warn('Loader module error:', error);
         throw error;
       }
-    };
+    }
+
+    const initVegas = async () => {
+      var bgndKenburns = $GUI.$('#bgndKenburns');
+      if (bgndKenburns.length) {
+        bgndKenburns.vegas({
+          timer: false,
+          delay: 8000,
+          transition: 'fade2',
+          transitionDuration: 2000,
+          slides: [
+            { src: "img/backgrounds/960x1080-kenburns-1.webp" },
+            { src: "img/backgrounds/960x1080-kenburns-2.webp" },
+            { src: "img/backgrounds/960x1080-kenburns-3.webp" }
+          ],
+          animation: ['kenburnsUp', 'kenburnsDown', 'kenburnsLeft', 'kenburnsRight']
+        });
+      }
+
+      var bgndKenburnsFull = $GUI.$('#bgndKenburnsFull');
+      if (bgndKenburnsFull.length) {
+        bgndKenburnsFull.vegas({
+          timer: false,
+          delay: 8000,
+          transition: 'fade2',
+          transitionDuration: 2000,
+          slides: [
+            { src: "img/backgrounds/1920x1080-kenburns-1.webp" },
+            { src: "img/backgrounds/1920x1080-kenburns-2.webp" },
+            { src: "img/backgrounds/1920x1080-kenburns-3.webp" }
+          ],
+          animation: ['kenburnsUp', 'kenburnsDown', 'kenburnsLeft', 'kenburnsRight']
+        });
+      }
+    }
 
     // ==================== MODULE: TYPED ====================
     const initTyped = async () => {
@@ -301,8 +335,13 @@
     };
 
     const initParticles = async () => {
+      const { selector, config } = defaults.particles;
+      const $container = $GUI.$(selector);
 
-    };
+      if ($container.length && window.particlesJS) {
+        particlesJS(selector.replace('#', ''), config);
+      }
+    }
 
     // ==================== MODULE: MAGNIFIC POPUP ====================
     const initMagnificPopup = async () => {
@@ -473,7 +512,8 @@
         config = $GUI.utils.merge({}, defaults, options);
 
         const domModules = [];
-        if (config.modules.particles) domModules.push(initParticles())
+        if (config.modules.vegas) domModules.push(initVegas());
+        if (config.modules.particles) domModules.push(initParticles());
         if (config.modules.swiper) domModules.push(initSwiper());
         if (config.modules.magnificPopup) domModules.push(initMagnificPopup());
         if (config.modules.skillbars) domModules.push(initSkillbars());
