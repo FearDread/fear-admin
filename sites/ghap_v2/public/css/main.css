@@ -37,11 +37,11 @@
 }
 
 .about-image {
-  background-image: url("../img/magic_011.jpg");
+  background-image: url("../img/fear-about-bg.jpg");
 }
 
 .contact-image {
-  background-image: url("../img/magic_012.jpg");
+  background-image: url("../img/magic_014.jpg");
 }
 
 
@@ -1149,7 +1149,7 @@ a {
 .btn-l-icon .btn-icon-anim {
   display: block;
   position: absolute;
-  top: 0;
+  top: 10px;
   right: 2rem;
   width: auto;
   height: 3.6rem;
@@ -1698,7 +1698,7 @@ background-repeat: no-repeat;
   left: 0;
   width: 100%;
   min-width: 360px;
-  height: 8rem;
+  height: 7rem;
   overflow: hidden;
   z-index: 2;
 }
@@ -1712,7 +1712,7 @@ background-repeat: no-repeat;
 }
 @media only screen and (min-width: 1400px) {
   .header {
-    height: 9rem;
+    height: 8rem;
   }
 }
 
@@ -1726,6 +1726,7 @@ background-repeat: no-repeat;
 
 .header.split {
   background-color: #0c0c0c;
+  opacity: 0.8;
 }
 .header.split .header__left,
 .header.split .header__right {
@@ -1753,7 +1754,8 @@ background-repeat: no-repeat;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 .header.full {
-  background-color: transparent;
+  background-color: #0c0c0c;
+  opacity: 0.8;
 }
 .header.full .header__left,
 .header.full .header__right {
@@ -1762,14 +1764,17 @@ background-repeat: no-repeat;
 }
 .header.full.menu-is-visible {
   background-color: #0c0c0c;
+  opacity: 0.8;
 }
 .header.full.menu-is-visible .header__left,
 .header.full.menu-is-visible .header__right {
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  background-color: transparent;
+  background-color: #0c0c0c;
+  opacity: 0.8;
 }
 .header.full.inner-is-visible {
   background-color: #0c0c0c;
+  opacity: 0.8;
 }
 .header.full.inner-is-visible .header__left,
 .header.full.inner-is-visible .header__right {
@@ -1815,12 +1820,14 @@ background-repeat: no-repeat;
     border-bottom: none;
   }
   .header.full.menu-is-visible {
-    background-color: transparent;
+  background-color: #0c0c0c;
+  opacity: 0.8;
   }
   .header.full.menu-is-visible .header__left,
 .header.full.menu-is-visible .header__right {
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    background-color: transparent;
+  background-color: #0c0c0c;
+  opacity: 0.8;
   }
   .header.full.inner-is-visible {
     background-color: transparent;
@@ -2178,7 +2185,7 @@ background-repeat: no-repeat;
   background-position: bottom center;
   -moz-background-size: 100%;
        background-size: 100%;
-  background-image: url("../img/jbird/dark_bg.jpg");
+  background-image: url("../img/magic_015.jpg");
 }
 @media only screen and (min-width: 1200px) {
   .nav__background {
