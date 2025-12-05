@@ -43,6 +43,10 @@ const FearServer = (function () {
         ? `/${basePath.replace(/^\/+|\/+$/g, '')}`
         : '';
 
+        
+      this.fear.getLogger().info(`Serving static files from: ${buildPath}`);
+      this.fear.getLogger().info(`Base URL path: ${normalizedBasePath || '/'}`);
+
       this.fear.getApp().use(
         normalizedBasePath,
         express.static(buildPath, {
@@ -60,6 +64,7 @@ const FearServer = (function () {
         });
       });
     },
+
     /**
      * Setup process event handlers for graceful shutdown
      */
@@ -186,7 +191,7 @@ const FearServer = (function () {
         this.fear = new FearFactory();
         this.Router = this.fear.Router;
 
-        this.setupStaticFiles(paths.root, paths.app, paths.build);
+        this.setupStaticFiles(paths.root, paths.app, paths.build, paths.basePath);
         this.setupProcessHandlers();
 
         return Promise.resolve(this.fear);
