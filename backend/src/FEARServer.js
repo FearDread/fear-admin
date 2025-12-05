@@ -4,7 +4,7 @@ const path = require('path');
 const express = require('express');
 require("dotenv").config();
 
-const FearServer = (function() {
+const FearServer = (function () {
   // Private constants
   const DEFAULT_PATHS = {
     root: path.resolve(),
@@ -24,23 +24,34 @@ const FearServer = (function() {
     this.rootDir = path.resolve();
   }
 
-  // Consolidated prototype
   FearServer.prototype = {
     constructor: FearServer,
 
     /**
      * Configure static file serving for React SPA
+     * @param {string} root - Root directory path
+     * @param {string} app - App directory path
+     * @param {string} build - Build directory path
+     * @param {string} basePath - Base path for the app (e.g., '/fear/sites/ghap')
      */
-    setupStaticFiles(root, app, build) {
+    setupStaticFiles(root, app, build, basePath = '') {
       this.rootDir = root || path.resolve();
       const buildPath = path.join(this.rootDir, app);
       const indexPath = path.resolve(this.rootDir, build, "index.html");
 
-      // Serve static files from React build
-      this.fear.getApp().use(express.static(buildPath));
-      
-      // Catch-all handler for SPA routing
-      this.fear.getApp().get("*", (req, res) => {
+      const normalizedBasePath = basePath
+        ? `/${basePath.replace(/^\/+|\/+$/g, '')}`
+        : '';
+
+      this.fear.getApp().use(
+        normalizedBasePath,
+        express.static(buildPath, {
+          index: false,
+          fallthrough: true 
+        })
+      );
+
+      this.fear.getApp().get(`${normalizedBasePath}/*`, (req, res) => {
         res.sendFile(indexPath, (err) => {
           if (err) {
             this.fear.getLogger().error('Error serving index.html:', err);
@@ -49,7 +60,6 @@ const FearServer = (function() {
         });
       });
     },
-
     /**
      * Setup process event handlers for graceful shutdown
      */
@@ -90,7 +100,7 @@ const FearServer = (function() {
               this.fear.getLogger().error('Database initialization failed:', err);
               return reject(err);
             }
-            
+
             this.fear.getLogger().info('Database initialized successfully');
             resolve();
           });
@@ -144,7 +154,7 @@ const FearServer = (function() {
       }, SHUTDOWN_TIMEOUT);
 
       // Close server connections
-      const closeServerPromise = this.server 
+      const closeServerPromise = this.server
         ? new Promise((resolve) => this.server.close(resolve))
         : Promise.resolve();
 
@@ -175,10 +185,10 @@ const FearServer = (function() {
         const FearFactory = require("./FEAR");
         this.fear = new FearFactory();
         this.Router = this.fear.Router;
-        
+
         this.setupStaticFiles(paths.root, paths.app, paths.build);
         this.setupProcessHandlers();
-        
+
         return Promise.resolve(this.fear);
       } catch (error) {
         console.error('Failed to initialize FEAR application:', error);
@@ -192,7 +202,7 @@ const FearServer = (function() {
     startServer() {
       const port = this.fear.getApp().get("PORT") || DEFAULT_PORT;
       const logger = this.fear.getLogger();
-      
+
       // Display logo
       if (this.fear.logo) {
         logger.warn(this.fear.logo);

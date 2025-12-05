@@ -6,7 +6,8 @@ async function main() {
     server.initialize({
             root: __dirname,
             app: '/public',
-            build: 'public'
+            build: 'public',
+            basePath: '/fear/sites/ghap'
         })
         .then(() => server.startServer())
         .catch((error) => process.exit(1))
