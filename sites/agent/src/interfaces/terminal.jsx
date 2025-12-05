@@ -406,7 +406,7 @@ API URL: ${apiBaseUrl}`;
         {history.map((entry, index) => (
           <div key={index}>
             {entry.type === 'banner' ? (
-              <pre className="terminal-banner" style={{ textAlign: 'center', color: '#22d3ee', fontSize: '0.75rem', lineHeight: '1.2', marginBottom: '0.5rem' }}>
+              <pre className="terminal-banner" style={{ textAlign: 'center', color: '#ec1111ff', fontSize: '0.75rem', lineHeight: '1.2', marginBottom: '0.5rem' }}>
                 {logo}
                 <div style={{ marginTop: '0.5rem', textAlign: 'center' }}>
 {`═══════════════════════════════════════════════════════
