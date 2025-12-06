@@ -14,9 +14,8 @@ export const App = () => {
         <BrowserRouter>
             <Suspense>
                 <Routes>
-
-	    		<Route path="/" element={<TerminalAgent/>} />
-			    <Route path="/chat" element={<AIChatInterface/>} />
+	    		    <Route path="/" element={<TerminalAgent/>} />
+			        <Route path="/chat" element={<AIChatInterface/>} />
                 </Routes>
             </Suspense>
         </BrowserRouter>
