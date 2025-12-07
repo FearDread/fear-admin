@@ -4,6 +4,7 @@
   "private": true,
   "author": "FearDread",
   "description": "Store front using FEAR backend and new feature factory",
+  "homepage": "/stores/ecomix",
   "dependencies": {
     "@feardread/feature-factory": "^5.0.8",
     "@reduxjs/toolkit": "^1.9.5",
