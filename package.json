@@ -55,7 +55,8 @@
     "swagger-ui-express": "^5.0.1",
     "swipe": "^1.7.7",
     "uniqid": "^5.4.0",
-    "validator": "^13.9.0"
+    "validator": "^13.9.0",
+    "winston": "^3.18.3"
   },
   "devDependencies": {
     "apidoc": "^1.2.0",
