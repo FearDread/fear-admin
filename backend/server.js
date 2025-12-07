@@ -1,8 +1,8 @@
-const FearServer = require("./src/FEARServer");
+const Fear = require("@feardread/fear");
 
 // Main execution
 async function main() {
-  const server = new FearServer();
+  const server = new Fear.FearServer();
 
   server.initialize()
         .then(() => server.startServer())
