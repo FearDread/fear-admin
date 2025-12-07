@@ -1,21 +1,19 @@
-const FearServer = require('../../backend/src/FEARServer');
+const Fear = require('@feardread/fear');
 
 async function main() {
-    const server = new FearServer();
+    const server = new Fear.FearServer();
 
     server.initialize({
             root: __dirname,
             app: '/build',
             build: 'public',
-            basePath: ''
+            basePath: '/fear/agent'
         })
         .then(() => { 
-            server.startServer().catch(err => process.exit(1));
-        })
-        .catch((error) => {
-            console.error('Failed to start application:', error);
-            process.exit(1);
-        });
+		server.fear.getLogger().warn('Running Template script for AI Agent');
+		server.startServer().catch((err) => { process.exit(1) })
+	})
+        .catch((error) => { process.exit(1);});
 }
 
 // Handle top-level errors
