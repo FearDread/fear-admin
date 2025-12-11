@@ -18,6 +18,45 @@ export default function AIChatInterface() {
     scrollToBottom();
   }, [messages]);
 
+   const handleSend = async () => {
+    if (!input.trim()) return;
+
+    const userMessage = { role: 'user', content: input };
+    setMessages(prev => [...prev, userMessage]);
+    setInput('');
+    setIsTyping(true);
+
+    try {
+      const response = await fetch('http://localhost:11434/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'llama2',
+          messages: [...messages, userMessage],
+          stream: false
+        })
+      });
+
+      const data = await response.json();
+      const aiResponse = {
+        role: 'assistant',
+        content: data.message.content
+      };
+      setMessages(prev => [...prev, aiResponse]);
+    } catch (error) {
+      console.error('Error:', error);
+      const errorResponse = {
+        role: 'assistant',
+        content: 'Sorry, I encountered an error. Please make sure Ollama is running on localhost:11434.'
+      };
+      setMessages(prev => [...prev, errorResponse]);
+    } finally {
+      setIsTyping(false);
+    }
+  };
+  /*
   const handleSend = async () => {
     if (!input.trim()) return;
 
@@ -36,7 +75,7 @@ export default function AIChatInterface() {
       setIsTyping(false);
     }, 1000);
   };
-
+  */
   const handleKeyPress = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
