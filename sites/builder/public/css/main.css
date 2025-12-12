@@ -1,0 +1,262 @@
+ * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+      background: url("/img/fear_logo.jpg");
+        background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: rgba(20, 20, 20, 0.8);
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #340158 0%, #af2fdd 100%);
+      color: white;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .header p {
+      color: rgba(248, 246, 246, 0.9);
+    }
+
+    .content {
+      padding: 2rem;
+    }
+
+    .section {
+      margin-bottom: 2rem;
+    }
+
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #ffffff;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    label {
+      display: block;
+      font-weight: 500;
+      color: #e8dfdf;
+      margin-bottom: 0.5rem;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 0.75rem;
+      border: 2px solid #ffffff;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color 0.3s;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.75rem;
+    }
+
+    .tool-card {
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 1rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .tool-card:hover {
+      border-color: #667eea;
+    }
+
+    .tool-card.selected {
+      border-color: #667eea;
+      background: #f0f4ff;
+    }
+
+    .tool-card input[type="checkbox"] {
+      width: auto;
+    }
+
+    .tool-info {
+      flex: 1;
+    }
+
+    .tool-name {
+      font-weight: 600;
+      color: #fff9f9;
+      margin-bottom: 0.25rem;
+    }
+
+    .tool-desc {
+      font-size: 0.875rem;
+      color: #797676;
+    }
+
+    .btn {
+      padding: 1rem 2rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #33015b 0%, #4c005f 100%);
+      color: white;
+      width: 100%;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-success {
+      background: #10b981;
+      color: white;
+    }
+
+    .btn-success:hover {
+      background: #059669;
+    }
+
+    .success-message {
+      background: #d1fae5;
+      border: 2px solid #10b981;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .success-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .success-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #059669;
+    }
+
+    .files-list {
+      background: #1f2937;
+      color: #f3f4f6;
+      padding: 1rem;
+      border-radius: 8px;
+      font-family: 'Courier New', monospace;
+      margin: 1rem 0;
+    }
+
+    .file-item {
+      color: #60a5fa;
+      margin: 0.25rem 0;
+    }
+
+    .instructions {
+      background: #dbeafe;
+      border: 2px solid #3b82f6;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-top: 1rem;
+    }
+
+    .instructions-title {
+      font-weight: 600;
+      color: #1e40af;
+      margin-bottom: 0.5rem;
+    }
+
+    .instructions ol {
+      margin-left: 1.5rem;
+      color: #1e3a8a;
+    }
+
+    .instructions li {
+      margin: 0.5rem 0;
+    }
+
+    .instructions code {
+      background: #bfdbfe;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+    }
+
+    @media (max-width: 768px) {
+      .grid-2,
+      .tools-grid {
+        grid-template-columns: 1fr;
+      }
+    }

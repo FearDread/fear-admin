@@ -39,6 +39,7 @@ export default function AiChatInterface() {
       });
 
       const data = await response.json();
+
       const aiResponse = {
         role: 'assistant',
         content: data.message.content
