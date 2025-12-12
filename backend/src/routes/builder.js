@@ -1,24 +1,4 @@
 
-
-const anthropic = new Anthropic({
-    apiKey: process.env.ANTHROPIC_API_KEY || ''
-});
-
-const AGENT_CONFIG = {
-    name: 'home work assistant',
-    description: 'helps me organize calls and client files',
-    personality: 'professional',
-    model: 'claude-sonnet-4-20250514'
-};
-
-const SYSTEM_PROMPT = `You are ${AGENT_CONFIG.name}, ${AGENT_CONFIG.description}.
-Your primary function is: organize clients and files.
-Personality: ${AGENT_CONFIG.personality}.
-Available tools: web_search, file_read, database
-`;
-
-
-
 module.exports = (fear) => {
     const router = fear.createRouter();
     const logger = fear.getLogger();
