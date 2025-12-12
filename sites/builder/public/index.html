@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Agent Builder</title>
+  <link href="css/main.css", rel="stylesheet">
+   
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="header">
+        <h1>
+          <span>✨</span>
+         FEAR AI Builder
+        </h1>
+        <p>Design and generate custom AI agents as standalone Node.js applications</p>
+      </div>
+
+      <div class="content">
+        <form id="agentForm">
+          <!-- Basic Configuration -->
+          <div class="section">
+            <div class="section-title">
+              <span>⚙️</span>
+              Basic Configuration
+            </div>
+
+            <div class="form-group">
+              <label for="agentName">Agent Name *</label>
+              <input type="text" id="agentName" name="agentName" placeholder="e.g., Customer Support Assistant" required>
+            </div>
+
+            <div class="form-group">
+              <label for="agentDescription">Description *</label>
+              <textarea id="agentDescription" name="agentDescription" placeholder="Describe what your agent does..." required></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="primaryFunction">Primary Function *</label>
+              <input type="text" id="primaryFunction" name="primaryFunction" placeholder="e.g., Answer questions about products and services" required>
+            </div>
+
+            <div class="grid-2">
+              <div class="form-group">
+                <label for="personality">Personality</label>
+                <select id="personality" name="personality">
+                  <option value="professional">Professional</option>
+                  <option value="friendly">Friendly</option>
+                  <option value="technical">Technical</option>
+                  <option value="casual">Casual</option>
+                  <option value="formal">Formal</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="port">Port</label>
+                <input type="text" id="port" name="port" value="3000">
+              </div>
+            </div>
+          </div>
+
+          <!-- Tools & Capabilities -->
+          <div class="section">
+            <div class="section-title">
+              <span>🔧</span>
+              Tools & Capabilities
+            </div>
+
+            <div class="tools-grid" id="toolsGrid">
+              <div class="tool-card" data-tool="web_search">
+                <input type="checkbox" name="tools" value="web_search">
+                <div class="tool-info">
+                  <div class="tool-name">Web Search</div>
+                  <div class="tool-desc">Search the internet</div>
+                </div>
+              </div>
+
+              <div class="tool-card" data-tool="file_read">
+                <input type="checkbox" name="tools" value="file_read">
+                <div class="tool-info">
+                  <div class="tool-name">File System</div>
+                  <div class="tool-desc">Read/write files</div>
+                </div>
+              </div>
+
+              <div class="tool-card" data-tool="calculator">
+                <input type="checkbox" name="tools" value="calculator">
+                <div class="tool-info">
+                  <div class="tool-name">Calculator</div>
+                  <div class="tool-desc">Perform calculations</div>
+                </div>
+              </div>
+
+              <div class="tool-card" data-tool="database">
+                <input type="checkbox" name="tools" value="database">
+                <div class="tool-info">
+                  <div class="tool-name">Database</div>
+                  <div class="tool-desc">Query databases</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- API Configuration -->
+          <div class="section">
+            <div class="section-title">
+              <span>🔑</span>
+              API Configuration
+            </div>
+
+            <div class="form-group">
+              <label for="apiKey">Anthropic API Key (optional - can be set later in .env)</label>
+              <input type="password" id="apiKey" name="apiKey" placeholder="sk-ant-...">
+            </div>
+
+            <div class="form-group">
+              <label for="model">Claude Model</label>
+              <select id="model" name="model">
+                <option value="claude-sonnet-4-20250514">Claude Sonnet 4</option>
+                <option value="claude-opus-4-20250514">Claude Opus 4</option>
+                <option value="claude-haiku-4-20250514">Claude Haiku 4</option>
+              </select>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary" id="generateBtn">
+            <span>✨</span>
+            Generate Agent Code
+          </button>
+        </form>
+
+        <div id="successMessage" style="display: none;"></div>
+      </div>
+    </div>
+  </div>
+<script>
+
+    document.querySelectorAll('.tool-card').forEach(card => {
+      card.addEventListener('click', (e) => {
+        if (e.target.type !== 'checkbox') {
+          const checkbox = card.querySelector('input[type="checkbox"]');
+          checkbox.checked = !checkbox.checked;
+        }
+        card.classList.toggle('selected', card.querySelector('input').checked);
+      });
+    });
+
+    // Form submission
+    document.getElementById('agentForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const generateBtn = document.getElementById('generateBtn');
+      generateBtn.disabled = true;
+      generateBtn.textContent = 'Generating...';
+
+      const formData = {
+        agentName: document.getElementById('agentName').value,
+        agentDescription: document.getElementById('agentDescription').value,
+        primaryFunction: document.getElementById('primaryFunction').value,
+        personality: document.getElementById('personality').value,
+        port: document.getElementById('port').value,
+        apiKey: document.getElementById('apiKey').value,
+        model: document.getElementById('model').value,
+        tools: Array.from(document.querySelectorAll('input[name="tools"]:checked')).map(cb => cb.value)
+      };
+
+      try {
+        const response = await fetch('/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ formData })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          displaySuccess(data.files, formData);
+        }
+      } catch (error) {
+        alert('Error generating agent: ' + error.message);
+      }
+
+      generateBtn.disabled = false;
+      generateBtn.innerHTML = '<span>✨</span> Generate Agent Code';
+    });
+
+    function displaySuccess(files, formData) {
+      const successDiv = document.getElementById('successMessage');
+      
+      const filesList = Object.keys(files).map(name => 
+        `<div class="file-item">→ ${name}</div>`
+      ).join('');
+
+      successDiv.innerHTML = `
+        <div class="success-message">
+          <div class="success-header">
+            <div class="success-title">✓ Agent Generated Successfully!</div>
+            <button class="btn btn-success" onclick="downloadAllFiles()">
+              <span>⬇️</span>
+              Download All Files
+            </button>
+          </div>
+
+          <div class="files-list">
+            <div style="color: #10b981; margin-bottom: 0.5rem;">Files generated:</div>
+            ${filesList}
+          </div>
+
+          <div class="instructions">
+            <div class="instructions-title">Next Steps:</div>
+            <ol>
+              <li>Download all files using the button above</li>
+              <li>Create a new directory and place all files inside</li>
+              <li>Run <code>npm install</code></li>
+              <li>Add your API key to the .env file</li>
+              <li>Run <code>npm start</code></li>
+              <li>Open http://localhost:${formData.port} in your browser</li>
+            </ol>
+          </div>
+        </div>
+      `;
+
+      successDiv.style.display = 'block';
+      
+      // Store files globally for download
+      window.generatedFiles = files;
+    }
+
+    function downloadAllFiles() {
+      // Get agent name for folder name
+      const agentName = document.getElementById('agentName').value
+        .toLowerCase()
+        .replace(/\s+/g, '-')
+        .replace(/[^a-z0-9-]/g, '') || 'custom-agent';
+
+      // Create a zip-like structure using JSZip would be ideal,
+      // but we'll create a bundled script instead
+      createInstallScript(agentName);
+      
+      // Download individual files
+      Object.entries(window.generatedFiles).forEach(([filename, content]) => {
+        const blob = new Blob([content], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(url);
+      });
+    }
+
+    function createInstallScript(agentName) {
+      // Create an install script that sets up everything
+      const installScript = `#!/bin/bash
+# AI Agent Setup Script
+# Run this script to automatically set up your agent
+
+AGENT_NAME="${agentName}"
+
+echo "🤖 Setting up $AGENT_NAME..."
+echo ""
+
+# Create directory
+if [ -d "$AGENT_NAME" ]; then
+  echo "⚠️  Directory $AGENT_NAME already exists!"
+  read -p "Do you want to overwrite it? (y/n) " -n 1 -r
+  echo
+  if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+    echo "Installation cancelled."
+    exit 1
+  fi
+  rm -rf "$AGENT_NAME"
+fi
+
+mkdir "$AGENT_NAME"
+cd "$AGENT_NAME"
+
+echo "📁 Created directory: $AGENT_NAME"
+
+# Instructions for user
+echo ""
+echo "📋 Next steps:"
+echo "1. Move all downloaded files into the $AGENT_NAME folder"
+echo "2. cd $AGENT_NAME"
+echo "3. npm install"
+echo "4. Create .env file (copy from .env.example)"
+echo "5. Add your ANTHROPIC_API_KEY to .env"
+echo "6. npm start"
+echo ""
+echo "✅ Setup complete! Follow the steps above to run your agent."
+`;
+
+      // For Windows users, create a batch file too
+      const installBatch = `@echo off
+REM AI Agent Setup Script for Windows
+REM Run this script to automatically set up your agent
+
+set AGENT_NAME=${agentName}
+
+echo Setting up %AGENT_NAME%...
+echo.
+
+REM Create directory
+if exist "%AGENT_NAME%" (
+  echo Directory %AGENT_NAME% already exists!
+  set /p OVERWRITE="Do you want to overwrite it? (y/n): "
+  if /i not "%OVERWRITE%"=="y" (
+    echo Installation cancelled.
+    exit /b
+  )
+  rmdir /s /q "%AGENT_NAME%"
+)
+
+mkdir "%AGENT_NAME%"
+cd "%AGENT_NAME%"
+
+echo Created directory: %AGENT_NAME%
+
+REM Instructions for user
+echo.
+echo Next steps:
+echo 1. Move all downloaded files into the %AGENT_NAME% folder
+echo 2. cd %AGENT_NAME%
+echo 3. npm install
+echo 4. Create .env file (copy from .env.example)
+echo 5. Add your ANTHROPIC_API_KEY to .env
+echo 6. npm start
+echo.
+echo Setup complete! Follow the steps above to run your agent.
+pause
+`;
+
+      // Download install script
+      const blob = new Blob([installScript], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'install.sh';
+      a.click();
+      URL.revokeObjectURL(url);
+
+      // Download Windows batch file
+      const blobBat = new Blob([installBatch], { type: 'text/plain' });
+      const urlBat = URL.createObjectURL(blobBat);
+      const aBat = document.createElement('a');
+      aBat.href = urlBat;
+      aBat.download = 'install.bat';
+      aBat.click();
+      URL.revokeObjectURL(urlBat);
+    }
+  </script>
+</body>
+</html>
