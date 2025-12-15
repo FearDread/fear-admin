@@ -22,7 +22,7 @@ main().catch((error) => {
     process.exit(1);
 });
 
-
+/*
 const express = require('express');
 const path = require('path');
 
@@ -374,3 +374,4 @@ const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
   console.log(`🚀 AI Agent Builder running on http://localhost:${PORT}`);
 });
+*/
