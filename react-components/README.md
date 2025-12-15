@@ -10,16 +10,13 @@ npm install
 
 ## Components
 
-- **ProductDetails** - Main component
+- **ShopGridLeftSidebar** - Main component
 - **Navigation1** - Extracted component
 - **Navigation2** - Extracted component
 - **Navigation3** - Extracted component
 - **Navigation4** - Extracted component
+- **Navigation5** - Extracted component
 - **Footer** - Extracted component
-- **Section1** - Extracted component
-- **Section2** - Extracted component
-- **Section3** - Extracted component
-- **Section4** - Extracted component
 
 ## Manual Review Required
 

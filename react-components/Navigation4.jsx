@@ -8,7 +8,7 @@ function Navigation4() {
       </li>
       <li className="breadcrumb-item"><a href="javascript:;">Shop</a>
     </li>
-    <li className="breadcrumb-item active" aria-current="page">Product Details</li>
+    <li className="breadcrumb-item active" aria-current="page">Shop Left Sidebar</li>
     </ol>
     </nav>
   );
