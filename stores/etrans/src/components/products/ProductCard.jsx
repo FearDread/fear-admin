@@ -2,37 +2,53 @@
 
 const ProductCard = ({ product }) => {
   return (
-    <div className="bg-gray-800 rounded-lg overflow-hidden hover:shadow-xl transition-shadow">
-      <div className="relative">
-        <div className="absolute top-3 right-3 flex gap-2">
-          <button className="bg-gray-900 p-2 rounded-full hover:bg-gray-700">
-            <i></i>
-          </button>
-        </div>
-        <div className="bg-gray-700 h-64 flex items-center justify-center text-6xl">
-          {product.icon}
-        </div>
-      </div>
-      <div className="p-4">
-        <p className="text-xs text-gray-400 mb-1">{product.category}</p>
-        <h6 className="font-semibold mb-2">{product.name}</h6>
-        <div className="flex items-center justify-between mb-3">
-          <div>
-            <span className="text-gray-400 line-through text-sm mr-2">$99.00</span>
-            <span className="text-xl font-bold">${product.price}</span>
+    <>
+    <div className="col">
+      <div className="card rounded-0 product-card">
+        <div className="card-header bg-transparent border-bottom-0">
+          <div className="d-flex align-items-center justify-content-end gap-3">
+            <a href="javascript:;">
+              <div className="product-compare"><span><i className='bx bx-git-compare'></i> Compare</span>
+            </div>
+          </a>
+          <a href="javascript:;">
+            <div className="product-wishlist"> <i className='bx bx-heart'></i>
           </div>
-          <div className="flex gap-1">
-            {[...Array(5)].map((_, i) => (
-              <i idx={i}></i>
-              /* <Star key={i} size={14} fill={i < product.rating ? "currentColor" : "none"} /> */
-            ))}
-          </div>
-        </div>
-        <button className="w-full bg-white text-gray-900 py-2 rounded hover:bg-gray-100 flex items-center justify-center gap-2">
-          <i></i> Add to Cart
-        </button>
+        </a>
       </div>
     </div>
+    <a href="product-details.html">
+      <img src="assets/images/products/03.png" className="card-img-top" alt="..." />
+    </a>
+    <div className="card-body">
+      <div className="product-info">
+        <a href="javascript:;">
+          <p className="product-catergory font-13 mb-1">Catergory Name</p>
+        </a>
+        <a href="javascript:;">
+          <h6 className="product-name mb-2">Product Short Name</h6>
+        </a>
+        <div className="d-flex align-items-center">
+          <div className="mb-1 product-price"> <span className="me-1 text-decoration-line-through">$99.00</span>
+          <span className="text-white fs-5">$49.00</span>
+        </div>
+        <div className="cursor-pointer ms-auto"> <i className="bx bxs-star text-white"></i>
+        <i className="bx bxs-star text-white"></i>
+        <i className="bx bxs-star text-white"></i>
+        <i className="bx bxs-star text-white"></i>
+        <i className="bx bxs-star text-light-4"></i>
+      </div>
+    </div>
+    <div className="product-action mt-2">
+      <div className="d-grid gap-2">
+        <a href="javascript:;" className="btn btn-light btn-ecomm"> <i className='bx bxs-cart-add'></i>Add to Cart</a> <a href="javascript:;" className="btn btn-link btn-ecomm" data-bs-toggle="modal" data-bs-target="#QuickViewProduct"><i className='bx bx-zoom-in'></i>Quick View</a>
+      </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    </>
   );
 };
 
