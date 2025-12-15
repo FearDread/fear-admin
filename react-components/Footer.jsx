@@ -32,35 +32,25 @@ function Footer() {
               <div className="footer-section2 mb-3">
                 <h6 className="mb-3 text-uppercase">Shop Categories</h6>
                 <ul className="list-unstyled">
-                  <li className="mb-1"><a href="javascript:;"><i className='bx bx-chevron-right'></i>
-                  Jeans</a>
+                  <li className="mb-1"><a href="javascript:;"><i className='bx bx-chevron-right'></i> Jeans</a>
                 </li>
-                <li className="mb-1"><a href="javascript:;"><i className='bx bx-chevron-right'></i>
-                T-Shirts</a>
+                <li className="mb-1"><a href="javascript:;"><i className='bx bx-chevron-right'></i> T-Shirts</a>
               </li>
-              <li className="mb-1"><a href="javascript:;"><i className='bx bx-chevron-right'></i>
-              Sports</a>
+              <li className="mb-1"><a href="javascript:;"><i className='bx bx-chevron-right'></i> Sports</a>
             </li>
-            <li className="mb-1"><a href="javascript:;"><i className='bx bx-chevron-right'></i> Shirts &
-            Tops</a>
+            <li className="mb-1"><a href="javascript:;"><i className='bx bx-chevron-right'></i> Shirts & Tops</a>
           </li>
-          <li className="mb-1"><a href="javascript:;"><i className='bx bx-chevron-right'></i> Clogs &
-          Mules</a>
+          <li className="mb-1"><a href="javascript:;"><i className='bx bx-chevron-right'></i> Clogs & Mules</a>
         </li>
-        <li className="mb-1"><a href="javascript:;"><i className='bx bx-chevron-right'></i>
-        Sunglasses</a>
+        <li className="mb-1"><a href="javascript:;"><i className='bx bx-chevron-right'></i> Sunglasses</a>
       </li>
-      <li className="mb-1"><a href="javascript:;"><i className='bx bx-chevron-right'></i> Bags &
-      Wallets</a>
+      <li className="mb-1"><a href="javascript:;"><i className='bx bx-chevron-right'></i> Bags & Wallets</a>
     </li>
-    <li className="mb-1"><a href="javascript:;"><i className='bx bx-chevron-right'></i> Sneakers
-    & Athletic</a>
+    <li className="mb-1"><a href="javascript:;"><i className='bx bx-chevron-right'></i> Sneakers & Athletic</a>
     </li>
-    <li className="mb-1"><a href="javascript:;"><i className='bx bx-chevron-right'></i>
-    Electronis</a>
+    <li className="mb-1"><a href="javascript:;"><i className='bx bx-chevron-right'></i> Electronis</a>
     </li>
-    <li className="mb-1"><a href="javascript:;"><i className='bx bx-chevron-right'></i>
-    Furniture</a>
+    <li className="mb-1"><a href="javascript:;"><i className='bx bx-chevron-right'></i> Furniture</a>
     </li>
     </ul>
     </div>
@@ -68,7 +58,7 @@ function Footer() {
     <div className="col">
       <div className="footer-section3 mb-3">
         <h6 className="mb-3 text-uppercase">Popular Tags</h6>
-        <div className="tags-box">	<a href="javascript:;" className="tag-link">Cloths</a>
+        <div className="tags-box"> <a href="javascript:;" className="tag-link">Cloths</a>
         <a href="javascript:;" className="tag-link">Electronis</a>
         <a href="javascript:;" className="tag-link">Furniture</a>
         <a href="javascript:;" className="tag-link">Sports</a>
@@ -108,7 +98,7 @@ function Footer() {
     </div>
     </div>
     </div>
-    <hr / />
+    <hr/ />
     <div className="row row-cols-1 row-cols-md-2 align-items-center">
       <div className="col">
         <p className="mb-0">Copyright © 2021. All right reserved.</p>
