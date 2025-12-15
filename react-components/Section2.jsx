@@ -2,41 +2,13 @@ import React from 'react';
 
 function Section2() {
   return (
-    <section className="py-3 border-top border-bottom">
+    <section className="py-4">
       <div className="container">
-        <div className="row row-cols-1 row-cols-lg-3 row-group align-items-center">
-          <div className="col p-3">
-            <div className="d-flex align-items-center">
-              <div className="fs-1 text-white">	<i className='bx bx-taxi'></i>
-            </div>
-            <div className="info-box-content ps-3">
-              <h6 className="mb-0">FREE SHIPPING {"&"} RETURN</h6>
-              <p className="mb-0">Free shipping on all orders over $49</p>
-            </div>
-          </div>
-        </div>
-        <div className="col p-3">
-          <div className="d-flex align-items-center">
-            <div className="fs-1 text-white">	<i className='bx bx-dollar-circle'></i>
-          </div>
-          <div className="info-box-content ps-3">
-            <h6 className="mb-0">MONEY BACK GUARANTEE</h6>
-            <p className="mb-0">100% money back guarantee</p>
-          </div>
+        <h3 className="d-none">Google Map</h3>
+        <div className="contact-map p-3 bg-dark-1 rounded-0 shadow-none">
+          <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d805184.6319269302!2d144.49269200596396!3d-37.971237009163936!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6ad646b5d2ba4df7%3A0x4045675218ccd90!2sMelbourne%20VIC%2C%20Australia!5e0!3m2!1sen!2sin!4v1618835176130!5m2!1sen!2sin" className="w-100" height="450" style={{'border':0}} allowfullscreen="" loading="lazy"></iframe>
         </div>
       </div>
-      <div className="col p-3">
-        <div className="d-flex align-items-center">
-          <div className="fs-1 text-white">	<i className='bx bx-support'></i>
-        </div>
-        <div className="info-box-content ps-3">
-          <h6 className="mb-0">ONLINE SUPPORT 24/7</h6>
-          <p className="mb-0">Awesome Support for 24/7 Days</p>
-        </div>
-      </div>
-    </div>
-    </div>
-    </div>
     </section>
   );
 }
