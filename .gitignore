@@ -8,5 +8,6 @@ yarn.lock
 .eslintcache
 .env
 build/
+dork-results/
 
 
