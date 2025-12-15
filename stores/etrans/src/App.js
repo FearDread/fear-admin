@@ -13,61 +13,36 @@ import Contact from "./pages/Contact";
 
 import { useRouter } from "./contexts/Router";
 
+import './assets/css/bootstrap.min.css';
+import './assets/css/icons.css';
+import './assets/css/index.css';
+import './assets/css/pace.min.css';
 import './assets/css/app.css';
 
-const App = () => {
+const LoadingFallback = () => (
+  <div className="d-flex justify-content-center align-items-center min-vh-100">
+    <div className="spinner-border" role="status">
+      <span className="visually-hidden">Loading...</span>
+    </div>
+  </div>
+);
+
+export const App = () => {
   const { currentRoute } = useRouter();
 
   const renderRoute = () => {
-    switch (currentRoute) {
-      case '/':
-        return (
-          <PublicRoute>
-            <Home />
-          </PublicRoute>
-        );
-
-      case '/shop':
-        return (
-          <PublicRoute>
-            <Shop />
-          </PublicRoute>
-        );
-
-        // AUTH AND ADMIN PAGES
-      case '/login':
-        return <Login />;
-
-      case '/admin/dashboard':
-        return (
-          <PrivateRoute>
-            <Dashboard />
-          </PrivateRoute>
-        );
-
-      case '/admin/orders':
-        return (
-          <PrivateRoute>
-            <Orders />
-          </PrivateRoute>
-        );
-
-      default:
-        return (
-          <PublicRoute>
-            <Home />
-          </PublicRoute>
-        );
-    }
+    console.log('current route = ', currentRoute);
   };
 
   return (
     <BrowserRouter>
-      <Suspense>
+      <Suspense fallback={<LoadingFallback />}>
         <Routes>
           <Route path="/" element={<Layout />}>
-            {currentRoute !== '/login'}
-            {renderRoute()}
+            <Route index element={<PublicRoute><Home /></PublicRoute>} /> 
+            <Route path="about" element={<PublicRoute><About /></PublicRoute>} />
+            <Route path="shop" element={<PublicRoute><Shop /></PublicRoute>} />
+            <Route path="contact" element={<PublicRoute><Contact /></PublicRoute>} />
           </Route>
         </Routes>
       </Suspense>
