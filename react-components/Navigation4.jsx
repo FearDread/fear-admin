@@ -6,9 +6,9 @@ function Navigation4() {
       <ol className="breadcrumb mb-0 p-0">
         <li className="breadcrumb-item"><a href="javascript:;"><i className="bx bx-home-alt"></i> Home</a>
       </li>
-      <li className="breadcrumb-item"><a href="javascript:;">Pages</a>
+      <li className="breadcrumb-item"><a href="javascript:;">Shop</a>
     </li>
-    <li className="breadcrumb-item active" aria-current="page">Contact Us</li>
+    <li className="breadcrumb-item active" aria-current="page">Shop Left Sidebar</li>
     </ol>
     </nav>
   );
