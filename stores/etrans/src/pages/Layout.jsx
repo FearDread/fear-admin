@@ -9,13 +9,18 @@ import Footer from "../components/common/Footer";
 const Layout = () => {
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
-      <Header />
-      <main>
-        <Outlet />
-      </main>
+    <>
+      <b className="screen-overlay"></b>
+      <div className="wrapper">
+        <Header />
+      </div>
+      <div className="page-wrapper">
+        <div className="page-content">
+          <Outlet />
+        </div>
+      </div>
       <Footer />
-    </div>
+    </>
   );
 };
 

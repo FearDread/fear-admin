@@ -1,4 +1,4 @@
-
+import React, { useState } from 'react';
 
 // Hero Slider Component
 const HeroSlider = () => {
@@ -37,7 +37,7 @@ const HeroSlider = () => {
             <h1 className="text-5xl font-bold mb-4">{slides[currentSlide].title}</h1>
             <p className="text-gray-300 mb-6">{slides[currentSlide].description}</p>
             <button className="bg-white text-gray-900 px-6 py-3 rounded hover:bg-gray-100 flex items-center gap-2">
-              Shop Now <ChevronRight size={20} />
+              Shop Now <i></i>
             </button>
           </div>
           <div className="flex-1 text-9xl text-center">{slides[currentSlide].image}</div>

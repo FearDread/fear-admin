@@ -1,8 +1,8 @@
 
-import Login from "../../Pages/Login"
+import Login from "../../pages/Login"
 import { useAuth } from "../Auth";
 
-const PrivateRoute = ({ children }) => {
+export const PrivateRoute = ({ children }) => {
   const { isAuthenticated } = useAuth();
 
   if (!isAuthenticated) {

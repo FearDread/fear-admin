@@ -9,8 +9,9 @@ import Section2 from './Section2';
 import Section3 from './Section3';
 import Section4 from './Section4';
 
-function AboutUs() {
+const AboutUs = () => {
   return (
+    <>
     <b className="screen-overlay"></b>
     <div className="wrapper">
       <div className="header-wrapper bg-dark-1">
@@ -121,7 +122,9 @@ function AboutUs() {
     <script src="assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
     <script src="assets/js/app.js"></script>
     <script src='../../../img1.wsimg.com/signals/js/clients/scc-c2/scc-c2.min.js'></script>
+  </>
   );
+  
 }
 
 export default AboutUs;

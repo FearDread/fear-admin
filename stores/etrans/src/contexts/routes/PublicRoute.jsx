@@ -1,4 +1,6 @@
 
-const PublicRoute = ({ children }) => {
+export const PublicRoute = ({ children }) => {
   return children;
 };
+
+export default PublicRoute;
