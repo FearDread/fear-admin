@@ -23,11 +23,32 @@ const About = () => {
                 <h2 className="page-haeding"> Provide the best
                   <span className="d-block"> Comics Emporium </span>
                 </h2>
-                <p className="mt-4"> It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to
-                  using 'Content here, content here', making it look like readable English. </p>
+                <p className="mt-4"> </p>
+About Us
+Welcome to the Void (With Better Graphics)
+We started this business because someone once told us "following your dreams doesn't pay the bills." Well, joke's on them—we're still broke, but now we get to read comics while doing it.
+Our Origin Story (Tragically Less Interesting Than Batman's)
+Founded in a dimly lit basement that may or may not have violated several building codes, our shop emerged from a simple question: "What if we could lose money doing something we actually enjoy?" Turns out, we could. We really, really could.
+After years of hoarding graphic novels and e-books like a literary dragon with questionable taste, we realized our collection had become large enough to either start a business or seek professional help. We chose the path with fewer feelings.
+What We Do
+We sell comic books and e-books. Revolutionary, we know. Someone should write a comic about it. (Please don't.)
+Our carefully curated selection ranges from mainstream superhero fare to independent titles so obscure that even their creators have forgotten about them. We've got everything from capes and tights to existential dread in panel form—because sometimes you want to escape reality, and sometimes you want reality to punch you in the face with better artwork.
+Our Promise
 
-                <p> It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to
-                  using 'Content here, content here', making it look like readable English. </p>
+Fast shipping: Your comics will arrive before the heat death of the universe (probably)
+Quality products: No coffee stains. Those are our copies.
+Customer service: We'll respond to your emails faster than DC responds to fan criticism
+Honest recommendations: If a book is terrible, we'll tell you. Then sell it to you anyway because capitalism.
+
+Why Choose Us?
+Listen, you're already here reading this. The hard part is over. At this point, you're pot-committed. Plus, we need to make rent, and our landlord has made it very clear that "exposure" is not legal tender.
+Our Team
+We're a small operation, which is a fancy way of saying we can't afford to hire anyone else. But what we lack in manpower, we make up for in caffeine addiction and the sinking feeling that we should have gotten real jobs.
+Contact Us
+Have questions? Concerns? Existential crises you'd like to share? We're here for approximately 60% of those things.
+
+Disclaimer: No comic book characters were harmed in the making of this website. Our dignity, however, didn't make it.
+                <p> </p>
 
                 <a href="about.html#" className="btn comon-button mt-5  d-table" data-aos="fade-up"> <span> Explore more </span> </a>
 
