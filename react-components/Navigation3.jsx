@@ -63,56 +63,43 @@ function Navigation3() {
     </div>
     </div>
     </li>
-    <li className="nav-item dropdown">	<a className="nav-link dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown">Shop <i className='bx bx-chevron-down'></i></a>
+    <li className="nav-item dropdown">	<a className="nav-link dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown">Shop  <i className='bx bx-chevron-down'></i></a>
     <ul className="dropdown-menu">
-      <li><a className="dropdown-item dropdown-toggle dropdown-toggle-nocaret" href="#">Shop
-        Layouts <i className='bx bx-chevron-right float-end'></i></a>
-        <ul className="submenu dropdown-menu">
-          <li><a className="dropdown-item" href="shop-grid-left-sidebar.html">Shop Grid -
-            Left Sidebar</a>
-          </li>
-          <li><a className="dropdown-item" href="shop-grid-right-sidebar.html">Shop Grid -
-            Right Sidebar</a>
-          </li>
-          <li><a className="dropdown-item" href="shop-list-left-sidebar.html">Shop List -
-            Left Sidebar</a>
-          </li>
-          <li><a className="dropdown-item" href="shop-list-right-sidebar.html">Shop List -
-            Right Sidebar</a>
-          </li>
-          <li><a className="dropdown-item" href="shop-grid-filter-on-top.html">Shop Grid -
-            Top Filter</a>
-          </li>
-          <li><a className="dropdown-item" href="shop-list-filter-on-top.html">Shop List -
-            Top Filter</a>
-          </li>
-        </ul>
+      <li><a className="dropdown-item dropdown-toggle dropdown-toggle-nocaret" href="#">Shop Layouts <i className='bx bx-chevron-right float-end'></i></a>
+      <ul className="submenu dropdown-menu">
+        <li><a className="dropdown-item" href="shop-grid-left-sidebar.html">Shop Grid - Left Sidebar</a>
       </li>
-      <li><a className="dropdown-item dropdown-toggle dropdown-toggle-nocaret" href="#">Shop
-        Pages <i className='bx bx-chevron-right float-end'></i></a>
-        <ul className="submenu dropdown-menu">
-          <li><a className="dropdown-item" href="shop-cart.html">Shop Cart</a>
-        </li>
-        <li><a className="dropdown-item" href="shop-categories.html">Shop Categories</a>
-      </li>
-      <li><a className="dropdown-item" href="checkout-details.html">Checkout
-        Details</a>
-      </li>
-      <li><a className="dropdown-item" href="checkout-shipping.html">Checkout
-        Shipping</a>
-      </li>
-      <li><a className="dropdown-item" href="checkout-payment.html">Checkout
-        Payment</a>
-      </li>
-      <li><a className="dropdown-item" href="checkout-review.html">Checkout Review</a>
+      <li><a className="dropdown-item" href="shop-grid-right-sidebar.html">Shop Grid - Right Sidebar</a>
     </li>
-    <li><a className="dropdown-item" href="checkout-complete.html">Checkout
-      Complete</a>
+    <li><a className="dropdown-item" href="shop-list-left-sidebar.html">Shop List - Left Sidebar</a>
+    </li>
+    <li><a className="dropdown-item" href="shop-list-right-sidebar.html">Shop List - Right Sidebar</a>
+    </li>
+    <li><a className="dropdown-item" href="shop-grid-filter-on-top.html">Shop Grid - Top Filter</a>
+    </li>
+    <li><a className="dropdown-item" href="shop-list-filter-on-top.html">Shop List - Top Filter</a>
+    </li>
+    </ul>
+    </li>
+    <li><a className="dropdown-item dropdown-toggle dropdown-toggle-nocaret" href="#">Shop Pages <i className='bx bx-chevron-right float-end'></i></a>
+    <ul className="submenu dropdown-menu">
+      <li><a className="dropdown-item" href="shop-cart.html">Shop Cart</a>
+    </li>
+    <li><a className="dropdown-item" href="shop-categories.html">Shop Categories</a>
+    </li>
+    <li><a className="dropdown-item" href="checkout-details.html">Checkout Details</a>
+    </li>
+    <li><a className="dropdown-item" href="checkout-shipping.html">Checkout Shipping</a>
+    </li>
+    <li><a className="dropdown-item" href="checkout-payment.html">Checkout Payment</a>
+    </li>
+    <li><a className="dropdown-item" href="checkout-review.html">Checkout Review</a>
+    </li>
+    <li><a className="dropdown-item" href="checkout-complete.html">Checkout Complete</a>
     </li>
     <li><a className="dropdown-item" href="order-tracking.html">Order Tracking</a>
     </li>
-    <li><a className="dropdown-item" href="product-comparison.html">Product
-      Comparison</a>
+    <li><a className="dropdown-item" href="product-comparison.html">Product Comparison</a>
     </li>
     </ul>
     </li>
@@ -124,8 +111,7 @@ function Navigation3() {
     </li>
     <li><a className="dropdown-item" href="authentication-signup.html">Sign Up</a>
     </li>
-    <li><a className="dropdown-item" href="authentication-forgot-password.html">Forgot
-      Password</a>
+    <li><a className="dropdown-item" href="authentication-forgot-password.html">Forgot Password</a>
     </li>
     </ul>
     </li>
@@ -137,7 +123,7 @@ function Navigation3() {
     </li>
     <li className="nav-item"> <a className="nav-link" href="shop-categories.html">Our Store</a>
     </li>
-    <li className="nav-item dropdown">	<a className="nav-link dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown">My Account <i className='bx bx-chevron-down'></i></a>
+    <li className="nav-item dropdown">	<a className="nav-link dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown">My Account  <i className='bx bx-chevron-down'></i></a>
     <ul className="dropdown-menu">
       <li><a className="dropdown-item" href="account-dashboard.html">Dashboard</a>
     </li>
