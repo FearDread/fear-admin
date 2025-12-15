@@ -1,6 +1,8 @@
-const RouterContext = createContext(null);
+import React, { useState, createContext, useContext } from 'react';
 
-const Router = ({ children }) => {
+export const RouterContext = createContext(null);
+
+export const Router = ({ children }) => {
   const [currentRoute, setCurrentRoute] = useState('/');
 
   const navigate = (path) => {
