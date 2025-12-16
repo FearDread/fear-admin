@@ -4,7 +4,7 @@ function Navigation5() {
   return (
     <nav className="d-flex justify-content-between" aria-label="Page navigation">
       <ul className="pagination">
-        <li className="page-item"><a className="page-link" href="javascript:;"><i className='bx bx-chevron-left'></i> Prev</a>
+        <li className="page-item"><a className="page-link" href="javascript:;"><i className="bx bx-chevron-left"></i> Prev</a>
       </li>
     </ul>
     <ul className="pagination">
@@ -20,7 +20,7 @@ function Navigation5() {
     </li>
     </ul>
     <ul className="pagination">
-      <li className="page-item"><a className="page-link" href="javascript:;" aria-label="Next">Next <i className='bx bx-chevron-right'></i></a>
+      <li className="page-item"><a className="page-link" href="javascript:;" aria-label="Next">Next <i className="bx bx-chevron-right"></i></a>
     </li>
     </ul>
     </nav>
