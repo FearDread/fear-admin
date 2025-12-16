@@ -205,6 +205,7 @@ function Index() {
     </div>
     <a href="javaScript:;" className="back-to-top"><i className='bx bxs-up-arrow-alt'></i></a>
     </div>
+    
     <div className="switcher-wrapper">
       <div className="switcher-btn"> <i className='bx bx-cog bx-spin'></i>
     </div>

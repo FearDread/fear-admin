@@ -75,6 +75,7 @@ function ShopGridLeftSidebar() {
             </div>
           </div>
         </section>
+        
         <section className="py-4">
           <div className="container">
             <div className="row">
@@ -279,6 +280,7 @@ function ShopGridLeftSidebar() {
         <div>	<a href="shop-list-left-sidebar.html" className="btn btn-light rounded-0"><i className='bx bx-list-ul me-0'></i></a>
       </div>
     </div>
+
     <div className="product-grid">
       <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-3">
         <div className="col">
