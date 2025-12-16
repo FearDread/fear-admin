@@ -10,7 +10,7 @@ npm install
 
 ## Components
 
-- **ShopGridLeftSidebar** - Main component
+- **ShopListLeftSidebar** - Main component
 - **Navigation1** - Extracted component
 - **Navigation2** - Extracted component
 - **Navigation3** - Extracted component
