@@ -57,7 +57,7 @@ function Navigation3() {
     </div>
     <div className="col-md-4">
       <div className="pramotion-banner1">
-        <img src="assets/images/gallery/menu-img.jpg" className="img-fluid" alt="" / />
+        <img src="assets/images/gallery/menu-img.jpg" className="img-fluid" / />
       </div>
     </div>
     </div>
