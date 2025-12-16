@@ -24,7 +24,7 @@ export const Register = () => {
                         </a> <a href="javascript:;" className="btn btn-light"><i className="bx bxl-facebook"></i>Sign Up with Facebook</a>
                       </div>
                       <div className="login-separater text-center mb-4"> <span>OR SIGN UP WITH EMAIL</span>
-                        <hr / />
+                        <hr />
                       </div>
                       <div className="form-body">
                         <form className="row g-3">

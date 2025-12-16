@@ -120,7 +120,7 @@ export const ProductDetails = (product) => {
                                         <div className="d-flex gap-2 mt-3">
                                             <a href="javascript:;" className="btn btn-white btn-ecomm">	<i className="bx bxs-cart-add"></i>Add to Cart</a> <a href="javascript:;" className="btn btn-light btn-ecomm"><i className="bx bx-heart"></i>Add to Wishlist</a>
                                         </div>
-                                        <hr / />
+                                        <hr />
                                         <div className="product-sharing">
                                             <ul className="list-inline">
                                                 <li className="list-inline-item"> <a href="javascript:;"><i className='bx bxl-facebook'></i></a>
@@ -216,7 +216,7 @@ export const ProductDetails = (product) => {
                                             <div className="review-list">
                                                 <div className="d-flex align-items-start">
                                                     <div className="review-user">
-                                                        <img src="assets/images/avatars/avatar-1.png" width="65" height="65" className="rounded-circle" alt="" / />
+                                                        <img src="assets/images/avatars/avatar-1.png" width="65" height="65" className="rounded-circle" alt="" />
                                                     </div>
                                                     <div className="review-content ms-3">
                                                         <div className="rates cursor-pointer fs-6">	<i className="bx bxs-star text-white"></i>
@@ -232,10 +232,10 @@ export const ProductDetails = (product) => {
                                                         <p>Nesciunt tofu stumptown aliqua, retro synth master cleanse. Mustache cliche tempor, williamsburg carles vegan helvetica. Reprehenderit butcher retro keffiyeh dreamcatcher synth. Cosby sweater eu banh mi, qui irure terry richardson ex squid. Aliquip placeat salvia cillum iphone. Seitan aliquip quis cardigan</p>
                                                     </div>
                                                 </div>
-                                                <hr / />
+                                                <hr />
                                                 <div className="d-flex align-items-start">
                                                     <div className="review-user">
-                                                        <img src="assets/images/avatars/avatar-2.png" width="65" height="65" className="rounded-circle" alt="" / />
+                                                        <img src="assets/images/avatars/avatar-2.png" width="65" height="65" className="rounded-circle" alt="" />
                                                     </div>
                                                     <div className="review-content ms-3">
                                                         <div className="rates cursor-pointer fs-6"> <i className="bx bxs-star text-white"></i>
@@ -251,10 +251,10 @@ export const ProductDetails = (product) => {
                                                         <p>Nesciunt tofu stumptown aliqua, retro synth master cleanse. Mustache cliche tempor, williamsburg carles vegan helvetica. Reprehenderit butcher retro keffiyeh dreamcatcher synth. Cosby sweater eu banh mi, qui irure terry richardson ex squid. Aliquip placeat salvia cillum iphone. Seitan aliquip quis cardigan</p>
                                                     </div>
                                                 </div>
-                                                <hr / />
+                                                <hr />
                                                 <div className="d-flex align-items-start">
                                                     <div className="review-user">
-                                                        <img src="assets/images/avatars/avatar-3.png" width="65" height="65" className="rounded-circle" alt="" / />
+                                                        <img src="assets/images/avatars/avatar-3.png" width="65" height="65" className="rounded-circle" alt="" />
                                                     </div>
                                                     <div className="review-content ms-3">
                                                         <div className="rates cursor-pointer fs-6">	<i className="bx bxs-star text-white"></i>
