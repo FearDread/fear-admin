@@ -6,6 +6,7 @@ import PublicRoute from "./contexts/routes/PublicRoute";
 
 import Layout from "./pages/Layout";
 import Home from './pages/Home';
+import Blog from "./pages/Blog";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Shop from "./pages/shop/Shop";
@@ -51,7 +52,7 @@ export const App = () => {
             <Route path="product/:id" element={<PublicRoute><ProductDetails /></PublicRoute>} />
             <Route path="product/compare" element={<PublicRoute><ProductComparison /></PublicRoute>} />
             <Route path="auth/login" element={<PublicRoute><Login /></PublicRoute>} />
-             <Route path="auth/login" element={<PublicRoute><Register /></PublicRoute>} />
+             <Route path="auth/register" element={<PublicRoute><Register /></PublicRoute>} />
           </Route>
         </Routes>
       </Suspense>
