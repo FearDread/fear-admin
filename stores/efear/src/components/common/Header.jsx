@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { ShoppingCart, Heart, User, Search, Menu, X, Phone, Facebook, Twitter, Linkedin, ChevronRight, Star } from 'lucide-react';
 
 // Header Component
 export const Header = () => {
@@ -14,17 +13,17 @@ export const Header = () => {
             <div className="container">
 
               <nav className="navbar navbar-expand">
-                <div className="shiping-title text-uppercase font-13 text-white d-none d-sm-flex">Welcome to our eTrans store!</div>
+                <div className="shiping-title text-uppercase font-13 text-white d-none d-sm-flex">Welcome to the e-FEAR store!</div>
                 <ul className="navbar-nav ms-auto d-none d-lg-flex">
-                  <li className="nav-item">	<a className="nav-link" href="order-tracking.html">Track Order</a>
+                  <li className="nav-item">	<a className="nav-link" href="/order-tracking">Track Order</a>
                   </li>
-                  <li className="nav-item">	<a className="nav-link" href="about-us.html">About</a>
+                  <li className="nav-item">	<a className="nav-link" href="/about">About</a>
                   </li>
-                  <li className="nav-item">	<a className="nav-link" href="shop-categories.html">Our Stores</a>
+                  <li className="nav-item">	<a className="nav-link" href="/shop-categories">Our Stores</a>
                   </li>
-                  <li className="nav-item">	<a className="nav-link" href="blog.html">Blog</a>
+                  <li className="nav-item">	<a className="nav-link" href="/blog">Blog</a>
                   </li>
-                  <li className="nav-item">	<a className="nav-link" href="contact-us.html">Contact</a>
+                  <li className="nav-item">	<a className="nav-link" href="/contact">Contact</a>
                   </li>
                   <li className="nav-item">	<a className="nav-link" href="javascript:;">Help & FAQs</a>
                   </li>
@@ -92,9 +91,9 @@ export const Header = () => {
                     <input type="text" className="form-control w-100" placeholder="Search for Products" />
                     <select className="form-select flex-shrink-0" aria-label="Default select example" style={{ 'width': '10.5rem' }}>
                       <option selected={true}>All Categories</option>
-                      <option value="1">One</option>
-                      <option value="2">Two</option>
-                      <option value="3">Three</option>
+                      <option value="Comics">Comics</option>
+                      <option value="Books">E-Books</option>
+                      <option value="Cards">Trading Cards</option>
                     </select>	<span className="input-group-text cursor-pointer"><i className='bx bx-search'></i></span>
                   </div>
                 </div>
@@ -103,7 +102,7 @@ export const Header = () => {
                   </div>
                   <div className="ms-2">
                     <p className="mb-0 font-13">CALL US NOW</p>
-                    <h5 className="mb-0">+011 5827918</h5>
+                    <h5 className="mb-0">+1 (254) 435 - 0130</h5>
                   </div>
                 </div>
                 <div className="col col-md-auto order-2 order-md-4">
@@ -114,6 +113,8 @@ export const Header = () => {
                         </li>
                         <li className="nav-item"><a href="wishlist.html" className="nav-link cart-link"><i className='bx bx-heart'></i></a>
                         </li>
+
+                        {/* TODO: EXTRACT CART COMPONENT */}
                         <li className="nav-item dropdown dropdown-large">
                           <a href="#" className="nav-link dropdown-toggle dropdown-toggle-nocaret position-relative cart-link" data-bs-toggle="dropdown">	<span className="alert-count">8</span>
                             <i className='bx bx-shopping-bag'></i>
@@ -257,6 +258,7 @@ export const Header = () => {
                             </div>
                           </div>
                         </li>
+
                       </ul>
                     </nav>
                   </div>
@@ -272,34 +274,24 @@ export const Header = () => {
                   <h5 className="py-2 text-white">Navigation</h5>
                 </div>
                 <ul className="navbar-nav">
-                  <li className="nav-item active"> <a className="nav-link" href="index.html">Home </a>
+                  <li className="nav-item active"> <a className="nav-link" href="/">Home </a>
                   </li>
+                  
+                  {/* TODO: EXTRACT CATEGORY LIST COMPONENT */}
                   <li className="nav-item dropdown">	<a className="nav-link dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown">Categories <i className='bx bx-chevron-down'></i></a>
                     <div className="dropdown-menu dropdown-large-menu">
                       <div className="row">
                         <div className="col-md-4">
-                          <h6 className="large-menu-title">Fashion</h6>
+                          <h6 className="large-menu-title">Comics & Books</h6>
                           <ul>
-                            <li><a href="#">Casual T-Shirts</a>
+                            <li><a href="/shop?category=Comics">Comic Books</a>
                             </li>
-                            <li><a href="#">Formal Shirts</a>
-                            </li>
-                            <li><a href="#">Jackets</a>
-                            </li>
-                            <li><a href="#">Jeans</a>
-                            </li>
-                            <li><a href="#">Dresses</a>
-                            </li>
-                            <li><a href="#">Sneakers</a>
-                            </li>
-                            <li><a href="#">Belts</a>
-                            </li>
-                            <li><a href="#">Sports Shoes</a>
+                            <li><a href="/shop?category=Ebooks">E-Books</a>
                             </li>
                           </ul>
                         </div>
                         <div className="col-md-4">
-                          <h6 className="large-menu-title">Electronics</h6>
+                          <h6 className="large-menu-title">Trading Cards</h6>
                           <ul>
                             <li><a href="#">Mobiles</a>
                             </li>
@@ -327,13 +319,13 @@ export const Header = () => {
                       </div>
                     </div>
                   </li>
+
                   <li className="nav-item dropdown">	<a className="nav-link dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown">Shop <i className='bx bx-chevron-down'></i></a>
                     <ul className="dropdown-menu">
                       <li><a className="dropdown-item dropdown-toggle dropdown-toggle-nocaret" href="#">Shop
-                        Layouts <i className='bx bx-chevron-right float-end'></i></a>
+                         <i className='bx bx-chevron-right float-end'></i></a>
                         <ul className="submenu dropdown-menu">
-                          <li><a className="dropdown-item" href="shop-grid-left-sidebar.html">Shop Grid -
-                            Left Sidebar</a>
+                          <li><a className="dropdown-item" href="shop-grid-left-sidebar.html">Our Store</a>
                           </li>
                           <li><a className="dropdown-item" href="shop-grid-right-sidebar.html">Shop Grid -
                             Right Sidebar</a>
@@ -380,38 +372,38 @@ export const Header = () => {
                           </li>
                         </ul>
                       </li>
-                      <li><a className="dropdown-item" href="about-us.html">About Us</a>
+                      <li><a className="dropdown-item" href="/about">About Us</a>
                       </li>
-                      <li><a className="dropdown-item" href="contact-us.html">Contact Us</a>
+                      <li><a className="dropdown-item" href="/contact">Contact Us</a>
                       </li>
-                      <li><a className="dropdown-item" href="authentication-signin.html">Sign In</a>
+                      <li><a className="dropdown-item" href="/auth/login">Sign In</a>
                       </li>
-                      <li><a className="dropdown-item" href="authentication-signup.html">Sign Up</a>
+                      <li><a className="dropdown-item" href="/auth/register">Sign Up</a>
                       </li>
-                      <li><a className="dropdown-item" href="authentication-forgot-password.html">Forgot
+                      <li><a className="dropdown-item" href="/auth/forgot-password">Forgot
                         Password</a>
                       </li>
                     </ul>
                   </li>
-                  <li className="nav-item"> <a className="nav-link" href="blog.html">Blog </a>
+                  <li className="nav-item"> <a className="nav-link" href="/blog">Blog </a>
                   </li>
-                  <li className="nav-item"> <a className="nav-link" href="about-us.html">About Us </a>
+                  <li className="nav-item"> <a className="nav-link" href="/about">About Us </a>
                   </li>
-                  <li className="nav-item"> <a className="nav-link" href="contact-us.html">Contact Us </a>
+                  <li className="nav-item"> <a className="nav-link" href="/contact">Contact Us </a>
                   </li>
-                  <li className="nav-item"> <a className="nav-link" href="shop-categories.html">Our Store</a>
+                  <li className="nav-item"> <a className="nav-link" href="/shop-categories">Our Store</a>
                   </li>
                   <li className="nav-item dropdown">	<a className="nav-link dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown">My Account <i className='bx bx-chevron-down'></i></a>
                     <ul className="dropdown-menu">
-                      <li><a className="dropdown-item" href="account-dashboard.html">Dashboard</a>
+                      <li><a className="dropdown-item" href="/account/dashboard">Dashboard</a>
                       </li>
-                      <li><a className="dropdown-item" href="account-downloads.html">Downloads</a>
+                      <li><a className="dropdown-item" href="/account/downloads">Downloads</a>
                       </li>
-                      <li><a className="dropdown-item" href="account-orders.html">Orders</a>
+                      <li><a className="dropdown-item" href="/account/orders">Orders</a>
                       </li>
-                      <li><a className="dropdown-item" href="account-payment-methods.html">Payment Methods</a>
+                      <li><a className="dropdown-item" href="/account/payment-methods">Payment Methods</a>
                       </li>
-                      <li><a className="dropdown-item" href="account-user-details.html">User Details</a>
+                      <li><a className="dropdown-item" href="/account/user-details">User Details</a>
                       </li>
                     </ul>
                   </li>

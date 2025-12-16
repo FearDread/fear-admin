@@ -6,10 +6,14 @@ import PublicRoute from "./contexts/routes/PublicRoute";
 
 import Layout from "./pages/Layout";
 import Home from './pages/Home';
-import Shop from "./pages/Shop";
-import Login from "./pages/Login";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
+import Shop from "./pages/shop/Shop";
+import Login from "./pages/auth/Login";
+//import Register from "./pages/auth/Register";
+//import ProductComparison from "./pages/products/ProductComparison";
+//import ProductDetails from "./pages/products/ProductDetails";
+
 
 import { useRouter } from "./contexts/Router";
 
@@ -43,6 +47,8 @@ export const App = () => {
             <Route path="about" element={<PublicRoute><About /></PublicRoute>} />
             <Route path="shop" element={<PublicRoute><Shop /></PublicRoute>} />
             <Route path="contact" element={<PublicRoute><Contact /></PublicRoute>} />
+
+            <Route path="auth/login" element={<PublicRoute><Login /></PublicRoute>} />
           </Route>
         </Routes>
       </Suspense>
