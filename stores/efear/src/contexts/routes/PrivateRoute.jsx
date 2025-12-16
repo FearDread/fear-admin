@@ -1,5 +1,5 @@
 
-import Login from "../../pages/Login"
+import Login from "../../pages/auth/Login"
 import { useAuth } from "../Auth";
 
 export const PrivateRoute = ({ children }) => {

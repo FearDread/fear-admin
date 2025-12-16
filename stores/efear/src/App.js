@@ -10,9 +10,9 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Shop from "./pages/shop/Shop";
 import Login from "./pages/auth/Login";
-import Register from "./pages/auth/Register";
+//import Register from "./pages/auth/Register";
 //import ProductComparison from "./pages/products/ProductComparison";
-import ProductDetails from "./pages/products/ProductDetails";
+//import ProductDetails from "./pages/products/ProductDetails";
 
 
 import { useRouter } from "./contexts/Router";
@@ -47,6 +47,8 @@ export const App = () => {
             <Route path="about" element={<PublicRoute><About /></PublicRoute>} />
             <Route path="shop" element={<PublicRoute><Shop /></PublicRoute>} />
             <Route path="contact" element={<PublicRoute><Contact /></PublicRoute>} />
+
+            <Route path="auth/login" element={<PublicRoute><Login /></PublicRoute>} />
           </Route>
         </Routes>
       </Suspense>
