@@ -1,10 +1,10 @@
-
+import React, { useState } from "react";
 
 const BreadCrumbs = (crumbs) => {
 
     if (!crumbs) crumbs = [
-        {href: 'javascript:;', icon: 'bx bx-home-alt', label: 'Home', active:false},
-        {href: null, icon: null, label: 'About Us', active:true}
+        {href: '/', icon: 'bx bx-home-alt', label: 'Home', active:false},
+        {href: '/about', icon: 'bx', label: 'About Us', active:true}
     ]
 
     return (
@@ -12,19 +12,21 @@ const BreadCrumbs = (crumbs) => {
             <nav aria-label="breadcrumb">
                 <ol className="breadcrumb mb-0 p-0">
                     {crumbs.forEach((idx, crumb) => {
-                        if (crumb.active) {
-                        return (
-                            <li className='breadcrumb-item active' aria-current="page">${crumb.label}</li>
-                        )
+                        if (!crumb.active) {
+                            return (
+                                <li key={idx} className="breadcrumb-item">
+                                    <a href={crumb.href}>
+                                        <i className={crumb.icon} ></i> {crumb.label}
+                                    </a>
+                                </li>
+                            )
+                        } else {
+                            return (
+                                <li key={idx} className='breadcrumb-item active' aria-current="page">{crumb.label}</li>
+                            )
                         }
 
                     })}
-                    <li className="breadcrumb-item">
-                        <a href="javascript:;">
-                            <i className="bx bx-home-alt"></i> Home
-                        </a>
-                    </li>
-                    <li className="breadcrumb-item active" aria-current="page">About Us</li>
                 </ol>
             </nav>
         </>
