@@ -285,7 +285,7 @@ export const addHandlers = (builder, asyncActions, entity) => {
         console.log('payload = ', payload);
         // Update data based on operation type
         if (key === 'fetch' || key === 'search') {
-          state.data = Array.isArray(payload) ? payload : (payload?.data.result || []);
+          state.data = Array.isArray(payload) ? payload : (payload?.data || []);
         } else if (key === 'fetchOne') {
           state[entity] = Array.isArray(payload) ? payload[0] : payload;
         } else if (key === 'create') {

@@ -1,5 +1,6 @@
 import React, { Suspense, useEffect, useState, useMemo } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 
 import PrivateRoute from "./contexts/routes/PrivateRoute";
 import PublicRoute from "./contexts/routes/PublicRoute";
@@ -24,6 +25,8 @@ import './assets/css/icons.css';
 import './assets/css/index.css';
 import './assets/css/pace.min.css';
 import './assets/css/app.css';
+import { store } from "./features/store";
+import { Product } from "./features/products/slice";
 
 const LoadingFallback = () => (
   <div className="d-flex justify-content-center align-items-center min-vh-100">
@@ -34,11 +37,17 @@ const LoadingFallback = () => (
 );
 
 export const App = () => {
+  const dispatch = store.dispatch;
   const { currentRoute } = useRouter();
 
   const renderRoute = () => {
     console.log('current route = ', currentRoute);
   };
+
+  useEffect(() => {
+
+    dispatch(Product.fetch());
+  }, [])
 
   return (
     <BrowserRouter>

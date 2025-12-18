@@ -9,5 +9,7 @@ export const { slice, asyncActions: Product } = productFactory.create({
   includeCommonReducers: true
 });
 
+export const selectProducts = state => state.products.data;
+
 // Export reducer
 export default { reducer: slice.reducer, Product } ;
