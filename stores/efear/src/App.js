@@ -10,6 +10,7 @@ import Blog from "./pages/Blog";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Shop from "./pages/shop/Shop";
+import ShopCategories from "./pages/shop/ShopCategories";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import ProductComparison from "./pages/products/ProductComparison";
@@ -46,14 +47,27 @@ export const App = () => {
           <Route path="/" element={<Layout />}>
             <Route index element={<PublicRoute><Home /></PublicRoute>} /> 
             <Route path="about" element={<PublicRoute><About /></PublicRoute>} />
-            <Route path="shop" element={<PublicRoute><Shop /></PublicRoute>} />
             <Route path="contact" element={<PublicRoute><Contact /></PublicRoute>} />
             <Route path="blog" element={<PublicRoute><Blog /></PublicRoute>} />
+
+            <Route path="shop" element={<PublicRoute><Shop /></PublicRoute>} />
+            <Route path="shop/categories" element={<PublicRoute><ShopCategories /></PublicRoute>} />
+
             <Route path="product/:id" element={<PublicRoute><ProductDetails /></PublicRoute>} />
             <Route path="product/compare" element={<PublicRoute><ProductComparison /></PublicRoute>} />
+            
             <Route path="auth/login" element={<PublicRoute><Login /></PublicRoute>} />
-             <Route path="auth/register" element={<PublicRoute><Register /></PublicRoute>} />
-          </Route>
+            <Route path="auth/register" element={<PublicRoute><Register /></PublicRoute>} />
+
+        {/* 
+            <Route path="account/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+            <Route path="account/orders" element={<PrivateRoute><Orders /></PrivateRoute>} />
+            <Route path="account/details" element={<PrivateRoute><UserDetails /></PrivateRoute>} />
+            <Route path="account/payment-methods" element={<PrivateRoute><PaymentMethods /></PrivateRoute>} />
+            <Route path="account/addresses" element={<PrivateRoute><Addresses /></PrivateRoute>} />
+            <Route path="account/forgot-password" element={<PrivateRoute><ForgotPassword /></PrivateRoute>} />
+            */}
+            </Route>
         </Routes>
       </Suspense>
     </BrowserRouter>
