@@ -88,13 +88,13 @@ function Footer() {
         <h6 className="mb-3 text-uppercase">Download our app</h6>
         <div className="d-flex align-items-center gap-2">
           <a href="javascript:;">
-            <img src="assets/images/icons/apple-store.png" width="160" / />
+            <img src="assets/images/icons/apple-store.png" width="160" alt="" / />
           </a>
-          <a href="javascript:;"></a>
-          <img src="assets/images/icons/play-store.png" width="160" / />
-        </a>
+          <a href="javascript:;">
+            <img src="assets/images/icons/play-store.png" width="160" alt="" / />
+          </a>
+        </div>
       </div>
-    </div>
     </div>
     </div>
     </div>
@@ -107,16 +107,16 @@ function Footer() {
         <div className="payment-icon">
           <div className="row row-cols-auto g-2 justify-content-end">
             <div className="col">
-              <img src="assets/images/icons/visa.png" / />
+              <img src="assets/images/icons/visa.png" alt="" / />
             </div>
             <div className="col">
-              <img src="assets/images/icons/paypal.png" / />
+              <img src="assets/images/icons/paypal.png" alt="" / />
             </div>
             <div className="col">
-              <img src="assets/images/icons/mastercard.png" / />
+              <img src="assets/images/icons/mastercard.png" alt="" / />
             </div>
             <div className="col">
-              <img src="assets/images/icons/american-express.png" / />
+              <img src="assets/images/icons/american-express.png" alt="" / />
             </div>
           </div>
         </div>

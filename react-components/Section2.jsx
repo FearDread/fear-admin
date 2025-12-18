@@ -4,117 +4,222 @@ function Section2() {
   return (
     <section className="py-4">
       <div className="container">
-        <div className="product-detail-card">
-          <div className="product-detail-body">
-            <div className="row g-0">
-              <div className="col-12 col-lg-5">
-                <div className="image-zoom-section">
-                  <div className="product-gallery owl-carousel owl-theme border mb-3 p-3" data-slider-id="1">
-                    <div className="item">
-                      <img src="assets/images/product-gallery/01.png" className="img-fluid" alt="" />
-                    </div>
-                    <div className="item">
-                      <img src="assets/images/product-gallery/02.png" className="img-fluid" alt="" />
-                    </div>
-                    <div className="item">
-                      <img src="assets/images/product-gallery/03.png" className="img-fluid" alt="" />
-                    </div>
-                    <div className="item">
-                      <img src="assets/images/product-gallery/04.png" className="img-fluid" alt="" />
-                    </div>
-                  </div>
-                  <div className="owl-thumbs d-flex justify-content-center" data-slider-id="1">
-                    <button className="owl-thumb-item">
-                      <img src="assets/images/product-gallery/01.png" alt="" />
-                    </button>
-                    <button className="owl-thumb-item">
-                      <img src="assets/images/product-gallery/02.png" alt="" />
-                    </button>
-                    <button className="owl-thumb-item">
-                      <img src="assets/images/product-gallery/03.png" alt="" />
-                    </button>
-                    <button className="owl-thumb-item">
-                      <img src="assets/images/product-gallery/04.png" alt="" />
-                    </button>
-                  </div>
-                </div>
+        <div className="product-categories">
+          <div className="row row-cols-1 row-cols-lg-4">
+            <div className="col">
+              <div className="card rounded-0 product-card">
+                <a href="javascript:;">
+                  <img src="assets/images/shop-categories/01.png" className="card-img-top border-bottom bg-dark-1" alt="..." />
+                </a>
+                <div className="list-group list-group-flush">
+                  <a href="javascript:;" className="list-group-item bg-transparent">
+                    <h6 className="mb-0 text-uppercase">Clothing</h6>
+                  </a>	<a href="javascript:;" className="list-group-item bg-transparent d-flex justify-content-between align-items-center">
+                  Blazers & Suits
+                  <span className="badge bg-light rounded-pill">14</span>
+                </a>
+                <a href="javascript:;" className="list-group-item bg-transparent d-flex justify-content-between align-items-center">
+                  Dresses
+                  <span className="badge bg-light rounded-pill">2</span>
+                </a>
+                <a href="javascript:;" className="list-group-item bg-transparent d-flex justify-content-between align-items-center">
+                  Sportswear
+                  <span className="badge bg-light rounded-pill">1</span>
+                </a>
+                <a href="javascript:;" className="list-group-item bg-transparent d-flex justify-content-between align-items-center">
+                  Hoodie & Sweatshirts
+                  <span className="badge bg-light rounded-pill">1</span>
+                </a>
               </div>
-              <div className="col-12 col-lg-7">
-                <div className="product-info-section p-3">
-                  <h3 className="mt-3 mt-lg-0 mb-0">Allen Solly Men's Polo T-Shirt</h3>
-                  <div className="product-rating d-flex align-items-center mt-2">
-                    <div className="rates cursor-pointer font-13">	<i className="bx bxs-star text-warning"></i>
-                    <i className="bx bxs-star text-warning"></i>
-                    <i className="bx bxs-star text-warning"></i>
-                    <i className="bx bxs-star text-warning"></i>
-                    <i className="bx bxs-star text-light-4"></i>
-                  </div>
-                  <div className="ms-1">
-                    <p className="mb-0">(24 Ratings)</p>
-                  </div>
-                </div>
-                <div className="d-flex align-items-center mt-3 gap-2">
-                  <h5 className="mb-0 text-decoration-line-through text-light-3">$98.00</h5>
-                  <h4 className="mb-0">$49.00</h4>
-                </div>
-                <div className="mt-3">
-                  <h6>Discription :</h6>
-                  <p className="mb-0">Virgil Abloh’s Off-White is a streetwear-inspired collection that continues to break away from the conventions of mainstream fashion. Made in Italy, these black and brown Odsy-1000 low-top sneakers.</p>
-                </div>
-                <dl className="row mt-3">	<dt className="col-sm-3">Product id</dt>
-                <dd className="col-sm-9">#BHU5879</dd>	<dt className="col-sm-3">Delivery</dt>
-                <dd className="col-sm-9">Russia, USA, and Europe</dd>
-              </dl>
-              <div className="row row-cols-auto align-items-center mt-3">
-                <div className="col">
-                  <label className="form-label">Quantity</label>
-                  <select className="form-select form-select-sm">
-                    <option>1</option>
-                    <option>2</option>
-                    <option>3</option>
-                    <option>4</option>
-                    <option>5</option>
-                  </select>
-                </div>
-                <div className="col">
-                  <label className="form-label">Size</label>
-                  <select className="form-select form-select-sm">
-                    <option>S</option>
-                    <option>M</option>
-                    <option>L</option>
-                    <option>XS</option>
-                    <option>XL</option>
-                  </select>
-                </div>
-                <div className="col">
-                  <label className="form-label">Colors</label>
-                  <div className="color-indigators d-flex align-items-center gap-2">
-                    <div className="color-indigator-item bg-primary"></div>
-                    <div className="color-indigator-item bg-danger"></div>
-                    <div className="color-indigator-item bg-success"></div>
-                    <div className="color-indigator-item bg-warning"></div>
-                  </div>
-                </div>
-              </div>
-              <div className="d-flex gap-2 mt-3">
-                <a href="javascript:;" className="btn btn-white btn-ecomm">	<i className="bx bxs-cart-add"></i>Add to Cart</a> <a href="javascript:;" className="btn btn-light btn-ecomm"><i className="bx bx-heart"></i>Add to Wishlist</a>
-              </div>
-              <hr/ />
-              <div className="product-sharing">
-                <ul className="list-inline">
-                  <li className="list-inline-item"> <a href="javascript:;"><i className='bx bxl-facebook'></i></a>
-                </li>
-                <li className="list-inline-item">	<a href="javascript:;"><i className='bx bxl-linkedin'></i></a>
-              </li>
-              <li className="list-inline-item">	<a href="javascript:;"><i className='bx bxl-twitter'></i></a>
-            </li>
-            <li className="list-inline-item">	<a href="javascript:;"><i className='bx bxl-instagram'></i></a>
-          </li>
-          <li className="list-inline-item">	<a href="javascript:;"><i className='bx bxl-google'></i></a>
-        </li>
-      </ul>
+            </div>
+          </div>
+          <div className="col">
+            <div className="card rounded-0 product-card">
+              <a href="javascript:;">
+                <img src="assets/images/shop-categories/02.png" className="card-img-top border-bottom bg-dark-1" alt="..." />
+              </a>
+              <div className="list-group list-group-flush">
+                <a href="javascript:;" className="list-group-item bg-transparent">
+                  <h6 className="mb-0 text-uppercase">Accessories</h6>
+                </a> <a href="javascript:;" className="list-group-item bg-transparent d-flex justify-content-between align-items-center">
+                Bags
+                <span className="badge bg-light rounded-pill">14</span>
+              </a>
+              <a href="javascript:;" className="list-group-item bg-transparent d-flex justify-content-between align-items-center">
+                Sunglasses
+                <span className="badge bg-light rounded-pill">22</span>
+              </a>
+              <a href="javascript:;" className="list-group-item bg-transparent d-flex justify-content-between align-items-center">
+                Jewelry
+                <span className="badge bg-light rounded-pill">14</span>
+              </a>
+              <a href="javascript:;" className="list-group-item bg-transparent d-flex justify-content-between align-items-center">
+                Cosmetics
+                <span className="badge bg-light rounded-pill">12</span>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div className="col">
+          <div className="card rounded-0 product-card">
+            <a href="javascript:;">
+              <img src="assets/images/shop-categories/03.png" className="card-img-top border-bottom bg-dark-1" alt="..." />
+            </a>
+            <div className="list-group list-group-flush">
+              <a href="javascript:;" className="list-group-item bg-transparent">
+                <h6 className="mb-0 text-uppercase">Shoes</h6>
+              </a> <a href="javascript:;" className="list-group-item bg-transparent d-flex justify-content-between align-items-center">
+              Sandals
+              <span className="badge bg-light rounded-pill">14</span>
+            </a>
+            <a href="javascript:;" className="list-group-item bg-transparent d-flex justify-content-between align-items-center">
+              Boots
+              <span className="badge bg-light rounded-pill">20</span>
+            </a>
+            <a href="javascript:;" className="list-group-item bg-transparent d-flex justify-content-between align-items-center">
+              Ballerinas & Flats
+              <span className="badge bg-light rounded-pill">16</span>
+            </a>
+            <a href="javascript:;" className="list-group-item bg-transparent d-flex justify-content-between align-items-center">
+              Flip Flops
+              <span className="badge bg-light rounded-pill">18</span>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div className="col">
+        <div className="card rounded-0 product-card">
+          <a href="javascript:;">
+            <img src="assets/images/shop-categories/04.png" className="card-img-top border-bottom bg-dark-1" alt="..." />
+          </a>
+          <div className="list-group list-group-flush">
+            <a href="javascript:;" className="list-group-item bg-transparent">
+              <h6 className="mb-0 text-uppercase">Furniture</h6>
+            </a> <a href="javascript:;" className="list-group-item bg-transparent d-flex justify-content-between align-items-center">
+            Tables
+            <span className="badge bg-light rounded-pill">14</span>
+          </a>
+          <a href="javascript:;" className="list-group-item bg-transparent d-flex justify-content-between align-items-center">
+            Office Chairs
+            <span className="badge bg-light rounded-pill">2</span>
+          </a>
+          <a href="javascript:;" className="list-group-item bg-transparent d-flex justify-content-between align-items-center">
+            Adjustable Height Desks
+            <span className="badge bg-light rounded-pill">1</span>
+          </a>
+          <a href="javascript:;" className="list-group-item bg-transparent d-flex justify-content-between align-items-center">
+            Lounge Seating
+            <span className="badge bg-light rounded-pill">1</span>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div className="col">
+      <div className="card rounded-0 product-card">
+        <a href="javascript:;">
+          <img src="assets/images/shop-categories/05.png" className="card-img-top border-bottom bg-dark-1" alt="..." />
+        </a>
+        <div className="list-group list-group-flush">
+          <a href="javascript:;" className="list-group-item bg-transparent">
+            <h6 className="mb-0 text-uppercase">Electronics</h6>
+          </a> <a href="javascript:;" className="list-group-item bg-transparent d-flex justify-content-between align-items-center">
+          Mobiles
+          <span className="badge bg-light rounded-pill">25</span>
+        </a>
+        <a href="javascript:;" className="list-group-item bg-transparent d-flex justify-content-between align-items-center">
+          Laptops
+          <span className="badge bg-light rounded-pill">42</span>
+        </a>
+        <a href="javascript:;" className="list-group-item bg-transparent d-flex justify-content-between align-items-center">
+          Headphones
+          <span className="badge bg-light rounded-pill">14</span>
+        </a>
+        <a href="javascript:;" className="list-group-item bg-transparent d-flex justify-content-between align-items-center">
+          Computers & Accessories
+          <span className="badge bg-light rounded-pill">10</span>
+        </a>
+      </div>
     </div>
     </div>
+    <div className="col">
+      <div className="card rounded-0 product-card">
+        <a href="javascript:;">
+          <img src="assets/images/shop-categories/06.png" className="card-img-top border-bottom bg-dark-1" alt="..." />
+        </a>
+        <div className="list-group list-group-flush">
+          <a href="javascript:;" className="list-group-item bg-transparent">
+            <h6 className="mb-0 text-uppercase">Makeup Kit</h6>
+          </a> <a href="javascript:;" className="list-group-item bg-transparent d-flex justify-content-between align-items-center">
+          Skin & Eye Primer
+          <span className="badge bg-light rounded-pill">16</span>
+        </a>
+        <a href="javascript:;" className="list-group-item bg-transparent d-flex justify-content-between align-items-center">
+          Eyeshadow
+          <span className="badge bg-light rounded-pill">18</span>
+        </a>
+        <a href="javascript:;" className="list-group-item bg-transparent d-flex justify-content-between align-items-center">
+          Lipstick Palette
+          <span className="badge bg-light rounded-pill">26</span>
+        </a>
+        <a href="javascript:;" className="list-group-item bg-transparent d-flex justify-content-between align-items-center">
+          Excellent Brow
+          <span className="badge bg-light rounded-pill">16</span>
+        </a>
+      </div>
+    </div>
+    </div>
+    <div className="col">
+      <div className="card rounded-0 product-card">
+        <a href="javascript:;">
+          <img src="assets/images/shop-categories/07.png" className="card-img-top border-bottom bg-dark-1" alt="..." />
+        </a>
+        <div className="list-group list-group-flush">
+          <a href="javascript:;" className="list-group-item bg-transparent">
+            <h6 className="mb-0 text-uppercase">Jewelry</h6>
+          </a> <a href="javascript:;" className="list-group-item bg-transparent d-flex justify-content-between align-items-center">
+          Bridal
+          <span className="badge bg-light rounded-pill">25</span>
+        </a>
+        <a href="javascript:;" className="list-group-item bg-transparent d-flex justify-content-between align-items-center">
+          Fashion
+          <span className="badge bg-light rounded-pill">42</span>
+        </a>
+        <a href="javascript:;" className="list-group-item bg-transparent d-flex justify-content-between align-items-center">
+          Temple
+          <span className="badge bg-light rounded-pill">14</span>
+        </a>
+        <a href="javascript:;" className="list-group-item bg-transparent d-flex justify-content-between align-items-center">
+          Handmade
+          <span className="badge bg-light rounded-pill">10</span>
+        </a>
+      </div>
+    </div>
+    </div>
+    <div className="col">
+      <div className="card rounded-0 product-card">
+        <a href="javascript:;">
+          <img src="assets/images/shop-categories/08.png" className="card-img-top border-bottom bg-dark-1" alt="..." />
+        </a>
+        <div className="list-group list-group-flush">
+          <a href="javascript:;" className="list-group-item bg-transparent">
+            <h6 className="mb-0 text-uppercase">Sports</h6>
+          </a> <a href="javascript:;" className="list-group-item bg-transparent d-flex justify-content-between align-items-center">
+          Soccer/football
+          <span className="badge bg-light rounded-pill">12</span>
+        </a>
+        <a href="javascript:;" className="list-group-item bg-transparent d-flex justify-content-between align-items-center">
+          Badminton
+          <span className="badge bg-light rounded-pill">35</span>
+        </a>
+        <a href="javascript:;" className="list-group-item bg-transparent d-flex justify-content-between align-items-center">
+          Table Tennis
+          <span className="badge bg-light rounded-pill">10</span>
+        </a>
+        <a href="javascript:;" className="list-group-item bg-transparent d-flex justify-content-between align-items-center">
+          Volleyball
+          <span className="badge bg-light rounded-pill">15</span>
+        </a>
+      </div>
     </div>
     </div>
     </div>

@@ -20,7 +20,7 @@ function Navigation1() {
     </ul>
     <ul className="navbar-nav">
       <li className="nav-item dropdown"> <a className="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">USD</a>
-      <ul className="dropdown-menu dropdown-menu-lg-end" aria-labelledby="dropdownMenuButton1">
+      <ul className="dropdown-menu dropdown-menu-lg-end">
         <li><a className="dropdown-item" href="#">USD</a>
       </li>
       <li><a className="dropdown-item" href="#">EUR</a>
