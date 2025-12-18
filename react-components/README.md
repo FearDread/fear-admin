@@ -10,12 +10,11 @@ npm install
 
 ## Components
 
-- **Blog** - Main component
+- **AccountPaymentMethods** - Main component
 - **Navigation1** - Extracted component
 - **Navigation2** - Extracted component
 - **Navigation3** - Extracted component
 - **Navigation4** - Extracted component
-- **Navigation5** - Extracted component
 - **Footer** - Extracted component
 
 ## Manual Review Required
