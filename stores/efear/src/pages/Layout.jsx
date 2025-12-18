@@ -5,19 +5,19 @@ import { Outlet } from "react-router-dom";
 import Header from "../components/common/Header";
 import Footer from "../components/common/Footer";
 
+import { store } from "../features/store";
 import { Product } from "../features/products/slice";
 
 const Layout = () => {
-  const dispatch = useDispatch(); 
-  const products = useSelector(state => state.products);
-
-  const fetchProducts = () => {
-    dispatch(Product.fetch());
-  }
+  const dispatch = store.dispatch; 
+  //const products = useSelector(state => state.products);
+  const { loading, loadingState, data: products } = useSelector(state => state.products)
 
   useEffect(() => {
-    fetchProducts();
-    //console.log('p state ', state);
+
+    if (loading) {
+
+    }
     console.log('products = ', products);
   }, [])
 
