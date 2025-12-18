@@ -52,8 +52,17 @@ export const App = () => {
             <Route path="product/:id" element={<PublicRoute><ProductDetails /></PublicRoute>} />
             <Route path="product/compare" element={<PublicRoute><ProductComparison /></PublicRoute>} />
             <Route path="auth/login" element={<PublicRoute><Login /></PublicRoute>} />
-             <Route path="auth/register" element={<PublicRoute><Register /></PublicRoute>} />
-          </Route>
+            <Route path="auth/register" element={<PublicRoute><Register /></PublicRoute>} />
+
+        {/* 
+            <Route path="account/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+            <Route path="account/orders" element={<PrivateRoute><Orders /></PrivateRoute>} />
+            <Route path="account/details" element={<PrivateRoute><UserDetails /></PrivateRoute>} />
+            <Route path="account/payment-methods" element={<PrivateRoute><PaymentMethods /></PrivateRoute>} />
+            <Route path="account/addresses" element={<PrivateRoute><Addresses /></PrivateRoute>} />
+            <Route path="account/forgot-password" element={<PrivateRoute><ForgotPassword /></PrivateRoute>} />
+            */}
+            </Route>
         </Routes>
       </Suspense>
     </BrowserRouter>
