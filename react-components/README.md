@@ -10,7 +10,7 @@ npm install
 
 ## Components
 
-- **AccountPaymentMethods** - Main component
+- **ShopCart** - Main component
 - **Navigation1** - Extracted component
 - **Navigation2** - Extracted component
 - **Navigation3** - Extracted component
