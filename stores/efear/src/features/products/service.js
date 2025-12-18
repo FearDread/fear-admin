@@ -5,15 +5,6 @@ import { ThunkFactory } from "@feardread/feature-factory";
  * Create custom async thunks for products
  */
 export const ProductService = {
-  // Create new product
-  createProduct: ThunkFactory.post('products', 'create'),
-  
-  // Update existing product
-  updateProduct: ThunkFactory.put('products', 'update'),
-  
-  // Delete product
-  deleteProduct: ThunkFactory.delete('products', 'delete'),
-  
   // Search products
   searchProducts: ThunkFactory.post('products', 'search'),
   
