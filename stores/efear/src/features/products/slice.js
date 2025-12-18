@@ -10,4 +10,4 @@ export const { slice, asyncActions: Product } = productFactory.create({
 });
 
 // Export reducer
-export default { productReducer:slice.reducer, Product } ;
+export default { reducer: slice.reducer, Product } ;
