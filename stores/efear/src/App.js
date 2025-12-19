@@ -1,6 +1,6 @@
 import React, { Suspense, useEffect, useState, useMemo } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector, useDispatch, Provider } from "react-redux";
 
 import PrivateRoute from "./contexts/routes/PrivateRoute";
 import PublicRoute from "./contexts/routes/PublicRoute";
@@ -19,12 +19,6 @@ import ProductDetails from "./pages/products/ProductDetails";
 
 
 import { useRouter } from "./contexts/Router";
-
-import './assets/css/bootstrap.min.css';
-import './assets/css/icons.css';
-import './assets/css/index.css';
-import './assets/css/pace.min.css';
-import './assets/css/app.css';
 import { store } from "./features/store";
 import { Product } from "./features/products/slice";
 
@@ -37,19 +31,14 @@ const LoadingFallback = () => (
 );
 
 export const App = () => {
-  const dispatch = store.dispatch;
   const { currentRoute } = useRouter();
 
   const renderRoute = () => {
     console.log('current route = ', currentRoute);
   };
 
-  useEffect(() => {
-
-    dispatch(Product.fetch());
-  }, [])
-
   return (
+    <Provider store={store}>
     <BrowserRouter>
       <Suspense fallback={<LoadingFallback />}>
         <Routes>
@@ -80,6 +69,7 @@ export const App = () => {
         </Routes>
       </Suspense>
     </BrowserRouter>
+    </Provider>
   );
 };
 
