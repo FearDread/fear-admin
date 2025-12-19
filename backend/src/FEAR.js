@@ -307,7 +307,7 @@ module.exports = FEAR = (() => {
 
       routers.forEach(config => {
         if (typeof config === 'function') {
-          this.useRouter(config);
+          this.useRouter(config, DEFAULT_ROUTE_PATH, this.corsConfig);
         } else if (config && config.router) {
           this.useRouter(config.router, config.path, config.cors);
         } else {
