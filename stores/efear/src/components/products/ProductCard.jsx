@@ -1,36 +1,46 @@
 
 
-const ProductCard = ({ product }) => {
+const ProductCard = ( product ) => {
+
+  const detailsLink = "/product/" + product._id;
+
+  const handleWishlist = () => {
+
+  }
+  const handleAddToCart = () => {
+
+  }
+
   return (
     <>
     <div className="col">
       <div className="card rounded-0 product-card">
         <div className="card-header bg-transparent border-bottom-0">
           <div className="d-flex align-items-center justify-content-end gap-3">
-            <a href="javascript:;">
+            <a href={detailsLink}>
               <div className="product-compare"><span><i className='bx bx-git-compare'></i> Compare</span>
             </div>
           </a>
-          <a href="javascript:;">
+          <a href="#" onClick={handleWishlist}>
             <div className="product-wishlist"> <i className='bx bx-heart'></i>
           </div>
         </a>
       </div>
     </div>
-    <a href="product-details.html">
-      <img src="assets/images/products/03.png" className="card-img-top" alt="..." />
+    <a href={detailsLink}>
+      <img src={(product.images[0]) ? product.images[0].url : null} className="card-img-top" alt="..." />
     </a>
     <div className="card-body">
       <div className="product-info">
         <a href="javascript:;">
-          <p className="product-catergory font-13 mb-1">Catergory Name</p>
+          <p className="product-catergory font-13 mb-1">{product.category}</p>
         </a>
         <a href="javascript:;">
-          <h6 className="product-name mb-2">Product Short Name</h6>
+          <h6 className="product-name mb-2">{product.title}</h6>
         </a>
         <div className="d-flex align-items-center">
-          <div className="mb-1 product-price"> <span className="me-1 text-decoration-line-through">$99.00</span>
-          <span className="text-white fs-5">$49.00</span>
+          <div className="mb-1 product-price"> <span className="me-1 text-decoration-line-through">${product.price}</span>
+          <span className="text-white fs-5">${product.price}</span>
         </div>
         <div className="cursor-pointer ms-auto"> <i className="bx bxs-star text-white"></i>
         <i className="bx bxs-star text-white"></i>

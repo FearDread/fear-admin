@@ -1,6 +1,6 @@
 import React from 'react';
 
-function Section7() {
+function CategorySection() {
   return (
     <section className="py-4">
       <div className="container">
@@ -8,7 +8,7 @@ function Section7() {
           <h5 className="text-uppercase mb-0">Browse Catergory</h5>
           <a href="shop-categories.html" className="btn btn-light ms-auto rounded-0">View All<i className='bx bx-chevron-right'></i></a>
         </div>
-        <hr/ />
+        <hr/>
         <div className="product-grid">
           <div className="browse-category owl-carousel owl-theme">
             <div className="item">
@@ -150,4 +150,5 @@ function Section7() {
   );
 }
 
-export default Section7;
+export default CategorySection;
+;
