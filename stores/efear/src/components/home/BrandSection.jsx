@@ -7,19 +7,33 @@ import 'owl.carousel/dist/assets/owl.theme.default.css';
 const BrandSection = () => {
 
   const carouselOptions = {
-    loop: true,
-    margin: 10,
-    nav: true,
-    responsive: {
-      0: { items: 1 },
-      768: { items: 2 },
-      992: { items: 3 },
-      1200: { items: 4 }
-    }
+				loop:true,
+					margin:0,
+					responsiveClass:true,
+					nav:false,
+					autoplay:true,
+					autoplayTimeout:5000,
+					dots: false,
+					responsive:{
+						0:{
+							items:1
+						},
+						600:{
+							items:2
+						},
+						1024:{
+							items:3
+						 },
+						1366:{
+							items:5
+						 }
+					  }
   };
 
   return (
+    <>
     <section className="py-4">
+          <hr/>
       <div className="container">
         <h3 className="d-none">Brands</h3>
         <div className="brand-grid">
@@ -80,6 +94,7 @@ const BrandSection = () => {
         </div>
       </div>
     </section>
+    </>
   );
 }
 
