@@ -13,9 +13,9 @@ function Navigation1() {
     </li>
     <li className="nav-item"> <a className="nav-link" href="blog.html">Blog</a>
     </li>
-    <li className="nav-item"> <a className="nav-link" href="contact-us.html">Contact</a>
+    <li className="nav-item">	<a className="nav-link" href="contact-us.html">Contact</a>
     </li>
-    <li className="nav-item"> <a className="nav-link" href="javascript:;">Help & FAQs</a>
+    <li className="nav-item">	<a className="nav-link" href="javascript:;">Help & FAQs</a>
     </li>
     </ul>
     <ul className="navbar-nav">
@@ -37,8 +37,8 @@ function Navigation1() {
     </div>
     </a>
     <div className="dropdown-menu dropdown-menu-lg-end">
-      <a className="dropdown-item d-flex allign-items-center" href="javascript:;">	<i className="flag-icon flag-icon-de me-2"></i><span>German</span>
-    </a> <a className="dropdown-item d-flex allign-items-center" href="javascript:;"><i
+      <a className="dropdown-item d-flex allign-items-center" href="javascript:;"> <i className="flag-icon flag-icon-de me-2"></i><span>German</span>
+    </a>	<a className="dropdown-item d-flex allign-items-center" href="javascript:;"><i
     className="flag-icon flag-icon-fr me-2"></i><span>French</span></a>
     <a className="dropdown-item d-flex allign-items-center" href="javascript:;"><i
       className="flag-icon flag-icon-um me-2"></i><span>English</span></a>
