@@ -23,7 +23,7 @@ const Home = () => {
 
       <FeaturedProducts />
 
-
+      <BrandSection />
 
       <NewArrivals />
 
@@ -33,7 +33,6 @@ const Home = () => {
 
       {/* <LatestNews /> */ }
 
-      <BrandSection />
             
       <AdSection />
 

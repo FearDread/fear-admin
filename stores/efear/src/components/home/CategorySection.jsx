@@ -1,12 +1,12 @@
 import React from 'react';
 
-function CategorySection() {
+export const CategorySection = () => {
   return (
     <section className="py-4">
       <div className="container">
         <div className="d-flex align-items-center">
           <h5 className="text-uppercase mb-0">Browse Catergory</h5>
-          <a href="shop-categories.html" className="btn btn-light ms-auto rounded-0">View All<i className='bx bx-chevron-right'></i></a>
+          <a href="/shop-categories" className="btn btn-light ms-auto rounded-0">View All<i className='bx bx-chevron-right'></i></a>
         </div>
         <hr/>
         <div className="product-grid">
@@ -17,7 +17,7 @@ function CategorySection() {
                   <img src="assets/images/categories/01.png" className="img-fluid" alt="..." />
                 </div>
                 <div className="card-footer text-center">
-                  <h6 className="mb-1 text-uppercase">Fashion</h6>
+                  <h6 className="mb-1 text-uppercase">Comics</h6>
                   <p className="mb-0 font-12 text-uppercase">10 Products</p>
                 </div>
               </div>
@@ -28,7 +28,7 @@ function CategorySection() {
                   <img src="assets/images/categories/02.png" className="img-fluid" alt="..." />
                 </div>
                 <div className="card-footer text-center">
-                  <h6 className="mb-1 text-uppercase">Watches</h6>
+                  <h6 className="mb-1 text-uppercase">E-Books</h6>
                   <p className="mb-0 font-12 text-uppercase">8 Products</p>
                 </div>
               </div>
@@ -39,7 +39,7 @@ function CategorySection() {
                   <img src="assets/images/categories/03.png" className="img-fluid" alt="..." />
                 </div>
                 <div className="card-footer text-center">
-                  <h6 className="mb-1 text-uppercase">Shoes</h6>
+                  <h6 className="mb-1 text-uppercase">Football Cards</h6>
                   <p className="mb-0 font-12 text-uppercase">14 Products</p>
                 </div>
               </div>
@@ -50,7 +50,7 @@ function CategorySection() {
                   <img src="assets/images/categories/04.png" className="img-fluid" alt="..." />
                 </div>
                 <div className="card-footer text-center">
-                  <h6 className="mb-1 text-uppercase">Bags</h6>
+                  <h6 className="mb-1 text-uppercase">Graphic Novels</h6>
                   <p className="mb-0 font-12 text-uppercase">6 Products</p>
                 </div>
               </div>
@@ -61,7 +61,7 @@ function CategorySection() {
                   <img src="assets/images/categories/05.png" className="img-fluid" alt="..." />
                 </div>
                 <div className="card-footer text-center">
-                  <h6 className="mb-1 text-uppercase">Electronis</h6>
+                  <h6 className="mb-1 text-uppercase">Pokemon Cards</h6>
                   <p className="mb-0 font-12 text-uppercase">6 Products</p>
                 </div>
               </div>
@@ -72,7 +72,7 @@ function CategorySection() {
                   <img src="assets/images/categories/06.png" className="img-fluid" alt="..." />
                 </div>
                 <div className="card-footer text-center">
-                  <h6 className="mb-1 text-uppercase">Headphones</h6>
+                  <h6 className="mb-1 text-uppercase">Manga</h6>
                   <p className="mb-0 font-12 text-uppercase">5 Products</p>
                 </div>
               </div>
@@ -83,7 +83,7 @@ function CategorySection() {
                   <img src="assets/images/categories/07.png" className="img-fluid" alt="..." />
                 </div>
                 <div className="card-footer text-center">
-                  <h6 className="mb-1 text-uppercase">Furniture</h6>
+                  <h6 className="mb-1 text-uppercase">Basketball Cards</h6>
                   <p className="mb-0 font-12 text-uppercase">20 Products</p>
                 </div>
               </div>
@@ -94,7 +94,7 @@ function CategorySection() {
                   <img src="assets/images/categories/08.png" className="img-fluid" alt="..." />
                 </div>
                 <div className="card-footer text-center">
-                  <h6 className="mb-1 text-uppercase">Jewelry</h6>
+                  <h6 className="mb-1 text-uppercase">Collectibles</h6>
                   <p className="mb-0 font-12 text-uppercase">16 Products</p>
                 </div>
               </div>
@@ -116,7 +116,7 @@ function CategorySection() {
                   <img src="assets/images/categories/10.png" className="img-fluid" alt="..." />
                 </div>
                 <div className="card-footer text-center">
-                  <h6 className="mb-1 text-uppercase">Vegetable</h6>
+                  <h6 className="mb-1 text-uppercase">Marvel</h6>
                   <p className="mb-0 font-12 text-uppercase">15 Products</p>
                 </div>
               </div>
@@ -127,7 +127,7 @@ function CategorySection() {
                   <img src="assets/images/categories/11.png" className="img-fluid" alt="..." />
                 </div>
                 <div className="card-footer text-center">
-                  <h6 className="mb-1 text-uppercase">Medical</h6>
+                  <h6 className="mb-1 text-uppercase">DC</h6>
                   <p className="mb-0 font-12 text-uppercase">24 Products</p>
                 </div>
               </div>
@@ -138,7 +138,7 @@ function CategorySection() {
                   <img src="assets/images/categories/12.png" className="img-fluid" alt="..." />
                 </div>
                 <div className="card-footer text-center">
-                  <h6 className="mb-1 text-uppercase">Sunglasses</h6>
+                  <h6 className="mb-1 text-uppercase">Toys</h6>
                   <p className="mb-0 font-12 text-uppercase">18 Products</p>
                 </div>
               </div>
