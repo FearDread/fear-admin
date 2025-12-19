@@ -1,18 +1,14 @@
 import React, { useState } from 'react';
+import { useSelector } from "react-redux";
 import ProductCard from "./ProductCard";
 
 // Featured Products Section
-export const FeaturedProducts = () => {
-  const products = [
-    { id: 1, name: "Men White T-Shirt", category: "Fashion", price: 49, rating: 5, icon: "👕" },
-    { id: 2, name: "Puma Sports Shoes", category: "Sports", price: 49, rating: 4, icon: "👟" },
-    { id: 3, name: "Women Red Sneakers", category: "Fashion", price: 49, rating: 4, icon: "👠" },
-    { id: 4, name: "Black Headphone", category: "Electronics", price: 49, rating: 5, icon: "🎧" },
-    { id: 5, name: "Smart Watch", category: "Electronics", price: 49, rating: 4, icon: "⌚" },
-    { id: 6, name: "Laptop Bag", category: "Accessories", price: 49, rating: 5, icon: "💼" },
-    { id: 7, name: "Sunglasses", category: "Accessories", price: 49, rating: 4, icon: "🕶️" },
-    { id: 8, name: "Blue Girl Shoes", category: "Fashion", price: 49, rating: 5, icon: "👡" }
-  ];
+export const FeaturedProducts = (products) => {
+  const prodState = useSelector((state) => state.products.data);
+   
+  products = (products.length > 0) ? products : prodState
+
+  console.log('featured products ', products);
 
   return (
     <section className="py-4">
