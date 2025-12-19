@@ -9,7 +9,7 @@ function Navigation2() {
       <li className="nav-item"><a href="wishlist.html" className="nav-link cart-link"><i className='bx bx-heart'></i></a>
     </li>
     <li className="nav-item dropdown dropdown-large">
-      <a href="#" className="nav-link dropdown-toggle dropdown-toggle-nocaret position-relative cart-link" data-bs-toggle="dropdown"> <span className="alert-count">8</span>
+      <a href="#" className="nav-link dropdown-toggle dropdown-toggle-nocaret position-relative cart-link" data-bs-toggle="dropdown">	<span className="alert-count">8</span>
       <i className='bx bx-shopping-bag'></i>
     </a>
     <div className="dropdown-menu dropdown-menu-end">
@@ -147,7 +147,7 @@ function Navigation2() {
         <h5 className="mb-0 ms-auto">$189.00</h5>
       </div>
     </a>
-    <div className="d-grid p-3 border-top"> <a href="javascript:;" className="btn btn-light btn-ecomm">CHECKOUT</a>
+    <div className="d-grid p-3 border-top">	<a href="javascript:;" className="btn btn-light btn-ecomm">CHECKOUT</a>
     </div>
     </div>
     </li>
