@@ -8,7 +8,7 @@ function Section9() {
           <h5 className="text-uppercase mb-0">Latest News</h5>
           <a href="blog.html" className="btn btn-light ms-auto rounded-0">View All News<i className='bx bx-chevron-right'></i></a>
         </div>
-        <hr/ />
+        <hr/>
         <div className="product-grid">
           <div className="latest-news owl-carousel owl-theme">
             <div className="item">

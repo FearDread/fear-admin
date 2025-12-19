@@ -10,10 +10,11 @@ import App from './App';
 import { store } from "./features/store";
 
 import './assets/css/bootstrap.min.css';
+import './assets/css/owl.carousel.min.css'
 import './assets/css/icons.css';
-import './assets/css/index.css';
 import './assets/css/pace.min.css';
 import './assets/css/app.css';
+import './assets/css/index.css';
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

@@ -1,12 +1,32 @@
 import React from 'react';
 
-function Section10() {
+import OwlCarousel from 'react-owl-carousel';
+import 'owl.carousel/dist/assets/owl.carousel.css';
+import 'owl.carousel/dist/assets/owl.theme.default.css';
+
+const BrandSection = () => {
+
+  const carouselOptions = {
+    loop: true,
+    margin: 10,
+    nav: true,
+    responsive: {
+      0: { items: 1 },
+      768: { items: 2 },
+      992: { items: 3 },
+      1200: { items: 4 }
+    }
+  };
+
   return (
     <section className="py-4">
       <div className="container">
         <h3 className="d-none">Brands</h3>
         <div className="brand-grid">
-          <div className="brands-shops owl-carousel owl-theme border">
+          <OwlCarousel
+            className="brands-shops owl-carousel owl-theme border"
+            {...carouselOptions}
+          >
             <div className="item border-end">
               <div className="p-4">
                 <a href="javascript:;">
@@ -56,11 +76,11 @@ function Section10() {
                 </a>
               </div>
             </div>
-          </div>
+          </OwlCarousel>
         </div>
       </div>
     </section>
   );
 }
 
-export default Section10;
+export default BrandSection;

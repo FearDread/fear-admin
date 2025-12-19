@@ -26,7 +26,7 @@ function Section11() {
               </p>
             </div>
           </div>
-          <hr/ />
+          <hr/>
           <div className="d-flex align-items-center">
             <div className="bottom-product-img">
               <a href="product-details.html">
@@ -45,7 +45,7 @@ function Section11() {
           </p>
         </div>
       </div>
-      <hr/ />
+      <hr/>
       <div className="d-flex align-items-center">
         <div className="bottom-product-img">
           <a href="product-details.html">
@@ -64,7 +64,7 @@ function Section11() {
       </p>
     </div>
     </div>
-    <hr/ />
+    <hr/>
     <div className="d-flex align-items-center">
       <div className="bottom-product-img">
         <a href="product-details.html">
@@ -106,7 +106,7 @@ function Section11() {
         </p>
       </div>
     </div>
-    <hr/ />
+    <hr/>
     <div className="d-flex align-items-center">
       <div className="bottom-product-img">
         <a href="product-details.html">
@@ -125,7 +125,7 @@ function Section11() {
     </p>
     </div>
     </div>
-    <hr/ />
+    <hr/>
     <div className="d-flex align-items-center">
       <div className="bottom-product-img">
         <a href="product-details.html">
@@ -144,7 +144,7 @@ function Section11() {
     </p>
     </div>
     </div>
-    <hr/ />
+    <hr/>
     <div className="d-flex align-items-center">
       <div className="bottom-product-img">
         <a href="product-details.html">
@@ -186,7 +186,7 @@ function Section11() {
         </p>
       </div>
     </div>
-    <hr/ />
+    <hr/>
     <div className="d-flex align-items-center">
       <div className="bottom-product-img">
         <a href="product-details.html">
@@ -205,7 +205,7 @@ function Section11() {
     </p>
     </div>
     </div>
-    <hr/ />
+    <hr/>
     <div className="d-flex align-items-center">
       <div className="bottom-product-img">
         <a href="product-details.html">
@@ -224,7 +224,7 @@ function Section11() {
     </p>
     </div>
     </div>
-    <hr/ />
+    <hr/>
     <div className="d-flex align-items-center">
       <div className="bottom-product-img">
         <a href="product-details.html">
@@ -266,7 +266,7 @@ function Section11() {
         </p>
       </div>
     </div>
-    <hr/ />
+    <hr/>
     <div className="d-flex align-items-center">
       <div className="bottom-product-img">
         <a href="product-details.html">
@@ -285,7 +285,7 @@ function Section11() {
     </p>
     </div>
     </div>
-    <hr/ />
+    <hr/>
     <div className="d-flex align-items-center">
       <div className="bottom-product-img">
         <a href="product-details.html">
@@ -304,7 +304,7 @@ function Section11() {
     </p>
     </div>
     </div>
-    <hr/ />
+    <hr/>
     <div className="d-flex align-items-center">
       <div className="bottom-product-img">
         <a href="product-details.html">

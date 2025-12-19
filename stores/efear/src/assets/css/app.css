@@ -182,14 +182,19 @@ body.offcanvas-active {
 	border-radius: 0%;
 	-webkit-transition: all .2s;
 	-o-transition: all .2s;
-	transition: all .2s
+	transition: all .2s;
+	transform: scale(1);
+}
+.product-grid .card.product-card:hover {
+	transform: scale(1.1);
 }
 .product-grid .product-card .product-action, .product-grid .product-card .product-compare {
 	opacity: 0;
 	visibility: hidden;
 	-webkit-transition: all .2s;
 	-o-transition: all .2s;
-	transition: all .2s
+	transition: all .2s;
+	transform: scale(1);
 }
 .product-grid .product-card:hover .product-action, .product-card:hover .product-compare {
 	visibility: visible;
@@ -1466,4 +1471,21 @@ body.bg-theme15 {
 		height: auto;
 		padding: 2rem 1rem
 	}
+}
+
+.card-img-top {
+	object-fit: cover;
+    height: 300px;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+h6.product-name {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.owl-stage-outer {
+	padding-top: 25px;
 }
