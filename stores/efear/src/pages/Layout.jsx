@@ -28,7 +28,7 @@ const Layout = () => {
   const success = useSelector(selectProductsSuccess);
   const error = useSelector(selectProductsError);
   const loadingState = useSelector(selectProductsLoadingState);
-  const fetchStatus = useSelector(state => selectOperationStatus(state, 'fetch'));
+  //const fetchStatus = useSelector(state => selectOperationStatus(state, 'fetch'));
   
   // Manual refresh
   const handleRefresh = () => {
@@ -50,20 +50,21 @@ const Layout = () => {
     return (
       <div className="loading-container">
         <p>Loading products...</p>
-        {fetchStatus.lastRun && (
-          <small>Last fetched: {new Date(fetchStatus.lastRun).toLocaleString()}</small>
-        )}
       </div>
     );
   }
 
-  if (error) {
+  if (!loading && error) {
     return (
       <div className="error-container">
         <p>Error: {error.message || error}</p>
         <button onClick={handleRefresh}>Retry</button>
       </div>
     );
+  }
+
+  if (!loading && products.length > 0 || success) {
+    console.log('products? = ', products);
   }
 
   return (
@@ -75,16 +76,16 @@ const Layout = () => {
       <div className="page-wrapper">
         <div className="page-content">
 
-            {(!fetchStatus.loading) && (
+            {(!loading && products.length > 0) && (
                   <>
-                    <Outlet />
+                    <Outlet {...products} />
                   </>
             )}
         </div>
       </div>
       <Footer />
     </>
-  );
+  )
 };
 
 export default Layout;
