@@ -16,18 +16,14 @@ import {
   selectOperationStatus
 } from '../features/products/slice';
 import { fetchCategories, selectAllCategories } from '../features/categories/slice';
-import { fetchBrands, selectAllBrands } from '../features/brands/slice';
 
 const Layout = () => {
   // Select data from store
   const products = useSelector(selectAllProducts); // Now includes filtering & sorting
   const categories = useSelector(selectAllCategories);
-  const brands = useSelector(selectAllBrands);
   const loading = useSelector(selectProductsLoading);
   const success = useSelector(selectProductsSuccess);
   const error = useSelector(selectProductsError);
-  const loadingState = useSelector(selectProductsLoadingState);
-  //const fetchStatus = useSelector(state => selectOperationStatus(state, 'fetch'));
 
   // Manual refresh
   const handleRefresh = () => {
@@ -39,8 +35,6 @@ const Layout = () => {
 
     dispatch(fetchProducts());
     dispatch(fetchCategories());
-    //dispatch(fetchBrands());
-
 
   }, [dispatch]);
 

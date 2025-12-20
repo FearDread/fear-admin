@@ -1,6 +1,6 @@
 
 
-const ProductCard = ( product ) => {
+export const ProductCard = ( product ) => {
 
   const detailsLink = "/product/" + product._id;
 

@@ -1,7 +1,7 @@
 // features/categories/categorySlice.js
 import { FeatureFactory } from '@feardread/feature-factory';
 
-const reportsFactory = FeatureFactory('categories', {});
+const reportsFactory = FeatureFactory('category', {});
 const { slice, asyncActions: Categories } = reportsFactory.createBasic();
 
 // Export all actions

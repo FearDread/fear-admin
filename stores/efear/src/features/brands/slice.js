@@ -2,7 +2,7 @@
 import { FeatureFactory } from '@feardread/feature-factory';
 import { brandService } from "./service";
 
-const brandFactory = FeatureFactory('brands', brandService);
+const brandFactory = FeatureFactory('brand', brandService);
 const { slice, asyncActions: Brands } = brandFactory.createBasic();
 
 export const {
