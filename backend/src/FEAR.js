@@ -23,8 +23,6 @@ module.exports = FEAR = (() => {
     this.logger = null;
     this.morgan = null;
     this.cloud = null;
-    this.agentService = null;
-    this.agentWebInterface = null;
     this.db = null;
     this.handler = null;
     this.validator = null;
@@ -38,8 +36,6 @@ module.exports = FEAR = (() => {
     this.setupMiddleware();
     this.corsConfig = this.getCorsConfig();
     this.setupRoutes();
-    //this.setupAiAgent();
-    //this.setupAgentWebInterface();
   };
 
   // Consolidated prototype
@@ -47,50 +43,10 @@ module.exports = FEAR = (() => {
     constructor: FEAR,
 
     /**
-     * Initialize AI Agent service
-     */
-    setupAiAgent() {
-      const { getInstance } = require("./libs/agent");
-
-      if (!this.agentService) {
-        this.agentService = getInstance();
-      }
-    },
-
-    /**
-     * Initialize Agent Web Interface
-     */
-    setupAgentWebInterface() {
-      try {
-        const AgentWebInterface = require("./libs/agent");
-        
-        this.agentWebInterface = new AgentWebInterface(this);
-        
-        // Register agent routes
-        this.useRouter(
-          this.agentWebInterface.getRouter(), 
-          AGENT_ROUTE_PATH
-        );
-        
-        this.logger.info(`Agent Web Interface initialized at ${AGENT_ROUTE_PATH}`);
-      } catch (error) {
-        this.logger.error("Failed to initialize Agent Web Interface:", error);
-        this.logger.warn("Agent Web Interface will not be available");
-      }
-    },
-
-    /**
      * Get AI Agent service instance
      */
     getAiAgent() {
       return this.agentService;
-    },
-
-    /**
-     * Get Agent Web Interface instance
-     */
-    getAgentWebInterface() {
-      return this.agentWebInterface;
     },
 
     /**
