@@ -1,75 +1,147 @@
-import React, { Suspense, useEffect, useState, useMemo } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { useSelector, useDispatch, Provider } from "react-redux";
-
+// App.jsx
+import React, { Suspense, lazy } from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import PrivateRoute from "./contexts/routes/PrivateRoute";
 import PublicRoute from "./contexts/routes/PublicRoute";
-
+// Layout
 import Layout from "./pages/Layout";
+
+// Eager-loaded components (critical for initial render)
 import Home from './pages/Home';
-import Blog from "./pages/Blog";
-import About from "./pages/About";
-import Contact from "./pages/Contact";
-import Shop from "./pages/shop/Shop";
-import ShopCategories from "./pages/shop/ShopCategories";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
-import ProductComparison from "./pages/products/ProductComparison";
-import ProductDetails from "./pages/products/ProductDetails";
 
+// Lazy-loaded components (code splitting for better performance)
+const Blog = lazy(() => import("./pages/Blog"));
+const About = lazy(() => import("./pages/About"));
+const Contact = lazy(() => import("./pages/Contact"));
+const Shop = lazy(() => import("./pages/shop/Shop"));
+const ShopCategories = lazy(() => import("./pages/shop/ShopCategories"));
+const ProductComparison = lazy(() => import("./pages/products/ProductComparison"));
+const ProductDetails = lazy(() => import("./pages/products/ProductDetails"));
 
-import { useRouter } from "./contexts/Router";
-import { store } from "./features/store";
-import { Product } from "./features/products/slice";
-
+// Account pages (lazy loaded)
+/*
+const Dashboard = lazy(() => import("./pages/account/Dashboard"));
+const Orders = lazy(() => import("./pages/account/Orders"));
+const UserDetails = lazy(() => import("./pages/account/UserDetails"));
+const PaymentMethods = lazy(() => import("./pages/account/PaymentMethods"));
+const Addresses = lazy(() => import("./pages/account/Addresses"));
+//const ForgotPassword = lazy(() => import("./pages/auth/ForgotPassword"));
+// Error pages
+//const Unauthorized = lazy(() => import("./pages/Unauthorized"));
+*/
+/**
+ * Loading fallback component with better UX
+ */
 const LoadingFallback = () => (
   <div className="d-flex justify-content-center align-items-center min-vh-100">
-    <div className="spinner-border" role="status">
-      <span className="visually-hidden">Loading...</span>
+    <div className="text-center">
+      <div className="spinner-border text-primary" role="status" style={{ width: '3rem', height: '3rem' }}>
+        <span className="visually-hidden">Loading...</span>
+      </div>
+      <p className="mt-3 text-muted">Loading...</p>
     </div>
   </div>
 );
 
+/**
+ * 404 Not Found Page
+ */
+const NotFound = () => (
+  <div className="container">
+    <div className="d-flex justify-content-center align-items-center min-vh-100">
+      <div className="text-center">
+        <h1 className="display-1 fw-bold">404</h1>
+        <p className="fs-3">
+          <span className="text-danger">Oops!</span> Page not found.
+        </p>
+        <p className="lead">
+          The page you're looking for doesn't exist.
+        </p>
+        <a href="/" className="btn btn-primary">Go Home</a>
+      </div>
+    </div>
+  </div>
+);
+
+/**
+ * Route configuration for better organization
+ */
+const routeConfig = {
+  public: [
+    { path: "/", element: <Home />, exact: true },
+    { path: "/about", element: <About /> },
+    { path: "/contact", element: <Contact /> },
+    { path: "/blog", element: <Blog /> },
+    { path: "/shop", element: <Shop /> },
+    { path: "/shop-categories", element: <ShopCategories /> },
+    { path: ":id", element: <ProductDetails /> },
+        { path: "/product/:id", element: <ProductDetails /> },
+    { path: "/compare", element: <ProductComparison /> },
+  ],
+  auth: [
+    { path: "/login", element: <Login /> },
+    { path: "/register", element: <Register /> },
+    //{ path: "/forgot-password", element: <ForgotPassword /> },
+  ],
+  protected: []
+  /*
+  protected: [
+    { path: "/account/dashboard", element: <Dashboard /> },
+    { path: "/account/orders", element: <Orders /> },
+    { path: "/account/details", element: <UserDetails /> },
+    { path: "/account/payment-methods", element: <PaymentMethods /> },
+    { path: "/account/addresses", element: <Addresses /> },
+  ],
+  */
+};
+
+/**
+ * Main App Component
+ */
 export const App = () => {
-  const { currentRoute } = useRouter();
-
-  const renderRoute = () => {
-    console.log('current route = ', currentRoute);
-  };
-
   return (
-    <Provider store={store}>
     <BrowserRouter>
       <Suspense fallback={<LoadingFallback />}>
         <Routes>
-          <Route path="/" element={<Layout />}>
-            <Route index element={<PublicRoute><Home /></PublicRoute>} /> 
-            <Route path="about" element={<PublicRoute><About /></PublicRoute>} />
-            <Route path="contact" element={<PublicRoute><Contact /></PublicRoute>} />
-            <Route path="blog" element={<PublicRoute><Blog /></PublicRoute>} />
+          <Route path="/" exact element={<Layout />}>
+            {routeConfig.public.map((route) => (
+              <Route
+                key={route.path}
+                path={route.path}
+                element={<PublicRoute>{(route.subpath) ? <Route path={route.subpath} element={route.element} /> : route.element}</PublicRoute>}
+              />
+            ))}
 
-            <Route path="shop" element={<PublicRoute><Shop /></PublicRoute>} />
-            <Route path="shop/categories" element={<PublicRoute><ShopCategories /></PublicRoute>} />
-
-            <Route path="product/:id" element={<PublicRoute><ProductDetails /></PublicRoute>} />
-            <Route path="product/compare" element={<PublicRoute><ProductComparison /></PublicRoute>} />
+            {routeConfig.auth.map((route) => (
+              <Route
+                key={route.path}
+                path={route.path}
+                element={<PublicRoute restricted>{route.element}</PublicRoute>}
+              />
+            ))}
             
-            <Route path="auth/login" element={<PublicRoute><Login /></PublicRoute>} />
-            <Route path="auth/register" element={<PublicRoute><Register /></PublicRoute>} />
+            {routeConfig.protected.map((route) => (
+              <Route
+                key={route.path}
+                path={route.path}
+                element={<PrivateRoute>{route.element}</PrivateRoute>}
+              />
+            ))}
 
-        {/* 
-            <Route path="account/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
-            <Route path="account/orders" element={<PrivateRoute><Orders /></PrivateRoute>} />
-            <Route path="account/details" element={<PrivateRoute><UserDetails /></PrivateRoute>} />
-            <Route path="account/payment-methods" element={<PrivateRoute><PaymentMethods /></PrivateRoute>} />
-            <Route path="account/addresses" element={<PrivateRoute><Addresses /></PrivateRoute>} />
-            <Route path="account/forgot-password" element={<PrivateRoute><ForgotPassword /></PrivateRoute>} />
-            */}
-            </Route>
+            <Route path="/unauthorized" element={<NotFound />} />
+            <Route path="/product" element={<Route path="/:id" element={<ProductDetails />} />} />
+            <Route path="/product/compare" element={<Navigate to="/products/compare" replace />} />
+
+            {/* 404 Not Found */}
+                        <Route path="*" element={<NotFound />} />
+          </Route>
+
+
         </Routes>
       </Suspense>
     </BrowserRouter>
-    </Provider>
   );
 };
 

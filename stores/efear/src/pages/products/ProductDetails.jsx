@@ -24,7 +24,7 @@ import {
 import OwlCarousel from 'react-owl-carousel';
 
 export const ProductDetails = () => {
-    const { productId } = useParams();
+    const { id } = useParams();
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
@@ -53,19 +53,18 @@ export const ProductDetails = () => {
     const brand = useSelector(state =>
         product?.brandId ? selectBrandById(state, product.brandId) : null
     );
-    const breadcrumbs = useSelector(state =>
-        product?.categoryId ? selectCategoryBreadcrumbs(state, product.categoryId) : []
-    );
     const isBrandFavorite = useSelector(state =>
         product?.brandId ? selectIsBrandFavorite(state, product.brandId) : false
     );
 
     useEffect(() => {
-        if (productId) {
-            dispatch(fetchProduct({ id: productId }));
-            dispatch(getRecommendations({ id: productId, limit: 4 }));
+        console.log('prod id = ', id);
+        
+        if (id) {
+            dispatch(fetchProduct({ id: id }));
+            //dispatch(getRecommendations({ id: id, limit: 4 }));
         }
-    }, [dispatch, productId]);
+    }, [dispatch, id]);
 
     // Fetch related data when product loads
     useEffect(() => {
@@ -110,7 +109,7 @@ export const ProductDetails = () => {
         if (!product) return;
 
         const cartItem = {
-            productId: product.id,
+            id: product.id,
             product,
             quantity,
             size: selectedSize,
@@ -150,7 +149,7 @@ export const ProductDetails = () => {
     const handleSubmitReview = () => {
         console.log('Submitting review:', reviewForm);
         // TODO: Dispatch review submission action
-        // dispatch(submitReview({ productId, ...reviewForm }));
+        // dispatch(submitReview({ id, ...reviewForm }));
 
         // Reset form
         setReviewForm({
@@ -202,7 +201,7 @@ export const ProductDetails = () => {
                 <div className="alert alert-danger" role="alert">
                     <h4 className="alert-heading">Error Loading Product</h4>
                     <p>{error.message || error}</p>
-                    <button className="btn btn-primary" onClick={() => dispatch(fetchProduct({ id: productId }))}>
+                    <button className="btn btn-primary" onClick={() => dispatch(fetchProduct({ id: id }))}>
                         Try Again
                     </button>
                 </div>
@@ -252,6 +251,7 @@ export const ProductDetails = () => {
         return stars;
     };
 
+    if ( !loading && product ) {
     return (
         <>
             {/* Breadcrumb Section */}
@@ -272,16 +272,6 @@ export const ProductDetails = () => {
                                             Shop
                                         </a>
                                     </li>
-                                    {breadcrumbs.map((crumb) => (
-                                        <li key={crumb.id} className="breadcrumb-item">
-                                            <a
-                                                href={`/categories/${crumb.id}`}
-                                                onClick={(e) => { e.preventDefault(); handleCategoryClick(crumb.id); }}
-                                            >
-                                                {crumb.name}
-                                            </a>
-                                        </li>
-                                    ))}
                                     <li className="breadcrumb-item active" aria-current="page">
                                         {product.name}
                                     </li>
@@ -303,10 +293,10 @@ export const ProductDetails = () => {
                                     <div className="image-zoom-section">
                                         {/* Main Image */}
 
-                                                      <OwlCarousel
-                                                        className="product-gallery owl-carousel owl-theme border mb-3 p-3"
-                                                        {...carouselOptions}
-                                                      >
+                                        <OwlCarousel
+                                            className="product-gallery owl-carousel owl-theme border mb-3 p-3"
+                                            {...carouselOptions}
+                                        >
                                             <div className="item">
                                                 <img
                                                     src={images[selectedImageIndex]}
@@ -314,7 +304,7 @@ export const ProductDetails = () => {
                                                     alt={product.name}
                                                 />
                                             </div>
-                                            </OwlCarousel>
+                                        </OwlCarousel>
 
 
                                         {/* Thumbnails */}
@@ -329,7 +319,7 @@ export const ProductDetails = () => {
                                                 </button>
                                             ))}
                                         </OwlCarousel>
-                                        
+
                                     </div>
                                 </div>
 
@@ -795,6 +785,9 @@ export const ProductDetails = () => {
             </section>
         </>
     );
+    }
+
+
 };
 
 export default ProductDetails

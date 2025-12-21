@@ -35,7 +35,7 @@ const Layout = () => {
 
     dispatch(fetchProducts());
     dispatch(fetchCategories());
-
+    
   }, [dispatch]);
 
 
@@ -62,7 +62,9 @@ const Layout = () => {
 
   return (
     <>
-      <b className="screen-overlay"></b>
+    <b className="screen-overlay"></b>
+    { (!loading) && (
+      <>
       <div className="wrapper">
         <Header />
       </div>
@@ -77,6 +79,8 @@ const Layout = () => {
         </div>
       </div>
       <Footer />
+      </>
+    )}
     </>
   )
 };

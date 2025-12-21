@@ -25,7 +25,7 @@ export const Header = () => {
                   </li>
                   <li className="nav-item">	<a className="nav-link" href="/contact">Contact</a>
                   </li>
-                  <li className="nav-item">	<a className="nav-link" href="javascript:;">Help & FAQs</a>
+                  <li className="nav-item">	<a className="nav-link" href="/faq">Help & FAQs</a>
                   </li>
                 </ul>
                 <ul className="navbar-nav">
@@ -86,6 +86,8 @@ export const Header = () => {
                     </div>
                   </div>
                 </div>
+
+                {/* Extract Search Component */}
                 <div className="col-12 col-md order-4 order-md-2">
                   <div className="input-group flex-nowrap px-xl-4">
                     <input type="text" className="form-control w-100" placeholder="Search for Products" />
@@ -109,9 +111,9 @@ export const Header = () => {
                   <div className="top-cart-icons">
                     <nav className="navbar navbar-expand">
                       <ul className="navbar-nav ms-auto">
-                        <li className="nav-item"><a href="account-dashboard.html" className="nav-link cart-link"><i className='bx bx-user'></i></a>
+                        <li className="nav-item"><a href="/account/dashboard" className="nav-link cart-link"><i className='bx bx-user'></i></a>
                         </li>
-                        <li className="nav-item"><a href="wishlist.html" className="nav-link cart-link"><i className='bx bx-heart'></i></a>
+                        <li className="nav-item"><a href="/account/wishlist" className="nav-link cart-link"><i className='bx bx-heart'></i></a>
                         </li>
 
                         {/* TODO: EXTRACT CART COMPONENT */}
@@ -288,26 +290,26 @@ export const Header = () => {
                             </li>
                             <li><a href="/shop?category=Ebooks">E-Books</a>
                             </li>
+                            <li><a href="/shop?category=Ebooks">Graphic Novels</a>
+                            </li>
+                            <li><a href="/shop?category=Ebooks">Manga</a>
+                            </li>
+                            <li><a href="/shop?category=Ebooks">Anime</a>
+                            </li>
                           </ul>
                         </div>
                         <div className="col-md-4">
                           <h6 className="large-menu-title">Trading Cards</h6>
                           <ul>
-                            <li><a href="#">Mobiles</a>
+                            <li><a href="#">Basketball</a>
                             </li>
-                            <li><a href="#">Laptops</a>
+                            <li><a href="#">Football</a>
                             </li>
-                            <li><a href="#">Macbook</a>
+                            <li><a href="#">Magic The Gathering</a>
                             </li>
-                            <li><a href="#">Televisions</a>
+                            <li><a href="#">Baseball</a>
                             </li>
-                            <li><a href="#">Lighting</a>
-                            </li>
-                            <li><a href="#">Smart Watch</a>
-                            </li>
-                            <li><a href="#">Galaxy Phones</a>
-                            </li>
-                            <li><a href="#">PC Monitors</a>
+                            <li><a href="#">Pokemon</a>
                             </li>
                           </ul>
                         </div>
@@ -322,25 +324,10 @@ export const Header = () => {
 
                   <li className="nav-item dropdown">	<a className="nav-link dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown">Shop <i className='bx bx-chevron-down'></i></a>
                     <ul className="dropdown-menu">
-                      <li><a className="dropdown-item dropdown-toggle dropdown-toggle-nocaret" href="#">Shop
+                      <li><a className="dropdown-item dropdown-toggle dropdown-toggle-nocaret" href="#">Our Store
                          <i className='bx bx-chevron-right float-end'></i></a>
                         <ul className="submenu dropdown-menu">
-                          <li><a className="dropdown-item" href="shop-grid-left-sidebar.html">Our Store</a>
-                          </li>
-                          <li><a className="dropdown-item" href="shop-grid-right-sidebar.html">Shop Grid -
-                            Right Sidebar</a>
-                          </li>
-                          <li><a className="dropdown-item" href="shop-list-left-sidebar.html">Shop List -
-                            Left Sidebar</a>
-                          </li>
-                          <li><a className="dropdown-item" href="shop-list-right-sidebar.html">Shop List -
-                            Right Sidebar</a>
-                          </li>
-                          <li><a className="dropdown-item" href="shop-grid-filter-on-top.html">Shop Grid -
-                            Top Filter</a>
-                          </li>
-                          <li><a className="dropdown-item" href="shop-list-filter-on-top.html">Shop List -
-                            Top Filter</a>
+                          <li><a className="dropdown-item" href="shop-grid-left-sidebar.html">Comic Shop</a>
                           </li>
                         </ul>
                       </li>
