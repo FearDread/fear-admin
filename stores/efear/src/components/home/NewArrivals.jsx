@@ -7,6 +7,7 @@ import 'owl.carousel/dist/assets/owl.theme.default.css';
 
 export const NewArrivals = ( {data} ) => {
   const stateData = useSelector(state => state.products.data);
+  const loading = useSelector(state => state.products.loading);
   // Memoize the product data to avoid unnecessary recalculations
   const productData = useMemo(() => {
     return data || stateData;
@@ -43,6 +44,8 @@ export const NewArrivals = ( {data} ) => {
   };
 
   return (
+    <>
+    { (!loading) && (
     <section className="py-4">
       <div className="container">
         <div className="d-flex align-items-center">
@@ -64,6 +67,10 @@ export const NewArrivals = ( {data} ) => {
         </div>
       </div>
     </section>
+
+    )}
+    </>
+
   );
 }
 

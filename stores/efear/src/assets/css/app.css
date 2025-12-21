@@ -142,6 +142,9 @@ body.offcanvas-active {
 .primary-menu .navbar .dropdown-large-menu {
 	padding: 1rem;
 }
+.navbar .nav-item:hover {
+	background-color:black;
+}
 @media all and (min-width: 992px) {
 	.primary-menu .navbar .dropdown-large-menu {
 		min-width: 630px;

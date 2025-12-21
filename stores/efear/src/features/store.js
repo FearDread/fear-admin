@@ -4,6 +4,7 @@ import { setupListeners } from '@reduxjs/toolkit/query';
 import product from './products/slice';
 import category from './categories/slice';
 import brand from './brands/slice';
+import user from './user/slice';
 
 /**
  * Configure the Redux store with all feature slices
@@ -14,9 +15,15 @@ export const store = configureStore({
     products: product.reducer,
     categories: category.reducer,
     brands: brand.reducer,
+    users: user.reducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({}),
+    getDefaultMiddleware({
+      serializableCheck: {
+        // Ignore these action types if needed
+        ignoredActions: ['product/:id'],
+      },
+    }),
   devTools: process.env.NODE_ENV !== 'production',
 });
 
