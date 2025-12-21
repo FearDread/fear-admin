@@ -76,8 +76,7 @@ const routeConfig = {
     { path: "/blog", element: <Blog /> },
     { path: "/shop", element: <Shop /> },
     { path: "/shop-categories", element: <ShopCategories /> },
-    { path: ":id", element: <ProductDetails /> },
-        { path: "/product/:id", element: <ProductDetails /> },
+    { path: "/:id", element: <ProductDetails /> },
     { path: "/compare", element: <ProductComparison /> },
   ],
   auth: [
@@ -110,7 +109,7 @@ export const App = () => {
               <Route
                 key={route.path}
                 path={route.path}
-                element={<PublicRoute>{(route.subpath) ? <Route path={route.subpath} element={route.element} /> : route.element}</PublicRoute>}
+                element={<PublicRoute>{route.element}</PublicRoute>}
               />
             ))}
 
@@ -121,21 +120,20 @@ export const App = () => {
                 element={<PublicRoute restricted>{route.element}</PublicRoute>}
               />
             ))}
-            
             {routeConfig.protected.map((route) => (
-              <Route
-                key={route.path}
-                path={route.path}
-                element={<PrivateRoute>{route.element}</PrivateRoute>}
+              <Route path="/account" element={
+                <Route key={route.path} path={route.path} element={<PrivateRoute>{route.element}</PrivateRoute>} />
+              }
               />
             ))}
 
+
             <Route path="/unauthorized" element={<NotFound />} />
-            <Route path="/product" element={<Route path="/:id" element={<ProductDetails />} />} />
+            <Route path="product" element={<Route path="/:id" element={<ProductDetails />} />} />
             <Route path="/product/compare" element={<Navigate to="/products/compare" replace />} />
 
             {/* 404 Not Found */}
-                        <Route path="*" element={<NotFound />} />
+            <Route path="*" element={<NotFound />} />
           </Route>
 
 
