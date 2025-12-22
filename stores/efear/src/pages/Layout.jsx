@@ -38,19 +38,6 @@ const Layout = () => {
 
   }, [dispatch]);
 
-
-  if (loading && products.length === 0) {
-    return (
-      <div className="loading-container">
-        <p>Loading products...</p>
-      </div>
-    );
-  }
-
-  if (!loading && products.length > 0 || success) {
-    console.log('categories = ', categories);
-  }
-
   return (
     <>
       <b className="screen-overlay"></b>
@@ -59,6 +46,13 @@ const Layout = () => {
       </div>
       <div className="page-wrapper">
         <div className="page-content">
+          {(loading && products.length === 0) && (
+            <>
+              <div className="loading-container">
+                <p>Loading products...</p>
+              </div>
+            </>
+          )}
           {(!loading && error) && (
             <>
               <div className="error-container">

@@ -76,7 +76,7 @@ const routeConfig = {
     { path: "/blog", element: <Blog /> },
     { path: "/shop", element: <Shop /> },
     { path: "/shop-categories", element: <ShopCategories /> },
-    { path: "/:id", element: <ProductDetails /> },
+    { path: "/product/:id", element: <ProductDetails /> },
     { path: "/compare", element: <ProductComparison /> },
   ],
   auth: [
@@ -121,7 +121,7 @@ export const App = () => {
               />
             ))}
             {routeConfig.protected.map((route) => (
-              <Route path="account" element={
+              <Route path="/account" element={
                 <Route key={route.path} path={route.path} element={<PrivateRoute>{route.element}</PrivateRoute>} />
               }
               />

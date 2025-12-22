@@ -1,406 +1,393 @@
 import React, { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 
-// Header Component
-export const Header = () => {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [cartCount] = useState(8);
+// Configuration objects for dynamic content
+const topMenuLinks = [
+  { label: 'Track Order', path: '/order-tracking' },
+  { label: 'About', path: '/about' },
+  { label: 'Our Stores', path: '/shop-categories' },
+  { label: 'Blog', path: '/blog' },
+  { label: 'Contact', path: '/contact' },
+  { label: 'Help & FAQs', path: '/faq' }
+];
+
+const currencies = ['USD', 'EUR'];
+
+const languages = [
+  { code: 'en', flag: 'um', label: 'English' },
+  { code: 'de', flag: 'de', label: 'German' },
+  { code: 'fr', flag: 'fr', label: 'French' },
+  { code: 'hi', flag: 'in', label: 'Hindi' },
+  { code: 'zh', flag: 'cn', label: 'Chinese' },
+  { code: 'ar', flag: 'ae', label: 'Arabic' }
+];
+
+const socialLinks = [
+  { icon: 'bxl-facebook', url: 'https://facebook.com' },
+  { icon: 'bxl-twitter', url: 'https://twitter.com' },
+  { icon: 'bxl-linkedin', url: 'https://linkedin.com' }
+];
+
+const categories = {
+  'Comics & Books': [
+    { label: 'Comic Books', path: '/shop?category=Comics' },
+    { label: 'E-Books', path: '/shop?category=Ebooks' },
+    { label: 'Graphic Novels', path: '/shop?category=GraphicNovels' },
+    { label: 'Manga', path: '/shop?category=Manga' },
+    { label: 'Anime', path: '/shop?category=Anime' }
+  ],
+  'Trading Cards': [
+    { label: 'Basketball', path: '/shop?category=Basketball' },
+    { label: 'Football', path: '/shop?category=Football' },
+    { label: 'Magic The Gathering', path: '/shop?category=MTG' },
+    { label: 'Baseball', path: '/shop?category=Baseball' },
+    { label: 'Pokemon', path: '/shop?category=Pokemon' }
+  ]
+};
+
+const mainNavItems = [
+  { label: 'Home', path: '/' },
+  { label: 'Blog', path: '/blog' },
+  { label: 'About Us', path: '/about' },
+  { label: 'Contact Us', path: '/contact' },
+  { label: 'Our Store', path: '/shop-categories' }
+];
+
+const accountLinks = [
+  { label: 'Dashboard', path: '/account/dashboard' },
+  { label: 'Downloads', path: '/account/downloads' },
+  { label: 'Orders', path: '/account/orders' },
+  { label: 'Payment Methods', path: '/account/payment-methods' },
+  { label: 'User Details', path: '/account/user-details' }
+];
+
+// Cart items - in a real app, this would come from state management
+const initialCartItems = [
+  { id: 1, name: 'Men White T-Shirt', price: 29.00, quantity: 1, image: 'assets/images/products/01.png' },
+  { id: 2, name: 'Puma Sports Shoes', price: 29.00, quantity: 1, image: 'assets/images/products/05.png' },
+  { id: 3, name: 'Women Red Sneakers', price: 29.00, quantity: 1, image: 'assets/images/products/17.png' },
+  { id: 4, name: 'Black Headphone', price: 29.00, quantity: 1, image: 'assets/images/products/10.png' },
+  { id: 5, name: 'Blue Girl Shoes', price: 29.00, quantity: 1, image: 'assets/images/products/08.png' },
+  { id: 6, name: 'Men Leather Belt', price: 29.00, quantity: 1, image: 'assets/images/products/18.png' },
+  { id: 7, name: 'Men Yellow T-Shirt', price: 29.00, quantity: 1, image: 'assets/images/products/04.png' },
+  { id: 8, name: 'Pool Chair', price: 29.00, quantity: 1, image: 'assets/images/products/16.png' }
+];
+
+// Search Component
+const SearchBar = ({ categories: searchCategories }) => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('All Categories');
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    console.log('Searching for:', searchTerm, 'in', selectedCategory);
+  };
 
   return (
-    <>
-      <div className="wrapper">
-        <div className="header-wrapper bg-dark-1">
-          <div className="top-menu border-bottom">
-            <div className="container">
+    <form onSubmit={handleSearch} className="input-group flex-nowrap px-xl-4">
+      <input
+        type="text"
+        className="form-control w-100"
+        placeholder="Search for Products"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+      />
+      <select
+        className="form-select flex-shrink-0"
+        style={{ width: '10.5rem' }}
+        value={selectedCategory}
+        onChange={(e) => setSelectedCategory(e.target.value)}
+      >
+        <option>All Categories</option>
+        {searchCategories.map((cat) => (
+          <option key={cat} value={cat}>{cat}</option>
+        ))}
+      </select>
+      <button type="submit" className="input-group-text cursor-pointer">
+        <i className='bx bx-search'></i>
+      </button>
+    </form>
+  );
+};
 
-              <nav className="navbar navbar-expand">
-                <div className="shiping-title text-uppercase font-13 text-white d-none d-sm-flex">Welcome to the e-FEAR store!</div>
-                <ul className="navbar-nav ms-auto d-none d-lg-flex">
-                  <li className="nav-item">	<a className="nav-link" href="/order-tracking">Track Order</a>
-                  </li>
-                  <li className="nav-item">	<a className="nav-link" href="/about">About</a>
-                  </li>
-                  <li className="nav-item">	<a className="nav-link" href="/shop-categories">Our Stores</a>
-                  </li>
-                  <li className="nav-item">	<a className="nav-link" href="/blog">Blog</a>
-                  </li>
-                  <li className="nav-item">	<a className="nav-link" href="/contact">Contact</a>
-                  </li>
-                  <li className="nav-item">	<a className="nav-link" href="/faq">Help & FAQs</a>
-                  </li>
-                </ul>
-                <ul className="navbar-nav">
-                  <li className="nav-item dropdown">	<a className="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">USD</a>
-                    <ul className="dropdown-menu dropdown-menu-lg-end">
-                      <li><a className="dropdown-item" href="#">USD</a>
-                      </li>
-                      <li><a className="dropdown-item" href="#">EUR</a>
-                      </li>
-                    </ul>
-                  </li>
-                  <li className="nav-item dropdown">
-                    <a className="nav-link dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown">
-                      <div className="lang d-flex gap-1">
-                        <div><i className="flag-icon flag-icon-um"></i>
-                        </div>
-                        <div><span>ENG</span>
-                        </div>
-                      </div>
-                    </a>
-                    <div className="dropdown-menu dropdown-menu-lg-end">
-                      <a className="dropdown-item d-flex allign-items-center" href="javascript:;">	<i className="flag-icon flag-icon-de me-2"></i><span>German</span>
-                      </a>	<a className="dropdown-item d-flex allign-items-center" href="javascript:;"><i
-                        className="flag-icon flag-icon-fr me-2"></i><span>French</span></a>
-                      <a className="dropdown-item d-flex allign-items-center" href="javascript:;"><i
-                        className="flag-icon flag-icon-um me-2"></i><span>English</span></a>
-                      <a className="dropdown-item d-flex allign-items-center" href="javascript:;"><i
-                        className="flag-icon flag-icon-in me-2"></i><span>Hindi</span></a>
-                      <a className="dropdown-item d-flex allign-items-center" href="javascript:;"><i
-                        className="flag-icon flag-icon-cn me-2"></i><span>Chinese</span></a>
-                      <a className="dropdown-item d-flex allign-items-center" href="javascript:;"><i
-                        className="flag-icon flag-icon-ae me-2"></i><span>Arabic</span></a>
-                    </div>
-                  </li>
-                </ul>
-                <ul className="navbar-nav social-link ms-lg-2 ms-auto">
-                  <li className="nav-item">	<a className="nav-link" href="javascript:;"><i className='bx bxl-facebook'></i></a>
-                  </li>
-                  <li className="nav-item">	<a className="nav-link" href="javascript:;"><i className='bx bxl-twitter'></i></a>
-                  </li>
-                  <li className="nav-item">	<a className="nav-link" href="javascript:;"><i className='bx bxl-linkedin'></i></a>
-                  </li>
-                </ul>
-              </nav>
-            </div>
-          </div>
-          <div className="header-content pb-3 pb-md-0">
-            <div className="container">
-              <div className="row align-items-center">
-                <div className="col col-md-auto">
-                  <div className="d-flex align-items-center">
-                    <div className="mobile-toggle-menu d-lg-none px-lg-2" data-trigger="#navbar_main"><i className='bx bx-menu'></i>
-                    </div>
-                    <div className="logo d-none d-lg-flex">
-                      <a href="index.html">
-                        <img src="assets/images/logo-icon.png" className="logo-icon" alt="" />
-                      </a>
-                    </div>
-                  </div>
-                </div>
+// Cart Dropdown Component
+const CartDropdown = ({ items, onRemoveItem }) => {
+  const total = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
-                {/* Extract Search Component */}
-                <div className="col-12 col-md order-4 order-md-2">
-                  <div className="input-group flex-nowrap px-xl-4">
-                    <input type="text" className="form-control w-100" placeholder="Search for Products" />
-                    <select className="form-select flex-shrink-0" aria-label="Default select example" style={{ 'width': '10.5rem' }}>
-                      <option selected={true}>All Categories</option>
-                      <option value="Comics">Comics</option>
-                      <option value="Books">E-Books</option>
-                      <option value="Cards">Trading Cards</option>
-                    </select>	<span className="input-group-text cursor-pointer"><i className='bx bx-search'></i></span>
-                  </div>
-                </div>
-                <div className="col col-md-auto order-3 d-none d-xl-flex align-items-center">
-                  <div className="fs-1 text-white"><i className='bx bx-headphone'></i>
-                  </div>
-                  <div className="ms-2">
-                    <p className="mb-0 font-13">CALL US NOW</p>
-                    <h5 className="mb-0">+1 (254) 435 - 0130</h5>
-                  </div>
-                </div>
-                <div className="col col-md-auto order-2 order-md-4">
-                  <div className="top-cart-icons">
-                    <nav className="navbar navbar-expand">
-                      <ul className="navbar-nav ms-auto">
-                        <li className="nav-item"><a href="/account/dashboard" className="nav-link cart-link"><i className='bx bx-user'></i></a>
-                        </li>
-                        <li className="nav-item"><a href="/account/wishlist" className="nav-link cart-link"><i className='bx bx-heart'></i></a>
-                        </li>
-
-                        {/* TODO: EXTRACT CART COMPONENT */}
-                        <li className="nav-item dropdown dropdown-large">
-                          <a href="#" className="nav-link dropdown-toggle dropdown-toggle-nocaret position-relative cart-link" data-bs-toggle="dropdown">	<span className="alert-count">8</span>
-                            <i className='bx bx-shopping-bag'></i>
-                          </a>
-                          <div className="dropdown-menu dropdown-menu-end">
-                            <a href="javascript:;">
-                              <div className="cart-header">
-                                <p className="cart-header-title mb-0">8 ITEMS</p>
-                                <p className="cart-header-clear ms-auto mb-0">VIEW CART</p>
-                              </div>
-                            </a>
-                            <div className="cart-list">
-                              <a className="dropdown-item" href="javascript:;">
-                                <div className="d-flex align-items-center">
-                                  <div className="flex-grow-1">
-                                    <h6 className="cart-product-title">Men White T-Shirt</h6>
-                                    <p className="cart-product-price">1 X $29.00</p>
-                                  </div>
-                                  <div className="position-relative">
-                                    <div className="cart-product-cancel position-absolute"><i className='bx bx-x'></i>
-                                    </div>
-                                    <div className="cart-product">
-                                      <img src="assets/images/products/01.png" alt="product image" />
-                                    </div>
-                                  </div>
-                                </div>
-                              </a>
-                              <a className="dropdown-item" href="javascript:;">
-                                <div className="d-flex align-items-center">
-                                  <div className="flex-grow-1">
-                                    <h6 className="cart-product-title">Puma Sports Shoes</h6>
-                                    <p className="cart-product-price">1 X $29.00</p>
-                                  </div>
-                                  <div className="position-relative">
-                                    <div className="cart-product-cancel position-absolute"><i className='bx bx-x'></i>
-                                    </div>
-                                    <div className="cart-product">
-                                      <img src="assets/images/products/05.png" alt="product image" />
-                                    </div>
-                                  </div>
-                                </div>
-                              </a>
-                              <a className="dropdown-item" href="javascript:;">
-                                <div className="d-flex align-items-center">
-                                  <div className="flex-grow-1">
-                                    <h6 className="cart-product-title">Women Red Sneakers</h6>
-                                    <p className="cart-product-price">1 X $29.00</p>
-                                  </div>
-                                  <div className="position-relative">
-                                    <div className="cart-product-cancel position-absolute"><i className='bx bx-x'></i>
-                                    </div>
-                                    <div className="cart-product">
-                                      <img src="assets/images/products/17.png" alt="product image" />
-                                    </div>
-                                  </div>
-                                </div>
-                              </a>
-                              <a className="dropdown-item" href="javascript:;">
-                                <div className="d-flex align-items-center">
-                                  <div className="flex-grow-1">
-                                    <h6 className="cart-product-title">Black Headphone</h6>
-                                    <p className="cart-product-price">1 X $29.00</p>
-                                  </div>
-                                  <div className="position-relative">
-                                    <div className="cart-product-cancel position-absolute"><i className='bx bx-x'></i>
-                                    </div>
-                                    <div className="cart-product">
-                                      <img src="assets/images/products/10.png" alt="product image" />
-                                    </div>
-                                  </div>
-                                </div>
-                              </a>
-                              <a className="dropdown-item" href="javascript:;">
-                                <div className="d-flex align-items-center">
-                                  <div className="flex-grow-1">
-                                    <h6 className="cart-product-title">Blue Girl Shoes</h6>
-                                    <p className="cart-product-price">1 X $29.00</p>
-                                  </div>
-                                  <div className="position-relative">
-                                    <div className="cart-product-cancel position-absolute"><i className='bx bx-x'></i>
-                                    </div>
-                                    <div className="cart-product">
-                                      <img src="assets/images/products/08.png" alt="product image" />
-                                    </div>
-                                  </div>
-                                </div>
-                              </a>
-                              <a className="dropdown-item" href="javascript:;">
-                                <div className="d-flex align-items-center">
-                                  <div className="flex-grow-1">
-                                    <h6 className="cart-product-title">Men Leather Belt</h6>
-                                    <p className="cart-product-price">1 X $29.00</p>
-                                  </div>
-                                  <div className="position-relative">
-                                    <div className="cart-product-cancel position-absolute"><i className='bx bx-x'></i>
-                                    </div>
-                                    <div className="cart-product">
-                                      <img src="assets/images/products/18.png" alt="product image" />
-                                    </div>
-                                  </div>
-                                </div>
-                              </a>
-                              <a className="dropdown-item" href="javascript:;">
-                                <div className="d-flex align-items-center">
-                                  <div className="flex-grow-1">
-                                    <h6 className="cart-product-title">Men Yellow T-Shirt</h6>
-                                    <p className="cart-product-price">1 X $29.00</p>
-                                  </div>
-                                  <div className="position-relative">
-                                    <div className="cart-product-cancel position-absolute"><i className='bx bx-x'></i>
-                                    </div>
-                                    <div className="cart-product">
-                                      <img src="assets/images/products/04.png" alt="product image" />
-                                    </div>
-                                  </div>
-                                </div>
-                              </a>
-                              <a className="dropdown-item" href="javascript:;">
-                                <div className="d-flex align-items-center">
-                                  <div className="flex-grow-1">
-                                    <h6 className="cart-product-title">Pool Charir</h6>
-                                    <p className="cart-product-price">1 X $29.00</p>
-                                  </div>
-                                  <div className="position-relative">
-                                    <div className="cart-product-cancel position-absolute"><i className='bx bx-x'></i>
-                                    </div>
-                                    <div className="cart-product">
-                                      <img src="assets/images/products/16.png" alt="product image" />
-                                    </div>
-                                  </div>
-                                </div>
-                              </a>
-                            </div>
-                            <a href="javascript:;">
-                              <div className="text-center cart-footer d-flex align-items-center">
-                                <h5 className="mb-0">TOTAL</h5>
-                                <h5 className="mb-0 ms-auto">$189.00</h5>
-                              </div>
-                            </a>
-                            <div className="d-grid p-3 border-top">	<a href="javascript:;" className="btn btn-light btn-ecomm">CHECKOUT</a>
-                            </div>
-                          </div>
-                        </li>
-
-                      </ul>
-                    </nav>
-                  </div>
+  return (
+    <div className="dropdown-menu dropdown-menu-end">
+      <Link to="/cart">
+        <div className="cart-header">
+          <p className="cart-header-title mb-0">{items.length} ITEMS</p>
+          <p className="cart-header-clear ms-auto mb-0">VIEW CART</p>
+        </div>
+      </Link>
+      <div className="cart-list">
+        {items.map((item) => (
+          <div key={item.id} className="dropdown-item">
+            <div className="d-flex align-items-center">
+              <div className="flex-grow-1">
+                <h6 className="cart-product-title">{item.name}</h6>
+                <p className="cart-product-price">{item.quantity} X ${item.price.toFixed(2)}</p>
+              </div>
+              <div className="position-relative">
+                <button
+                  className="cart-product-cancel position-absolute"
+                  onClick={() => onRemoveItem(item.id)}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer' }}
+                >
+                  <i className='bx bx-x'></i>
+                </button>
+                <div className="cart-product">
+                  <img src={item.image} alt={item.name} />
                 </div>
               </div>
             </div>
           </div>
-          <div className="primary-menu border-top">
-            <div className="container">
-              <nav id="navbar_main" className="mobile-offcanvas navbar navbar-expand-lg">
-                <div className="offcanvas-header">
-                  <button className="btn-close float-end"></button>
-                  <h5 className="py-2 text-white">Navigation</h5>
-                </div>
-                <ul className="navbar-nav">
-                  <li className="nav-item active"> <a className="nav-link" href="/">Home </a>
-                  </li>
-                  
-                  {/* TODO: EXTRACT CATEGORY LIST COMPONENT */}
-                  <li className="nav-item dropdown">	<a className="nav-link dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown">Categories <i className='bx bx-chevron-down'></i></a>
-                    <div className="dropdown-menu dropdown-large-menu">
-                      <div className="row">
-                        <div className="col-md-4">
-                          <h6 className="large-menu-title">Comics & Books</h6>
-                          <ul>
-                            <li><a href="/shop?category=Comics">Comic Books</a>
-                            </li>
-                            <li><a href="/shop?category=Ebooks">E-Books</a>
-                            </li>
-                            <li><a href="/shop?category=Ebooks">Graphic Novels</a>
-                            </li>
-                            <li><a href="/shop?category=Ebooks">Manga</a>
-                            </li>
-                            <li><a href="/shop?category=Ebooks">Anime</a>
-                            </li>
-                          </ul>
-                        </div>
-                        <div className="col-md-4">
-                          <h6 className="large-menu-title">Trading Cards</h6>
-                          <ul>
-                            <li><a href="#">Basketball</a>
-                            </li>
-                            <li><a href="#">Football</a>
-                            </li>
-                            <li><a href="#">Magic The Gathering</a>
-                            </li>
-                            <li><a href="#">Baseball</a>
-                            </li>
-                            <li><a href="#">Pokemon</a>
-                            </li>
-                          </ul>
-                        </div>
-                        <div className="col-md-4">
-                          <div className="pramotion-banner1">
-                            <img src="assets/images/gallery/menu-img.jpg" className="img-fluid" alt="" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </li>
+        ))}
+      </div>
+      <Link to="/cart">
+        <div className="text-center cart-footer d-flex align-items-center">
+          <h5 className="mb-0">TOTAL</h5>
+          <h5 className="mb-0 ms-auto">${total.toFixed(2)}</h5>
+        </div>
+      </Link>
+      <div className="d-grid p-3 border-top">
+        <Link to="/checkout" className="btn btn-light btn-ecomm">CHECKOUT</Link>
+      </div>
+    </div>
+  );
+};
 
-                  <li className="nav-item dropdown">	<a className="nav-link dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown">Shop <i className='bx bx-chevron-down'></i></a>
-                    <ul className="dropdown-menu">
-                      <li><a className="dropdown-item dropdown-toggle dropdown-toggle-nocaret" href="#">Our Store
-                         <i className='bx bx-chevron-right float-end'></i></a>
-                        <ul className="submenu dropdown-menu">
-                          <li><a className="dropdown-item" href="shop-grid-left-sidebar.html">Comic Shop</a>
-                          </li>
-                        </ul>
-                      </li>
-                      <li><a className="dropdown-item dropdown-toggle dropdown-toggle-nocaret" href="#">Shop
-                        Pages <i className='bx bx-chevron-right float-end'></i></a>
-                        <ul className="submenu dropdown-menu">
-                          <li><a className="dropdown-item" href="shop-cart.html">Shop Cart</a>
-                          </li>
-                          <li><a className="dropdown-item" href="shop-categories.html">Shop Categories</a>
-                          </li>
-                          <li><a className="dropdown-item" href="checkout-details.html">Checkout
-                            Details</a>
-                          </li>
-                          <li><a className="dropdown-item" href="checkout-shipping.html">Checkout
-                            Shipping</a>
-                          </li>
-                          <li><a className="dropdown-item" href="checkout-payment.html">Checkout
-                            Payment</a>
-                          </li>
-                          <li><a className="dropdown-item" href="checkout-review.html">Checkout Review</a>
-                          </li>
-                          <li><a className="dropdown-item" href="checkout-complete.html">Checkout
-                            Complete</a>
-                          </li>
-                          <li><a className="dropdown-item" href="order-tracking.html">Order Tracking</a>
-                          </li>
-                          <li><a className="dropdown-item" href="product-comparison.html">Product
-                            Comparison</a>
-                          </li>
-                        </ul>
-                      </li>
-                      <li><a className="dropdown-item" href="/about">About Us</a>
-                      </li>
-                      <li><a className="dropdown-item" href="/contact">Contact Us</a>
-                      </li>
-                      <li><a className="dropdown-item" href="/auth/login">Sign In</a>
-                      </li>
-                      <li><a className="dropdown-item" href="/auth/register">Sign Up</a>
-                      </li>
-                      <li><a className="dropdown-item" href="/auth/forgot-password">Forgot
-                        Password</a>
-                      </li>
-                    </ul>
-                  </li>
-                  <li className="nav-item"> <a className="nav-link" href="/blog">Blog </a>
-                  </li>
-                  <li className="nav-item"> <a className="nav-link" href="/about">About Us </a>
-                  </li>
-                  <li className="nav-item"> <a className="nav-link" href="/contact">Contact Us </a>
-                  </li>
-                  <li className="nav-item"> <a className="nav-link" href="/shop-categories">Our Store</a>
-                  </li>
-                  <li className="nav-item dropdown">	<a className="nav-link dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown">My Account <i className='bx bx-chevron-down'></i></a>
-                    <ul className="dropdown-menu">
-                      <li><a className="dropdown-item" href="/account/dashboard">Dashboard</a>
-                      </li>
-                      <li><a className="dropdown-item" href="/account/downloads">Downloads</a>
-                      </li>
-                      <li><a className="dropdown-item" href="/account/orders">Orders</a>
-                      </li>
-                      <li><a className="dropdown-item" href="/account/payment-methods">Payment Methods</a>
-                      </li>
-                      <li><a className="dropdown-item" href="/account/user-details">User Details</a>
-                      </li>
-                    </ul>
-                  </li>
-                </ul>
-              </nav>
-            </div>
+// Category Dropdown Component
+const CategoryDropdown = ({ categories: categoryData }) => {
+  return (
+    <div className="dropdown-menu dropdown-large-menu">
+      <div className="row">
+        {Object.entries(categoryData).map(([title, items], idx) => (
+          <div key={title} className="col-md-4">
+            <h6 className="large-menu-title">{title}</h6>
+            <ul>
+              {items.map((item) => (
+                <li key={item.label}>
+                  <Link to={item.path}>{item.label}</Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+        <div className="col-md-4">
+          <div className="pramotion-banner1">
+            <img src="assets/images/gallery/menu-img.jpg" className="img-fluid" alt="Promotion" />
           </div>
         </div>
       </div>
-    </>
+    </div>
+  );
+};
+
+// Main Header Component
+export const Header = () => {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [cartItems, setCartItems] = useState(initialCartItems);
+  const [currency, setCurrency] = useState('USD');
+  const [language, setLanguage] = useState('en');
+  const location = useLocation();
+
+  const removeFromCart = (itemId) => {
+    setCartItems(cartItems.filter(item => item.id !== itemId));
+  };
+
+  const isActiveRoute = (path) => {
+    return location.pathname === path ? 'active' : '';
+  };
+
+  const searchCategories = ['Comics', 'E-Books', 'Trading Cards'];
+
+  return (
+    <div className="wrapper">
+      <div className="header-wrapper bg-dark-1">
+        {/* Top Menu */}
+        <div className="top-menu border-bottom">
+          <div className="container">
+            <nav className="navbar navbar-expand">
+              <div className="shiping-title text-uppercase font-13 text-white d-none d-sm-flex">
+                Welcome to the e-FEAR store!
+              </div>
+              
+              {/* Top Links */}
+              <ul className="navbar-nav ms-auto d-none d-lg-flex">
+                {topMenuLinks.map((link) => (
+                  <li key={link.path} className="nav-item">
+                    <Link className="nav-link" to={link.path}>{link.label}</Link>
+                  </li>
+                ))}
+              </ul>
+
+              {/* Currency & Language */}
+              <ul className="navbar-nav">
+                <li className="nav-item dropdown">
+                  <a className="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                    {currency}
+                  </a>
+                  <ul className="dropdown-menu dropdown-menu-lg-end">
+                    {currencies.map((curr) => (
+                      <li key={curr}>
+                        <button
+                          className="dropdown-item"
+                          onClick={() => setCurrency(curr)}
+                        >
+                          {curr}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </li>
+                
+                <li className="nav-item dropdown">
+                  <a className="nav-link dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown">
+                    <div className="lang d-flex gap-1">
+                      <div><i className={`flag-icon flag-icon-${languages.find(l => l.code === language)?.flag}`}></i></div>
+                      <div><span>{language.toUpperCase()}</span></div>
+                    </div>
+                  </a>
+                  <div className="dropdown-menu dropdown-menu-lg-end">
+                    {languages.map((lang) => (
+                      <button
+                        key={lang.code}
+                        className="dropdown-item d-flex align-items-center"
+                        onClick={() => setLanguage(lang.code)}
+                      >
+                        <i className={`flag-icon flag-icon-${lang.flag} me-2`}></i>
+                        <span>{lang.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </li>
+              </ul>
+
+              {/* Social Links */}
+              <ul className="navbar-nav social-link ms-lg-2 ms-auto">
+                {socialLinks.map((social) => (
+                  <li key={social.icon} className="nav-item">
+                    <a className="nav-link" href={social.url} target="_blank" rel="noopener noreferrer">
+                      <i className={`bx ${social.icon}`}></i>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          </div>
+        </div>
+
+        {/* Header Content */}
+        <div className="header-content pb-3 pb-md-0">
+          <div className="container">
+            <div className="row align-items-center">
+              <div className="col col-md-auto">
+                <div className="d-flex align-items-center">
+                  <button
+                    className="mobile-toggle-menu d-lg-none px-lg-2"
+                    onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                  >
+                    <i className='bx bx-menu'></i>
+                  </button>
+                  <div className="logo d-none d-lg-flex">
+                    <Link to="/">
+                      <img src="assets/images/logo-icon.png" className="logo-icon" alt="Logo" />
+                    </Link>
+                  </div>
+                </div>
+              </div>
+
+              {/* Search Bar */}
+              <div className="col-12 col-md order-4 order-md-2">
+                <SearchBar categories={searchCategories} />
+              </div>
+
+              {/* Contact Info */}
+              <div className="col col-md-auto order-3 d-none d-xl-flex align-items-center">
+                <div className="fs-1 text-white">
+                  <i className='bx bx-headphone'></i>
+                </div>
+                <div className="ms-2">
+                  <p className="mb-0 font-13">CALL US NOW</p>
+                  <h5 className="mb-0">+1 (254) 435 - 0130</h5>
+                </div>
+              </div>
+
+              {/* Cart Icons */}
+              <div className="col col-md-auto order-2 order-md-4">
+                <div className="top-cart-icons">
+                  <nav className="navbar navbar-expand">
+                    <ul className="navbar-nav ms-auto">
+                      <li className="nav-item">
+                        <Link to="/account/dashboard" className="nav-link cart-link">
+                          <i className='bx bx-user'></i>
+                        </Link>
+                      </li>
+                      <li className="nav-item">
+                        <Link to="/account/wishlist" className="nav-link cart-link">
+                          <i className='bx bx-heart'></i>
+                        </Link>
+                      </li>
+                      <li className="nav-item dropdown dropdown-large">
+                        <a href="#" className="nav-link dropdown-toggle dropdown-toggle-nocaret position-relative cart-link" data-bs-toggle="dropdown">
+                          <span className="alert-count">{cartItems.length}</span>
+                          <i className='bx bx-shopping-bag'></i>
+                        </a>
+                        <CartDropdown items={cartItems} onRemoveItem={removeFromCart} />
+                      </li>
+                    </ul>
+                  </nav>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Primary Menu */}
+        <div className="primary-menu border-top">
+          <div className="container">
+            <nav id="navbar_main" className={`mobile-offcanvas navbar navbar-expand-lg ${mobileMenuOpen ? 'show' : ''}`}>
+              <div className="offcanvas-header">
+                <button className="btn-close float-end" onClick={() => setMobileMenuOpen(false)}></button>
+                <h5 className="py-2 text-white">Navigation</h5>
+              </div>
+              <ul className="navbar-nav">
+                {mainNavItems.map((item) => (
+                  <li key={item.path} className={`nav-item ${isActiveRoute(item.path)}`}>
+                    <Link className="nav-link" to={item.path}>{item.label}</Link>
+                  </li>
+                ))}
+
+                {/* Categories Dropdown */}
+                <li className="nav-item dropdown">
+                  <a className="nav-link dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown">
+                    Categories <i className='bx bx-chevron-down'></i>
+                  </a>
+                  <CategoryDropdown categories={categories} />
+                </li>
+
+                {/* Account Dropdown */}
+                <li className="nav-item dropdown">
+                  <a className="nav-link dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown">
+                    My Account <i className='bx bx-chevron-down'></i>
+                  </a>
+                  <ul className="dropdown-menu">
+                    {accountLinks.map((link) => (
+                      <li key={link.path}>
+                        <Link className="dropdown-item" to={link.path}>{link.label}</Link>
+                      </li>
+                    ))}
+                  </ul>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 
