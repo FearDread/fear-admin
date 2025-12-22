@@ -14,8 +14,8 @@ module.exports = (fear) => {
       router.route('/search/all').get(Product.productSearch);
       router.route("/one").get(handler.async(Product.read));
       router.route("/:id")
-            .get(handler.async(Product.read))
-            .put(handler.async(Product.update))
+            .get(Product.read)
+            .put(Product.update)
             .delete(handler.async(Product.delete));
 
       return router;
