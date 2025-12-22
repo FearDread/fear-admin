@@ -127,21 +127,10 @@ export const App = () => {
               />
             ))}
 
-
             <Route path="/unauthorized" element={<NotFound />} />
-
-
-
-
-
-
             {/* 404 Not Found */}
             <Route path="*" element={<NotFound />} />
           </Route>
-          <Route path="/product" exact element={<Layout />}>
-              <Route path="/product/:id" element={<ProductDetails />} />
-              <Route path="/product/compare" element={<Navigate to="/product" replace />} />
-            </Route>
         </Routes>
       </Suspense>
     </BrowserRouter>
