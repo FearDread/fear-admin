@@ -2,7 +2,7 @@
 
 export const ProductCard = ( product ) => {
 
-  const detailsLink = "/product/" + product._id;
+  const detailsLink = "/" + product._id;
 
   const handleWishlist = () => {
 

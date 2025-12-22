@@ -35,7 +35,7 @@ const Layout = () => {
 
     dispatch(fetchProducts());
     dispatch(fetchCategories());
-    
+
   }, [dispatch]);
 
 
@@ -43,15 +43,6 @@ const Layout = () => {
     return (
       <div className="loading-container">
         <p>Loading products...</p>
-      </div>
-    );
-  }
-
-  if (!loading && error) {
-    return (
-      <div className="error-container">
-        <p>Error: {error.message || error}</p>
-        <button onClick={handleRefresh}>Retry</button>
       </div>
     );
   }
@@ -68,7 +59,14 @@ const Layout = () => {
       </div>
       <div className="page-wrapper">
         <div className="page-content">
-
+          {(!loading && error) && (
+            <>
+              <div className="error-container">
+                <p>Error: {error.message || error}</p>
+                <button onClick={handleRefresh}>Retry</button>
+              </div>
+            </>
+          )}
           {(!loading && products.length > 0) && (
             <>
               <Outlet {...products} />
