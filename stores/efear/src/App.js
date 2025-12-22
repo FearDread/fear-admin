@@ -87,7 +87,7 @@ const routeConfig = {
   protected: []
   /*
   protected: [
-    { path: "/account/dashboard", element: <Dashboard /> },
+    { path: "/account/dashboard", layout: <AdminLayout />, element: <Dashboard /> },
     { path: "/account/orders", element: <Orders /> },
     { path: "/account/details", element: <UserDetails /> },
     { path: "/account/payment-methods", element: <PaymentMethods /> },
@@ -121,7 +121,7 @@ export const App = () => {
               />
             ))}
             {routeConfig.protected.map((route) => (
-              <Route path="/account" element={
+              <Route path="account" element={
                 <Route key={route.path} path={route.path} element={<PrivateRoute>{route.element}</PrivateRoute>} />
               }
               />
@@ -129,14 +129,19 @@ export const App = () => {
 
 
             <Route path="/unauthorized" element={<NotFound />} />
-            <Route path="product" element={<Route path="/:id" element={<ProductDetails />} />} />
-            <Route path="/product/compare" element={<Navigate to="/products/compare" replace />} />
+
+
+
+
+
 
             {/* 404 Not Found */}
             <Route path="*" element={<NotFound />} />
           </Route>
-
-
+          <Route path="/product" exact element={<Layout />}>
+              <Route path="/product/:id" element={<ProductDetails />} />
+              <Route path="/product/compare" element={<Navigate to="/product" replace />} />
+            </Route>
         </Routes>
       </Suspense>
     </BrowserRouter>

@@ -20,11 +20,10 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        // Ignore these action types if needed
-        ignoredActions: ['product/:id'],
+        ignoredActions: false,
       },
     }),
-  devTools: process.env.NODE_ENV !== 'production',
+  devTools: true,
 });
 
 // Setup listeners for RTK Query (if needed in future)

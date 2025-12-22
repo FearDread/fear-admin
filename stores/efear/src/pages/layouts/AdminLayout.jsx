@@ -6,18 +6,9 @@ import Header from "../components/common/Header";
 import Footer from "../components/common/Footer";
 
 import { dispatch } from "../features/store";
-import { Product, selectProductsSuccess } from "../features/products/slice";
-import {
-  fetchProducts,
-  selectAllProducts,
-  selectProductsLoading,
-  selectProductsLoadingState,
-  selectProductsError,
-  selectOperationStatus
-} from '../features/products/slice';
 import { fetchCategories, selectAllCategories } from '../features/categories/slice';
 
-const Layout = () => {
+const AdminLayout = () => {
   // Select data from store
   const products = useSelector(selectAllProducts); // Now includes filtering & sorting
   const categories = useSelector(selectAllCategories);
@@ -35,7 +26,7 @@ const Layout = () => {
 
     dispatch(fetchProducts());
     dispatch(fetchCategories());
-    
+
   }, [dispatch]);
 
 
@@ -81,4 +72,4 @@ const Layout = () => {
   )
 };
 
-export default Layout;
+export default AdminLayout;
