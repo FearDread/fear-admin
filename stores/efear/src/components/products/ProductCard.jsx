@@ -1,8 +1,8 @@
-
+import { Link, Navigate } from "react-router-dom";
 
 export const ProductCard = ( product ) => {
 
-  const detailsLink = "/" + product._id;
+  const detailsLink = "/product/" + product._id;
 
   const handleWishlist = () => {
 
@@ -17,19 +17,19 @@ export const ProductCard = ( product ) => {
       <div className="card rounded-0 product-card">
         <div className="card-header bg-transparent border-bottom-0">
           <div className="d-flex align-items-center justify-content-end gap-3">
-            <a href={detailsLink}>
+            <Link to={detailsLink}>
               <div className="product-compare"><span><i className='bx bx-git-compare'></i> Compare</span>
             </div>
-          </a>
+          </Link>
           <a href="#" onClick={handleWishlist}>
             <div className="product-wishlist"> <i className='bx bx-heart'></i>
           </div>
         </a>
       </div>
     </div>
-    <a href={detailsLink}>
+    <Link to={detailsLink}>
       <img src={(product.images[0]) ? product.images[0].url : null} className="card-img-top" alt="..." />
-    </a>
+    </Link>
     <div className="card-body">
       <div className="product-info">
         <a href="javascript:;">
