@@ -21,7 +21,6 @@ const ProductComparison = lazy(() => import("./pages/products/ProductComparison"
 const ProductDetails = lazy(() => import("./pages/products/ProductDetails"));
 
 // Account pages (lazy loaded)
-/*
 const Dashboard = lazy(() => import("./pages/account/Dashboard"));
 const Orders = lazy(() => import("./pages/account/Orders"));
 const UserDetails = lazy(() => import("./pages/account/UserDetails"));
@@ -30,10 +29,7 @@ const Addresses = lazy(() => import("./pages/account/Addresses"));
 //const ForgotPassword = lazy(() => import("./pages/auth/ForgotPassword"));
 // Error pages
 //const Unauthorized = lazy(() => import("./pages/Unauthorized"));
-*/
-/**
- * Loading fallback component with better UX
- */
+
 const LoadingFallback = () => (
   <div className="d-flex justify-content-center align-items-center min-vh-100">
     <div className="text-center">
@@ -84,16 +80,13 @@ const routeConfig = {
     { path: "/register", element: <Register /> },
     //{ path: "/forgot-password", element: <ForgotPassword /> },
   ],
-  protected: []
-  /*
   protected: [
-    { path: "/account/dashboard", layout: <AdminLayout />, element: <Dashboard /> },
+    { path: "/account/dashboard", element: <Dashboard /> },
     { path: "/account/orders", element: <Orders /> },
     { path: "/account/details", element: <UserDetails /> },
     { path: "/account/payment-methods", element: <PaymentMethods /> },
     { path: "/account/addresses", element: <Addresses /> },
   ],
-  */
 };
 
 /**
@@ -106,25 +99,15 @@ export const App = () => {
         <Routes>
           <Route path="/" exact element={<Layout />}>
             {routeConfig.public.map((route) => (
-              <Route
-                key={route.path}
-                path={route.path}
-                element={<PublicRoute>{route.element}</PublicRoute>}
-              />
+              <Route key={route.path} path={route.path} element={<PublicRoute>{route.element}</PublicRoute>} />
             ))}
 
             {routeConfig.auth.map((route) => (
-              <Route
-                key={route.path}
-                path={route.path}
-                element={<PublicRoute restricted>{route.element}</PublicRoute>}
-              />
+              <Route key={route.path} path={route.path} element={<PublicRoute restricted>{route.element}</PublicRoute>} />
             ))}
+            
             {routeConfig.protected.map((route) => (
-              <Route path="/account" element={
-                <Route key={route.path} path={route.path} element={<PrivateRoute>{route.element}</PrivateRoute>} />
-              }
-              />
+              <Route key={route.path} path={route.path} element={<PrivateRoute>{route.element}</PrivateRoute>} />
             ))}
 
             <Route path="/unauthorized" element={<NotFound />} />

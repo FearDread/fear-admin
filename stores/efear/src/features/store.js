@@ -5,6 +5,8 @@ import product from './products/slice';
 import category from './categories/slice';
 import brand from './brands/slice';
 import user from './user/slice';
+import cart from './cart/slice';
+import wishlist from './wishlist/slice';
 
 /**
  * Configure the Redux store with all feature slices
@@ -16,6 +18,8 @@ export const store = configureStore({
     categories: category.reducer,
     brands: brand.reducer,
     users: user.reducer,
+    cart: cart.reducer,
+    wishlist: wishlist.reducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

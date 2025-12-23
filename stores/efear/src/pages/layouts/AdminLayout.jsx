@@ -9,13 +9,7 @@ import { dispatch } from "../features/store";
 import { fetchCategories, selectAllCategories } from '../features/categories/slice';
 
 const AdminLayout = () => {
-  // Select data from store
-  const products = useSelector(selectAllProducts); // Now includes filtering & sorting
   const categories = useSelector(selectAllCategories);
-  const loading = useSelector(selectProductsLoading);
-  const success = useSelector(selectProductsSuccess);
-  const error = useSelector(selectProductsError);
-
   // Manual refresh
   const handleRefresh = () => {
     dispatch(fetchProducts());
@@ -24,7 +18,7 @@ const AdminLayout = () => {
   // Fetch data on component mount
   useEffect(() => {
 
-    dispatch(fetchProducts());
+
     dispatch(fetchCategories());
 
   }, [dispatch]);
@@ -59,12 +53,7 @@ const AdminLayout = () => {
       </div>
       <div className="page-wrapper">
         <div className="page-content">
-
-          {(!loading && products.length > 0) && (
-            <>
-              <Outlet {...products} />
-            </>
-          )}
+        <Outlet />
         </div>
       </div>
       <Footer />

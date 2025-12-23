@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { dispatch } from "../../features/store";
 import {
   loginUser,
   loginWithGoogle,
@@ -16,7 +17,6 @@ import {
 } from '../../features/user/slice';
 
 export const Login = () => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -37,12 +37,12 @@ export const Login = () => {
   const [validationErrors, setValidationErrors] = useState({});
 
   // Redirect path after login (from location state or default to home)
-  const from = location.state?.from?.pathname || '/';
+  const from = location.state?.from?.pathname !== '/login' || '/account/dashboard';
 
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      navigate(from, { replace: true });
+      navigate('/account/dashboard', { replace: true });
     }
   }, [isAuthenticated, navigate, from]);
 
@@ -116,6 +116,7 @@ export const Login = () => {
       
       // Navigation is handled by useEffect when isAuthenticated changes
       console.log('Login successful');
+      navigate('/account/dashboard', { replace: true });
     }
   };
 
