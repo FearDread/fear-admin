@@ -1,6 +1,33 @@
 import React from 'react';
+import OwlCarousel from 'react-owl-carousel';
 
 export const CategorySection = () => {
+
+    const carouselOptions = {
+    loop: true,
+    margin: 10,
+    responsiveClass: true,
+    nav: false,
+    dots: false,
+    responsive: {
+      0: {
+        items: 1
+      },
+      576: {
+        items: 2
+      },
+      768: {
+        items: 3
+      },
+      1366: {
+        items: 4
+      },
+      1400: {
+        items: 5
+      }
+    }
+  };
+  
   return (
     <section className="py-4">
       <div className="container">
@@ -10,7 +37,10 @@ export const CategorySection = () => {
         </div>
         <hr/>
         <div className="product-grid">
-          <div className="browse-category owl-carousel owl-theme">
+          <OwlCarousel 
+            className='browse-category owl-carousel owl-theme'
+             {...carouselOptions}
+          >
             <div className="item">
               <div className="card rounded-0 product-card border">
                 <div className="card-body">
@@ -143,7 +173,9 @@ export const CategorySection = () => {
                 </div>
               </div>
             </div>
-          </div>
+          
+          </OwlCarousel>
+
         </div>
       </div>
     </section>

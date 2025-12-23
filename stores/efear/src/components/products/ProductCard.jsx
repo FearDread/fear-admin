@@ -9,6 +9,7 @@ import {
   selectIsInWishlist 
 } from '../../features/wishlist/slice';
 import { selectIsAuthenticated } from '../../features/user/slice';
+import { dispatch } from "../../features/store";
 import ProductQuickView from './ProductQuickView';
 
 /**
@@ -25,6 +26,8 @@ export const ProductCard = (product, onQuickView) => {
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [isAddingToWishlist, setIsAddingToWishlist] = useState(false);
   const [showQuickView, setShowQuickView] = useState(false);
+    const [selectedProduct, setSelectedProduct] = useState(null);
+
 
   // Check if product is in wishlist
   const isInWishlist = useSelector(state => 
@@ -41,7 +44,7 @@ export const ProductCard = (product, onQuickView) => {
   const productImage = product.images?.[0]?.url || 
                        product.images?.[0] || 
                        product.image || 
-                       '/assets/images/products/placeholder.png';
+                       '/assets/images/fear/fear-dark-bg.jpg';
 
   // Calculate discount percentage
   const hasDiscount = product.salePrice && product.salePrice < product.price;
@@ -114,9 +117,13 @@ export const ProductCard = (product, onQuickView) => {
     }
   };
 
-  /**
-   * Handle Add to Cart
-   */
+  const handleQuickView = (product) => {
+    setSelectedProduct(product);
+    setShowQuickView(true);
+
+    console.log('quick view', product);
+  };
+
   const handleAddToCart = async (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -215,12 +222,9 @@ export const ProductCard = (product, onQuickView) => {
           </div>
           <Link to={detailsLink}>
             <img 
-              src={productImage}
+              src={productImage || 'assets/images/fear/fear-dark-bg.jpg'}
               className="card-img-top" 
               alt={product.title || product.title}
-              onError={(e) => {
-                e.target.src = '/assets/images/products/placeholder.png';
-              }}
             />
           </Link>
 
@@ -296,7 +300,7 @@ export const ProductCard = (product, onQuickView) => {
 
                 {/* Quick View Button */}
                 <button
-                  onClick={onQuickView}
+                  onClick={handleQuickView}
                   className="btn btn-link btn-ecomm"
                 >
                   <i className='bx bx-zoom-in'></i>
