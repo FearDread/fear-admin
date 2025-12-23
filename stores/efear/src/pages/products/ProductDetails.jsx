@@ -43,7 +43,7 @@ export const ProductDetails = () => {
     });
     // Select product data from Redux store
     //const product = useSelector(state => id ? selectProductById(state, id) : null);
-    const product = useSelector(state => state.products.product)
+    const product = useSelector(selectCurrentProduct);
     const loading = useSelector(selectProductsLoading);
     const error = useSelector(selectProductsError);
 
@@ -71,7 +71,9 @@ export const ProductDetails = () => {
     }, [dispatch]);
 
     useEffect(() => {
-        if (!product) dispatch(fetchProduct({id: id}))
+        /* TODO refactor ths logic */
+        if (id && product._id !== id) dispatch(fetchProduct({id: id}))
+
     }, [])
 
     const carouselOptions = {
@@ -368,7 +370,7 @@ export const ProductDetails = () => {
 
                                             {/* Stock Status */}
                                             <div className="mt-2">
-                                                {product.inStock ? (
+                                                {product.quantity ? (
                                                     <span className="badge bg-success">
                                                         In Stock ({product.quantity || 0} available)
                                                     </span>
@@ -409,7 +411,7 @@ export const ProductDetails = () => {
                                                         className="form-select form-select-sm"
                                                         value={quantity}
                                                         onChange={handleQuantityChange}
-                                                        disabled={!product.inStock}
+                                                        disabled={!product.quantity}
                                                     >
                                                         {[...Array(Math.min(product.quantity || 5, 10))].map((_, i) => (
                                                             <option key={i + 1} value={i + 1}>{i + 1}</option>
@@ -456,7 +458,7 @@ export const ProductDetails = () => {
                                                 <button
                                                     onClick={handleAddToCart}
                                                     className="btn btn-white btn-ecomm"
-                                                    disabled={!product.inStock}
+                                                    disabled={!product.quantity}
                                                 >
                                                     <i className="bx bxs-cart-add"></i>
                                                     Add to Cart

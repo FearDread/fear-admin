@@ -64,7 +64,7 @@ export const {
 
 // Export selectors
 export const selectAllProducts = (state) => state.products.data;
-export const selectCurrentProduct = (state) => state.products.products || state.products.product;
+export const selectCurrentProduct = (state) => state.products.currentProduct || state.products.product;
 export const selectProductsLoading = (state) => state.products.loading;
 export const selectProductsError = (state) => state.products.error;
 export const selectProductsSuccess = (state) => state.products.success;

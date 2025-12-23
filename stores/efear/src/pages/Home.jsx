@@ -10,7 +10,6 @@ import CategorySection from '../components/home/CategorySection';
 import LatestNews from '../components/home/LatestNews';
 import BrandSection from '../components/home/BrandSection';
 import AdSection2 from "../components/home/AdSection2";
-import BestSelling from '../components/home/BestSelling';
 
 const Home = () => {
   return (
@@ -36,7 +35,6 @@ const Home = () => {
             
       <AdSection />
       <BrandSection />
-      <BestSelling />
     </>
   );
 };
