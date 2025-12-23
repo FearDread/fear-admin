@@ -187,6 +187,7 @@ body.offcanvas-active {
 	-o-transition: all .2s;
 	transition: all .2s;
 	transform: scale(1);
+	min-height: 450px;
 }
 .product-grid .card.product-card:hover {
 	transform: scale(1.1);

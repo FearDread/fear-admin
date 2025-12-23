@@ -10,6 +10,9 @@ const userReducers = {
     state.isAuthenticated = !!action.payload;
   },
   
+  setIsAuthenticated: (state, action) => {
+    state.isAuthenticated = action.payload;
+  },
   // Clear current user (logout)
   clearCurrentUser: (state) => {
     state.currentUser = null;
@@ -92,6 +95,7 @@ export const {
   updateMetadata,
   // Custom user reducers
   setCurrentUser,
+  setIsAuthenticated,
   clearCurrentUser,
   setToken,
   clearToken,
@@ -125,7 +129,8 @@ export const loginUser = (credentials) => async (dispatch) => {
     const result = await dispatch(login(credentials));
     
     if (login.fulfilled.match(result)) {
-      const { token, user, rememberMe } = result.payload;
+      console.log('login result = ', result.payload)
+      const { token, user } = result.payload.data;
       
       // Store token in API utility
       API.setAuth(token, user);
@@ -133,7 +138,6 @@ export const loginUser = (credentials) => async (dispatch) => {
       // Update state
       dispatch(setToken(token));
       dispatch(setCurrentUser(user));
-      dispatch(setRememberMe(rememberMe));
       dispatch(updateMetadata({ lastLoginAt: new Date().toISOString() }));
       
       return { success: true, user };
@@ -186,16 +190,5 @@ export const selectUserFullName = (state) => {
   if (!user) return '';
   return `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.email || 'User';
 };
-// Async operation status selectors
-export const selectOperationStatus = (state, operation) => 
-  state.users.async?.operations?.[operation] || {
-    loading: false,
-    success: false,
-    error: null,
-    lastRun: null,
-  };
-
-export const selectLoginStatus = (state) => selectOperationStatus(state, 'login');
-export const selectRegisterStatus = (state) => selectOperationStatus(state, 'register');
 
 export default slice;
