@@ -1,10 +1,15 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import OwlCarousel from 'react-owl-carousel';
 import ProductCard from "./ProductCard";
+import ProductQuickView from "./ProductQuickView";
 
 // Featured Products Section
 export const FeaturedProducts = ({ data }) => {
+    const [selectedProduct, setSelectedProduct] = useState(null);
+  const [showQuickView, setShowQuickView] = useState(false);
+
+
   const prodState = useSelector((state) => state.products.data);
   const productData = useMemo(() => {
     return data || prodState;
@@ -40,7 +45,15 @@ export const FeaturedProducts = ({ data }) => {
     }
   };
 
+  const handleQuickView = (product) => {
+    setSelectedProduct(product);
+    setShowQuickView(true);
+
+    console.log('handing quick view in card parent', product);
+  };
+
   return (
+    <>
     <section className="py-4">
       <div className="container">
         <div className="d-flex align-items-center">
@@ -55,13 +68,33 @@ export const FeaturedProducts = ({ data }) => {
           >
             {featuredProducts.map((product) => (
               <div className="item" key={product._id}>
-                <ProductCard {...product} />
+
+                <ProductCard 
+                  {...product}
+                  key={product._id}
+                  product={product}
+                  onQuickView={() => handleQuickView(product)}
+                />
+      {selectedProduct && (
+        <ProductQuickView 
+          product={selectedProduct}
+          isOpen={showQuickView}
+          onClose={() => {
+            setShowQuickView(false);
+            setSelectedProduct(null);
+          }}
+        />
+      )}
+
               </div>
             ))}
           </OwlCarousel>
         </div>
       </div>
+
     </section>
+
+                </>
   );
 };
 

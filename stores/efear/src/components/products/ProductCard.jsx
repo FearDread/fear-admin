@@ -1,63 +1,312 @@
-import { Link, Navigate } from "react-router-dom";
+// components/products/ProductCard.jsx
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { addItem as addToCart } from '../../features/cart/slice';
+import { 
+  addToWishlist, 
+  removeFromWishlist,
+  selectIsInWishlist 
+} from '../../features/wishlist/slice';
+import { selectIsAuthenticated } from '../../features/user/slice';
+import ProductQuickView from './ProductQuickView';
 
-export const ProductCard = ( product ) => {
+/**
+ * ProductCard Component
+ * Displays product information with cart and wishlist functionality
+ * 
+ * @param {Object} product - Product data object
+ */
+export const ProductCard = (product, onQuickView) => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const detailsLink = "/product/" + product._id;
+  // Local state
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [isAddingToWishlist, setIsAddingToWishlist] = useState(false);
+  const [showQuickView, setShowQuickView] = useState(false);
 
-  const handleWishlist = () => {
+  // Check if product is in wishlist
+  const isInWishlist = useSelector(state => 
+    selectIsInWishlist(state, product._id || product.id)
+  );
 
-  }
-  const handleAddToCart = () => {
+  // Check if user is authenticated
+  const isAuthenticated = useSelector(selectIsAuthenticated);
 
-  }
+  // Product details link
+  const detailsLink = `/product/${product._id || product.id}`;
+
+  // Get product image
+  const productImage = product.images?.[0]?.url || 
+                       product.images?.[0] || 
+                       product.image || 
+                       '/assets/images/products/placeholder.png';
+
+  // Calculate discount percentage
+  const hasDiscount = product.salePrice && product.salePrice < product.price;
+  const discountPercent = hasDiscount 
+    ? Math.round((1 - product.salePrice / product.price) * 100)
+    : 0;
+
+  // Get current price
+  const currentPrice = product.salePrice || product.price;
+
+  // Render rating stars
+  const renderStars = (rating = 4) => {
+    const stars = [];
+    for (let i = 1; i <= 5; i++) {
+      stars.push(
+        <i 
+          key={i}
+          className={`bx bxs-star ${i <= rating ? 'text-warning' : 'text-light-4'}`}
+        ></i>
+      );
+    }
+    return stars;
+  };
+
+  /**
+   * Handle Add to Wishlist
+   */
+  const handleWishlist = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    // Check if user is logged in
+    if (!isAuthenticated) {
+      navigate('/login', { 
+        state: { 
+          from: window.location.pathname,
+          message: 'Please login to add items to your wishlist' 
+        } 
+      });
+      return;
+    }
+
+    setIsAddingToWishlist(true);
+
+    try {
+      const wishlistItem = {
+        id: product._id || product.id,
+        productId: product._id || product.id,
+        name: product.title || product.title,
+        price: currentPrice,
+        image: productImage,
+        category: product.category,
+        inStock: product.quantity,
+      };
+
+      if (isInWishlist) {
+        // Remove from wishlist
+        dispatch(removeFromWishlist(product._id || product.id));
+        console.log('Removed from wishlist:', product);
+      } else {
+        // Add to wishlist
+        dispatch(addToWishlist(wishlistItem));
+        console.log('Added to wishlist:', product);
+      }
+    } catch (error) {
+      console.error('Wishlist error:', error);
+      alert('Failed to update wishlist. Please try again.');
+    } finally {
+      setIsAddingToWishlist(false);
+    }
+  };
+
+  /**
+   * Handle Add to Cart
+   */
+  const handleAddToCart = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    // Check stock
+    if (!product.quantity) {
+      alert('This product is currently out of stock');
+      return;
+    }
+
+    setIsAddingToCart(true);
+
+    try {
+      // Prepare cart item
+      const cartItem = {
+        productId: product._id || product.id,
+        product: {
+          id: product._id || product.id,
+          name: product.title || product.title,
+          price: currentPrice,
+          image: productImage,
+          sku: product.sku,
+        },
+        quantity: 1,
+        price: currentPrice,
+      };
+
+      // Dispatch to cart
+      dispatch(addToCart(cartItem));
+      
+      console.log('Added to cart:', cartItem);
+      
+    } catch (error) {
+      console.error('Add to cart error:', error);
+      alert('Failed to add to cart. Please try again.');
+    } finally {
+      setIsAddingToCart(false);
+    }
+  };
+
+  const handleCompare = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    // TODO: Implement compare functionality
+    console.log('Compare:', product);
+    
+    // For now, navigate to compare page
+    navigate('/product/compare', { 
+      state: { product: [product] } 
+    });
+  };
 
   return (
     <>
-    <div className="col">
-      <div className="card rounded-0 product-card">
-        <div className="card-header bg-transparent border-bottom-0">
-          <div className="d-flex align-items-center justify-content-end gap-3">
-            <Link to={detailsLink}>
-              <div className="product-compare"><span><i className='bx bx-git-compare'></i> Compare</span>
+      <div className="col">
+        <div className="card rounded-0 product-card">
+          <div className="card-header bg-transparent border-bottom-0">
+            <div className="d-flex align-items-center justify-content-end gap-3">
+              <button
+                onClick={handleCompare}
+                className="btn btn-link p-0 text-decoration-none"
+                title="Compare"
+              >
+                <div className="product-compare">
+                  <span>
+                    <i className='bx bx-git-compare'></i> Compare
+                  </span>
+                </div>
+              </button>
+              <button
+                onClick={handleWishlist}
+                className="btn btn-link p-0 text-decoration-none"
+                disabled={isAddingToWishlist}
+                title={isInWishlist ? 'Remove from Wishlist' : 'Add to Wishlist'}
+              >
+                <div className="product-wishlist">
+                  {isAddingToWishlist ? (
+                    <span className="spinner-border spinner-border-sm"></span>
+                  ) : (
+                    <i className={`bx ${isInWishlist ? 'bxs-heart text-danger' : 'bx-heart'}`}></i>
+                  )}
+                </div>
+              </button>
             </div>
-          </Link>
-          <a href="#" onClick={handleWishlist}>
-            <div className="product-wishlist"> <i className='bx bx-heart'></i>
+            {hasDiscount && (
+              <div className="position-absolute top-0 start-0 m-3">
+                <span className="badge bg-danger">-{discountPercent}%</span>
+              </div>
+            )}
+            {!product.quantity && (
+              <div className="position-absolute top-0 end-0 m-3">
+                <span className="badge bg-dark">Out of Stock</span>
+              </div>
+            )}
           </div>
-        </a>
-      </div>
-    </div>
-    <Link to={detailsLink}>
-      <img src={(product.images[0]) ? product.images[0].url : null} className="card-img-top" alt="..." />
-    </Link>
-    <div className="card-body">
-      <div className="product-info">
-        <a href="javascript:;">
-          <p className="product-catergory font-13 mb-1">{product.category}</p>
-        </a>
-        <a href="javascript:;">
-          <h6 className="product-name mb-2">{product.title}</h6>
-        </a>
-        <div className="d-flex align-items-center">
-          <div className="mb-1 product-price"> <span className="me-1 text-decoration-line-through">${product.price}</span>
-          <span className="text-white fs-5">${product.price}</span>
+          <Link to={detailsLink}>
+            <img 
+              src={productImage}
+              className="card-img-top" 
+              alt={product.title || product.title}
+              onError={(e) => {
+                e.target.src = '/assets/images/products/placeholder.png';
+              }}
+            />
+          </Link>
+
+
+          <div className="card-body">
+            <div className="product-info">
+
+              <Link to={`/shop?category=${product.categoryId || ''}`}>
+                <p className="product-catergory font-13 mb-1">
+                  {product.category || 'General'}
+                </p>
+              </Link>
+
+              <Link to={detailsLink}>
+                <h6 className="product-name mb-2">
+                  {product.title || product.title}
+                </h6>
+              </Link>
+
+              {/* Price and Rating */}
+              <div className="d-flex align-items-center">
+                {/* Price */}
+                <div className="mb-1 product-price">
+                  {hasDiscount && (
+                    <span className="me-1 text-decoration-line-through text-muted">
+                      ${product.price?.toFixed(2)}
+                    </span>
+                  )}
+                  <span className="text-white fs-5">
+                    ${currentPrice?.toFixed(2)}
+                  </span>
+                </div>
+
+                {/* Rating */}
+                <div className="cursor-pointer ms-auto">
+                  {renderStars(product.rating || 4)}
+                </div>
+              </div>
+
+              {/* Stock Status */}
+              {product.quantity && product.quantity && (
+                <div className="mt-2">
+                  <small className={`text-${product.quantity < 10 ? 'warning' : 'success'}`}>
+                    {product.quantity < 10 
+                      ? `Only ${product.quantity} left!` 
+                      : 'In Stock'}
+                  </small>
+                </div>
+              )}
+            </div>
+
+            {/* Product Actions */}
+            <div className="product-action mt-2">
+              <div className="d-grid gap-2">
+                {/* Add to Cart Button */}
+                <button
+                  onClick={handleAddToCart}
+                  className="btn btn-light btn-ecomm"
+                  disabled={isAddingToCart || !product.quantity}
+                >
+                  {isAddingToCart ? (
+                    <>
+                      <span className="spinner-border spinner-border-sm me-2"></span>
+                      Adding...
+                    </>
+                  ) : (
+                    <>
+                      <i className='bx bxs-cart-add'></i>
+                      {product.quantity ? 'Add to Cart' : 'Out of Stock'}
+                    </>
+                  )}
+                </button>
+
+                {/* Quick View Button */}
+                <button
+                  onClick={onQuickView}
+                  className="btn btn-link btn-ecomm"
+                >
+                  <i className='bx bx-zoom-in'></i>
+                  Quick View
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
-        <div className="cursor-pointer ms-auto"> <i className="bx bxs-star text-white"></i>
-        <i className="bx bxs-star text-white"></i>
-        <i className="bx bxs-star text-white"></i>
-        <i className="bx bxs-star text-white"></i>
-        <i className="bx bxs-star text-light-4"></i>
       </div>
-    </div>
-    <div className="product-action mt-2">
-      <div className="d-grid gap-2">
-        <a href="javascript:;" className="btn btn-light btn-ecomm"> <i className='bx bxs-cart-add'></i>Add to Cart</a> <a href="javascript:;" className="btn btn-link btn-ecomm" data-bs-toggle="modal" data-bs-target="#QuickViewProduct"><i className='bx bx-zoom-in'></i>Quick View</a>
-      </div>
-    </div>
-    </div>
-    </div>
-    </div>
-    </div>
     </>
   );
 };

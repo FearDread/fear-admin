@@ -181,6 +181,11 @@ export const selectUserSuccess = (state) => state.users.success;
 export const selectRememberMe = (state) => state.users.rememberMe;
 export const selectUserPreferences = (state) => state.users.preferences;
 export const selectLastLoginAt = (state) => state.users.lastLoginAt;
+export const selectUserFullName = (state) => {
+  const user = state.users.currentUser;
+  if (!user) return '';
+  return `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.email || 'User';
+};
 // Async operation status selectors
 export const selectOperationStatus = (state, operation) => 
   state.users.async?.operations?.[operation] || {

@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
+import { useSelector } from "react-redux";
 import { Link, useLocation } from 'react-router-dom';
-
+import {
+  selectIsAuthenticated,
+  selectCurrentUser
+} from '../../features/user/slice';
 // Configuration objects for dynamic content
 const topMenuLinks = [
   { label: 'Track Order', path: '/order-tracking' },
@@ -50,7 +54,7 @@ const mainNavItems = [
   { label: 'Blog', path: '/blog' },
   { label: 'About Us', path: '/about' },
   { label: 'Contact Us', path: '/contact' },
-  { label: 'Our Store', path: '/shop-categories' }
+  { label: 'Our Store', path: '/shop' }
 ];
 
 const accountLinks = [
@@ -170,7 +174,7 @@ const CategoryDropdown = ({ categories: categoryData }) => {
             <ul>
               {items.map((item) => (
                 <li key={item.label}>
-                  <Link to={item.path}>{item.label}</Link>
+                  <Link to={item.path} className="dropdown-item">{item.label}</Link>
                 </li>
               ))}
             </ul>
@@ -194,6 +198,9 @@ export const Header = () => {
   const [language, setLanguage] = useState('en');
   const location = useLocation();
 
+  const currentUser = useSelector(selectCurrentUser);
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+  
   const removeFromCart = (itemId) => {
     setCartItems(cartItems.filter(item => item.id !== itemId));
   };
@@ -317,6 +324,7 @@ export const Header = () => {
               </div>
 
               {/* Cart Icons */}
+              {(isAuthenticated) && (
               <div className="col col-md-auto order-2 order-md-4">
                 <div className="top-cart-icons">
                   <nav className="navbar navbar-expand">
@@ -342,6 +350,27 @@ export const Header = () => {
                   </nav>
                 </div>
               </div>
+              )}
+              {(!isAuthenticated) && (
+                <div className="col col-md-auto order-2 order-md-4">
+                  <div className="top-cart-icons">
+                    <nav className="navbar navbar-expand">
+                      <ul className="navbar-nav ms-auto">
+                        <li className="nav-item">
+                          <Link to="/login" className="nav-link cart-link">
+                            <button className='btn btn-white btn-ecom'>Login</button>
+                          </Link>
+                        </li>
+                        <li className="nav-item">
+                          <Link to="/register" className="nav-link cart-link">
+                            <button className='btn btn-white btn-ecom'>Register</button>
+                          </Link>
+                        </li>
+                      </ul>
+                    </nav>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
