@@ -4,6 +4,7 @@ import { Outlet } from "react-router-dom";
 
 import Header from "../components/common/Header";
 import Footer from "../components/common/Footer";
+import BestSelling from "../components/common/BestSelling";
 
 import { dispatch } from "../features/store";
 import { Product, selectProductsSuccess } from "../features/products/slice";
@@ -73,6 +74,7 @@ const Layout = () => {
               <Outlet {...products} />
             </>
           )}
+          <BestSelling />
         </div>
       </div>
       <Footer />

@@ -18,8 +18,7 @@ import ProductQuickView from './ProductQuickView';
  * 
  * @param {Object} product - Product data object
  */
-export const ProductCard = (product, onQuickView) => {
-  const dispatch = useDispatch();
+export const ProductCard = (product) => {
   const navigate = useNavigate();
 
   // Local state
