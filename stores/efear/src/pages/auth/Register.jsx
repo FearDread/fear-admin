@@ -9,7 +9,6 @@ import {
   selectIsAuthenticated,
   selectUserLoading,
   selectUserError,
-  selectRegisterStatus,
   clearError,
 } from '../../features/user/slice';
 
@@ -21,7 +20,6 @@ export const Register = () => {
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const loading = useSelector(selectUserLoading);
   const error = useSelector(selectUserError);
-  const registerStatus = useSelector(selectRegisterStatus);
 
   // Local form state
   const [formData, setFormData] = useState({

@@ -29,6 +29,7 @@ function AccountDashboard() {
 
   // Redirect if not authenticated
   useEffect(() => {
+    console.log('user = ', currentUser);
     if (!isAuthenticated && !loading) {
       navigate('/login', { 
         state: { 
@@ -126,11 +127,9 @@ function AccountDashboard() {
     );
   }
 
-  // Don't render if not authenticated
-  if (!isAuthenticated || !currentUser) {
+  if (!currentUser && !loading)  {
     return null;
   }
-
   return (
     <>
       {/* Breadcrumb Section */}

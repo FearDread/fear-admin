@@ -44,7 +44,7 @@ export const CategorySection = () => {
             <div className="item">
               <div className="card rounded-0 product-card border">
                 <div className="card-body">
-                  <img src="assets/images/categories/01.png" className="img-fluid" alt="..." />
+                  <img src="assets/images/comics/promo/06.png" className="img-fluid" alt="..." />
                 </div>
                 <div className="card-footer text-center">
                   <h6 className="mb-1 text-uppercase">Comics</h6>
@@ -55,7 +55,7 @@ export const CategorySection = () => {
             <div className="item">
               <div className="card rounded-0 product-card border">
                 <div className="card-body">
-                  <img src="assets/images/categories/02.png" className="img-fluid" alt="..." />
+                  <img src="assets/images/ebooks/02.jpg" className="img-fluid" alt="..." />
                 </div>
                 <div className="card-footer text-center">
                   <h6 className="mb-1 text-uppercase">E-Books</h6>
@@ -66,10 +66,10 @@ export const CategorySection = () => {
             <div className="item">
               <div className="card rounded-0 product-card border">
                 <div className="card-body">
-                  <img src="assets/images/categories/03.png" className="img-fluid" alt="..." />
+                  <img src="assets/images/comics/promo/05.png" className="img-fluid" alt="..." />
                 </div>
                 <div className="card-footer text-center">
-                  <h6 className="mb-1 text-uppercase">Football Cards</h6>
+                  <h6 className="mb-1 text-uppercase">Manga</h6>
                   <p className="mb-0 font-12 text-uppercase">14 Products</p>
                 </div>
               </div>
@@ -77,7 +77,7 @@ export const CategorySection = () => {
             <div className="item">
               <div className="card rounded-0 product-card border">
                 <div className="card-body">
-                  <img src="assets/images/categories/04.png" className="img-fluid" alt="..." />
+                  <img src="assets/images/comics/promo/04.png" className="img-fluid" alt="..." />
                 </div>
                 <div className="card-footer text-center">
                   <h6 className="mb-1 text-uppercase">Graphic Novels</h6>
@@ -88,10 +88,10 @@ export const CategorySection = () => {
             <div className="item">
               <div className="card rounded-0 product-card border">
                 <div className="card-body">
-                  <img src="assets/images/categories/05.png" className="img-fluid" alt="..." />
+                  <img src="assets/images/comics/promo/03.png" className="img-fluid" alt="..." />
                 </div>
                 <div className="card-footer text-center">
-                  <h6 className="mb-1 text-uppercase">Pokemon Cards</h6>
+                  <h6 className="mb-1 text-uppercase">Star Trek</h6>
                   <p className="mb-0 font-12 text-uppercase">6 Products</p>
                 </div>
               </div>

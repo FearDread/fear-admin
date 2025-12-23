@@ -33,7 +33,6 @@ const BrandSection = () => {
   return (
     <>
     <section className="py-4">
-          <hr/>
       <div className="container">
         <h3 className="d-none">Brands</h3>
         <div className="brand-grid">

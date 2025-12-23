@@ -22,20 +22,20 @@ const Home = () => {
       <AdSection2 />
 
       <FeaturedProducts />
+    <InfoSection2 />
 
-      <BrandSection />
 
       <NewArrivals />
 
       <CategorySection />
 
-      <InfoSection2 />
+  
 
       {/* <LatestNews /> */ }
 
             
       <AdSection />
-
+      <BrandSection />
       <BestSelling />
     </>
   );

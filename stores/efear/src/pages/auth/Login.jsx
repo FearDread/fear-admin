@@ -10,10 +10,11 @@ import {
   selectIsAuthenticated,
   selectUserLoading,
   selectUserError,
-  selectLoginStatus,
   setRememberMe,
   selectRememberMe,
   clearError,
+  setCurrentUser,
+  setIsAuthenticated
 } from '../../features/user/slice';
 
 export const Login = () => {
@@ -24,7 +25,6 @@ export const Login = () => {
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const loading = useSelector(selectUserLoading);
   const error = useSelector(selectUserError);
-  const loginStatus = useSelector(selectLoginStatus);
   const rememberMe = useSelector(selectRememberMe);
 
   // Local form state
@@ -37,12 +37,12 @@ export const Login = () => {
   const [validationErrors, setValidationErrors] = useState({});
 
   // Redirect path after login (from location state or default to home)
-  const from = location.state?.from?.pathname !== '/login' || '/account/dashboard';
+  const from = location.state?.from?.pathname || '/';
 
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/account/dashboard', { replace: true });
+      navigate(from, { replace: true });
     }
   }, [isAuthenticated, navigate, from]);
 
@@ -113,7 +113,9 @@ export const Login = () => {
     if (result.success) {
       // Store remember me preference
       dispatch(setRememberMe(localRememberMe));
-      
+      dispatch(setCurrentUser(result.user));
+      dispatch(setIsAuthenticated(true));
+
       // Navigation is handled by useEffect when isAuthenticated changes
       console.log('Login successful');
       navigate('/account/dashboard', { replace: true });
