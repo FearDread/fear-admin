@@ -101,20 +101,14 @@ exports.read = tryCatch(async (Model, req, res) => {
  */
 exports.create = tryCatch(async (Model, req, res) => {
   const documentData = { ...req.body };
-  console.log('raw document data = ', documentData);
   // Handle image uploads if present
   if (documentData.images) {
-    // Parse comma-separated string to array if needed
-    const imageArray = typeof documentData.images === 'string'
-      ? documentData.images.split(',').map(item => item.trim())
-      : documentData.images;
 
-    await cloud.uploadImages(imageArray)
-      .then((imageLinks) => {
-            if (imageLinks) documentData.images = imageLinks;
-            console.log('Uploaded Images:', imageLinks);
-      })
-      .catch((error) => { console.log('Error Uploading Images:: ', error);});
+      documentData.images.split(',').map(item => item.trim());
+    
+      const imageLinks = await cloud.uploadImages(documentData.images);
+    
+      if ( imageLinks ) documentData.images = imageLinks;
   }
 
   console.log('Creating document:', documentData);
