@@ -202,17 +202,6 @@ export const selectBrandsAlphabetIndex = (state) => {
   return Object.keys(grouped).sort();
 };
 
-// Async operation status selectors
-export const selectOperationStatus = (state, operation) => 
-  state.brands.async?.operations?.[operation] || {
-    loading: false,
-    success: false,
-    error: null,
-    lastRun: null,
-  };
-
-export const selectIsOperationLoading = (state, operation) =>
-  state.brands.async?.operations?.[operation]?.loading || false;
 
 // Export reducer
 export default slice;

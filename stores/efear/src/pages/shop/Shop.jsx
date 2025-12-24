@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from 'react-router-dom';
+import { dispatch } from "../../features/store";
 import ProductCard from "../../components/products/ProductCard";
 import {
   fetchProducts,
@@ -16,6 +17,7 @@ import {
   setCurrentPage,
   setPageSize,
   selectProductsFilters,
+  selectAllProducts,
 } from "../../features/products/slice";
 import {
   fetchCategories,
@@ -27,10 +29,8 @@ import {
   selectAllBrands,
   selectBrandsLoading,
 } from "../../features/brands/slice";
-import OwlCarousel from 'react-owl-carousel';
 
 export const Shop = ({ data }) => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   // Redux selectors
@@ -53,13 +53,26 @@ export const Shop = ({ data }) => {
     sizes: [],
     colors: [],
   });
-
+  const productData = useMemo(() => {
+    return data || products;
+  }, [data, products]);
   // View state
   const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
   const [sortBy, setSortByLocal] = useState('menu_order');
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
 
+  // Fetch data on mount
+  useEffect(() => {
+        dispatch(fetchBrands());
+            dispatch(fetchCategories());
+    if (products.length === 0) {
 
+    dispatch(fetchProducts());
+
+    }
+    console.log('products ', productData);
+
+  }, [dispatch]);
 
   // Handle category filter
   const handleCategoryChange = (categoryId) => {
@@ -155,7 +168,7 @@ export const Shop = ({ data }) => {
   };
 
   // Calculate pagination
-  const pageSize = pagination?.pageSize || 9;
+  const pageSize = pagination?.pageSize || 8;
   const currentPage = pagination?.currentPage || 1;
   const totalProducts = products?.length || 0;
   const totalPages = Math.ceil(totalProducts / pageSize);
@@ -164,7 +177,7 @@ export const Shop = ({ data }) => {
   const paginatedProducts = useMemo(() => {
     const startIndex = (currentPage - 1) * pageSize;
     const endIndex = startIndex + pageSize;
-    return products?.slice(startIndex, endIndex) || [];
+    return products?.slice(startIndex, endIndex - 1) || [];
   }, [products, currentPage, pageSize]);
 
   // Count products by category
@@ -184,15 +197,7 @@ export const Shop = ({ data }) => {
 
   // Loading state
   const isLoading = productsLoading || categoriesLoading || brandsLoading;
-  // Fetch data on mount
-  
-  /*
-  useEffect(() => {
-    dispatch(fetchProducts());
-    dispatch(fetchCategories());
-    dispatch(fetchBrands());
-  }, [dispatch]);
-    */
+
   if (isLoading && products.length === 0) {
     return (
       <div className="container py-5 text-center">
@@ -218,15 +223,13 @@ export const Shop = ({ data }) => {
     );
   }
 
-  if (!isLoading) {
-
   return (
     <>
       {/* Breadcrumb Section */}
       <section className="py-3 border-bottom d-none d-md-flex">
         <div className="container">
           <div className="page-breadcrumb d-flex align-items-center">
-            <h3 className="breadcrumb-title pe-3">Shop Grid Left Sidebar</h3>
+            <h3 className="breadcrumb-title pe-3">Filters</h3>
             <div className="ms-auto">
               <nav aria-label="breadcrumb">
                 <ol className="breadcrumb mb-0 p-0">
@@ -286,18 +289,18 @@ export const Shop = ({ data }) => {
                           </a>
                         </li>
                         {categories.map((category) => (
-                          <li key={category.id}>
+                          <li key={category._id}>
                             <a 
                               href="#" 
                               onClick={(e) => { 
                                 e.preventDefault(); 
-                                handleCategoryChange(category.id); 
+                                handleCategoryChange(category._id); 
                               }}
-                              className={localFilters.categoryId === category.id ? 'active' : ''}
+                              className={localFilters.categoryId === category._id ? 'active' : ''}
                             >
-                              {category.name}
+                              {category.title}
                               <span className="float-end badge rounded-pill bg-light">
-                                {getCategoryCount(category.id)}
+                                {getCategoryCount(category._id)}
                               </span>
                             </a>
                           </li>
@@ -357,35 +360,7 @@ export const Shop = ({ data }) => {
                       </div>
                     </div>
                     <hr />
-                    
-                    {/* Size Filter */}
-                    <div className="size-range">
-                      <h6 className="text-uppercase mb-3">Size</h6>
-                      <ul className="list-unstyled mb-0 categories-list">
-                        {['Small', 'Medium', 'Large', 'Extra Large'].map((size) => (
-                          <li key={size}>
-                            <div className="form-check">
-                              <input 
-                                className="form-check-input" 
-                                type="checkbox" 
-                                value={size}
-                                id={size.replace(' ', '')}
-                                checked={localFilters.sizes?.includes(size)}
-                                onChange={(e) => handleSizeChange(size, e.target.checked)}
-                              />
-                              <label 
-                                className="form-check-label" 
-                                htmlFor={size.replace(' ', '')}
-                              >
-                                {size}
-                              </label>
-                            </div>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    <hr />
-                    
+                   
                     {/* Brands Filter */}
                     <div className="product-brands">
                       <h6 className="text-uppercase mb-3">Brands</h6>
@@ -405,7 +380,7 @@ export const Shop = ({ data }) => {
                                 className="form-check-label" 
                                 htmlFor={`brand-${brand.id}`}
                               >
-                                {brand.name} ({getBrandCount(brand.id)})
+                                {brand.title} ({getBrandCount(brand.id)})
                               </label>
                             </div>
                           </li>
@@ -414,40 +389,6 @@ export const Shop = ({ data }) => {
                     </div>
                     <hr />
                     
-                    {/* Colors Filter */}
-                    <div className="product-colors">
-                      <h6 className="text-uppercase mb-3">Colors</h6>
-                      <ul className="list-unstyled mb-0 categories-list">
-                        {[
-                          { name: 'Black', class: 'bg-black' },
-                          { name: 'Yellow', class: 'bg-warning' },
-                          { name: 'Red', class: 'bg-danger' },
-                          { name: 'Blue', class: 'bg-primary' },
-                          { name: 'White', class: 'bg-white' },
-                          { name: 'Green', class: 'bg-success' },
-                          { name: 'Sky Blue', class: 'bg-info' },
-                        ].map((color) => (
-                          <li key={color.name}>
-                            <div 
-                              className="d-flex align-items-center cursor-pointer"
-                              onClick={() => handleColorChange(
-                                color.name, 
-                                !localFilters.colors?.includes(color.name)
-                              )}
-                            >
-                              <input
-                                type="checkbox"
-                                className="form-check-input me-2"
-                                checked={localFilters.colors?.includes(color.name)}
-                                onChange={() => {}}
-                              />
-                              <div className={`color-indigator ${color.class}`}></div>
-                              <p className="mb-0 ms-3">{color.name}</p>
-                            </div>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
                     <hr />
                     
                     {/* Clear Filters Button */}
@@ -627,6 +568,6 @@ export const Shop = ({ data }) => {
       </section>
     </>
   );
-}};
+};
 
 export default Shop;

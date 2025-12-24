@@ -27,14 +27,14 @@ const Home = () => {
       <NewArrivals />
 
       <CategorySection />
-
+      <BrandSection />
   
 
       {/* <LatestNews /> */ }
 
             
       <AdSection />
-      <BrandSection />
+
     </>
   );
 };

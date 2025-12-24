@@ -72,8 +72,7 @@ export const ProductDetails = () => {
 
     useEffect(() => {
         /* TODO refactor ths logic */
-        if (id && product._id !== id) dispatch(fetchProduct({id: id}))
-
+        if (id && product === null || product._id !== id) dispatch(fetchProduct({id: id}))
     }, [])
 
     const carouselOptions = {
