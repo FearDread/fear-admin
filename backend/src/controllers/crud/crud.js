@@ -101,7 +101,7 @@ exports.read = tryCatch(async (Model, req, res) => {
  */
 exports.create = tryCatch(async (Model, req, res) => {
   const documentData = { ...req.body };
-
+  console.log('raw document data = ', documentData);
   // Handle image uploads if present
   if (documentData.images) {
     // Parse comma-separated string to array if needed
@@ -109,24 +109,23 @@ exports.create = tryCatch(async (Model, req, res) => {
       ? documentData.images.split(',').map(item => item.trim())
       : documentData.images;
 
-    let imageLinks = await cloud.uploadImages(imageArray);
-    
-    if (imageLinks) {
-      documentData.images = imageLinks;
-      console.log('Added Images:', imageLinks);
-    }
+    await cloud.uploadImages(imageArray)
+      .then((imageLinks) => {
+            if (imageLinks) documentData.images = imageLinks;
+            console.log('Uploaded Images:', imageLinks);
+      })
+      .catch((error) => { console.log('Error Uploading Images:: ', error);});
   }
 
   console.log('Creating document:', documentData);
 
   const document = new Model(documentData);
-  const result = await document.save();
-
-  return res.status(201).json({
-    result,
-    success: true,
-    message: `Document created successfully in ${Model.modelName} collection`
-  });
+  await document.save()
+      .then((result) => {
+        return res.status(201).json({ result, success: true,
+          message: `Document created successfully in ${Model.modelName} collection`});
+      })
+      .catch((error) => {console.log('Error Saving document :: ', error);});
 });
 
 /**
