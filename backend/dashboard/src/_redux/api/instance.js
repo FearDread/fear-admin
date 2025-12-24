@@ -8,7 +8,7 @@ import storePersist from "../storePersist";
 
 const API_URL = (process.env.NODE_ENV === "production")
                  ? "https://fear.dedyn.io/fear/api/" 
-                 : "http://fear.master.com:4000/fear/api/";
+                 : "http://localhost:4000/fear/api/";
                  
 const API_STATIC_URL = "http://localhost:4000/fear/api/";
 const ACCESS_TOKEN_NAME = (process.env.JWT_TOKEN) 
