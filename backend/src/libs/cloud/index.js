@@ -82,7 +82,7 @@ const uploadImages = async (files, chunkSize = 3) => {
 
     return imageLinks;
   } catch (error) {
-    throw new Error(`Image upload failed: ${error.message}`);
+    throw new Error(`Image upload failed: ${error}`);
   }
 };
 
