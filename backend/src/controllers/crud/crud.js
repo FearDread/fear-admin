@@ -59,22 +59,13 @@ exports.all = tryCatch(async (Model, req, res) => {
 exports.read = tryCatch(async (Model, req, res) => {
   const { id } = req.params;
 
-  if (!id) {
+  if (!id || !isValidObjectId(id)) {
     return res.status(400).json({
       result: null,
       success: false,
-      message: "Document ID is required"
+      message: "Invalid or Missing Document ID"
     });
   }
-
-  if (!isValidObjectId(id)) {
-    return res.status(400).json({
-      result: null,
-      success: false,
-      message: "Invalid document ID format"
-    });
-  }
-
   const result = await Model.findById(id).exec();
 
   if (!result) {
