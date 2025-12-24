@@ -192,6 +192,7 @@ export const Register = () => {
 
     // Prepare registration data
     const registrationData = {
+      name: formData.firstName.trim() + ' ' + formData.lastName.trim(),
       firstName: formData.firstName.trim(),
       lastName: formData.lastName.trim(),
       email: formData.email.trim().toLowerCase(),

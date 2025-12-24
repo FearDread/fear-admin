@@ -93,7 +93,7 @@ export const selectInStockProducts = (state) =>
   state.products.data.filter(product => product.inStock === true);
 
 export const selectFilteredProducts = (state) => {
-  let products = [...state.products.data];
+  let products = selectAllProducts(state);
   const filters = state.products.filtering?.filters || {};
   const searchTerm = state.products.filtering?.searchTerm || '';
   
@@ -110,15 +110,15 @@ export const selectFilteredProducts = (state) => {
   if (filters.maxPrice) {
     products = products.filter(p => p.price <= filters.maxPrice);
   }
-  if (filters.inStock !== undefined) {
-    products = products.filter(p => p.inStock === filters.inStock);
+  if (filters.quantity !== undefined) {
+    products = products.filter(p => p.quantity === filters.quantity);
   }
   
   // Apply search
   if (searchTerm) {
     const term = searchTerm.toLowerCase();
     products = products.filter(p => 
-      p.name?.toLowerCase().includes(term) ||
+      p.title?.toLowerCase().includes(term) ||
       p.description?.toLowerCase().includes(term) ||
       p.sku?.toLowerCase().includes(term)
     );

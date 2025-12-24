@@ -71,11 +71,6 @@ function AccountDashboard() {
       badge: currentUser?.orderCount || 0,
     },
     {
-      label: 'Downloads',
-      path: '/account/downloads',
-      icon: 'bx-download',
-    },
-    {
       label: 'Addresses',
       path: '/account/addresses',
       icon: 'bx-home-smile',

@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { Outlet } from "react-router-dom";
 
-import Header from "../components/common/Header";
+import Header from "../components/header/Header";
 import Footer from "../components/common/Footer";
 import BestSelling from "../components/common/BestSelling";
 
@@ -14,7 +14,7 @@ import {
   selectProductsLoading,
   selectProductsLoadingState,
   selectProductsError,
-  selectOperationStatus
+  selectSortedProducts
 } from '../features/products/slice';
 import { fetchCategories, selectAllCategories } from '../features/categories/slice';
 import ProductQuickView from "../components/products/ProductQuickView";
