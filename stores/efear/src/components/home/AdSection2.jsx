@@ -11,7 +11,7 @@ const AdSection2 = () => {
             <div className="card rounded-0">
               <div className="row g-0 align-items-center">
                 <div className="col">
-                  <img src="assets/images/ebooks/01.jpg" className="img-fluid" alt="" />
+                  <img src="assets/images/comics/super2.png" className="img-fluid" alt="" />
                 </div>
                 <div className="col">
                   <div className="card-body">
@@ -41,7 +41,7 @@ const AdSection2 = () => {
             <div className="card rounded-0">
               <div className="row g-0 align-items-center">
                 <div className="col">
-                  <img src="assets/images/comics/spider.svg" className="img-fluid" alt="" />
+                  <img src="assets/images/comics/super3.png" className="img-fluid" alt="" />
                 </div>
                 <div className="col">
                   <div className="card-body">
