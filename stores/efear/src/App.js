@@ -15,6 +15,7 @@ import Register from "./pages/auth/Register";
 const Blog = lazy(() => import("./pages/Blog"));
 const About = lazy(() => import("./pages/About"));
 const Contact = lazy(() => import("./pages/Contact"));
+const FAQ = lazy(() => import("./pages/Faq"));
 const Shop = lazy(() => import("./pages/shop/Shop"));
 const ShopCategories = lazy(() => import("./pages/shop/ShopCategories"));
 const ProductComparison = lazy(() => import("./pages/products/ProductComparison"));
@@ -71,6 +72,7 @@ const routeConfig = {
     { path: "/contact", element: <Contact /> },
     { path: "/blog", element: <Blog /> },
     { path: "/shop", element: <Shop /> },
+    { path: "/faq", element: <FAQ /> },
     { path: "/shop-categories", element: <ShopCategories /> },
     { path: "/product/:id", element: <ProductDetails /> },
     { path: "/compare", element: <ProductComparison /> },

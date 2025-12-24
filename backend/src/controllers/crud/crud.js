@@ -109,7 +109,7 @@ exports.create = tryCatch(async (Model, req, res) => {
       ? documentData.images.split(',').map(item => item.trim())
       : documentData.images;
 
-    const imageLinks = await cloud.uploadImages(imageArray);
+    let imageLinks = await cloud.uploadImages(imageArray);
     
     if (imageLinks) {
       documentData.images = imageLinks;
