@@ -1,4 +1,4 @@
-import React, { useEffect, useState, Suspense } from "react";
+import React, { useEffect, useState, Suspense, useRef } from "react";
 import { useHistory, useLocation, Route, Switch, Redirect } from 'react-router-dom';
 import AuthLayout from "layouts/Auth/Auth.js";
 import AdminLayout from "layouts/Admin/Admin.js";
