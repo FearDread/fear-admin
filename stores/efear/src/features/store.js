@@ -31,7 +31,7 @@ export const store = configureStore({
 });
 
 // Setup listeners for RTK Query (if needed in future)
-setupListeners(store.dispatch);
+//setupListeners(store.dispatch);
 
 export const getState = () => store.getState();
 export const dispatch = (action) => store.dispatch(action);
