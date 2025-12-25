@@ -47,10 +47,10 @@ export const AdSection = () => {
                                     <div className="position-absolute top-0 end-0 m-3 product-discount"><span>-50%</span>
                                     </div>
                                     <div className="card-body text-center">
-                                        <img src="assets/images/comics/super1.png" className="card-img-top" alt="..." />
+                                        <img src="assets/images/ebooks/04.jpg" className="card-img-top" alt="..." />
                                         <h5 className="card-title fs-1 text-uppercase">Super Sale</h5>
                                         <p className="card-text text-uppercase fs-4 text-white lh-1 mb-2">Up to 50% off</p>
-                                        <p className="card-text">On All Graphic Novels</p> <a href="javascript:;" className="btn btn-light btn-ecomm">HURRY UP!</a>
+                                        <p className="card-text">On All E Novels</p> <a href="javascript:;" className="btn btn-light btn-ecomm">HURRY UP!</a>
                                     </div>
                                 </div>
                             </div>

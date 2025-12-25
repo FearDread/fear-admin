@@ -209,7 +209,7 @@ export const Shop = ({ data }) => {
     );
   }
 
-  if (error) {
+  if (error && products.length === 0) {
     return (
       <div className="container py-5 text-center">
         <div className="alert alert-danger" role="alert">

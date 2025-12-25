@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from "react-router-dom";
 
 // Hero Slider Component
 export const HeroSection = () => {
@@ -29,15 +30,15 @@ export const HeroSection = () => {
                 <div className="row d-flex align-items-center">
                   <div className="col d-none d-lg-flex justify-content-center">
                     <div>
-                      <h3 className="h3 fw-light">Has just arrived!</h3>
-                      <h1 className="h1">Huge Summer Collection</h1>
-                      <p className="pb-3">Swimwear, Tops, Shorts, Sunglasses {"&"} much more...</p>
-                      <div> <a className="btn btn-light btn-ecomm" href="javascript:;">Shop Now <i className='bx bx-chevron-right'></i></a>
+                      <h3 className="h3 fw-light">New Arrivals!</h3>
+                      <h1 className="h1">Huge Comic Collection</h1>
+                      <p className="pb-3">Marvel, DC, Dark Horse {"&"} much more...</p>
+                      <div> <Link to="/shop" className="btn btn-light btn-ecomm">Shop Now <i className='bx bx-chevron-right'></i></Link>
                       </div>
                     </div>
                   </div>
                   <div className="col">
-                    <img src="assets/images/slider/04.png" className="img-fluid" alt="..." />
+                    <img src="assets/images/comics/marvel_banner_1.jpg" className="img-fluid" alt="..." />
                   </div>
                 </div>
               </div>
@@ -45,15 +46,15 @@ export const HeroSection = () => {
                 <div className="row d-flex align-items-center">
                   <div className="col d-none d-lg-flex justify-content-center">
                     <div>
-                      <h3 className="h3 fw-light">Hurry up! Limited time offer.</h3>
-                      <h1 className="h1">Women Sportswear Sale</h1>
-                      <p className="pb-3">Sneakers, Keds, Sweatshirts, Hoodies {"&"} much more...</p>
+                      <h3 className="h3 fw-light">Hurry up! Available on Amazon.</h3>
+                      <h1 className="h1">FEAR Series Collection</h1>
+                      <p className="pb-3">Cookbooks, Manifestos, {"&"} much more...</p>
                       <div> <a className="btn btn-white btn-ecomm" href="javascript:;">Shop Now <i className='bx bx-chevron-right'></i></a>
                       </div>
                     </div>
                   </div>
                   <div className="col">
-                    <img src="assets/images/slider/05.png" className="img-fluid" alt="..." />
+                    <img src="assets/images/ebooks/03.jpg" className="img-fluid fear-banner" alt="..." />
                   </div>
                 </div>
               </div>
@@ -61,15 +62,15 @@ export const HeroSection = () => {
                 <div className="row d-flex align-items-center">
                   <div className="col d-none d-lg-flex justify-content-center">
                     <div>
-                      <h3 className="h3 fw-light">Complete your look with</h3>
-                      <h1 className="h1">New Men's Accessories</h1>
-                      <p className="pb-3">Hats {"&"} Caps, Sunglasses, Bags {"&"} much more...</p>
+                      <h3 className="h3 fw-light">Trading Cards!</h3>
+                      <h1 className="h1">New Trading Card Collections</h1>
+                      <p className="pb-3">NFL {"&"} NBA Cards, Pokemon, Baseball {"&"} much more...</p>
                       <div> <a className="btn btn-dark btn-ecomm" href="javascript:;">Shop Now <i className='bx bx-chevron-right'></i></a>
                       </div>
                     </div>
                   </div>
                   <div className="col">
-                    <img src="assets/images/slider/03.png" className="img-fluid" alt="..." />
+                    <img src="assets/images/comics/banner-img-1.jpg" className="img-fluid" alt="..." />
                   </div>
                 </div>
               </div>

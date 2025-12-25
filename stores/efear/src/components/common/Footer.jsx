@@ -1,8 +1,16 @@
 import React, { useState } from 'react';
+import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { fetchCategories, selectAllCategories } from '../../features/categories/slice';
 
 
 // Footer Component
-export const Footer = () => {
+export const Footer = ({ categories }) => {
+
+  const allCategories = useSelector(selectAllCategories);
+  
+  if (!categories) categories = allCategories;
+  
   return (
     <footer>
       <section className="py-4 bg-dark-1">
@@ -11,18 +19,19 @@ export const Footer = () => {
             <div className="col">
               <div className="footer-section1 mb-3">
                 <h6 className="mb-3 text-uppercase">Contact Info</h6>
+                <hr />
                 <div className="address mb-3">
                   <p className="mb-0 text-uppercase text-white">Address</p>
-                  <p className="mb-0 font-12">123 Street Name, City, Australia</p>
+                  <p className="mb-0 font-12">2003 E. Veterans Memorial Blvd.</p>
                 </div>
                 <div className="phone mb-3">
                   <p className="mb-0 text-uppercase text-white">Phone</p>
-                  <p className="mb-0 font-13">Toll Free (123) 472-796</p>
-                  <p className="mb-0 font-13">Mobile : +91-9910XXXX</p>
+                  <p className="mb-0 font-13">Toll Free (254) 345-0130</p>
+                  <p className="mb-0 font-13">Mobile : +1 (254) 345-0130</p>
                 </div>
                 <div className="email mb-3">
                   <p className="mb-0 text-uppercase text-white">Email</p>
-                  <p className="mb-0 font-13">mail@example.com</p>
+                  <p className="mb-0 font-13">fear.dread@underworld.dog</p>
                 </div>
                 <div className="working-days mb-3">
                   <p className="mb-0 text-uppercase text-white">WORKING DAYS</p>
@@ -33,59 +42,43 @@ export const Footer = () => {
             <div className="col">
               <div className="footer-section2 mb-3">
                 <h6 className="mb-3 text-uppercase">Shop Categories</h6>
+                <hr />
                 <ul className="list-unstyled">
-                  <li className="mb-1"><a href="javascript:;"><i className='bx bx-chevron-right'></i>
-                    Jeans</a>
-                  </li>
-                  <li className="mb-1"><a href="javascript:;"><i className='bx bx-chevron-right'></i>
-                    T-Shirts</a>
-                  </li>
-                  <li className="mb-1"><a href="javascript:;"><i className='bx bx-chevron-right'></i>
-                    Sports</a>
-                  </li>
-                  <li className="mb-1"><a href="javascript:;"><i className='bx bx-chevron-right'></i> Shirts &
-                    Tops</a>
-                  </li>
-                  <li className="mb-1"><a href="javascript:;"><i className='bx bx-chevron-right'></i> Clogs &
-                    Mules</a>
-                  </li>
-                  <li className="mb-1"><a href="javascript:;"><i className='bx bx-chevron-right'></i>
-                    Sunglasses</a>
-                  </li>
-                  <li className="mb-1"><a href="javascript:;"><i className='bx bx-chevron-right'></i> Bags &
-                    Wallets</a>
-                  </li>
-                  <li className="mb-1"><a href="javascript:;"><i className='bx bx-chevron-right'></i> Sneakers
-                    & Athletic</a>
-                  </li>
-                  <li className="mb-1"><a href="javascript:;"><i className='bx bx-chevron-right'></i>
-                    Electronis</a>
-                  </li>
-                  <li className="mb-1"><a href="javascript:;"><i className='bx bx-chevron-right'></i>
-                    Furniture</a>
-                  </li>
+                  {categories && categories.slice(0,10).map((category) => (
+                    <li key={category._id} className="mb-1">
+
+                      <Link to={"/shop?search=" + category.title}>
+                        {category.title}
+                      </Link>
+                      <i className='bx bx-chevron-right'></i>
+                    </li>
+                  ))}
                 </ul>
               </div>
             </div>
             <div className="col">
               <div className="footer-section3 mb-3">
-                <h6 className="mb-3 text-uppercase">Popular Tags</h6>
-                <div className="tags-box">	<a href="javascript:;" className="tag-link">Cloths</a>
-                  <a href="javascript:;" className="tag-link">Electronis</a>
-                  <a href="javascript:;" className="tag-link">Furniture</a>
-                  <a href="javascript:;" className="tag-link">Sports</a>
-                  <a href="javascript:;" className="tag-link">Men Wear</a>
-                  <a href="javascript:;" className="tag-link">Women Wear</a>
-                  <a href="javascript:;" className="tag-link">Laptops</a>
-                  <a href="javascript:;" className="tag-link">Formal Shirts</a>
-                  <a href="javascript:;" className="tag-link">Topwear</a>
-                  <a href="javascript:;" className="tag-link">Headphones</a>
-                  <a href="javascript:;" className="tag-link">Bottom Wear</a>
-                  <a href="javascript:;" className="tag-link">Bags</a>
-                  <a href="javascript:;" className="tag-link">Sofa</a>
-                  <a href="javascript:;" className="tag-link">Shoes</a>
-                </div>
-              </div>
+                <h6 className="mb-3 text-uppercase">Support</h6>
+                                    <hr /> 
+                  <ul className="list-unstyled">
+
+                    <li>
+                      <Link to="/policy/privacy">* Privacy Policy</Link>
+                    </li>
+
+                    <li>
+                      <Link to="/policy/terms">* Terms & Conditions</Link>
+                    </li>
+
+                    <li>
+                      <Link to="/policy/shipping">* Shipping & Return Policy</Link>
+                    </li>
+
+                    <li>
+                      <Link to="/faq">* Frequently Asked Questions</Link>
+                    </li>
+                  </ul>
+              </div>  
             </div>
             <div className="col">
               <div className="footer-section4 mb-3">
@@ -113,7 +106,7 @@ export const Footer = () => {
           <hr />
           <div className="row row-cols-1 row-cols-md-2 align-items-center">
             <div className="col">
-              <p className="mb-0">Copyright © 2021. All right reserved.</p>
+              <p className="mb-0">Copyright © <a href="https://feard.vercel.app">FEAR Inc.</a> 2025. All right reserved.</p>
             </div>
             <div className="col text-end">
               <div className="payment-icon">
