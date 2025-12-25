@@ -70,7 +70,7 @@ const Layout = () => {
           <BestSelling />
         </div>
       </div>
-      <Footer />
+      <Footer categories={(!loading) ? categories : []}/>
 
       {selectedProduct && (
         <ProductQuickView 

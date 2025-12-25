@@ -52,7 +52,6 @@ a {
 	position: relative
 }
 /* Header */
-
 .header-wrapper .top-menu .nav-link {
 	font-size: 88%;
 }
@@ -1504,4 +1503,10 @@ body.bg-theme15 {
 		height: auto;
 		padding: 2rem 1rem
 	}
+}
+
+.slider-section img {
+	height: 400px;
+	margin-left: auto;
+	margin-right: auto;
 }
