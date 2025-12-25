@@ -1,10 +1,15 @@
 import React, { useState } from 'react';
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { Link, useLocation } from 'react-router-dom';
 import {
   selectIsAuthenticated,
   selectCurrentUser
 } from '../../features/user/slice';
+import {
+  selectCartItems,
+  selectCartItemCount,
+  removeItem
+} from '../../features/cart/slice';
 import CartDropdown from "./CartDropdown";
 import CatDropdown from "./CatDropdown";
 import SearchBar from "./SearchBar";
@@ -70,24 +75,21 @@ const accountLinks = [
   { label: 'Saved Addresses', path: '/account/addresses'}
 ];
 
-// Cart items - in a real app, this would come from state management
-const initialCartItems = [
-  { id: 1, name: 'F.E.A.R. - The Hackers Manifesto', price: 29.00, quantity: 1, image: 'assets/images/ebooks/01.png' },
-  { id: 2, name: 'FEAR - The Vegan Manifesto', price: 29.00, quantity: 1, image: 'assets/images/ebooks/02.png' },
-];
-
 export const Header = () => {
+  const dispatch = useDispatch();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [cartItems, setCartItems] = useState(initialCartItems);
   const [currency, setCurrency] = useState('USD');
   const [language, setLanguage] = useState('en');
   const location = useLocation();
 
+  // Redux selectors
   const currentUser = useSelector(selectCurrentUser);
   const isAuthenticated = useSelector(selectIsAuthenticated);
+  const cartItems = useSelector(selectCartItems);
+  const cartItemCount = useSelector(selectCartItemCount);
 
-  const removeFromCart = (itemId) => {
-    setCartItems(cartItems.filter(item => item.id !== itemId));
+  const handleRemoveFromCart = (productId) => {
+    dispatch(removeItem(productId));
   };
 
   const isActiveRoute = (path) => {
@@ -208,8 +210,8 @@ export const Header = () => {
                 </div>
               </div>
 
-              {/* Cart Icons */}
-              {(isAuthenticated) && (
+              {/* Cart Icons - Authenticated */}
+              {isAuthenticated && (
                 <div className="col col-md-auto order-2 order-md-4">
                   <div className="top-cart-icons">
                     <nav className="navbar navbar-expand">
@@ -226,17 +228,19 @@ export const Header = () => {
                         </li>
                         <li className="nav-item dropdown dropdown-large">
                           <a href="#" className="nav-link dropdown-toggle dropdown-toggle-nocaret position-relative cart-link" data-bs-toggle="dropdown">
-                            <span className="alert-count">{cartItems.length}</span>
+                            <span className="alert-count">{cartItemCount}</span>
                             <i className='bx bx-shopping-bag'></i>
                           </a>
-                          <CartDropdown items={cartItems} onRemoveItem={removeFromCart} />
+                          <CartDropdown items={cartItems} onRemoveItem={handleRemoveFromCart} />
                         </li>
                       </ul>
                     </nav>
                   </div>
                 </div>
               )}
-              {(!isAuthenticated) && (
+
+              {/* Cart Icons - Not Authenticated */}
+              {!isAuthenticated && (
                 <div className="col col-md-auto order-2 order-md-4">
                   <div className="top-cart-icons">
                     <nav className="navbar navbar-expand">
@@ -253,10 +257,10 @@ export const Header = () => {
                         </li>
                         <li className="nav-item dropdown dropdown-large">
                           <a href="#" className="nav-link dropdown-toggle dropdown-toggle-nocaret position-relative cart-link" data-bs-toggle="dropdown">
-                            <span className="alert-count">{cartItems.length}</span>
+                            <span className="alert-count">{cartItemCount}</span>
                             <i className='bx bx-shopping-bag'></i>
                           </a>
-                          <CartDropdown items={cartItems} onRemoveItem={removeFromCart} />
+                          <CartDropdown items={cartItems} onRemoveItem={handleRemoveFromCart} />
                         </li>
                       </ul>
                     </nav>
