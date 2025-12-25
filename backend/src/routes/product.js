@@ -10,7 +10,7 @@ module.exports = (fear) => {
             .post("/new", Product.create)
             .get("/edit/:id", Product.read);
 
-      router.route("/search").post(handler.async(Product.search));
+      router.route("/search").post(handler.async(Product.search);
       router.route("/featured").get(handler.async(Product.featured));
       router.route("/one").get(handler.async(Product.read));
       router.route("/:id")
