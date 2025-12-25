@@ -10,7 +10,7 @@ function Navigation3() {
       <ul className="navbar-nav">
         <li className="nav-item active"> <a className="nav-link" href="index.html">Home </a>
       </li>
-      <li className="nav-item dropdown">	<a className="nav-link dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown">Categories <i className='bx bx-chevron-down'></i></a>
+      <li className="nav-item dropdown"> <a className="nav-link dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown">Categories <i className='bx bx-chevron-down'></i></a>
       <div className="dropdown-menu dropdown-large-menu">
         <div className="row">
           <div className="col-md-4">
@@ -63,7 +63,7 @@ function Navigation3() {
     </div>
     </div>
     </li>
-    <li className="nav-item dropdown">	<a className="nav-link dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown">Shop  <i className='bx bx-chevron-down'></i></a>
+    <li className="nav-item dropdown"> <a className="nav-link dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown">Shop  <i className='bx bx-chevron-down'></i></a>
     <ul className="dropdown-menu">
       <li><a className="dropdown-item dropdown-toggle dropdown-toggle-nocaret" href="#">Shop Layouts <i className='bx bx-chevron-right float-end'></i></a>
       <ul className="submenu dropdown-menu">
@@ -123,7 +123,7 @@ function Navigation3() {
     </li>
     <li className="nav-item"> <a className="nav-link" href="shop-categories.html">Our Store</a>
     </li>
-    <li className="nav-item dropdown">	<a className="nav-link dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown">My Account  <i className='bx bx-chevron-down'></i></a>
+    <li className="nav-item dropdown"> <a className="nav-link dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown">My Account  <i className='bx bx-chevron-down'></i></a>
     <ul className="dropdown-menu">
       <li><a className="dropdown-item" href="account-dashboard.html">Dashboard</a>
     </li>
