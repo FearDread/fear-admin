@@ -12,6 +12,7 @@ const productSchema = new mongoose.Schema({
     quantity: { type: Number, required: true },
     sold: { type: Number, default: 0 },
     reviews: [Review.schema],
+    isFeatured: {type: Boolean, required: false, default: true}
     images: [{
         public_id: String,
         url: String

@@ -128,6 +128,25 @@ exports.getProductStats = tryCatch(async (req, res) => {
   });
 });
 
+
+/**
+ * Get trending products (latest products with high ratings)
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
+exports.featured = async (req, res) => {
+  console.log('Featured Product route called ');
+  const featuredProducts = Product.find({isFeatured: true})
+  console.log('Featured Product route called ', featuredProducts);
+  return res.status(200).json({
+    success: true,
+    message: `Top ${featuredProducts.length} trending products`,
+    result: featuredProducts,
+    count: featuredProducts.length,
+    sortBy
+  });
+};
+
 exports.productSearch = tryCatch(async (req, res) => {
   return await productSearch(req.query, Product)
     .then((result) => {
