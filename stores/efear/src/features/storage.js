@@ -93,7 +93,7 @@ export const clearUserStorage = () => {
   }
 };
 
-export default {
+export default Storage = {
   save: saveUserToStorage,
   load: loadUserFromStorage,
   clear: clearUserStorage

@@ -4,35 +4,42 @@ import { setupListeners } from '@reduxjs/toolkit/query';
 import product from './products/slice';
 import category from './categories/slice';
 import brand from './brands/slice';
-import user from './user/slice';
+import user, { restoreUser } from './user/slice';
 import cart from './cart/slice';
 import wishlist from './wishlist/slice';
+import Storage from './storage';
 
-/**
- * Configure the Redux store with all feature slices
- */
+export const initializeStore = () => {
 
-export const store = configureStore({
-  reducer: {
+  const store = configureStore({
+    reducer: {
     products: product.reducer,
     categories: category.reducer,
     brands: brand.reducer,
     users: user.reducer,
     cart: cart.reducer,
     wishlist: wishlist.reducer
-  },
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({
-      serializableCheck: {
-        ignoredActions: false,
-      },
-    }),
-  devTools: true,
-});
+    },
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware({
+        serializableCheck: {
+          // Ignore these action types for serialization checks
+          ignoredActions: ['users/restoreUser'],
+        },
+      }),
+  });
 
-// Setup listeners for RTK Query (if needed in future)
-//setupListeners(store.dispatch);
+  // Restore user session from storage
+  const storedAuth = Storage.load();
+  if (storedAuth) {
+    store.dispatch(restoreUser(storedAuth));
+    console.log('User session restored from storage');
+  }
 
+  return store;
+};
+
+export const store = initializeStore();
 export const getState = () => store.getState();
 export const dispatch = (action) => store.dispatch(action);
 
