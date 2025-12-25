@@ -2,15 +2,26 @@
 import { FeatureFactory } from '@feardread/feature-factory';
 import ProductService from "./service";
 
-export const productFactory = FeatureFactory('product', ProductService);
+export const productFactory = FeatureFactory('product', {
+  toggleFeatured: (state, action) => {
+    const productId = action.payload;
+    const product = state.data.find(p => p.id === productId);
+    if (product) {
+      product.featured = !product.featured;
+    }
+  },
+
+  setViewMode: (state, action) => {
+    state.viewMode = action.payload; // 'grid' or 'list'
+  },
+});
 
 export const { slice, asyncActions: Product } = productFactory.create({
+  service: ProductService,
   operations: { fetch: true, search: true, fetchOne: true },
   includeCommonReducers: true
 });
 
-export const selectProducts = state => state.products.data;
-// Export all actions (common + custom)
 export const {
   // Common reducers from FeatureFactory
   setEntity,
@@ -51,7 +62,6 @@ export const {
   setViewMode,
 } = slice.actions;
 
-// Export async actions
 export const {
   fetch: fetchProducts,
   fetchOne: fetchProduct,
@@ -63,6 +73,7 @@ export const {
 } = Product;
 
 // Export selectors
+export const selectProducts = state => state.products.data;
 export const selectAllProducts = (state) => state.products.data;
 export const selectCurrentProduct = (state) => state.products.currentProduct || state.products.product;
 export const selectProductsLoading = (state) => state.products.loading;

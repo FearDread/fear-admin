@@ -21,18 +21,15 @@ const Home = () => {
       <AdSection2 />
 
       <FeaturedProducts />
-    <InfoSection2 />
 
+      <InfoSection2 />
 
       <NewArrivals />
 
       <CategorySection />
+
       <BrandSection />
-  
-
-      {/* <LatestNews /> */ }
-
-            
+    
       <AdSection />
 
     </>

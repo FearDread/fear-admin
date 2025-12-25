@@ -4,7 +4,7 @@ import { Outlet } from "react-router-dom";
 
 import Header from "../components/header/Header";
 import Footer from "../components/common/Footer";
-import BestSelling from "../components/common/BestSelling";
+import BestSelling from "../components/products/BestSelling";
 
 import { dispatch } from "../features/store";
 import { Product, selectProductsSuccess } from "../features/products/slice";
@@ -12,9 +12,7 @@ import {
   fetchProducts,
   selectAllProducts,
   selectProductsLoading,
-  selectProductsLoadingState,
   selectProductsError,
-  selectSortedProducts
 } from '../features/products/slice';
 import { fetchCategories, selectAllCategories } from '../features/categories/slice';
 import ProductQuickView from "../components/products/ProductQuickView";
@@ -62,12 +60,7 @@ const Layout = () => {
             </>
           )}
           {(!loading && error) && (
-            <>
-              <div className="error-container">
-                <p>Error: {error.message || error}</p>
-                <button onClick={handleRefresh}>Retry</button>
-              </div>
-            </>
+            console.log('error :: ', error)
           )}
           {(!loading && products.length > 0) && (
             <>

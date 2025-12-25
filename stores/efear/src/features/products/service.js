@@ -6,27 +6,27 @@ import { ThunkFactory } from "@feardread/feature-factory";
  */
 export const ProductService = {
   // Search products
-  searchProducts: ThunkFactory.post('products', 'search'),
+  //searchProducts: ThunkFactory.post('product', 'search'),
   
   // Get products by category
-  getProductsByCategory: ThunkFactory.custom('products', 'by-category', {
+  getProductsByCategory: ThunkFactory.custom('product', 'by-category', {
     method: 'GET',
     useParams: true,
   }),
   
   // Get products by brand
-  getProductsByBrand: ThunkFactory.custom('products', 'by-brand', {
+  getProductsByBrand: ThunkFactory.custom('product', 'by-brand', {
     method: 'GET',
     useParams: true,
   }),
   
   // Get featured products
-  getFeaturedProducts: ThunkFactory.custom('products', 'featured', {
+  getFeaturedProducts: ThunkFactory.custom('product', 'featured', {
     method: 'GET',
   }),
   
   // Get product recommendations
-  getRecommendations: ThunkFactory.custom('products', 'recommendations', {
+  getTrendingProducts: ThunkFactory.custom('product', 'trending', {
     method: 'GET',
     useParams: true,
   }),

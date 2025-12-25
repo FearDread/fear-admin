@@ -10,6 +10,7 @@ import Layout from "./pages/Layout";
 import Home from './pages/Home';
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
+import CheckoutShipping from "./pages/checkout/CheckoutShipping";
 
 // Lazy-loaded components (code splitting for better performance)
 const Blog = lazy(() => import("./pages/Blog"));
@@ -21,6 +22,7 @@ const ShopCart = lazy(() => import("./pages/shop/ShopCart"));
 const ShopCategories = lazy(() => import("./pages/shop/ShopCategories"));
 const ProductComparison = lazy(() => import("./pages/products/ProductComparison"));
 const ProductDetails = lazy(() => import("./pages/products/ProductDetails"));
+const Wishlist = lazy(() => import('./pages/Wishlist'));
 
 // Account pages (lazy loaded)
 const Dashboard = lazy(() => import("./pages/account/Dashboard"));
@@ -78,6 +80,7 @@ const routeConfig = {
     { path: "/shop-categories", element: <ShopCategories /> },
     { path: "/product/:id", element: <ProductDetails /> },
     { path: "/compare", element: <ProductComparison /> },
+    { path: "/wishlist", element: <Wishlist />},
   ],
   auth: [
     { path: "/login", element: <Login /> },
@@ -90,6 +93,8 @@ const routeConfig = {
     { path: "/account/details", element: <UserDetails /> },
     { path: "/account/payment-methods", element: <PaymentMethods /> },
     { path: "/account/addresses", element: <Addresses /> },
+
+    { path: "/checkout/shipping", element: <CheckoutShipping />}
   ],
 };
 
