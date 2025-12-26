@@ -3,7 +3,8 @@ const FearServer = require('./src/FEARServer');
 
 // Main execution
 async function main() {
-  const server = (process.argv['dev']) ? new FearServer() : new Fear.FearServer();
+  const env = process.env.NODE_ENV;
+  const server = (env === 'development') ? new FearServer() : new Fear.FearServer();
 
   server.initialize()
         .then(() => server.startServer())
