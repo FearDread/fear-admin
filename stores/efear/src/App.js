@@ -10,7 +10,11 @@ import Layout from "./pages/Layout";
 import Home from './pages/Home';
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
+
+//import Checkout from "./pages/checkout/checkout";
 import CheckoutShipping from "./pages/checkout/CheckoutShipping";
+import CheckoutPayment from "./pages/checkout/CheckoutPayment";
+import CheckoutDetails from "./pages/checkout/CheckoutDetails";
 
 // Lazy-loaded components (code splitting for better performance)
 const Blog = lazy(() => import("./pages/Blog"));
@@ -94,7 +98,10 @@ const routeConfig = {
     { path: "/account/payment-methods", element: <PaymentMethods /> },
     { path: "/account/addresses", element: <Addresses /> },
 
-    { path: "/checkout/shipping", element: <CheckoutShipping />}
+    { path: "/checkout", element: <CheckoutDetails />},
+    { path: "/checkout/shipping", element: <CheckoutShipping />},
+    { path: "/checkout/payment", element: <CheckoutPayment />},
+    { path: "/checkout/details", element: <CheckoutDetails />}
   ],
 };
 

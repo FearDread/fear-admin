@@ -93,8 +93,8 @@ export const BestSelling = ({ products }) => {
   useEffect(() => {
 
     if (!products) dispatch(fetchProducts());
-    dispatch(getFeaturedProducts());
-
+    //dispatch(getFeaturedProducts());
+    console.log('produts = ', products);
   }, [dispatch]);
 
   // Derive product lists from data
