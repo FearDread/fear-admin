@@ -1,4 +1,3 @@
-
 // components/ProductDetails.jsx
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -23,6 +22,18 @@ import {
     toggleFavorite as toggleBrandFavorite,
     selectIsBrandFavorite,
 } from '../../features/brands/slice';
+import {
+    addItem,
+    selectIsInCart,
+    selectCartItemById,
+} from '../../features/cart/slice';
+import {
+    addToWishlist,
+    removeFromWishlist,
+    toggleWishlist,
+    selectIsInWishlist,
+    moveToCart,
+} from '../../features/wishlist/slice';
 import OwlCarousel from 'react-owl-carousel';
 
 export const ProductDetails = () => {
@@ -41,8 +52,8 @@ export const ProductDetails = () => {
         rating: '',
         comment: '',
     });
+
     // Select product data from Redux store
-    //const product = useSelector(state => id ? selectProductById(state, id) : null);
     const product = useSelector(selectCurrentProduct);
     const loading = useSelector(selectProductsLoading);
     const error = useSelector(selectProductsError);
@@ -57,7 +68,19 @@ export const ProductDetails = () => {
     const isBrandFavorite = useSelector(state =>
         product?.brandId ? selectIsBrandFavorite(state, product.brandId) : false
     );
-        console.log('product =- ', product);
+
+    // Cart and Wishlist state
+    const isInCart = useSelector(state => 
+        product?._id ? selectIsInCart(state, product._id) : false
+    );
+    const cartItem = useSelector(state =>
+        product?._id ? selectCartItemById(state, product._id) : null
+    );
+    const isInWishlist = useSelector(state =>
+        product?.id ? selectIsInWishlist(state, product.id) : false
+    );
+
+    console.log('product =- ', product);
 
     useEffect(() => {
         if (product) {
@@ -68,12 +91,13 @@ export const ProductDetails = () => {
                 dispatch(fetchBrand({ id: product.brandId }));
             }
         }
-    }, [dispatch]);
+    }, [product]);
 
     useEffect(() => {
-        /* TODO refactor ths logic */
-        if (id && product === null || product._id !== id) dispatch(fetchProduct({id: id}))
-    }, [])
+        if (id && (product === null || product._id !== id)) {
+            dispatch(fetchProduct({ id: id }));
+        }
+    }, [id]);
 
     const carouselOptions = {
         loop: true,
@@ -83,17 +107,12 @@ export const ProductDetails = () => {
         dots: false,
         thumbs: true,
         responsive: {
-            0: {
-                items: 1
-            },
-            600: {
-                items: 1
-            },
-            1000: {
-                items: 1
-            }
+            0: { items: 1 },
+            600: { items: 1 },
+            1000: { items: 1 }
         }
-    }
+    };
+
     // Handle quantity change
     const handleQuantityChange = (e) => {
         const value = parseInt(e.target.value) || 1;
@@ -105,28 +124,80 @@ export const ProductDetails = () => {
         if (!product) return;
 
         const cartItem = {
-            id: product.id,
-            product,
+            productId: product._id,
+            id: product._id,
+            name: product.title,
+            title: product.title,
+            image: product.images?.[0]?.url || '',
+            price: product.salePrice || product.price,
             quantity,
             size: selectedSize,
             color: selectedColor,
-            price: product.salePrice || product.price,
+            sku: product.sku,
         };
 
-        console.log('Adding to cart:', cartItem);
-        // TODO: Dispatch to cart slice
-        // dispatch(addToCart(cartItem));
+        dispatch(addItem(cartItem));
+        
+        // Show success message (you can replace with toast notification)
         alert('Product added to cart!');
     };
 
     // Handle add to wishlist
-    const handleAddToWishlist = () => {
+    const handleToggleWishlist = () => {
         if (!product) return;
 
-        console.log('Adding to wishlist:', product);
-        // TODO: Dispatch to wishlist slice
-        // dispatch(addToWishlist(product));
-        alert('Product added to wishlist!');
+        const wishlistItem = {
+            id: product.id || product._id,
+            productId: product._id,
+            title: product.title,
+            name: product.title,
+            image: product.images?.[0]?.url || '',
+            price: product.salePrice || product.price,
+            originalPrice: product.price,
+            rating: product.rating,
+            sku: product.sku,
+        };
+
+        if (isInWishlist) {
+            dispatch(removeFromWishlist(wishlistItem.id));
+            alert('Product removed from wishlist!');
+        } else {
+            dispatch(addToWishlist(wishlistItem));
+            alert('Product added to wishlist!');
+        }
+    };
+
+    // Handle move from wishlist to cart
+    const handleMoveToCart = async () => {
+        if (!product || !isInWishlist) return;
+
+        try {
+            // Add to cart
+            const cartItem = {
+                productId: product._id,
+                id: product._id,
+                name: product.title,
+                title: product.title,
+                image: product.images?.[0]?.url || '',
+                price: product.salePrice || product.price,
+                quantity: 1,
+            };
+
+            dispatch(addItem(cartItem));
+            
+            // Remove from wishlist
+            dispatch(removeFromWishlist(product.id || product._id));
+
+            // Optionally sync with server
+            await dispatch(moveToCart({ 
+                productId: product._id,
+                quantity: 1 
+            })).unwrap();
+
+            alert('Product moved to cart!');
+        } catch (error) {
+            console.error('Failed to move to cart:', error);
+        }
     };
 
     // Handle brand favorite toggle
@@ -184,15 +255,6 @@ export const ProductDetails = () => {
         ? Math.round((1 - product?.salePrice / product?.price) * 100)
         : 0;
 
-    // Get product images
-    //const images = product?.images || (product.images ? [product.image] : ['assets/images/product-gallery/01.png']);
-
-    // Product colors (if available)
-    //const colors = product?.colors || ['primary', 'danger', 'success', 'warning'];
-
-    // Product sizes (if available)
-   // const sizes = product.sizes || ['S', 'M', 'L', 'XS', 'XL'];
-
     // Rating stars
     const renderStars = (rating) => {
         const stars = [];
@@ -247,7 +309,6 @@ export const ProductDetails = () => {
         );
     }
 
-
     if (!loading && product) {
         return (
             <>
@@ -288,8 +349,6 @@ export const ProductDetails = () => {
                                     {/* Image Gallery */}
                                     <div className="col-12 col-lg-5">
                                         <div className="image-zoom-section">
-                                            {/* Main Image */}
-
                                             <OwlCarousel
                                                 className="product-gallery owl-carousel owl-theme border mb-3 p-3"
                                                 {...carouselOptions}
@@ -303,7 +362,6 @@ export const ProductDetails = () => {
                                                 </div>
                                             </OwlCarousel>
 
-
                                             {/* Thumbnails */}
                                             <OwlCarousel className="owl-thumbs d-flex justify-content-center">
                                                 {product.images.map((img, index) => (
@@ -316,7 +374,6 @@ export const ProductDetails = () => {
                                                     </button>
                                                 ))}
                                             </OwlCarousel>
-
                                         </div>
                                     </div>
 
@@ -368,13 +425,23 @@ export const ProductDetails = () => {
                                             </div>
 
                                             {/* Stock Status */}
-                                            <div className="mt-2">
+                                            <div className="mt-2 d-flex gap-2 align-items-center">
                                                 {product.quantity ? (
                                                     <span className="badge bg-success">
                                                         In Stock ({product.quantity || 0} available)
                                                     </span>
                                                 ) : (
                                                     <span className="badge bg-danger">Out of Stock</span>
+                                                )}
+                                                {isInCart && (
+                                                    <span className="badge bg-info">
+                                                        <i className="bx bx-check"></i> In Cart ({cartItem?.quantity})
+                                                    </span>
+                                                )}
+                                                {isInWishlist && (
+                                                    <span className="badge bg-warning">
+                                                        <i className="bx bx-heart"></i> In Wishlist
+                                                    </span>
                                                 )}
                                             </div>
 
@@ -390,7 +457,7 @@ export const ProductDetails = () => {
                                             {/* Product Info */}
                                             <dl className="row mt-3">
                                                 <dt className="col-sm-3">Product ID</dt>
-                                                <dd className="col-sm-9">#{product.sku || product._idid}</dd>
+                                                <dd className="col-sm-9">#{product.sku || product._id}</dd>
                                                 <dt className="col-sm-3">Category</dt>
                                                 <dd className="col-sm-9">{category?.name || 'General'}</dd>
                                                 {product.deliveryInfo && (
@@ -401,9 +468,8 @@ export const ProductDetails = () => {
                                                 )}
                                             </dl>
 
-                                            {/* Quantity, Size, Colors */}
+                                            {/* Quantity */}
                                             <div className="row row-cols-auto align-items-center mt-3">
-                                                {/* Quantity */}
                                                 <div className="col">
                                                     <label className="form-label">Quantity</label>
                                                     <select
@@ -417,58 +483,35 @@ export const ProductDetails = () => {
                                                         ))}
                                                     </select>
                                                 </div>
-
-                                                {/* Size }
-                                                {sizes && sizes.length > 0 && (
-                                                    <div className="col">
-                                                        <label className="form-label">Size</label>
-                                                        <select
-                                                            className="form-select form-select-sm"
-                                                            value={selectedSize}
-                                                            onChange={(e) => setSelectedSize(e.target.value)}
-                                                        >
-                                                            <option value="">Select Size</option>
-                                                            {sizes.map((size) => (
-                                                                <option key={size} value={size}>{size}</option>
-                                                            ))}
-                                                        </select>
-                                                    </div>
-                                                )}
-                                                {colors && colors.length > 0 && (
-                                                    <div className="col">
-                                                        <label className="form-label">Colors</label>
-                                                        <div className="color-indigators d-flex align-items-center gap-2">
-                                                            {colors.map((color, index) => (
-                                                                <div
-                                                                    key={index}
-                                                                    className={`color-indigator-item bg-${color} ${selectedColor === color ? 'border border-dark border-2' : ''}`}
-                                                                    onClick={() => setSelectedColor(color)}
-                                                                    style={{ cursor: 'pointer' }}
-                                                                ></div>
-                                                            ))}
-                                                        </div>
-                                                    </div>
-                                                )}
-                                                                                        */}
                                             </div>
         
                                             {/* Action Buttons */}
-                                            <div className="d-flex gap-2 mt-3">
+                                            <div className="d-flex gap-2 mt-3 flex-wrap">
                                                 <button
                                                     onClick={handleAddToCart}
                                                     className="btn btn-white btn-ecomm"
                                                     disabled={!product.quantity}
                                                 >
-                                                    <i className="bx bxs-cart-add"></i>
-                                                    Add to Cart
+                                                    <i className={`bx ${isInCart ? 'bx-check' : 'bxs-cart-add'}`}></i>
+                                                    {isInCart ? 'Added to Cart' : 'Add to Cart'}
                                                 </button>
                                                 <button
-                                                    onClick={handleAddToWishlist}
-                                                    className="btn btn-light btn-ecomm"
+                                                    onClick={handleToggleWishlist}
+                                                    className={`btn btn-ecomm ${isInWishlist ? 'btn-warning' : 'btn-light'}`}
                                                 >
-                                                    <i className="bx bx-heart"></i>
-                                                    Add to Wishlist
+                                                    <i className={`bx ${isInWishlist ? 'bxs-heart' : 'bx-heart'}`}></i>
+                                                    {isInWishlist ? 'In Wishlist' : 'Add to Wishlist'}
                                                 </button>
+                                                {isInWishlist && (
+                                                    <button
+                                                        onClick={handleMoveToCart}
+                                                        className="btn btn-primary btn-ecomm"
+                                                        disabled={!product.quantity}
+                                                    >
+                                                        <i className="bx bx-transfer"></i>
+                                                        Move to Cart
+                                                    </button>
+                                                )}
                                             </div>
 
                                             <hr />
@@ -589,7 +632,7 @@ export const ProductDetails = () => {
                                     role="tabpanel"
                                 >
                                     <p>{product.fullDescription || product.description ||
-                                        "Raw denim you probably haven't heard of them jean shorts Austin. Nesciunt tofu stumptown aliqua, retro synth master cleanse. Mustache cliche tempor, williamsburg carles vegan helvetica. Reprehenderit butcher retro keffiyeh dreamcatcher synth. Cosby sweater eu banh mi, qui irure terry richardson ex squid. Aliquip placeat salvia cillum iphone. Seitan aliquip quis cardigan american apparel, butcher voluptate nisi."}</p>
+                                        "Raw denim you probably haven't heard of them jean shorts Austin. Nesciunt tofu stumptown aliqua, retro synth master cleanse. Mustache cliche tempor, williamsburg carles vegan helvetica."}</p>
                                     {product.features && (
                                         <ul>
                                             {product.features.map((feature, index) => (
@@ -614,7 +657,7 @@ export const ProductDetails = () => {
                                     role="tabpanel"
                                 >
                                     <p>{product.additionalInfo ||
-                                        "Food truck fixie locavore, accusamus mcsweeney's marfa nulla single-origin coffee squid. Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan four loko farm-to-table craft beer twee. Qui photo booth letterpress, commodo enim craft beer mlkshk aliquip jean shorts ullamco ad vinyl cillum PBR. Homo nostrud organic, assumenda labore aesthetic magna delectus mollit. Keytar helvetica VHS salvia yr, vero magna velit sapiente labore stumptown. Vegan fanny pack odio cillum wes anderson 8-bit, sustainable jean shorts beard ut DIY ethical culpa terry richardson biodiesel. Art party scenester stumptown, tumblr butcher vero sint qui sapiente accusamus tattooed echo park."}</p>
+                                        "Food truck fixie locavore, accusamus mcsweeney's marfa nulla single-origin coffee squid. Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan four loko farm-to-table craft beer twee."}</p>
                                 </div>
 
                                 {/* Tags Tab */}
@@ -631,21 +674,10 @@ export const ProductDetails = () => {
                                         ))}
                                         {!product.tags && (
                                             <>
-
                                                 <a href="#" className="tag-link" onClick={(e) => e.preventDefault()}>Cloths</a>
                                                 <a href="#" className="tag-link" onClick={(e) => e.preventDefault()}>Electronics</a>
                                                 <a href="#" className="tag-link" onClick={(e) => e.preventDefault()}>Furniture</a>
                                                 <a href="#" className="tag-link" onClick={(e) => e.preventDefault()}>Sports</a>
-                                                <a href="#" className="tag-link" onClick={(e) => e.preventDefault()}>Men Wear</a>
-                                                <a href="#" className="tag-link" onClick={(e) => e.preventDefault()}>Women Wear</a>
-                                                <a href="#" className="tag-link" onClick={(e) => e.preventDefault()}>Laptops</a>
-                                                <a href="#" className="tag-link" onClick={(e) => e.preventDefault()}>Formal Shirts</a>
-                                                <a href="#" className="tag-link" onClick={(e) => e.preventDefault()}>Topwear</a>
-                                                <a href="#" className="tag-link" onClick={(e) => e.preventDefault()}>Headphones</a>
-                                                <a href="#" className="tag-link" onClick={(e) => e.preventDefault()}>Bottom Wear</a>
-                                                <a href="#" className="tag-link" onClick={(e) => e.preventDefault()}>Bags</a>
-                                                <a href="#" className="tag-link" onClick={(e) => e.preventDefault()}>Sofa</a>
-                                                <a href="#" className="tag-link" onClick={(e) => e.preventDefault()}>Shoes</a>
                                             </>
                                         )}
                                     </div>
@@ -664,52 +696,8 @@ export const ProductDetails = () => {
                                                     {product.reviews?.length || 3} Reviews For The Product
                                                 </h5>
                                                 <div className="review-list">
-                                                    {product.reviews && product.reviews.map((review, index) => {
-
-                                                        <div key={review.id || index}>
-                                                            <div className="d-flex align-items-start">
-                                                                <div className="review-user">
-                                                                    <img
-                                                                        src={review.avatar || `assets/images/avatars/avatar-${(index % 3) + 1}.png`}
-                                                                        width="65"
-                                                                        height="65"
-                                                                        className="rounded-circle"
-                                                                        alt={review.name}
-                                                                    />
-                                                                </div>
-                                                                <div className="review-content ms-3">
-                                                                    <div className="rates cursor-pointer fs-6">
-                                                                        {renderStars(review.rating || 4)}
-                                                                    </div>
-                                                                    <div className="d-flex align-items-center mb-2">
-                                                                        <h6 className="mb-0">David Buckley</h6>
-                                                                        <p className="mb-0 ms-auto">February 22, 2021</p>
-                                                                    </div>
-                                                                    <p>Nesciunt tofu stumptown aliqua, retro synth master cleanse. Mustache cliche tempor, williamsburg carles vegan helvetica. Reprehenderit butcher retro keffiyeh dreamcatcher synth. Cosby sweater eu banh mi, qui irure terry richardson ex squid. Aliquip placeat salvia cillum iphone. Seitan aliquip quis cardigan</p>
-                                                                </div>
-                                                            </div>
-                                                            <hr />
-                                                            <div className="d-flex align-items-start">
-                                                                <div className="review-user">
-                                                                    <img src="assets/images/avatars/avatar-3.png" width="65" height="65" className="rounded-circle" alt="" />
-                                                                </div>
-                                                                <div className="review-content ms-3">
-                                                                    <div className="rates cursor-pointer fs-6">
-                                                                        <i className="bx bxs-star text-warning"></i>
-                                                                        <i className="bx bxs-star text-warning"></i>
-                                                                        <i className="bx bxs-star text-warning"></i>
-                                                                        <i className="bx bxs-star text-warning"></i>
-                                                                        <i className="bx bxs-star text-light-4"></i>
-                                                                    </div>
-                                                                    <div className="d-flex align-items-center mb-2">
-                                                                        <h6 className="mb-0">Peter Costanzo</h6>
-                                                                        <p className="mb-0 ms-auto">February 26, 2021</p>
-                                                                    </div>
-                                                                    <p>Nesciunt tofu stumptown aliqua, retro synth master cleanse. Mustache cliche tempor, williamsburg carles vegan helvetica. Reprehenderit butcher retro keffiyeh dreamcatcher synth. Cosby sweater eu banh mi, qui irure terry richardson ex squid. Aliquip placeat salvia cillum iphone. Seitan aliquip quis cardigan</p>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    })}
+                                                    {/* Review content here */}
+                                                    <p>Reviews section - integrate with your reviews system</p>
                                                 </div>
                                             </div>
                                         </div>

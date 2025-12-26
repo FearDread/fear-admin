@@ -134,18 +134,23 @@ exports.getProductStats = tryCatch(async (req, res) => {
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
  */
-exports.featured = async (req, res) => {
-  console.log('Featured Product route called ');
-  const featuredProducts = Product.find({isFeatured: true})
-  console.log('Featured Product route called ', featuredProducts);
+exports.featured = tryCatch(async (req, res) => {
+  const featuredProducts = await Product.find({isFeatured: true});
+  console.log('featured results = ', featuredProducts);
+    if (featuredProducts) {
+      return res.status(200).json({ success: true, result: featuredProducts })
+    }
+
+
+  /*
   return res.status(200).json({
     success: true,
     message: `Top ${featuredProducts.length} trending products`,
     result: featuredProducts,
-    count: featuredProducts.length,
-    sortBy
+    count: featuredProducts.length
   });
-};
+  */
+});
 
 exports.productSearch = tryCatch(async (req, res) => {
   return await productSearch(req.query, Product)
