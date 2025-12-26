@@ -13,7 +13,7 @@
   "author": "Garrett Haptonstall (FearDread)",
   "license": "MIT",
   "dependencies": {
-    "@feardread/fear": "^1.1.1",
+    "@feardread/fear": "^1.1.2",
     "@feardread/fear-ai-agent": "^2.0.2",
     "@feardread/security-agent": "^2.4.2",
     "axios": "^1.6.7",
