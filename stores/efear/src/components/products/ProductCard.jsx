@@ -116,13 +116,6 @@ export const ProductCard = (product) => {
     }
   };
 
-  const handleQuickView = (product) => {
-    setSelectedProduct(product);
-    setShowQuickView(true);
-
-    console.log('quick view', product);
-  };
-
   const handleAddToCart = async (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -176,6 +169,13 @@ export const ProductCard = (product) => {
     });
   };
 
+  const handleQuickView = (product) => {
+    setSelectedProduct(product);
+    setShowQuickView(true);
+
+    console.log('quick view', product);
+  };
+  
   return (
     <>
       <div className="col">
