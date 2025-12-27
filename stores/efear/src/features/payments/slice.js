@@ -125,11 +125,11 @@ export const removePayments = (methodId) => async (dispatch, getState) => {
     dispatch(clearError());
     
     const state = getState();
-    const method = state.Payments.entities[methodId];
+    const method = state.payments.entities[methodId];
     
     // Prevent deletion of default method if other methods exist
     if (method?.isDefault) {
-      const otherMethods = Object.values(state.Payments.entities).filter(
+      const otherMethods = Object.values(state.payments.entities).filter(
         m => m.id !== methodId
       );
       
@@ -241,37 +241,37 @@ export const verifyPayments = (methodId, verificationData) => async (dispatch) =
 
 // Export selectors
 export const selectAllPayments = (state) => 
-  Object.values(state.Payments.entities || {});
+  Object.values(state.payments.entities || {});
 
 export const selectPaymentsById = (state, methodId) => 
-  state.Payments.entities?.[methodId];
+  state.payments.entities?.[methodId];
 
 export const selectDefaultPayments = (state) => {
-  const methods = Object.values(state.Payments.entities || {});
+  const methods = Object.values(state.payments.entities || {});
   return methods.find(method => method.isDefault);
 };
 
 export const selectPaymentsLoading = (state) => 
-  state.Payments.loading;
+  state.payments.loading;
 
 export const selectPaymentsError = (state) => 
-  state.Payments.error;
+  state.payments.error;
 
 export const selectPaymentsSuccess = (state) => 
-  state.Payments.success;
+  state.payments.success;
 
 export const selectPaymentsByType = (state, type) => {
-  const methods = Object.values(state.Payments.entities || {});
+  const methods = Object.values(state.payments.entities || {});
   return methods.filter(method => method.type === type);
 };
 
 export const selectVerifiedPayments = (state) => {
-  const methods = Object.values(state.Payments.entities || {});
+  const methods = Object.values(state.payments.entities || {});
   return methods.filter(method => method.verified);
 };
 
 export const selectExpiredPayments = (state) => {
-  const methods = Object.values(state.Payments.entities || {});
+  const methods = Object.values(state.payments.entities || {});
   const now = new Date();
   const currentYear = now.getFullYear();
   const currentMonth = now.getMonth() + 1;
@@ -288,6 +288,6 @@ export const selectExpiredPayments = (state) => {
 };
 
 export const selectPaymentsCount = (state) => 
-  Object.keys(state.Payments.entities || {}).length;
+  Object.keys(state.payments.entities || {}).length;
 
 export default slice;
