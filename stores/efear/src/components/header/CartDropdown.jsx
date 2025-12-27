@@ -17,7 +17,7 @@ export const CartDropdown = ({ items, onRemoveItem }) => {
       </Link>
       <div className="cart-list">
         {items.map((item) => (
-          <div key={item.id} className="dropdown-item">
+          <div key={item._id} className="dropdown-item">
             <div className="d-flex align-items-center">
               <div className="flex-grow-1">
                 <h6 className="cart-product-title">{item.title}</h6>
@@ -26,13 +26,14 @@ export const CartDropdown = ({ items, onRemoveItem }) => {
               <div className="position-relative">
                 <button
                   className="cart-product-cancel position-absolute"
-                  onClick={() => onRemoveItem(item.id)}
+                  onClick={() => onRemoveItem(item._id)}
                   style={{ background: 'none', border: 'none', cursor: 'pointer' }}
                 >
                   <i className='bx bx-x'></i>
                 </button>
                 <div className="cart-product">
-                  <img src={item.image || '/assets/images/ebooks/01.jpg'} alt={item.title} />
+                  
+                  <img src={(item.image) ? item.image : '/assets/images/ebooks/01.jpg'} alt={item.title} />
                 </div>
               </div>
             </div>

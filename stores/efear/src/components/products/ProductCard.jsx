@@ -40,8 +40,8 @@ export const ProductCard = (product) => {
   const detailsLink = `/product/${product._id || product.id}`;
 
   // Get product image
-  const productImage = product.images?.[0]?.url || 
-                       product.images?.[0] || 
+  const productImage = product.images[0]?.url || 
+                       product.images[0] || 
                        product.image || 
                        '/assets/images/fear/fear-dark-bg.jpg';
 
@@ -134,7 +134,7 @@ export const ProductCard = (product) => {
         productId: product._id || product.id,
         product: {
           id: product._id || product.id,
-          name: product.title || product.title,
+          title: product.title || product.title,
           price: currentPrice,
           image: productImage,
           sku: product.sku,

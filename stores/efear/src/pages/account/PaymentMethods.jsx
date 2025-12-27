@@ -16,6 +16,7 @@ import {
 import {
   selectIsAuthenticated,
   logoutUser,
+  getCurrentUser
 } from '../../features/user/slice';
 
 function AccountPayments() {
@@ -99,6 +100,7 @@ function AccountPayments() {
     
     // Format payment method data
     const paymentData = {
+      userId: getCurrentUser(),
       type: 'card',
       cardType: getCardType(newPayments.cardNumber),
       last4: newPayments.cardNumber.slice(-4),
