@@ -7,6 +7,7 @@ module.exports = (fear) => {
 
     router.get("/all", Payment.list);
     router.post("/new", Payment.create);
+    router.post("/:params", Payment.create);
     
     router.route('/:id')
         .get(Payment.read)
