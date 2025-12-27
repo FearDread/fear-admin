@@ -32,7 +32,7 @@ const Wishlist = lazy(() => import('./pages/Wishlist'));
 const Dashboard = lazy(() => import("./pages/account/Dashboard"));
 const Orders = lazy(() => import("./pages/account/Orders"));
 const UserDetails = lazy(() => import("./pages/account/UserDetails"));
-const PaymentMethods = lazy(() => import("./pages/account/PaymentMethods"));
+const AccountPayment = lazy(() => import("./pages/account/PaymentMethods"));
 const Addresses = lazy(() => import("./pages/account/Addresses"));
 //const ForgotPassword = lazy(() => import("./pages/auth/ForgotPassword"));
 // Error pages
@@ -95,7 +95,7 @@ const routeConfig = {
     { path: "/account/dashboard", element: <Dashboard /> },
     { path: "/account/orders", element: <Orders /> },
     { path: "/account/details", element: <UserDetails /> },
-    { path: "/account/payment-methods", element: <PaymentMethods /> },
+    { path: "/account/payment-methods", element: <AccountPayment /> },
     { path: "/account/addresses", element: <Addresses /> },
 
     { path: "/checkout", element: <CheckoutDetails />},

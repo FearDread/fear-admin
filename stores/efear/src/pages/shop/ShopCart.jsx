@@ -202,7 +202,7 @@ export const ShopCart = () => {
                               <img
                                 src={item.image || 'assets/images/products/placeholder.png'}
                                 width="130"
-                                alt={item.name}
+                                alt={item.title}
                               />
                             </div>
                             <div className="cart-detail text-center text-lg-start">
