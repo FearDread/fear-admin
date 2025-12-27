@@ -7,12 +7,16 @@ import brand from './brands/slice';
 import user, { restoreUser } from './user/slice';
 import cart from './cart/slice';
 import wishlist from './wishlist/slice';
+import order from "./orders/slice";
+import payment from "./payments/slice";
 import Storage from './storage';
 
 export const initializeStore = () => {
 
   const store = configureStore({
     reducer: {
+    orders: order.reducer,
+    payments: payment.reducer,
     products: product.reducer,
     categories: category.reducer,
     brands: brand.reducer,

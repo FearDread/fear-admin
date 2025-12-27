@@ -105,7 +105,7 @@ const orderReducers = {
 /**
  * Create the order feature factory
  */
-const orderFactory = FeatureFactory('orders', orderReducers);
+const orderFactory = FeatureFactory('order', orderReducers);
 
 export const { slice, asyncActions: Order } = orderFactory.create({
   service: OrderService,

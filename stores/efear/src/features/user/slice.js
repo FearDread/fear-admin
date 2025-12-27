@@ -1,7 +1,7 @@
 // features/users/userSlice.js
 import { FeatureFactory, API } from '@feardread/feature-factory';
 import UserService from "./service";
-import { saveUserToStorage, clearUserStorage } from '../storage';
+import Storage, { saveUserToStorage, clearUserStorage } from '../storage';
 
 
 const userReducers = {
@@ -82,15 +82,6 @@ export const { slice, asyncActions: User } = userFactory.create({
       lastLoginAt: null,
     },
   },
-  operations: {
-    fetch: false,
-    fetchOne: false,
-    search: false,
-    create: false,
-    update: false,
-    patch: false,
-    delete: false,
-  },
   includeCommonReducers: true,
 });
 
@@ -148,11 +139,9 @@ export const loginUser = (credentials, rememberMe = false) => async (dispatch) =
       const expiryHours = rememberMe ? 24 * 7 : 24;
       const expiresAt = new Date(Date.now() + expiryHours * 60 * 60 * 1000).toISOString();
       
-      // Store token in API utility
+
       API.setAuth(token, user);
-      
-      // Save to persistent storage
-      saveUserToStorage(user, token, rememberMe, expiresAt);
+      Storage.save(user, token, rememberMe, expiresAt);
       
       // Update state
       dispatch(setToken(token));
