@@ -7,12 +7,13 @@ const productSchema = new mongoose.Schema({
     slug: { type: String, required: false, unique: true, lowercase: true },
     description: { type: String, required: true },
     price: { type: Number, required: true },
+    discount: { type: Number, required: false, default: 0 },
     category: { type: mongoose.Schema.Types.String, ref: "Category" },
     brand: { type: mongoose.Schema.Types.String, ref: "Brand" , required: false },
     quantity: { type: Number, required: true },
     sold: { type: Number, default: 0 },
     reviews: [Review.schema],
-    isFeatured: {type: Boolean, required: false, default: true},
+    isFeatured: {type: Boolean, required: false, default: false},
     images: [{
         public_id: String,
         url: String
