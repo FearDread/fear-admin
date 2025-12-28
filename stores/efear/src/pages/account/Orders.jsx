@@ -17,9 +17,11 @@ import {
   clearError,
 } from '../../features/orders/slice';
 import {
+  selectCurrentUser,
   selectIsAuthenticated,
   logoutUser,
 } from '../../features/user/slice';
+import AccountSidebar from '../../components/common/AccountSidebar';
 
 function AccountOrders() {
   const dispatch = useDispatch();
@@ -30,6 +32,7 @@ function AccountOrders() {
   const loading = useSelector(selectOrdersLoading);
   const error = useSelector(selectOrdersError);
   const filters = useSelector(selectOrderFilters);
+  const currentUser = useSelector(selectCurrentUser);
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const totalOrderValue = useSelector(selectTotalOrderValue);
   
@@ -137,6 +140,11 @@ function AccountOrders() {
   const sortedOrders = [...filteredOrders].sort((a, b) => 
     new Date(b.orderDate || b.createdAt) - new Date(a.orderDate || a.createdAt)
   );
+
+  const sidebarProps = {
+    handleLogout,
+    currentUser,
+  }
   
   return (
     <>
@@ -162,57 +170,9 @@ function AccountOrders() {
           <div className="card">
             <div className="card-body">
               <div className="row">
-                <div className="col-lg-4">
-                  <div className="card shadow-none mb-3 mb-lg-0">
-                    <div className="card-body">
-                      <div className="list-group list-group-flush">
-                        <a 
-                          href="/account/dashboard" 
-                          className="list-group-item d-flex justify-content-between align-items-center bg-transparent"
-                        >
-                          Dashboard <i className='bx bx-tachometer fs-5'></i>
-                        </a>
-                        <a 
-                          href="/account/orders" 
-                          className="list-group-item active d-flex justify-content-between align-items-center"
-                        >
-                          Orders <i className='bx bx-cart-alt fs-5'></i>
-                        </a>
-                        <a 
-                          href="/account/downloads" 
-                          className="list-group-item d-flex justify-content-between align-items-center bg-transparent"
-                        >
-                          Downloads <i className='bx bx-download fs-5'></i>
-                        </a>
-                        <a 
-                          href="/account/addresses" 
-                          className="list-group-item d-flex justify-content-between align-items-center bg-transparent"
-                        >
-                          Addresses <i className='bx bx-home-smile fs-5'></i>
-                        </a>
-                        <a 
-                          href="/account/payment-methods" 
-                          className="list-group-item d-flex justify-content-between align-items-center bg-transparent"
-                        >
-                          Payment Methods <i className='bx bx-credit-card fs-5'></i>
-                        </a>
-                        <a 
-                          href="/account/details" 
-                          className="list-group-item d-flex justify-content-between align-items-center bg-transparent"
-                        >
-                          Account Details <i className='bx bx-user-circle fs-5'></i>
-                        </a>
-                        <button 
-                          onClick={handleLogout}
-                          className="list-group-item d-flex justify-content-between align-items-center bg-transparent border-0 text-start"
-                        >
-                          Logout <i className='bx bx-log-out fs-5'></i>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
+
+                <AccountSidebar {...sidebarProps} />
+
                 <div className="col-lg-8">
                   <div className="card shadow-none mb-0">
                     <div className="card-body">
