@@ -38,7 +38,7 @@ a {
 	border: 1px solid rgb(255 255 255 / 15%);
 }
 .logo-icon {
-	width: 110px
+	width: 200px
 }
 .top-cart-icons ul.navbar-nav .nav-item a.cart-link {
 	font-size: 30px;
@@ -142,7 +142,7 @@ body.offcanvas-active {
 .primary-menu .navbar .dropdown-large-menu {
 	padding: 1rem;
 }
-.navbar .nav-item:hover {
+.primary-menu .navbar .nav-item:hover {
 	background-color:rgba(0,0,0,.8);;
 }
 @media all and (min-width: 992px) {
@@ -1495,3 +1495,67 @@ h6.product-name {
 	padding-left: 10px;
 	padding-bottom: 10px;
 }
+
+        .carousel-container::-webkit-scrollbar {
+          display: none;
+        }
+
+        .carousel-nav-btn {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          background: white;
+          border: 1px solid #ddd;
+          border-radius: 50%;
+          width: 40px;
+          height: 40px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          z-index: 10;
+          transition: all 0.3s ease;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .carousel-nav-btn:hover {
+          background: #f8f9fa;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .carousel-nav-prev {
+          left: -20px;
+        }
+
+        .carousel-nav-next {
+          right: -20px;
+        }
+
+        .carousel-nav-btn i {
+          font-size: 24px;
+          color: #333;
+        }
+
+        @media (min-width: 576px) {
+          .carousel-item-wrapper {
+            width: calc(50% - 10px) !important;
+          }
+        }
+
+        @media (min-width: 768px) {
+          .carousel-item-wrapper {
+            width: calc(33.333% - 10px) !important;
+          }
+        }
+
+        @media (min-width: 1366px) {
+          .carousel-item-wrapper {
+            width: calc(25% - 10px) !important;
+          }
+        }
+
+        @media (min-width: 1400px) {
+          .carousel-item-wrapper {
+            width: calc(20% - 10px) !important;
+          }
+        }

@@ -21,7 +21,7 @@ export const CatDropdown = ({ categories: categoryData }) => {
         ))}
         <div className="col-md-4">
           <div className="pramotion-banner1">
-            <img src="assets/images/gallery/menu-img.jpg" className="img-fluid" alt="Promotion" />
+            <img src="assets/images/comics/banner/01.png" className="img-fluid" alt="Promotion" />
           </div>
         </div>
       </div>
