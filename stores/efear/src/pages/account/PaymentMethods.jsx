@@ -25,6 +25,8 @@ import {
   selectCurrentUser,
   logoutUser,
 } from '../../features/user/slice';
+import StripeCardForm from "./payments/StripeCardForm";
+import AccountSidebar from "../../components/common/AccountSidebar";
 
 // Initialize Stripe (replace with your publishable key)
 const stripePromise = loadStripe('pk_test_YOUR_PUBLISHABLE_KEY');
@@ -102,6 +104,8 @@ function AccountPayments() {
   const formatExpiry = (month, year) => {
     return `${String(month).padStart(2, '0')}/${String(year).slice(-2)}`;
   };
+
+  const sidebarProps = { currentUser };
   
   return (
     <>
@@ -119,57 +123,9 @@ function AccountPayments() {
           <div className="card">
             <div className="card-body">
               <div className="row">
-                <div className="col-lg-4">
-                  <div className="card shadow-none mb-3 mb-lg-0">
-                    <div className="card-body">
-                      <div className="list-group list-group-flush">
-                        <a 
-                          href="/account/dashboard" 
-                          className="list-group-item d-flex justify-content-between align-items-center bg-transparent"
-                        >
-                          Dashboard <i className='bx bx-tachometer fs-5'></i>
-                        </a>
-                        <a 
-                          href="/account/orders" 
-                          className="list-group-item d-flex justify-content-between align-items-center bg-transparent"
-                        >
-                          Orders <i className='bx bx-cart-alt fs-5'></i>
-                        </a>
-                        <a 
-                          href="/account/downloads" 
-                          className="list-group-item d-flex justify-content-between align-items-center bg-transparent"
-                        >
-                          Downloads <i className='bx bx-download fs-5'></i>
-                        </a>
-                        <a 
-                          href="/account/addresses" 
-                          className="list-group-item d-flex justify-content-between align-items-center bg-transparent"
-                        >
-                          Addresses <i className='bx bx-home-smile fs-5'></i>
-                        </a>
-                        <a 
-                          href="/account/payment-methods" 
-                          className="list-group-item active d-flex justify-content-between align-items-center"
-                        >
-                          Payment Methods <i className='bx bx-credit-card fs-5'></i>
-                        </a>
-                        <a 
-                          href="/account/details" 
-                          className="list-group-item d-flex justify-content-between align-items-center bg-transparent"
-                        >
-                          Account Details <i className='bx bx-user-circle fs-5'></i>
-                        </a>
-                        <button 
-                          onClick={handleLogout}
-                          className="list-group-item d-flex justify-content-between align-items-center bg-transparent border-0 text-start"
-                        >
-                          Logout <i className='bx bx-log-out fs-5'></i>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
+
+                <AccountSidebar {...sidebarProps} />
+
                 <div className="col-lg-8">
                   <div className="card shadow-none mb-0">
                     <div className="card-body">
