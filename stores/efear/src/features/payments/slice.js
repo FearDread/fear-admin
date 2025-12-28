@@ -69,7 +69,6 @@ export const {
   clearError,
   resetState,
   updateMetadata,
-  // Custom payment method reducers
   setDefaultPayments,
   addPaymentsToState,
   removePaymentsFromState,
@@ -77,7 +76,6 @@ export const {
   setVerificationStatus,
 } = slice.actions;
 
-// Export async actions from factory
 export const {
   fetch: fetchPayments,
   fetchOne: fetchPayment,

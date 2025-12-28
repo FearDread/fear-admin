@@ -43,9 +43,10 @@ export const About = () => {
                         Fast shipping: Your comics will arrive before the heat death of the universe (probably)
                         Quality products: No coffee stains. Those are our copies.
                         Customer service: We'll respond to your emails faster than DC responds to fan criticism
-                        Honest recommendations: If a book is terrible, we'll tell you. Then sell it to you anyway because capitalism.
+                        Honest recommendations: If a book is terrible, we'll tell you. Then sell it to you anyway because capitalism.</p>
 
-                        Why Choose Us?
+                        <h3>Why Choose Us?</h3>
+                        <p>
                         Listen, you're already here reading this. The hard part is over. At this point, you're pot-committed. Plus, we need to make rent, and our landlord has made it very clear that "exposure" is not legal tender.
                         Our Team
                         We're a small operation, which is a fancy way of saying we can't afford to hire anyone else. But what we lack in manpower, we make up for in caffeine addiction and the sinking feeling that we should have gotten real jobs.
@@ -67,7 +68,7 @@ export const About = () => {
                                 <div className="card-body">
                                     <img src="assets/images/icons/delivery.png" width="60" alt="" />
                                     <h5 className="my-3">FREE SHIPPING</h5>
-                                    <p className="mb-0">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industr in some form.</p>
+                                    <p className="mb-0">We'll bring it to your door for free. Because if we charged you shipping, you'd probably just steal it from a neighbor's porch anyway.</p>
                                 </div>
                             </div>
                         </div>
@@ -76,7 +77,7 @@ export const About = () => {
                                 <div className="card-body">
                                     <img src="assets/images/icons/money-bag.png" width="60" alt="" />
                                     <h5 className="my-3">100% MONEY BACK GUARANTEE</h5>
-                                    <p className="mb-0">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industr in some form.</p>
+                                    <p className="mb-0">Regret your life choices? Us too. Send it back within 30 days, no judgment. We've seen worse decisions, trust us.</p>
                                 </div>
                             </div>
                         </div>
@@ -85,7 +86,7 @@ export const About = () => {
                                 <div className="card-body">
                                     <img src="assets/images/icons/support.png" width="60" alt="" />
                                     <h5 className="my-3">ONLINE SUPPORT 24/7</h5>
-                                    <p className="mb-0">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industr in some form.</p>
+                                    <p className="mb-0">Can't sleep at 3 AM? Neither can our support team—misery loves company. We're here to answer your questions or just listen to you complain about life.</p>
                                 </div>
                             </div>
                         </div>
@@ -102,7 +103,7 @@ export const About = () => {
                             <div className="card">
                                 <div className="card-body">
                                     <a href="javscript:;">
-                                        <img src="assets/images/brands/01.png" className="img-fluid" alt="" />
+                                        <img src="assets/images/brands/marvel.jpg" className="img-fluid" alt="" />
                                     </a>
                                 </div>
                             </div>
@@ -111,7 +112,7 @@ export const About = () => {
                             <div className="card">
                                 <div className="card-body">
                                     <a href="javscript:;">
-                                        <img src="assets/images/brands/02.png" className="img-fluid" alt="" />
+                                        <img src="assets/images/brands/dc.jpg" className="img-fluid" alt="" />
                                     </a>
                                 </div>
                             </div>
@@ -120,7 +121,7 @@ export const About = () => {
                             <div className="card">
                                 <div className="card-body">
                                     <a href="javscript:;">
-                                        <img src="assets/images/brands/03.png" className="img-fluid" alt="" />
+                                        <img src="assets/images/brands/dh.jpg" className="img-fluid" alt="" />
                                     </a>
                                 </div>
                             </div>

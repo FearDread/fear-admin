@@ -247,12 +247,12 @@ export const Header = () => {
                       <ul className="navbar-nav ms-auto">
                         <li className="nav-item">
                           <Link to="/login" className="nav-link cart-link">
-                            <button className='btn btn-white btn-ecom'>Login</button>
+                            <button className='btn btn-light btn-ecomm'>Login</button>
                           </Link>
                         </li>
                         <li className="nav-item">
                           <Link to="/register" className="nav-link cart-link">
-                            <button className='btn btn-white btn-ecom'>Register</button>
+                            <button className='btn btn-dark btn-ecomm'>Register</button>
                           </Link>
                         </li>
                         <li className="nav-item dropdown dropdown-large">

@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { loadStripe } from '@stripe/stripe-js';
+import {
+  Elements,
+  CardElement,
+  useStripe,
+  useElements,
+} from '@stripe/react-stripe-js';
 import {
   fetchPayments,
   addPayments,
@@ -15,33 +22,31 @@ import {
 } from '../../features/payments/slice';
 import {
   selectIsAuthenticated,
+  selectCurrentUser,
   logoutUser,
-  getCurrentUser
 } from '../../features/user/slice';
+
+// Initialize Stripe (replace with your publishable key)
+const stripePromise = loadStripe('pk_test_YOUR_PUBLISHABLE_KEY');
+
 
 function AccountPayments() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   
   // Redux selectors
-  const Payments = useSelector(selectAllPayments);
+  const payments = useSelector(selectAllPayments);
   const defaultMethod = useSelector(selectDefaultPayments);
   const loading = useSelector(selectPaymentsLoading);
   const error = useSelector(selectPaymentsError);
   const expiredMethods = useSelector(selectExpiredPayments);
   const isAuthenticated = useSelector(selectIsAuthenticated);
+  const currentUser = useSelector(selectCurrentUser);
   
   // Local state
   const [showAddModal, setShowAddModal] = useState(false);
   const [deletingMethodId, setDeletingMethodId] = useState(null);
-  const [newPayments, setNewPayments] = useState({
-    cardNumber: '',
-    cardholderName: '',
-    expiryMonth: '',
-    expiryYear: '',
-    cvv: '',
-    makeDefault: false,
-  });
+  const [makeDefault, setMakeDefault] = useState(false);
   
   // Redirect if not authenticated
   useEffect(() => {
@@ -68,7 +73,6 @@ function AccountPayments() {
       const result = await dispatch(removePayments(methodId));
       
       if (result.success) {
-        // Refresh the list
         dispatch(fetchPayments());
       } else {
         alert(result.error || 'Failed to delete payment method');
@@ -85,57 +89,10 @@ function AccountPayments() {
     }
   };
   
-  const handleAddPayments = async (e) => {
-    e.preventDefault();
-    
-    // Basic validation
-    if (!newPayments.cardNumber || 
-        !newPayments.cardholderName || 
-        !newPayments.expiryMonth || 
-        !newPayments.expiryYear || 
-        !newPayments.cvv) {
-      alert('Please fill in all fields');
-      return;
-    }
-    
-    // Format payment method data
-    const paymentData = {
-      userId: getCurrentUser(),
-      type: 'card',
-      cardType: getCardType(newPayments.cardNumber),
-      last4: newPayments.cardNumber.slice(-4),
-      cardholderName: newPayments.cardholderName,
-      expiryMonth: newPayments.expiryMonth,
-      expiryYear: newPayments.expiryYear,
-      makeDefault: newPayments.makeDefault,
-      // In production, you would tokenize the card details
-      // and send the token instead of raw card data
-    };
-    
-    const result = await dispatch(addPayments(paymentData));
-    
-    if (result.success) {
-      setShowAddModal(false);
-      setNewPayments({
-        cardNumber: '',
-        cardholderName: '',
-        expiryMonth: '',
-        expiryYear: '',
-        cvv: '',
-        makeDefault: false,
-      });
-      dispatch(fetchPayments());
-    } else {
-      alert(result.error || 'Failed to add payment method');
-    }
-  };
-  
-  const getCardType = (cardNumber) => {
-    const firstDigit = cardNumber.charAt(0);
-    if (firstDigit === '4') return 'Visa';
-    if (firstDigit === '5') return 'Mastercard';
-    if (firstDigit === '3') return 'Amex';
-    return 'Card';
+  const handlePaymentSuccess = (result) => {
+    setShowAddModal(false);
+    setMakeDefault(false);
+    dispatch(fetchPayments());
   };
   
   const isExpired = (methodId) => {
@@ -233,7 +190,7 @@ function AccountPayments() {
                             <span className="visually-hidden">Loading...</span>
                           </div>
                         </div>
-                      ) : Payments.length === 0 ? (
+                      ) : payments.length === 0 ? (
                         <div className="text-center py-5">
                           <i className='bx bx-credit-card fs-1 text-muted'></i>
                           <p className="mt-3">No payment methods saved yet.</p>
@@ -257,7 +214,7 @@ function AccountPayments() {
                                 </tr>
                               </thead>
                               <tbody>
-                                {Payments.map((method) => (
+                                {payments.map((method) => (
                                   <tr key={method.id}>
                                     <td>
                                       <div className="d-flex align-items-center">
@@ -328,7 +285,7 @@ function AccountPayments() {
         </div>
       </section>
       
-      {/* Add Payment Method Modal */}
+      {/* Add Payment Method Modal with Stripe */}
       {showAddModal && (
         <div className="modal show d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
           <div className="modal-dialog modal-dialog-centered">
@@ -341,122 +298,29 @@ function AccountPayments() {
                   onClick={() => setShowAddModal(false)}
                 ></button>
               </div>
-              <form onSubmit={handleAddPayments}>
-                <div className="modal-body">
-                  <div className="mb-3">
-                    <label className="form-label">Cardholder Name</label>
-                    <input 
-                      type="text" 
-                      className="form-control"
-                      value={newPayments.cardholderName}
-                      onChange={(e) => setNewPayments({
-                        ...newPayments,
-                        cardholderName: e.target.value
-                      })}
-                      required
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label className="form-label">Card Number</label>
-                    <input 
-                      type="text" 
-                      className="form-control"
-                      placeholder="1234 5678 9012 3456"
-                      maxLength="16"
-                      value={newPayments.cardNumber}
-                      onChange={(e) => setNewPayments({
-                        ...newPayments,
-                        cardNumber: e.target.value.replace(/\D/g, '')
-                      })}
-                      required
-                    />
-                  </div>
-                  <div className="row">
-                    <div className="col-md-4 mb-3">
-                      <label className="form-label">Month</label>
-                      <select 
-                        className="form-select"
-                        value={newPayments.expiryMonth}
-                        onChange={(e) => setNewPayments({
-                          ...newPayments,
-                          expiryMonth: e.target.value
-                        })}
-                        required
-                      >
-                        <option value="">MM</option>
-                        {Array.from({ length: 12 }, (_, i) => i + 1).map(month => (
-                          <option key={month} value={month}>
-                            {String(month).padStart(2, '0')}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                    <div className="col-md-4 mb-3">
-                      <label className="form-label">Year</label>
-                      <select 
-                        className="form-select"
-                        value={newPayments.expiryYear}
-                        onChange={(e) => setNewPayments({
-                          ...newPayments,
-                          expiryYear: e.target.value
-                        })}
-                        required
-                      >
-                        <option value="">YYYY</option>
-                        {Array.from({ length: 10 }, (_, i) => new Date().getFullYear() + i).map(year => (
-                          <option key={year} value={year}>{year}</option>
-                        ))}
-                      </select>
-                    </div>
-                    <div className="col-md-4 mb-3">
-                      <label className="form-label">CVV</label>
-                      <input 
-                        type="text" 
-                        className="form-control"
-                        placeholder="123"
-                        maxLength="4"
-                        value={newPayments.cvv}
-                        onChange={(e) => setNewPayments({
-                          ...newPayments,
-                          cvv: e.target.value.replace(/\D/g, '')
-                        })}
-                        required
-                      />
-                    </div>
-                  </div>
-                  <div className="form-check">
-                    <input 
-                      className="form-check-input" 
-                      type="checkbox" 
-                      id="makeDefault"
-                      checked={newPayments.makeDefault}
-                      onChange={(e) => setNewPayments({
-                        ...newPayments,
-                        makeDefault: e.target.checked
-                      })}
-                    />
-                    <label className="form-check-label" htmlFor="makeDefault">
-                      Make this my default payment method
-                    </label>
-                  </div>
+              <div className="modal-body">
+                <div className="form-check mb-3">
+                  <input 
+                    className="form-check-input" 
+                    type="checkbox" 
+                    id="makeDefault"
+                    checked={makeDefault}
+                    onChange={(e) => setMakeDefault(e.target.checked)}
+                  />
+                  <label className="form-check-label" htmlFor="makeDefault">
+                    Make this my default payment method
+                  </label>
                 </div>
-                <div className="modal-footer">
-                  <button 
-                    type="button" 
-                    className="btn btn-secondary"
-                    onClick={() => setShowAddModal(false)}
-                  >
-                    Cancel
-                  </button>
-                  <button 
-                    type="submit" 
-                    className="btn btn-primary"
-                    disabled={loading}
-                  >
-                    {loading ? 'Adding...' : 'Add Payment Method'}
-                  </button>
-                </div>
-              </form>
+
+                <Elements stripe={stripePromise}>
+                  <StripeCardForm
+                    onSuccess={handlePaymentSuccess}
+                    onCancel={() => setShowAddModal(false)}
+                    currentUser={currentUser}
+                    makeDefault={makeDefault}
+                  />
+                </Elements>
+              </div>
             </div>
           </div>
         </div>
