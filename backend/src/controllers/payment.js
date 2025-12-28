@@ -82,9 +82,52 @@ exports.paymentVerification = async (req, res) => {
   }
 };
 
+exports.createStripePayment = async (req, res) => {
+   try {
+    const { paymentMethodId, amount, currency } = req.body;
+
+    // Create a PaymentIntent
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: amount,
+      currency: currency || 'usd',
+      payment_method: paymentMethodId,
+      confirmation_method: 'manual',
+      confirm: true,
+      return_url: 'https://your-site.com/payment-success',
+    });
+
+    res.json({
+      clientSecret: paymentIntent.client_secret,
+      status: paymentIntent.status,
+    });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+exports.saveStripePayment = async (req, res) => {
+  try {
+    const { paymentMethodId, customerId } = req.body;
+
+    // Attach payment method to customer
+    await stripe.paymentMethods.attach(paymentMethodId, {
+      customer: customerId,
+    });
+
+    // Set as default payment method
+    await stripe.customers.update(customerId, {
+      invoice_settings: {
+        default_payment_method: paymentMethodId,
+      },
+    });
+
+    res.json({ success: true });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+}
 // ============ PAYPAL METHODS ============
 
-const createPayPalOrder = async (req, res) => {
+exports.createPayPalOrder = async (req, res) => {
   try {
     const { amount, currency = "USD" } = req.body;
     
@@ -116,7 +159,7 @@ const createPayPalOrder = async (req, res) => {
   }
 };
 
-const capturePayPalOrder = async (req, res) => {
+exports.capturePayPalOrder = async (req, res) => {
   try {
     const { orderId } = req.body;
     
