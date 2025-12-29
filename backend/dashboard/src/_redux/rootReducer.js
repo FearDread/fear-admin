@@ -12,6 +12,7 @@ import reviewReducer from "./review/reducer";
 import blogReducer from "./blog/reducer";
 import taskReducer from "./task/reducer";
 import eventReducer from "./event/reducer";
+import orderReducer from "./order/reducer";
 //import storePersist from "./storePersist";
 
 const appReducer = combineReducers({
@@ -23,6 +24,7 @@ const appReducer = combineReducers({
   events: eventReducer,
   task: taskReducer,
   review: reviewReducer,
+  order: orderReducer,
   product: productsReducer,
   cat: categoriesReducer,
   search: searchReducer
