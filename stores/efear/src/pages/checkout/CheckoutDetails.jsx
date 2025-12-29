@@ -125,8 +125,8 @@ function CheckoutDetails() {
     const missingFields = requiredFields.filter(field => !shippingAddress[field]);
     
     if (missingFields.length > 0) {
-      alert('Please fill in all required fields');
-      return;
+     // alert('Please fill in all required fields');
+      //return;
     }
     
     // Create initial order object
