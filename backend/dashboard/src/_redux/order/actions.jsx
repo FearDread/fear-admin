@@ -1,110 +1,75 @@
-import {
-  CREATE_ORDER_REQUEST,
-  CREATE_ORDER_FAIL,
-  CREATE_ORDER_SUCCESS,
-  CLEAR_ERRORS,
-  MY_ORDER_REQUEST,
-  MY_ORDER_SUCCESS,
-  MY_ORDER_FAIL,
-  ORDER_DETAILS_REQUEST,
-  ORDER_DETAILS_SUCCESS,
-  ORDER_DETAILS_FAIL,
-  ALL_ORDERS_REQUEST,
-  ALL_ORDERS_FAIL,
-  ALL_ORDERS_SUCCESS,
-  DELETE_ORDER_REQUEST,
-  DELETE_ORDER_SUCCESS,
-  DELETE_ORDER_FAIL,
-  UPDATE_ORDER_REQUEST,
-  UPDATE_ORDER_SUCCESS,
-  UPDATE_ORDER_FAIL,
-} from "_constants/orderConstant";
-import axios from "axios";
+import * as Types from "./types";
+import API from "../api/instance";
 
-export const createOrder = (order) => async (dispatch) => {
-  try {
-    dispatch({ type: CREATE_ORDER_REQUEST });
+export const create = (data) => async (dispatch) => {
+  dispatch({ type: Types.NEW_ORDER_REQUEST });
 
-    const config = { headers: { "Content-Type": "application/json" } };
-    const { data } = await axios.post("http://fear.master.com:4000/fear/api/order/new", order, config);
-
-    dispatch({ type: CREATE_ORDER_SUCCESS, payload: data });
-  } catch (error) {
-    dispatch({ type: CREATE_ORDER_FAIL, payload: error.message });
-  }
+  await API.post('order/new', data,
+    {headers: { "Content-Type": "application/json" }})
+    .then((response) => {
+      dispatch({ type: Types.NEW_ORDER_SUCCESS, payload: response.data.result });
+    })
+    .catch((error) => {
+      dispatch({ type: Types.NEW_ORDER_FAIL, payload: error });
+    });
 };
 
-// get all orders
-export const myOrders = () => async (dispatch) => {
-  try {
-    dispatch({ type: MY_ORDER_REQUEST });
+export const read = (id) => async (dispatch) => {
+  dispatch({ type: Types.ORDER_DETAILS_REQUEST });
 
-    const { data } = await axios.get(" http://fear.master.com:4000/fear/api/orders/myOrders");
-
-    dispatch({ type: MY_ORDER_SUCCESS, payload: data.userOrders });
-  } catch (error) {
-    dispatch({ type: MY_ORDER_FAIL, payload: error.message });
-  }
+  await API.get(`order/${id}`)
+    .then((response) => {
+      dispatch({ type: Types.ORDER_DETAILS_SUCCESS, payload: response.data.result });
+    })
+    .catch((error) => {
+      dispatch({ type: Types.ORDER_DETAILS_FAIL, payload: error });
+    });
 };
 
-// get single order
+// admin ORDER request :
+export const list = () => async (dispatch) => {
+  dispatch({ type: Types.ALL_ORDERS_REQUEST });
 
-export const getOrderDetails = (id) => async (dispatch) => {
-  try {
-    dispatch({ type: ORDER_DETAILS_REQUEST });
-
-    const { data } = await axios.get(`http://fear.master.com:4000/fear/api/order/${id}`);
-
-    dispatch({ type: ORDER_DETAILS_SUCCESS, payload: data.order });
-  } catch (error) {
-    dispatch({ type: ORDER_DETAILS_FAIL, payload: error.message });
-  }
+  await API.get("order/all")
+    .then((response) => {
+      dispatch({ type: Types.ALL_ORDERS_SUCCESS, payload: response.data.result });
+    })
+    .catch((error) => {
+      dispatch({ type: Types.ALL_ORDERS_FAIL, payload: error });
+    });
 };
 
-export const getAllOrders = () => async (dispatch) => {
-  try {
-    dispatch({ type: ALL_ORDERS_REQUEST });
+// updateORDER;
+export const update = (id, data) => async (dispatch) => {
+  dispatch({ type: Types.UPDATE_ORDER_REQUEST });
 
-    const { data } = await axios.get(`http://fear.master.com:4000/fear/api/admin/orders`);
-
-    dispatch({ type: ALL_ORDERS_SUCCESS, payload: data.orders });
-  } catch (error) {
-    dispatch({ type: ALL_ORDERS_FAIL, payload: error.message });
-  }
+  await API.put(`order/${id}`, data, {
+        headers: { "Content-Type": "multipart/form-data" }
+      })
+      .then((response) => {
+        console.log("update response = ", response);
+        dispatch({ type: Types.UPDATE_ORDER_SUCCESS, payload: response.data.result });
+      })
+      .catch((error) => {
+        console.log('error = ', error);
+        dispatch({ type: Types.UPDATE_ORDER_FAIL, payload: error });
+      });
 };
 
+// Delete ORDER request
+export const remove = (id) => async (dispatch) => {
+  dispatch({ type: Types.DELETE_ORDER_REQUEST });
 
-// delet Order --> admin
-export const deleteOrder = (id) => async (dispatch) => {
-  try {
-    dispatch({ type: DELETE_ORDER_REQUEST });
-
-    const { data } = await axios.delete(`/api/v1/admin/order/${id}`);
-
-    dispatch({ type: DELETE_ORDER_SUCCESS, payload: data.success });
-  } catch (error) {
-    dispatch({ type: DELETE_ORDER_FAIL, payload: error.message });
-  }
-};
-
-// update order --> admin (status update) 
-export const updateOrder = (id, productData) => async (dispatch) => {
-  try {
-    dispatch({ type: UPDATE_ORDER_REQUEST });
-    const config = { headers: { "Content-Type": "application/json" } };
-    const { data } = await axios.put(
-      `/api/v1/admin/order/${id}`,
-      productData,
-      config
-    );
-    dispatch({ type: UPDATE_ORDER_SUCCESS, payload: data.success });
-  } catch (error) {
-    dispatch({ type: UPDATE_ORDER_FAIL, payload: error.message });
-  }
-};
+  await API.delete(`order/${id}`)
+    .then((response) => {
+      dispatch({ type: Types.DELETE_ORDER_SUCCESS, payload: response.data.success });
+    })
+    .catch((error) => {
+      dispatch({ type: Types.DELETE_ORDER_FAIL, payload: error });
+    })
+}
 
 // clear errors
-
 export const clearErrors = () => async (dispatch) => {
-  dispatch({ type: CLEAR_ERRORS });
+  dispatch({ type: Types.CLEAR_ERRORS });
 };

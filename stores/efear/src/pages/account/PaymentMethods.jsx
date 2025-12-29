@@ -29,7 +29,7 @@ import StripeCardForm from "./payments/StripeCardForm";
 import AccountSidebar from "../../components/common/AccountSidebar";
 
 // Initialize Stripe (replace with your publishable key)
-const stripePromise = loadStripe('pk_test_YOUR_PUBLISHABLE_KEY');
+const stripePromise = loadStripe(process.env.STRIPE_API_KEY);
 
 
 function AccountPayments() {
