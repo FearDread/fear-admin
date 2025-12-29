@@ -21,6 +21,7 @@ import BlogList from "_dashboard/BlogList.jsx";
 import BlogNew from "_dashboard/BlogNew.jsx";
 import TaskList from "_dashboard/TaskList.jsx";
 import TaskNew from "_dashboard/TaskNew.jsx";
+import OrderList from "_dashboard/OrderList.jsx";
 
 //import CouponsList from "_dashboard/CouponsList.jsx";
 //import CouponNew from "_dashboard/CouponNew.jsx";
@@ -159,7 +160,7 @@ const routes = [
     path: "/orders",
     name: "Orders",
     icon: "tim-icons icon-laptop",
-    component: RegularForms,
+    component: OrderList,
     layout: "/admin"
   },
   {
