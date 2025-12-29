@@ -14,6 +14,13 @@ import {
   selectCurrentUser,
   selectIsAuthenticated,
 } from '../../features/user/slice';
+import {
+  Elements,
+  CardElement,
+  useStripe,
+  useElements,
+} from '@stripe/react-stripe-js';
+import { createOrder } from "../../features/orders/slice";
 
 function CheckoutPayment() {
   const dispatch = useDispatch();
@@ -209,31 +216,34 @@ function CheckoutPayment() {
 
     try {
       // Simulate payment processing
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      // In a real app, you would:
-      // 1. Create order in backend
-      // 2. Process payment
-      // 3. Handle response
-      // const orderData = {
-      //   userId: currentUser._id,
-      //   items: cartItems,
-      //   subtotal,
-      //   shipping,
-      //   taxes,
-      //   discount,
-      //   total: orderTotal,
-      //   paymentMethod,
-      //   paymentDetails: {...}
-      // };
-      // const result = await dispatch(createOrder(orderData));
+      //await new Promise(resolve => setTimeout(resolve, 2000));
+      const orderData = {
+        userId: currentUser._id,
+        items: cartItems,
+        subtotal,
+        shipping,
+        taxes,
+        discount,
+        total: orderTotal,
+        paymentMethod,
+        paymentDetails: {
+          type: 'card',
+          card: CardElement,
+          billing_details: {
+            name: creditCardData.cardName,
+            email: currentUser?.email,
+          },
+        }
+      };
+      const result = await dispatch(createOrder(orderData));
+      console.log('order result');
 
       // Navigate to review/confirmation page
-      navigate('/checkout/review', { 
-        state: { 
+      navigate('/checkout/review', {
+        state: {
           paymentMethod,
-          orderTotal 
-        } 
+          orderTotal
+        }
       });
     } catch (error) {
       console.error('Payment error:', error);
@@ -527,7 +537,7 @@ function CheckoutPayment() {
                           </div>
                           <div className="mb-3">
                             <p className="mb-0 text-muted small">
-                              Note: After clicking the button, you will be directed to PayPal's secure gateway. 
+                              Note: After clicking the button, you will be directed to PayPal's secure gateway.
                               After completing payment, you'll be redirected back to view your order details.
                             </p>
                           </div>

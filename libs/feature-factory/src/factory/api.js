@@ -7,11 +7,12 @@ import CacheFactory from './cache';
  */
 const CONFIG = {
   BASE_URL: null,
+  environment: process.env.NODE_ENV,
   // API Base URLs
   baseUrls: {
-    production: process.env.API_BASE_URL_PROD || 'http://fear.master.com/fear/api/',
+    production: process.env.API_BASE_URL_PROD || 'https://fear.dedyn.io/fear/api/',
     development: process.env.API_BASE_URL_DEV || 'http://localhost:4000/fear/api/',
-    test: process.env.API_BASE_URL_TEST || 'https://fear.dedyn.io/fear/api/',
+    test: process.env.API_BASE_URL_TEST || 'https://fear.master.com/fear/api/',
   },
   tokenNames: {
     bearer: 'Authorization',
@@ -231,10 +232,8 @@ const responseInterceptor = (response) => {
     requestId: response.config.headers['X-Request-ID'],
   };
 
-  console.log('Loaded Env = ', process.env);
-
   // Log successful responses in development
-  if (process.env.NODE_ENV === 'development') {
+  if (CONFIG.environment === 'development') {
     console.log(`✅ API Success [${response.status}]:`, {
       url: response.config.url,
       data: response.data,
@@ -276,7 +275,7 @@ const responseErrorInterceptor = async (error) => {
   const formattedError = formatError(error);
   
   // Log errors in development
-  if (process.env.NODE_ENV === 'development') {
+  if (CONFIG.environment === 'development') {
     console.error(`❌ API Error [${formattedError.status}]:`, {
       url: originalRequest?.url,
       error: formattedError,
