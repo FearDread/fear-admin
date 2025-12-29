@@ -34,7 +34,7 @@ import {
     selectIsInWishlist,
     moveToCart,
 } from '../../features/wishlist/slice';
-import OwlCarousel from 'react-owl-carousel';
+import ImageGallery from '../../components/common/ImageGallery';
 
 export const ProductDetails = () => {
     const { id } = useParams();
@@ -349,31 +349,10 @@ export const ProductDetails = () => {
                                     {/* Image Gallery */}
                                     <div className="col-12 col-lg-5">
                                         <div className="image-zoom-section">
-                                            <OwlCarousel
-                                                className="product-gallery owl-carousel owl-theme border mb-3 p-3"
-                                                {...carouselOptions}
-                                            >
-                                                <div className="item">
-                                                    <img
-                                                        src={product.images[selectedImageIndex].url}
-                                                        className="img-fluid"
-                                                        alt={product.title}
-                                                    />
-                                                </div>
-                                            </OwlCarousel>
-
-                                            {/* Thumbnails */}
-                                            <OwlCarousel className="owl-thumbs d-flex justify-content-center">
-                                                {product.images.map((img, index) => (
-                                                    <button
-                                                        key={index}
-                                                        className={`owl-thumb-item ${selectedImageIndex === index ? 'active' : ''}`}
-                                                        onClick={() => setSelectedImageIndex(index)}
-                                                    >
-                                                        <img src={img.url} alt={`${product.title} ${index + 1}`} />
-                                                    </button>
-                                                ))}
-                                            </OwlCarousel>
+                                            <ImageGallery
+                                                images={product.images}
+                                                productTitle={product.title}
+                                            />
                                         </div>
                                     </div>
 

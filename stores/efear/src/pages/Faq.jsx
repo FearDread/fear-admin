@@ -173,23 +173,23 @@ const FAQ = () => {
         <div className="container">
           {/* Header */}
           <div className="row">
-            <div className="col-12 text-center mb-4">
+            <div className="col-12 text-center mb-4 content-card">
               <h2 className="mb-3">How Can We Help You?</h2>
-              <p className="text-muted mb-4">
+              <p className="text mb-4">
                 Find answers to commonly asked questions about our products, services, and policies.
               </p>
               
               {/* Expand/Collapse All */}
               <div className="d-flex justify-content-center gap-2 mb-4">
                 <button 
-                  className="btn btn-outline-primary btn-sm"
+                  className="btn btn-dark btn-ecomm btn-sm"
                   onClick={expandAll}
                 >
                   <i className='bx bx-plus-circle me-1'></i>
                   Expand All
                 </button>
                 <button 
-                  className="btn btn-outline-secondary btn-sm"
+                  className="btn btn-light btn-ecomm btn-sm"
                   onClick={collapseAll}
                 >
                   <i className='bx bx-minus-circle me-1'></i>
@@ -201,7 +201,7 @@ const FAQ = () => {
 
           {/* FAQ Categories */}
           <div className="row">
-            <div className="col-12">
+            <div className="col-12 content-card">
               {faqCategories.map((category, categoryIndex) => (
                 <div key={category.id} className="mb-4">
                   {/* Category Header */}
@@ -256,7 +256,7 @@ const FAQ = () => {
           {/* Contact Support Section */}
           <div className="row mt-5">
             <div className="col-12">
-              <div className="card border-0 shadow-sm bg-light">
+              <div className="card border-0 shadow-sm content-card">
                 <div className="card-body p-4 text-center">
                   <i className='bx bx-support display-4 text-primary mb-3'></i>
                   <h4 className="mb-3">Still Have Questions?</h4>
@@ -264,11 +264,11 @@ const FAQ = () => {
                     Can't find the answer you're looking for? Our customer support team is here to help!
                   </p>
                   <div className="d-flex justify-content-center gap-3 flex-wrap">
-                    <Link to="/contact" className="btn btn-primary">
+                    <Link to="/contact" className="btn btn-dark btn-ecomm">
                       <i className='bx bx-envelope me-2'></i>
                       Contact Support
                     </Link>
-                    <a href="tel:+1234567890" className="btn btn-outline-primary">
+                    <a href="tel:+1234567890" className="btn btn-light btn-ecomm">
                       <i className='bx bx-phone me-2'></i>
                       Call Us: (123) 456-7890
                     </a>
