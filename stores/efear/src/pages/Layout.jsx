@@ -52,16 +52,6 @@ const Layout = () => {
       </div>
       <div className="page-wrapper">
         <div className="page-content">
-          {(loading && products.length === 0) && (
-            <>
-              <div className="loading-container">
-                <p>Loading products...</p>
-              </div>
-            </>
-          )}
-          {(!loading && error) && (
-            console.log('error :: ', error)
-          )}
           {(!loading && products.length > 0) && (
             <>
               <Outlet {...products} />
