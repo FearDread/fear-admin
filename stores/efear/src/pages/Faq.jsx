@@ -290,25 +290,25 @@ const FAQ = () => {
                   <h6 className="mb-3">Quick Links</h6>
                   <div className="row">
                     <div className="col-md-3 col-6 mb-2">
-                      <Link to="/shop" className="text-decoration-none">
+                      <Link to="/shop" className="text-decoration-none btn btn-light btn-ecomm">
                         <i className='bx bx-shopping-bag me-2'></i>
                         Shop Now
                       </Link>
                     </div>
                     <div className="col-md-3 col-6 mb-2">
-                      <Link to="/account/orders" className="text-decoration-none">
+                      <Link to="/account/orders" className="text-decoration-none btn btn-light btn-ecomm">
                         <i className='bx bx-package me-2'></i>
                         Track Order
                       </Link>
                     </div>
                     <div className="col-md-3 col-6 mb-2">
-                      <Link to="/returns" className="text-decoration-none">
+                      <Link to="/account/dashboard" className="text-decoration-none btn btn-light btn-ecomm">
                         <i className='bx bx-refresh me-2'></i>
                         Returns
                       </Link>
                     </div>
                     <div className="col-md-3 col-6 mb-2">
-                      <Link to="/shipping" className="text-decoration-none">
+                      <Link to="/account/shipping" className="text-decoration-none btn btn-light btn-ecomm">
                         <i className='bx bx-car me-2'></i>
                         Shipping Info
                       </Link>
