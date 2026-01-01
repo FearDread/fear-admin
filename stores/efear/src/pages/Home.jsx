@@ -24,11 +24,11 @@ const Home = () => {
 
       <InfoSection2 />
 
+      <BrandSection />
+
       <NewArrivals />
 
       <CategorySection />
-
-      <BrandSection />
     
       <AdSection />
 

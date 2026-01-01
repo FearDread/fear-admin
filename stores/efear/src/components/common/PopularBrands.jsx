@@ -1,4 +1,5 @@
-
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
 
 export const PopularBrands = () => {
 
@@ -16,135 +17,45 @@ export const PopularBrands = () => {
                             <div className="col">
                                 <div className="card">
                                     <div className="card-body">
-                                        <a href="javscript:;">
+                                        <Link to="/shop?brand=DC">
+                                            <img src="assets/images/brands/dc.jpg" className="img-fluid" alt="" />
+                                        </Link>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="col">
+                                <div className="card">
+                                    <div className="card-body">
+                                        <Link to="/shop?brand=Dark Horse">
+                                            <img src="assets/images/brands/dh.jpg" className="img-fluid" alt="" />
+                                        </Link>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="col">
+                                <div className="card">
+                                    <div className="card-body">
+                                        <Link to="/shop?brand=IDW Publishing">
+                                            <img src="assets/images/brands/idw.jpg" className="img-fluid" alt="" />
+                                        </Link>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="col">
+                                <div className="card">
+                                    <div className="card-body">
+                                        <Link to="/shop?brand=Marvel">
+                                            <img src="assets/images/brands/marvel.jpg" className="img-fluid" alt="" />
+                                        </Link>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="col">
+                                <div className="card">
+                                    <div className="card-body">
+                                        <Link to="/shop?brand=Amazon">
                                             <img src="assets/images/brands/01.png" className="img-fluid" alt="" />
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="col">
-                                <div className="card">
-                                    <div className="card-body">
-                                        <a href="javscript:;">
-                                            <img src="assets/images/brands/02.png" className="img-fluid" alt="" />
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="col">
-                                <div className="card">
-                                    <div className="card-body">
-                                        <a href="javscript:;">
-                                            <img src="assets/images/brands/03.png" className="img-fluid" alt="" />
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="col">
-                                <div className="card">
-                                    <div className="card-body">
-                                        <a href="javscript:;">
-                                            <img src="assets/images/brands/04.png" className="img-fluid" alt="" />
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="col">
-                                <div className="card">
-                                    <div className="card-body">
-                                        <a href="javscript:;">
-                                            <img src="assets/images/brands/05.png" className="img-fluid" alt="" />
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="col">
-                                <div className="card">
-                                    <div className="card-body">
-                                        <a href="javscript:;">
-                                            <img src="assets/images/brands/06.png" className="img-fluid" alt="" />
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="col">
-                                <div className="card">
-                                    <div className="card-body">
-                                        <a href="javscript:;">
-                                            <img src="assets/images/brands/07.png" className="img-fluid" alt="" />
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="col">
-                                <div className="card">
-                                    <div className="card-body">
-                                        <a href="javscript:;">
-                                            <img src="assets/images/brands/08.png" className="img-fluid" alt="" />
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="col">
-                                <div className="card">
-                                    <div className="card-body">
-                                        <a href="javscript:;">
-                                            <img src="assets/images/brands/09.png" className="img-fluid" alt="" />
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="col">
-                                <div className="card">
-                                    <div className="card-body">
-                                        <a href="javscript:;">
-                                            <img src="assets/images/brands/10.png" className="img-fluid" alt="" />
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="col">
-                                <div className="card">
-                                    <div className="card-body">
-                                        <a href="javscript:;">
-                                            <img src="assets/images/brands/11.png" className="img-fluid" alt="" />
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="col">
-                                <div className="card">
-                                    <div className="card-body">
-                                        <a href="javscript:;">
-                                            <img src="assets/images/brands/12.png" className="img-fluid" alt="" />
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="col">
-                                <div className="card">
-                                    <div className="card-body">
-                                        <a href="javscript:;">
-                                            <img src="assets/images/brands/13.png" className="img-fluid" alt="" />
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="col">
-                                <div className="card">
-                                    <div className="card-body">
-                                        <a href="javscript:;">
-                                            <img src="assets/images/brands/14.png" className="img-fluid" alt="" />
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="col">
-                                <div className="card">
-                                    <div className="card-body">
-                                        <a href="javscript:;">
-                                            <img src="assets/images/brands/15.png" className="img-fluid" alt="" />
-                                        </a>
+                                        </Link>
                                     </div>
                                 </div>
                             </div>
