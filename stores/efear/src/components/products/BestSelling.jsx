@@ -9,43 +9,8 @@ import {
   selectProductsError
 } from '../../features/products/slice';
 import { dispatch } from "../../features/store";
+import { ProductListItem } from "./ProductListItem";
 
-// Product list item component
-const ProductListItem = ({ product }) => {
-  const renderStars = (rating = 5) => {
-    return [...Array(rating)].map((_, i) => (
-      <i key={i} className="bx bxs-star text-white"></i>
-    ));
-  };
-
-  return (
-    <>
-      <div className="d-flex align-items-center">
-        <div className="bottom-product-img">
-          <a href={`/product-details/${product.id}`}>
-            <img 
-              src={product.image || product.thumbnail || 'assets/images/products/placeholder.png'} 
-              width="100" 
-              alt={product.title || 'Product'} 
-            />
-          </a>
-        </div>
-        <div className="ms-0">
-          <h6 className="mb-0 fw-light mb-1">
-            {product.title || product.name || 'Product Name'}
-          </h6>
-          <div className="rating font-12">
-            {renderStars(product.rating)}
-          </div>
-          <p className="mb-0 text-white">
-            <strong>${product.price?.toFixed(2) || '0.00'}</strong>
-          </p>
-        </div>
-      </div>
-      <hr/>
-    </>
-  );
-};
 
 // Product list section component
 const ProductListSection = ({ title, products, loading }) => {
@@ -94,10 +59,10 @@ export const BestSelling = ({ products }) => {
 
     if (!products) dispatch(fetchProducts());
     //dispatch(getFeaturedProducts());
-    console.log('produts = ', products);
+
   }, [dispatch]);
 
-  // Derive product lists from data
+  /*
   const bestSellingProducts = allProducts
     .filter(p => p.sales || p.bestseller)
     .sort((a, b) => (b.sales || 0) - (a.sales || 0));
@@ -109,6 +74,12 @@ export const BestSelling = ({ products }) => {
   const topRatedProducts = allProducts
     .filter(p => p.rating)
     .sort((a, b) => (b.rating || 0) - (a.rating || 0));
+  */
+
+  // TODO: Revisit these
+  const bestSelling = allProducts.slice(10,16);
+  const newArrivals = allProducts.slice(17, 22);
+  const topRated = allProducts.slice(4, 9);
 
   if (error) {
     return (
@@ -128,13 +99,13 @@ export const BestSelling = ({ products }) => {
         <div className="row row-cols-1 row-cols-md-2 row-cols-xl-4">
           <ProductListSection 
             title="Best Selling Products" 
-            products={bestSellingProducts}
+            products={bestSelling}
             loading={loading}
           />
           
           <ProductListSection 
             title="Featured Products" 
-            products={featuredProducts}
+            products={allProducts}
             loading={loading}
           />
           
@@ -146,7 +117,7 @@ export const BestSelling = ({ products }) => {
           
           <ProductListSection 
             title="Top rated Products" 
-            products={topRatedProducts}
+            products={topRated}
             loading={loading}
           />
         </div>
