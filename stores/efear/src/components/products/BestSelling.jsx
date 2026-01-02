@@ -77,7 +77,7 @@ export const BestSelling = ({ products }) => {
   */
 
   // TODO: Revisit these
-  const bestSelling = allProducts.slice(10,16);
+  const bestSelling = allProducts.slice(10, 16);
   const newArrivals = allProducts.slice(17, 22);
   const topRated = allProducts.slice(4, 9);
 
@@ -94,29 +94,37 @@ export const BestSelling = ({ products }) => {
   }
 
   return (
+
     <section className="py-4 border-top">
       <div className="container">
+        <div className="d-flex align-items-center">
+          <h5 className="text-uppercase mb-0">RELATED PRODUCTS</h5>
+          <a href="/shop" className="btn btn-light ms-auto rounded-0">
+            More Products<i className='bx bx-chevron-right'></i>
+          </a>
+        </div>
+        <hr />
         <div className="row row-cols-1 row-cols-md-2 row-cols-xl-4">
-          <ProductListSection 
-            title="Best Selling Products" 
+          <ProductListSection
+            title="Best Selling Products"
             products={bestSelling}
             loading={loading}
           />
-          
-          <ProductListSection 
-            title="Featured Products" 
+
+          <ProductListSection
+            title="Featured Products"
             products={allProducts}
             loading={loading}
           />
-          
-          <ProductListSection 
-            title="New arrivals" 
+
+          <ProductListSection
+            title="New arrivals"
             products={newArrivals}
             loading={loading}
           />
-          
-          <ProductListSection 
-            title="Top rated Products" 
+
+          <ProductListSection
+            title="Top rated Products"
             products={topRated}
             loading={loading}
           />

@@ -3,36 +3,34 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 
 
 export const AccountSidebar = (props) => {
+    const { handleLogout, currentUser, userFullName, lastLoginAt } = props;
 
-  console.log('sidebar props = ', props);
-  const { handleLogout, currentUser, userFullName, lastLoginAt } = props;
-  
-  const navigate = useNavigate();
-  const location = useLocation();
-  const [showLogoutModal, setShowLogoutModal] = useState(false);
-  const [loggingOut, setLoggingOut] = useState(false);
-  const isActiveMenuItem = (path) => {
-    return location.pathname === path;
-  };
+    const navigate = useNavigate();
+    const location = useLocation();
+    const [showLogoutModal, setShowLogoutModal] = useState(false);
+    const [loggingOut, setLoggingOut] = useState(false);
+    const isActiveMenuItem = (path) => {
+        return location.pathname === path;
+    };
 
-  // Format last login date
-  const formatLastLogin = (dateString) => {
-    if (!dateString) return 'Recently';
-    
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffMs = now - date;
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
-    const diffDays = Math.floor(diffMs / 86400000);
+    // Format last login date
+    const formatLastLogin = (dateString) => {
+        if (!dateString) return 'Recently';
 
-    if (diffMins < 1) return 'Just now';
-    if (diffMins < 60) return `${diffMins} minute${diffMins > 1 ? 's' : ''} ago`;
-    if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
-    if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
-    
-    return date.toLocaleDateString();
-  };
+        const date = new Date(dateString);
+        const now = new Date();
+        const diffMs = now - date;
+        const diffMins = Math.floor(diffMs / 60000);
+        const diffHours = Math.floor(diffMs / 3600000);
+        const diffDays = Math.floor(diffMs / 86400000);
+
+        if (diffMins < 1) return 'Just now';
+        if (diffMins < 60) return `${diffMins} minute${diffMins > 1 ? 's' : ''} ago`;
+        if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+        if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+
+        return date.toLocaleDateString();
+    };
 
     // Menu items configuration
     const menuItems = [

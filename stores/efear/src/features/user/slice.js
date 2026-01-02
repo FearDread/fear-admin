@@ -109,6 +109,7 @@ export const {
 
 // Export async actions
 export const {
+  fetchOne: fetchUser,
   login,
   loginWithGoogle,
   loginWithFacebook,
@@ -120,6 +121,7 @@ export const {
   getCurrentUser,
   updateProfile,
   changePassword,
+  updateUser,
   updateAvatar,
 } = User;
 
