@@ -35,8 +35,7 @@ const UserDetails = lazy(() => import("./pages/account/UserDetails"));
 const AccountPayment = lazy(() => import("./pages/account/PaymentMethods"));
 const Addresses = lazy(() => import("./pages/account/Addresses"));
 //const ForgotPassword = lazy(() => import("./pages/auth/ForgotPassword"));
-// Error pages
-//const Unauthorized = lazy(() => import("./pages/Unauthorized"));
+
 
 const LoadingFallback = () => (
   <div className="d-flex justify-content-center align-items-center min-vh-100">
@@ -69,9 +68,6 @@ const NotFound = () => (
   </div>
 );
 
-/**
- * Route configuration for better organization
- */
 const routeConfig = {
   public: [
     { path: "/", element: <Home />, exact: true },
