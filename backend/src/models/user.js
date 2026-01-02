@@ -1,70 +1,135 @@
-const mongoose = require("mongoose");
-const bcrypt = require("bcrypt");
-const crypto = require("crypto");
+const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
 
 const userSchema = new mongoose.Schema({
-    name: { type: String, required: true },
-    firstname: { type: String, required: true },
-    lastname: { type: String, required: false },
-    displayname: { type: String, required: false },
-    email: { type: String, required: true, unique: true },
-    username: { type: String, required: false, unique: false },
-    mobile: { type: String, required: false, unique: true },
-    password: { type: String, required: true },
-    avatar: { type: Object, required: false, default: {
+  email: { type: String, required: true, unique: true, lowercase: true, trim: true,
+    match: [/^\S+@\S+\.\S+$/, 'Please enter a valid email']
+  },
+  password: { type: String, required: true, minlength: 8, select: false },
+  firstName: { type: String, required: true, trim: true },
+  lastName: { type: String, required: true, trim: true },
+  displayName: { type: String, trim: true },
+  avatar: { type: Object, required: false, default: {
       public_id: '',
-      secure_url: ''
-    }},
-    role: { type: String, default: "customer" },
-    isBlocked: { type: Boolean, default: false },
-    address: { type: String },
-    shipping: { type: String },
-    wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
-    refreshToken: { type: String },
-      passwordChangedAt: Date,
-      passwordResetToken: String,
-      passwordResetExpires: Date
+      secure_url: '',
+    }, trim: true
+  },
+  bio: { type: String, maxlength: 500 },
+  dateOfBirth: Date,
+  phoneNumber: { type: String, trim: true },
+  role: { type: String, 
+    enum: ['user', 'admin', 'moderator'], default: 'user' },
+  status: { type: String, 
+    enum: ['active', 'inactive', 'suspended', 'deleted'], default: 'active' },
+  emailVerified: { type: Boolean, default: false },
+  emailVerificationToken: String,
+  emailVerificationExpires: Date,
+  passwordResetToken: String,
+  passwordResetExpires: Date,
+  twoFactorSecret: { type: String, select: false},
+  twoFactorEnabled: { type: Boolean, default: false },
+  preferences: {
+    language: { type: String, default: 'en' },
+    timezone: { type: String, default: 'UTC' },
+    notifications: {
+      email: { type: Boolean, default: true },
+      push: { type: Boolean, default: true },
+      sms: { type: Boolean, default: false }
     },
-  { timestamps: true }
-);
-
-// Hooks
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) {
-    next();
-  }
-  const salt = await bcrypt.genSaltSync(10);
-  this.password = await bcrypt.hash(this.password, salt);
-  next();
+    theme: { type: String, enum: ['light', 'dark', 'auto'], default: 'auto' }
+  },
+  socialAccounts: [{
+    provider: { type: String,
+      enum: ['google', 'facebook', 'github', 'apple']},
+    providerId: String,
+    email: String,
+    connectedAt: {
+      type: Date,
+      default: Date.now
+    }
+  }],
+  lastLoginAt: Date,
+  lastLoginIP: String,
+  loginAttempts: { type: Number, default: 0 },
+  lockUntil: Date
+}, {
+  timestamps: true
 });
 
-// Methods
-userSchema.methods.compare = async function (entered) {
-  return await bcrypt.compare(entered, this.password);
+// Indexes
+userSchema.index({ email: 1 });
+userSchema.index({ 'profile.firstName': 1, 'profile.lastName': 1 });
+userSchema.index({ createdAt: 1 });
+userSchema.index({ status: 1, role: 1 });
+
+// Virtual for full name
+userSchema.virtual('profile.fullName').get(function() {
+  return `${this.profile.firstName} ${this.profile.lastName}`;
+});
+
+// Hash password before saving
+userSchema.pre('save', async function(next) {
+  if (!this.isModified('password')) return next();
+  
+  try {
+    const salt = await bcrypt.genSalt(12);
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Method to compare passwords
+userSchema.methods.comparePassword = async function(candidatePassword) {
+  return await bcrypt.compare(candidatePassword, this.password);
 };
 
-userSchema.methods.token = async function () {
-  const resettoken = crypto.randomBytes(32).toString("hex");
-
-  this.passwordResetToken = crypto.createHash("sha256").update(resettoken).digest("hex");
-  this.passwordResetExpires = Date.now() + 30 * 60 * 1000;
-
-  return resettoken;
+// Method to check if account is locked
+userSchema.methods.isLocked = function() {
+  return !!(this.lockUntil && this.lockUntil > Date.now());
 };
 
-//Statics
-userSchema.statics.countUsers = function () {
-  return this.countDocuments({});
+// Method to increment login attempts
+userSchema.methods.incLoginAttempts = async function() {
+  if (this.lockUntil && this.lockUntil < Date.now()) {
+    return await this.updateOne({
+      $set: { loginAttempts: 1 },
+      $unset: { lockUntil: 1 }
+    });
+  }
+  
+  const updates = { $inc: { loginAttempts: 1 } };
+  const maxAttempts = 5;
+  const lockTime = 2 * 60 * 60 * 1000; // 2 hours
+  
+  if (this.loginAttempts + 1 >= maxAttempts && !this.isLocked()) {
+    updates.$set = { lockUntil: Date.now() + lockTime };
+  }
+  
+  return await this.updateOne(updates);
 };
 
-userSchema.statics.findByEmail = async function (email) {
-return await this.findOne({ email });
+// Method to reset login attempts
+userSchema.methods.resetLoginAttempts = async function() {
+  return await this.updateOne({
+    $set: { loginAttempts: 0 },
+    $unset: { lockUntil: 1 }
+  });
 };
 
-// Query
-userSchema.query.paginate = function ({ page, limit }) {
-  const skip = limit * (page - 1);
-  return this.skip(skip).limit(limit);
+// Remove sensitive data from JSON output
+userSchema.methods.toJSON = function() {
+  const obj = this.toObject();
+  delete obj.password;
+  delete obj.twoFactorSecret;
+  delete obj.emailVerificationToken;
+  delete obj.emailVerificationExpires;
+  delete obj.passwordResetToken;
+  delete obj.passwordResetExpires;
+  delete obj.loginAttempts;
+  delete obj.lockUntil;
+  return obj;
 };
 
-module.exports = mongoose.model("User", userSchema);
+module.exports = mongoose.model('User', userSchema);
