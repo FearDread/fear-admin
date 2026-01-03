@@ -17,8 +17,9 @@ import {
 import {
   setCurrentOrder,
 } from '../../features/orders/slice';
+import CheckoutSteps from "./components/CheckoutSteps";
 
-function CheckoutDetails() {
+export const CheckoutDetails = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   
@@ -176,6 +177,8 @@ function CheckoutDetails() {
                 <div className="checkout-details">
                   <div className="card bg-transparent rounded-0 shadow-none">
                     <div className="card-body">
+                      <CheckoutSteps currentStep="shipping" />
+                      {/* 
                       <div className="steps steps-light">
                         <a className="step-item active" href="/cart">
                           <div className="step-progress"><span className="step-count">1</span></div>
@@ -198,6 +201,7 @@ function CheckoutDetails() {
                           <div className="step-label"><i className='bx bx-check-circle'></i>Review</div>
                         </a>
                       </div>
+                      */}
                     </div>
                   </div>
                   
