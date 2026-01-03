@@ -27,6 +27,9 @@ const PaymentsFactory = FeatureFactory('payment', {
     delete state.entities[methodId];
     state.ids = state.ids.filter(id => id !== methodId);
   },
+  clearPaymentsState: (state) => {
+    state.payments = null;
+  },
   updatePaymentsExpiry: (state, action) => {
     const { methodId, expiryMonth, expiryYear } = action.payload;
     const method = state.entities[methodId];
@@ -287,5 +290,7 @@ export const selectExpiredPayments = (state) => {
 
 export const selectPaymentsCount = (state) => 
   Object.keys(state.payments.entities || {}).length;
+
+export const clearPaymentsState = state => state.payments = null;
 
 export default slice;
