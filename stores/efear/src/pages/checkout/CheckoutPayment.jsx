@@ -230,7 +230,7 @@ export const CheckoutPayment = () => {
         }
       };
       const result = await dispatch(createOrder(orderData));
-      console.log('order result');
+      console.log('order result', result);
 
       // Navigate to review/confirmation page
       navigate('/checkout/review', {
