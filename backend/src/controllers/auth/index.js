@@ -512,4 +512,5 @@ exports.AuthResponse = response;
 module.exports = {
   login: exports.login,
   register: exports.register,
+  logout: exports.logout
 }
