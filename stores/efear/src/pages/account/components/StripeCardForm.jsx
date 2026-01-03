@@ -1,36 +1,72 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { loadStripe } from '@stripe/stripe-js';
 import {
-  Elements,
   CardElement,
   useStripe,
   useElements,
 } from '@stripe/react-stripe-js';
+import {
+  addPayments,
+  createPayments,
+  selectPaymentsLoading,
+  selectPaymentsError,
+  selectPaymentsSuccess,
+  clearPaymentsState,
+} from '../../../features/payments/slice';
 
 // Stripe Card Form Component
-export const StripeCardForm = ({ onSuccess, onCancel, currentUser, makeDefault }) => {
+export const StripeCardForm = ({ onSuccess, onCancel, currentUser, makeDefault = false }) => {
+  const dispatch = useDispatch();
   const stripe = useStripe();
   const elements = useElements();
-  const [processing, setProcessing] = useState(false);
-  const [error, setError] = useState(null);
+  
+  // Redux selectors
+  const loading = useSelector(selectPaymentsLoading);
+  const error = useSelector(selectPaymentsError);
+  const success = useSelector(selectPaymentsSuccess);
+  
+  // Local state
   const [cardholderName, setCardholderName] = useState('');
+  const [localError, setLocalError] = useState('');
+
+  // Handle success from Redux
+  useEffect(() => {
+    if (success && !loading) {
+      onSuccess(success);
+      // Clear state after success
+      dispatch(clearPaymentsState());
+    }
+  }, [success, loading, onSuccess, dispatch]);
+
+  // Handle errors from Redux
+  useEffect(() => {
+    if (error) {
+      setLocalError(error);
+    }
+  }, [error]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Validation checks
     if (!stripe || !elements) {
+      setLocalError('Stripe has not loaded yet. Please try again.');
       return;
     }
 
     if (!cardholderName.trim()) {
-      setError('Cardholder name is required');
+      setLocalError('Please enter cardholder name');
       return;
     }
 
-    setProcessing(true);
-    setError(null);
+    if (!currentUser?._id) {
+      setLocalError('User information is missing');
+      return;
+    }
+
+    // Clear previous errors
+    setLocalError('');
 
     try {
       const cardElement = elements.getElement(CardElement);
@@ -46,40 +82,37 @@ export const StripeCardForm = ({ onSuccess, onCancel, currentUser, makeDefault }
       });
 
       if (methodError) {
-        setError(methodError.message);
-        setProcessing(false);
+        setLocalError(methodError.message);
         return;
       }
 
-      // Send tokenized payment method to backend
-      const response = await fetch('/api/payments/add-payment-method', {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+      // Dispatch Redux action to save payment method
+      dispatch(addPayments({
+        userId: currentUser._id,
+        paymentMethodId: paymentMethod.id, // Secure token from Stripe
+        cardholderName: cardholderName,
+        makeDefault: makeDefault,
+        // Include card details for display purposes
+        cardDetails: {
+          last4: paymentMethod.card.last4,
+          brand: paymentMethod.card.brand,
+          expiryMonth: paymentMethod.card.exp_month.toString().padStart(2, '0'),
+          expiryYear: paymentMethod.card.exp_year.toString(),
+          fingerprint: paymentMethod.card.fingerprint,
         },
-        body: JSON.stringify({
-          userId: currentUser._id,
-          paymentMethodId: paymentMethod.id, // This is the secure token
-          cardholderName: cardholderName,
-          makeDefault: makeDefault,
-        }),
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error || 'Failed to add payment method');
-      }
-
-      // Success callback
-      onSuccess(result);
+      }));
 
     } catch (err) {
-      setError(err.message);
-    } finally {
-      setProcessing(false);
+      setLocalError('An unexpected error occurred. Please try again.');
+      console.error('Payment method creation error:', err);
     }
+  };
+
+  const handleCancel = () => {
+    // Clear any errors when canceling
+    dispatch(clearPaymentsState());
+    setLocalError('');
+    onCancel();
   };
 
   return (
@@ -93,6 +126,7 @@ export const StripeCardForm = ({ onSuccess, onCancel, currentUser, makeDefault }
           onChange={(e) => setCardholderName(e.target.value)}
           placeholder="John Doe"
           required
+          disabled={loading}
         />
       </div>
 
@@ -115,6 +149,7 @@ export const StripeCardForm = ({ onSuccess, onCancel, currentUser, makeDefault }
                 },
               },
               hidePostalCode: false,
+              disabled: loading,
             }}
           />
         </div>
@@ -123,9 +158,17 @@ export const StripeCardForm = ({ onSuccess, onCancel, currentUser, makeDefault }
         </small>
       </div>
 
-      {error && (
+      {/* Display errors */}
+      {(localError || error) && (
         <div className="alert alert-danger" role="alert">
-          {error}
+          {localError || error}
+        </div>
+      )}
+
+      {/* Display success message temporarily */}
+      {success && !loading && (
+        <div className="alert alert-success" role="alert">
+          Payment method added successfully!
         </div>
       )}
 
@@ -133,17 +176,17 @@ export const StripeCardForm = ({ onSuccess, onCancel, currentUser, makeDefault }
         <button 
           type="button" 
           className="btn btn-secondary"
-          onClick={onCancel}
-          disabled={processing}
+          onClick={handleCancel}
+          disabled={loading}
         >
           Cancel
         </button>
         <button 
           type="submit" 
           className="btn btn-primary"
-          disabled={!stripe || processing}
+          disabled={!stripe || loading || !cardholderName.trim()}
         >
-          {processing ? (
+          {loading ? (
             <>
               <span className="spinner-border spinner-border-sm me-2"></span>
               Adding...
@@ -154,6 +197,18 @@ export const StripeCardForm = ({ onSuccess, onCancel, currentUser, makeDefault }
         </button>
       </div>
     </form>
+  );
+};
+// Stripe Payment Wrapper Component (for checkout flow)
+export function StripePayment({ amount, onSuccess, onError, currentUser }) {
+  return (
+    <StripeCardForm
+      amount={amount}
+      onSuccess={onSuccess}
+      onError={onError}
+      currentUser={currentUser}
+      makeDefault={false}
+    />
   );
 }
 

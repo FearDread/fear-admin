@@ -16,7 +16,7 @@ const userSchema = new mongoose.Schema({
   },
   bio: { type: String, maxlength: 500 },
   dateOfBirth: Date,
-  phoneNumber: { type: String, trim: true },
+  mobile: { type: String, trim: true, unique: false, required: false },
   role: { type: String, 
     enum: ['user', 'admin', 'moderator'], default: 'user' },
   status: { type: String, 
