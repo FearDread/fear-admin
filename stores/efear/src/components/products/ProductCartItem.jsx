@@ -2,7 +2,7 @@ import React from "react";
 
 
 
-export const CartItem = (item) => {
+export const ProductCartItem = (item) => {
 
     return (
         <>
@@ -33,4 +33,4 @@ export const CartItem = (item) => {
     )
 }
 
-export default CartItem;
+export default ProductCartItem;

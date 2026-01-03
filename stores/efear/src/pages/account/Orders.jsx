@@ -21,7 +21,7 @@ import {
   selectIsAuthenticated,
   logoutUser,
 } from '../../features/user/slice';
-import AccountSidebar from '../../components/common/AccountSidebar';
+import AccountSidebar from './components/AccountSidebar';
 
 function AccountOrders() {
   const dispatch = useDispatch();

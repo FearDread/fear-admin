@@ -21,12 +21,11 @@ import {
   useElements,
 } from '@stripe/react-stripe-js';
 import { createOrder } from "../../features/orders/slice";
+import { dispatch } from "../../features/store";
 
-function CheckoutPayment() {
-  const dispatch = useDispatch();
+export const CheckoutPayment = () => {
   const navigate = useNavigate();
 
-  // Redux selectors
   const cartItems = useSelector(selectCartItems);
   const subtotal = useSelector(selectCartSubtotal);
   const total = useSelector(selectCartTotal);
@@ -34,7 +33,6 @@ function CheckoutPayment() {
   const discount = useSelector(selectCartDiscount);
   const currentUser = useSelector(selectCurrentUser);
   const isAuthenticated = useSelector(selectIsAuthenticated);
-
   // Local state
   const [paymentMethod, setPaymentMethod] = useState('credit-card');
   const [discountCode, setDiscountCode] = useState('');
@@ -52,11 +50,7 @@ function CheckoutPayment() {
 
   // PayPal state
   const [paypalAccountType, setPaypalAccountType] = useState('domestic');
-
-  // Net Banking state
   const [selectedBank, setSelectedBank] = useState('');
-
-  // Tax calculation (7% example)
   const taxRate = 0.07;
   const taxes = subtotal * taxRate;
   const orderTotal = total + taxes;

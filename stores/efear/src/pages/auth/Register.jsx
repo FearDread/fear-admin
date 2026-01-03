@@ -25,6 +25,7 @@ export const Register = () => {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
+    displayName: '',
     email: '',
     password: '',
     confirmPassword: '',
@@ -192,7 +193,7 @@ export const Register = () => {
 
     // Prepare registration data
     const registrationData = {
-      name: formData.firstName.trim() + ' ' + formData.lastName.trim(),
+      displayName: formData.firstName.trim() + ' ' + formData.lastName.trim(),
       firstName: formData.firstName.trim(),
       lastName: formData.lastName.trim(),
       email: formData.email.trim().toLowerCase(),

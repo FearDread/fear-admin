@@ -41,6 +41,11 @@ class DatabaseManager {
       await this.close();
       process.exit(0);
     });
+
+    process.on('UnhandledRejection', async (promise, reson) => {
+      console.log('Unhandled Rejection at ', reason);
+      await this.close();
+    })
   }
 
   /**

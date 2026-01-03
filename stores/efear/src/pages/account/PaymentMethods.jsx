@@ -25,8 +25,8 @@ import {
   selectCurrentUser,
   logoutUser,
 } from '../../features/user/slice';
-import StripeCardForm from "./payments/StripeCardForm";
-import AccountSidebar from "../../components/common/AccountSidebar";
+import StripeCardForm from "./components/StripeCardForm";
+import AccountSidebar from "./components/AccountSidebar";
 
 // Initialize Stripe (replace with your publishable key)
 const stripePromise = loadStripe(process.env.STRIPE_API_KEY);

@@ -52,7 +52,7 @@ exports.input = {
    * @returns {object} Validation result
    */
   register: (data) => {
-    const { email, password, firstname, lastname, name } = data;
+    const { email, password, firstName, lastName, displayName } = data;
 
     if (!email) return { isValid: false, message: "Email is required" };
     if (!exports.input.email(email)) return { isValid: false, message: "Please provide a valid email address" };
@@ -60,7 +60,7 @@ exports.input = {
     const passwordValidation = exports.input.password(password);
     if (!passwordValidation.isValid) return passwordValidation;
 
-    const fullName = firstname && lastname ? `${firstname} ${lastname}` : name;
+    const fullName = (displayName) ? displayName : `${firstName} ${lastName}`;
     if (!fullName) return { isValid: false, message: "Name is required" };
 
     return { isValid: true, name: fullName };
