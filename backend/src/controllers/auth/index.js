@@ -172,7 +172,7 @@ exports.register = (req, res) => {
         firstName: firstName.trim(),
         lastName: lastName.trim(),
         displayName: displayName || `${firstName} ${lastName}`,
-        phoneNumber: phoneNumber || undefined,
+        mobile: phoneNumber || undefined,
         dateOfBirth: dateOfBirth || undefined,
         role: otherFields.role || 'user',
         status: 'active'
