@@ -213,7 +213,7 @@ exports.register = (req, res) => {
  * @description Clears the JWT token cookie to log out the authenticated user
  * @tags authentication
  */
-exports.logout = (req, res) => {
+exports.logout = async (req, res) => {
   return res
     .status(200)
     .clearCookie('jwt', {

@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-
+import { dispatch } from "../../../features/store";
+import {
+  logoutUser,
+} from '../../../features/user/slice';
 
 export const AccountSidebar = (props) => {
-    const { handleLogout, currentUser, userFullName, lastLoginAt } = props;
+    const { currentUser, userFullName, lastLoginAt } = props;
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -13,6 +16,20 @@ export const AccountSidebar = (props) => {
         return location.pathname === path;
     };
 
+    const handleLogout = async () => {
+        setLoggingOut(true);
+        try {
+            await dispatch(logoutUser());
+            navigate('/login', {
+                state: { message: 'You have been logged out successfully' }
+            });
+        } catch (error) {
+            console.error('Logout error:', error);
+        } finally {
+            setLoggingOut(false);
+            setShowLogoutModal(false);
+        }
+    };
     // Format last login date
     const formatLastLogin = (dateString) => {
         if (!dateString) return 'Recently';
@@ -131,12 +148,57 @@ export const AccountSidebar = (props) => {
                     </div>
                 </div>
             </div>
-
+            {/* Logout Confirmation Modal */}
+            {showLogoutModal && (
+                <div className="modal fade show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+                    <div className="modal-dialog modal-dialog-centered">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h5 className="modal-title">Confirm Logout</h5>
+                                <button
+                                    type="button"
+                                    className="btn-close"
+                                    onClick={() => setShowLogoutModal(false)}
+                                    disabled={loggingOut}
+                                ></button>
+                            </div>
+                            <div className="modal-body">
+                                <p>Are you sure you want to logout?</p>
+                            </div>
+                            <div className="modal-footer">
+                                <button
+                                    type="button"
+                                    className="btn btn-secondary"
+                                    onClick={() => setShowLogoutModal(false)}
+                                    disabled={loggingOut}
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="button"
+                                    className="btn btn-danger"
+                                    onClick={handleLogout}
+                                    disabled={loggingOut}
+                                >
+                                    {loggingOut ? (
+                                        <>
+                                            <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                                            Logging out...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <i className='bx bx-log-out me-2'></i>
+                                            Logout
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </>
-
     )
-
-
 }
 
 export default AccountSidebar;
