@@ -12,7 +12,7 @@ import {
   clearError,
   setSuccess,
 } from '../../features/user/slice';
-import AccountSidebar from "../../components/common/AccountSidebar";
+import AccountSidebar from "./components/AccountSidebar";
 
 
 export const UserDetails = () => {

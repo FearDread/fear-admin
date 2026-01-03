@@ -11,7 +11,7 @@ import {
   selectUserLoading,
   selectLastLoginAt,
 } from '../../features/user/slice';
-import AccountSidebar from '../../components/common/AccountSidebar';
+import AccountSidebar from './components/AccountSidebar';
 
 
 export const AccountDashboard = () => {
@@ -235,56 +235,6 @@ export const AccountDashboard = () => {
           </div>
         </div>
       </section>
-
-      {/* Logout Confirmation Modal */}
-      {showLogoutModal && (
-        <div className="modal fade show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
-          <div className="modal-dialog modal-dialog-centered">
-            <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">Confirm Logout</h5>
-                <button 
-                  type="button" 
-                  className="btn-close"
-                  onClick={() => setShowLogoutModal(false)}
-                  disabled={loggingOut}
-                ></button>
-              </div>
-              <div className="modal-body">
-                <p>Are you sure you want to logout?</p>
-              </div>
-              <div className="modal-footer">
-                <button 
-                  type="button" 
-                  className="btn btn-secondary"
-                  onClick={() => setShowLogoutModal(false)}
-                  disabled={loggingOut}
-                >
-                  Cancel
-                </button>
-                <button 
-                  type="button" 
-                  className="btn btn-danger"
-                  onClick={handleLogout}
-                  disabled={loggingOut}
-                >
-                  {loggingOut ? (
-                    <>
-                      <span className="spinner-border spinner-border-sm me-2" role="status"></span>
-                      Logging out...
-                    </>
-                  ) : (
-                    <>
-                      <i className='bx bx-log-out me-2'></i>
-                      Logout
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 }

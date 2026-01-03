@@ -1,5 +1,6 @@
 import React, { useMemo, useState, useRef, useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import { Link, useNavigate } from "react-router-dom";
 import ProductCard from "./ProductCard";
 import ProductQuickView from "./ProductQuickView";
 

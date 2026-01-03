@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import Breadcrumbs from "../../components/common/Breadcrumbs";
-import CartItem from "../../components/products/CartItem";
+import ProductCartItem from "../../components/products/ProductCartItem";
 import {
   selectCartItems,
   selectCartSubtotal,
@@ -425,7 +425,7 @@ function CheckoutDetails() {
                           <div className="my-3 border-top"></div>
                           
                           {cartItems.map((item) => (
-                            <CartItem {...item} />
+                            <ProductCartItem {...item} />
                           ))}
                         </div>
                       </div>
