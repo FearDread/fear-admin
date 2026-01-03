@@ -3,14 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { loadStripe } from '@stripe/stripe-js';
 import {
-  Elements,
-  CardElement,
-  useStripe,
-  useElements,
-} from '@stripe/react-stripe-js';
-import {
   fetchPayments,
-  addPayments,
+  createPayments,
   removePayments,
   setDefaultMethod,
   selectAllPayments,
@@ -27,9 +21,6 @@ import {
 } from '../../features/user/slice';
 import StripeCardForm from "./components/StripeCardForm";
 import AccountSidebar from "./components/AccountSidebar";
-
-// Initialize Stripe (replace with your publishable key)
-const stripePromise = loadStripe(process.env.STRIPE_API_KEY);
 
 
 function AccountPayments() {
@@ -64,11 +55,6 @@ function AccountPayments() {
     }
   }, [dispatch, isAuthenticated]);
   
-  const handleLogout = async () => {
-    await dispatch(logoutUser());
-    navigate('/login');
-  };
-  
   const handleDeleteMethod = async (methodId) => {
     if (window.confirm('Are you sure you want to delete this payment method?')) {
       setDeletingMethodId(methodId);
@@ -91,7 +77,7 @@ function AccountPayments() {
     }
   };
   
-  const handlePaymentSuccess = (result) => {
+  const onSuccess = (result) => {
     setShowAddModal(false);
     setMakeDefault(false);
     dispatch(fetchPayments());
@@ -268,14 +254,12 @@ function AccountPayments() {
                   </label>
                 </div>
 
-                <Elements stripe={stripePromise}>
-                  <StripeCardForm
-                    onSuccess={handlePaymentSuccess}
-                    onCancel={() => setShowAddModal(false)}
-                    currentUser={currentUser}
-                    makeDefault={makeDefault}
-                  />
-                </Elements>
+
+    <StripeCardForm
+      onSuccess={onSuccess}
+      currentUser={currentUser}
+      makeDefault={false}
+    />
               </div>
             </div>
           </div>
