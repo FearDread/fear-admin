@@ -9,7 +9,7 @@ const addressSchema = new mongoose.Schema({
   line2: { type: String, trim: true },
   city: { type: String, required: true, trim: true },
   state: { type: String, required: true, trim: true },
-  postalCode: { type: String, required: true, trim: true },
+  zipCode: { type: String, required: true, trim: true },
   country: { type: String, required: true, default: 'US', uppercase: true },
   coordinates: { type: { type: String, enum: ['Point'], default: 'Point' },
     coordinates: { type: [Number], default: [0, 0] }},

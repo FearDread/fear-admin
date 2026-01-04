@@ -3,7 +3,7 @@ const crypto = require("crypto");
 
 const paymentMethodSchema = new mongoose.Schema(
   {
-    userId: { type: mongoose.Schema.Types.ObjectId. ref: "User", required: true, index: true, },
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true, index: true, },
     paymentType: {  type: String, enum: ["razorpay", "paypal", "card", "upi", "netbanking", "stripe"], required: true, },
     paymentToken: { type: String, required: true, },
     isDefault: { type: Boolean, default: false, },
@@ -134,6 +134,4 @@ paymentMethodSchema.virtual("isExpired").get(function () {
 paymentMethodSchema.set("toJSON", { virtuals: true });
 paymentMethodSchema.set("toObject", { virtuals: true });
 
-const PaymentMethod = mongoose.model("PaymentMethod", paymentMethodSchema);
-
-module.exports = PaymentMethod;
+module.exports = mongoose.model("PaymentMethod", paymentMethodSchema);
