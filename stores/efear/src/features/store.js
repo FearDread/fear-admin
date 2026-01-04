@@ -6,6 +6,7 @@ import category from './categories/slice';
 import brand from './brands/slice';
 import user, { restoreUser } from './user/slice';
 import cart from './cart/slice';
+import address from "./address/slice";
 import wishlist from './wishlist/slice';
 import order from "./orders/slice";
 import payment from "./payments/slice";
@@ -15,14 +16,15 @@ export const initializeStore = () => {
 
   const store = configureStore({
     reducer: {
-    orders: order.reducer,
-    payments: payment.reducer,
-    products: product.reducer,
-    categories: category.reducer,
-    brands: brand.reducer,
-    users: user.reducer,
-    cart: cart.reducer,
-    wishlist: wishlist.reducer
+      addresses: address.reducer,
+      orders: order.reducer,
+      payments: payment.reducer,
+      products: product.reducer,
+      categories: category.reducer,
+      brands: brand.reducer,
+      users: user.reducer,
+      cart: cart.reducer,
+      wishlist: wishlist.reducer
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({

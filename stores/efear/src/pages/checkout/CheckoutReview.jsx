@@ -16,6 +16,7 @@ import {
   selectCurrentUser,
   fetchUser,
 } from '../../features/user/slice';
+import CheckoutSteps from "./components/CheckoutSteps";
 
 function CheckoutReview() {
   const dispatch = useDispatch();
@@ -203,32 +204,7 @@ function CheckoutReview() {
               <div className="col-12 col-xl-8">
                 <div className="checkout-review">
                   {/* Progress Steps */}
-                  <div className="card bg-transparent rounded-0 shadow-none">
-                    <div className="card-body">
-                      <div className="steps steps-light">
-                        <a className="step-item active" href="#" onClick={(e) => { e.preventDefault(); navigate('/cart'); }}>
-                          <div className="step-progress"><span className="step-count">1</span></div>
-                          <div className="step-label"><i className='bx bx-cart'></i>Cart</div>
-                        </a>
-                        <a className="step-item active" href="#" onClick={(e) => { e.preventDefault(); navigate('/checkout/details'); }}>
-                          <div className="step-progress"><span className="step-count">2</span></div>
-                          <div className="step-label"><i className='bx bx-user-circle'></i>Details</div>
-                        </a>
-                        <a className="step-item active" href="#" onClick={(e) => { e.preventDefault(); navigate('/checkout/shipping'); }}>
-                          <div className="step-progress"><span className="step-count">3</span></div>
-                          <div className="step-label"><i className='bx bx-cube'></i>Shipping</div>
-                        </a>
-                        <a className="step-item active" href="#" onClick={(e) => { e.preventDefault(); navigate('/checkout/payment'); }}>
-                          <div className="step-progress"><span className="step-count">4</span></div>
-                          <div className="step-label"><i className='bx bx-credit-card'></i>Payment</div>
-                        </a>
-                        <a className="step-item active current" href="#" onClick={(e) => e.preventDefault()}>
-                          <div className="step-progress"><span className="step-count">5</span></div>
-                          <div className="step-label"><i className='bx bx-check-circle'></i>Review</div>
-                        </a>
-                      </div>
-                    </div>
-                  </div>
+                  <CheckoutSteps currentStep="review" />
 
                   {/* Cart Items Review */}
                   <div className="card rounded-0 shadow-none">

@@ -2,9 +2,6 @@
 import { FeatureFactory } from '@feardread/feature-factory';
 
 
-/**
- * Create the brand feature factory
- */
 const brandFactory = FeatureFactory('brand', {});
 const { slice, asyncActions: Brands } = brandFactory.create({
   stateOptions: {

@@ -11,6 +11,7 @@ import {
   setShipping,
   applyDiscount,
 } from '../../features/cart/slice';
+import CheckoutSteps from "./components/CheckoutSteps";
 
 const CheckoutShipping = () => {
   const dispatch = useDispatch();
@@ -150,6 +151,8 @@ const CheckoutShipping = () => {
               <div className="col-12 col-xl-8">
                 <div className="checkout-shipping">
                   {/* Progress Steps */}
+                  <CheckoutSteps currentStep="shipping" />
+                  {/* 
                   <div className="card bg-transparent rounded-0 shadow-none">
                     <div className="card-body">
                       <div className="steps steps-light">
@@ -176,7 +179,7 @@ const CheckoutShipping = () => {
                       </div>
                     </div>
                   </div>
-
+                    */}
                   {/* Shipping Methods */}
                   <div className="card rounded-0 shadow-none">
                     <div className="card-body">

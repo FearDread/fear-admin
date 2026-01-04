@@ -15,6 +15,8 @@ import Register from "./pages/auth/Register";
 import CheckoutShipping from "./pages/checkout/CheckoutShipping";
 import CheckoutPayment from "./pages/checkout/CheckoutPayment";
 import CheckoutDetails from "./pages/checkout/CheckoutDetails";
+import CheckoutReview from "./pages/checkout/CheckoutReview";
+import CheckoutComplete from "./pages/checkout/CheckoutComplete";
 
 // Lazy-loaded components (code splitting for better performance)
 const Blog = lazy(() => import("./pages/Blog"));
@@ -95,9 +97,12 @@ const routeConfig = {
     { path: "/account/addresses", element: <Addresses /> },
 
     { path: "/checkout", element: <CheckoutDetails />},
+    { path: "/checkout/review", element: <CheckoutReview />},
     { path: "/checkout/shipping", element: <CheckoutShipping />},
     { path: "/checkout/payment", element: <CheckoutPayment />},
-    { path: "/checkout/details", element: <CheckoutDetails />}
+    { path: "/checkout/details", element: <CheckoutDetails />},
+    { path: "/checkout/complete", element: <CheckoutComplete />},
+
   ],
 };
 

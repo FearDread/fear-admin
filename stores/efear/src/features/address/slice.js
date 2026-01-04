@@ -1,0 +1,207 @@
+import { FeatureFactory } from '@feardread/feature-factory';
+
+// Create Address Feature with FeatureFactory
+const addressFactory = FeatureFactory('address', {
+  // Add a new address
+  addAddress: (state, action) => {
+    const newAddress = {
+      id: Date.now().toString(),
+      ...action.payload,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    state.data.push(newAddress);
+    
+    // If this is the first address or marked as default, set it as default
+    if (state.data.length === 1 || newAddress.isDefault) {
+      state.defaultAddressId = newAddress.id;
+      // Unset other defaults
+      state.data.forEach(addr => {
+        if (addr.id !== newAddress.id) {
+          addr.isDefault = false;
+        }
+      });
+    }
+    
+    state.success = true;
+    state.error = null;
+  },
+
+  // Update an existing address
+  updateAddress: (state, action) => {
+    const { id, updates } = action.payload;
+    const addressIndex = state.data.findIndex(addr => addr.id === id);
+    
+    if (addressIndex !== -1) {
+      state.data[addressIndex] = {
+        ...state.data[addressIndex],
+        ...updates,
+        updatedAt: new Date().toISOString()
+      };
+      
+      // Handle default address change
+      if (updates.isDefault) {
+        state.defaultAddressId = id;
+        state.data.forEach((addr, idx) => {
+          if (idx !== addressIndex) {
+            addr.isDefault = false;
+          }
+        });
+      }
+      
+      state.success = true;
+      state.error = null;
+    } else {
+      state.error = 'Address not found';
+    }
+  },
+
+  // Remove an address
+  removeAddress: (state, action) => {
+    const id = action.payload;
+    const addressIndex = state.data.findIndex(addr => addr.id === id);
+    
+    if (addressIndex !== -1) {
+      const wasDefault = state.data[addressIndex].isDefault;
+      state.data.splice(addressIndex, 1);
+      
+      // If removed address was default, set first remaining as default
+      if (wasDefault && state.data.length > 0) {
+        state.data[0].isDefault = true;
+        state.defaultAddressId = state.data[0].id;
+      } else if (state.data.length === 0) {
+        state.defaultAddressId = null;
+      }
+      
+      state.success = true;
+      state.error = null;
+    }
+  },
+
+  // Set default address
+  setDefaultAddress: (state, action) => {
+    const id = action.payload;
+    let found = false;
+    
+    state.data.forEach(addr => {
+      if (addr.id === id) {
+        addr.isDefault = true;
+        found = true;
+      } else {
+        addr.isDefault = false;
+      }
+    });
+    
+    if (found) {
+      state.defaultAddressId = id;
+      state.success = true;
+      state.error = null;
+    } else {
+      state.error = 'Address not found';
+    }
+  },
+
+  // Validate address
+  validateAddress: (state, action) => {
+    state.validation = {
+      isValid: true,
+      errors: {}
+    };
+    
+    const address = action.payload;
+    const errors = {};
+    
+    if (!address.fullName || address.fullName.trim().length < 2) {
+      errors.fullName = 'Full name must be at least 2 characters';
+      state.validation.isValid = false;
+    }
+    
+    if (!address.addressLine1 || address.addressLine1.trim().length < 5) {
+      errors.addressLine1 = 'Address must be at least 5 characters';
+      state.validation.isValid = false;
+    }
+    
+    if (!address.city || address.city.trim().length < 2) {
+      errors.city = 'City is required';
+      state.validation.isValid = false;
+    }
+    
+    if (!address.state || address.state.trim().length < 2) {
+      errors.state = 'State is required';
+      state.validation.isValid = false;
+    }
+    
+    if (!address.zipCode || !/^\d{5}(-\d{4})?$/.test(address.zipCode)) {
+      errors.zipCode = 'Invalid ZIP code format';
+      state.validation.isValid = false;
+    }
+    
+    if (!address.country || address.country.trim().length < 2) {
+      errors.country = 'Country is required';
+      state.validation.isValid = false;
+    }
+    
+    if (address.phone && !/^[\d\s\-\+\(\)]{10,}$/.test(address.phone)) {
+      errors.phone = 'Invalid phone number format';
+      state.validation.isValid = false;
+    }
+    
+    state.validation.errors = errors;
+  },
+
+  // Clear validation
+  clearValidation: (state) => {
+    state.validation = {
+      isValid: true,
+      errors: {}
+    };
+  }
+}, {
+  includeEntityState: true,
+  includePagination: false,
+  includeFiltering: true,
+  includeSorting: true,
+  includeSelection: false,
+  includeValidation: true,
+  includeMetadata: true,
+  customFields: {
+    defaultAddressId: null,
+    searchResults: [],
+    addressTypes: ['home', 'work', 'billing', 'shipping', 'other']
+  }
+});
+
+// Create the slice
+const { slice, asyncActions: Address } = addressFactory.create();
+
+// Export actions and reducer
+export const {
+  addAddress,
+  removeAddress,
+  setDefaultAddress,
+  validateAddress,
+  clearValidation,
+  searchAddresses,
+  clearSearch,
+  setData,
+  setError,
+  setLoading
+} = slice.actions;
+
+// Export async actions
+export const {
+  fetch: fetchAddresses,
+  fetchOne: fetchAddress,
+  search: searchAddress,
+  create: createAddress,
+  update: updateAddress,
+  patch: patchAddress,
+} = Address;
+
+export const selectAllAddresses = (state) => state.address?.data || [];
+export const selectDefaultAddress = (state) => {
+  const addresses = state.address?.data || [];
+  return addresses.find(addr => addr.id === state.address?.defaultAddressId);
+};
+
+export default slice;

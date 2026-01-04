@@ -12,12 +12,14 @@ import {
   selectUserError,
 } from '../../features/user/slice';
 import {
-  selectCartItemCount,
-} from '../../features/cart/slice';
+  addAddress,
+  selectAllAddresses,
+} from "../../features/address/slice";
+
 import { dispatch } from "../../features/store";
 import AccountSidebar from './components/AccountSidebar';
 
-const AccountAddresses = () => {
+export const AccountAddresses = () => {
   const navigate = useNavigate();
 
   const currentUser = useSelector(selectCurrentUser);
@@ -28,12 +30,13 @@ const AccountAddresses = () => {
   const error = useSelector(selectUserError);
 
   // Local state
+  const [ loggingOut, setLoggingOut ] = useState(false);
   const [editMode, setEditMode] = useState({ billing: false, shipping: false });
   const [formData, setFormData] = useState({
     billing: {
       name: '',
-      address1: '',
-      address2: '',
+      line1: '',
+      line2: '',
       city: '',
       state: '',
       zipCode: '',
@@ -41,16 +44,14 @@ const AccountAddresses = () => {
     },
     shipping: {
       name: '',
-      address1: '',
-      address2: '',
+      line1: '',
+      line2: '',
       city: '',
       state: '',
       zipCode: '',
       country: '',
     },
   });
-    const [showLogoutModal, setShowLogoutModal] = useState(false);
-  const [loggingOut, setLoggingOut] = useState(false);
   const [sameAsBilling, setSameAsBilling] = useState(false);
 
   // Load user data on mount
@@ -120,10 +121,13 @@ const AccountAddresses = () => {
   const handleSaveAddress = async (type) => {
     try {
       const updateData = {
+        userId: currentUser._id,
         [`${type}Address`]: formData[type],
       };
 
       await dispatch(updateUser(updateData)).unwrap();
+      let result = await dispatch(addAddress(updateData)).unwrap();
+      console.log('address result = ', result);
       setEditMode(prev => ({ ...prev, [type]: false }));
       alert(`${type === 'billing' ? 'Billing' : 'Shipping'} address updated successfully!`);
     } catch (error) {
@@ -164,18 +168,9 @@ const AccountAddresses = () => {
       console.error('Logout error:', error);
     } finally {
       setLoggingOut(false);
-
     }
   };
-  // Navigation items
-  const navItems = [
-    { label: 'Dashboard', path: '/account/dashboard', icon: 'bx-tachometer' },
-    { label: 'Orders', path: '/account/orders', icon: 'bx-cart-alt' },
-    { label: 'Downloads', path: '/account/downloads', icon: 'bx-download' },
-    { label: 'Addresses', path: '/account/addresses', icon: 'bx-home-smile', active: true },
-    { label: 'Payment Methods', path: '/account/payment-methods', icon: 'bx-credit-card' },
-    { label: 'Account Details', path: '/account/details', icon: 'bx-user-circle' },
-  ];
+
   const sidebarProps = {
     handleLogout,
     currentUser,
