@@ -22,12 +22,13 @@ function OrderList() {
   const [alert, setAlert] = useState(null);
   const [toggle, setToggle] = useState(false);
 
-  const { error, loading, orders } = useSelector((state) => state.order);
+  const { loading, ORDER } = useSelector((state) => state.order);
   const header = [
-    { Header: "Order ID", accessor: "_id" },
+    { Header: "Order ID", accessor: "number" },
     { Header: "Status", accessor: "status" },
+    { Header: "Payment", accessor: "payment" },
     { Header: "Items", accessor: "items" },
-    { Header: "Price", accessor: "price" },
+    { Header: "Total", accessor: "total" },
     { Header: "Actions", accessor: "actions", sortable: true, filterable: false }
   ];
   // delet order handler
@@ -62,13 +63,14 @@ function OrderList() {
   const displayOrders = () => {
     let dataTable = [];
 
-    if (orders && orders.length > 0) {
-      orders.map((item, key) => {
+    if (ORDER && ORDER.length > 0) {
+      ORDER.map((item, key) => {
         dataTable.push({
-          id: item._id,
-          status: item.status,
-          price: "$" + item.orderPrice,
-          items: item.items || 1,
+          number: item.orderNumber,
+          status: item.orderStatus,
+          payment: item.paymentStatus,
+          items: item.itemsCount || 1,
+          total: "$" + item.total,
           actions: (
             ReactTableActions(key, (() => {
               console.log("edit order ::", item);
@@ -84,7 +86,7 @@ function OrderList() {
         });
       })
     }
-
+    console.log('order table = ', dataTable);
     return dataTable;
   }
 
