@@ -306,8 +306,8 @@ export const CheckoutDetails = () => {
                               <label className="form-label">Address 1 *</label>
                               <textarea 
                                 className="form-control rounded-0"
-                                value={shippingAddress.address1}
-                                onChange={(e) => handleShippingChange('address1', e.target.value)}
+                                value={shippingAddress.line1}
+                                onChange={(e) => handleShippingChange('line1', e.target.value)}
                                 required
                               />
                             </div>
@@ -315,8 +315,8 @@ export const CheckoutDetails = () => {
                               <label className="form-label">Address 2</label>
                               <textarea 
                                 className="form-control rounded-0"
-                                value={shippingAddress.address2}
-                                onChange={(e) => handleShippingChange('address2', e.target.value)}
+                                value={shippingAddress.line2}
+                                onChange={(e) => handleShippingChange('line2', e.target.value)}
                               />
                             </div>
                             
