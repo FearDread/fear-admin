@@ -134,7 +134,6 @@ export const loginUser = (credentials, rememberMe = false) => async (dispatch) =
     const result = await dispatch(login(credentials));
     
     if (login.fulfilled.match(result)) {
-      console.log('login result = ', result.payload);
       const { token, user } = result.payload.data;
       
       // Calculate token expiry (default 7 days for remember me, 24 hours otherwise)
