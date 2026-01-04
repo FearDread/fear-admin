@@ -2,14 +2,16 @@ import React, { useState } from "react";
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { dispatch } from "../../../features/store";
 import {
-  logoutUser,
+    logoutUser,
 } from '../../../features/user/slice';
 
 export const AccountSidebar = (props) => {
-    const { currentUser, userFullName, lastLoginAt } = props;
-
     const navigate = useNavigate();
     const location = useLocation();
+
+    const { currentUser, userFullName, lastLoginAt } = props;
+
+
     const [showLogoutModal, setShowLogoutModal] = useState(false);
     const [loggingOut, setLoggingOut] = useState(false);
     const isActiveMenuItem = (path) => {
@@ -30,7 +32,7 @@ export const AccountSidebar = (props) => {
             setShowLogoutModal(false);
         }
     };
-    // Format last login date
+
     const formatLastLogin = (dateString) => {
         if (!dateString) return 'Recently';
 
@@ -49,35 +51,13 @@ export const AccountSidebar = (props) => {
         return date.toLocaleDateString();
     };
 
-    // Menu items configuration
+    // Navigation items
     const menuItems = [
-        {
-            label: 'Dashboard',
-            path: '/account/dashboard',
-            icon: 'bx-tachometer',
-            active: true,
-        },
-        {
-            label: 'Orders',
-            path: '/account/orders',
-            icon: 'bx-cart-alt',
-            badge: currentUser?.orderCount || 0,
-        },
-        {
-            label: 'Addresses',
-            path: '/account/addresses',
-            icon: 'bx-home-smile',
-        },
-        {
-            label: 'Payment Methods',
-            path: '/account/payment-methods',
-            icon: 'bx-credit-card',
-        },
-        {
-            label: 'Account Details',
-            path: '/account/details',
-            icon: 'bx-user-circle',
-        },
+        { label: 'Dashboard', path: '/account/dashboard', icon: 'bx-tachometer', active: true },
+        { label: 'Orders', path: '/account/orders', icon: 'bx-cart-alt' },
+        { label: 'Addresses', path: '/account/addresses', icon: 'bx-home-smile',  },
+        { label: 'Payment Methods', path: '/account/payment-methods', icon: 'bx-credit-card' },
+        { label: 'Account Details', path: '/account/details', icon: 'bx-user-circle' },
     ];
 
     return (
@@ -90,7 +70,7 @@ export const AccountSidebar = (props) => {
                             <div className="mb-3">
                                 {currentUser.avatar ? (
                                     <img
-                                        src={currentUser.avatar}
+                                        src={currentUser.avatar ? currentUser.avatar.url : '/assets/images/avatars/avatar-1.png'}
                                         alt={userFullName}
                                         className="rounded-circle"
                                         width="80"

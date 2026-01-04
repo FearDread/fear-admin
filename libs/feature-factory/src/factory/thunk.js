@@ -258,6 +258,7 @@ export const ThunkFactory = {
       fetch: ThunkFactory.create(entity, 'all'),
       read: ThunkFactory.create(entity, 'one'),
       create: ThunkFactory.post(entity, 'create'),
+      new: ThunkFactory.post(entity, 'new'),
       update: ThunkFactory.put(entity, 'update'),
       patch: ThunkFactory.patch(entity, 'patch'),
       delete: ThunkFactory.delete(entity, 'delete'),

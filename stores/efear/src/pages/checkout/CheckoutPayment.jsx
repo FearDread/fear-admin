@@ -20,6 +20,7 @@ import {
   useStripe,
   useElements,
 } from '@stripe/react-stripe-js';
+import CheckoutSteps from "./components/CheckoutSteps";
 import { createOrder } from "../../features/orders/slice";
 import { dispatch } from "../../features/store";
 
@@ -287,38 +288,12 @@ export const CheckoutPayment = () => {
         <div className="container">
           <div className="shop-cart">
             <div className="row">
-              {/* Main Content */}
               <div className="col-12 col-xl-8">
                 <div className="checkout-payment">
                   {/* Progress Steps */}
-                  <div className="card bg-transparent rounded-0 shadow-none">
-                    <div className="card-body">
-                      <div className="steps steps-light">
-                        <Link className="step-item active" to="/cart">
-                          <div className="step-progress"><span className="step-count">1</span></div>
-                          <div className="step-label"><i className='bx bx-cart'></i>Cart</div>
-                        </Link>
-                        <Link className="step-item active" to="/checkout/details">
-                          <div className="step-progress"><span className="step-count">2</span></div>
-                          <div className="step-label"><i className='bx bx-user-circle'></i>Details</div>
-                        </Link>
-                        <Link className="step-item active" to="/checkout/shipping">
-                          <div className="step-progress"><span className="step-count">3</span></div>
-                          <div className="step-label"><i className='bx bx-cube'></i>Shipping</div>
-                        </Link>
-                        <Link className="step-item active current" to="/checkout/payment">
-                          <div className="step-progress"><span className="step-count">4</span></div>
-                          <div className="step-label"><i className='bx bx-credit-card'></i>Payment</div>
-                        </Link>
-                        <span className="step-item">
-                          <div className="step-progress"><span className="step-count">5</span></div>
-                          <div className="step-label"><i className='bx bx-check-circle'></i>Review</div>
-                        </span>
-                      </div>
-                    </div>
-                  </div>
 
-                  {/* Payment Method Selection */}
+                <CheckoutSteps currentStep="payment" />
+                
                   <div className="card rounded-0 shadow-none">
                     <div className="card-header border-bottom">
                       <h2 className="h5 my-2">Choose Payment Method</h2>

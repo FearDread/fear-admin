@@ -41,8 +41,8 @@ export const CheckoutDetails = () => {
     state: '',
     zipCode: '',
     country: 'United States',
-    address1: '',
-    address2: '',
+    line1: '',
+    line2: '',
   });
   
   const [billingAddress, setBillingAddress] = useState({
@@ -54,8 +54,8 @@ export const CheckoutDetails = () => {
     state: '',
     zipCode: '',
     country: 'United States',
-    address1: '',
-    address2: '',
+    line1: '',
+    line2: '',
   });
   
   const [sameAsShipping, setSameAsShipping] = useState(true);
@@ -122,7 +122,7 @@ export const CheckoutDetails = () => {
   
   const handleProceedToShipping = () => {
     // Validate required fields
-    const requiredFields = ['firstName', 'lastName', 'email', 'phone', 'address1', 'city', 'state', 'zipCode', 'country'];
+    const requiredFields = ['firstName', 'lastName', 'email', 'phone', 'line1', 'city', 'state', 'zipCode', 'country'];
     const missingFields = requiredFields.filter(field => !shippingAddress[field]);
     
     if (missingFields.length > 0) {
@@ -175,35 +175,8 @@ export const CheckoutDetails = () => {
             <div className="row">
               <div className="col-12 col-xl-8">
                 <div className="checkout-details">
-                  <div className="card bg-transparent rounded-0 shadow-none">
-                    <div className="card-body">
-                      <CheckoutSteps currentStep="shipping" />
-                      {/* 
-                      <div className="steps steps-light">
-                        <a className="step-item active" href="/cart">
-                          <div className="step-progress"><span className="step-count">1</span></div>
-                          <div className="step-label"><i className='bx bx-cart'></i>Cart</div>
-                        </a>
-                        <a className="step-item active current" href="/checkout/details">
-                          <div className="step-progress"><span className="step-count">2</span></div>
-                          <div className="step-label"><i className='bx bx-user-circle'></i>Details</div>
-                        </a>
-                        <a className="step-item" href="/checkout/shipping">
-                          <div className="step-progress"><span className="step-count">3</span></div>
-                          <div className="step-label"><i className='bx bx-cube'></i>Shipping</div>
-                        </a>
-                        <a className="step-item" href="/checkout/payment">
-                          <div className="step-progress"><span className="step-count">4</span></div>
-                          <div className="step-label"><i className='bx bx-credit-card'></i>Payment</div>
-                        </a>
-                        <a className="step-item" href="/checkout/review">
-                          <div className="step-progress"><span className="step-count">5</span></div>
-                          <div className="step-label"><i className='bx bx-check-circle'></i>Review</div>
-                        </a>
-                      </div>
-                      */}
-                    </div>
-                  </div>
+
+                      <CheckoutSteps currentStep="details" />
                   
                   {currentUser && (
                     <div className="card rounded-0">
