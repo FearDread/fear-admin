@@ -179,15 +179,29 @@ export const {
 export const {
   fetch: fetchAddresses,
   fetchOne: fetchAddress,
+  new: createNewAddress,
   create: createAddress,
   update: updateAddress,
   patch: patchAddress,
 } = Address;
 
-export const selectAllAddresses = (state) => state.address?.data || [];
+// Selectors
+export const selectAllAddresses = (state) => state.addresses?.data || [];
 export const selectDefaultAddress = (state) => {
-  const addresses = state.address?.data || [];
+  let addresses = state.addresses?.data || [];
   return addresses.find(addr => addr.id === state.address?.defaultAddressId);
 };
+export const selectAddressById = (state, id) => {
+  let addresses = state.addresses?.data || [];
+  return addresses.find(addr => addr.id === id);
+};
+export const selectAddressesByType = (state, type) => {
+  let addresses = state.addresses?.data || [];
+  addresses = addresses.filter(addr => addr.type === type);
+  return addresses;
+};
+export const selectSearchResults = (state) => state.addresses?.searchResults || [];
+export const selectAddressValidation = (state) => state.addresses?.validation || { isValid: true, errors: {} };
+
 
 export default slice;
