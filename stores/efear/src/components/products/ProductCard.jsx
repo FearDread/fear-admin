@@ -2,11 +2,16 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { addItem as addToCart } from '../../features/cart/slice';
-import { 
-  addToWishlist, 
+import Toast from "../../components/common/Toast";
+import {
+  addItem,
+  selectIsInCart,
+  selectCartItemById,
+} from '../../features/cart/slice';
+import {
+  addToWishlist,
   removeFromWishlist,
-  selectIsInWishlist 
+  selectIsInWishlist
 } from '../../features/wishlist/slice';
 import { selectIsAuthenticated } from '../../features/user/slice';
 import { dispatch } from "../../features/store";
@@ -25,41 +30,39 @@ export const ProductCard = (product) => {
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [isAddingToWishlist, setIsAddingToWishlist] = useState(false);
   const [showQuickView, setShowQuickView] = useState(false);
-    const [selectedProduct, setSelectedProduct] = useState(null);
-
-
-  // Check if product is in wishlist
-  const isInWishlist = useSelector(state => 
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [quantity, setQuantity] = useState(1);
+  const isInWishlist = useSelector(state =>
     selectIsInWishlist(state, product._id || product.id)
   );
+  const [toasts, setToasts] = useState([]);
 
-  // Check if user is authenticated
+  const addToast = (message, type) => {
+    const id = Date.now();
+    setToasts(prev => [...prev, { id, message, type }]);
+  };
+
+  const removeToast = (id) => {
+    setToasts(prev => prev.filter(toast => toast.id !== id));
+  };
   const isAuthenticated = useSelector(selectIsAuthenticated);
-
-  // Product details link
   const detailsLink = `/product/${product._id || product.id}`;
+  const productImage = product.images[0]?.url ||
+    product.images[0] ||
+    product.image ||
+    '/assets/images/fear/fear-dark-bg.jpg';
 
-  // Get product image
-  const productImage = product.images[0]?.url || 
-                       product.images[0] || 
-                       product.image || 
-                       '/assets/images/fear/fear-dark-bg.jpg';
-
-  // Calculate discount percentage
   const hasDiscount = product.salePrice && product.salePrice < product.price;
-  const discountPercent = hasDiscount 
+  const discountPercent = hasDiscount
     ? Math.round((1 - product.salePrice / product.price) * 100)
     : 0;
 
-  // Get current price
   const currentPrice = product.salePrice || product.price;
-
-  // Render rating stars
   const renderStars = (rating = 4) => {
     const stars = [];
     for (let i = 1; i <= 5; i++) {
       stars.push(
-        <i 
+        <i
           key={i}
           className={`bx bxs-star ${i <= rating ? 'text-warning' : 'text-light-4'}`}
         ></i>
@@ -77,11 +80,11 @@ export const ProductCard = (product) => {
 
     // Check if user is logged in
     if (!isAuthenticated) {
-      navigate('/login', { 
-        state: { 
+      navigate('/login', {
+        state: {
           from: window.location.pathname,
-          message: 'Please login to add items to your wishlist' 
-        } 
+          message: 'Please login to add items to your wishlist'
+        }
       });
       return;
     }
@@ -116,6 +119,7 @@ export const ProductCard = (product) => {
     }
   };
 
+  /*
   const handleAddToCart = async (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -155,17 +159,37 @@ export const ProductCard = (product) => {
       setIsAddingToCart(false);
     }
   };
+  */
+  // Handle add to cart
+  const handleAddToCart = () => {
+    if (!product) return;
+
+    const cartItem = {
+      productId: product._id,
+      id: product._id,
+      name: product.title,
+      title: product.title,
+      image: product.images?.[0]?.url || '',
+      price: product.salePrice || product.price,
+      subtotal: product.price,
+      quantity,
+      sku: product.sku,
+    };
+
+    dispatch(addItem(cartItem));
+    addToast('Product added to cart!', 'success')
+  };
 
   const handleCompare = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     // TODO: Implement compare functionality
     console.log('Compare:', product);
-    
+
     // For now, navigate to compare page
-    navigate('/product/compare', { 
-      state: { product: [product] } 
+    navigate('/product/compare', {
+      state: { product: [product] }
     });
   };
 
@@ -175,7 +199,7 @@ export const ProductCard = (product) => {
 
     console.log('quick view', product);
   };
-  
+
   return (
     <>
       <div className="col">
@@ -220,9 +244,9 @@ export const ProductCard = (product) => {
             )}
           </div>
           <Link to={detailsLink}>
-            <img 
+            <img
               src={productImage || 'assets/images/fear/fear-dark-bg.jpg'}
-              className="card-img-top" 
+              className="card-img-top"
               alt={product.title || product.title}
             />
           </Link>
@@ -267,8 +291,8 @@ export const ProductCard = (product) => {
               {product.quantity && product.quantity && (
                 <div className="mt-2">
                   <small className={`text-${product.quantity < 10 ? 'warning' : 'success'}`}>
-                    {product.quantity < 10 
-                      ? `Only ${product.quantity} left!` 
+                    {product.quantity < 10
+                      ? `Only ${product.quantity} left!`
                       : 'In Stock'}
                   </small>
                 </div>
@@ -310,6 +334,14 @@ export const ProductCard = (product) => {
           </div>
         </div>
       </div>
+           {toasts.map(toast => (
+        <Toast
+          key={toast.id}
+          message={toast.message}
+          type={toast.type}
+          onClose={() => removeToast(toast.id)}
+        />
+      ))}
     </>
   );
 };

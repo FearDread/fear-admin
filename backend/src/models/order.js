@@ -26,22 +26,18 @@ const orderSchema = new mongoose.Schema(
     total: { type: Number, required: true, },
     currency: { type: String,  default: "INR", enum: ["INR", "USD", "EUR", "GBP"], },
     paymentMethod: { type: String, enum: ["razorpay", "paypal", "card", "upi", "netbanking", "cod"], required: true, },
-    paymentStatus: {
-      type: String,
-      enum: ["pending", "processing", "completed", "failed", "refunded", "partially_refunded"],
-      default: "pending",
-      index: true,
-    },
+    paymentStatus: { type: String, enum: ["pending", "processing", "completed", "failed", "refunded", "partially_refunded"], default: "pending", index: true, },
     paymentDetails: {
       // Razorpay
       razorpayOrderId: String,
       razorpayPaymentId: String,
       razorpaySignature: String,
-      
       // PayPal
       paypalOrderId: String,
       paypalCaptureId: String,
-      
+      // Stripe
+      stripeOrderId: String,
+      stripePaymentId: String,
       // Common
       transactionId: String,
       paymentMethodId: {
@@ -66,8 +62,8 @@ const orderSchema = new mongoose.Schema(
       default: "pending",
       index: true,
     },
-    shippingAddress: { Address.schema, required: true, },
-    billingAddress: { Address.schema, required: true, },
+    shippingAddress: Address.schema,
+    billingAddress: Address.schema,
     shippingProvider: String,
     trackingNumber: String,
     estimatedDeliveryDate: Date,

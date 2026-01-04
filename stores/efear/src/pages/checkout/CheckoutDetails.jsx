@@ -37,7 +37,7 @@ export const CheckoutDetails = () => {
     lastName: currentUser?.lastName || '',
     email: currentUser?.email || '',
     phone: currentUser?.phone || '',
-    company: '',
+    city: '',
     state: '',
     zipCode: '',
     country: 'United States',
@@ -50,7 +50,7 @@ export const CheckoutDetails = () => {
     lastName: '',
     email: '',
     phone: '',
-    company: '',
+    city: '',
     state: '',
     zipCode: '',
     country: 'United States',
@@ -255,12 +255,12 @@ export const CheckoutDetails = () => {
                               />
                             </div>
                             <div className="col-md-6">
-                              <label className="form-label">Company</label>
+                              <label className="form-label">City</label>
                               <input 
                                 type="text" 
                                 className="form-control rounded-0"
-                                value={shippingAddress.company}
-                                onChange={(e) => handleShippingChange('company', e.target.value)}
+                                value={shippingAddress.city}
+                                onChange={(e) => handleShippingChange('city', e.target.value)}
                               />
                             </div>
                             <div className="col-md-6">
