@@ -213,12 +213,16 @@ export const CheckoutPayment = () => {
 
     setIsProcessing(true);
     try {
+      const timestamp = Date.now().toString(36).toUpperCase();
+      const random = Math.random().toString(36).substring(2, 7).toUpperCase();
+      const orderNumber = `ORD-${timestamp}-${random}`;
       // Simulate payment processing
       //await new Promise(resolve => setTimeout(resolve, 2000));
       const orderData = {
+        orderNumber,
         userId: currentUser._id,
         items: cartItems,
-        subtotal,
+        subtotal: orderTotal,
         shipping,
         taxes,
         discount,
@@ -299,7 +303,7 @@ export const CheckoutPayment = () => {
                 <div className="checkout-payment">
                   {/* Progress Steps */}
 
-                <CheckoutSteps currentStep="payment" />
+                  <CheckoutSteps currentStep="payment" />
 
                   <div className="card rounded-0 shadow-none">
                     <div className="card-header border-bottom">

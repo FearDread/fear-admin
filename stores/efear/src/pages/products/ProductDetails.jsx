@@ -16,6 +16,7 @@ import {
     selectCategoryById,
     selectCategoryBreadcrumbs,
 } from '../../features/categories/slice';
+import Toast from "../../components/common/Toast";
 import {
     fetchBrand,
     selectBrandById,
@@ -39,7 +40,16 @@ import ImageGallery from '../../components/common/ImageGallery';
 export const ProductDetails = () => {
     const { id } = useParams();
     const navigate = useNavigate();
+    const [toasts, setToasts] = useState([]);
 
+    const addToast = (message, type) => {
+        const id = Date.now();
+        setToasts(prev => [...prev, { id, message, type }]);
+    };
+
+    const removeToast = (id) => {
+        setToasts(prev => prev.filter(toast => toast.id !== id));
+    };
     // Local state
     const [quantity, setQuantity] = useState(1);
     const [selectedSize, setSelectedSize] = useState('');
@@ -70,7 +80,7 @@ export const ProductDetails = () => {
     );
 
     // Cart and Wishlist state
-    const isInCart = useSelector(state => 
+    const isInCart = useSelector(state =>
         product?._id ? selectIsInCart(state, product._id) : false
     );
     const cartItem = useSelector(state =>
@@ -137,9 +147,7 @@ export const ProductDetails = () => {
         };
 
         dispatch(addItem(cartItem));
-        
-        // Show success message (you can replace with toast notification)
-        alert('Product added to cart!');
+        addToast('Product added to cart!', 'success');
     };
 
     // Handle add to wishlist
@@ -184,14 +192,14 @@ export const ProductDetails = () => {
             };
 
             dispatch(addItem(cartItem));
-            
+
             // Remove from wishlist
             dispatch(removeFromWishlist(product.id || product._id));
 
             // Optionally sync with server
-            await dispatch(moveToCart({ 
+            await dispatch(moveToCart({
                 productId: product._id,
-                quantity: 1 
+                quantity: 1
             })).unwrap();
 
             alert('Product moved to cart!');
@@ -463,7 +471,7 @@ export const ProductDetails = () => {
                                                     </select>
                                                 </div>
                                             </div>
-        
+
                                             {/* Action Buttons */}
                                             <div className="d-flex gap-2 mt-3 flex-wrap">
                                                 <button
@@ -746,6 +754,14 @@ export const ProductDetails = () => {
                         </div>
                     </div>
                 </section>
+                {toasts.map(toast => (
+                    <Toast
+                        key={toast.id}
+                        message={toast.message}
+                        type={toast.type}
+                        onClose={() => removeToast(toast.id)}
+                    />
+                ))}
             </>
         );
     }
