@@ -50,7 +50,6 @@ const ProductListSection = ({ title, products, loading }) => {
 
 export const BestSelling = ({ products }) => {
   const allProducts = useSelector(selectAllProducts);
-  const featuredProducts = useSelector(selectFeaturedProducts);
   const loading = useSelector(selectProductsLoading);
   const error = useSelector(selectProductsError);
 

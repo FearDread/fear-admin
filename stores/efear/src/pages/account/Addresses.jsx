@@ -67,8 +67,8 @@ export const AccountAddresses = () => {
       setFormData({
         billing: {
           name: currentUser.billingAddress?.name || currentUser.name || '',
-          address1: currentUser.billingAddress?.address1 || '',
-          address2: currentUser.billingAddress?.address2 || '',
+          line1: currentUser.billingAddress?.line1 || '',
+          line2: currentUser.billingAddress?.line2 || '',
           city: currentUser.billingAddress?.city || '',
           state: currentUser.billingAddress?.state || '',
           zipCode: currentUser.billingAddress?.zipCode || '',
@@ -76,8 +76,8 @@ export const AccountAddresses = () => {
         },
         shipping: {
           name: currentUser.shippingAddress?.name || currentUser.name || '',
-          address1: currentUser.shippingAddress?.address1 || '',
-          address2: currentUser.shippingAddress?.address2 || '',
+          line1: currentUser.shippingAddress?.line1 || '',
+          line2: currentUser.shippingAddress?.line2 || '',
           city: currentUser.shippingAddress?.city || '',
           state: currentUser.shippingAddress?.state || '',
           zipCode: currentUser.shippingAddress?.zipCode || '',
@@ -124,6 +124,7 @@ export const AccountAddresses = () => {
         userId: currentUser._id,
         [`${type}Address`]: formData[type],
       };
+      console.log('update data = ', updateData);
 
       await dispatch(updateUser(updateData)).unwrap();
       let result = await dispatch(addAddress(updateData)).unwrap();
@@ -144,8 +145,8 @@ export const AccountAddresses = () => {
         ...prev,
         [type]: {
           name: currentUser[`${type}Address`]?.name || currentUser.name || '',
-          address1: currentUser[`${type}Address`]?.address1 || '',
-          address2: currentUser[`${type}Address`]?.address2 || '',
+          line1: currentUser[`${type}Address`]?.line1 || '',
+          line2: currentUser[`${type}Address`]?.line2 || '',
           city: currentUser[`${type}Address`]?.city || '',
           state: currentUser[`${type}Address`]?.state || '',
           zipCode: currentUser[`${type}Address`]?.zipCode || '',
@@ -187,11 +188,11 @@ export const AccountAddresses = () => {
       // Display mode
       return (
         <div>
-          {address.name || address.address1 ? (
+          {address.name || address.line1 ? (
             <address>
               {address.name && <>{address.name}<br /></>}
-              {address.address1 && <>{address.address1}<br /></>}
-              {address.address2 && <>{address.address2}<br /></>}
+              {address.line1 && <>{address.line1}<br /></>}
+              {address.line2 && <>{address.line2}<br /></>}
               {address.city && <>{address.city}</>}
               {address.state && <>, {address.state}</>}
               {address.zipCode && <> {address.zipCode}</>}
@@ -206,7 +207,7 @@ export const AccountAddresses = () => {
             onClick={() => toggleEditMode(type)}
           >
             <i className="bx bx-edit me-1"></i>
-            {address.name || address.address1 ? 'Edit Address' : 'Add Address'}
+            {address.name || address.line1 ? 'Edit Address' : 'Add Address'}
           </button>
         </div>
       );
@@ -231,8 +232,8 @@ export const AccountAddresses = () => {
           <input
             type="text"
             className="form-control"
-            value={address.address1}
-            onChange={(e) => handleInputChange(type, 'address1', e.target.value)}
+            value={address.line1}
+            onChange={(e) => handleInputChange(type, 'line1', e.target.value)}
             placeholder="123 Main Street"
           />
         </div>
@@ -241,8 +242,8 @@ export const AccountAddresses = () => {
           <input
             type="text"
             className="form-control"
-            value={address.address2}
-            onChange={(e) => handleInputChange(type, 'address2', e.target.value)}
+            value={address.line2}
+            onChange={(e) => handleInputChange(type, 'line2', e.target.value)}
             placeholder="Apt 4B"
           />
         </div>

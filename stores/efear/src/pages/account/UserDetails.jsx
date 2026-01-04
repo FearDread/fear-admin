@@ -53,9 +53,9 @@ export const UserDetails = () => {
   useEffect(() => {
     if (currentUser) {
       setFormData({
-        firstName: currentUser.name.split(' '[0]) || '',
-        lastName: currentUser.name.split(' ')[1] || '',
-        displayName: currentUser.displayName || `${currentUser.name || ''} ${currentUser.lastName || ''}`.trim(),
+        firstName: currentUser.firstName.trim(),
+        lastName: currentUser.lastName.trim(),
+        displayName: currentUser.displayName || `${currentUser.firstName || ''} ${currentUser.lastName || ''}`.trim(),
         email: currentUser.email || '',
       });
     }
