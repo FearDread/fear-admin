@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const Address = require("./address");
 
 const orderItemSchema = new mongoose.Schema({
   productId: {  type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
@@ -65,8 +66,8 @@ const orderSchema = new mongoose.Schema(
       default: "pending",
       index: true,
     },
-    shippingAddress: { type: mongoose.Schema.Types.ObjectId, ref: "Address", required: true, },
-    billingAddress: { type: mongoose.Schema.Types.ObjectId, ref: "Address", required: true, },
+    shippingAddress: { Address.schema, required: true, },
+    billingAddress: { Address.schema, required: true, },
     shippingProvider: String,
     trackingNumber: String,
     estimatedDeliveryDate: Date,

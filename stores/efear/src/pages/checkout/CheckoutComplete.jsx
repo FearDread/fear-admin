@@ -257,9 +257,9 @@ function CheckoutComplete() {
                     <h5 className="card-title text-start mb-3">Shipping Address</h5>
                     <address className="text-start mb-0">
                       {orderDetails.shippingAddress.name}<br />
-                      {orderDetails.shippingAddress.address1}<br />
-                      {orderDetails.shippingAddress.address2 && (
-                        <>{orderDetails.shippingAddress.address2}<br /></>
+                      {orderDetails.shippingAddress.line1}<br />
+                      {orderDetails.shippingAddress.line2 && (
+                        <>{orderDetails.shippingAddress.line2}<br /></>
                       )}
                       {orderDetails.shippingAddress.city}, {orderDetails.shippingAddress.state} {orderDetails.shippingAddress.zipCode}<br />
                       {orderDetails.shippingAddress.country}

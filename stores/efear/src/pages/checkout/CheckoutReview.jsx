@@ -127,7 +127,7 @@ function CheckoutReview() {
   // Handle complete order
   const handleCompleteOrder = async () => {
     // Validate shipping address
-    if (!currentUser?.shippingAddress?.address1) {
+    if (!currentUser?.shippingAddress?.line1) {
       alert('Please add a shipping address before completing your order.');
       navigate('/checkout/details');
       return;
@@ -300,8 +300,8 @@ function CheckoutReview() {
                                   <span className="text-light">Customer:</span> {shippingAddress.name}
                                 </p>
                                 <p className="mb-1">
-                                  <span className="text-light">Address:</span> {shippingAddress.address1}
-                                  {shippingAddress.address2 && `, ${shippingAddress.address2}`}
+                                  <span className="text-light">Address:</span> {shippingAddress.line1}
+                                  {shippingAddress.line2 && `, ${shippingAddress.line2}`}
                                   {shippingAddress.city && `, ${shippingAddress.city}`}
                                   {shippingAddress.state && `, ${shippingAddress.state}`}
                                   {shippingAddress.zipCode && ` ${shippingAddress.zipCode}`}

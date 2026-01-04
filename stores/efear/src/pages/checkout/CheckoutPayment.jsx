@@ -20,6 +20,9 @@ import {
   useStripe,
   useElements,
 } from '@stripe/react-stripe-js';
+import {
+  selectCurrentOrder,
+} from '../../features/orders/slice';
 import CheckoutSteps from "./components/CheckoutSteps";
 import { createOrder } from "../../features/orders/slice";
 import { dispatch } from "../../features/store";
@@ -33,6 +36,7 @@ export const CheckoutPayment = () => {
   const shipping = useSelector(selectCartShipping);
   const discount = useSelector(selectCartDiscount);
   const currentUser = useSelector(selectCurrentUser);
+  const currentOrder = useSelector(selectCurrentOrder);
   const isAuthenticated = useSelector(selectIsAuthenticated);
   // Local state
   const [paymentMethod, setPaymentMethod] = useState('credit-card');
@@ -208,7 +212,6 @@ export const CheckoutPayment = () => {
     }
 
     setIsProcessing(true);
-
     try {
       // Simulate payment processing
       //await new Promise(resolve => setTimeout(resolve, 2000));
@@ -228,8 +231,12 @@ export const CheckoutPayment = () => {
             name: creditCardData.cardName,
             email: currentUser?.email,
           },
-        }
+        },
+        ...currentOrder
       };
+
+      console.log('curent order = ', currentOrder);
+      console.log('order data = ', orderData);
       const result = await dispatch(createOrder(orderData));
       console.log('order result', result);
 
@@ -293,7 +300,7 @@ export const CheckoutPayment = () => {
                   {/* Progress Steps */}
 
                 <CheckoutSteps currentStep="payment" />
-                
+
                   <div className="card rounded-0 shadow-none">
                     <div className="card-header border-bottom">
                       <h2 className="h5 my-2">Choose Payment Method</h2>
