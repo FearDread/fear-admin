@@ -97,7 +97,7 @@ const orderSchema = new mongoose.Schema(
     cancelledBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-    },q
+    },
     returnReason: String,
     returnedAt: Date,
     refundAmount: Number,

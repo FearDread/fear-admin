@@ -4,7 +4,7 @@
   "author": "Garrett Haptonstall ( FearDread )",
   "version": "1.1.0",
   "dependencies": {
-    "@feardread/feature-factory": "^5.1.2",
+    "@feardread/feature-factory": "^5.2.3",
     "@paypal/react-paypal-js": "^8.9.2",
     "@stripe/react-stripe-js": "^5.4.1",
     "@stripe/stripe-js": "^8.6.0",
