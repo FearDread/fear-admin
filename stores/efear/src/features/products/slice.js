@@ -97,8 +97,12 @@ export const selectProductsByCategory = (state, categoryId) =>
 export const selectProductsByBrand = (state, brandId) =>
   state.products.data.filter(product => product.brandId === brandId);
 
-export const selectFeaturedProducts = (state) =>
-  state.products.data.filter(product => product.featured === true);
+export const selectFeaturedProducts = (state) => {
+  let products = selectAllProducts(state);
+  products = products.filter(product => product.isFeatured === true);
+  
+  return products;
+}
 
 export const selectInStockProducts = (state) =>
   state.products.data.filter(product => product.inStock === true);
