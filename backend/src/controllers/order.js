@@ -7,7 +7,6 @@ exports.getMyOrders = async (req, res) => {
       const orders = await Order.find({ user: _id })
         .populate("user")
         .populate("orderItems.product")
-        .populate("orderItems.color");
       res.json({
         orders,
       });

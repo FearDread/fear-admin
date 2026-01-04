@@ -3,87 +3,28 @@ const crypto = require("crypto");
 
 const paymentMethodSchema = new mongoose.Schema(
   {
-    userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-      index: true,
-    },
-    paymentType: {
-      type: String,
-      enum: ["razorpay", "paypal", "card", "upi", "netbanking"],
-      required: true,
-    },
-    paymentToken: {
-      type: String,
-      required: true,
-      // This stores the tokenized payment method from the payment gateway
-    },
-    isDefault: {
-      type: Boolean,
-      default: false,
-    },
-    isActive: {
-      type: Boolean,
-      default: true,
-    },
-    // Card/Payment details (only non-sensitive info for display)
+    userId: { type: mongoose.Schema.Types.ObjectId. ref: "User", required: true, index: true, },
+    paymentType: {  type: String, enum: ["razorpay", "paypal", "card", "upi", "netbanking", "stripe"], required: true, },
+    paymentToken: { type: String, required: true, },
+    isDefault: { type: Boolean, default: false, },
+    isActive: { type: Boolean,  default: true, },
     cardDetails: {
-      last4: {
-        type: String,
-        maxlength: 4,
-      },
-      brand: {
-        type: String, // Visa, Mastercard, Amex, etc.
-      },
-      expiryMonth: {
-        type: String,
-        maxlength: 2,
-      },
-      expiryYear: {
-        type: String,
-        maxlength: 4,
-      },
-      cardholderName: {
-        type: String,
-      },
-      fingerprint: {
-        type: String, // Unique identifier for the card
-      },
+      last4: { type: String, maxlength: 4, },
+      brand: { type: String, },
+      expiryMonth: { type: String, maxlength: 2, },
+      expiryYear: { type: String, maxlength: 4, },
+      cardholderName: { type: String, },
+      fingerprint: { type: String,} 
     },
-    // PayPal details
-    paypalDetails: {
-      email: {
-        type: String,
-      },
-      payerId: {
-        type: String,
-      },
+    paypalDetails: { 
+      email: { type: String, },
+      payerId: { type: String, },
     },
-    // UPI details
     upiDetails: {
-      vpa: {
-        type: String, // Virtual Payment Address (e.g., user@paytm)
-      },
+      vpa: { type: String, },
     },
-    // Billing address
-    billingAddress: {
-      name: String,
-      line1: String,
-      line2: String,
-      city: String,
-      state: String,
-      postalCode: String,
-      country: {
-        type: String,
-        default: "IN",
-      },
-    },
-    // Metadata for additional information
-    metadata: {
-      type: Map,
-      of: String,
-    },
+    billingAddress: { type: mongoose.Schema.Types.ObjectId, ref: "Address", required: true, index: true, },
+    metadata: { type: Map,  of: String, },
   },
   {
     timestamps: true,

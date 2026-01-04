@@ -5,8 +5,10 @@ module.exports = ( fear ) => {
         const handler = fear.getHandler();
         const validator = fear.getValidator();
 
-        router.get("/all", Order.list);
-        router.post("/new", Order.create);
+        router.get("/all", handler.async(Order.list));
+        router.post("/new", handler.async(Order.create));
+        router.post("/create", handler.async(Order.create));
+
         router.route('/:id')
                 .get(Order.read)
                 .put(Order.update);

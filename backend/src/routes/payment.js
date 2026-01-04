@@ -6,8 +6,8 @@ module.exports = (fear) => {
     const validator = fear.getValidator();
 
     router.get("/all", handler.async(Payment.list));
-    router.post("/new", Payment.create);
-    router.post("/:params", Payment.create);
+    router.post("/new", handler.async(Payment.create));
+    router.post("/create", handler.async(Payment.create));
     
     router.route('/:id')
         .get(Payment.read)

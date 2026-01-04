@@ -1,93 +1,30 @@
 const mongoose = require("mongoose");
 
 const orderItemSchema = new mongoose.Schema({
-  productId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Product",
-    required: true,
-  },
-  name: {
-    type: String,
-    required: true,
-  },
-  quantity: {
-    type: Number,
-    required: true,
-    min: 1,
-  },
-  price: {
-    type: Number,
-    required: true,
-  },
-  discount: {
-    type: Number,
-    default: 0,
-  },
-  tax: {
-    type: Number,
-    default: 0,
-  },
-  subtotal: {
-    type: Number,
-    required: true,
-  },
+  productId: {  type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
+  title: { type: String,  required: true, },
+  quantity: { type: Number, required: true, min: 1, },
+  price: { type: Number, required: true, },
+  discount: { type: Number,  default: 0, },
+  tax: { type: Number, default: 0, },
+  subtotal: { type: Number, required: true, },
   image: String,
   sku: String,
-  attributes: {
-    type: Map,
-    of: String, // For size, color, etc.
-  },
+  attributes: { type: Map, of: String, },
 });
 
 const orderSchema = new mongoose.Schema(
   {
-    orderNumber: {
-      type: String,
-      unique: true,
-      required: true,
-    },
-    userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-      index: true,
-    },
-    // Order Items
+    orderNumber: { type: String, unique: true, required: true, },
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true, index: true, },
     items: [orderItemSchema],
-    
-    // Pricing
-    subtotal: {
-      type: Number,
-      required: true,
-    },
-    discount: {
-      type: Number,
-      default: 0,
-    },
-    tax: {
-      type: Number,
-      default: 0,
-    },
-    shippingCost: {
-      type: Number,
-      default: 0,
-    },
-    total: {
-      type: Number,
-      required: true,
-    },
-    currency: {
-      type: String,
-      default: "INR",
-      enum: ["INR", "USD", "EUR", "GBP"],
-    },
-    
-    // Payment Information
-    paymentMethod: {
-      type: String,
-      enum: ["razorpay", "paypal", "card", "upi", "netbanking", "cod"],
-      required: true,
-    },
+    subtotal: {  type: Number, required: true },
+    discount: { type: Number, default: 0, },
+    tax: { type: Number, default: 0, },
+    shippingCost: { type: Number, default: 0, },
+    total: { type: Number, required: true, },
+    currency: { type: String,  default: "INR", enum: ["INR", "USD", "EUR", "GBP"], },
+    paymentMethod: { type: String, enum: ["razorpay", "paypal", "card", "upi", "netbanking", "cod"], required: true, },
     paymentStatus: {
       type: String,
       enum: ["pending", "processing", "completed", "failed", "refunded", "partially_refunded"],
@@ -112,8 +49,6 @@ const orderSchema = new mongoose.Schema(
       },
       paidAt: Date,
     },
-    
-    // Order Status
     orderStatus: {
       type: String,
       enum: [
@@ -130,62 +65,12 @@ const orderSchema = new mongoose.Schema(
       default: "pending",
       index: true,
     },
-    
-    // Shipping Information
-    shippingAddress: {
-      name: {
-        type: String,
-        required: true,
-      },
-      phone: {
-        type: String,
-        required: true,
-      },
-      email: String,
-      line1: {
-        type: String,
-        required: true,
-      },
-      line2: String,
-      city: {
-        type: String,
-        required: true,
-      },
-      state: {
-        type: String,
-        required: true,
-      },
-      postalCode: {
-        type: String,
-        required: true,
-      },
-      country: {
-        type: String,
-        required: true,
-        default: "IN",
-      },
-      landmark: String,
-    },
-    
-    billingAddress: {
-      name: String,
-      phone: String,
-      email: String,
-      line1: String,
-      line2: String,
-      city: String,
-      state: String,
-      postalCode: String,
-      country: String,
-    },
-    
-    // Shipping Details
+    shippingAddress: { type: mongoose.Schema.Types.ObjectId, ref: "Address", required: true, },
+    billingAddress: { type: mongoose.Schema.Types.ObjectId, ref: "Address", required: true, },
     shippingProvider: String,
     trackingNumber: String,
     estimatedDeliveryDate: Date,
     actualDeliveryDate: Date,
-    
-    // Status History
     statusHistory: [
       {
         status: String,
@@ -200,30 +85,21 @@ const orderSchema = new mongoose.Schema(
         },
       },
     ],
-    
-    // Discount/Coupon
     couponCode: String,
     couponDiscount: {
       type: Number,
       default: 0,
     },
-    
-    // Notes
     customerNote: String,
     internalNote: String,
-    
-    // Cancellation/Return
     cancellationReason: String,
     cancelledAt: Date,
     cancelledBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
-    
     returnReason: String,
     returnedAt: Date,
-    
-    // Refund Information
     refundAmount: Number,
     refundStatus: {
       type: String,
@@ -232,8 +108,6 @@ const orderSchema = new mongoose.Schema(
     },
     refundedAt: Date,
     refundTransactionId: String,
-    
-    // Metadata
     metadata: {
       type: Map,
       of: mongoose.Schema.Types.Mixed,
@@ -252,6 +126,8 @@ orderSchema.index({ paymentStatus: 1 });
 orderSchema.index({ "paymentDetails.razorpayOrderId": 1 });
 orderSchema.index({ "paymentDetails.paypalOrderId": 1 });
 orderSchema.index({ trackingNumber: 1 });
+orderSchema.index({ shippingAddress: 1 });
+orderSchema.index({ billingAddress: 1 });
 
 // Pre-save middleware to generate order number
 orderSchema.pre("save", async function (next) {
@@ -288,7 +164,9 @@ orderSchema.statics.getUserOrders = async function (userId, options = {}) {
     .limit(limit)
     .skip(skip)
     .populate("items.productId", "name images")
-    .populate("paymentDetails.paymentMethodId");
+    .populate("paymentDetails.paymentMethodId")
+    .populate("shippingAddress")
+    .populate("billingAddress");
 };
 
 // Static method to get order statistics
