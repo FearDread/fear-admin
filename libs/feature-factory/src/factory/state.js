@@ -10,6 +10,7 @@ const DEFAULT_OPTIONS = {
   includeValidation: false,
   includeMetadata: true,
   customFields: {},
+  DEBUG: true,
 };
 
 /**
@@ -219,7 +220,10 @@ export const StateFactory = (namespace, options = {}) => {
     ...optionalStates,
     ...config.customFields,
   };
-  console.log('Initial State :: ', initialState);
+
+  if (config.DEBUG) {
+    console.log('Initial State: ', initialState);
+  }
   return initialState;
 };
 

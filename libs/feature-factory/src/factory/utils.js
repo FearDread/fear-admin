@@ -252,6 +252,10 @@ export const createThunks = (entity, operations = {}) => {
     thunks.delete = ThunkFactory.delete(entity, 'delete');
   }
 
+  if (config.new) {
+    thunks.new = ThunkFactory.post(entity, 'new');
+  }
+
   return thunks;
 };
 
@@ -274,17 +278,13 @@ export const addHandlers = (builder, asyncActions, entity) => {
             lastRun: new Date().toISOString(),
           };
         }
-        console.log('pending state = ', state);
       })
       .addCase(action.fulfilled, (state, actionPayload) => {
         state.loading = false;
         state.success = true;
         state.loadingState = 'fulfilled';
-
         // Handle different response structures
         const payload = actionPayload.payload;
-        console.log('fulfilled state = ', state);
-        console.log('loading state = false (success)', payload);
         // Update data based on operation type
         if (key === 'fetch' || key === 'search') {
           state.data = Array.isArray(payload) ? payload : (payload?.data || []);
@@ -328,7 +328,6 @@ export const addHandlers = (builder, asyncActions, entity) => {
             lastRun: new Date().toISOString(),
           };
         }
-        console.log('fully fulfilled state :: ', state);
       })
       .addCase(action.rejected, (state, actionPayload) => {
         state.loading = false;
@@ -344,7 +343,6 @@ export const addHandlers = (builder, asyncActions, entity) => {
             lastRun: new Date().toISOString(),
           };
         }
-        console.log('Rejected state = ', state);
       });
   });
 };
