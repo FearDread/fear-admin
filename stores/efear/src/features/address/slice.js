@@ -2,7 +2,6 @@ import { FeatureFactory } from '@feardread/feature-factory';
 
 // Create Address Feature with FeatureFactory
 const addressFactory = FeatureFactory('address', {
-  // Add a new address
   addAddress: (state, action) => {
     const newAddress = {
       id: Date.now().toString(),
@@ -26,8 +25,6 @@ const addressFactory = FeatureFactory('address', {
     state.success = true;
     state.error = null;
   },
-
-  // Update an existing address
   updateAddress: (state, action) => {
     const { id, updates } = action.payload;
     const addressIndex = state.data.findIndex(addr => addr.id === id);
@@ -55,8 +52,6 @@ const addressFactory = FeatureFactory('address', {
       state.error = 'Address not found';
     }
   },
-
-  // Remove an address
   removeAddress: (state, action) => {
     const id = action.payload;
     const addressIndex = state.data.findIndex(addr => addr.id === id);
@@ -77,8 +72,6 @@ const addressFactory = FeatureFactory('address', {
       state.error = null;
     }
   },
-
-  // Set default address
   setDefaultAddress: (state, action) => {
     const id = action.payload;
     let found = false;
@@ -100,8 +93,6 @@ const addressFactory = FeatureFactory('address', {
       state.error = 'Address not found';
     }
   },
-
-  // Validate address
   validateAddress: (state, action) => {
     state.validation = {
       isValid: true,
@@ -148,8 +139,6 @@ const addressFactory = FeatureFactory('address', {
     
     state.validation.errors = errors;
   },
-
-  // Clear validation
   clearValidation: (state) => {
     state.validation = {
       isValid: true,
@@ -181,8 +170,6 @@ export const {
   setDefaultAddress,
   validateAddress,
   clearValidation,
-  searchAddresses,
-  clearSearch,
   setData,
   setError,
   setLoading
@@ -192,7 +179,6 @@ export const {
 export const {
   fetch: fetchAddresses,
   fetchOne: fetchAddress,
-  search: searchAddress,
   create: createAddress,
   update: updateAddress,
   patch: patchAddress,
