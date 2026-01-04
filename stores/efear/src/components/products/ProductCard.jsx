@@ -95,11 +95,14 @@ export const ProductCard = (product) => {
       const wishlistItem = {
         id: product._id || product.id,
         productId: product._id || product.id,
-        name: product.title || product.title,
+        name: product.title,
+        title: product.title,
+        subtotal: currentPrice,
         price: currentPrice,
         image: productImage,
         category: product.category,
         inStock: product.quantity,
+        sku: product._id
       };
 
       if (isInWishlist) {
@@ -173,7 +176,7 @@ export const ProductCard = (product) => {
       price: product.salePrice || product.price,
       subtotal: product.price,
       quantity,
-      sku: product.sku,
+      sku: product._id,
     };
 
     dispatch(addItem(cartItem));

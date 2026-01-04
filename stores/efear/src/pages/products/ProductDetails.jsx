@@ -134,15 +134,14 @@ export const ProductDetails = () => {
         if (!product) return;
 
         const cartItem = {
-            productId: product._id,
             id: product._id,
+            productId: product._id,
+            quantity,
             name: product.title,
             title: product.title,
             image: product.images?.[0]?.url || '',
             price: product.salePrice || product.price,
-            quantity,
-            size: selectedSize,
-            color: selectedColor,
+            subtotal: product.price,
             sku: product.sku,
         };
 

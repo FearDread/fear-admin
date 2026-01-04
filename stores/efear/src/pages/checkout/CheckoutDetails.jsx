@@ -33,6 +33,7 @@ export const CheckoutDetails = () => {
   
   // Local state for form
   const [shippingAddress, setShippingAddress] = useState({
+    userId: currentUser?._id || null,
     firstName: currentUser?.firstName || '',
     lastName: currentUser?.lastName || '',
     email: currentUser?.email || '',
@@ -46,6 +47,7 @@ export const CheckoutDetails = () => {
   });
   
   const [billingAddress, setBillingAddress] = useState({
+    userId: currentUser?._id || null,
     firstName: '',
     lastName: '',
     email: '',

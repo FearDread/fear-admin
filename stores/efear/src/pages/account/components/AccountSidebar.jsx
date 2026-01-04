@@ -70,7 +70,8 @@ export const AccountSidebar = (props) => {
                             <div className="mb-3">
                                 {currentUser.avatar ? (
                                     <img
-                                        src={currentUser.avatar ? currentUser.avatar.url : '/assets/images/avatars/avatar-1.png'}
+                                        className="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center"
+                                        src={currentUser.avatar && currentUser.avatar.secure_url !== '' ? currentUser.avatar.secure_url : '/assets/images/avatars/avatar-1.png'}
                                         alt={userFullName}
                                         className="rounded-circle"
                                         width="80"
