@@ -1,191 +1,354 @@
-const Razorpay = require("razorpay");
-const paypal = require("@paypal/checkout-server-sdk");
-const Payment = require("../models/payment");
-const methods = require("./crud");
+const stripeHandler = require("../libs/stripe");
 
-const instance = new Razorpay({
-  key_id: "rzp_test_HSSeDI22muUrLR",
-  key_secret: "sRO0YkBxvgMg0PvWHJN16Uf7",
-});
+exports.createPaymentIntent =  (req, res) => {
+    const { amount, currency, metadata, customer, description } = req.body;
 
-// Razorpay instance
-const razorpayInstance = new Razorpay({
-  key_id: "rzp_test_HSSeDI22muUrLR",
-  key_secret: "sRO0YkBxvgMg0PvWHJN16Uf7",
-});
-
-// PayPal environment setup
-const paypalEnvironment = () => {
-  const clientId = process.env.PAYPAL_CLIENT_ID || "YOUR_PAYPAL_CLIENT_ID";
-  const clientSecret = process.env.PAYPAL_CLIENT_SECRET || "YOUR_PAYPAL_CLIENT_SECRET";
-  
-  // Use sandbox for testing, live for production
-  return new paypal.core.SandboxEnvironment(clientId, clientSecret);
-  // For production: return new paypal.core.LiveEnvironment(clientId, clientSecret);
-};
-
-const paypalClient = () => {
-  return new paypal.core.PayPalHttpClient(paypalEnvironment());
-};
-
-exports.checkout = async (req, res) => {
-  try {
-    const { amount } = req.body;
-    const option = {
-      amount: amount * 100,
-      currency: "INR",
-    };
-    const order = await razorpayInstance.orders.create(option);
-    res.json({
-      success: true,
-      order,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Error creating Razorpay order",
-      error: error.message,
-    });
-  }
-};
-
-exports.paymentVerification = async (req, res) => {
-  try {
-    const { razorpayOrderId, razorpayPaymentId, razorpaySignature } = req.body;
-    
-    // Verify signature for security
-    const crypto = require("crypto");
-    const generatedSignature = crypto
-      .createHmac("sha256", "sRO0YkBxvgMg0PvWHJN16Uf7")
-      .update(`${razorpayOrderId}|${razorpayPaymentId}`)
-      .digest("hex");
-    
-    if (generatedSignature === razorpaySignature) {
-      res.json({
-        success: true,
-        razorpayOrderId,
-        razorpayPaymentId,
-        verified: true,
-      });
-    } else {
-      res.status(400).json({
+    // Validate required fields
+    if (!amount || amount <= 0) {
+      return res.status(400).json({
         success: false,
-        message: "Payment verification failed",
+        message: 'Amount is required and must be greater than 0'
       });
     }
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Error verifying payment",
-      error: error.message,
-    });
-  }
-};
 
-exports.createStripePayment = async (req, res) => {
-   try {
-    const { paymentMethodId, amount, currency } = req.body;
+    return stripeHandler.createPaymentIntent({
+      amount,
+      currency,
+      metadata,
+      customer,
+      description
+    })
+      .then(result => {
+        if (!result.success) {
+          return res.status(400).json({
+            success: false,
+            message: result.error
+          });
+        }
+        return res.status(200).json({
+          success: true,
+          message: 'Payment intent created successfully',
+          result: result.data
+        });
+      })
+      .catch(error => {
+        return res.status(500).json({
+          success: false,
+          message: 'Failed to create payment intent',
+          error: error.message
+        });
+      });
+  };
 
-    // Create a PaymentIntent
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: amount,
-      currency: currency || 'usd',
-      payment_method: paymentMethodId,
-      confirmation_method: 'manual',
-      confirm: true,
-      return_url: 'https://your-site.com/payment-success',
-    });
+exports.retrievePaymentIntent =  (req, res) => {
+    const { id } = req.params;
 
-    res.json({
-      clientSecret: paymentIntent.client_secret,
-      status: paymentIntent.status,
-    });
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-};
-exports.saveStripePayment = async (req, res) => {
-  try {
-    const { paymentMethodId, customerId } = req.body;
+    return stripeHandler.retrievePaymentIntent(id)
+      .then(result => {
+        if (!result.success) {
+          return res.status(404).json({
+            success: false,
+            message: result.error
+          });
+        }
+        return res.status(200).json({
+          success: true,
+          message: 'Payment intent retrieved',
+          result: result.data
+        });
+      })
+      .catch(error => {
+        return res.status(500).json({
+          success: false,
+          message: 'Failed to retrieve payment intent',
+          error: error.message
+        });
+      });
+  };
 
-    // Attach payment method to customer
-    await stripe.paymentMethods.attach(paymentMethodId, {
-      customer: customerId,
-    });
+exports.cancelPaymentIntent =  (req, res) => {
+    const { id } = req.params;
 
-    // Set as default payment method
-    await stripe.customers.update(customerId, {
-      invoice_settings: {
-        default_payment_method: paymentMethodId,
-      },
-    });
+    return stripeHandler.cancelPaymentIntent(id)
+      .then(result => {
+        if (!result.success) {
+          return res.status(400).json({
+            success: false,
+            message: result.error
+          });
+        }
+        return res.status(200).json({
+          success: true,
+          message: 'Payment intent cancelled',
+          result: result.data
+        });
+      })
+      .catch(error => {
+        return res.status(500).json({
+          success: false,
+          message: 'Failed to cancel payment intent',
+          error: error.message
+        });
+      });
+  };
 
-    res.json({ success: true });
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-}
-// ============ PAYPAL METHODS ============
+exports.createCustomer =  (req, res) => {
+    const { email, name, metadata } = req.body;
 
-exports.createPayPalOrder = async (req, res) => {
-  try {
-    const { amount, currency = "USD" } = req.body;
-    
-    const request = new paypal.orders.OrdersCreateRequest();
-    request.prefer("return=representation");
-    request.requestBody({
-      intent: "CAPTURE",
-      purchase_units: [{
-        amount: {
-          currency_code: currency,
-          value: amount.toString(),
-        },
-      }],
-    });
-    
-    const order = await paypalClient().execute(request);
-    
-    res.json({
-      success: true,
-      orderId: order.result.id,
-      order: order.result,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Error creating PayPal order",
-      error: error.message,
-    });
-  }
-};
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email is required'
+      });
+    }
 
-exports.capturePayPalOrder = async (req, res) => {
-  try {
-    const { orderId } = req.body;
-    
-    const request = new paypal.orders.OrdersCaptureRequest(orderId);
-    request.requestBody({});
-    
-    const capture = await paypalClient().execute(request);
-    
-    res.json({
-      success: true,
-      captureId: capture.result.id,
-      status: capture.result.status,
-      capture: capture.result,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Error capturing PayPal order",
-      error: error.message,
-    });
-  }
-};
+    return stripeHandler.createCustomer({
+      email,
+      name,
+      metadata
+    })
+      .then(result => {
+        if (!result.success) {
+          return res.status(400).json({
+            success: false,
+            message: result.error
+          });
+        }
+        return res.status(200).json({
+          success: true,
+          message: 'Customer created successfully',
+          result: result.data
+        });
+      })
+      .catch(error => {
+        return res.status(500).json({
+          success: false,
+          message: 'Failed to create customer',
+          error: error.message
+        });
+      });
+  };
 
-const crud = methods.crudController( Payment );
-for(prop in crud) {
-  if(crud.hasOwnProperty(prop)) {
-    module.exports[prop] = crud[prop];
-  }
-}
+exports.retrieveCustomer =  (req, res) => {
+    const { id } = req.params;
+
+    return stripeHandler.retrieveCustomer(id)
+      .then(result => {
+        if (!result.success) {
+          return res.status(404).json({
+            success: false,
+            message: result.error
+          });
+        }
+        return res.status(200).json({
+          success: true,
+          message: 'Customer retrieved',
+          result: result.data
+        });
+      })
+      .catch(error => {
+        return res.status(500).json({
+          success: false,
+          message: 'Failed to retrieve customer',
+          error: error.message
+        });
+      });
+  };
+
+
+exports.listCustomers =  (req, res) => {
+    const { limit = 10 } = req.query;
+
+    return stripeHandler.listCustomers(Number(limit))
+      .then(result => {
+        if (!result.success) {
+          return res.status(400).json({
+            success: false,
+            message: result.error
+          });
+        }
+        return res.status(200).json({
+          success: true,
+          message: 'Customers retrieved',
+          result: result.data,
+          count: result.data.length
+        });
+      })
+      .catch(error => {
+        return res.status(500).json({
+          success: false,
+          message: 'Failed to list customers',
+          error: error.message
+        });
+      });
+  };
+
+exports.createRefund =  (req, res) => {
+    const { paymentIntentId, amount, reason } = req.body;
+
+    if (!paymentIntentId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Payment intent ID is required'
+      });
+    }
+
+    return stripeHandler.createRefund({
+      paymentIntentId,
+      amount,
+      reason
+    })
+      .then(result => {
+        if (!result.success) {
+          return res.status(400).json({
+            success: false,
+            message: result.error
+          });
+        }
+        return res.status(200).json({
+          success: true,
+          message: 'Refund created successfully',
+          result: result.data
+        });
+      })
+      .catch(error => {
+        return res.status(500).json({
+          success: false,
+          message: 'Failed to create refund',
+          error: error.message
+        });
+      });
+  };
+
+exports.createCheckoutSession =  (req, res) => {
+    const { lineItems, successUrl, cancelUrl, metadata, customer } = req.body;
+
+    if (!lineItems || !Array.isArray(lineItems) || lineItems.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Line items are required'
+      });
+    }
+
+    if (!successUrl || !cancelUrl) {
+      return res.status(400).json({
+        success: false,
+        message: 'Success and cancel URLs are required'
+      });
+    }
+
+    return stripeHandler.createCheckoutSession({
+      lineItems,
+      successUrl,
+      cancelUrl,
+      metadata,
+      customer
+    })
+      .then(result => {
+        if (!result.success) {
+          return res.status(400).json({
+            success: false,
+            message: result.error
+          });
+        }
+        return res.status(200).json({
+          success: true,
+          message: 'Checkout session created',
+          result: result.data
+        });
+      })
+      .catch(error => {
+        return res.status(500).json({
+          success: false,
+          message: 'Failed to create checkout session',
+          error: error.message
+        });
+      });
+  };
+
+exports.createSubscription =  (req, res) => {
+    const { customerId, priceId, metadata } = req.body;
+
+    if (!customerId || !priceId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Customer ID and Price ID are required'
+      });
+    }
+
+    return stripeHandler.createSubscription({
+      customerId,
+      priceId,
+      metadata
+    })
+      .then(result => {
+        if (!result.success) {
+          return res.status(400).json({
+            success: false,
+            message: result.error
+          });
+        }
+        return res.status(200).json({
+          success: true,
+          message: 'Subscription created successfully',
+          result: result.data
+        });
+      })
+      .catch(error => {
+        return res.status(500).json({
+          success: false,
+          message: 'Failed to create subscription',
+          error: error.message
+        });
+      });
+  };
+
+exports.cancelSubscription =  (req, res) => {
+    const { id } = req.params;
+
+    return stripeHandler.cancelSubscription(id)
+      .then(result => {
+        if (!result.success) {
+          return res.status(400).json({
+            success: false,
+            message: result.error
+          });
+        }
+        return res.status(200).json({
+          success: true,
+          message: 'Subscription cancelled',
+          result: result.data
+        });
+      })
+      .catch(error => {
+        return res.status(500).json({
+          success: false,
+          message: 'Failed to cancel subscription',
+          error: error.message
+        });
+      });
+  };
+
+
+exports.handleWebhook =  (req, res) => {
+    return stripeHandler.handleWebhook(req)
+      .then(result => {
+        if (!result.success) {
+          return res.status(400).json({
+            success: false,
+            message: result.error
+          });
+        }
+        return res.status(200).json({
+          success: true,
+          received: true
+        });
+      })
+      .catch(error => {
+        return res.status(400).json({
+          success: false,
+          message: 'Webhook error',
+          error: error.message
+        });
+      });
+  };

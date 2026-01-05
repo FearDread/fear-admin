@@ -5,6 +5,7 @@ module.exports = (fear) => {
     const handler = fear.getHandler();
     const validator = fear.getValidator();
 
+    /*
     router.get("/all", handler.async(Payment.list));
     router.post("/new", handler.async(Payment.create));
     router.post("/create", handler.async(Payment.create));
@@ -13,6 +14,6 @@ module.exports = (fear) => {
         .get(Payment.read)
         .put(Payment.update);
 
-
+*/
     return router;
 }
