@@ -16,6 +16,8 @@ import {
   setCurrentUser,
   setIsAuthenticated
 } from '../../features/user/slice';
+import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
+import GoogleAuth from "./components/GoogleAuth";
 
 export const Login = () => {
   const navigate = useNavigate();
@@ -191,21 +193,7 @@ export const Login = () => {
 
                       {/* Social Login Buttons */}
                       <div className="d-grid">
-                        <button 
-                          className="btn my-4 shadow-sm btn-light" 
-                          onClick={handleGoogleLogin}
-                          disabled={loading}
-                        >
-                          <span className="d-flex justify-content-center align-items-center">
-                            <img 
-                              className="me-2" 
-                              src="assets/images/icons/search.svg" 
-                              width="16" 
-                              alt="Google" 
-                            />
-                            <span>Sign in with Google</span>
-                          </span>
-                        </button>
+                        <GoogleAuth />
                         <button 
                           className="btn btn-light"
                           onClick={handleFacebookLogin}
