@@ -1,5 +1,6 @@
 const path = require("path");
 const fs = require("fs");
+const stripe = require('stripe');
 const express = require("express");
 const compression = require("compression");
 const cookieParser = require("cookie-parser");
@@ -14,7 +15,7 @@ module.exports = FEAR = (() => {
   const AGENT_ROUTE_PATH = '/fear/api/agent';
 
   // Constructor function
-  const FEAR = function() {
+  const FEAR = function () {
     this.app = express();
     this.Router = express.Router;
     this.server = null;
@@ -29,10 +30,12 @@ module.exports = FEAR = (() => {
     this.logo = null;
     this.origins = [];
     this.corsConfig = null;
+    this.stripe = null;
 
     // Initialize
     this.setupEnvironment();
     this.setupDependencies();
+    this.setupStripe();
     this.setupMiddleware();
     this.corsConfig = this.getCorsConfig();
     this.setupRoutes();
@@ -42,6 +45,9 @@ module.exports = FEAR = (() => {
   FEAR.prototype = {
     constructor: FEAR,
 
+    getStripe() {
+      return this.stripe;
+    },
     /**
      * Get AI Agent service instance
      */
@@ -145,6 +151,15 @@ module.exports = FEAR = (() => {
       this.validator = require("./libs/validator");
       this.logo = this.env.FEAR_LOGO;
       this.origins = this.getAllowedOrigins();
+    },
+
+    setupStripe() {
+      const StripeHandler = require("./libs/stripe");
+      // Initialize Stripe with secret key
+      if (!this.env.STRIPE_SECRET_KEY || !this.env.STRIPE_API_KEY) {
+        this.logger.error('STRIPE_API_KEY not found in .env file')
+      }
+      this.stripe = new StripeHandler(this);
     },
 
     /**
@@ -287,6 +302,7 @@ module.exports = FEAR = (() => {
       router.getHandler = () => this.handler;
       router.getValidator = () => this.validator;
       router.getAiAgent = () => this.agentService;
+      router.getStripe = () => this.stripe;
       //router.getAgentWebInterface = () => this.agentWebInterface;
 
       return router;
@@ -314,14 +330,14 @@ module.exports = FEAR = (() => {
             this.logger.error(`Failed to start server on port ${serverPort}:`, err);
             return reject(err);
           }
-          
+
           this.logger.info(`FEAR server started on port ${serverPort}`);
-          
+
           // Log agent interface status
           if (this.agentWebInterface) {
             this.logger.info(`Agent Web Interface available at ${AGENT_ROUTE_PATH}`);
           }
-          
+
           resolve(this.server);
         });
       });
@@ -347,7 +363,7 @@ module.exports = FEAR = (() => {
           }
 
           // Shutdown agent web interface
-          const agentShutdown = this.agentWebInterface && 
+          const agentShutdown = this.agentWebInterface &&
             typeof this.agentWebInterface.shutdown === 'function' ?
             this.agentWebInterface.shutdown() :
             Promise.resolve();
@@ -397,8 +413,7 @@ module.exports = FEAR = (() => {
         getDatabase: () => this.db,
         getEnvironment: () => this.env,
         getCloud: () => this.cloud,
-        getAiAgent: () => this.agentService,
-        getAgentWebInterface: () => this.agentWebInterface
+        getStripe: () => this.stripe
       };
       return this;
     }

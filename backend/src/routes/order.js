@@ -10,8 +10,9 @@ module.exports = ( fear ) => {
         router.post("/create", handler.async(Order.create));
 
         router.route('/:id')
-                .get(Order.read)
-                .put(Order.update);
+                .post(handler.async(Order.update))
+                .get(handler.async(Order.read))
+                .put(handler.async(Order.update));
 
         router.get("/myOrders", Order.getMyOrders);
         router.get("/monthly", Order.getMonthWiseOrderIncome);
