@@ -23,6 +23,7 @@ function OrderList() {
   const [toggle, setToggle] = useState(false);
 
   const { loading, ORDER } = useSelector((state) => state.order);
+  const orderData = useSelector(state => state.order);
   const header = [
     { Header: "Order ID", accessor: "number" },
     { Header: "Status", accessor: "status" },
@@ -62,7 +63,7 @@ function OrderList() {
 
   const displayOrders = () => {
     let dataTable = [];
-
+    console.log('orders = ', orderData);
     if (ORDER && ORDER.length > 0) {
       ORDER.map((item, key) => {
         dataTable.push({
@@ -93,7 +94,7 @@ function OrderList() {
   useEffect(() => {
 
     dispatch(OrderActions.list());
-
+    console.log('order data = ', orderData);
   }, [dispatch]);
 
   return (
