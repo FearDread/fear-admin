@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import Breadcrumbs from "../../components/common/Breadcrumbs";
-import ProductCartItem from "../../components/products/ProductCartItem";
 import {
   selectCartItems,
   selectCartSubtotal,
@@ -16,6 +15,7 @@ import {
 } from '../../features/user/slice';
 import {
   setCurrentOrder,
+  selectCurrentOrder,
 } from '../../features/orders/slice';
 import CheckoutSteps from "./components/CheckoutSteps";
 
@@ -30,14 +30,15 @@ export const CheckoutDetails = () => {
   const discount = useSelector(selectCartDiscount);
   const currentUser = useSelector(selectCurrentUser);
   const isAuthenticated = useSelector(selectIsAuthenticated);
+  const existingOrder = useSelector(selectCurrentOrder);
   
   // Local state for form
   const [shippingAddress, setShippingAddress] = useState({
-    userId: currentUser?._id || null,
-    firstName: currentUser?.firstName || '',
-    lastName: currentUser?.lastName || '',
-    email: currentUser?.email || '',
-    phone: currentUser?.phone || '',
+    userId: currentUser?._id,
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
     city: '',
     state: '',
     zipCode: '',
@@ -47,7 +48,7 @@ export const CheckoutDetails = () => {
   });
   
   const [billingAddress, setBillingAddress] = useState({
-    userId: currentUser?._id || null,
+    userId: currentUser?._id,
     firstName: '',
     lastName: '',
     email: '',
@@ -63,6 +64,7 @@ export const CheckoutDetails = () => {
   const [sameAsShipping, setSameAsShipping] = useState(true);
   const [discountCode, setDiscountCode] = useState('');
   const [discountError, setDiscountError] = useState('');
+  const [validationErrors, setValidationErrors] = useState({});
   
   // Redirect if not authenticated
   useEffect(() => {
@@ -78,21 +80,33 @@ export const CheckoutDetails = () => {
     }
   }, [cartItems, navigate]);
   
-  // Update form when user data loads
+  // Load existing order data or user data
   useEffect(() => {
-    if (currentUser) {
+    if (existingOrder?.shippingAddress) {
+      // Load from existing order
+      setShippingAddress(existingOrder.shippingAddress);
+      if (existingOrder.billingAddress) {
+        setBillingAddress(existingOrder.billingAddress);
+        setSameAsShipping(false);
+      }
+    } else if (currentUser) {
+      // Load from user profile
       setShippingAddress(prev => ({
         ...prev,
-        firstName: currentUser.firstName || prev.firstName,
-        lastName: currentUser.lastName || prev.lastName,
-        email: currentUser.email || prev.email,
-        phone: currentUser.phone || prev.phone,
+        firstName: currentUser.firstName || '',
+        lastName: currentUser.lastName || '',
+        email: currentUser.email || '',
+        phone: currentUser.phone || '',
       }));
     }
-  }, [currentUser]);
+  }, [currentUser, existingOrder]);
   
   const handleShippingChange = (field, value) => {
     setShippingAddress(prev => ({ ...prev, [field]: value }));
+    // Clear validation error for this field
+    if (validationErrors[field]) {
+      setValidationErrors(prev => ({ ...prev, [field]: '' }));
+    }
   };
   
   const handleBillingChange = (field, value) => {
@@ -105,43 +119,69 @@ export const CheckoutDetails = () => {
       return;
     }
     
-    // Mock discount validation - replace with actual API call
     const validCodes = {
       'SAVE10': 10,
       'SAVE20': 20,
-      'WELCOME': 15,
+      'WELCOME15': 15,
+      'FIRST25': 25,
     };
     
-    const discountAmount = validCodes[discountCode.toUpperCase()];
+    const discountPercentage = validCodes[discountCode.toUpperCase()];
     
-    if (discountAmount) {
+    if (discountPercentage) {
+      const discountAmount = (subtotal * discountPercentage) / 100;
       dispatch(applyDiscount(discountAmount));
       setDiscountError('');
+      alert(`Discount applied! You saved $${discountAmount.toFixed(2)}`);
+      setDiscountCode('');
     } else {
       setDiscountError('Invalid discount code');
     }
   };
   
-  const handleProceedToShipping = () => {
-    // Validate required fields
-    const requiredFields = ['firstName', 'lastName', 'email', 'phone', 'line1', 'city', 'state', 'zipCode', 'country'];
-    const missingFields = requiredFields.filter(field => !shippingAddress[field]);
+  const validateForm = () => {
+    const errors = {};
+    const requiredFields = ['firstName', 'lastName', 'email', 'phone', 'line1', 'city', 'state', 'zipCode'];
     
-    if (missingFields.length > 0) {
-     // alert('Please fill in all required fields');
-      //return;
+    requiredFields.forEach(field => {
+      if (!shippingAddress[field] || !shippingAddress[field].trim()) {
+        errors[field] = `${field.replace(/([A-Z])/g, ' $1').trim()} is required`;
+      }
+    });
+    
+    // Email validation
+    if (shippingAddress.email && !/\S+@\S+\.\S+/.test(shippingAddress.email)) {
+      errors.email = 'Please enter a valid email address';
     }
     
-    // Create initial order object
+    // Phone validation
+    if (shippingAddress.phone && !/^\d{10,}$/.test(shippingAddress.phone.replace(/\D/g, ''))) {
+      errors.phone = 'Please enter a valid phone number';
+    }
+    
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+  
+  const handleProceedToShipping = () => {
+    // Validate form
+    if (!validateForm()) {
+      alert('Please fill in all required fields correctly');
+      return;
+    }
+    
+    // Create order object with address details
     const orderData = {
+      ...existingOrder,
       shippingAddress,
       billingAddress: sameAsShipping ? shippingAddress : billingAddress,
       items: cartItems,
       subtotal,
       discount,
       total,
-      status: 'pending',
-      step: 'shipping', // Track checkout step
+      orderStatus: 'pending',
+      step: 'shipping',
+      updatedAt: new Date().toISOString(),
     };
     
     // Save to order slice
@@ -155,8 +195,9 @@ export const CheckoutDetails = () => {
     navigate('/cart');
   };
   
-  // Calculate taxes (mock calculation - 7%)
-  const taxes = subtotal * 0.07;
+  // Calculate taxes
+  const taxRate = 0.07;
+  const taxes = subtotal * taxRate;
   const finalTotal = subtotal + taxes - (discount || 0);
   
   return (
@@ -171,14 +212,14 @@ export const CheckoutDetails = () => {
           </div>
         </div>
       </section>
+      
       <section className="py-4">
         <div className="container">
           <div className="shop-cart">
             <div className="row">
               <div className="col-12 col-xl-8">
                 <div className="checkout-details">
-
-                      <CheckoutSteps currentStep="details" />
+                  <CheckoutSteps currentStep="details" />
                   
                   {currentUser && (
                     <div className="card rounded-0">
@@ -215,80 +256,122 @@ export const CheckoutDetails = () => {
                         <h2 className="h5 mb-0">Shipping Address</h2>
                         <div className="my-3 border-bottom"></div>
                         <div className="form-body">
-                          <form className="row g-3" onSubmit={(e) => e.preventDefault()}>
+                          <div className="row g-3">
                             <div className="col-md-6">
                               <label className="form-label">First Name *</label>
                               <input 
                                 type="text" 
-                                className="form-control rounded-0"
+                                className={`form-control rounded-0 ${validationErrors.firstName ? 'is-invalid' : ''}`}
                                 value={shippingAddress.firstName}
                                 onChange={(e) => handleShippingChange('firstName', e.target.value)}
-                                required
                               />
+                              {validationErrors.firstName && (
+                                <div className="invalid-feedback">{validationErrors.firstName}</div>
+                              )}
                             </div>
                             <div className="col-md-6">
                               <label className="form-label">Last Name *</label>
                               <input 
                                 type="text" 
-                                className="form-control rounded-0"
+                                className={`form-control rounded-0 ${validationErrors.lastName ? 'is-invalid' : ''}`}
                                 value={shippingAddress.lastName}
                                 onChange={(e) => handleShippingChange('lastName', e.target.value)}
-                                required
                               />
+                              {validationErrors.lastName && (
+                                <div className="invalid-feedback">{validationErrors.lastName}</div>
+                              )}
                             </div>
                             <div className="col-md-6">
-                              <label className="form-label">E-mail id *</label>
+                              <label className="form-label">E-mail *</label>
                               <input 
                                 type="email" 
-                                className="form-control rounded-0"
+                                className={`form-control rounded-0 ${validationErrors.email ? 'is-invalid' : ''}`}
                                 value={shippingAddress.email}
                                 onChange={(e) => handleShippingChange('email', e.target.value)}
-                                required
                               />
+                              {validationErrors.email && (
+                                <div className="invalid-feedback">{validationErrors.email}</div>
+                              )}
                             </div>
                             <div className="col-md-6">
                               <label className="form-label">Phone Number *</label>
                               <input 
                                 type="tel" 
-                                className="form-control rounded-0"
+                                className={`form-control rounded-0 ${validationErrors.phone ? 'is-invalid' : ''}`}
                                 value={shippingAddress.phone}
                                 onChange={(e) => handleShippingChange('phone', e.target.value)}
-                                required
+                                placeholder="(555) 123-4567"
                               />
+                              {validationErrors.phone && (
+                                <div className="invalid-feedback">{validationErrors.phone}</div>
+                              )}
                             </div>
-                            <div className="col-md-6">
-                              <label className="form-label">City</label>
+                            <div className="col-md-12">
+                              <label className="form-label">Address Line 1 *</label>
+                              <input 
+                                type="text" 
+                                className={`form-control rounded-0 ${validationErrors.line1 ? 'is-invalid' : ''}`}
+                                value={shippingAddress.line1}
+                                onChange={(e) => handleShippingChange('line1', e.target.value)}
+                                placeholder="Street address, P.O. box"
+                              />
+                              {validationErrors.line1 && (
+                                <div className="invalid-feedback">{validationErrors.line1}</div>
+                              )}
+                            </div>
+                            <div className="col-md-12">
+                              <label className="form-label">Address Line 2</label>
                               <input 
                                 type="text" 
                                 className="form-control rounded-0"
+                                value={shippingAddress.line2}
+                                onChange={(e) => handleShippingChange('line2', e.target.value)}
+                                placeholder="Apartment, suite, unit, building, floor, etc."
+                              />
+                            </div>
+                            <div className="col-md-6">
+                              <label className="form-label">City *</label>
+                              <input 
+                                type="text" 
+                                className={`form-control rounded-0 ${validationErrors.city ? 'is-invalid' : ''}`}
                                 value={shippingAddress.city}
                                 onChange={(e) => handleShippingChange('city', e.target.value)}
                               />
+                              {validationErrors.city && (
+                                <div className="invalid-feedback">{validationErrors.city}</div>
+                              )}
                             </div>
                             <div className="col-md-6">
                               <label className="form-label">State/Province *</label>
                               <select 
-                                className="form-select rounded-0"
+                                className={`form-select rounded-0 ${validationErrors.state ? 'is-invalid' : ''}`}
                                 value={shippingAddress.state}
                                 onChange={(e) => handleShippingChange('state', e.target.value)}
-                                required
                               >
                                 <option value="">Select State</option>
                                 <option value="CA">California</option>
                                 <option value="TX">Texas</option>
                                 <option value="NY">New York</option>
                                 <option value="FL">Florida</option>
+                                <option value="IL">Illinois</option>
+                                <option value="PA">Pennsylvania</option>
                               </select>
+                              {validationErrors.state && (
+                                <div className="invalid-feedback">{validationErrors.state}</div>
+                              )}
                             </div>
                             <div className="col-md-6">
                               <label className="form-label">Zip/Postal Code *</label>
                               <input 
                                 type="text" 
-                                className="form-control rounded-0"
+                                className={`form-control rounded-0 ${validationErrors.zipCode ? 'is-invalid' : ''}`}
                                 value={shippingAddress.zipCode}
                                 onChange={(e) => handleShippingChange('zipCode', e.target.value)}
-                                required
+                                placeholder="12345"
                               />
+                              {validationErrors.zipCode && (
+                                <div className="invalid-feedback">{validationErrors.zipCode}</div>
+                              )}
                             </div>
                             <div className="col-md-6">
                               <label className="form-label">Country *</label>
@@ -296,30 +379,12 @@ export const CheckoutDetails = () => {
                                 className="form-select rounded-0"
                                 value={shippingAddress.country}
                                 onChange={(e) => handleShippingChange('country', e.target.value)}
-                                required
                               >
                                 <option value="United States">United States</option>
                                 <option value="Canada">Canada</option>
                                 <option value="United Kingdom">United Kingdom</option>
                                 <option value="Australia">Australia</option>
                               </select>
-                            </div>
-                            <div className="col-md-6">
-                              <label className="form-label">Address 1 *</label>
-                              <textarea 
-                                className="form-control rounded-0"
-                                value={shippingAddress.line1}
-                                onChange={(e) => handleShippingChange('line1', e.target.value)}
-                                required
-                              />
-                            </div>
-                            <div className="col-md-6">
-                              <label className="form-label">Address 2</label>
-                              <textarea 
-                                className="form-control rounded-0"
-                                value={shippingAddress.line2}
-                                onChange={(e) => handleShippingChange('line2', e.target.value)}
-                              />
                             </div>
                             
                             <div className="col-md-12">
@@ -361,7 +426,7 @@ export const CheckoutDetails = () => {
                                 </button>
                               </div>
                             </div>
-                          </form>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -375,7 +440,7 @@ export const CheckoutDetails = () => {
                     <div className="card-body">
                       <div className="card rounded-0 border bg-transparent shadow-none">
                         <div className="card-body">
-                          <p className="fs-5 text-white">Apply Discount Code</p>
+                          <p className="fs-5">Apply Discount Code</p>
                           <div className="input-group">
                             <input 
                               type="text" 
@@ -389,23 +454,43 @@ export const CheckoutDetails = () => {
                               type="button"
                               onClick={handleApplyDiscount}
                             >
-                              Apply Discount
+                              Apply
                             </button>
                           </div>
                           {discountError && (
                             <small className="text-danger mt-2 d-block">{discountError}</small>
+                          )}
+                          {discount > 0 && (
+                            <small className="text-success mt-2 d-block">
+                              <i className="bx bx-check-circle me-1"></i>
+                              Discount applied: ${discount.toFixed(2)}
+                            </small>
                           )}
                         </div>
                       </div>
                       
                       <div className="card rounded-0 border bg-transparent shadow-none">
                         <div className="card-body">
-                          <p className="fs-5 text-white">Order summary</p>
+                          <p className="fs-5">Order Summary</p>
                           <div className="my-3 border-top"></div>
                           
-                          {cartItems.map((item) => (
-                            <ProductCartItem {...item} />
+                          <p className="mb-2">
+                            Items ({cartItems.length}): 
+                            <span className="float-end">${subtotal.toFixed(2)}</span>
+                          </p>
+                          
+                          {cartItems.slice(0, 3).map((item, index) => (
+                            <div key={item.productId} className="mb-2">
+                              <small className="text-muted">
+                                {item.name} (x{item.quantity})
+                              </small>
+                            </div>
                           ))}
+                          {cartItems.length > 3 && (
+                            <small className="text-muted">
+                              +{cartItems.length - 3} more items
+                            </small>
+                          )}
                         </div>
                       </div>
                       
@@ -418,16 +503,16 @@ export const CheckoutDetails = () => {
                             Shipping: <span className="float-end">Calculated at next step</span>
                           </p>
                           <p className="mb-2">
-                            Taxes: <span className="float-end">${taxes.toFixed(2)}</span>
+                            Taxes (7%): <span className="float-end">${taxes.toFixed(2)}</span>
                           </p>
-                          <p className="mb-0">
-                            Discount: <span className="float-end">
-                              {discount ? `-$${discount.toFixed(2)}` : '--'}
-                            </span>
-                          </p>
+                          {discount > 0 && (
+                            <p className="mb-0 text-success">
+                              Discount: <span className="float-end">-${discount.toFixed(2)}</span>
+                            </p>
+                          )}
                           <div className="my-3 border-top"></div>
                           <h5 className="mb-0">
-                            Order Total: <span className="float-end">${finalTotal.toFixed(2)}</span>
+                            Estimated Total: <span className="float-end">${finalTotal.toFixed(2)}</span>
                           </h5>
                         </div>
                       </div>

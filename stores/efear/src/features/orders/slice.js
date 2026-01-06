@@ -3,17 +3,18 @@ import { FeatureFactory } from '@feardread/feature-factory';
 import OrderService from './service';
 
 const orderReducers = {
-  // Set current order being viewed/edited
   setCurrentOrder: (state, action) => {
     state.currentOrder = action.payload;
   },
-  
-  // Clear current order
   clearCurrentOrder: (state) => {
     state.currentOrder = null;
   },
-  
-  // Update order status
+  updateCurrentOrder: (state, action) => {
+      state.currentOrder = {
+        ...state.currentOrder,
+        ...action.payload,
+      };
+  },
   updateOrderStatus: (state, action) => {
     const { orderId, status } = action.payload;
     const order = state.entities[orderId];
@@ -28,8 +29,6 @@ const orderReducers = {
       state.currentOrder.updatedAt = new Date().toISOString();
     }
   },
-  
-  // Add tracking info
   addTrackingInfo: (state, action) => {
     const { orderId, trackingNumber, carrier } = action.payload;
     const order = state.entities[orderId];
@@ -46,13 +45,9 @@ const orderReducers = {
       state.currentOrder.shippedAt = new Date().toISOString();
     }
   },
-  
-  // Set filter criteria
   setOrderFilters: (state, action) => {
     state.filters = { ...state.filters, ...action.payload };
   },
-  
-  // Clear filters
   clearOrderFilters: (state) => {
     state.filters = {
       status: null,
@@ -62,13 +57,9 @@ const orderReducers = {
       maxAmount: null,
     };
   },
-  
-  // Set order statistics
   setOrderStats: (state, action) => {
     state.statistics = action.payload;
   },
-  
-  // Add order note
   addOrderNote: (state, action) => {
     const { orderId, note } = action.payload;
     const order = state.entities[orderId];
@@ -95,8 +86,6 @@ const orderReducers = {
       });
     }
   },
-  
-  // Set recent orders
   setRecentOrders: (state, action) => {
     state.recentOrders = action.payload;
   },
@@ -147,6 +136,7 @@ export const {
   // Custom order reducers
   setCurrentOrder,
   clearCurrentOrder,
+  updateCurrentOrder,
   updateOrderStatus,
   addTrackingInfo,
   setOrderFilters,

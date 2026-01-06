@@ -11,6 +11,10 @@ import {
   setShipping,
   applyDiscount,
 } from '../../features/cart/slice';
+import {
+  selectCurrentOrder,
+  updateCurrentOrder,
+} from '../../features/orders/slice';
 import CheckoutSteps from "./components/CheckoutSteps";
 
 const CheckoutShipping = () => {
@@ -23,6 +27,7 @@ const CheckoutShipping = () => {
   const total = useSelector(selectCartTotal);
   const currentShipping = useSelector(selectCartShipping);
   const discount = useSelector(selectCartDiscount);
+  const currentOrder = useSelector(selectCurrentOrder);
 
   // Local state
   const [selectedShipping, setSelectedShipping] = useState(null);
@@ -31,28 +36,44 @@ const CheckoutShipping = () => {
 
   // Shipping methods
   const shippingMethods = [
-    { id: 'flat', name: 'Flat Rate', time: '2 days', fee: 10.00 },
-    { id: 'international', name: 'International shipping', time: '12 days', fee: 12.00 },
-    { id: 'same-day', name: 'Same day delivery', time: '1 day', fee: 22.00 },
-    { id: 'expedited', name: 'Expedited shipping', time: '--', fee: 15.00 },
-    { id: 'local', name: 'Local Pickup', time: '--', fee: 0.00 },
-    { id: 'ups', name: 'UPS Ground', time: '2-5 days', fee: 16.00 },
+    { id: 'standard', name: 'Standard Shipping', time: '5-7 days', fee: 0.00, description: 'Free standard shipping' },
+    { id: 'express', name: 'Express Shipping', time: '2-3 days', fee: 10.00, description: 'Faster delivery' },
+    { id: 'overnight', name: 'Overnight Delivery', time: '1 day', fee: 25.00, description: 'Next day delivery' },
+    { id: 'international', name: 'International Shipping', time: '10-15 days', fee: 35.00, description: 'Worldwide delivery' },
   ];
 
-  // Set default shipping method on mount
+  // Set default or existing shipping method on mount
   useEffect(() => {
-    if (currentShipping === 0 && shippingMethods.length > 0) {
+    if (currentOrder?.shippingMethodId) {
+      // Restore from existing order
+      setSelectedShipping(currentOrder.shippingMethodId);
+      const method = shippingMethods.find(m => m.id === currentOrder.shippingMethodId);
+      if (method) {
+        dispatch(setShipping(method.fee));
+      }
+    } else if (shippingMethods.length > 0) {
+      // Set default to first method
       const defaultMethod = shippingMethods[0];
       setSelectedShipping(defaultMethod.id);
       dispatch(setShipping(defaultMethod.fee));
-    } else if (currentShipping > 0) {
-      // Find the shipping method that matches current shipping cost
-      const method = shippingMethods.find(m => m.fee === currentShipping);
-      if (method) {
-        setSelectedShipping(method.id);
-      }
     }
   }, []);
+
+  // Validate that user has completed previous steps
+  useEffect(() => {
+    if (!currentOrder?.shippingAddress?.line1) {
+      alert('Please complete shipping address first');
+      navigate('/checkout/details');
+    }
+  }, [currentOrder, navigate]);
+
+  // Redirect if cart is empty
+  useEffect(() => {
+    if (cartItems.length === 0) {
+      alert('Your cart is empty. Please add items before checkout.');
+      navigate('/products');
+    }
+  }, [cartItems, navigate]);
 
   // Handle shipping method selection
   const handleShippingSelect = (method) => {
@@ -69,13 +90,12 @@ const CheckoutShipping = () => {
 
     setIsApplyingDiscount(true);
 
-    // Simulate discount code validation
-    // In real app, this would be an API call
     setTimeout(() => {
       const validCodes = {
-        'SAVE10': 0.10, // 10% off
-        'SAVE20': 0.20, // 20% off
-        'FLAT15': 15.00, // $15 flat discount
+        'SAVE10': 0.10,
+        'SAVE20': 0.20,
+        'FLAT15': 15.00,
+        'WELCOME': 0.15,
       };
 
       const discountValue = validCodes[discountCode.toUpperCase()];
@@ -83,10 +103,8 @@ const CheckoutShipping = () => {
       if (discountValue) {
         let discountAmount;
         if (discountValue < 1) {
-          // Percentage discount
           discountAmount = subtotal * discountValue;
         } else {
-          // Flat discount
           discountAmount = discountValue;
         }
 
@@ -111,20 +129,29 @@ const CheckoutShipping = () => {
       alert('Please select a shipping method');
       return;
     }
+
+    // Get selected shipping method details
+    const shippingMethod = shippingMethods.find(m => m.id === selectedShipping);
+    
+    // Update order with shipping information
+    const updatedOrder = {
+      ...currentOrder,
+      shippingMethodId: selectedShipping,
+      shippingMethod: shippingMethod?.name,
+      shippingCost: shippingMethod?.fee || 0,
+      estimatedDelivery: shippingMethod?.time,
+      step: 'payment',
+      updatedAt: new Date().toISOString(),
+    };
+
+    dispatch(updateCurrentOrder(updatedOrder));
     navigate('/checkout/payment');
   };
 
-  // Redirect if cart is empty
-  useEffect(() => {
-    if (cartItems.length === 0) {
-      alert('Your cart is empty. Please add items before checkout.');
-      navigate('/products');
-    }
-  }, [cartItems, navigate]);
-
-  // Calculate taxes (example: 7% tax)
+  // Calculate taxes
   const taxRate = 0.07;
   const taxes = subtotal * taxRate;
+  const orderTotal = subtotal + currentShipping + taxes - discount;
 
   return (
     <>
@@ -150,96 +177,97 @@ const CheckoutShipping = () => {
             <div className="row">
               <div className="col-12 col-xl-8">
                 <div className="checkout-shipping">
-                  {/* Progress Steps */}
                   <CheckoutSteps currentStep="shipping" />
-                  {/* 
-                  <div className="card bg-transparent rounded-0 shadow-none">
-                    <div className="card-body">
-                      <div className="steps steps-light">
-                        <a className="step-item active" href="#" onClick={(e) => { e.preventDefault(); navigate('/cart'); }}>
-                          <div className="step-progress"><span className="step-count">1</span></div>
-                          <div className="step-label"><i className='bx bx-cart'></i>Cart</div>
-                        </a>
-                        <a className="step-item active" href="#" onClick={(e) => { e.preventDefault(); navigate('/checkout/details'); }}>
-                          <div className="step-progress"><span className="step-count">2</span></div>
-                          <div className="step-label"><i className='bx bx-user-circle'></i>Details</div>
-                        </a>
-                        <a className="step-item active current" href="#" onClick={(e) => e.preventDefault()}>
-                          <div className="step-progress"><span className="step-count">3</span></div>
-                          <div className="step-label"><i className='bx bx-cube'></i>Shipping</div>
-                        </a>
-                        <a className="step-item" href="#" onClick={(e) => e.preventDefault()}>
-                          <div className="step-progress"><span className="step-count">4</span></div>
-                          <div className="step-label"><i className='bx bx-credit-card'></i>Payment</div>
-                        </a>
-                        <a className="step-item" href="#" onClick={(e) => e.preventDefault()}>
-                          <div className="step-progress"><span className="step-count">5</span></div>
-                          <div className="step-label"><i className='bx bx-check-circle'></i>Review</div>
-                        </a>
+
+                  {/* Shipping Address Summary */}
+                  {currentOrder?.shippingAddress && (
+                    <div className="card rounded-0 shadow-none">
+                      <div className="card-body">
+                        <div className="d-flex justify-content-between align-items-start">
+                          <div>
+                            <h6 className="mb-2">Shipping To:</h6>
+                            <p className="mb-1">
+                              <strong>
+                                {currentOrder.shippingAddress.firstName} {currentOrder.shippingAddress.lastName}
+                              </strong>
+                            </p>
+                            <p className="mb-1 text-muted">
+                              {currentOrder.shippingAddress.line1}
+                              {currentOrder.shippingAddress.line2 && `, ${currentOrder.shippingAddress.line2}`}
+                            </p>
+                            <p className="mb-0 text-muted">
+                              {currentOrder.shippingAddress.city}, {currentOrder.shippingAddress.state} {currentOrder.shippingAddress.zipCode}
+                            </p>
+                          </div>
+                          <button
+                            onClick={() => navigate('/checkout/details')}
+                            className="btn btn-sm btn-outline-primary"
+                          >
+                            <i className="bx bx-edit me-1"></i>Edit
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                    */}
+                  )}
+
                   {/* Shipping Methods */}
                   <div className="card rounded-0 shadow-none">
                     <div className="card-body">
                       <h2 className="h5 mb-0">Choose Shipping Method</h2>
                       <div className="my-3 border-bottom"></div>
-                      <div className="table-responsive">
-                        <table className="table">
-                          <thead className="table-light">
-                            <tr>
-                              <th>Select</th>
-                              <th>Method</th>
-                              <th>Time</th>
-                              <th>Fee</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {shippingMethods.map((method) => (
-                              <tr
-                                key={method.id}
-                                className={selectedShipping === method.id ? 'table-active' : ''}
-                                style={{ cursor: 'pointer' }}
-                                onClick={() => handleShippingSelect(method)}
-                              >
-                                <td>
-                                  <div className="form-check">
-                                    <input
-                                      className="form-check-input"
-                                      type="radio"
-                                      name="shippingMethod"
-                                      id={`shipping-${method.id}`}
-                                      checked={selectedShipping === method.id}
-                                      onChange={() => handleShippingSelect(method)}
-                                    />
-                                  </div>
-                                </td>
-                                <td>
-                                  <label
-                                    htmlFor={`shipping-${method.id}`}
-                                    style={{ cursor: 'pointer', marginBottom: 0 }}
-                                  >
-                                    {method.name}
-                                  </label>
-                                </td>
-                                <td>{method.time}</td>
-                                <td>
-                                  <strong>${method.fee.toFixed(2)}</strong>
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
+                      
+                      <div className="shipping-methods">
+                        {shippingMethods.map((method) => (
+                          <div
+                            key={method.id}
+                            className={`shipping-method-card p-3 mb-3 border rounded ${
+                              selectedShipping === method.id ? 'border-primary bg-light' : ''
+                            }`}
+                            style={{ cursor: 'pointer' }}
+                            onClick={() => handleShippingSelect(method)}
+                          >
+                            <div className="d-flex align-items-center justify-content-between">
+                              <div className="d-flex align-items-center">
+                                <div className="form-check me-3">
+                                  <input
+                                    className="form-check-input"
+                                    type="radio"
+                                    name="shippingMethod"
+                                    id={`shipping-${method.id}`}
+                                    checked={selectedShipping === method.id}
+                                    onChange={() => handleShippingSelect(method)}
+                                  />
+                                </div>
+                                <div>
+                                  <h6 className="mb-1">{method.name}</h6>
+                                  <p className="mb-0 text-muted small">{method.description}</p>
+                                  <small className="text-muted">
+                                    <i className="bx bx-time-five me-1"></i>
+                                    Estimated delivery: {method.time}
+                                  </small>
+                                </div>
+                              </div>
+                              <div className="text-end">
+                                <strong className="text-primary">
+                                  {method.fee === 0 ? 'FREE' : `$${method.fee.toFixed(2)}`}
+                                </strong>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
                       </div>
 
                       {selectedShipping && (
                         <div className="alert alert-info mt-3">
                           <i className="bx bx-info-circle me-2"></i>
-                          Selected shipping method: <strong>
+                          Selected: <strong>
                             {shippingMethods.find(m => m.id === selectedShipping)?.name}
-                          </strong> - $
-                          {shippingMethods.find(m => m.id === selectedShipping)?.fee.toFixed(2)}
+                          </strong>
+                          {' - '}
+                          {shippingMethods.find(m => m.id === selectedShipping)?.fee === 0 
+                            ? 'FREE' 
+                            : `$${shippingMethods.find(m => m.id === selectedShipping)?.fee.toFixed(2)}`
+                          }
                         </div>
                       )}
                     </div>
@@ -284,7 +312,7 @@ const CheckoutShipping = () => {
                       {/* Discount Code */}
                       <div className="card rounded-0 border bg-transparent shadow-none">
                         <div className="card-body">
-                          <p className="fs-5 text-white">Apply Discount Code</p>
+                          <p className="fs-5">Apply Discount Code</p>
                           <div className="input-group">
                             <input
                               type="text"
@@ -300,7 +328,7 @@ const CheckoutShipping = () => {
                               onClick={handleApplyDiscount}
                               disabled={isApplyingDiscount || !discountCode.trim()}
                             >
-                              {isApplyingDiscount ? 'Applying...' : 'Apply Discount'}
+                              {isApplyingDiscount ? 'Applying...' : 'Apply'}
                             </button>
                           </div>
                           {discount > 0 && (
@@ -317,56 +345,37 @@ const CheckoutShipping = () => {
                       {/* Cart Items */}
                       <div className="card rounded-0 border bg-transparent shadow-none">
                         <div className="card-body">
-                          <p className="fs-5 text-white">Order summary</p>
+                          <p className="fs-5">Order Summary</p>
                           <div className="my-3 border-top"></div>
                           
-                          {cartItems.length === 0 ? (
-                            <p className="text-center text-muted">Your cart is empty</p>
-                          ) : (
-                            <>
-                              {cartItems.map((item, index) => (
-                                <React.Fragment key={item.productId || index}>
-                                  <div className="d-flex align-items-center">
-                                    <a
-                                      className="d-block flex-shrink-0"
-                                      href="#"
-                                      onClick={(e) => {
-                                        e.preventDefault();
-                                        navigate(`/products/${item.productId}`);
-                                      }}
-                                    >
-                                      <img
-                                        src={item.image || 'assets/images/products/01.png'}
-                                        width="75"
-                                        alt={item.name || item.title}
-                                      />
-                                    </a>
-                                    <div className="ps-2">
-                                      <h6 className="mb-1">
-                                        <a
-                                          href="#"
-                                          onClick={(e) => {
-                                            e.preventDefault();
-                                            navigate(`/products/${item.productId}`);
-                                          }}
-                                        >
-                                          {item.name || item.title}
-                                        </a>
-                                      </h6>
-                                      <div className="widget-product-meta">
-                                        <span className="me-2">
-                                          ${item.price?.toFixed(2) || '0.00'}
-                                        </span>
-                                        <span>x {item.quantity}</span>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  {index < cartItems.length - 1 && (
-                                    <div className="my-3 border-top"></div>
-                                  )}
-                                </React.Fragment>
-                              ))}
-                            </>
+                          <p className="mb-2">
+                            Items ({cartItems.length}):
+                            <span className="float-end">${subtotal.toFixed(2)}</span>
+                          </p>
+
+                          {cartItems.slice(0, 2).map((item) => (
+                            <div key={item.productId} className="mb-2">
+                              <div className="d-flex align-items-center">
+                                <img
+                                  src={item.image || 'assets/images/products/01.png'}
+                                  width="50"
+                                  alt={item.name}
+                                  className="me-2"
+                                />
+                                <div className="flex-grow-1">
+                                  <small className="d-block">{item.name}</small>
+                                  <small className="text-muted">
+                                    ${item.price.toFixed(2)} x {item.quantity}
+                                  </small>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                          
+                          {cartItems.length > 2 && (
+                            <small className="text-muted">
+                              +{cartItems.length - 2} more items
+                            </small>
                           )}
                         </div>
                       </div>
@@ -380,24 +389,22 @@ const CheckoutShipping = () => {
                           <p className="mb-2">
                             Shipping: 
                             <span className="float-end">
-                              {currentShipping > 0 ? `$${currentShipping.toFixed(2)}` : '--'}
+                              {currentShipping === 0 ? 'FREE' : `$${currentShipping.toFixed(2)}`}
                             </span>
                           </p>
                           <p className="mb-2">
                             Taxes (7%): <span className="float-end">${taxes.toFixed(2)}</span>
                           </p>
-                          <p className="mb-0">
-                            Discount: 
-                            <span className="float-end text-success">
-                              {discount > 0 ? `-$${discount.toFixed(2)}` : '--'}
-                            </span>
-                          </p>
+                          {discount > 0 && (
+                            <p className="mb-0 text-success">
+                              Discount: 
+                              <span className="float-end">-${discount.toFixed(2)}</span>
+                            </p>
+                          )}
                           <div className="my-3 border-top"></div>
                           <h5 className="mb-0">
                             Order Total: 
-                            <span className="float-end">
-                              ${(total + taxes).toFixed(2)}
-                            </span>
+                            <span className="float-end">${orderTotal.toFixed(2)}</span>
                           </h5>
                         </div>
                       </div>
