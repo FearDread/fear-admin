@@ -17,6 +17,7 @@ import {
   createAddress,
   createNewAddress,
   setDefaultAddress,
+  fetchAddresses,
   validateAddress,
   clearValidation,
   selectAllAddresses,
@@ -91,10 +92,14 @@ export const AccountAddresses = () => {
 
   // Load addresses on mount
   useEffect(() => {
+
+
     if (currentUser && isAuthenticated) {
+      dispatch(fetchAddresses());
+          console.log('current user addresses = ', allAddresses);
       // Populate form with existing addresses
-      const primaryBilling = billingAddresses.find(addr => addr.isDefault) || billingAddresses[0];
-      const primaryShipping = shippingAddresses.find(addr => addr.isDefault) || shippingAddresses[0];
+      const primaryBilling = allAddresses.find(addr => addr.isDefault) || allAddresses[0];
+      const primaryShipping = allAddresses.find(addr => addr.isDefault) || shippingAddresses[0];
 
       if (primaryBilling) {
         setFormData(prev => ({
@@ -134,7 +139,7 @@ export const AccountAddresses = () => {
         setEditingAddressId(prev => ({ ...prev, shipping: primaryShipping.id }));
       }
     }
-  }, [currentUser, isAuthenticated, billingAddresses.length, shippingAddresses.length]);
+  }, [currentUser, isAuthenticated, allAddresses.length, shippingAddresses.length]);
 
   // Handle input change
   const handleInputChange = (type, field, value) => {

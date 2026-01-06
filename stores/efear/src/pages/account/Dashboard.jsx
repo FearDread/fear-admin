@@ -2,9 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { dispatch } from "../../features/store";
 import {
-  logoutUser,
   selectCurrentUser,
   selectUserFullName,
   selectIsAuthenticated,
@@ -17,7 +15,7 @@ import AccountSidebar from './components/AccountSidebar';
 export const AccountDashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
-
+  const dispatch = useDispatch();
   // Redux selectors
   const currentUser = useSelector(selectCurrentUser);
   const userFullName = useSelector(selectUserFullName);
@@ -25,13 +23,8 @@ export const AccountDashboard = () => {
   const loading = useSelector(selectUserLoading);
   const lastLoginAt = useSelector(selectLastLoginAt);
 
-  // Local state for logout confirmation
-  const [showLogoutModal, setShowLogoutModal] = useState(false);
-  const [loggingOut, setLoggingOut] = useState(false);
-
   // Redirect if not authenticated
   useEffect(() => {
-    console.log('user = ', currentUser);
     if (!isAuthenticated && !loading) {
       navigate('/login', { 
         state: { 
@@ -41,30 +34,13 @@ export const AccountDashboard = () => {
       });
     }
   }, [isAuthenticated, loading, navigate, location]);
-  // Handle logout
-  const handleLogout = async () => {
-    setLoggingOut(true);
-    try {
-      await dispatch(logoutUser());
-      navigate('/login', { 
-        state: { message: 'You have been logged out successfully' } 
-      });
-    } catch (error) {
-      console.error('Logout error:', error);
-    } finally {
-      setLoggingOut(false);
-      setShowLogoutModal(false);
-    }
-  };
+
 
   const sidebarProps = {
-    handleLogout,
     currentUser,
     userFullName,
     lastLoginAt,
   }
-
-
 
   // Show loading state
   if (loading) {
@@ -134,16 +110,9 @@ export const AccountDashboard = () => {
                       {/* Account Overview */}
                       <div className="mb-4">
                         <h5 className="mb-3">Account Overview</h5>
-                        <p>
-                          Hello <strong>{userFullName}</strong> 
-                          {' '}(not <strong>{currentUser.name || userFullName}</strong>?{' '}
-                          <button 
-                            onClick={() => setShowLogoutModal(true)}
-                            className="btn btn-link p-0 text-decoration-none"
-                          >
-                            Logout
-                          </button>)
-                        </p>
+                          <p>
+                            Hello <strong>{userFullName}</strong> 
+                          </p>
                         <p>
                           From your account dashboard you can view your{' '}
                           <Link to="/account/orders">recent orders</Link>, manage your{' '}

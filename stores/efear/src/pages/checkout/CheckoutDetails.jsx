@@ -74,7 +74,7 @@ export const CheckoutDetails = () => {
   // Redirect if cart is empty
   useEffect(() => {
     if (cartItems.length === 0) {
-      navigate('/shop-cart');
+      navigate('/cart');
     }
   }, [cartItems, navigate]);
   

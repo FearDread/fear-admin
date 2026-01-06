@@ -318,7 +318,8 @@ export const fetchRecentOrders = (limit = 5) => async (dispatch) => {
 };
 
 // Export selectors
-export const selectAllOrders = (state) => Object.values(state.orders.entities || {});
+//export const selectAllOrders = (state) => Object.values(state.orders.entities || {});
+export const selectAllOrders = (state) => state.orders.data;
 export const selectCurrentOrder = (state) => state.orders.currentOrder;
 export const selectRecentOrders = (state) => state.orders.recentOrders;
 export const selectOrderById = (state, orderId) => state.orders.entities?.[orderId];

@@ -23,12 +23,14 @@ import {
 import {
   selectCurrentOrder,
 } from '../../features/orders/slice';
+import StripePayment from "./components/StripePayment";
 import CheckoutSteps from "./components/CheckoutSteps";
 import { createOrder } from "../../features/orders/slice";
-import { dispatch } from "../../features/store";
+import { createPayments, createPaymentIntent } from "../../features/payments/slice";
 
 export const CheckoutPayment = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const cartItems = useSelector(selectCartItems);
   const subtotal = useSelector(selectCartSubtotal);
@@ -39,7 +41,7 @@ export const CheckoutPayment = () => {
   const currentOrder = useSelector(selectCurrentOrder);
   const isAuthenticated = useSelector(selectIsAuthenticated);
   // Local state
-  const [paymentMethod, setPaymentMethod] = useState('credit-card');
+  const [paymentMethod, setPaymentMethod] = useState('card');
   const [discountCode, setDiscountCode] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [validationErrors, setValidationErrors] = useState({});
@@ -194,7 +196,7 @@ export const CheckoutPayment = () => {
 
     // Validate based on payment method
     switch (paymentMethod) {
-      case 'credit-card':
+      case 'card':
         isValid = validateCreditCard();
         break;
       case 'paypal-payment':
@@ -241,9 +243,17 @@ export const CheckoutPayment = () => {
 
       console.log('curent order = ', currentOrder);
       console.log('order data = ', orderData);
-      const result = await dispatch(createOrder(orderData));
-      console.log('order result', result);
+      
+      const orderResult = await dispatch(createOrder(orderData));
+      
+      const paymentResult = await dispatch(createPayments(orderData));
+      const paymentIntent = await dispatch(createPaymentIntent(orderData));
+      
+      console.log('order result', orderResult);
+      console.log('payment result = ', paymentResult);
+      console.log('payment intent (stripe) = ', paymentIntent);
 
+      return;
       // Navigate to review/confirmation page
       navigate('/checkout/review', {
         state: {
@@ -258,6 +268,92 @@ export const CheckoutPayment = () => {
       setIsProcessing(false);
     }
   };
+
+    const handlePaymentSuccess = async (e) => {
+    e.preventDefault();
+
+    let isValid = false;
+
+    // Validate based on payment method
+    switch (paymentMethod) {
+      case 'card':
+        isValid = validateCreditCard();
+        break;
+      case 'paypal-payment':
+        isValid = validatePayPal();
+        break;
+      case 'net-banking':
+        isValid = validateNetBanking();
+        break;
+      default:
+        isValid = false;
+    }
+
+    if (!isValid) {
+      return;
+    }
+
+    setIsProcessing(true);
+    try {
+      const timestamp = Date.now().toString(36).toUpperCase();
+      const random = Math.random().toString(36).substring(2, 7).toUpperCase();
+      const orderNumber = `ORD-${timestamp}-${random}`;
+      // Simulate payment processing
+      //await new Promise(resolve => setTimeout(resolve, 2000));
+      const orderData = {
+        orderNumber,
+        userId: currentUser._id,
+        items: cartItems,
+        subtotal: orderTotal,
+        shipping,
+        taxes,
+        discount,
+        total: orderTotal,
+        paymentMethod,
+        paymentDetails: {
+          type: 'card',
+          card: CardElement,
+          billing_details: {
+            name: creditCardData.cardName,
+            email: currentUser?.email,
+          },
+        },
+        ...currentOrder
+      };
+
+      console.log('curent order = ', currentOrder);
+      console.log('order data = ', orderData);
+      
+      const orderResult = await dispatch(createOrder(orderData));
+      
+      const paymentResult = await dispatch(createPayments(orderData));
+      const paymentIntent = await dispatch(createPaymentIntent(orderData));
+      
+      console.log('order result', orderResult);
+      console.log('payment result = ', paymentResult);
+      console.log('payment intent (stripe) = ', paymentIntent);
+
+      return;
+      // Navigate to review/confirmation page
+      navigate('/checkout/review', {
+        state: {
+          paymentMethod,
+          orderTotal
+        }
+      });
+    } catch (error) {
+      console.error('Payment error:', error);
+      alert('Payment processing failed. Please try again.');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handlePaymentError = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    alert('Error in intent')
+  }
 
   const handleBackToShipping = () => {
     navigate('/checkout/shipping');
@@ -313,8 +409,8 @@ export const CheckoutPayment = () => {
                       <ul className="nav nav-pills mb-3 border p-3" role="tablist">
                         <li className="nav-item" role="presentation">
                           <button
-                            className={`nav-link ${paymentMethod === 'credit-card' ? 'active' : ''} rounded-0`}
-                            onClick={() => setPaymentMethod('credit-card')}
+                            className={`nav-link ${paymentMethod === 'card' ? 'active' : ''} rounded-0`}
+                            onClick={() => setPaymentMethod('card')}
                             type="button"
                           >
                             <div className="d-flex align-items-center">
@@ -350,8 +446,9 @@ export const CheckoutPayment = () => {
                       </ul>
 
                       {/* Credit Card Form */}
-                      {paymentMethod === 'credit-card' && (
+                      {paymentMethod === 'card' && (
                         <div className="p-3 border">
+                          {/* 
                           <form onSubmit={handleConfirmPayment}>
                             <div className="mb-3">
                               <label className="form-label">Card Owner *</label>
@@ -462,6 +559,12 @@ export const CheckoutPayment = () => {
                               </div>
                             </div>
                           </form>
+                          */}
+                          <StripePayment 
+                            amount={currentOrder.total}
+                            onSuccess={handlePaymentSuccess}
+                            onError={handlePaymentError}
+                          />
                         </div>
                       )}
 

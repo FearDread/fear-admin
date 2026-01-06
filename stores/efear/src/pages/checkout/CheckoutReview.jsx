@@ -16,6 +16,18 @@ import {
   selectCurrentUser,
   fetchUser,
 } from '../../features/user/slice';
+import {
+  selectCurrentOrder
+} from "../../features/orders/slice";
+import {
+  selectAllAddresses,
+  selectAddressByType
+} from "../../features/address/slice";
+import { 
+  addPayments,
+  createPayments
+} from "../../features/payments/slice";
+
 import CheckoutSteps from "./components/CheckoutSteps";
 
 function CheckoutReview() {
@@ -29,7 +41,7 @@ function CheckoutReview() {
   const shipping = useSelector(selectCartShipping);
   const discount = useSelector(selectCartDiscount);
   const currentUser = useSelector(selectCurrentUser);
-
+  const currentOrder = useSelector(selectCurrentOrder);
   // Local state
   const [discountCode, setDiscountCode] = useState('');
   const [isApplyingDiscount, setIsApplyingDiscount] = useState(false);
@@ -126,6 +138,8 @@ function CheckoutReview() {
 
   // Handle complete order
   const handleCompleteOrder = async () => {
+    console.log('review user = ', currentUser);
+    console.log('review order = ', currentOrder);
     // Validate shipping address
     if (!currentUser?.shippingAddress?.line1) {
       alert('Please add a shipping address before completing your order.');
@@ -158,13 +172,13 @@ function CheckoutReview() {
         billingAddress: currentUser.billingAddress,
         paymentMethod: 'Credit Card', // This should come from payment step
         orderDate: new Date().toISOString(),
-        status: 'pending',
+        status: 'fulfilled',
       };
 
-      console.log('Order created:', order);
+      console.log('Payment created:', order);
       
       // TODO: Dispatch order creation action
-      // await dispatch(createOrder(order)).unwrap();
+      //await dispatch(createPayments(order));
 
       // Clear cart after successful order
       dispatch(clearCart());

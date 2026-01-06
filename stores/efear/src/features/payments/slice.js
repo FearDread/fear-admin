@@ -1,9 +1,9 @@
 // features/Payments/slice.js
-import { FeatureFactory } from '@feardread/feature-factory';
+import { FeatureFactory, ThunkFactory } from '@feardread/feature-factory';
+
 //import Paymentservice from './service';
 
-
-const PaymentsFactory = FeatureFactory('payment', {
+const paymentReducers = {
       // Set default payment method
   setDefaultPayments: (state, action) => {
     const PaymentsId = action.payload;
@@ -49,9 +49,19 @@ const PaymentsFactory = FeatureFactory('payment', {
       method.verifiedAt = verified ? new Date().toISOString() : null;
     }
   }
-});
+}
+const paymentService = {
+  createPaymentIntent: ThunkFactory.custom('stripe', 'intent', {
+    method: 'POST',
+    useParams: true,
+  }),
+  
+}
+
+const PaymentsFactory = FeatureFactory('payment', paymentReducers);
 
 export const { slice, asyncActions: Payments } = PaymentsFactory.create({
+  service: paymentService,
   stateOptions: {
     includeEntityState: true,
     includeMetadata: true,
@@ -86,6 +96,7 @@ export const {
   update: updatePayments,
   patch: patchPayments,
   delete: deletePayments,
+  createPaymentIntent,
 } = Payments;
 
 // Enhanced thunk to add payment method
@@ -94,7 +105,7 @@ export const addPayments = (paymentData) => async (dispatch) => {
     dispatch(setLoading(true));
     dispatch(clearError());
     
-    const result = await dispatch(createPayments(paymentData));
+    const result = await dispatch(createPaymentIntent(paymentData));
     
     if (createPayments.fulfilled.match(result)) {
       const method = result.payload.data;
