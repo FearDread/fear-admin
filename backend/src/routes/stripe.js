@@ -1,3 +1,5 @@
+const Payment = require('../controllers/payment');
+
 
 module.exports = (fear) => {
   const router = fear.createRouter();
@@ -5,6 +7,7 @@ module.exports = (fear) => {
   const handler = fear.getHandler();
   const Stripe = fear.stripe;
 
+  //router.post('/intent', handler.async(Stripe.createPaymentIntent));
   router.post('/intent', handler.async(Stripe.createPaymentIntent));
   /*
   router.get('/intent/:id', handler.async(stripe.retrievePaymentIntent));
