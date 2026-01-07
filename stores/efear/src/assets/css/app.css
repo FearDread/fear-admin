@@ -2034,3 +2034,7 @@ h6.product-name {
 .text-primary {
 	color: white !important;
 }
+
+.p-product-description {
+	white-space: pre-line;
+}

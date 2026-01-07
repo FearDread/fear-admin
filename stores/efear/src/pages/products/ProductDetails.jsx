@@ -434,7 +434,7 @@ export const ProductDetails = () => {
                                             {/* Description */}
                                             <div className="mt-3">
                                                 <h6>Description:</h6>
-                                                <p className="mb-0">
+                                                <p className="mb-0 p-product-description">
                                                     {product.description || product.shortDescription ||
                                                         "Virgil Abloh's Off-White is a streetwear-inspired collection that continues to break away from the conventions of mainstream fashion. Made in Italy, these black and brown Odsy-1000 low-top sneakers."}
                                                 </p>

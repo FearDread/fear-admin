@@ -14,7 +14,7 @@ export const ProductListItem = ({ product }) => {
         <div className="bottom-product-img">
           <Link to={`/product/${product._id}`}>
             <img 
-              src={product.images && product.images[0].url || product.thumbnail || 'assets/images/products/placeholder.png'} 
+              src={(product.images[0] && product.images[0].url) || 'assets/images/products/placeholder.png'} 
               width="100" 
               alt={product.title || 'Product'} 
             />
