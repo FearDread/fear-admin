@@ -10,9 +10,5 @@ module.exports = (fear) => {
     router.post("/new", handler.async(Payment.create));
     router.post("/create", handler.async(Payment.create));
     
-    router.route('/:id')
-        .get(Payment.read)
-        .put(Payment.update);
-
     return router;
 }
