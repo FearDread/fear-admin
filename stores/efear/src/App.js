@@ -38,6 +38,10 @@ const AccountPayment = lazy(() => import("./pages/account/PaymentMethods"));
 const Addresses = lazy(() => import("./pages/account/Addresses"));
 //const ForgotPassword = lazy(() => import("./pages/auth/ForgotPassword"));
 
+const TermsOfService = lazy(() => import("./pages/policies/Terms"));
+const PrivacyPolicy = lazy(() => import("./pages/policies/Privacy"));
+const ReturnPolicy = lazy(() => import("./pages/policies/Returns"));
+
 
 const LoadingFallback = () => (
   <div className="d-flex justify-content-center align-items-center min-vh-100">
@@ -84,6 +88,11 @@ const routeConfig = {
     { path: "/compare", element: <ProductComparison /> },
     { path: "/wishlist", element: <Wishlist />},
   ],
+  policy: [
+    { path: "/terms", element: <TermsOfService /> },
+    { path: "/privacy", element: <PrivacyPolicy /> },
+    { path: "returns", element: <ReturnPolicy /> },
+  ],
   auth: [
     { path: "/login", element: <Login /> },
     { path: "/register", element: <Register /> },
@@ -116,6 +125,9 @@ export const App = () => {
         <Routes>
           <Route path="/" exact element={<Layout />}>
             {routeConfig.public.map((route) => (
+              <Route key={route.path} path={route.path} element={<PublicRoute>{route.element}</PublicRoute>} />
+            ))}
+            {routeConfig.policy.map((route) => (
               <Route key={route.path} path={route.path} element={<PublicRoute>{route.element}</PublicRoute>} />
             ))}
 

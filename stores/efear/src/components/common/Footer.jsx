@@ -63,15 +63,15 @@ export const Footer = ({ categories }) => {
                   <ul className="list-unstyled">
 
                     <li>
-                      <Link to="/policy/privacy">* Privacy Policy</Link>
+                      <Link to="/privacy">* Privacy Policy</Link>
                     </li>
 
                     <li>
-                      <Link to="/policy/terms">* Terms & Conditions</Link>
+                      <Link to="/terms">* Terms & Conditions</Link>
                     </li>
 
                     <li>
-                      <Link to="/policy/shipping">* Shipping & Return Policy</Link>
+                      <Link to="/returns">* Shipping & Return Policy</Link>
                     </li>
 
                     <li>
