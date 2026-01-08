@@ -23,6 +23,13 @@ module.exports = ( fear ) => {
             .catch((error) => res.status(500).json({ success: false, message: error.message }))
     })
 
+    router.post("/subscribe", (req, res) => {
+        Mail.sendSubscriptionEmail(req.body)
+            .then((resp) => res.status(200).json({ success: true, result: resp.message })
+            .catch((error) => res.status(500).json({success: false, result: error.message })
+        ))
+    })
+
     return router;
 };
 

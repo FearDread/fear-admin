@@ -4,12 +4,58 @@ import { useSelector } from "react-redux";
 import { fetchCategories, selectAllCategories } from '../../features/categories/slice';
 
 
-// Footer Component
 export const Footer = ({ categories }) => {
-
+  const [subEmail, setSubEmail] = useState('');
+  const [subLoading, setSubLoading] = useState(false);
+  const [subMessage, setSubMessage] = useState({ text: '', type: '' });
   const allCategories = useSelector(selectAllCategories);
+
+  const isValidEmail = (email) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
   
   if (!categories) categories = allCategories;
+ 
+  const handleSubscribe = async () => {
+    setSubMessage({ text: '', type: '' });
+    if (!subEmail.trim()) {
+      setSubMessage({ text: 'Please enter an email address', type: 'error' });
+      return;
+    }
+    if (!isValidEmail(subEmail)) {
+      setSubMessage({ text: 'Please enter a valid email address', type: 'error' });
+      return;
+    }
+
+    setSubLoading(true);
+
+    try {
+      // Replace with your actual API endpoint
+      const response = await fetch('https://fear.dedyn.io/fear/api/email/subscribe', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: subEmail }),
+      });
+      console.log('subscript response = ', response);
+      const data = await response.json();
+
+      setSubMessage({ text: 'Successfully subscribed! Check your email.', type: 'success' });
+      setSubEmail('');
+
+    } catch (error) {
+
+      setSubMessage({ 
+        text: 'Failed to subscribe. Please try again later.', 
+        type: 'error' 
+      });
+      console.error('Subscription error:', error);
+    } finally {
+      setSubLoading(false);
+    }
+  };
   
   return (
     <footer>
@@ -82,6 +128,7 @@ export const Footer = ({ categories }) => {
             </div>
             <div className="col">
               <div className="footer-section4 mb-3">
+
                 <h6 className="mb-3 text-uppercase">Stay informed</h6>
                 <div className="subscribe">
                   <input type="text" className="form-control radius-30" placeholder="Enter Your Email" />
@@ -89,6 +136,7 @@ export const Footer = ({ categories }) => {
                   </div>
                   <p className="mt-2 mb-0 font-13">Subscribe to our newsletter to receive early discount offers, updates and new products info.</p>
                 </div>
+                
                 <div className="download-app mt-3">
                   <h6 className="mb-3 text-uppercase">Download our app</h6>
                   <div className="d-flex align-items-center gap-2">
