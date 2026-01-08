@@ -16,7 +16,7 @@ const StripeHandler = function(fear) {
     createPaymentIntent: (req, res) => {
       const currency = 'usd';
       const paymentData = req.body;
-      console.log('payment data = ', paymentData)
+
       // Validate required fields
       if (!paymentData.amount || paymentData.amount <= 0) {
         return res.status(400).json({success: false, message: 'Amount is required and must be greater than 0'});
@@ -28,9 +28,10 @@ const StripeHandler = function(fear) {
         metadata: paymentData.metadata,
         automatic_payment_methods: { enabled: true }
       };
+      
+      console.log('payment data = ', paymentIntentParams)
 
-      return _this.stripe.paymentIntents
-        .create(paymentIntentParams)
+      return _this.stripe.createPaymentItent(paymentIntentParams)
         .then(result => {
           if (!result.success) {
             return res.status(400).json({ success: false, message: result.error });

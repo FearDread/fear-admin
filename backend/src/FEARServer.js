@@ -8,7 +8,7 @@ const FearServer = (function () {
   // Private constants
   const DEFAULT_PATHS = {
     root: path.resolve(),
-    app: '/backend/dashboard/build',
+    app: '/backend/dashboard/build', 
     build: 'backend/dashboard/build'
   };
 
