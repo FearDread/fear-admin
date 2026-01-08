@@ -222,7 +222,7 @@ export const Header = () => {
                           </Link>
                         </li>
                         <li className="nav-item">
-                          <Link to="/account/wishlist" className="nav-link cart-link">
+                          <Link to="/wishlist" className="nav-link cart-link">
                             <i className='bx bx-heart'></i>
                           </Link>
                         </li>

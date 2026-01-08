@@ -47,10 +47,7 @@ export const ProductCard = (product) => {
   };
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const detailsLink = `/product/${product._id || product.id}`;
-  const productImage = product.images[0]?.url ||
-    product.images[0] ||
-    product.image ||
-    '/assets/images/fear/fear-dark-bg.jpg';
+  const productImage = (product.images && product.images.length > 0) ? product.images[0]?.url : product.image || '/assets/images/fear/fear-dark-bg.jpg';
 
   const hasDiscount = product.salePrice && product.salePrice < product.price;
   const discountPercent = hasDiscount
@@ -71,9 +68,6 @@ export const ProductCard = (product) => {
     return stars;
   };
 
-  /**
-   * Handle Add to Wishlist
-   */
   const handleWishlist = async (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -122,48 +116,6 @@ export const ProductCard = (product) => {
     }
   };
 
-  /*
-  const handleAddToCart = async (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    // Check stock
-    if (!product.quantity) {
-      alert('This product is currently out of stock');
-      return;
-    }
-
-    setIsAddingToCart(true);
-
-    try {
-      // Prepare cart item
-      const cartItem = {
-        productId: product._id || product.id,
-        product: {
-          id: product._id || product.id,
-          title: product.title || product.title,
-          price: currentPrice,
-          image: productImage,
-          sku: product.sku,
-        },
-        quantity: 1,
-        price: currentPrice,
-      };
-
-      // Dispatch to cart
-      dispatch(addToCart(cartItem));
-      
-      console.log('Added to cart:', cartItem);
-      
-    } catch (error) {
-      console.error('Add to cart error:', error);
-      alert('Failed to add to cart. Please try again.');
-    } finally {
-      setIsAddingToCart(false);
-    }
-  };
-  */
-  // Handle add to cart
   const handleAddToCart = () => {
     if (!product) return;
 
@@ -172,7 +124,7 @@ export const ProductCard = (product) => {
       id: product._id,
       name: product.title,
       title: product.title,
-      image: product.images?.[0]?.url || '',
+      image: (product.images && product.images.length > 0) ? product.images?.[0]?.url : '',
       price: product.salePrice || product.price,
       subtotal: product.price,
       quantity,

@@ -2026,15 +2026,68 @@ h6.product-name {
 }
 
 .content-card {
-	background: rgba(0,0,0,.1);
+	background: rgba(0, 0, 0, .1);
 }
+
 .text-muted {
 	color: white !important;
 }
+
 .text-primary {
 	color: white !important;
 }
 
 .p-product-description {
 	white-space: pre-line;
+}
+
+.product-card {
+	transition: transform 0.2s, box-shadow 0.2s;
+	height: 100%;
+}
+
+.product-card:hover {
+	transform: translateY(-5px);
+	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.product-name {
+	min-height: 2.5rem;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+}
+
+.toast {
+	min-width: 250px;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.btn-ecomm {
+	transition: all 0.3s ease;
+}
+
+.btn-ecomm:hover:not(:disabled) {
+	transform: scale(1.02);
+}
+
+.btn-ecomm:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+}
+
+.cursor-pointer {
+	cursor: pointer;
+}
+
+.badge {
+	font-size: 0.75rem;
+	padding: 0.25rem 0.5rem;
+}
+
+.card-img-top {
+	height: 250px;
+	object-fit: cover;
 }

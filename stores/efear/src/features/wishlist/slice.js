@@ -1,47 +1,84 @@
 import { FeatureFactory, ThunkFactory } from '@feardread/feature-factory';
 
 const WishlistReducers = {
-  // Add item to wishlist
-  addToWishlist: (state, action) => {
+addToWishlist: (state, action) => {
     const item = action.payload;
-    const exists = state.items.find(i => i.id === item.id);
+    const exists = state.data.find(i => i.productId === item.productId || i.id === item.id);
     
     if (!exists) {
-      state.items.push({
+      state.data.push({
+        id: item.id || item.productId || Date.now().toString(),
+        productId: item.productId || item.id,
         ...item,
-        addedAt: new Date().toISOString(),
+        addedAt: new Date().toISOString()
       });
-      state.itemCount = state.items.length;
+      state.itemCount = state.data.length;
+      state.success = true;
+      state.error = null;
+    } else {
+      state.error = 'Item already in wishlist';
     }
   },
-  
-  // Remove from wishlist
+
+  // Remove item from wishlist
   removeFromWishlist: (state, action) => {
     const productId = action.payload;
-    state.items = state.items.filter(item => item.id !== productId);
-    state.itemCount = state.items.length;
+    state.data = state.data.filter(item => 
+      item.productId !== productId && item.id !== productId
+    );
+    state.itemCount = state.data.length;
+    state.success = true;
+    state.error = null;
   },
-  
-  // Clear wishlist
+
+  // Clear entire wishlist
   clearWishlist: (state) => {
-    state.items = [];
+    state.data = [];
     state.itemCount = 0;
+    state.success = true;
   },
-  
-  // Toggle wishlist item
+
+  // Move item to cart
+  moveToCart: (state, action) => {
+    const productId = action.payload;
+    const item = state.data.find(i => 
+      i.productId === productId || i.id === productId
+    );
+    
+    if (item) {
+      state.data = state.data.filter(i => 
+        i.productId !== productId && i.id !== productId
+      );
+      state.itemCount = state.data.length;
+      state.movedToCart = item;
+      state.success = true;
+    }
+  },
+
+  // Toggle item in wishlist (add if not exists, remove if exists)
   toggleWishlist: (state, action) => {
     const item = action.payload;
-    const index = state.items.findIndex(i => i.id === item.id);
+    const index = state.data.findIndex(i => 
+      i.productId === item.productId || i.id === item.id
+    );
     
-    if (index > -1) {
-      state.items.splice(index, 1);
+    if (index !== -1) {
+      state.data.splice(index, 1);
     } else {
-      state.items.push({
+      state.data.push({
+        id: item.id || item.productId || Date.now().toString(),
+        productId: item.productId || item.id,
         ...item,
-        addedAt: new Date().toISOString(),
+        addedAt: new Date().toISOString()
       });
     }
-    state.itemCount = state.items.length;
+    state.itemCount = state.data.length;
+    state.success = true;
+  },
+
+  // Update wishlist item count
+  updateItemCount: (state) => {
+    state.itemCount = state.data.length;
   },
 };
 
@@ -57,52 +94,54 @@ const WishlistService = {
   }),
 };
 
-/**
- * Create wishlist feature
- */
-const wishlistFactory = FeatureFactory('wishlist', WishlistReducers);
 
-const { slice, asyncActions: Wishlist } = wishlistFactory.create({ 
+const wishlistFactory = FeatureFactory('wishlist', WishlistReducers, {
   service: WishlistService,
-  stateOptions: {
-    customFields: {
-      items: [],
-      itemCount: 0,
-    },
-  },
-  operations: {
-    fetch: false,
-    fetchOne: false,
-    search: false,
-    create: false,
-    update: false,
-    patch: false,
-    delete: false,
-  },
+  includeEntityState: true,
+  includePagination: false,
+  includeFiltering: true,
+  includeSorting: true,
+  includeSelection: true,
+  customFields: {
+    items: [],
+    movedToCart: null,
+    itemInWishlist: false,
+    totalItems: 0
+  }
 });
 
-// Export actions
+// Create wishlist slice
+const { slice, asyncActions: Wishlist } = wishlistFactory.create();
+
 export const {
+  setSorting,
   addToWishlist,
   removeFromWishlist,
   clearWishlist,
+  moveToCart,
   toggleWishlist,
+  isInWishlist,
+  setData,
+  setLoading,
+  setError,
+  updateItemCount
 } = slice.actions;
 
-export const {
-  syncWishlist,
-  moveToCart,
-} = Wishlist;
-
 // Selectors
-export const selectWishlistItems = (state) => state.wishlist.items;
-export const selectWishlistItemCount = (state) => state.wishlist.itemCount;
+export const selectWishlistItems = (state) => state.wishlist?.data || [];
+export const selectWishlistCount = (state) => state.wishlist?.data?.length || 0;
+export const selectWishlistLoading = (state) => state.wishlist?.loading || false;
+export const selectWishlistError = (state) => state.wishlist?.error || null;
+export const selectIsInWishlist = (state, productId) => {
+  const items = state.wishlist?.data || [];
+  return items.some(item => item.productId === productId);
+};
+export const selectWishlistSorting = (state) => state.wishlist?.sorting || { sortBy: 'addedAt', sortOrder: 'desc' };
+export const selectWishlistTotalValue = (state) => {
+  const items = state.wishlist?.data || [];
+  return items.reduce((sum, item) => sum + (item.price || 0), 0);
+};
 
-export const selectIsInWishlist = (state, productId) =>
-  state.wishlist.items.some(item => item.id === productId);
 
-export const selectWishlistItemById = (state, productId) =>
-  state.wishlist.items.find(item => item.id === productId);
 
-export { slice };
 export default slice
