@@ -19,7 +19,7 @@ export const CartDropdown = ({ items, onRemoveItem }) => {
         {items.map((item) => (
           <div key={item._id} className="dropdown-item">
             <div className="d-flex align-items-center">
-              <div className="flex-grow-1">
+              <div className="flex-grow-1 cart-product-container">
                 <h6 className="cart-product-title">{item.title}</h6>
                 <p className="cart-product-price">{item.quantity} X ${item.price.toFixed(2)}</p>
               </div>

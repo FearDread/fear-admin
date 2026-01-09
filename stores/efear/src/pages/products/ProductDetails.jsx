@@ -109,20 +109,6 @@ export const ProductDetails = () => {
         }
     }, [id]);
 
-    const carouselOptions = {
-        loop: true,
-        margin: 10,
-        responsiveClass: true,
-        nav: false,
-        dots: false,
-        thumbs: true,
-        responsive: {
-            0: { items: 1 },
-            600: { items: 1 },
-            1000: { items: 1 }
-        }
-    };
-
     // Handle quantity change
     const handleQuantityChange = (e) => {
         const value = parseInt(e.target.value) || 1;

@@ -1316,6 +1316,13 @@ ul.categories-list li {
 	font-size: 14px;
 	margin-bottom: 8px;
 	color: rgb(255 255 255);
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.dropdown-large .cart-product-container {
+	overflow:hidden;
 }
 
 .dropdown-large .cart-product-price {
@@ -1377,7 +1384,9 @@ ul.categories-list li {
 
 .cart-list {
 	position: relative;
-	height: 224px
+	min-height: 225px;
+	max-height: 350px;
+	overflow-y: scroll;
 }
 
 .header-notifications-list {

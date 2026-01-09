@@ -5,8 +5,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import Toast from "../../components/common/Toast";
 import {
   addItem,
-  selectIsInCart,
-  selectCartItemById,
 } from '../../features/cart/slice';
 import {
   addToWishlist,
@@ -14,7 +12,6 @@ import {
   selectIsInWishlist
 } from '../../features/wishlist/slice';
 import { selectIsAuthenticated } from '../../features/user/slice';
-import { dispatch } from "../../features/store";
 import ProductQuickView from './ProductQuickView';
 
 /**
@@ -25,36 +22,25 @@ import ProductQuickView from './ProductQuickView';
  */
 export const ProductCard = (product) => {
   const navigate = useNavigate();
-
-  // Local state
+  const dispatch = useDispatch();
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [isAddingToWishlist, setIsAddingToWishlist] = useState(false);
   const [showQuickView, setShowQuickView] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
-  const isInWishlist = useSelector(state =>
-    selectIsInWishlist(state, product._id || product.id)
-  );
   const [toasts, setToasts] = useState([]);
-
-  const addToast = (message, type) => {
-    const id = Date.now();
-    setToasts(prev => [...prev, { id, message, type }]);
-  };
-
-  const removeToast = (id) => {
-    setToasts(prev => prev.filter(toast => toast.id !== id));
-  };
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const detailsLink = `/product/${product._id || product.id}`;
   const productImage = (product.images && product.images.length > 0) ? product.images[0]?.url : product.image || '/assets/images/fear/fear-dark-bg.jpg';
-
   const hasDiscount = product.salePrice && product.salePrice < product.price;
+  const currentPrice = product.salePrice || product.price;
+  const isInWishlist = useSelector(state =>
+    selectIsInWishlist(state, product._id || product.id)
+  );
   const discountPercent = hasDiscount
     ? Math.round((1 - product.salePrice / product.price) * 100)
     : 0;
-
-  const currentPrice = product.salePrice || product.price;
+  
   const renderStars = (rating = 4) => {
     const stars = [];
     for (let i = 1; i <= 5; i++) {
@@ -68,6 +54,15 @@ export const ProductCard = (product) => {
     return stars;
   };
 
+  const addToast = (message, type) => {
+    const id = Date.now();
+    setToasts(prev => [...prev, { id, message, type }]);
+  };
+
+  const removeToast = (id) => {
+    setToasts(prev => prev.filter(toast => toast.id !== id));
+  };
+  
   const handleWishlist = async (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -82,38 +77,30 @@ export const ProductCard = (product) => {
       });
       return;
     }
-
     setIsAddingToWishlist(true);
+    const wishlistItem = {
+      id: product._id || product.id,
+      productId: product._id || product.id,
+      name: product.title,
+      title: product.title,
+      subtotal: currentPrice,
+      price: currentPrice,
+      image: productImage,
+      category: product.category,
+      inStock: product.quantity,
+      sku: product._id
+    };
 
-    try {
-      const wishlistItem = {
-        id: product._id || product.id,
-        productId: product._id || product.id,
-        name: product.title,
-        title: product.title,
-        subtotal: currentPrice,
-        price: currentPrice,
-        image: productImage,
-        category: product.category,
-        inStock: product.quantity,
-        sku: product._id
-      };
-
-      if (isInWishlist) {
-        // Remove from wishlist
-        dispatch(removeFromWishlist(product._id || product.id));
-        console.log('Removed from wishlist:', product);
-      } else {
-        // Add to wishlist
-        dispatch(addToWishlist(wishlistItem));
-        console.log('Added to wishlist:', product);
-      }
-    } catch (error) {
-      console.error('Wishlist error:', error);
-      alert('Failed to update wishlist. Please try again.');
-    } finally {
-      setIsAddingToWishlist(false);
-    }
+    Promise.resolve()
+           .then(() => {
+              if (isInWishlist) dispatch(removeFromWishlist(product._id || product.id));
+              dispatch(addToWishlist(wishlistItem));
+            })
+            .catch((error) => { addToast('Failed to add to wishlist! :: ' + error.message, 'error');})
+            .finally(() => {
+                setIsAddingToWishlist(false);
+                addToast('Product added to Wishlist!', 'success')
+            });
   };
 
   const handleAddToCart = () => {
@@ -131,18 +118,17 @@ export const ProductCard = (product) => {
       sku: product._id,
     };
 
-    dispatch(addItem(cartItem));
-    addToast('Product added to cart!', 'success')
+    Promise.resolve()
+          .then(() => { dispatch(addItem(cartItem));})
+          .catch((error) => { addToast('Failed to add to wishlist! :: ' + error.message, 'error');})
+          .finally(() => { addToast('Product added to cart!', 'success');})
   };
 
   const handleCompare = (e) => {
     e.preventDefault();
     e.stopPropagation();
-
     // TODO: Implement compare functionality
     console.log('Compare:', product);
-
-    // For now, navigate to compare page
     navigate('/product/compare', {
       state: { product: [product] }
     });
@@ -151,7 +137,6 @@ export const ProductCard = (product) => {
   const handleQuickView = (product) => {
     setSelectedProduct(product);
     setShowQuickView(true);
-
     console.log('quick view', product);
   };
 
@@ -289,7 +274,7 @@ export const ProductCard = (product) => {
           </div>
         </div>
       </div>
-           {toasts.map(toast => (
+      {toasts.map(toast => (
         <Toast
           key={toast.id}
           message={toast.message}

@@ -14,10 +14,13 @@ export const Footer = ({ categories }) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   };
 
-  
+
   if (!categories) categories = allCategories;
- 
-  const handleSubscribe = async () => {
+
+  const handleSubscribe = (e) => {
+    e.preventDefault();
+
+    console.log('handle subscrible hit');
     setSubMessage({ text: '', type: '' });
     if (!subEmail.trim()) {
       setSubMessage({ text: 'Please enter an email address', type: 'error' });
@@ -29,35 +32,34 @@ export const Footer = ({ categories }) => {
     }
 
     setSubLoading(true);
+    Promise.resolve(fetch('http://localhost:4000/fear/api/mail/subscribe', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({email: subEmail, options:{ subject: 'E-Fear Subscription Notice' }}),
+    }))
+      .then((response) => {
+        console.log('subscript response = ', response);
+        setSubMessage({ text: 'Successfully subscribed! Check your email.', type: 'success' });
+        setSubEmail('');
+      })
+      .catch((error) => {
+        setSubMessage({
+          text: 'Failed to subscribe. Please try again later.',
+          type: 'error'
+        });
 
-    try {
-      // Replace with your actual API endpoint
-      const response = await fetch('https://fear.dedyn.io/fear/api/email/subscribe', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email: subEmail }),
-      });
-      console.log('subscript response = ', response);
-      const data = await response.json();
+        console.error('Subscription error:', error);
+      })
+      .finally(() => {
+        setSubLoading(false);
+      })
 
-      setSubMessage({ text: 'Successfully subscribed! Check your email.', type: 'success' });
-      setSubEmail('');
-
-    } catch (error) {
-
-      setSubMessage({ 
-        text: 'Failed to subscribe. Please try again later.', 
-        type: 'error' 
-      });
-      console.error('Subscription error:', error);
-    } finally {
-      setSubLoading(false);
-    }
   };
-  
-  return (
+
+return (
+  <>
     <footer>
       <section className="py-4 bg-dark-1">
         <div className="container">
@@ -90,7 +92,7 @@ export const Footer = ({ categories }) => {
                 <h6 className="mb-3 text-uppercase">Shop Categories</h6>
                 <hr />
                 <ul className="list-unstyled">
-                  {categories && categories.slice(0,10).map((category) => (
+                  {categories && categories.slice(0, 10).map((category) => (
                     <li key={category._id} className="mb-1">
 
                       <Link to={"/shop?search=" + category.title}>
@@ -105,38 +107,62 @@ export const Footer = ({ categories }) => {
             <div className="col">
               <div className="footer-section3 mb-3">
                 <h6 className="mb-3 text-uppercase">Support</h6>
-                                    <hr /> 
-                  <ul className="list-unstyled">
+                <hr />
+                <ul className="list-unstyled">
 
-                    <li>
-                      <Link to="/privacy">* Privacy Policy</Link>
-                    </li>
+                  <li>
+                    <Link to="/privacy">* Privacy Policy</Link>
+                  </li>
 
-                    <li>
-                      <Link to="/terms">* Terms & Conditions</Link>
-                    </li>
+                  <li>
+                    <Link to="/terms">* Terms & Conditions</Link>
+                  </li>
 
-                    <li>
-                      <Link to="/returns">* Shipping & Return Policy</Link>
-                    </li>
+                  <li>
+                    <Link to="/returns">* Shipping & Return Policy</Link>
+                  </li>
 
-                    <li>
-                      <Link to="/faq">* Frequently Asked Questions</Link>
-                    </li>
-                  </ul>
-              </div>  
+                  <li>
+                    <Link to="/faq">* Frequently Asked Questions</Link>
+                  </li>
+                </ul>
+              </div>
             </div>
             <div className="col">
               <div className="footer-section4 mb-3">
-
-                <h6 className="mb-3 text-uppercase">Stay informed</h6>
+                <h6 className="mb-3 text-uppercase">Stay informed</h6>    
                 <div className="subscribe">
-                  <input type="text" className="form-control radius-30" placeholder="Enter Your Email" />
-                  <div className="mt-2 d-grid">	<a href="javascript:;" className="btn btn-white btn-ecomm radius-30">Subscribe</a>
-                  </div>
-                  <p className="mt-2 mb-0 font-13">Subscribe to our newsletter to receive early discount offers, updates and new products info.</p>
+                <input
+                  id="sub-email"
+                  type="email"
+                  value={subEmail}
+                  onChange={(e) => setSubEmail(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && handleSubscribe()}
+                  placeholder="Your email address"
+                  className="form-control"
+                  disabled={subLoading}
+                />
+              <div className="mt-2 d-grid">
+              <button
+                onClick={handleSubscribe}
+                disabled={subLoading}
+                className="btn btn-white btn-ecomm radius-302"
+              >
+                {subLoading ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    Subscribing...
+                  </>
+                ) : (
+                  <>
+                    Subscribe
+                  </>
+                )}
+              </button>
+              </div>
+              <p className="mt-2 mb-0 font-13">Subscribe to our newsletter to receive early discount offers, updates and new products info.</p>
                 </div>
-                
+
                 <div className="download-app mt-3">
                   <h6 className="mb-3 text-uppercase">Download our app</h6>
                   <div className="d-flex align-items-center gap-2">
@@ -178,7 +204,9 @@ export const Footer = ({ categories }) => {
         </div>
       </section>
     </footer>
-  );
+  </>
+
+);
 };
 
 export default Footer;
