@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { Toast } from "./Toast";
 import { fetchCategories, selectAllCategories } from '../../features/categories/slice';
 
 
@@ -9,6 +10,16 @@ export const Footer = ({ categories }) => {
   const [subLoading, setSubLoading] = useState(false);
   const [subMessage, setSubMessage] = useState({ text: '', type: '' });
   const allCategories = useSelector(selectAllCategories);
+  const [toasts, setToasts] = useState([]);
+
+  const addToast = (message, type) => {
+    const id = Date.now();
+    setToasts(prev => [...prev, { id, message, type }]);
+  };
+
+  const removeToast = (id) => {
+    setToasts(prev => prev.filter(toast => toast.id !== id));
+  };
 
   const isValidEmail = (email) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -23,11 +34,11 @@ export const Footer = ({ categories }) => {
     console.log('handle subscrible hit');
     setSubMessage({ text: '', type: '' });
     if (!subEmail.trim()) {
-      setSubMessage({ text: 'Please enter an email address', type: 'error' });
+      addToast('Please enter an email address', 'error' );
       return;
     }
     if (!isValidEmail(subEmail)) {
-      setSubMessage({ text: 'Please enter a valid email address', type: 'error' });
+      addToast('Please enter a valid email address', 'error' );
       return;
     }
 
@@ -40,19 +51,16 @@ export const Footer = ({ categories }) => {
       body: JSON.stringify({email: subEmail, options:{ subject: 'E-Fear Subscription Notice' }}),
     }))
       .then((response) => {
-        console.log('subscript response = ', response);
-        setSubMessage({ text: 'Successfully subscribed! Check your email.', type: 'success' });
-        setSubEmail('');
+        if (response.status === 200) {
+          addToast('Successfully subscribed! Check your email.', 'success');
+        }
       })
       .catch((error) => {
-        setSubMessage({
-          text: 'Failed to subscribe. Please try again later.',
-          type: 'error'
-        });
-
+        addToast('Failed to subscribe. Please try again later.','error');
         console.error('Subscription error:', error);
       })
       .finally(() => {
+        setSubEmail('');
         setSubLoading(false);
       })
 
@@ -204,6 +212,14 @@ return (
         </div>
       </section>
     </footer>
+    {toasts.map(toast => (
+      <Toast
+        key={toast.id}
+        message={toast.message}
+        type={toast.type}
+        onClose={() => removeToast(toast.id)}
+      />
+    ))}
   </>
 
 );

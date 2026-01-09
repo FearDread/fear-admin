@@ -1,12 +1,20 @@
 const nodemailer = require("nodemailer");
 
-module.exports = function (config) {
+module.exports = function ( fear ) {
     const _this = {};
+    const logger = fear.getLogger();
 
-    _this.mailConfig = config || {};
+    _this.mailConfig = fear.mailinfo || {};
+    _this.mailService = fear.mailinfo.service || 'google';
     _this.transporter = null;
 
-    if (!_this.transporter) _this.transporter = nodemailer.createTransport(_this.mailConfig.smtp);
+    if (!_this.transporter) {
+        _this.transporter = nodemailer.createTransport(_this.mailConfig.smtp[_this.mailService]);
+        
+        Promise.resolve(_this.transporter.verify())
+            .then(() => { logger.info('Mail transport setup complete.');})
+            .catch((error) => { logger.error('Error loading mail transport :: ', error);})
+    } 
 
     _this.templates = {
         baseTemplate(content, title = "Email") {
@@ -233,14 +241,16 @@ Received: ${new Date().toLocaleString()}
 
         // Ensure we have default from address
         const emailOptions = {
-            from: _this.mailConfig.smtp.auth.user,
+            from: _this.mailConfig.smtp[_this.mailService].auth.user,
             ...options
         };
 
         return _this.transporter.sendMail(emailOptions)
             .then((info) => {
-                console.log('mail response = ', info);
-                res.status(200).json({ success: true, message: 'Email sent successfully', messageId: info.messageId })
+                if ( !info.messageId ) {
+                    logger.error('Error retrieving messageId :: ', info);
+                }
+                return { success: true, message: 'Email sent successfully', messageId: info.messageId }
             })
             .catch((error) => ({ success: false, message: error.message || 'Failed to send email', error: error }));
     }
@@ -256,9 +266,9 @@ Received: ${new Date().toLocaleString()}
             const textContent = _this.templates.generatePlainText(data, 'project');
 
             const options = {
-                from: _this.mailConfig.smtp.auth.user,
+                from: _this.mailConfig.smtp[_this.mailService].auth.user,
                 replyTo: email,
-                to: _this.mailConfig.smtp.auth.user,
+                to: _this.mailConfig.smtp[_this.mailService].auth.user,
                 subject: $subject || 'New Project Inquiry',
                 html: htmlContent,
                 text: textContent
@@ -284,9 +294,9 @@ Received: ${new Date().toLocaleString()}
             const textContent = _this.templates.generatePlainText(data, 'contact');
 
             const options = {
-                from: _this.mailConfig.smtp.auth.user,
+                from: _this.mailConfig.smtp[_this.mailService].auth.user,
                 replyTo: $email,
-                to: _this.mailConfig.smtp.auth.user,
+                to: _this.mailConfig.smtp[_this.mailService].auth.user,
                 subject: $subject || `Contact Form Message from ${$email}`,
                 html: htmlContent,
                 text: textContent
@@ -335,11 +345,13 @@ Received: ${new Date().toLocaleString()}
 
             return Promise.resolve(_this.sendEmail(emailOptions))
                 .then((resp) => {
-                    console.log('Subscription email resp:', resp);
+                    if ( !resp.success ) {
+                        logger.error('Unable to send email :: ', resp);
+                    }
                     return res.status(200).json({ success: true, result: resp })
                 })
                 .catch((error) => {
-                    console.error('Subscription email error:', error);
+                    logger.error('Subscription email error:', error);
                     return res.status(400).json({ success: false, message: error.message || 'Failed to send subscription email', error: error });
                 });
         },

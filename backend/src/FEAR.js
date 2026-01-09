@@ -187,15 +187,16 @@ module.exports = FEAR = (() => {
     },
 
     setupMailer() {
+      const mailService = (this.env.NODE_ENV === 'production') ? 'mailgun' : 'google';
       const mailinfo = require('./libs/emailer/info');
       const smtp = require('./libs/emailer/smtp')
 
-      if (!this.env.SMTP_USER || !this.env.SMTP_PASS) {
-        this.logger.error('Missing SMTP_ environment values.');
-      }
+      mailinfo.service = mailService;
+      this.mailinfo = mailinfo;
 
-      this.mailer = new smtp(mailinfo);
-      this.logger.info('Mail transport setup complete.');
+      if ( !this.mailer ) {
+        this.mailer = new smtp(this);
+      }
     },
     /**
      * Parse allowed origins from environment

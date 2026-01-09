@@ -2,20 +2,22 @@ require("dotenv").config({ path: "backend/.env" });
 
 module.exports = {
   smtp: {
-    host: process.env.SMTP_HOST,
-    port: parseInt(process.env.SMTP_PORT),
     secure: process.env.SMTP_SECURE === 'true',
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS
-    }
-  },
-  "imap": {
-    "host": "mail.mydomain.com",
-    "port": 999,
-    "auth": {
-      "user": "user@domain.com",
-      "pass": "xxx"
+    mailgun: {
+      host: process.env.MG_SMTP_HOST,
+      port: parseInt(process.env.SMTP_PORT),
+      auth: {
+        user: process.env.MG_SMTP_USER,
+        pass: process.env.MG_SMTP_PASS
+      }
+    },
+    google: {
+      host: process.env.GOOGLE_SMTP_HOST,
+      port: parseInt(process.env.SMTP_PORT),
+      auth: {
+        user: process.env.GOOGLE_SMTP_USER,
+        pass: process.env.GOOGLE_SMTP_PASS
+      }
     }
   }
 }
