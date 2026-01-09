@@ -1,33 +1,13 @@
 require("dotenv").config({ path: "backend/.env" });
 
 module.exports = {
-  "smtp": {
-    "service": process.env.SMTP_SERVICE,
-    "host": process.env.SMTP_HOST,
-    "port": process.env.SMTP_PORT,
-    "auth": {
-      "user": process.env.SMTP_MAIL,
-      "pass": process.env.SMTP_PASS
-    },
-    "apps": {
-      "gfolio": {
-        "auth": {
-          "user": process.env.SMTP_MAIL,
-          "pass": process.env.SMTP_PASS
-        },
-      },
-      "gdrea": {
-        "auth": {
-          "user": process.env.SMTP_MAIL,
-          "pass": process.env.SMTP_PASS
-        },
-      },
-      "jbird": {
-        "auth": {
-          "user": process.env.SMTP_MAIL,
-          "pass": process.env.SMTP_PASS
-        },
-      },
+  smtp: {
+    host: process.env.SMTP_HOST,
+    port: parseInt(process.env.SMTP_PORT),
+    secure: process.env.SMTP_SECURE === 'true',
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS
     }
   },
   "imap": {

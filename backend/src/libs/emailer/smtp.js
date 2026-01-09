@@ -1,165 +1,14 @@
 const nodemailer = require("nodemailer");
 
-const smtp = function (config) {
-    this.mailConfig = config || {};
-    this.transporter = null;
+module.exports = function (config) {
+    const _this = {};
 
-    if (!this.transporter) {
-        this.transporter = nodemailer.createTransport(this.mailConfig.smtp);
-    }
+    _this.mailConfig = config || {};
+    _this.transporter = null;
 
-    return this.transporter;
+    if (!_this.transporter) _this.transporter = nodemailer.createTransport(_this.mailConfig.smtp);
 
-}
-
-smtp.prototype = {
-    constructo: smtp,
-
-    async sendEmail(options) {
-        const validation = this.validateEmailOptions(options);
-
-        if (!validation.isValid) throw new Error(`Validation failed: ${validation.errors.join(', ')}`);
-
-        // Ensure we have default from address
-        const emailOptions = {
-            from: this.mailConfig.smtp.auth.user,
-            ...options
-        };
-
-        await this.transporter.sendMail(emailOptions)
-            .then((info) => ({ success: true, message: 'Email sent successfully', messageId: info.messageId }))
-            .catch((error) => ({ success: false, message: error.message || 'Failed to send email', error: error }));
-    },
-
-    async sendProjectEmail(data) {
-        const { $subject, email } = data;
-
-        if (!email || !this.isValidEmail(email)) throw new Error('Valid email address is required');
-
-        const htmlContent = this.templates.projectTemplate(data);
-        const textContent = this.templates.generatePlainText(data, 'project');
-
-        const options = {
-            from: this.mailConfig.smtp.auth.user,
-            replyTo: email,
-            to: this.mailConfig.smtp.auth.user,
-            subject: $subject || 'New Project Inquiry',
-            html: htmlContent,
-            text: textContent
-        };
-
-        return await this.sendEmail(this.mailConfig, options).catch((error) => {
-            console.error('Project email error:', error);
-            return {
-                success: false,
-                message: error.message || 'Failed to send project email',
-                error: error
-            };
-        })
-    },
-
-    async sendContactEmail(data) {
-        const { $email, $message, $subject } = data;
-
-        if (!$email || !isValidEmail($email)) throw new Error('Valid email address is required');
-        if (!$message || $message.trim().length === 0) throw new Error('Message is required');
-
-        const htmlContent = this.templates.contactTemplate(data);
-        const textContent = this.templates.generatePlainText(data, 'contact');
-
-        const options = {
-            from: this.mailConfig.smtp.auth.user,
-            replyTo: $email,
-            to: this.mailConfig.smtp.auth.user,
-            subject: $subject || `Contact Form Message from ${$email}`,
-            html: htmlContent,
-            text: textContent
-        };
-
-        return await this.sendEmail(this.mailConfig, options).catch((error) => {
-            console.error('Contact email error:', error);
-            return {
-                success: false,
-                message: error.message || 'Failed to send contact email',
-                error: error
-            };
-        });
-    },
-
-    async sendSubscriptionEmail(subscriberEmail, options = {}) {
-        if (!subscriberEmail || !isValidEmail(subscriberEmail)) {
-            throw new Error('Valid email address is required');
-        }
-
-        const { subject, customMessage } = options;
-
-        const htmlContent = `
-            <div class="header">
-                <h1 style="margin: 0; font-size: 28px;">Welcome! 🎉</h1>
-                <p style="margin: 10px 0 0 0; opacity: 0.9;">Thank you for subscribing</p>
-            </div>
-            <div class="content">
-                <p style="font-size: 16px;">
-                    ${customMessage || "You've successfully subscribed to our newsletter. We're excited to have you on board!"}
-                </p>
-                <p style="font-size: 16px;">
-                    You'll receive updates and news directly to your inbox.
-                </p>
-            </div>
-            <div class="footer">
-                <p style="margin: 0;">If you didn't subscribe, you can safely ignore this email.</p>
-            </div>
-        `;
-
-        const emailOptions = {
-            to: subscriberEmail,
-            subject: subject || 'Welcome to Our Newsletter!',
-            html: this.templates.baseTemplate(htmlContent, 'Subscription Confirmation'),
-            text: customMessage || "Thank you for subscribing! You'll receive updates directly to your inbox."
-        };
-
-        return await this.sendEmail(this.mailConfig, emailOptions).catch((error) => {
-            console.error('Subscription email error:', error);
-            return {
-                success: false,
-                message: error.message || 'Failed to send subscription email',
-                error: error
-            };
-        });
-    },
-
-    resetTransporter() {
-        this.transporter = null;
-    },
-    getTransporter() {
-        return this.transporter;
-    },
-    isValidEmail(email) {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return emailRegex.test(email);
-    },
-    validateEmailOptions(options) {
-        const errors = [];
-
-        if (!options.to) errors.push('Recipient email (to) is required');
-        if (!options.subject) errors.push('Subject is required');
-        if (!options.html && !options.text) errors.push('Email content (html or text) is required');
-
-        if (options.to && !isValidEmail(options.to)) {
-            errors.push('Invalid recipient email address');
-        }
-
-        if (options.from && !isValidEmail(options.from)) {
-            errors.push('Invalid sender email address');
-        }
-
-        return {
-            isValid: errors.length === 0,
-            errors
-        };
-    },
-
-    templates: {
+    _this.templates = {
         baseTemplate(content, title = "Email") {
             `
 <!DOCTYPE html>
@@ -350,19 +199,149 @@ ${$message}
 Received: ${new Date().toLocaleString()}
     `.trim();
         },
+    };
+    _this.isValidEmail = (email) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    };
+
+    _this.validateEmailOptions = (options) => {
+        const errors = [];
+
+        if (!options.to) errors.push('Recipient email (to) is required');
+        if (!options.subject) errors.push('Subject is required');
+        if (!options.html && !options.text) errors.push('Email content (html or text) is required');
+
+        if (options.to && !_this.isValidEmail(options.to)) {
+            errors.push('Invalid recipient email address');
+        }
+
+        if (options.from && !_this.isValidEmail(options.from)) {
+            errors.push('Invalid sender email address');
+        }
+
+        return {
+            isValid: errors.length === 0,
+            errors
+        };
+    };
+
+    _this.sendEmail = async (options) => {
+        const validation = _this.validateEmailOptions(options);
+
+        if (!validation.isValid) throw new Error(`Validation failed: ${validation.errors.join(', ')}`);
+
+        // Ensure we have default from address
+        const emailOptions = {
+            from: _this.mailConfig.smtp.auth.user,
+            ...options
+        };
+
+        return _this.transporter.sendMail(emailOptions)
+            .then((info) => {
+                console.log('mail response = ', info);
+                res.status(200).json({ success: true, message: 'Email sent successfully', messageId: info.messageId })
+            })
+            .catch((error) => ({ success: false, message: error.message || 'Failed to send email', error: error }));
+    }
+
+    return {
+        sendEmail: _this.sendEmail,
+        async sendProjectEmail(data) {
+            const { $subject, email } = data;
+
+            if (!email || !_this.isValidEmail(email)) throw new Error('Valid email address is required');
+
+            const htmlContent = _this.templates.projectTemplate(data);
+            const textContent = _this.templates.generatePlainText(data, 'project');
+
+            const options = {
+                from: _this.mailConfig.smtp.auth.user,
+                replyTo: email,
+                to: _this.mailConfig.smtp.auth.user,
+                subject: $subject || 'New Project Inquiry',
+                html: htmlContent,
+                text: textContent
+            };
+
+            return await _this.sendEmail(_this.mailConfig, options).catch((error) => {
+                console.error('Project email error:', error);
+                return {
+                    success: false,
+                    message: error.message || 'Failed to send project email',
+                    error: error
+                };
+            })
+        },
+
+        async sendContactEmail(data) {
+            const { $email, $message, $subject } = data;
+
+            if (!$email || !_this.isValidEmail($email)) throw new Error('Valid email address is required');
+            if (!$message || $message.trim().length === 0) throw new Error('Message is required');
+
+            const htmlContent = _this.templates.contactTemplate(data);
+            const textContent = _this.templates.generatePlainText(data, 'contact');
+
+            const options = {
+                from: _this.mailConfig.smtp.auth.user,
+                replyTo: $email,
+                to: _this.mailConfig.smtp.auth.user,
+                subject: $subject || `Contact Form Message from ${$email}`,
+                html: htmlContent,
+                text: textContent
+            };
+
+            return _this.sendEmail(options).catch((error) => {
+                console.error('Contact email error:', error);
+                return {
+                    success: false,
+                    message: error.message || 'Failed to send contact email',
+                    error: error
+                };
+            });
+        },
+
+        async sendSubscriptionEmail(req, res) {
+            const { email, options } = req.body;
+
+            if (!email) throw new Error('Valid email address is required');
+
+            const { subject, customMessage } = options;
+            const htmlContent = `
+            <div class="header">
+                <h1 style="margin: 0; font-size: 28px;">Welcome! 🎉</h1>
+                <p style="margin: 10px 0 0 0; opacity: 0.9;">Thank you for subscribing</p>
+            </div>
+            <div class="content">
+                <p style="font-size: 16px;">
+                    ${customMessage || "You've successfully subscribed to our newsletter. We're excited to have you on board!"}
+                </p>
+                <p style="font-size: 16px;">
+                    You'll receive updates and news directly to your inbox.
+                </p>
+            </div>
+            <div class="footer">
+                <p style="margin: 0;">If you didn't subscribe, you can safely ignore this email.</p>
+            </div>
+        `;
+
+            const emailOptions = {
+                to: email,
+                subject: subject || 'Welcome to Our Newsletter!',
+                html: _this.templates.baseTemplate(htmlContent, 'Subscription Confirmation'),
+                text: customMessage || "Thank you for subscribing! You'll receive updates directly to your inbox."
+            };
+
+            return Promise.resolve(_this.sendEmail(emailOptions))
+                .then((resp) => {
+                    console.log('Subscription email resp:', resp);
+                    return res.status(200).json({ success: true, result: resp })
+                })
+                .catch((error) => {
+                    console.error('Subscription email error:', error);
+                    return res.status(400).json({ success: false, message: error.message || 'Failed to send subscription email', error: error });
+                });
+        },
     }
 }
-
-exports.factory = () => new smtp({
-    smtp: {
-        host: 'smtp.gmail.com',
-        port: 587,
-        secure: false, // true for 465, false for other ports
-        auth: {
-            user: 'your-email@gmail.com',
-            pass: 'your-app-password' // Use app-specific password for Gmail
-        }
-    }
-});
-
-module.exports = smtp;

@@ -1,6 +1,5 @@
 const path = require("path");
 const fs = require("fs");
-const stripe = require('stripe');
 const express = require("express");
 const compression = require("compression");
 const cookieParser = require("cookie-parser");
@@ -31,11 +30,13 @@ module.exports = FEAR = (() => {
     this.origins = [];
     this.corsConfig = null;
     this.stripe = null;
+    this.mailer = null;
 
     // Initialize
     this.setupEnvironment();
     this.setupDependencies();
     this.setupStripe();
+    this.setupMailer();
     this.setupMiddleware();
     this.corsConfig = this.getCorsConfig();
     this.setupRoutes();
@@ -119,6 +120,9 @@ module.exports = FEAR = (() => {
       return this.handler;
     },
 
+    getMailer() {
+      return this.mailer;
+    },
     /**
      * Get CORS configuration
      */
@@ -182,6 +186,17 @@ module.exports = FEAR = (() => {
       });
     },
 
+    setupMailer() {
+      const mailinfo = require('./libs/emailer/info');
+      const smtp = require('./libs/emailer/smtp')
+
+      if (!this.env.SMTP_USER || !this.env.SMTP_PASS) {
+        this.logger.error('Missing SMTP_ environment values.');
+      }
+
+      this.mailer = new smtp(mailinfo);
+      this.logger.info('Mail transport setup complete.');
+    },
     /**
      * Parse allowed origins from environment
      */
