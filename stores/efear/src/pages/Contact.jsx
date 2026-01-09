@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { Mail, Send, User, MessageSquare } from 'lucide-react';
+import Toast from "../components/common/Toast";
 
 export const Contact = () => {
-    // Contact form state
     const [contactForm, setContactForm] = useState({
         name: '',
         email: '',
@@ -10,7 +9,16 @@ export const Contact = () => {
     });
     const [contactLoading, setContactLoading] = useState(false);
     const [contactMessage, setContactMessage] = useState({ text: '', type: '' });
+    const [toasts, setToasts] = useState([]);
 
+    const addToast = (message, type) => {
+        const id = Date.now();
+        setToasts(prev => [...prev, { id, message, type }]);
+    };
+
+    const removeToast = (id) => {
+        setToasts(prev => prev.filter(toast => toast.id !== id));
+    };
     const isValidEmail = (email) => {
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     };
@@ -31,36 +39,26 @@ export const Contact = () => {
         }
 
         setContactLoading(true);
-
-        try {
-            // Replace with your actual API endpoint
-            const response = await fetch('https:fear.dedyn.io/fear/api/email/contact', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(contactForm),
-            });
-
-            if (!response.ok) {
-                throw new Error('Message failed to send');
-            }
-
-            const data = await response.json();
-            setContactMessage({
-                text: 'Message sent successfully! We\'ll get back to you soon.',
-                type: 'success'
-            });
-            setContactForm({ name: '', email: '', message: '' });
-        } catch (error) {
-            setContactMessage({
-                text: 'Failed to send message. Please try again later.',
-                type: 'error'
-            });
-            console.error('Contact error:', error);
-        } finally {
-            setContactLoading(false);
-        }
+        Promise.resolve(fetch('http://localhost:4000/fear/api/mail/contact', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({'$name': contactForm.name, '$email': contactForm.email, '$message': contactForm.message}),
+        }))
+            .then((response) => {
+                if (response.status === 200) {
+                    addToast('Message sent successfully! We\'ll get back to you soon.', 'success');
+                }
+            })
+            .catch((error) => {
+                console.log('Email Error : ', error);
+                addToast('Failed to send message. Please try again later.', 'error');
+            })
+            .finally(() => {
+                setContactLoading(false);
+                setContactForm({ name: '', email: '', message: '' });
+            })
     };
 
     // Handle contact form input changes
@@ -178,7 +176,6 @@ export const Contact = () => {
                                                 </>
                                             ) : (
                                                 <>
-                                                    <Send size={18} />
                                                     Send Message
                                                 </>
                                             )}
@@ -211,6 +208,14 @@ export const Contact = () => {
                     </div>
                 </div>
             </section>
+            {toasts.map(toast => (
+                <Toast
+                    key={toast.id}
+                    message={toast.message}
+                    type={toast.type}
+                    onClose={() => removeToast(toast.id)}
+                />
+            ))}
         </>
     )
 

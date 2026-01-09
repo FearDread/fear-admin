@@ -141,7 +141,7 @@ module.exports = function ( fear ) {
         </div>
     `;
 
-            return baseTemplate(content, "New Project Inquiry");
+            return _this.templates.baseTemplate(content, "New Project Inquiry");
         },
 
         contactTemplate(data) {
@@ -173,7 +173,7 @@ module.exports = function ( fear ) {
         </div>
     `;
 
-            return baseTemplate(content, "New Contact Message");
+            return _this.templates.baseTemplate(content, "New Contact Message");
         },
 
         generatePlainText(data, type = 'contact') {
@@ -284,14 +284,14 @@ Received: ${new Date().toLocaleString()}
             })
         },
 
-        async sendContactEmail(data) {
-            const { $email, $message, $subject } = data;
+        async sendContactEmail(req, res) {
+            const { $email, $message, $subject } = req.body;
 
-            if (!$email || !_this.isValidEmail($email)) throw new Error('Valid email address is required');
+            if (!$email) throw new Error('Valid email address is required');
             if (!$message || $message.trim().length === 0) throw new Error('Message is required');
 
-            const htmlContent = _this.templates.contactTemplate(data);
-            const textContent = _this.templates.generatePlainText(data, 'contact');
+            const htmlContent = _this.templates.contactTemplate(req.body);
+            const textContent = _this.templates.generatePlainText(req.body, 'contact');
 
             const options = {
                 from: _this.mailConfig.smtp[_this.mailService].auth.user,
@@ -302,14 +302,17 @@ Received: ${new Date().toLocaleString()}
                 text: textContent
             };
 
-            return _this.sendEmail(options).catch((error) => {
-                console.error('Contact email error:', error);
-                return {
-                    success: false,
-                    message: error.message || 'Failed to send contact email',
-                    error: error
-                };
-            });
+            return Promise.resolve(_this.sendEmail(options))
+                .then((resp) => {
+                    if ( !resp.success ) {
+                        logger.error('Unable to send contact email :: ', resp);
+                    }
+                    return res.status(200).json({ success: true, result: resp })
+                })
+                .catch((error) => {
+                    logger.error('Subscription email error:', error);
+                    return res.status(400).json({ success: false, message: error.message || 'Failed to send contact email', error: error });
+                });
         },
 
         async sendSubscriptionEmail(req, res) {
