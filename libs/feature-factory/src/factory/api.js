@@ -21,7 +21,7 @@ const CONFIG = {
   cacheKeys: {
     auth: 'auth',
     refreshToken: 'refresh_token',
-    userPrefs: 'user_preferences',
+    userPrefs: 'user_preferences',                                                
   },
   timeout: parseInt(process.env.REACT_APP_API_TIMEOUT) || 30000,
   retryAttempts: parseInt(process.env.REACT_APP_API_RETRY_ATTEMPTS) || 3,

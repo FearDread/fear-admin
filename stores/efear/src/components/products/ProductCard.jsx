@@ -79,8 +79,8 @@ export const ProductCard = (product) => {
     }
     setIsAddingToWishlist(true);
     const wishlistItem = {
-      id: product._id || product.id,
-      productId: product._id || product.id,
+      id: product._id,
+      productId: product._id,
       name: product.title,
       title: product.title,
       subtotal: currentPrice,
@@ -108,8 +108,6 @@ export const ProductCard = (product) => {
 
     const cartItem = {
       productId: product._id,
-      id: product._id,
-      name: product.title,
       title: product.title,
       image: (product.images && product.images.length > 0) ? product.images?.[0]?.url : '',
       price: product.salePrice || product.price,

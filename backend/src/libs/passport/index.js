@@ -1,64 +1,71 @@
-// needed for local authentication
 const passport = require("passport");
-
 const LocalStrategy = require("passport-local").Strategy;
 const FacebookStrategy = require("passport-facebook").Strategy;
-const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const GoogleStrategy = require("passport-google-oauth20").Strategy;
 
 const secret = require("../config/secret");
 const User = require("../models/user");
-const async = require("async");
-const Cart = require("../models/cart");
 
-// serialize and deserialize
 passport.serializeUser((user, done) => {
-  done(null, user);
+  done(null, user._id); // Only serialize user ID, not entire user object
 });
 
 passport.deserializeUser((id, done) => {
-  User.findById(id, (err, user) => {
-    done(err, user);
-  });
+  User.findById(id)
+    .lean()
+    .exec()
+    .then((user) => done(null, user))
+    .catch((err) => done(err, null));
 });
 
-// custom function validate
-exports.isAuthenticated = (req, res, next) => {
-  if (req.isAuthenticated()) {
-    return next();
-  }
-  res.redirect("/login");
-};
-// give the middleware a name, and create a new anonymous instance of LocalStrategy
+/**
+ * Finds or creates a user from OAuth profile
+ */
+function findOrCreateOAuthUser(profile, provider, accessToken) {
+  const query = { [`${provider}Id`]: profile.id };
+  
+  return User.findOne(query)
+    .then((user) => {
+      if (user) {
+        return user;
+      }
 
+      // Create new user
+      const userData = {
+        [`${provider}Id`]: profile.id,
+        [`${provider}AccessToken`]: accessToken,
+        username: profile.displayName,
+        email: profile._json?.email || profile.emails?.[0]?.value,
+      };
 
+      if (provider === "facebook") {
+        userData.tokens = [{ kind: "facebook", token: accessToken }];
+        userData.profile = {
+          name: profile.displayName,
+          picture: `https://graph.facebook.com/${profile.id}/picture?type=large`,
+        };
+      }
 
-passport.use(
-  "google",
-  new GoogleStrategy({
-       clientID: process.env.GOOGLE_CLIENT_ID,
-       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-       callbackURL: "http://localhost:4000/fear/api/auth/google",
-       scope: ['profile', 'email']
-   },
-       async function (accessToken, refreshToken, profile, cb) {
-           try {
-               let user = await User.findOne({
-                   googleId: profile.id
-               })
-               if (user) return cb(null, user)
-               user = await User.create({
-                   googleAccessToken: accessToken,
-                   googleId: profile.id,
-                   username:profile.displayName,
-               })
-               cb(null, user)
-           } catch (err) {
-               cb(err, false)
+      return User.create(userData);
+    })
+    .then((user) => {
+      // If user already existed, return immediately
+      if (user.createdAt && Date.now() - user.createdAt > 1000) {
+        return user;
+      }
+      
+      // Create cart for new user
+      return createUserCart(user._id).then(() => user);
+    });
+}
 
-           }
+// ============================================
+// Strategy Configurations
+// ============================================
 
-       }
-   ));
+/**
+ * Local Strategy (Email/Password Login)
+ */
 passport.use(
   "login",
   new LocalStrategy(
@@ -68,75 +75,63 @@ passport.use(
       passReqToCallback: true,
     },
     (req, email, password, done) => {
-      // find a specific email
-      User.findOne({ email: email }, (err, user) => {
-        // incase of an error return a callback
-        if (err) return done(err);
+      User.findOne({ email: email.toLowerCase() })
+        .then((user) => {
+          if (!user) {
+            return done(null, false, req.flash("loginMessage", "No user found with this email"));
+          }
 
-        if (!user) {
-          return done(
-            null,
-            false,
-            req.flash("loginMessage", "No user with such credentials found")
-          );
-        }
+          const isValidPassword = user.comparePassword(password);
+          
+          if (!isValidPassword) {
+            return done(null, false, req.flash("loginMessage", "Incorrect password"));
+          }
 
-        // compare user provided password and the database one
-        if (!user.comparePassword(password)) {
-          return done(
-            null,
-            false,
-            req.flash("loginMessage", "Oops! Wrong credentials")
-          );
-        }
-
-        // return user object
-        return done(null, user);
-      });
-    }
-  )
-);
-
-passport.use(
-  new FacebookStrategy(
-    secret.facebook,
-    (token, refreshToken, profile, done) => {
-      User.findOne({ facebook: profile.id }, (err, user) => {
-        if (err) return next(err);
-
-        if (user) {
           return done(null, user);
-        } else {
-          async.waterfall([
-            (callback) => {
-              const newUser = new User();
-              newUser.email = profile._json.email;
-              newUser.facebook = profile.id;
-              newUser.tokens.push({ kind: "facebook", token: token });
-              newUser.profile.name = profile.displayName;
-              newUser.profile.picture =
-                "https://graph.facebook.com/" +
-                profile.id +
-                "/picture?type=large";
-
-              newUser.save((err) => {
-                if (err) return next(err);
-                callback(err, newUser._id);
-              });
-            },
-            (newUser) => {
-              const cart = new Cart();
-
-              cart.owner = newUser._id;
-              cart.save((err) => {
-                if (err) return done(err);
-                return done(err, newUser);
-              });
-            },
-          ]);
-        }
-      });
+        })
+        .catch((err) => done(err));
     }
   )
 );
 
+/**
+ * Google OAuth Strategy
+ */
+passport.use(
+  "google",
+  new GoogleStrategy(
+    {
+      clientID: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      callbackURL: process.env.GOOGLE_CALLBACK_URL || "http://localhost:4000/fear/api/auth/google",
+      scope: ["profile", "email"],
+    },
+    (accessToken, refreshToken, profile, done) => {
+      findOrCreateOAuthUser(profile, "google", accessToken)
+        .then((user) => done(null, user))
+        .catch((err) => done(err, false));
+    }
+  )
+);
+
+/**
+ * Facebook OAuth Strategy
+ */
+passport.use(
+  "facebook",
+  new FacebookStrategy(
+    {
+      clientID: secret.facebook.clientID,
+      clientSecret: secret.facebook.clientSecret,
+      callbackURL: secret.facebook.callbackURL,
+      profileFields: ["id", "displayName", "email", "picture.type(large)"],
+    },
+    (accessToken, refreshToken, profile, done) => {
+      findOrCreateOAuthUser(profile, "facebook", accessToken)
+        .then((user) => done(null, user))
+        .catch((err) => done(err, false));
+    }
+  )
+);
+
+module.exports = passport;

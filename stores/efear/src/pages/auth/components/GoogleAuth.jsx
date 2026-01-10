@@ -1,10 +1,16 @@
 import { useState } from 'react';
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
+import { useDispatch } from "react-redux";
+import {
+  loginWithGoogle
+} from "../../../features/user/slice";
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || "770636390-0080vi5ejigk8s5mbuaikgn9j0qb129n.apps.googleusercontent.com";
 const API_BASE_URL = 'http://localhost:4000/fear/api/auth';
 
 function AuthComponent() {
+  const dispatch = useDispatch();
+
   const [user, setUser] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -14,6 +20,8 @@ function AuthComponent() {
     setLoading(true);
     setError(null);
 
+    dispatch(loginWithGoogle(credentialResponse));
+    /*
     Promise.resolve(fetch(`${API_BASE_URL}/google`, {
       method: 'POST',
       headers: {
@@ -41,6 +49,7 @@ function AuthComponent() {
         console.error('Google auth error:', err);
 
       })
+        */
   };
 
   const handleGoogleError = () => {

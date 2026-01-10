@@ -1,5 +1,5 @@
 const Auth = require("../controllers/auth");
-const passport = require("../libs/passport");
+const passport = require("passport");
 
 module.exports = (fear) => {
     const router = fear.createRouter();
@@ -11,11 +11,9 @@ module.exports = (fear) => {
     router.post("/logout", handler.async(Auth.logout))
     router.post("/register", handler.async(Auth.register))
 
-    router.post('/google', 
-        passport.authenticate('google', { scope: ['profile'] }),
-        handler.async(Auth.googleAuth)); 
-    router.post('/google/link', Auth.isAuthorized, handler.async(Auth.linkGoogleAccount));
-    router.delete('/google/unlink', Auth.isAuthorized, handler.async(Auth.unlinkGoogleAccount));
+    router.post('/google', handler.async(Auth.googleAuth)); 
+    router.post('/google/link',handler.async(Auth.linkGoogleAccount));
+    router.delete('/google/unlink',handler.async(Auth.unlinkGoogleAccount));
 
     return router;
 }

@@ -6,6 +6,8 @@ const compression = require("compression");
 const cookieParser = require("cookie-parser");
 const fileUpload = require("express-fileupload");
 const cors = require("cors");
+const MongoStore = require('connect-mongo');
+const passport = require('passport');
 
 module.exports = FEAR = (() => {
   // Private constants
@@ -133,24 +135,33 @@ return this.passport;
      */
     setupMiddleware() {
       this.app.set("PORT", this.env.NODE_PORT || DEFAULT_PORT);
+      this.app.use(express.json({ limit: DEFAULT_JSON_LIMIT }));
+      this.app.use(express.urlencoded({ extended: true }));
       this.app.use(session({
-        secret: this.env.SECRET_KEY, // Secret key for session encryption
-        resave: false, // Prevent session resaving if unmodified
-        saveUninitialized: true, // Save sessions even if uninitialized
-        //store: MongoStore.create({ mongoUrl: process.env.MONGO_URL }) // Store sessions in MongoDB
+        secret: process.env.SESSION_SECRET,
+        resave: false,
+        saveUninitialized: false,
+        //store: MongoStore.create({
+          //mongoUrl: process.env.DB_LINK,
+          //touchAfter: 24 * 3600 // lazy session update (24 hours)
+        //}),
+        cookie: {
+          maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production' // HTTPS only in production
+        }
       }));
       this.app.use(this.morgan);
-      this.app.use(this.passport.initialize());  //middleware initializes passport.js in the app
-      this.app.use(this.passport.session()); 
-      this.app.use(express.json({ limit: DEFAULT_JSON_LIMIT }));
       this.app.use(compression());
       this.app.use(fileUpload());
       this.app.use(cookieParser());
+      this.app.use(passport.initialize());
+      this.app.use(passport.session()); 
 
-      // Request logging middleware
+      require('./libs/passport');
       this.app.use((req, res, next) => {
         this.logger.info(`FEAR API Query :: ${req.url}`);
-        res.locals.user = req.user;
+        res.locals.user = req.user || null;
         next();
       });
     },
