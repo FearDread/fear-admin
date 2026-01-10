@@ -2100,3 +2100,34 @@ h6.product-name {
 	height: 250px;
 	object-fit: cover;
 }
+.comon-shape {
+  background: transparent url(../images/about/shu2.png) no-repeat;
+  background-position: left;
+  height: 236px;
+  display: inline-block;
+  width: 305px;
+  padding-top: 83px;
+  padding-left: 30px;
+  padding-right: 30px;
+  position: relative;
+  margin-bottom: 60px;
+}
+.comon-shape h4 {
+  color: var(--primarycolor);
+  font-family: "Bangers", cursive;
+  font-size: 30px;
+  text-align: center;
+  position: absolute;
+  top: -30px;
+  left: 0;
+  right: 0;
+  font-size: 80px;
+  -webkit-text-stroke-width: 2px;
+  -webkit-text-stroke-color: var(--ligit-color);
+}
+.comon-shape h5 {
+  font-size: 25px;
+}
+.about-img-center {
+	width: 100%;
+}

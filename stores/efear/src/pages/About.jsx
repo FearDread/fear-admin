@@ -1,6 +1,6 @@
 import React from 'react';
-
-
+import PopularBrands from "../components/common/PopularBrands";
+import aboutImg from "../assets/images/about/01.png";
 export const About = () => {
     return (
         <>
@@ -45,8 +45,8 @@ export const About = () => {
                         Customer service: We'll respond to your emails faster than DC responds to fan criticism
                         Honest recommendations: If a book is terrible, we'll tell you. Then sell it to you anyway because capitalism.</p>
 
-                        <h3>Why Choose Us?</h3>
-                        <p>
+                    <h3>Why Choose Us?</h3>
+                    <p>
                         Listen, you're already here reading this. The hard part is over. At this point, you're pot-committed. Plus, we need to make rent, and our landlord has made it very clear that "exposure" is not legal tender.
                         Our Team
                         We're a small operation, which is a fancy way of saying we can't afford to hire anyone else. But what we lack in manpower, we make up for in caffeine addiction and the sinking feeling that we should have gotten real jobs.
@@ -57,6 +57,8 @@ export const About = () => {
                     </p>
                 </div>
             </section>
+
+
 
             <section className="py-4">
                 <div className="container">
@@ -94,149 +96,48 @@ export const About = () => {
                 </div>
             </section>
 
-            <section className="py-4">
+
+            <section className="py-0 py-lg-4 card">
                 <div className="container">
-                    <h4>Our Top Brands</h4>
-                    <hr />
-                    <div className="row row-cols-2 row-cols-sm-2 row-cols-md-4 row-cols-xl-5">
-                        <div className="col">
-                            <div className="card">
-                                <div className="card-body">
-                                    <a href="javscript:;">
-                                        <img src="assets/images/brands/marvel.jpg" className="img-fluid" alt="" />
-                                    </a>
-                                </div>
+                    <h5 className="sub-heading mb-2 text-center">  Why choose us </h5>
+                    <h2 className="text-center page-haeding"> Here's What we Offer </h2>
+                    <div className="row align-items-center mt-5 mt-lg-0">
+                        <div className="col-lg-3">
+                            <div className="comon-shape">
+                                <h4>01</h4>
+                                <h5 className="text-center"> Proin quis neque dapibus </h5>
                             </div>
+
+                            <div className="comon-shape">
+                                <h4>02</h4>
+                                <h5 className="text-center"> Proin quis neque dapibus </h5>
+                            </div>
+
                         </div>
-                        <div className="col">
-                            <div className="card">
-                                <div className="card-body">
-                                    <a href="javscript:;">
-                                        <img src="assets/images/brands/dc.jpg" className="img-fluid" alt="" />
-                                    </a>
-                                </div>
-                            </div>
+                        <div className="col-lg-6">
+                            <figure className="text-center">
+                                <img alt="about" className='about-img-center' src={aboutImg} />
+                            </figure>
                         </div>
-                        <div className="col">
-                            <div className="card">
-                                <div className="card-body">
-                                    <a href="javscript:;">
-                                        <img src="assets/images/brands/dh.jpg" className="img-fluid" alt="" />
-                                    </a>
-                                </div>
+                        <div className="col-lg-3">
+                            <div className="comon-shape">
+                                <h4>03</h4>
+                                <h5 className="text-center"> Proin quis neque dapibus </h5>
                             </div>
-                        </div>
-                        <div className="col">
-                            <div className="card">
-                                <div className="card-body">
-                                    <a href="javscript:;">
-                                        <img src="assets/images/brands/04.png" className="img-fluid" alt="" />
-                                    </a>
-                                </div>
+
+                            <div className="comon-shape">
+                                <h4>04</h4>
+                                <h5 className="text-center"> Proin quis neque dapibus </h5>
                             </div>
-                        </div>
-                        <div className="col">
-                            <div className="card">
-                                <div className="card-body">
-                                    <a href="javscript:;">
-                                        <img src="assets/images/brands/05.png" className="img-fluid" alt="" />
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col">
-                            <div className="card">
-                                <div className="card-body">
-                                    <a href="javscript:;">
-                                        <img src="assets/images/brands/06.png" className="img-fluid" alt="" />
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col">
-                            <div className="card">
-                                <div className="card-body">
-                                    <a href="javscript:;">
-                                        <img src="assets/images/brands/07.png" className="img-fluid" alt="" />
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col">
-                            <div className="card">
-                                <div className="card-body">
-                                    <a href="javscript:;">
-                                        <img src="assets/images/brands/08.png" className="img-fluid" alt="" />
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col">
-                            <div className="card">
-                                <div className="card-body">
-                                    <a href="javscript:;">
-                                        <img src="assets/images/brands/09.png" className="img-fluid" alt="" />
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col">
-                            <div className="card">
-                                <div className="card-body">
-                                    <a href="javscript:;">
-                                        <img src="assets/images/brands/10.png" className="img-fluid" alt="" />
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col">
-                            <div className="card">
-                                <div className="card-body">
-                                    <a href="javscript:;">
-                                        <img src="assets/images/brands/11.png" className="img-fluid" alt="" />
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col">
-                            <div className="card">
-                                <div className="card-body">
-                                    <a href="javscript:;">
-                                        <img src="assets/images/brands/12.png" className="img-fluid" alt="" />
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col">
-                            <div className="card">
-                                <div className="card-body">
-                                    <a href="javscript:;">
-                                        <img src="assets/images/brands/13.png" className="img-fluid" alt="" />
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col">
-                            <div className="card">
-                                <div className="card-body">
-                                    <a href="javscript:;">
-                                        <img src="assets/images/brands/14.png" className="img-fluid" alt="" />
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col">
-                            <div className="card">
-                                <div className="card-body">
-                                    <a href="javscript:;">
-                                        <img src="assets/images/brands/15.png" className="img-fluid" alt="" />
-                                    </a>
-                                </div>
-                            </div>
+
                         </div>
                     </div>
+
+                    <a href="about.html#" className="btn comon-button mx-auto mt-5 d-table">  <span> <i className="far fa-gem"></i> Join Now </span> </a>
                 </div>
+
             </section>
+            <PopularBrands />
         </>
     );
 }

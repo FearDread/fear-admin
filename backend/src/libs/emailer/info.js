@@ -1,6 +1,12 @@
 require("dotenv").config({ path: "backend/.env" });
 
 module.exports = {
+  mailgun: {
+    domain: "fear.dedyn.io",
+    region: 'US',
+    apikey: process.env.MG_API_KEY,
+    sandbox: "sandbox933b4315c0164f209bbf0bc7fb908598.mailgun.org"
+  },
   smtp: {
     secure: process.env.SMTP_SECURE === 'true',
     mailgun: {
