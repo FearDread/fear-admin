@@ -1,6 +1,6 @@
 const stripe = require('stripe');
 
-module.exports = function (fear) {
+module.exports = function ( fear ) {
   const _this = {};
   _this.env = fear.getEnvironment();
   _this.logger = fear.getLogger();
@@ -11,7 +11,7 @@ module.exports = function (fear) {
 
   _this.stripe = stripe(_this.env.STRIPE_SECRET_KEY);
   _this.webhookSecret = _this.env.STRIPE_WEBHOOK_SECRET;
-  _this.logger.info('Stripe Payment Handler initialized');
+  _this.logger.warn('Stripe Payment Handler initialized');
 
   _this.handleError = (res, statusCode, error) => {
     _this.logger.error(`Stripe Error :: `, error);

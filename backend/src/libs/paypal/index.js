@@ -1,6 +1,6 @@
-const paypal = require('paypal');
+const paypal = require('paypal-rest-sdk');
 
-module.exports = function (fear) {
+module.exports = function ( fear ) {
     const _this = {};
     _this.logger = fear.getLogger();
     _this.validator = fear.getValidator();
@@ -12,6 +12,8 @@ module.exports = function (fear) {
     if (!_this.clientId || !_this.clientSecret) {
         throw new Error('Missing PayPal client ID or client secret. Please update .env');
     }
+    _this.logger.warn('PayPal Payment Handler initialized')
+
     _this.initEnvironment = () => {
         return new paypal.core.SandboxEnvironment(_this.clientId, _this.clientSecret);
     };

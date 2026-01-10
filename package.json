@@ -46,6 +46,7 @@
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
+    "paypal-rest-sdk": "^1.8.1",
     "razorpay": "^2.9.6",
     "react-chartjs-2": "^5.2.0",
     "react-swipe": "^6.0.4",

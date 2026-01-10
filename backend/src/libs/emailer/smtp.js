@@ -5,20 +5,22 @@ module.exports = function ( fear ) {
     const logger = fear.getLogger();
 
     _this.mailConfig = fear.mailinfo || {};
-    _this.mailService = fear.mailinfo.service || 'google';
+    _this.mailService = fear.mailinfo?.service || 'google';
     _this.transporter = null;
 
+    if (!_this.mailConfig.smtp || !_this.mailConfig.smtp[_this.mailService]) {
+        throw new Error(`Missing mail configuration for service: ${_this.mailService}. Please update mail configuration.`);
+    }
     if (!_this.transporter) {
         _this.transporter = nodemailer.createTransport(_this.mailConfig.smtp[_this.mailService]);
-        
-        Promise.resolve(_this.transporter.verify())
-            .then(() => { logger.info('Mail transport setup complete.');})
-            .catch((error) => { logger.error('Error loading mail transport :: ', error);})
-    } 
+        _this.transporter.verify()
+            .then(() => logger.info('Mail transport setup complete.'))
+            .catch((error) => logger.error('Error loading mail transport :: ', error));
+    }
 
     _this.templates = {
         baseTemplate(content, title = "Email") {
-            `
+            return `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -92,7 +94,8 @@ module.exports = function ( fear ) {
     </div>
 </body>
 </html>
-        `},
+            `;
+        },
 
         projectTemplate(data) {
             const { fullname, company, email, phone, budget, about } = data;
@@ -139,7 +142,7 @@ module.exports = function ( fear ) {
         <div class="footer">
             <p style="margin: 0;">Received on ${new Date().toLocaleString()}</p>
         </div>
-    `;
+            `;
 
             return _this.templates.baseTemplate(content, "New Project Inquiry");
         },
@@ -171,7 +174,7 @@ module.exports = function ( fear ) {
         <div class="footer">
             <p style="margin: 0;">Received on ${new Date().toLocaleString()}</p>
         </div>
-    `;
+            `;
 
             return _this.templates.baseTemplate(content, "New Contact Message");
         },
@@ -190,7 +193,7 @@ Project Details:
 ${about || 'No details provided'}
 
 Received: ${new Date().toLocaleString()}
-        `.trim();
+                `.trim();
             }
 
             // Contact form
@@ -205,9 +208,10 @@ Message:
 ${$message}
 
 Received: ${new Date().toLocaleString()}
-    `.trim();
+            `.trim();
         },
     };
+
     _this.isValidEmail = (email) => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(email);
@@ -234,10 +238,12 @@ Received: ${new Date().toLocaleString()}
         };
     };
 
-    _this.sendEmail = async (options) => {
+    _this.sendEmail = (options) => {
         const validation = _this.validateEmailOptions(options);
 
-        if (!validation.isValid) throw new Error(`Validation failed: ${validation.errors.join(', ')}`);
+        if (!validation.isValid) {
+            return Promise.reject(new Error(`Validation failed: ${validation.errors.join(', ')}`));
+        }
 
         // Ensure we have default from address
         const emailOptions = {
@@ -247,24 +253,44 @@ Received: ${new Date().toLocaleString()}
 
         return _this.transporter.sendMail(emailOptions)
             .then((info) => {
-                if ( !info.messageId ) {
-                    logger.error('Error retrieving messageId :: ', info);
+                if (!info.messageId) {
+                    logger.warn('Email sent but messageId not found :: ', info);
                 }
-                return { success: true, message: 'Email sent successfully', messageId: info.messageId }
+                logger.info(`Email sent successfully :: messageId: ${info.messageId}`);
+                return {
+                    success: true,
+                    message: 'Email sent successfully',
+                    messageId: info.messageId
+                };
             })
-            .catch((error) => ({ success: false, message: error.message || 'Failed to send email', error: error }));
-    }
+            .catch((error) => {
+                logger.error('Error sending email :: ', error);
+                return {
+                    success: false,
+                    message: error.message || 'Failed to send email',
+                    error: error
+                };
+            });
+    };
+    
+    _this.handleError = (res, statusCode, error) => {
+        logger.error(`E-Mailer Error :: `, error);
+        return res.status(statusCode).json({ success: false, message: error.message, error });
+    };
 
     return {
+        templates: _this.templates,
         sendEmail: _this.sendEmail,
-        async sendProjectEmail(data) {
+
+        sendProjectEmail(req, res) {
+            const data = req.body;
             const { $subject, email } = data;
 
-            if (!email || !_this.isValidEmail(email)) throw new Error('Valid email address is required');
-
+            if (!email || !_this.isValidEmail(email)) {
+                return _this.handleError(res, 400, {message: 'Valide email required'})
+            }
             const htmlContent = _this.templates.projectTemplate(data);
             const textContent = _this.templates.generatePlainText(data, 'project');
-
             const options = {
                 from: _this.mailConfig.smtp[_this.mailService].auth.user,
                 replyTo: email,
@@ -274,22 +300,22 @@ Received: ${new Date().toLocaleString()}
                 text: textContent
             };
 
-            return await _this.sendEmail(_this.mailConfig, options).catch((error) => {
-                console.error('Project email error:', error);
-                return {
-                    success: false,
-                    message: error.message || 'Failed to send project email',
-                    error: error
-                };
-            })
+            return _this.sendEmail(options)
+                .then((resp) => {
+                    if (!resp.success) {
+                        return _this.handleError(res, 500, resp);
+                    }
+                    return res.status(200).json({ success: true,  message: 'Project email sent successfully', result: resp });
+                })
+                .catch((error) => _this.handleError(res, 500, error));
         },
 
-        async sendContactEmail(req, res) {
+        sendContactEmail(req, res) {
             const { $email, $message, $subject } = req.body;
 
-            if (!$email) throw new Error('Valid email address is required');
-            if (!$message || $message.trim().length === 0) throw new Error('Message is required');
-
+            if (!$email || !_this.isValidEmail($email)) return _this.handleError(res, 400, {message: 'Valid email is required'})
+            if (!$message || $message.trim().length === 0) return _this.handleError(res, 400, {message: 'Message is required'})
+    
             const htmlContent = _this.templates.contactTemplate(req.body);
             const textContent = _this.templates.generatePlainText(req.body, 'contact');
 
@@ -302,23 +328,26 @@ Received: ${new Date().toLocaleString()}
                 text: textContent
             };
 
-            return Promise.resolve(_this.sendEmail(options))
+            return _this.sendEmail(options)
                 .then((resp) => {
-                    if ( !resp.success ) {
-                        logger.error('Unable to send contact email :: ', resp);
+                    if (!resp.success) {
+                        return res.status(500).json(resp);
                     }
-                    return res.status(200).json({ success: true, result: resp })
+                    return res.status(200).json({
+                        success: true,
+                        message: 'Contact email sent successfully',
+                        result: resp
+                    });
                 })
                 .catch((error) => {
-                    logger.error('Subscription email error:', error);
-                    return res.status(400).json({ success: false, message: error.message || 'Failed to send contact email', error: error });
+                    return _this.handleError(res, 500, 'Failed to send contact email', error, 'Contact email error');
                 });
         },
 
-        async sendSubscriptionEmail(req, res) {
-            const { email, options } = req.body;
+        sendSubscriptionEmail(req, res) {
+            const { email, options = {} } = req.body;
 
-            if (!email) throw new Error('Valid email address is required');
+            if (!email || !_this.isValidEmail(email)) return _this.handleError(res, 400, {message: 'Valid email is required'});
 
             const { subject, customMessage } = options;
             const htmlContent = `
@@ -337,7 +366,7 @@ Received: ${new Date().toLocaleString()}
             <div class="footer">
                 <p style="margin: 0;">If you didn't subscribe, you can safely ignore this email.</p>
             </div>
-        `;
+            `;
 
             const emailOptions = {
                 to: email,
@@ -346,17 +375,20 @@ Received: ${new Date().toLocaleString()}
                 text: customMessage || "Thank you for subscribing! You'll receive updates directly to your inbox."
             };
 
-            return Promise.resolve(_this.sendEmail(emailOptions))
+            return _this.sendEmail(emailOptions)
                 .then((resp) => {
-                    if ( !resp.success ) {
-                        logger.error('Unable to send email :: ', resp);
+                    if (!resp.success) {
+                        return _this.handleError(res, 500, resp);
                     }
-                    return res.status(200).json({ success: true, result: resp })
+                    return res.status(200).json({
+                        success: true,
+                        message: 'Subscription email sent successfully',
+                        result: resp
+                    });
                 })
                 .catch((error) => {
-                    logger.error('Subscription email error:', error);
-                    return res.status(400).json({ success: false, message: error.message || 'Failed to send subscription email', error: error });
+                    return _this.handleError(res, 500, 'Failed to send subscription email', error, 'Subscription email error');
                 });
         },
-    }
-}
+    };
+};

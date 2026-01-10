@@ -30,109 +30,65 @@ module.exports = FEAR = (() => {
     this.origins = [];
     this.corsConfig = null;
     this.stripe = null;
+    this.paypal = null;
     this.mailer = null;
 
-    // Initialize
+
     this.setupEnvironment();
     this.setupDependencies();
-    this.setupStripe();
+    this.setupProcessors();
     this.setupMailer();
     this.setupMiddleware();
     this.corsConfig = this.getCorsConfig();
     this.setupRoutes();
   };
 
-  // Consolidated prototype
+
   FEAR.prototype = {
     constructor: FEAR,
-
     getStripe() {
       return this.stripe;
     },
-    /**
-     * Get AI Agent service instance
-     */
     getAiAgent() {
       return this.agentService;
     },
-
-    /**
-     * Clear global FearRouter
-     */
     clearGlobal() {
       delete global.FearRouter;
       return this;
     },
-
-    /**
-     * Get Express app instance
-     */
     getApp() {
       return this.app;
     },
-
-    /**
-     * Get logger instance
-     */
     getLogger() {
       return this.logger;
     },
-
-    /**
-     * Get database instance
-     */
     getDatabase() {
       return this.db;
     },
-
-    /**
-     * Get environment configuration
-     */
     getEnvironment() {
       return this.env;
     },
-
-    /**
-     * Get cloud service instance
-     */
     getCloud() {
       return this.cloud;
     },
-
-    /**
-     * Get Express Router
-     */
     getRouter() {
       return this.Router;
     },
-
-    /**
-     * Get validator instance
-     */
     getValidator() {
       return this.validator;
     },
-
-    /**
-     * Get handler instance
-     */
     getHandler() {
       return this.handler;
     },
-
+    getPaypal() {
+      return this.paypal;
+    },
     getMailer() {
       return this.mailer;
     },
-    /**
-     * Get CORS configuration
-     */
     getCorsConfigValue() {
       return this.corsConfig;
     },
-
-    /**
-     * Setup environment variables from .env file
-     */
     setupEnvironment() {
       const envResult = require("dotenv").config({ path: ".env" });
 
@@ -157,13 +113,16 @@ module.exports = FEAR = (() => {
       this.origins = this.getAllowedOrigins();
     },
 
-    setupStripe() {
+    setupProcessors() {
       const StripeHandler = require("./libs/stripe");
-      // Initialize Stripe with secret key
-      if (!this.env.STRIPE_SECRET_KEY || !this.env.STRIPE_API_KEY) {
-        this.logger.error('STRIPE_API_KEY not found in .env file')
+      const PayPal = require('./libs/paypal');
+
+      if ( !this.env.PAYPAL_CLIENT_ID|| !this.env.STRIPE_API_KEY ) {
+        this.logger.warn('Missing environment values in .env file')
       }
+
       this.stripe = new StripeHandler(this);
+      this.paypal = new PayPal(this);
     },
 
     /**
@@ -319,6 +278,7 @@ module.exports = FEAR = (() => {
       router.getValidator = () => this.validator;
       router.getAiAgent = () => this.agentService;
       router.getStripe = () => this.stripe;
+      router.getPaypal = () => this.paypal;
       //router.getAgentWebInterface = () => this.agentWebInterface;
 
       return router;
