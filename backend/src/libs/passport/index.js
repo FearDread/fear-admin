@@ -1,7 +1,10 @@
 // needed for local authentication
 const passport = require("passport");
+
 const LocalStrategy = require("passport-local").Strategy;
 const FacebookStrategy = require("passport-facebook").Strategy;
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
+
 const secret = require("../config/secret");
 const User = require("../models/user");
 const async = require("async");
@@ -26,6 +29,36 @@ exports.isAuthenticated = (req, res, next) => {
   res.redirect("/login");
 };
 // give the middleware a name, and create a new anonymous instance of LocalStrategy
+
+
+
+passport.use(
+  "google",
+  new GoogleStrategy({
+       clientID: process.env.GOOGLE_CLIENT_ID,
+       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+       callbackURL: "http://localhost:4000/fear/api/auth/google",
+       scope: ['profile', 'email']
+   },
+       async function (accessToken, refreshToken, profile, cb) {
+           try {
+               let user = await User.findOne({
+                   googleId: profile.id
+               })
+               if (user) return cb(null, user)
+               user = await User.create({
+                   googleAccessToken: accessToken,
+                   googleId: profile.id,
+                   username:profile.displayName,
+               })
+               cb(null, user)
+           } catch (err) {
+               cb(err, false)
+
+           }
+
+       }
+   ));
 passport.use(
   "login",
   new LocalStrategy(

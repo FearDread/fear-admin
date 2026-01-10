@@ -1,6 +1,7 @@
 const path = require("path");
 const fs = require("fs");
 const express = require("express");
+const session = require('express-session');
 const compression = require("compression");
 const cookieParser = require("cookie-parser");
 const fileUpload = require("express-fileupload");
@@ -31,6 +32,7 @@ module.exports = FEAR = (() => {
     this.corsConfig = null;
     this.stripe = null;
     this.paypal = null;
+    this.passport = null;
     this.mailer = null;
 
 
@@ -49,9 +51,9 @@ module.exports = FEAR = (() => {
     getStripe() {
       return this.stripe;
     },
-    getAiAgent() {
-      return this.agentService;
-    },
+getPassport() {
+return this.passport;
+},
     clearGlobal() {
       delete global.FearRouter;
       return this;
@@ -104,6 +106,7 @@ module.exports = FEAR = (() => {
      */
     setupDependencies() {
       this.logger = require("./libs/logger");
+      this.passport = require('./libs/passport');
       this.morgan = require("./libs/logger/morgan");
       this.cloud = require("./libs/cloud");
       this.db = require("./libs/db");
@@ -130,8 +133,15 @@ module.exports = FEAR = (() => {
      */
     setupMiddleware() {
       this.app.set("PORT", this.env.NODE_PORT || DEFAULT_PORT);
-
+      this.app.use(session({
+        secret: this.env.SECRET_KEY, // Secret key for session encryption
+        resave: false, // Prevent session resaving if unmodified
+        saveUninitialized: true, // Save sessions even if uninitialized
+        //store: MongoStore.create({ mongoUrl: process.env.MONGO_URL }) // Store sessions in MongoDB
+      }));
       this.app.use(this.morgan);
+      this.app.use(this.passport.initialize());  //middleware initializes passport.js in the app
+      this.app.use(this.passport.session()); 
       this.app.use(express.json({ limit: DEFAULT_JSON_LIMIT }));
       this.app.use(compression());
       this.app.use(fileUpload());

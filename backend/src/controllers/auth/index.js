@@ -1,6 +1,5 @@
 const User = require("../../models/user");
 const TokenService = require('./token');
-const handler = require('../../libs/handler');
 const validator = require('../../libs/validator');
 const logger = require('../../libs/logger');
 
@@ -361,7 +360,7 @@ exports.isAuthorized = (req, res, next) => {
   let token;
 
   // Check for token in cookies first, then Authorization header
-  if (req.cookies?.jwt) {
+  if (req && req.cookies?.jwt) {
     token = req.cookies.jwt;
   } else if (req.headers.authorization?.startsWith('Bearer ')) {
     token = req.headers.authorization.split(' ')[1];
@@ -505,12 +504,249 @@ exports.optionalAuth = (req, res, next) => {
     next();
   }
 };
+/**
+ * POST /fear/api/auth/google
+ * @summary Authenticate or register user via Google OAuth
+ * @description Handles Google OAuth login/registration. Creates new user if doesn't exist, or logs in existing user
+ * @tags authentication, oauth
+ */
+exports.googleAuth = (req, res) => {
+  const { googleToken, googleId, email, firstName, lastName, avatar } = req.body;
 
+  // Validate required fields
+  if (!email || !googleId) {
+    return response.error(res, 400, "Google ID and email are required");
+  }
+
+  // Validate email format (assuming validator has email method)
+  const emailValidation = validator.input.email ? validator.input.email(email) : { isValid: true };
+  if (!emailValidation.isValid) {
+    return response.error(res, 400, "Invalid email format");
+  }
+
+  logger.info('Google authentication attempt for:', email);
+
+  // Find user by email or googleId
+  User.findOne({
+    $or: [
+      { email: email.toLowerCase() },
+      { 'oauth.google.id': googleId }
+    ],
+    status: { $ne: 'deleted' }
+  })
+    .then(user => {
+      // If user exists - login flow
+      if (user) {
+        // Check account status
+        if (user.status === 'suspended') {
+          return response.error(res, 403, "Your account has been suspended. Please contact support.");
+        }
+
+        if (user.status === 'inactive') {
+          return response.error(res, 403, "Your account is inactive. Please contact support to reactivate.");
+        }
+
+        // Update Google OAuth info if not already set
+        if (!user.oauth || !user.oauth.google || !user.oauth.google.id) {
+          user.oauth = user.oauth || {};
+          user.oauth.google = {
+            id: googleId,
+            email: email.toLowerCase(),
+            connectedAt: new Date()
+          };
+        }
+
+        // Update last login info
+        user.lastLoginAt = new Date();
+        user.lastLoginIP = req.ip || req.connection.remoteAddress;
+
+        // Update avatar if provided and user doesn't have one
+        if (avatar && !user.avatar) {
+          user.avatar = avatar;
+        }
+
+        return user.save()
+          .then(savedUser => {
+            logger.info('Google login successful for:', savedUser.email);
+            
+            // Generate token and send response
+            const token = TokenService.generateToken(savedUser);
+            return response.success(res, savedUser, token, 200, "Google login successful");
+          });
+      }
+
+      // User doesn't exist - registration flow
+      const userData = {
+        email: email.toLowerCase(),
+        firstName: firstName?.trim() || 'User',
+        lastName: lastName?.trim() || '',
+        displayName: firstName && lastName ? `${firstName} ${lastName}`.trim() : email.split('@')[0],
+        avatar: avatar || undefined,
+        role: 'user',
+        status: 'active',
+        oauth: {
+          google: {
+            id: googleId,
+            email: email.toLowerCase(),
+            connectedAt: new Date()
+          }
+        },
+        isEmailVerified: true, // Google emails are already verified
+        lastLoginAt: new Date(),
+        lastLoginIP: req.ip || req.connection.remoteAddress
+      };
+
+      // Create new user (no password required for OAuth users)
+      return User.create(userData)
+        .then(newUser => {
+          logger.info('New user registered via Google:', newUser.email);
+
+          // Generate token and send response
+          const token = TokenService.generateToken(newUser);
+          return response.success(res, newUser, token, 201, "Google registration successful");
+        });
+    })
+    .catch(error => {
+      logger.error('Google authentication error:', error);
+
+      // Handle duplicate key error
+      if (error.code === 11000) {
+        return response.error(res, 409, "User with this email already exists");
+      }
+
+      // Handle validation errors
+      if (error.name === 'ValidationError') {
+        const messages = Object.values(error.errors).map(err => err.message);
+        return response.error(res, 400, messages.join(', '));
+      }
+
+      return response.error(res, 500, "Google authentication failed", error.message);
+    });
+};
+
+/**
+ * POST /fear/api/auth/google/link
+ * @summary Link Google account to existing authenticated user
+ * @description Connects a Google OAuth account to the currently logged-in user
+ * @tags authentication, oauth
+ */
+exports.linkGoogleAccount = (req, res) => {
+  const { googleId, email } = req.body;
+  const userId = req.user._id; // Set by isAuthorized middleware
+
+  if (!googleId || !email) {
+    return response.error(res, 400, "Google ID and email are required");
+  }
+
+  // Check if Google account is already linked to another user
+  User.findOne({
+    'oauth.google.id': googleId,
+    _id: { $ne: userId }
+  })
+    .then(existingUser => {
+      if (existingUser) {
+        return response.error(res, 409, "This Google account is already linked to another user");
+      }
+
+      // Get current user
+      return User.findById(userId);
+    })
+    .then(user => {
+      if (!user) {
+        return response.error(res, 404, "User not found");
+      }
+
+      // Update user with Google OAuth info
+      user.oauth = user.oauth || {};
+      user.oauth.google = {
+        id: googleId,
+        email: email.toLowerCase(),
+        connectedAt: new Date()
+      };
+
+      // Verify email if it matches
+      if (!user.isEmailVerified && email.toLowerCase() === user.email) {
+        user.isEmailVerified = true;
+      }
+
+      return user.save();
+    })
+    .then(user => {
+      if (!user) return; // Already handled
+
+      logger.info('Google account linked for user:', user.email);
+
+      return res.status(200).json({
+        success: true,
+        message: "Google account linked successfully",
+        data: { user: user.toJSON() }
+      });
+    })
+    .catch(error => {
+      logger.error('Google account linking error:', error);
+      return response.error(res, 500, "Failed to link Google account", error.message);
+    });
+};
+
+/**
+ * DELETE /fear/api/auth/google/unlink
+ * @summary Unlink Google account from authenticated user
+ * @description Removes Google OAuth connection from the user's account
+ * @tags authentication, oauth
+ */
+exports.unlinkGoogleAccount = (req, res) => {
+  const userId = req.user._id;
+
+  User.findById(userId)
+    .select('+password')
+    .then(user => {
+      if (!user) {
+        return response.error(res, 404, "User not found");
+      }
+
+      // Check if user has a password set (don't allow unlinking if it's their only auth method)
+      if (!user.password && user.oauth?.google) {
+        return response.error(
+          res,
+          400,
+          "Cannot unlink Google account. Please set a password first to maintain access to your account."
+        );
+      }
+
+      // Check if Google account is linked
+      if (!user.oauth || !user.oauth.google) {
+        return response.error(res, 400, "No Google account is linked to this user");
+      }
+
+      // Remove Google OAuth info
+      user.oauth.google = undefined;
+
+      return user.save();
+    })
+    .then(user => {
+      if (!user) return; // Already handled
+
+      logger.info('Google account unlinked for user:', user.email);
+
+      return res.status(200).json({
+        success: true,
+        message: "Google account unlinked successfully",
+        data: { user: user.toJSON() }
+      });
+    })
+    .catch(error => {
+      logger.error('Google account unlinking error:', error);
+      return response.error(res, 500, "Failed to unlink Google account", error.message);
+    });
+};
 // Export TokenService and other utilities for use in other modules
 exports.AuthResponse = response;
+
 
 module.exports = {
   login: exports.login,
   register: exports.register,
-  logout: exports.logout
+  logout: exports.logout,
+  isAuthorized: exports.isAuthorized,
+  googleAuth: exports.googleAuth,
 }
