@@ -12,7 +12,7 @@ const CONFIG = {
   baseUrls: {
     production: process.env.API_BASE_URL_PROD || 'https://fear.dedyn.io/fear/api/',
     development: process.env.API_BASE_URL_DEV || 'http://localhost:4000/fear/api/',
-    test: process.env.API_BASE_URL_TEST || 'https://fear.master.com/fear/api/',
+    test: process.env.API_BASE_URL_TEST || 'https://fear.dedyn.io/fear/api/',
   },
   tokenNames: {
     bearer: 'Authorization',
