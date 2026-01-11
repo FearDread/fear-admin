@@ -247,7 +247,7 @@ body.offcanvas-active {
 	}
 
 	.product-grid .card.product-card:hover {
-		background-color: rgb(0 0 0 / 20%);
+		background-color: rgb(0 0 0 / 50%);
 		-webkit-box-shadow: 0 0.3rem 0.8rem rgb(0 0 0 / 12%);
 		box-shadow: 0 0.3rem 0.8rem rgb(0 0 0 / 12%);
 	}
@@ -2062,7 +2062,8 @@ h6.product-name {
 
 .product-card:hover {
 	transform: translateY(-5px);
-	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.7);
+	background: rgba(255,0255,255,50%) !important;
 }
 
 .product-name {
@@ -2141,4 +2142,7 @@ h6.product-name {
 }
 .card.product-card {
 	background: transparent !important;
+}
+.card.product-card:hover {
+	background: rgba(0,0,0,70%) !important;
 }

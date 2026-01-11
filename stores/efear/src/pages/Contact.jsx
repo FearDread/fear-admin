@@ -1,10 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Toast from "../components/common/Toast";
 import { useDispatch, useSelector } from "react-redux";
 import { 
     sendContact,
-    selectMailLoading,
-    selectMailSuccess
  } from "../features/mail/slice";
 
 export const Contact = () => {
@@ -17,8 +15,7 @@ export const Contact = () => {
     const [contactLoading, setContactLoading] = useState(false);
     const [contactMessage, setContactMessage] = useState({ text: '', type: '' });
     const [toasts, setToasts] = useState([]);
-    const success = useSelector(selectMailSuccess);
-    const loading = useSelector(selectMailLoading);
+    const { success, loading, error } = useSelector(state => state.mail);
 
     const addToast = (message, type) => {
         const id = Date.now();
@@ -50,21 +47,28 @@ export const Contact = () => {
     
         setContactLoading(true);
         dispatch(sendContact(contactData))
-
-        if ( success && !loading ) {
-            addToast('Message sent successfully! We\'ll get back to you soon.', 'success');
-            setContactLoading(false);
-            setContactForm({ name: '', email: '', message: '' });
-        }
     };
 
-    // Handle contact form input changes
     const handleContactChange = (e) => {
         setContactForm({
             ...contactForm,
             [e.target.name]: e.target.value
         });
     };
+
+      useEffect(() => {
+    
+        if ( !loading && error ) {
+            addToast('Failed to subscribe. Please try again later.','error');
+            console.error('Subscription error');
+        }
+        if ( !loading && success ) {
+            addToast('Message sent successfully! We\'ll get back to you soon.', 'success');
+            setContactLoading(false);
+            setContactForm({ name: '', email: '', message: '' });
+        }
+      }, [loading, success, error]);
+
     return (
         <>
             <section className="py-3 border-bottom d-none d-md-flex">
@@ -89,7 +93,7 @@ export const Contact = () => {
                 <div className="container">
                     <h3 className="d-none">Google Map</h3>
                     <div className="contact-map p-3 bg-dark-1 rounded-0 shadow-none">
-                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d805184.6319269302!2d144.49269200596396!3d-37.971237009163936!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6ad646b5d2ba4df7%3A0x4045675218ccd90!2sMelbourne%20VIC%2C%20Australia!5e0!3m2!1sen!2sin!4v1618835176130!5m2!1sen!2sin" className="w-100" height="450" style={{ 'border': 0 }} allowfullscreen="" loading="lazy"></iframe>
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d805184.6319269302!2d144.49269200596396!3d-37.971237009163936!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6ad646b5d2ba4df7%3A0x4045675218ccd90!2sMelbourne%20VIC%2C%20Australia!5e0!3m2!1sen!2sin!4v1618835176130!5m2!1sen!2sin" className="w-100" height="450" style={{ 'border': 0 }} allowFullScreen="" loading="lazy"></iframe>
                     </div>
                 </div>
             </section>

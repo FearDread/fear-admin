@@ -1,16 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { Toast } from "./Toast";
 import { fetchCategories, selectAllCategories } from '../../features/categories/slice';
-
+import { sendSubscribe } from '../../features/mail/slice';
 
 export const Footer = ({ categories }) => {
+  const dispatch = useDispatch();
   const [subEmail, setSubEmail] = useState('');
   const [subLoading, setSubLoading] = useState(false);
   const [subMessage, setSubMessage] = useState({ text: '', type: '' });
   const allCategories = useSelector(selectAllCategories);
   const [toasts, setToasts] = useState([]);
+  const {success, error, loading } = useSelector(state => state.mail);
 
   if (!categories) categories = allCategories;
 
@@ -29,9 +31,8 @@ export const Footer = ({ categories }) => {
 
   const handleSubscribe = (e) => {
     e.preventDefault();
-
-    console.log('handle subscrible hit');
     setSubMessage({ text: '', type: '' });
+    
     if (!subEmail.trim()) {
       addToast('Please enter an email address', 'error' );
       return;
@@ -40,30 +41,23 @@ export const Footer = ({ categories }) => {
       addToast('Please enter a valid email address', 'error' );
       return;
     }
-
+    const subData = JSON.stringify({email: subEmail, options:{ subject: 'E-Fear Subscription Notice' }});
     setSubLoading(true);
-    Promise.resolve(fetch('http://localhost:4000/fear/api/mail/subscribe', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({email: subEmail, options:{ subject: 'E-Fear Subscription Notice' }}),
-    }))
-      .then((response) => {
-        if (response.status === 200) {
-          addToast('Successfully subscribed! Check your email.', 'success');
-        }
-      })
-      .catch((error) => {
+    dispatch(sendSubscribe(subData))
+  };
+
+  useEffect(() => {
+
+    if ( !loading && error ) {
         addToast('Failed to subscribe. Please try again later.','error');
-        console.error('Subscription error:', error);
-      })
-      .finally(() => {
+        console.error('Subscription error');
+    }
+    if ( !loading && success ) {
         setSubEmail('');
         setSubLoading(false);
-      })
-
-  };
+        addToast('Successfully subscribed! Check your email.', 'success');
+    }
+  }, [loading, success, error]);
 
 return (
   <>

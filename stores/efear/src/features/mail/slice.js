@@ -6,7 +6,7 @@ export const { slice, asyncActions: Mail } = FeatureFactory('mail', {})
         service: {
             sendSubscribe: ThunkFactory.custom('mail', 'subscribe', {
                 method: 'POST',
-                useParams: false
+                useParams: true
             }),
             sendContact: ThunkFactory.custom('mail', 'contact', {
                 method: 'POST',

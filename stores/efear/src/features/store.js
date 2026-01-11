@@ -1,6 +1,7 @@
 // store.js
 import { configureStore } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
+import logger from 'redux-logger';
 import product from './products/slice';
 import category from './categories/slice';
 import brand from './brands/slice';
@@ -33,7 +34,7 @@ export const initializeStore = () => {
         serializableCheck: {
           ignoredActions: ['users/restoreUser'],
         },
-      }),
+      }).concat(logger),
   });
 
   // Restore user session from storage
