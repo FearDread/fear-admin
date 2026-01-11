@@ -215,7 +215,7 @@ body.offcanvas-active {
 /* Product Effect */
 
 .product-grid .card.product-card {
-	background-color: rgb(0 0 0 / 0%);
+
 	box-shadow: none;
 	border-radius: 0%;
 	-webkit-transition: all .2s;
@@ -504,7 +504,8 @@ ul.categories-list li {
 .page-wrapper {
 	height: 100%;
 	margin-bottom: 0px;
-	margin-left: 0px
+	margin-left: 0px;
+	background: rgba(0,0,0,50%);
 }
 
 .page-content {
@@ -1013,11 +1014,11 @@ ul.categories-list li {
 }
 
 .bg-dark-1 {
-	background-color: rgb(0 0 0 / 15%) !important;
+	background-color: rgb(0 0 0 / 60%) !important;
 }
 
 .bg-dark-2 {
-	background-color: rgb(0 0 0 / 35%) !important;
+	background-color: rgb(0 0 0 / 50%) !important;
 }
 
 .bg-dark-3 {
@@ -1706,6 +1707,10 @@ body.bg-theme14 {
 body.bg-theme15 {
 	background-image: linear-gradient(45deg, #6a11cb, #2575fc);
 }
+body.bg-theme-fear {
+	background-image: url('../images/bg-themes/comic/1.png');
+}
+
 
 /* Responsive */
 
@@ -2130,4 +2135,10 @@ h6.product-name {
 }
 .about-img-center {
 	width: 100%;
+}
+.card {
+	background: rgba(0,0,0,70%) !important;
+}
+.card.product-card {
+	background: transparent !important;
 }
