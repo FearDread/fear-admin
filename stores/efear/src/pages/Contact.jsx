@@ -1,7 +1,14 @@
 import React, { useState } from 'react';
 import Toast from "../components/common/Toast";
+import { useDispatch, useSelector } from "react-redux";
+import { 
+    sendContact,
+    selectMailLoading,
+    selectMailSuccess
+ } from "../features/mail/slice";
 
 export const Contact = () => {
+    const dispatch = useDispatch();
     const [contactForm, setContactForm] = useState({
         name: '',
         email: '',
@@ -10,6 +17,8 @@ export const Contact = () => {
     const [contactLoading, setContactLoading] = useState(false);
     const [contactMessage, setContactMessage] = useState({ text: '', type: '' });
     const [toasts, setToasts] = useState([]);
+    const success = useSelector(selectMailSuccess);
+    const loading = useSelector(selectMailLoading);
 
     const addToast = (message, type) => {
         const id = Date.now();
@@ -27,7 +36,6 @@ export const Contact = () => {
         e.preventDefault();
         setContactMessage({ text: '', type: '' });
 
-        // Validation
         if (!contactForm.name.trim() || !contactForm.email.trim() || !contactForm.message.trim()) {
             setContactMessage({ text: 'Please fill in all fields', type: 'error' });
             return;
@@ -38,27 +46,16 @@ export const Contact = () => {
             return;
         }
 
+        const contactData = JSON.stringify({'$name': contactForm.name, '$email': contactForm.email, '$message': contactForm.message});
+    
         setContactLoading(true);
-        Promise.resolve(fetch('http://localhost:4000/fear/api/mail/contact', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({'$name': contactForm.name, '$email': contactForm.email, '$message': contactForm.message}),
-        }))
-            .then((response) => {
-                if (response.status === 200) {
-                    addToast('Message sent successfully! We\'ll get back to you soon.', 'success');
-                }
-            })
-            .catch((error) => {
-                console.log('Email Error : ', error);
-                addToast('Failed to send message. Please try again later.', 'error');
-            })
-            .finally(() => {
-                setContactLoading(false);
-                setContactForm({ name: '', email: '', message: '' });
-            })
+        dispatch(sendContact(contactData))
+
+        if ( success && !loading ) {
+            addToast('Message sent successfully! We\'ll get back to you soon.', 'success');
+            setContactLoading(false);
+            setContactForm({ name: '', email: '', message: '' });
+        }
     };
 
     // Handle contact form input changes

@@ -12,6 +12,8 @@ export const Footer = ({ categories }) => {
   const allCategories = useSelector(selectAllCategories);
   const [toasts, setToasts] = useState([]);
 
+  if (!categories) categories = allCategories;
+
   const addToast = (message, type) => {
     const id = Date.now();
     setToasts(prev => [...prev, { id, message, type }]);
@@ -24,9 +26,6 @@ export const Footer = ({ categories }) => {
   const isValidEmail = (email) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   };
-
-
-  if (!categories) categories = allCategories;
 
   const handleSubscribe = (e) => {
     e.preventDefault();
@@ -145,7 +144,7 @@ return (
                   type="email"
                   value={subEmail}
                   onChange={(e) => setSubEmail(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && handleSubscribe()}
+                  onKeyPress={(e) => e.key === 'Enter' && handleSubscribe(e)}
                   placeholder="Your email address"
                   className="form-control"
                   disabled={subLoading}

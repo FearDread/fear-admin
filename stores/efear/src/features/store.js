@@ -10,6 +10,7 @@ import address from "./address/slice";
 import wishlist from './wishlist/slice';
 import order from "./orders/slice";
 import payment from "./payments/slice";
+import mail from "./mail/slice";
 import Storage from './storage';
 
 export const initializeStore = () => {
@@ -24,12 +25,12 @@ export const initializeStore = () => {
       brands: brand.reducer,
       users: user.reducer,
       cart: cart.reducer,
-      wishlist: wishlist.reducer
+      wishlist: wishlist.reducer,
+      mail: mail.reducer,
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({
         serializableCheck: {
-          // Ignore these action types for serialization checks
           ignoredActions: ['users/restoreUser'],
         },
       }),
