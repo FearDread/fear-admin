@@ -1,7 +1,8 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 
-const Sidebar = ({ isOpen }) => {
+export const Sidebar = ({ isOpen }) => {
   const menuItems = [
     { icon: 'zmdi zmdi-view-dashboard', label: 'Dashboard', href: '#' },
     { icon: 'zmdi zmdi-invert-colors', label: 'UI Icons', href: '#' },
@@ -52,3 +53,5 @@ const Sidebar = ({ isOpen }) => {
     </>
   );
 };
+
+export default Sidebar;

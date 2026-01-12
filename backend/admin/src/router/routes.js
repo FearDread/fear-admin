@@ -1,5 +1,7 @@
 /* ------------------------------------ */
-import Dashboard from "pages/Dashboard.jsx";
+import Dashboard from "../pages/Dashboard";
+
+/*
 import Profile from "_dashboard/Profile.jsx";
 import UserList from "_dashboard/UserList.jsx";
 import UserNew from "_dashboard/UserList.jsx";
@@ -15,11 +17,25 @@ import BlogNew from "_dashboard/BlogNew.jsx";
 import TaskList from "_dashboard/TaskList.jsx";
 import TaskNew from "_dashboard/TaskNew.jsx";
 import OrderList from "_dashboard/OrderList.jsx";
+*/
+import Login from "../pages/auth/Login";
+import Register from "../pages/auth/Register";
 
 //import CouponsList from "_dashboard/CouponsList.jsx";
 //import CouponNew from "_dashboard/CouponNew.jsx";
 
+const routes = {
+  auth: [
+    { path: "/login", element: <Login /> },
+    { path: "/register", element: <Register /> },
+    //{ path: "/forgot-password", element: <ForgotPassword /> },
+  ],
+  protected: [
+    { path: "/admin/dashboard", name: "Dashboard", layout: "/admin", icon: '', element: <Dashboard /> },
+  ],
+};
 
+/*
 const routes = [
   {
     path: "/dashboard",
@@ -93,7 +109,7 @@ const routes = [
         component: Wizard,
         layout: "/admin",
       },
-      /*
+
       {
         path: "/product/reviews",
         name: "+ Review",
@@ -101,7 +117,7 @@ const routes = [
         component: Wizard,
         layout: "/admin"
       },
-      */
+
     ]
   },
       {
@@ -193,5 +209,5 @@ const routes = [
     ]
   },
 ]
-
+*/
 export default routes;

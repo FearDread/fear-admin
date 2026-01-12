@@ -1,9 +1,12 @@
 import React, { useEffect, Suspense } from "react";
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { useSelector } from "react-redux";
-import AuthLayout from "layouts/Auth/Auth.js";
-import AdminLayout from "layouts/Admin/Admin.js";
+import AuthLayout from "./layouts/Auth";
+import AdminLayout from "./layouts/Admin";
+import routes from "./router/routes";
 
+
+const isLoggedIn = true;
 const LoadingFallback = () => (
   <div className="d-flex justify-content-center align-items-center min-vh-100">
     <div className="text-center">
@@ -33,7 +36,7 @@ const NotFound = () => (
 );
 
 const ProtectedRoute = ({ children }) => {
-  const { isLoggedIn } = useSelector((state) => state.auth);
+  //const { isLoggedIn } = useSelector((state) => state.auth);
   const location = useLocation();
 
   if (!isLoggedIn) {
@@ -45,7 +48,7 @@ const ProtectedRoute = ({ children }) => {
 };
 
 const AuthRoute = ({ children }) => {
-  const { isLoggedIn } = useSelector((state) => state.auth);
+  //const { isLoggedIn } = useSelector((state) => state.auth);
 
   if (isLoggedIn) {
     return <Navigate to="/admin/dashboard" replace />;
@@ -57,7 +60,7 @@ const AuthRoute = ({ children }) => {
 const AppNavigator = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { isLoggedIn } = useSelector((state) => state.auth);
+  //const { isLoggedIn } = useSelector((state) => state.auth);
 
   useEffect(() => {
     console.log("Auth Status:", isLoggedIn);
@@ -92,15 +95,11 @@ function App() {
           />
           
           {/* Protected admin routes */}
-          <Route 
-            path="/admin/*" 
-            element={
-              <ProtectedRoute>
-                <AdminLayout />
-              </ProtectedRoute>
-            } 
-          />
-          
+          <Route path="/admin" exact element={<AdminLayout />}>
+            {routes.protected.map((route) => (
+              <Route key={route.path} path={route.path} element={<ProtectedRoute>{route.element}</ProtectedRoute>} />
+            ))}
+          </Route>
           {/* Unauthorized page */}
           <Route path="/unauthorized" element={<NotFound />} />
           

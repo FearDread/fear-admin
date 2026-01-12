@@ -1,14 +1,15 @@
 import React, { useEffect, useLayoutEffect } from "react";
-import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
+import { Outlet } from "react-router-dom";
 
-import Footer from "components/footer";
-import Sidebar from "components/sidebar";
+import Header from "../components/header/Header";
+import Footer from "../components/footer/Footer";
+import Sidebar from "../components/sidebar/Sidebar";
 
-import * as Router from "router";
-import routes from "router/routes.js";
+import * as Router from "../router";
+import routes from "../router/routes";
 //import logo from "assets/img/FEAR/logo.png";
 
-const Admin = (props) => {
+const AdminLayout = (props) => {
 
   return (
     <>
@@ -26,7 +27,7 @@ const Admin = (props) => {
   )
 }
 
-export default Admin;
+export default AdminLayout;
   /*
   const dispatch = useDispatch();
   const [activeColor, setActiveColor] = React.useState("blue");
