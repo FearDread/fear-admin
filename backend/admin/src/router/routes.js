@@ -24,14 +24,14 @@ import Register from "../pages/auth/Register";
 //import CouponsList from "_dashboard/CouponsList.jsx";
 //import CouponNew from "_dashboard/CouponNew.jsx";
 
-const routes = {
+export const routes = {
   auth: [
-    { path: "/login", element: <Login /> },
-    { path: "/register", element: <Register /> },
+    { path: "/auth/login", element: <Login /> },
+    { path: "/auth/register", element: <Register /> },
     //{ path: "/forgot-password", element: <ForgotPassword /> },
   ],
-  protected: [
-    { path: "/admin/dashboard", name: "Dashboard", layout: "/admin", icon: '', element: <Dashboard /> },
+  admin: [
+    { path: "/admin/dashboard", label: "Dashboard", layout: "/admin", icon: 'zmdi zmdi-view-dashboard', element: <Dashboard /> },
   ],
 };
 

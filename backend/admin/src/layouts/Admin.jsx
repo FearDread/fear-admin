@@ -14,7 +14,11 @@ const AdminLayout = (props) => {
   return (
     <>
       <div id="wrapper">
-        <Sidebar />
+        <Sidebar        
+        {...props}
+        routes={routes} 
+        />
+      
       <Header />
       <div className="clearfix"></div>
       <div className="content-wrapper">

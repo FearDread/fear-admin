@@ -4,9 +4,10 @@ import { useSelector } from "react-redux";
 import AuthLayout from "./layouts/Auth";
 import AdminLayout from "./layouts/Admin";
 import routes from "./router/routes";
+import "./assets/css/App.css";
 
 
-const isLoggedIn = true;
+const isLoggedIn = false;
 const LoadingFallback = () => (
   <div className="d-flex justify-content-center align-items-center min-vh-100">
     <div className="text-center">
@@ -85,18 +86,15 @@ function App() {
           <Route path="/" element={<Navigate to="/admin/dashboard" replace />} />
           
           {/* Auth routes - redirect to dashboard if already logged in */}
-          <Route 
-            path="/auth/*" 
-            element={
-              <AuthRoute>
-                <AuthLayout />
-              </AuthRoute>
-            } 
-          />
-          
+                    <Route path="/auth" exact element={<AuthLayout />}>
+            {routes.auth.map((route) => (
+              <Route key={route.path} path={route.path} element={<AuthRoute>{route.element}</AuthRoute>} />
+            ))}
+          </Route>
+
           {/* Protected admin routes */}
           <Route path="/admin" exact element={<AdminLayout />}>
-            {routes.protected.map((route) => (
+            {routes.admin.map((route) => (
               <Route key={route.path} path={route.path} element={<ProtectedRoute>{route.element}</ProtectedRoute>} />
             ))}
           </Route>
