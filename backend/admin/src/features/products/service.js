@@ -1,0 +1,35 @@
+import { ThunkFactory } from "@feardread/feature-factory";
+
+
+/**
+ * Create custom async thunks for products
+ */
+export const ProductService = {
+  // Search products
+  //searchProducts: ThunkFactory.post('product', 'search'),
+  
+  // Get products by category
+  getProductsByCategory: ThunkFactory.custom('product', 'by-category', {
+    method: 'GET',
+    useParams: true,
+  }),
+  
+  // Get products by brand
+  getProductsByBrand: ThunkFactory.custom('product', 'by-brand', {
+    method: 'GET',
+    useParams: true,
+  }),
+  
+  // Get featured products
+  getFeaturedProducts: ThunkFactory.custom('product', 'featured', {
+    method: 'GET',
+  }),
+  
+  // Get product recommendations
+  getTrendingProducts: ThunkFactory.custom('product', 'trending', {
+    method: 'GET',
+    useParams: true,
+  }),
+};
+
+export default ProductService;
