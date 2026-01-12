@@ -1,16 +1,33 @@
 import React, { useEffect, useLayoutEffect } from "react";
-import { Route, Switch, Redirect, useLocation, useHistory } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import NotificationAlert from "react-notification-alert";
-import AdminNavbar from "components/Navbars/AdminNavbar.js";
-import ProductEdit from "_dashboard/ProductEdit.jsx";
-import Footer from "components/Footer/Footer.js";
-import Sidebar from "components/Sidebar/Sidebar.js";
+import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
+
+import Footer from "components/footer";
+import Sidebar from "components/sidebar";
+
 import * as Router from "router";
 import routes from "router/routes.js";
-import logo from "assets/img/FEAR/logo.png";
+//import logo from "assets/img/FEAR/logo.png";
 
 const Admin = (props) => {
+
+  return (
+    <>
+      <div id="wrapper">
+        <Sidebar />
+      <Header />
+      <div className="clearfix"></div>
+      <div className="content-wrapper">
+        <Outlet />
+      </div>
+      <a href="javaScript:void();" className="back-to-top"><i className="fa fa-angle-double-up"></i> </a>
+      <Footer />
+      </div>
+    </>
+  )
+}
+
+export default Admin;
+  /*
   const dispatch = useDispatch();
   const [activeColor, setActiveColor] = React.useState("blue");
   const [sidebarMini, setSidebarMini] = React.useState(false);
@@ -112,3 +129,53 @@ const Admin = (props) => {
 };
 
 export default Admin;
+/*
+
+  // Stripe options configuration
+  const stripeOptions = useMemo(() => ({
+    // Stripe Elements appearance customization
+    appearance: {
+      theme: 'stripe',
+      variables: {
+        colorPrimary: '#0570de',
+        colorBackground: '#ffffff',
+        colorText: '#30313d',
+        colorDanger: '#df1b41',
+        fontFamily: 'Ideal Sans, system-ui, sans-serif',
+        spacingUnit: '4px',
+        borderRadius: '4px',
+      },
+    },
+  }), []);
+
+  return (
+    <Elements stripe={stripePromise} options={stripeOptions}>
+      <b className="screen-overlay"></b>
+      <div className="wrapper">
+        <Header />
+      </div>
+      <div className="page-wrapper">
+        <div className="page-content">
+          {(!loading && products.length > 0) && (
+            <>
+              <Outlet {...products} />
+            </>
+          )}
+          <BestSelling />
+        </div>
+      </div>
+      <Footer categories={(!loading) ? categories : []} products={products}/>
+
+      {selectedProduct && (
+        <ProductQuickView 
+          product={selectedProduct}
+          isOpen={showQuickView}
+          onClose={() => {
+            setShowQuickView(false);
+            setSelectedProduct(null);
+          }}
+        />
+      )}
+    </Elements>
+  );
+  */

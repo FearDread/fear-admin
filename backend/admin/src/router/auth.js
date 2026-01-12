@@ -1,7 +1,5 @@
-import Login from "views/pages/Login.jsx";
-import Register from "views/pages/Register.jsx";
-import Pricing from "views/pages/Pricing.js";
-import Lock from "views/pages/Lock.js";
+import Login from "pages/auth/Login";
+import Register from "pages/auth/Register";
 
 const routes = [
   {
@@ -14,18 +12,6 @@ const routes = [
     path: "/register",
     name: "Register",
     component: Register,
-    layout: "/auth"
-  },
-  {
-    path: "/pricing",
-    name: "Pricing",
-    component: Pricing,
-    layout: "/auth"
-  },
-  {
-    path: "/lock",
-    name: "Lock",
-    component: Lock,
     layout: "/auth"
   },
 ];

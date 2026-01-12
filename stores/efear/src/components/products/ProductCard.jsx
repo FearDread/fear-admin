@@ -81,7 +81,6 @@ export const ProductCard = (product) => {
     const wishlistItem = {
       id: product._id,
       productId: product._id,
-      name: product.title,
       title: product.title,
       subtotal: currentPrice,
       price: currentPrice,

@@ -1,12 +1,5 @@
-import Charts from "views/pages/Charts.js";
-import Notifications from "views/pages/Notification.js";
-import SweetAlert from "views/components/SweetAlert.js";
-import Grid from "views/components/Grid.js";
-import RegularForms from "views/components/forms/RegularForms.js";
-import Wizard from "_dashboard/ProductWizard/Wizard.js";
-import Widgits from "views/pages/Widgets.js";
 /* ------------------------------------ */
-import Dashboard from "views/Dashboard.jsx";
+import Dashboard from "pages/Dashboard.jsx";
 import Profile from "_dashboard/Profile.jsx";
 import UserList from "_dashboard/UserList.jsx";
 import UserNew from "_dashboard/UserList.jsx";
@@ -195,42 +188,6 @@ const routes = [
         name: "+ Blog",
         mini: "B",
         component: BlogNew,
-        layout: "/admin"
-      }
-    ]
-  },
-  {
-    collapse: true,
-    name: "Examples",
-    icon: "tim-icons icon-image-02",
-    state: "examplesCollapse",
-    views: [
-      {
-        path: "/notifications",
-        name: "Notifications",
-        mini: "T",
-        component: Notifications,
-        layout: "/admin"
-      },
-      {
-        path: "/sweet-alert",
-        name: "Sweet Altert",
-        mini: "T",
-        component: SweetAlert,
-        layout: "/admin"
-      },
-      {
-        path: "/example-tables",
-        name: "Grid Layout",
-        mini: "T",
-        component: Grid,
-        layout: "/admin"
-      },
-      {
-        path: "/example-charts",
-        name: "Charts",
-        mini: "T",
-        component: Charts,
         layout: "/admin"
       }
     ]

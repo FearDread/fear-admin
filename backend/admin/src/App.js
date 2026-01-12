@@ -4,9 +4,6 @@ import { useSelector } from "react-redux";
 import AuthLayout from "layouts/Auth/Auth.js";
 import AdminLayout from "layouts/Admin/Admin.js";
 
-/**
- * Loading Fallback Component
- */
 const LoadingFallback = () => (
   <div className="d-flex justify-content-center align-items-center min-vh-100">
     <div className="text-center">
@@ -18,9 +15,6 @@ const LoadingFallback = () => (
   </div>
 );
 
-/**
- * 404 Not Found Page
- */
 const NotFound = () => (
   <div className="container">
     <div className="d-flex justify-content-center align-items-center min-vh-100">
@@ -38,10 +32,6 @@ const NotFound = () => (
   </div>
 );
 
-/**
- * Protected Route Component
- * Redirects to login if user is not authenticated
- */
 const ProtectedRoute = ({ children }) => {
   const { isLoggedIn } = useSelector((state) => state.auth);
   const location = useLocation();
@@ -54,10 +44,6 @@ const ProtectedRoute = ({ children }) => {
   return children;
 };
 
-/**
- * Auth Route Component
- * Redirects to dashboard if user is already authenticated
- */
 const AuthRoute = ({ children }) => {
   const { isLoggedIn } = useSelector((state) => state.auth);
 
@@ -68,10 +54,6 @@ const AuthRoute = ({ children }) => {
   return children;
 };
 
-/**
- * App Navigation Logic Component
- * Handles automatic redirects based on auth state
- */
 const AppNavigator = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -90,9 +72,6 @@ const AppNavigator = () => {
   return null; // This component doesn't render anything
 };
 
-/**
- * Main App Component
- */
 function App() {
   return (
     <BrowserRouter>

@@ -20,32 +20,35 @@ const Sidebar = ({ isOpen }) => {
   ];
 
   return (
-    <div className={`position-fixed bg-dark text-white ${isOpen ? '' : 'd-none'}`} style={{ width: '250px', height: '100vh', overflowY: 'auto', zIndex: 1000 }}>
-      <div className="p-3 border-bottom">
-        <div className="d-flex align-items-center">
-          <div className="bg-primary rounded-circle" style={{ width: '40px', height: '40px' }}></div>
-          <h5 className="mb-0 ms-2 text-white">Dashtreme Admin</h5>
+    <>
+      <div id="sidebar-wrapper" data-simplebar="" data-simplebar-auto-hide="true">
+        <div className="brand-logo">
+          <a href="index.html">
+            <img src="assets/images/logo-icon.png" className="logo-icon" alt="logo icon" />
+            <h5 className="logo-text">Dashtreme Admin</h5>
+          </a>
         </div>
+
+        <ul className="sidebar-menu do-nicescrol">
+          <li className="sidebar-header">MAIN NAVIGATION</li>
+          {menuItems.map((item, idx) => (
+            <li key={idx}>
+              <Link to={item.href}>
+                <i className={item.icon}></i> <span className="ms-2">{item.label}</span>
+                {item.badge && <span className="badge bg-light text-dark float-end">{item.badge}</span>}
+              </Link>
+            </li>
+          ))}
+          <li className="">Labels</li>
+          {labels.map((item, idx) => (
+            <li key={idx}>
+              <Link to="#">
+                <i className={item.icon}></i> <span className="ms-2">{item.label}</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
       </div>
-      <ul className="list-unstyled">
-        <li className="px-3 py-2 text-uppercase small text-muted">Main Navigation</li>
-        {menuItems.map((item, idx) => (
-          <li key={idx}>
-            <a href={item.href} className="d-block px-3 py-2 text-white text-decoration-none hover-bg-secondary">
-              <i className={item.icon}></i> <span className="ms-2">{item.label}</span>
-              {item.badge && <span className="badge bg-light text-dark float-end">{item.badge}</span>}
-            </a>
-          </li>
-        ))}
-        <li className="px-3 py-2 text-uppercase small text-muted mt-3">Labels</li>
-        {labels.map((item, idx) => (
-          <li key={idx}>
-            <a href="#" className="d-block px-3 py-2 text-white text-decoration-none">
-              <i className={item.icon}></i> <span className="ms-2">{item.label}</span>
-            </a>
-          </li>
-        ))}
-      </ul>
-    </div>
+    </>
   );
 };

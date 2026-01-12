@@ -12,7 +12,7 @@ export const getRoutes = (routes) => {
         return (
           <Route
             path={prop.layout + prop.path}
-            component={prop.component}
+            element={prop.component}
             key={key}
             className={prop.collapse ? subclass : "side-nav"}
           />
