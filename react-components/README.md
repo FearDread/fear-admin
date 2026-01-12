@@ -10,7 +10,7 @@ npm install
 
 ## Components
 
-- **Index** - Main component
+- **Calendar** - Main component
 - **Navigation** - Extracted component
 - **Header** - Extracted component
 - **Footer** - Extracted component
