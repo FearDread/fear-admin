@@ -3,11 +3,15 @@ import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from
 import { useSelector } from "react-redux";
 import AuthLayout from "./layouts/Auth";
 import AdminLayout from "./layouts/Admin";
-import routes from "./router/routes";
+import routes from "./router/Routes";
 import "./assets/css/App.css";
+import {
+  selectIsAuthenticated,
+  selectCurrentUser
+} from "./features/user/slice";
+import { ProtectedRoute } from "./router/ProtectedRoute";
+import { AuthRoute } from "./router/AuthRoute";
 
-
-const isLoggedIn = false;
 const LoadingFallback = () => (
   <div className="d-flex justify-content-center align-items-center min-vh-100">
     <div className="text-center">
@@ -19,90 +23,49 @@ const LoadingFallback = () => (
   </div>
 );
 
-const NotFound = () => (
-  <div className="container">
-    <div className="d-flex justify-content-center align-items-center min-vh-100">
-      <div className="text-center">
-        <h1 className="display-1 fw-bold">404</h1>
-        <p className="fs-3">
-          <span className="text-danger">Oops!</span> Page not found.
-        </p>
-        <p className="lead">
-          The page you're looking for doesn't exist.
-        </p>
-        <a href="/" className="btn btn-primary">Go Home</a>
-      </div>
-    </div>
-  </div>
-);
-
-const ProtectedRoute = ({ children }) => {
-  //const { isLoggedIn } = useSelector((state) => state.auth);
-  const location = useLocation();
-
-  if (!isLoggedIn) {
-    // Redirect to login page but save the location they were trying to access
-    return <Navigate to="/auth/login" state={{ from: location }} replace />;
-  }
-
-  return children;
-};
-
-const AuthRoute = ({ children }) => {
-  //const { isLoggedIn } = useSelector((state) => state.auth);
-
-  if (isLoggedIn) {
-    return <Navigate to="/admin/dashboard" replace />;
-  }
-
-  return children;
-};
-
 const AppNavigator = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  //const { isLoggedIn } = useSelector((state) => state.auth);
+  const isAuthenticated = useSelector(selectIsAuthenticated);
 
   useEffect(() => {
-    console.log("Auth Status:", isLoggedIn);
+    console.log("Auth Status:", isAuthenticated);
     console.log("Current Path:", location.pathname);
 
-    // If user just logged in and is on auth page, redirect to dashboard
-    if (isLoggedIn && location.pathname.startsWith('/auth')) {
-      navigate('/admin/dashboard', { replace: true });
-    }
-  }, [isLoggedIn, location.pathname, navigate]);
+  }, [isAuthenticated, location.pathname]);
 
-  return null; // This component doesn't render anything
+  return null;
 };
 
-function App() {
+export const App = () => {
+  
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+
   return (
     <BrowserRouter>
       <AppNavigator />
       <Suspense fallback={<LoadingFallback />}>
         <Routes>
           {/* Root redirect */}
-          <Route path="/" element={<Navigate to="/admin/dashboard" replace />} />
+          <Route path="/" element={<Navigate to={(isAuthenticated) ? "/admin/dashboard" : "/auth/login"} replace />} />
           
           {/* Auth routes - redirect to dashboard if already logged in */}
-                    <Route path="/auth" exact element={<AuthLayout />}>
+           <Route path="/auth" exact element={<AuthLayout />}>
             {routes.auth.map((route) => (
-              <Route key={route.path} path={route.path} element={<AuthRoute>{route.element}</AuthRoute>} />
+              <Route key={route.path} path={route.path} element={route.element} />
             ))}
           </Route>
 
           {/* Protected admin routes */}
           <Route path="/admin" exact element={<AdminLayout />}>
             {routes.admin.map((route) => (
-              <Route key={route.path} path={route.path} element={<ProtectedRoute>{route.element}</ProtectedRoute>} />
+              <Route key={route.path} path={route.path} element={route.element} />
             ))}
           </Route>
-          {/* Unauthorized page */}
-          <Route path="/unauthorized" element={<NotFound />} />
+
           
           {/* 404 Not Found - catch all unmatched routes */}
-          <Route path="*" element={<NotFound />} />
+        { /* <Route path="*" element={<Navigate to="/admin/dashboard" replace />} /> */}
         </Routes>
       </Suspense>
     </BrowserRouter>

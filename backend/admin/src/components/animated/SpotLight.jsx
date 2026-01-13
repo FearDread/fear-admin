@@ -7,7 +7,7 @@ export const SpotLight = (props) => {
         
         <>
         <div className="spotlight-container">
-                        <div class="tmp-banner-circle">
+                        <div className="tmp-banner-circle">
                 <img class="tmp-banner-circle-1" src="/assets/images/circle-iamge/01.svg" alt="circle-image"/>
                 <img class="tmp-banner-circle-2" src="/assets/images/circle-iamge/02.svg" alt="circle-image"/>
                 <img class="tmp-banner-circle-3" src="/assets/images/circle-iamge/03.svg" alt="circle-image"/>
@@ -17,7 +17,7 @@ export const SpotLight = (props) => {
                 <img class="tmp-banner-circle-3" src="/assets/images/circle-iamge/03.svg" alt="circle-image"/>
                
             </div>
-                       <div class="separator-animated-border animated-true"></div>
+                       <div className="separator-animated-border animated-true"></div>
             <div className="slider-bg-light">
                 
                 <img className="blocksync-scroll-trigger fade_in animation-order-8" src="/assets/images/bg/light.svg" alt="Top Light Shape"/>

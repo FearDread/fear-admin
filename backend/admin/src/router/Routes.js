@@ -1,12 +1,16 @@
+import Login from "../pages/auth/Login";
+import Register from "../pages/auth/Register";
+
 /* ------------------------------------ */
 import Dashboard from "../pages/Dashboard";
-
+import ProductList from "../pages/dashboard/ProductList";
+import Wizard from "../pages/dashboard/ProductWizard/Wizard";
 /*
 import Profile from "_dashboard/Profile.jsx";
 import UserList from "_dashboard/UserList.jsx";
 import UserNew from "_dashboard/UserList.jsx";
 import Calendar from "_dashboard/Calendar.jsx"
-import ProductList from "_dashboard/ProductList.jsx";
+
 import NewProduct from "_dashboard/ProductNew.jsx";
 import BrandsList from "_dashboard/BrandsList.jsx";
 import BrandNew from "_dashboard/BrandNew.jsx";
@@ -18,20 +22,39 @@ import TaskList from "_dashboard/TaskList.jsx";
 import TaskNew from "_dashboard/TaskNew.jsx";
 import OrderList from "_dashboard/OrderList.jsx";
 */
-import Login from "../pages/auth/Login";
-import Register from "../pages/auth/Register";
 
 //import CouponsList from "_dashboard/CouponsList.jsx";
 //import CouponNew from "_dashboard/CouponNew.jsx";
 
 export const routes = {
   auth: [
-    { path: "/auth/login", element: <Login /> },
-    { path: "/auth/register", element: <Register /> },
+    { path: "/auth/login", label: 'Login', element: <Login /> },
+    { path: "/auth/register", label: 'Register', element: <Register /> },
     //{ path: "/forgot-password", element: <ForgotPassword /> },
   ],
   admin: [
     { path: "/admin/dashboard", label: "Dashboard", layout: "/admin", icon: 'zmdi zmdi-view-dashboard', element: <Dashboard /> },
+    {
+    collapse: true,
+    label: "Catelog",
+    icon: "zmdi zmdi-view-dashboard",
+    state: "productsCollapse",
+    views:[
+      {
+        path: "/admin/products",
+        label: "All Products",
+        element: <ProductList />,
+        layout: "/admin"
+      },
+      {
+        path: "/admin/product/new",
+        name: "+ Product",
+        component: <Wizard />,
+        layout: "/admin",
+      },
+
+    ]
+  }
   ],
 };
 

@@ -5,14 +5,14 @@ import Header from "../components/header/Header";
 import Footer from "../components/footer/Footer";
 import Sidebar from "../components/sidebar/Sidebar";
 
-import * as Router from "../router";
-import routes from "../router/routes";
+import routes from "../router/Routes";
 //import logo from "assets/img/FEAR/logo.png";
 
 const AdminLayout = (props) => {
 
   return (
     <>
+      <div id="pageloader-overlay" className="visible incoming"><div className="loader-wrapper-outer"><div className="loader-wrapper-inner" ><div className="loader"></div></div></div></div>
       <div id="wrapper">
         <Sidebar        
         {...props}

@@ -1,15 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Nav, Collapse } from "reactstrap";
-import routes from "../../router/routes";
+import routes from "../../router/Routes";
 
 export const Sidebar = (props) => {
-  const [state, setState] = React.useState({});
-  const sidebarRef = React.useRef(null);
+  const [state, setState] = useState({});
+  const sidebarRef = useRef(null);
   const location = useLocation();
-  React.useEffect(() => {
-    setState(getCollapseStates(props.routes));
-  }, []);
+
     // this creates the intial state of this component based on the collapse routes
   // that it gets through props.routes
   const getCollapseStates = (routes) => {
@@ -67,17 +65,17 @@ export const Sidebar = (props) => {
                 <>
                   <i className={prop.icon} />
                   <p>
-                    {rtlActive ? prop.rtlName : prop.name}
+                    {prop.label}
                     <b className="caret" />
                   </p>
                 </>
               ) : (
                 <>
                   <span className="sidebar-mini-icon">
-                    {rtlActive ? prop.rtlMini : prop.mini}
+                    {prop.label}
                   </span>
                   <span className="sidebar-normal">
-                    {rtlActive ? prop.rtlName : prop.name}
+                    {prop.label}
                     <b className="caret" />
                   </span>
                 </>
@@ -96,21 +94,8 @@ export const Sidebar = (props) => {
             activeClassName=""
             onClick={props.closeSidebar}
           >
-            {prop.icon !== undefined ? (
-              <>
                 <i className={prop.icon} />
-                <p>{rtlActive ? prop.rtlName : prop.name}</p>
-              </>
-            ) : (
-              <>
-                <span className="sidebar-mini-icon">
-                  {rtlActive ? prop.rtlMini : prop.mini}
-                </span>
-                <span className="sidebar-normal">
-                  {rtlActive ? prop.rtlName : prop.name}
-                </span>
-              </>
-            )}
+                <p> {prop.label}</p>
           </Link>
         </li>
       );
@@ -139,6 +124,7 @@ export const Sidebar = (props) => {
 
   return (
     <>
+
       <div id="sidebar-wrapper" data-simplebar="" data-simplebar-auto-hide="true">
         <div className="brand-logo">
           <Link to="/admin/dashboard">

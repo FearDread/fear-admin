@@ -69,7 +69,7 @@ const Dashboard = () => {
   return (
     <>
       <div className="container-fluid">
-        <div className="card mt-3">
+        <div className="card mt-3 media-object">
           <div className="card-content">
             <div className="row row-group m-0">
               <div className="col-12 col-lg-6 col-xl-3 border-light">
@@ -113,7 +113,7 @@ const Dashboard = () => {
         </div>
         <div className="row">
           <div className="col-12 col-lg-8 col-xl-8">
-            <div className="card">
+            <div className="card media-object">
               <div className="card-header">Site Traffic
                 <div className="card-action">
                   <div className="dropdown">
