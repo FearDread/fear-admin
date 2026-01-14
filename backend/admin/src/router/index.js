@@ -1,27 +1,7 @@
 import React from "react";
 import { Route } from "react-router-dom";
 
-export const getRoutes = (routes) => {
-  const subclass = 'side-subnav';
-  
-    return routes.map((prop, key) => {
-      if (prop.collapse) {
-        return getRoutes(prop.views);
-      }
-      if (prop.layout) {
-        return (
-          <Route
-            path={prop.layout + prop.path}
-            element={prop.component}
-            key={key}
-            className={prop.collapse ? subclass : "side-nav"}
-          />
-        );
-      } else {
-        return null;
-      }
-    });
-};
+
 
 export const getActiveRoute = (routes) => {
     let activeRoute = "Default Brand Text";

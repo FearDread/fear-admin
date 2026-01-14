@@ -70,31 +70,34 @@ export const {
   getProductsByBrand,
   getFeaturedProducts,
   getRecommendations,
+  create: createProduct,
+  update: updateProduct,
+  delete: deleteProduct,
 } = Product;
 
 // Export selectors
 export const selectProducts = state => state.products.data;
 export const selectAllProducts = (state) => state.products.data;
 export const selectCurrentProduct = (state) => state.products.currentProduct || state.products.product;
-export const selectProductsLoading = (state) => state.products.loading;
-export const selectProductsError = (state) => state.products.error;
-export const selectProductsSuccess = (state) => state.products.success;
-export const selectProductsLoadingState = (state) => state.products.loadingState;
-export const selectProductsPagination = (state) => state.products.pagination;
-export const selectProductsFilters = (state) => state.products.filtering?.filters || {};
-export const selectProductsSearchTerm = (state) => state.products.filtering?.searchTerm || '';
-export const selectProductsSorting = (state) => state.products.sorting;
-export const selectProductsSelection = (state) => state.products.selection;
-export const selectProductsViewMode = (state) => state.products.viewMode || 'grid';
+export const selectLoading = (state) => state.products.loading;
+export const selectError = (state) => state.products.error;
+export const selectSuccess = (state) => state.products.success;
+export const selectLoadingState = (state) => state.products.loadingState;
+export const selectPagination = (state) => state.products.pagination;
+export const selectFilters = (state) => state.products.filtering?.filters || {};
+export const selectSearchTerm = (state) => state.products.filtering?.searchTerm || '';
+export const selectSorting = (state) => state.products.sorting;
+export const selectSelection = (state) => state.products.selection;
+export const selectViewMode = (state) => state.products.viewMode || 'grid';
 
 // Advanced selectors
 export const selectProductById = (state, productId) => 
   state.products.data.find(product => product.id === productId);
 
-export const selectProductsByCategory = (state, categoryId) =>
+export const selectByCategory = (state, categoryId) =>
   state.products.data.filter(product => product.categoryId === categoryId);
 
-export const selectProductsByBrand = (state, brandId) =>
+export const selectByBrand = (state, brandId) =>
   state.products.data.filter(product => product.brandId === brandId);
 
 export const selectFeaturedProducts = (state) => {

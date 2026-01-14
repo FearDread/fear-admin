@@ -9,8 +9,8 @@ import {
   selectIsAuthenticated,
   selectCurrentUser
 } from "./features/user/slice";
-import { ProtectedRoute } from "./router/ProtectedRoute";
-import { AuthRoute } from "./router/AuthRoute";
+import { PrivateRoute } from "./router/PrivateRoute";
+import { PublicRoute } from "./router/PublicRoute";
 
 const LoadingFallback = () => (
   <div className="d-flex justify-content-center align-items-center min-vh-100">

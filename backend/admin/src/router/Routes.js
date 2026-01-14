@@ -34,27 +34,7 @@ export const routes = {
   ],
   admin: [
     { path: "/admin/dashboard", label: "Dashboard", layout: "/admin", icon: 'zmdi zmdi-view-dashboard', element: <Dashboard /> },
-    {
-    collapse: true,
-    label: "Catelog",
-    icon: "zmdi zmdi-view-dashboard",
-    state: "productsCollapse",
-    views:[
-      {
-        path: "/admin/products",
-        label: "All Products",
-        element: <ProductList />,
-        layout: "/admin"
-      },
-      {
-        path: "/admin/product/new",
-        name: "+ Product",
-        component: <Wizard />,
-        layout: "/admin",
-      },
-
-    ]
-  }
+    { path: "/admin/products", label: "Products", lalyout: "/admin", icon: "zmdi zmdi-view-products", element: <ProductList /> },
   ],
 };
 

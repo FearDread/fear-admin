@@ -12,7 +12,7 @@ const AdminLayout = (props) => {
 
   return (
     <>
-      <div id="pageloader-overlay" className="visible incoming"><div className="loader-wrapper-outer"><div className="loader-wrapper-inner" ><div className="loader"></div></div></div></div>
+      
       <div id="wrapper">
         <Sidebar        
         {...props}
