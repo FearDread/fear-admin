@@ -17,7 +17,7 @@ module.exports = FEAR = (() => {
   const AGENT_ROUTE_PATH = '/fear/api/agent';
 
   // Constructor function
-  const FEAR = function () {
+  const FEAR = function (config) {
     this.app = express();
     this.Router = express.Router;
     this.server = null;
@@ -40,7 +40,7 @@ module.exports = FEAR = (() => {
 
     this.setupEnvironment();
     this.setupDependencies();
-    this.setupProcessors();
+    if (this.env.ADD_PAYMENTS) this.setupProcessors();
     this.setupMailer();
     this.setupMiddleware();
     this.corsConfig = this.getCorsConfig();
@@ -53,9 +53,9 @@ module.exports = FEAR = (() => {
     getStripe() {
       return this.stripe;
     },
-getPassport() {
-return this.passport;
-},
+    getPassport() {
+      return this.passport;
+    },
     clearGlobal() {
       delete global.FearRouter;
       return this;
@@ -410,7 +410,8 @@ return this.passport;
         getDatabase: () => this.db,
         getEnvironment: () => this.env,
         getCloud: () => this.cloud,
-        getStripe: () => this.stripe
+        getStripe: () => this.stripe,
+        initProcessors: this.setupProcessors
       };
       return this;
     }

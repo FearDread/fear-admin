@@ -184,11 +184,11 @@ const FearServer = (function () {
     /**
      * Initialize FEAR application
      */
-    initialize(paths = DEFAULT_PATHS) {
+    initialize(paths = DEFAULT_PATHS, ADD_PAYMENTS = false) {
       try {
         // Import FEAR after dotenv is configured
         const FearFactory = require("./FEAR");
-        this.fear = new FearFactory();
+        this.fear = new FearFactory({ADD_PAYMENTS});
         this.Router = this.fear.Router;
 
         this.setupStaticFiles(paths.root, paths.app, paths.build, paths.basePath);
@@ -212,7 +212,6 @@ const FearServer = (function () {
       if (this.fear.logo) {
         logger.warn(this.fear.logo);
       }
-
       // Initialize database connection
       return this.initializeDatabase()
         .then(() => {

@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "node backend/server.js dev",
     "start": "node backend/server.js",
+    "admin": "node backend/server.js admin",
     "test": "mocha test/**/*.js",
     "apidoc": "apidoc -i routes/ -o public/apidoc"
   },
