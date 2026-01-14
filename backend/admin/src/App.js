@@ -42,7 +42,8 @@ export const App = () => {
   const isAuthenticated = useSelector(selectIsAuthenticated);
 
   return (
-    <BrowserRouter>
+    <>
+    
       <AppNavigator />
       <Suspense fallback={<LoadingFallback />}>
         <Routes>
@@ -51,15 +52,15 @@ export const App = () => {
           
           {/* Auth routes - redirect to dashboard if already logged in */}
            <Route path="/auth" exact element={<AuthLayout />}>
-            {routes.auth.map((route) => (
-              <Route key={route.path} path={route.path} element={route.element} />
+            {routes.auth.map((route, idx) => (
+              <Route key={idx} path={route.path} element={route.element} />
             ))}
           </Route>
 
           {/* Protected admin routes */}
-          <Route path="/admin" exact element={<AdminLayout />}>
-            {routes.admin.map((route) => (
-              <Route key={route.path} path={route.path} element={route.element} />
+          <Route path="/admin" exact element={<AdminLayout />} >
+            {routes.admin.map((route, idx) => (
+              <Route key={idx} path={route.path} element={route.element} />
             ))}
           </Route>
 
@@ -68,7 +69,7 @@ export const App = () => {
         { /* <Route path="*" element={<Navigate to="/admin/dashboard" replace />} /> */}
         </Routes>
       </Suspense>
-    </BrowserRouter>
+      </>
   );
 }
 

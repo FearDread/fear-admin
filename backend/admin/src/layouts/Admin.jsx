@@ -8,21 +8,20 @@ import Sidebar from "../components/sidebar/Sidebar";
 import routes from "../router/Routes";
 //import logo from "assets/img/FEAR/logo.png";
 
-const AdminLayout = (props) => {
+const AdminLayout = ({children}) => {
 
   return (
     <>
       
       <div id="wrapper">
         <Sidebar        
-        {...props}
         routes={routes} 
         />
       
       <Header />
       <div className="clearfix"></div>
       <div className="content-wrapper">
-        <Outlet />
+      {(children) ? children : <Outlet />}
       </div>
       <a href="javaScript:void();" className="back-to-top"><i className="fa fa-angle-double-up"></i> </a>
       <Footer />

@@ -56,7 +56,7 @@ const RecentOrdersTable = () => {
 };
 
 
-const Dashboard = () => {
+const Dashboard = function () {
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const statsData = [
@@ -232,6 +232,7 @@ const Dashboard = () => {
                   </div>
                 </div>
               </div>
+              {/* 
               <div className="table-responsive">
                 <table className="table align-items-center table-flush table-borderless">
                   <thead>
@@ -306,6 +307,7 @@ const Dashboard = () => {
                     </tr>
                   </tbody></table>
               </div>
+              */}
             </div>
           </div>
         </div>

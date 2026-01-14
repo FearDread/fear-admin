@@ -11,7 +11,7 @@ const AuthLayout = (props) => {
 
   return (
     <>
-        <div id="pageloader-overlay" className="visible incoming"><div className="loader-wrapper-outer"><div className="loader-wrapper-inner" ><div className="loader"></div></div></div></div>
+        
     <div id="wrapper">
       <div className="loader-wrapper"><div className="lds-ring"><div></div><div></div><div></div><div></div></div></div>
       <Outlet />

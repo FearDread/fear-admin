@@ -4,7 +4,6 @@ import { setupListeners } from '@reduxjs/toolkit/query';
 import logger from 'redux-logger';
 // Import reducers
 import user, { restoreUser } from './user/slice';
-import UserSlice from './user/slice';
 import product from './products/slice';
 
 

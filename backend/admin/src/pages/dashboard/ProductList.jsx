@@ -12,9 +12,9 @@ import {
   Badge,
 } from "reactstrap";
 import ReactBSAlert from "react-bootstrap-sweetalert";
-import ReactTable from "../../components/ReactTable/ReactTable.js";
-import ReactTableActions from "../../components/ReactTable/ReactTableActions.js";
-import Loader from "../../components/Loader/Loading.js";
+import ReactTable from "../../components/ReactTable/ReactTable";
+import ReactTableActions from "../../components/ReactTable/ReactTableActions";
+import Loader from "../../components/Loader/Loading";
 import { useSelector, useDispatch } from "react-redux";
 import {
   selectSortedProducts,
@@ -264,10 +264,7 @@ function ProductList() {
     }));
   }, [filteredProducts]);
 
-  // Show loader while fetching
-  if (loading && (!products || products.length === 0)) {
-    return <Loader />;
-  }
+
 
   return (
     <>
@@ -276,7 +273,7 @@ function ProductList() {
 
         <Row>
           <Col md="12">
-            <Card className="animated-border-box-glow">
+            <Card className="media-object content-card">
               <CardHeader className="d-flex justify-content-between align-items-center">
                 <div>
                   <CardTitle tag="h4" className="mb-0">
@@ -342,9 +339,9 @@ function ProductList() {
                           )
                         }
                       >
-                        <option value="all">All Categories</option>
+                        <option key="00" value="all">All Categories</option>
                         {categories.map(c => (
-                          <option key={c.id} value={c.id}>{c.name}</option>
+                          <option key={c._id} value={c._id}>{c.title}</option>
                         ))}
                       </Input>
                     </div>
@@ -377,54 +374,51 @@ function ProductList() {
                   </div>
                 )}
 
-                {viewMode === "list" ? (
-                  <ReactTable
-                    data={tableData}
-                    columns={columns}
-                    defaultPageSize={10}
-                    showPagination
-                  />
+
+                {loading && products && products.length > 0 ? (
+                  <Loader />
                 ) : (
-                  <Row>
-                    {products.map(p => (
-                      <Col md="3" key={p.id}>
-                        <Card className="product-card">
-                          <img src={p.images?.[0]?.url} className="img-fluid rounded-top" />
-                          <CardBody>
-                            <h6>{p.title}</h6>
-                            <Badge color="primary">{p.category}</Badge>
-                            <div className="mt-2 text-success">${p.price}</div>
+                  <>
 
-                            <div className="d-flex justify-content-between mt-3">
-                              <Button size="sm" onClick={() => handleEditProduct(p.id)}>
-                                Edit
-                              </Button>
-                              <Button size="sm" color="danger" onClick={() => confirmDelete(p.id, p)}>
-                                Delete
-                              </Button>
-                            </div>
-                          </CardBody>
-                        </Card>
-                      </Col>
-                    ))}
-                  </Row>
-                )}
+                    {viewMode === "list" && !loading ? (
+                      <>
+                        <ReactTable
+                          data={tableData}
+                          columns={columns}
+                          defaultPageSize={10}
+                          showPagination
+                        />
+                      </>
+                    ) : (
+    <>
+                      {/* }
+                      <Row>
+                        {products.map(p => (
+                          <Col md="3" key={p.id}>
+                            <Card className="product-card">
+                              <img src={p.images?.[0]?.url} className="img-fluid rounded-top" />
+                              <CardBody>
+                                <h6>{p.title}</h6>
+                                <Badge color="primary">{p.category}</Badge>
+                                <div className="mt-2 text-success">${p.price}</div>
 
-                {/* Loading Overlay */}
-                {loading && products && products.length > 0 && (
-                  <div
-                    className="position-absolute w-100 h-100 d-flex justify-content-center align-items-center"
-                    style={{
-                      top: 0,
-                      left: 0,
-                      background: 'rgba(0,0,0,0.5)',
-                      zIndex: 999
-                    }}
-                  >
-                    <div className="spinner-border text-primary" role="status">
-                      <span className="sr-only">Loading...</span>
-                    </div>
-                  </div>
+                                <div className="d-flex justify-content-between mt-3">
+                                  <Button size="sm" onClick={() => handleEditProduct(p.id)}>
+                                    Edit
+                                  </Button>
+                                  <Button size="sm" color="danger" onClick={() => confirmDelete(p.id, p)}>
+                                    Delete
+                                  </Button>
+                                </div>
+                              </CardBody>
+                            </Card>
+                          </Col>
+                        ))}
+                      </Row>
+                      */}
+      </>
+                    )}
+                  </>
                 )}
               </CardBody>
             </Card>

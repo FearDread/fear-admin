@@ -88,7 +88,7 @@ export const selectFilters = (state) => state.products.filtering?.filters || {};
 export const selectSearchTerm = (state) => state.products.filtering?.searchTerm || '';
 export const selectSorting = (state) => state.products.sorting;
 export const selectSelection = (state) => state.products.selection;
-export const selectViewMode = (state) => state.products.viewMode || 'grid';
+export const selectViewMode = (state) => state.products.viewMode || 'list';
 
 // Advanced selectors
 export const selectProductById = (state, productId) => 
