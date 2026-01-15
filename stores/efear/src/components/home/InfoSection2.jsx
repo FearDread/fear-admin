@@ -12,7 +12,7 @@ export const InfoSection = () => {
 
   return (
     <>
-      <section className="py-4 bg-dark-1">
+      <section className="py-4 bg-dark-1 media-object">
         <div className="container">
           <div className="row row-cols-1 row-cols-md-2 row-cols-xl-4 row-group">
             <div className="col">

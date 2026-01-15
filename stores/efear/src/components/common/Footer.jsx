@@ -204,6 +204,7 @@ return (
           </div>
         </div>
       </section>
+      <div className="separator-animated-border animated-true"></div>
     </footer>
     {toasts.map(toast => (
       <Toast

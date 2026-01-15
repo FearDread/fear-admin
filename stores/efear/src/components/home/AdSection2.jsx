@@ -8,7 +8,7 @@ const AdSection2 = () => {
       <div className="container">
         <div className="row row-cols-1 row-cols-lg-2 row-cols-xl-3">
           <div className="col">
-            <div className="card rounded-0">
+            <div className="card rounded-0 media-object media-border-big">
               <div className="row g-0 align-items-center">
                 <div className="col">
                   <img src="assets/images/comics/super2.png" className="img-fluid" alt="" />
@@ -23,7 +23,7 @@ const AdSection2 = () => {
             </div>
           </div>
           <div className="col">
-            <div className="card rounded-0">
+            <div className="card rounded-0 media-object media-border-big">
               <div className="row g-0 align-items-center">
                 <div className="col">
                   <img src="assets/images/comics/super1.png" className="img-fluid" alt="" />
@@ -38,7 +38,7 @@ const AdSection2 = () => {
             </div>
           </div>
           <div className="col">
-            <div className="card rounded-0">
+            <div className="card rounded-0 media-object media-border-big">
               <div className="row g-0 align-items-center">
                 <div className="col">
                   <img src="assets/images/comics/super3.png" className="img-fluid" alt="" />

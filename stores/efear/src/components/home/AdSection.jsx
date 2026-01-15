@@ -9,7 +9,7 @@ export const AdSection = () => {
                     <div className="add-banner">
                         <div className="row row-cols-1 row-cols-md-2 row-cols-lg-2 row-cols-xl-4">
                             <div className="col d-flex">
-                                <div className="card rounded-0 w-100">
+                                <div className="card rounded-0 w-100 media-object">
                                     <img src="assets/images/comics/comic_banner_1.jpg" className="card-img-top" alt="..." />
                                     <div className="position-absolute top-0 end-0 m-3 product-discount"><span>-10%</span>
                                     </div>
@@ -20,7 +20,7 @@ export const AdSection = () => {
                                 </div>
                             </div>
                             <div className="col d-flex">
-                                <div className="card rounded-0 w-100">
+                                <div className="card rounded-0 w-100 media-object">
                                     <div className="position-absolute top-0 end-0 m-3 product-discount"><span>-80%</span>
                                     </div>
                                     <div className="card-body text-center mt-5">
@@ -31,7 +31,7 @@ export const AdSection = () => {
                                 </div>
                             </div>
                             <div className="col d-flex">
-                                <div className="card rounded-0 w-100">
+                                <div className="card rounded-0 w-100 media-object">
                                     <img src="assets/images/comics/super4.png" className="card-img h-100" alt="..." />
                                     <div className="card-img-overlay text-center top-20">
                                         <div className="border border-white border-3 py-3 bg-dark-3">
@@ -43,7 +43,7 @@ export const AdSection = () => {
                                 </div>
                             </div>
                             <div className="col d-flex">
-                                <div className="card rounded-0 w-100">
+                                <div className="card rounded-0 w-100 media-object">
                                     <div className="position-absolute top-0 end-0 m-3 product-discount"><span>-50%</span>
                                     </div>
                                     <div className="card-body text-center">

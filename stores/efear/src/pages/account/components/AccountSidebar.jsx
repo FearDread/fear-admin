@@ -63,7 +63,7 @@ export const AccountSidebar = (props) => {
     return (
         <>
             <div className="col-lg-4">
-                <div className="card shadow-none mb-3 mb-lg-0">
+                <div className="card media-object shadow-none mb-3 mb-lg-0">
                     <div className="card-body">
                         {/* User Info Card */}
                         <div className="text-center mb-4 pb-4 border-bottom">

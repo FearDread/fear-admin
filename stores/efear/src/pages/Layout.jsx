@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 
@@ -32,6 +32,16 @@ const Layout = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [showQuickView, setShowQuickView] = useState(false);
 
+
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+}
   const handleQuickView = (product) => {
     setSelectedProduct(product);
     setShowQuickView(true);
@@ -66,6 +76,8 @@ const Layout = () => {
   }), []);
 
   return (
+    <>
+    <div className="separator-animated-border animated-true"></div>
     <Elements stripe={stripePromise} options={stripeOptions}>
       <b className="screen-overlay"></b>
       <div className="wrapper">
@@ -94,6 +106,8 @@ const Layout = () => {
         />
       )}
     </Elements>
+    <ScrollToTop />
+    </>
   );
 };
   

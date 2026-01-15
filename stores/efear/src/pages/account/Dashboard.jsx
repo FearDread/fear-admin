@@ -85,7 +85,7 @@ export const AccountDashboard = () => {
       <section className="py-4">
         <div className="container">
           <h3 className="d-none">Account</h3>
-          <div className="card">
+          <div className="card media-object">
             <div className="card-body">
               <div className="row">
                 {/* Sidebar Menu */}

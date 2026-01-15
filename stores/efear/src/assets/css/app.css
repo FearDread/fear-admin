@@ -250,6 +250,8 @@ body.offcanvas-active {
 		background-color: rgb(0 0 0 / 50%);
 		-webkit-box-shadow: 0 0.3rem 0.8rem rgb(0 0 0 / 12%);
 		box-shadow: 0 0.3rem 0.8rem rgb(0 0 0 / 12%);
+		  content: " ";
+
 	}
 }
 
@@ -2143,6 +2145,134 @@ h6.product-name {
 .card.product-card {
 	background: transparent !important;
 }
-.card.product-card:hover {
-	background: rgba(0,0,0,70%) !important;
+.card.product-card.media-object:hover {
+  --border-width: 1px;
+  --radius: 24px;
+
+  position: relative;
+  border-radius: var(--radius);
+  border: var(--border-width) solid transparent;
 }
+.card.product-card.media-object:hover::before {
+  content: " ";
+  position: absolute;
+  inset: calc(var(--border-width) * -1);
+  z-index: -1;
+  border: inherit;
+  border-radius: inherit;
+  background-image: conic-gradient(from var(--angle), #be0d0d 80%, #E0D1FF 88%, #E0D1FF 92%, #f90000 100%);
+  background-origin: border-box;
+  -webkit-mask:
+    linear-gradient(black, black) content-box,
+    linear-gradient(black, black);  
+  mask: linear-gradient(black, black),
+        linear-gradient(black, black);
+  -webkit-mask-clip: content-box, border-box;  
+  mask-clip: content-box, border-box;
+  -webkit-mask-composite: xor;  
+  mask-composite: exclude;
+  animation: spin 3s linear infinite;
+}
+.media-object {
+  --border-width: 2px;
+  position: relative;
+  border-radius: var(--radius);
+  border: var(--border-width) solid transparent;
+}
+
+.media-object::before {
+  content: " ";
+  position: absolute;
+  inset: calc(var(--border-width) * -1);
+  z-index: -1;
+  border: inherit;
+  border-radius: inherit;
+  background-image: conic-gradient(from var(--angle), #f10000 80%, #f6f1ff 88%, #f3f0f8 92%, #f90000 100%);
+  background-origin: border-box;
+  -webkit-mask:
+    linear-gradient(black, black) content-box,
+    linear-gradient(black, black);  
+  mask: linear-gradient(black, black),
+        linear-gradient(black, black);
+  -webkit-mask-clip: content-box, border-box;  
+  mask-clip: content-box, border-box;
+  -webkit-mask-composite: xor;  
+  mask-composite: exclude;
+  animation: spin 3s linear infinite;
+}
+@property --angle {
+  syntax: "<angle>";
+  inherits: true;
+  initial-value: 0turn;
+}
+
+@keyframes spin {
+  to {
+    --angle: 1turn;
+  }
+}
+.media-border-big {
+--border-width: 10px;
+}
+.separator-animated-border {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    right: 0;
+    overflow: hidden;
+    height: 2px;
+    width: 75%;
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, rgba(255, 255, 255, 0) 0%, rgb(20, 155, 253) 50%, rgba(0, 0, 0, 0.2) 100%);
+}
+
+.separator-animated-border::before {
+    content: "";
+    position: absolute;
+    width: 8%;
+    height: 100%;
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, rgba(255, 255, 255, 0) 0%, var(--color-primary) 50%, rgba(0, 0, 0, 0) 100%);
+    backdrop-filter: blur(20px);
+    animation: separateline 5s ease-in-out infinite;
+}
+.separator-animated-border.animated-true::before {
+    content: "";
+    position: absolute;
+    width: 8%;
+    height: 100%;
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, rgba(255, 255, 255, 0) 0%, var(--color-primary) 50%, rgba(0, 0, 0, 0) 100%);
+    backdrop-filter: blur(20px);
+    animation: separateline 5s ease-in-out infinite;
+}
+
+    .separator-animated-border {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        right: 0;
+        overflow: hidden;
+        height: 2px;
+        width: 75%;
+        background: linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, rgba(255, 255, 255, 0) 0%, rgb(255, 6, 6) 50%, rgba(0, 0, 0, 0.2) 100%);
+    }
+         .separator-animated-border.animated-true::before {
+            content: "";
+            position: absolute;
+            width: 8%;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, rgba(255, 255, 255, 0) 0%, var(--color-primary) 50%, rgba(0, 0, 0, 0) 100%);
+            backdrop-filter: blur(20px);
+            animation: separateline 5s ease-in-out infinite;
+        }
+
+
+        @keyframes separateline {
+            0% {
+                left: 0;
+            }
+        
+            100% {
+                left: 110%;
+            }
+        }
