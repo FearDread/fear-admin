@@ -119,7 +119,7 @@ body.offcanvas-active {
 	left: 0;
 	opacity: 0;
 	visibility: hidden;
-	background-color: rgba(34, 34, 34, 0.6);
+	background-color: rgba(0,0,0, 0.6);
 	transition: opacity .2s linear, visibility .1s, width 1s ease-in;
 }
 
@@ -215,7 +215,7 @@ body.offcanvas-active {
 /* Product Effect */
 
 .product-grid .card.product-card {
-
+	background: rgba(0,0,0,.7);
 	box-shadow: none;
 	border-radius: 0%;
 	-webkit-transition: all .2s;
@@ -237,6 +237,7 @@ body.offcanvas-active {
 
 .product-grid .product-card:hover .product-action,
 .product-card:hover .product-compare {
+	background-color: rgb(0 0 0 / 50%);
 	visibility: visible;
 	opacity: 1;
 }
@@ -247,12 +248,16 @@ body.offcanvas-active {
 	}
 
 	.product-grid .card.product-card:hover {
-		background-color: rgb(0 0 0 / 50%);
+		background-color: rgba(0 0 0 / 50%);
 		-webkit-box-shadow: 0 0.3rem 0.8rem rgb(0 0 0 / 12%);
 		box-shadow: 0 0.3rem 0.8rem rgb(0 0 0 / 12%);
 		  content: " ";
 
 	}
+}
+.product-card:hover {
+	background: rgba(0,0,0,.7) !important;
+	background-color: black;
 }
 
 .color-indigator-item {
@@ -1016,15 +1021,15 @@ ul.categories-list li {
 }
 
 .bg-dark-1 {
-	background-color: rgb(0 0 0 / 60%) !important;
+	background-color: rgb(0 0 0 / 70%) !important;
 }
 
 .bg-dark-2 {
-	background-color: rgb(0 0 0 / 50%) !important;
+	background-color: rgb(0 0 0 / 30%) !important;
 }
 
 .bg-dark-3 {
-	background-color: rgb(0 0 0 / 65%) !important;
+	background-color: rgb(0 0 0 / 55%) !important;
 }
 
 .bg-dark-4 {
@@ -2065,7 +2070,7 @@ h6.product-name {
 .product-card:hover {
 	transform: translateY(-5px);
 	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.7);
-	background: rgba(255,0255,255,50%) !important;
+	background: rgba(255,255,255,50%) !important;
 }
 
 .product-name {
@@ -2106,7 +2111,7 @@ h6.product-name {
 
 .card-img-top {
 	height: 250px;
-	object-fit: cover;
+	object-fit: contain !important;
 }
 .comon-shape {
   background: transparent url(../images/about/shu2.png) no-repeat;
@@ -2143,7 +2148,10 @@ h6.product-name {
 	background: rgba(0,0,0,70%) !important;
 }
 .card.product-card {
-	background: transparent !important;
+	background: rgba(0,0,0,0) !important;
+}
+.card.product-card:hover {
+	background: rgba(0,0,0,.4) !important;
 }
 .card.product-card.media-object:hover {
   --border-width: 1px;
@@ -2276,3 +2284,17 @@ h6.product-name {
                 left: 110%;
             }
         }
+
+		.dropdown-menu {
+			background: rgba(0,0,0,.7) !important;
+		}
+
+.pace-active {
+	background: black !important;
+}
+.account-sidebar .bg-dark-0 {
+	background: rgba(0,0,0,.0);
+}
+.account-sidebar a:hover {
+	background: rgba(106, 106, 106, 0.385);
+}

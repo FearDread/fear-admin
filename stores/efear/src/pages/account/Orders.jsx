@@ -167,7 +167,7 @@ function AccountOrders() {
       <section className="py-4">
         <div className="container">
           <h3 className="d-none">Account</h3>
-          <div className="card">
+          <div className="card-body media-object bg-dark-2">
             <div className="card-body">
               <div className="row">
 

@@ -85,7 +85,7 @@ export const AccountDashboard = () => {
       <section className="py-4">
         <div className="container">
           <h3 className="d-none">Account</h3>
-          <div className="card media-object">
+          <div className="bg-dark-2 card-body media-object">
             <div className="card-body">
               <div className="row">
                 {/* Sidebar Menu */}
@@ -94,10 +94,10 @@ export const AccountDashboard = () => {
 
                 {/* Main Content */}
                 <div className="col-lg-8">
-                  <div className="card shadow-none mb-0">
+                  <div className="card shadow-none mb-0 bg-dark-2">
                     <div className="card-body">
                       {/* Welcome Message */}
-                      <div className="alert alert-light border" role="alert">
+                      <div className="alert bg-transparent border" role="alert">
                         <h5 className="alert-heading">
                           <i className='bx bx-smile me-2'></i>
                           Welcome back, {currentUser.firstName || userFullName}!

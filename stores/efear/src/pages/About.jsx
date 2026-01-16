@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import PopularBrands from "../components/common/PopularBrands";
 import aboutImg from "../assets/images/about/01.png";
 export const About = () => {
@@ -27,6 +28,7 @@ export const About = () => {
             <section className="py-0 py-lg-4">
                 <div className="container">
                     <h3>Our Story</h3>
+                    <div className="card card-body bg-dark-2">
                     <h4>Welcome to the Void (With Better Graphics)</h4>
                     <p> We started this business because someone once told us "following your dreams doesn't pay the bills." Well, joke's on them—we're still broke, but now we get to read comics while doing it.
                         Our Origin Story (Tragically Less Interesting Than Batman's)</p>
@@ -56,13 +58,14 @@ export const About = () => {
                         Disclaimer: No comic book characters were harmed in the making of this website. Our dignity, however, didn't make it.
                     </p>
                 </div>
+                </div>
             </section>
 
 
 
             <section className="py-4">
                 <div className="container">
-                    <h4>Why Choose Us</h4>
+                    <h4>What makes us different</h4>
                     <hr />
                     <div className="row row-cols-1 row-cols-lg-3">
                         <div className="col d-flex">
@@ -97,20 +100,19 @@ export const About = () => {
             </section>
 
 
-            <section className="py-0 py-lg-4 card">
+            <section className="py-0 py-lg-4 bg-dark-2">
                 <div className="container">
-                    <h5 className="sub-heading mb-2 text-center">  Why choose us </h5>
                     <h2 className="text-center page-haeding"> Here's What we Offer </h2>
                     <div className="row align-items-center mt-5 mt-lg-0">
                         <div className="col-lg-3">
                             <div className="comon-shape">
                                 <h4>01</h4>
-                                <h5 className="text-center"> Proin quis neque dapibus </h5>
+                                <h5 className="text-center"> Competitive Pricing </h5>
                             </div>
 
                             <div className="comon-shape">
                                 <h4>02</h4>
-                                <h5 className="text-center"> Proin quis neque dapibus </h5>
+                                <h5 className="text-center"> High Value Collections </h5>
                             </div>
 
                         </div>
@@ -122,18 +124,18 @@ export const About = () => {
                         <div className="col-lg-3">
                             <div className="comon-shape">
                                 <h4>03</h4>
-                                <h5 className="text-center"> Proin quis neque dapibus </h5>
+                                <h5 className="text-center"> All Comics shipped with board and sleve! </h5>
                             </div>
 
                             <div className="comon-shape">
                                 <h4>04</h4>
-                                <h5 className="text-center"> Proin quis neque dapibus </h5>
+                                <h5 className="text-center"> Near Mint ( NM ) Quality! </h5>
                             </div>
 
                         </div>
                     </div>
 
-                    <a href="about.html#" className="btn comon-button mx-auto mt-5 d-table">  <span> <i className="far fa-gem"></i> Join Now </span> </a>
+                    <Link to="/shop" className="btn btn-light btn-ecom mx-auto mt-5 d-table">  <span> <i className="far fa-gem"></i> Shop NOW! </span> </Link>
                 </div>
 
             </section>

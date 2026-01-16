@@ -106,7 +106,7 @@ function AccountPayments() {
       <section className="py-4">
         <div className="container">
           <h3 className="d-none">Account</h3>
-          <div className="card">
+          <div className="card-body bg-dark-2">
             <div className="card-body">
               <div className="row">
 
@@ -138,7 +138,7 @@ function AccountPayments() {
                           <p className="mt-3">No payment methods saved yet.</p>
                           <button 
                             onClick={() => setShowAddModal(true)}
-                            className="btn btn-primary rounded-0"
+                            className="btn btn-dark btn-ecomm rounded-0"
                           >
                             Add Your First Payment Method
                           </button>

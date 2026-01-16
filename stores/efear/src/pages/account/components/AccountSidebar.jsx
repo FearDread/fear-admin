@@ -96,12 +96,12 @@ export const AccountSidebar = (props) => {
                         </div>
 
                         {/* Navigation Menu */}
-                        <div className="list-group list-group-flush">
+                        <div className="list-group list-group-flush account-sidebar">
                             {menuItems.map((item) => (
                                 <Link
                                     key={item.path}
                                     to={item.path}
-                                    className={`list-group-item d-flex justify-content-between align-items-center ${isActiveMenuItem(item.path) ? 'active' : 'bg-transparent'
+                                    className={`list-group-item d-flex justify-content-between align-items-center ${isActiveMenuItem(item.path) ? 'active' : 'bg-dark-0'
                                         }`}
                                 >
                                     <span>

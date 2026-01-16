@@ -604,7 +604,7 @@ export const AccountAddresses = () => {
       <section className="py-4">
         <div className="container">
           <h3 className="d-none">Account</h3>
-          <div className="card">
+          <div className="card-body bg-dark-2 media-object">
             <div className="card-body">
               <div className="row">
                 {/* Sidebar Navigation */}

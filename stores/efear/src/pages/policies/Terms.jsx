@@ -29,7 +29,7 @@ export const TermsOfService = () => {
                     <div className="row">
                         <div className="col-12 col-lg-9">
                             <div className="blog-right-sidebar p-3">
-                                <div className="card shadow-none bg-transparent">
+                                <div className="card card-body shadow-none bg-transparent">
                                     <div className="card-body p-0">
                                         <h2 className="mt-4 mb-4">TERMS OF SERVICE</h2>
 

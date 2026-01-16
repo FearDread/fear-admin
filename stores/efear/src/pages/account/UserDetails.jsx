@@ -266,7 +266,7 @@ export const UserDetails = () => {
             </div>
           )}
 
-          <div className="card">
+          <div className="card-body bg-dark-2 media-object">
             <div className="card-body">
               <div className="row">
 
