@@ -66,7 +66,7 @@ export const App = () => {
 
           
           {/* 404 Not Found - catch all unmatched routes */}
-        { /* <Route path="*" element={<Navigate to="/admin/dashboard" replace />} /> */}
+        { <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />}
         </Routes>
       </Suspense>
       </>

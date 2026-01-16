@@ -210,7 +210,7 @@ function ProductList() {
       avatar: (
         <div className="position-relative">
           <img
-            src={item.images?.[0]?.url || '/placeholder-product.png'}
+            src={item.images?.[0]?.url || '../../assets/images/placeholder.png'}
             alt={item.title}
             className="product-img rounded"
             style={{
@@ -312,14 +312,11 @@ function ProductList() {
                 </div>
               </CardHeader>
 
-              {/* Separator Animation */}
-              <div className="separator-animated-border animated-true"></div>
 
-              <CardBody>
                 {/* Search and Filter Section */}
-                <Row className="mb-4">
-                  <Col md="6" lg="4">
-                    <div className="position-relative">
+
+                <div className="d-flex justify-content-between align-items-center card-header">
+                  <Col md="12" lg="5" className="text-center">
                       <Input
                         placeholder="Search products…"
                         value={searchTerm}
@@ -327,6 +324,7 @@ function ProductList() {
                         className="form-control-rounded"
                       />
 
+                  {/*
                       <Input
                         type="select"
                         value={filters.categoryId || "all"}
@@ -344,21 +342,19 @@ function ProductList() {
                           <option key={c._id} value={c._id}>{c.title}</option>
                         ))}
                       </Input>
-                    </div>
+                      */}
                   </Col>
 
                   <Col md="12" lg="5" className="text-right">
-                    <div className="d-flex justify-content-end align-items-center">
                       <Badge color="light" className="mr-2 px-3">
                         Total: {products?.length || 0}
                       </Badge>
                       <Badge color="info" className="px-3">
                         Filtered: {tableData.length}
                       </Badge>
-                    </div>
                   </Col>
-                </Row>
-
+                  </div>
+            </Card>
                 {/* Error Display */}
                 {error && (
                   <div className="alert alert-danger alert-dismissible fade show" role="alert">
@@ -375,7 +371,7 @@ function ProductList() {
                 )}
 
 
-                {loading && products && products.length > 0 ? (
+                {loading || !products && products.length === 0 ? (
                   <Loader />
                 ) : (
                   <>
@@ -420,8 +416,7 @@ function ProductList() {
                     )}
                   </>
                 )}
-              </CardBody>
-            </Card>
+
           </Col>
         </Row>
       </div>

@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { Provider } from "react-redux";
 import reportWebVitals from './reportWebVitals';
 import AuthProvider from "./contexts/Auth";
-import Router from "./contexts/Router";
+//import Router from "./contexts/Router";
 import App from './App';
 
 import { store } from "./features/store";
@@ -23,9 +23,7 @@ function Providers({ children }) {
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
     <Providers>
-        <Router>
           <App />
-        </Router>
     </Providers>
 
   );

@@ -1,32 +1,40 @@
-import { Button } from "reactstrap";
-import classNames from "classnames";
+import React from "react";
 
-const ReactActions = ( key, _ecb, _dcb ) => {
-  if ( typeof _ecb !== 'function' ) {
-    console.log("missing edit callback");
+const ReactActions = ({ index, onEdit, onDelete }) => {
+  if (typeof onEdit !== 'function') {
+    //console.warn("Missing edit callback");
   }
+
+  if (typeof onDelete !== 'function') {
+    //console.warn("Missing delete callback");
+  }
+
+  const isNeutral = index < 5;
+
   return (
-      <div className="actions-right">
-      <Button
-        onClick={_ecb}  
-        color="warning"
-        size="sm"
-        className={classNames("btn-icon btn-link like", {
-          "btn-neutral": key < 5
-        })}>
+    <div key={index} className="actions-right">
+      <button
+      key={index}
+        onClick={onEdit}
+        className={`btn btn-warning btn-sm btn-icon btn-link like ${
+          isNeutral ? "btn-neutral" : ""
+        }`}
+        aria-label="Edit"
+      >
         <i className="tim-icons icon-pencil" />
-      </Button>{" "}
-      <Button
-        onClick={_dcb}
-        color="danger"
-        size="sm"
-        className={classNames("btn-icon btn-link like", {
-          "btn-neutral": key < 5
-        })}>
+      </button>{" "}
+      <button
+      key={index}
+        onClick={onDelete}
+        className={`btn btn-danger btn-sm btn-icon btn-link like ${
+          isNeutral ? "btn-neutral" : ""
+        }`}
+        aria-label="Delete"
+      >
         <i className="tim-icons icon-simple-remove" />
-      </Button>{" "}
+      </button>
     </div>
-    )
-}
+  );
+};
 
 export default ReactActions;

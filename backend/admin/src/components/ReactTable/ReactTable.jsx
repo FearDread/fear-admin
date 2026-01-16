@@ -1,70 +1,69 @@
-/*eslint-disable*/
-import React from "react";
+import React, { useState, useMemo } from "react";
 import {
   useTable,
   useFilters,
-  useAsyncDebounce,
   useSortBy,
   usePagination,
 } from "react-table";
-import classNames from "classnames";
-// A great library for fuzzy filtering/sorting items
 import { matchSorter } from "match-sorter";
-// react plugin used to create DropdownMenu for selecting items
 import Select from "react-select";
-import "../../assets/css/ReactTable.css";
-// reactstrap components
-import { FormGroup, Input, Row, Col, Button } from "reactstrap";
 
+import "./ReactTable.css";
 // Define a default UI for filtering
-function DefaultColumnFilter({
+const DefaultColumnFilter = ({
   column: { filterValue, preFilteredRows, setFilter },
-}) {
+}) => {
   const count = preFilteredRows.length;
 
-  return
   /*
-  (
+  return (
+    <div className="form-group">
+      <input
+        type="text"
+        className="form-control"
+        value={filterValue || ""}
+        onChange={(e) => {
+          setFilter(e.target.value || undefined);
+        }}
+        placeholder={`Search ${count} records...`}
+      />
+    </div>
+  );
+  */
+};
 
-<FormGroup>
-  <Input
-    type="email"
-    value={filterValue || ""}
-    onChange={(e) => {
-      setFilter(e.target.value || undefined); // Set undefined to remove the filter entirely
-    }}
-    placeholder={`Search ${count} records...`}
-  />
-</FormGroup>
- 
-)
-*/
-}
-
-function fuzzyTextFilterFn(rows, id, filterValue) {
+const fuzzyTextFilterFn = (rows, id, filterValue) => {
   return matchSorter(rows, filterValue, { keys: [(row) => row.values[id]] });
-}
+};
 
-// Let the table remove the filter if the string is empty
 fuzzyTextFilterFn.autoRemove = (val) => !val;
 
-// Our table component
-function Table({ columns, data }) {
-  const [numberOfRows, setNumberOfRows] = React.useState(10);
-  const [pageSelect, handlePageSelect] = React.useState(0);
-  const filterTypes = React.useMemo(
+const filterGreaterThan = (rows, id, filterValue) => {
+  return rows.filter((row) => {
+    const rowValue = row.values[id];
+    return rowValue >= filterValue;
+  });
+};
+
+filterGreaterThan.autoRemove = (val) => typeof val !== "number";
+
+const Table = ({ columns, data }) => {
+  const [numberOfRows, setNumberOfRows] = useState({
+    value: 10,
+    label: "10 rows",
+  });
+  const [pageSelect, setPageSelect] = useState({ value: 0, label: "Page 1" });
+
+  const filterTypes = useMemo(
     () => ({
-      // Add a new fuzzyTextFilterFn filter type.
       fuzzyText: fuzzyTextFilterFn,
-      // Or, override the default text filter to use
-      // "startWith"
       text: (rows, id, filterValue) => {
         return rows.filter((row) => {
           const rowValue = row.values[id];
           return rowValue !== undefined
             ? String(rowValue)
-              .toLowerCase()
-              .startsWith(String(filterValue).toLowerCase())
+                .toLowerCase()
+                .startsWith(String(filterValue).toLowerCase())
             : true;
         });
       },
@@ -72,9 +71,8 @@ function Table({ columns, data }) {
     []
   );
 
-  const defaultColumn = React.useMemo(
+  const defaultColumn = useMemo(
     () => ({
-      // Let's set up our default Filter UI
       Filter: DefaultColumnFilter,
     }),
     []
@@ -86,11 +84,8 @@ function Table({ columns, data }) {
     headerGroups,
     page,
     prepareRow,
-    state,
-    visibleColumns,
     nextPage,
     pageOptions,
-    pageCount,
     previousPage,
     canPreviousPage,
     canNextPage,
@@ -100,173 +95,161 @@ function Table({ columns, data }) {
     {
       columns,
       data,
-      defaultColumn, // Be sure to pass the defaultColumn option
+      defaultColumn,
       filterTypes,
       initialState: { pageSize: 10, pageIndex: 0 },
     },
-    useFilters, // useFilters!
+    useFilters,
     useSortBy,
     usePagination
   );
 
-  // We don't want to render all of the rows for this example, so cap
-  // it for this use case
-  // const firstPageRows = rows.slice(0, 10);
-  let pageSelectData = Array.apply(
-    null,
-    Array(pageOptions.length)
-  ).map(function () { });
-  let numberOfRowsData = [5, 10, 20, 25, 50, 100];
+  const pageSelectData = useMemo(
+    () =>
+      pageOptions.map((_, index) => ({
+        value: index,
+        label: `Page ${index + 1}`,
+      })),
+    [pageOptions]
+  );
+
+  const numberOfRowsData = useMemo(
+    () =>
+      [5, 10, 20, 25, 50, 100].map((num) => ({
+        value: num,
+        label: `${num} rows`,
+      })),
+    []
+  );
+
+  const handlePageChange = (value) => {
+    gotoPage(value.value);
+    setPageSelect(value);
+  };
+
+  const handleRowsChange = (value) => {
+    setPageSize(value.value);
+    setNumberOfRows(value);
+  };
 
   return (
-    <>
-      <div className="card media-object">
-        <div className="ReactTable -striped -highlight">
-
-          <div ClassName="d-flex justify-content-between align-items-center card-header">
-            <div className="pagination-top">
-              <div className="-pagination">
-                <div className="-previous">
-                  <button
-                    type="button"
-                    onClick={() => previousPage()}
-                    disabled={!canPreviousPage}
-                    className="btn btn-dark"
-                  >
-                    Previous
-                  </button>
-                </div>
-                <div className="-center flex-nowrap">
-                  <Select
-                    className="react-select info mx-5 w-100"
-                    classNamePrefix="react-select"
-                    name="singleSelect"
-                    value={pageSelect}
-                    onChange={(value) => {
-                      gotoPage(value.value);
-                      handlePageSelect(value);
-                    }}
-                    options={pageSelectData.map((prop, key) => {
-                      return {
-                        value: key,
-                        label: "Page " + (key + 1),
-                      };
-                    })}
-                    placeholder="Select page"
-                  />
-                  <Select
-                    className="react-select info mx-5 w-100"
-                    classNamePrefix="react-select"
-                    name="singleSelect"
-                    value={numberOfRows}
-                    onChange={(value) => {
-                      console.log(value);
-                      setPageSize(value.value);
-                      setNumberOfRows(value);
-                    }}
-                    options={numberOfRowsData.map((prop, idx) => {
-                      return {
-                        key: idx,
-                        value: prop,
-                        label: prop + " rows",
-                      };
-                    })}
-                    placeholder="Select #rows"
-                  />
-                </div>
-                <div className="-next">
-                  <button
-                    type="button"
-                    onClick={() => nextPage()}
-                    disabled={!canNextPage}
-                    className="btn btn-primary"
-                  >
-                    Next
-                  </button>
-                </div>
+    <div className="card media-object">
+      <div className="ReactTable -striped -highlight">
+        <div className="justify-content-between align-items-center card-header">
+          <div className="pagination-top">
+            <div className="-pagination">
+              <div className="-previous">
+                <button
+                  type="button"
+                  onClick={previousPage}
+                  disabled={!canPreviousPage}
+                  className="btn btn-dark"
+                >
+                  Previous
+                </button>
+              </div>
+              <div className="-center flex-nowrap">
+                <Select
+                  className="react-select info mx-5 w-100"
+                  classNamePrefix="react-select"
+                  name="pageSelect"
+                  value={pageSelect}
+                  onChange={handlePageChange}
+                  options={pageSelectData}
+                  placeholder="Select page"
+                />
+                <Select
+                  className="react-select info mx-5 w-100"
+                  classNamePrefix="react-select"
+                  name="rowsSelect"
+                  value={numberOfRows}
+                  onChange={handleRowsChange}
+                  options={numberOfRowsData}
+                  placeholder="Select #rows"
+                />
+              </div>
+              <div className="-next">
+                <button
+                  type="button"
+                  onClick={nextPage}
+                  disabled={!canNextPage}
+                  className="btn btn-primary"
+                >
+                  Next
+                </button>
               </div>
             </div>
-
-          </div>
-
-
-
-          <div className="card-body">
-
-            <table {...getTableProps()} className="rt-table">
-              <thead className="rt-thead -header">
-                {headerGroups.map((headerGroup, key) => (
-                  <tr key={key} {...headerGroup.getHeaderGroupProps()} className="rt-tr">
-                    {headerGroup.headers.map((column, key) => (
-                      <th
-                        key={key}
-                        {...column.getHeaderProps(column.getSortByToggleProps())}
-                        className={classNames("rt-th rt-resizable-header", {
-                          "-cursor-pointer": headerGroup.headers.length - 1 !== key,
-                          "-sort-asc": column.isSorted && !column.isSortedDesc,
-                          "-sort-desc": column.isSorted && column.isSortedDesc,
-                        })}
-                      >
-                        <div className="rt-resizable-header-content">
-                          {column.render("Header")}
-                        </div>
-                        {/* Render the columns filter UI */}
-                        <div>
-                          {headerGroup.headers.length - 1 === key
-                            ? null
-                            : column.canFilter
-                              ? column.render("Filter")
-                              : null}
-                        </div>
-                      </th>
-                    ))}
-                  </tr>
-                ))}
-              </thead>
-              <tbody {...getTableBodyProps()} className="rt-tbody">
-                {page.map((row, i) => {
-                  prepareRow(row);
-                  return (
-                    <tr key={i}
-                      {...row.getRowProps()}
-                      className={classNames(
-                        "rt-tr",
-                        { " -odd": i % 2 === 0 },
-                        { " -even": i % 2 === 1 }
-                      )}
-                    >
-                      {row.cells.map((cell) => {
-                        return (
-                          <td {...cell.getCellProps()} className="rt-td">
-                            {cell.render("Cell")}
-                          </td>
-                        );
-                      })}
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
           </div>
         </div>
-        <div className="pagination-bottom"></div>
+
+        <div className="card-body">
+          <table {...getTableProps()} className="rt-table">
+            <thead className="rt-thead -header">
+              {headerGroups.map((headerGroup) => {
+                const { key: headerGroupKey, ...headerGroupProps } = headerGroup.getHeaderGroupProps();
+                return (
+                  <tr
+                    key={headerGroupKey}
+                    {...headerGroupProps}
+                    className="rt-tr"
+                  >
+                    {headerGroup.headers.map((column, colIdx) => {
+                      const isLastColumn = colIdx === headerGroup.headers.length - 1;
+                      const { key: columnKey, ...columnProps } = column.getHeaderProps(column.getSortByToggleProps());
+                      return (
+                        <th
+                          key={columnKey}
+                          {...columnProps}
+                          className={`rt-th rt-resizable-header ${
+                            !isLastColumn ? "-cursor-pointer" : ""
+                          } ${column.isSorted && !column.isSortedDesc ? "-sort-asc" : ""} ${
+                            column.isSorted && column.isSortedDesc ? "-sort-desc" : ""
+                          }`}
+                        >
+                          <div className="rt-resizable-header-content">
+                            {column.render("Header")}
+                          </div>
+                          <div>
+                            {!isLastColumn && column.canFilter
+                              ? column.render("Filter")
+                              : null}
+                          </div>
+                        </th>
+                      );
+                    })}
+                  </tr>
+                );
+              })}
+            </thead>
+            <tbody {...getTableBodyProps()} className="rt-tbody">
+              {page.map((row) => {
+                prepareRow(row);
+                const { key: rowKey, ...rowProps } = row.getRowProps();
+                const rowIdx = parseInt(rowKey.split('.')[1] || 0);
+                return (
+                  <tr
+                    key={rowKey}
+                    {...rowProps}
+                    className={`rt-tr ${rowIdx % 2 === 0 ? "-odd" : "-even"}`}
+                  >
+                    {row.cells.map((cell) => {
+                      const { key: cellKey, ...cellProps } = cell.getCellProps();
+                      return (
+                        <td key={cellKey} {...cellProps} className="rt-td">
+                          {cell.render("Cell")}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
-    </>
+      <div className="pagination-bottom"></div>
+    </div>
   );
-}
-
-// Define a custom filter filter function!
-function filterGreaterThan(rows, id, filterValue) {
-  return rows.filter((row) => {
-    const rowValue = row.values[id];
-    return rowValue >= filterValue;
-  });
-}
-
-// This is an autoRemove method on the filter function that
-// when given the new filter value and returns true, the filter
-// will be automatically removed. Normally this is just an undefined
-// check, but here, we want to remove the filter if it's not a number
-filterGreaterThan.autoRemove = (val) => typeof val !== "number";
+};
 
 export default Table;
