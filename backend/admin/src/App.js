@@ -1,5 +1,5 @@
 import React, { useEffect, Suspense } from "react";
-import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
+import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { useSelector } from "react-redux";
 import AuthLayout from "./layouts/Auth";
 import AdminLayout from "./layouts/Admin";
