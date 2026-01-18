@@ -10,7 +10,6 @@ module.exports = (fear) => {
     router.post("/login", handler.async(Auth.login));
     router.post("/logout", handler.async(Auth.logout));
     router.post("/register", handler.async(Auth.register));
-    router.post("/forgot-password", handler.async(Auth.forgot));
 
     router.post('/google', handler.async(Auth.googleAuth)); 
     router.post('/google/link',handler.async(Auth.linkGoogleAccount));

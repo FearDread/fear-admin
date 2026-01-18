@@ -1,6 +1,6 @@
 const crypto = require('crypto');
-const User = require('../models/User'); // Adjust path as needed
-const { validateMongoDbId } = require('../utils/validateMongoDbId'); // Adjust path as needed
+const User = require("../../models/user")
+//const ObjectId = require('../../libs/db');
 
 // Response helper
 const response = {
@@ -11,7 +11,6 @@ const response = {
             data
         });
     },
-
     error: (res, statusCode, message, error = null) => {
         const responseObj = { success: false, message };
         if (error && process.env.NODE_ENV === "development") {
@@ -21,11 +20,11 @@ const response = {
     }
 };
 
-exports.update = (req, res) => {
+exports.updatePassword = (req, res) => {
     const { _id } = req.user;
     const { password } = req.body;
 
-    validateMongoDbId(_id);
+    //ObjectId.validate(_id);
 
     if (!password) return response.error(res, 400, 'Password is required');
 
@@ -58,7 +57,7 @@ exports.token = (req, res) => {
             foundUser = user;
             return user.createPasswordResetToken();
         })
-        .then((token) => foundUser.save().then(() => token);)
+        .then((token) => foundUser.save().then(() => token))
         .then((token) => {
             const resetURL = `${req.protocol}://${req.get('host')}/reset-password/${token}`;
             const mailService = req.app.get('mailService');
@@ -71,14 +70,11 @@ exports.token = (req, res) => {
             });
         })
         .then(() => {
-            return response.success(
-                res,
+            return response.success(res,
                 {
                     message: 'Password reset link sent to email',
                     expiresIn: '10 minutes'
-                },
-                200,
-                'Password reset email sent successfully'
+                },200,'Password reset email sent successfully'
             );
         })
         .catch((error) => {
@@ -86,8 +82,12 @@ exports.token = (req, res) => {
                 foundUser.passwordResetToken = undefined;
                 foundUser.passwordResetExpires = undefined;
                 foundUser.save()
-                    .then(() => response.error(res, 500, 'Error sending password reset email', error.message))
-                    .catch((saveError) => response.error(res, 500, 'Error sending password reset email', error.message));
+                    .then(() => {
+                        return response.error(res, 500, 'Error sending password reset email', error.message)
+                    })
+                    .catch((saveError) => {
+                        return response.error(res, 500, 'Error sending password reset email', error.message)
+                    });
             } else {
                 return response.error(res, 500, 'Error processing password reset request', error.message);
             }
@@ -95,20 +95,14 @@ exports.token = (req, res) => {
 };
 
 exports.reset = (req, res) => {
+    let foundUser;
     const { password } = req.body;
     const { token } = req.params;
 
-    if (!password) {
-        return response.error(res, 400, 'New password is required');
-    }
-
-    if (!token) {
-        return response.error(res, 400, 'Reset token is required');
-    }
+    if (!password) return response.error(res, 400, 'New password is required');
+    if (!token)  return response.error(res, 400, 'Reset token is required');
 
     const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
-
-    let foundUser;
 
     User.findOne({
         passwordResetToken: hashedToken,
@@ -139,12 +133,8 @@ exports.reset = (req, res) => {
                 });
 
             const userResponse = savedUser.toJSON();
-            return response.success(
-                res,
-                { user: userResponse },
-                200,
-                'Password reset successfully'
-            );
+            return response.success(res,
+                { user: userResponse }, 200, 'Password reset successfully');
         })
         .catch((error) => {
             return response.error(res, 500, 'Error resetting password', error.message);
@@ -153,6 +143,6 @@ exports.reset = (req, res) => {
 
 module.exports = {
     resetPassword: exports.reset,
-    updatePassword: exports.update,
+    updatePassword: exports.updatePassword,
     forgotPasswordToken: exports.token,
 };

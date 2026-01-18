@@ -4,9 +4,9 @@ module.exports = (fear) => {
     const router = fear.createRouter();
     const handler = fear.getHandler();
 
-    router.post('/forgot', Password.forgot);
-    router.post('/reset/:token', Password.reset);
-    router.put('/update', handler.authenticate, Password.update);
+    router.post('/forgot-password', Password.resetPassword);
+    router.post('/reset/:token', Password.forgotPasswordToken);
+    router.put('/update', Password.updatePassword);
 
     return router;
 };
