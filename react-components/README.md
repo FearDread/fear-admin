@@ -10,9 +10,11 @@ npm install
 
 ## Components
 
-- **Calendar** - Main component
-- **Navigation** - Extracted component
-- **Header** - Extracted component
+- **AuthenticationForgotPassword** - Main component
+- **Navigation1** - Extracted component
+- **Navigation2** - Extracted component
+- **Navigation3** - Extracted component
+- **Navigation4** - Extracted component
 - **Footer** - Extracted component
 
 ## Manual Review Required

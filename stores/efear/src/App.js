@@ -1,6 +1,6 @@
 // App.jsx
 import React, { Suspense, lazy } from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import PrivateRoute from "./contexts/routes/PrivateRoute";
 import PublicRoute from "./contexts/routes/PublicRoute";
 // Layout
@@ -11,7 +11,7 @@ import Home from './pages/Home';
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 
-//import Checkout from "./pages/checkout/checkout";
+// Checkout Pages
 import CheckoutShipping from "./pages/checkout/CheckoutShipping";
 import CheckoutPayment from "./pages/checkout/CheckoutPayment";
 import CheckoutDetails from "./pages/checkout/CheckoutDetails";
@@ -36,7 +36,7 @@ const Orders = lazy(() => import("./pages/account/Orders"));
 const UserDetails = lazy(() => import("./pages/account/UserDetails"));
 const AccountPayment = lazy(() => import("./pages/account/PaymentMethods"));
 const Addresses = lazy(() => import("./pages/account/Addresses"));
-//const ForgotPassword = lazy(() => import("./pages/auth/ForgotPassword"));
+const ForgotPassword = lazy(() => import("./pages/auth/ForgotPassword"));
 
 const TermsOfService = lazy(() => import("./pages/policies/Terms"));
 const PrivacyPolicy = lazy(() => import("./pages/policies/Privacy"));
@@ -96,7 +96,7 @@ const routeConfig = {
   auth: [
     { path: "/login", element: <Login /> },
     { path: "/register", element: <Register /> },
-    //{ path: "/forgot-password", element: <ForgotPassword /> },
+    { path: "/forgot-password", element: <ForgotPassword /> },
   ],
   protected: [
     { path: "/account/dashboard", element: <Dashboard /> },
@@ -120,7 +120,6 @@ const routeConfig = {
  */
 export const App = () => {
   return (
-    <BrowserRouter>
       <Suspense fallback={<LoadingFallback />}>
         <Routes>
           <Route path="/" exact element={<Layout />}>
@@ -145,7 +144,6 @@ export const App = () => {
           </Route>
         </Routes>
       </Suspense>
-    </BrowserRouter>
   );
 };
 

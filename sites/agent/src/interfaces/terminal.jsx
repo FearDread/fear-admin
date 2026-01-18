@@ -13,7 +13,7 @@ export default function SecurityAgentTerminal() {
   const [currentPath, setCurrentPath] = useState('~');
   const [activeServices, setActiveServices] = useState(0);
   const [agentInitialized, setAgentInitialized] = useState(false);
-  const [apiBaseUrl, setApiBaseUrl] = useState('https://fear.dedyn.io/fear/api/agent');
+  const [apiBaseUrl, setApiBaseUrl] = useState('http://localhost:4000/fear/api/agent');
   const terminalEndRef = useRef(null);
   const inputRef = useRef(null);
 
