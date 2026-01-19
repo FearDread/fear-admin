@@ -5,6 +5,8 @@ import logger from 'redux-logger';
 // Import reducers
 import user, { restoreUser } from './user/slice';
 import product from './products/slice';
+import category from "./categories/slice";
+import brand from "./brands/slice";
 
 
 export const initializeStore = () => {
@@ -13,13 +15,14 @@ export const initializeStore = () => {
       reducer: {
     users: user.reducer,
     products: product.reducer,
+    categories: category.reducer,
+    brands: brand.reducer,
     /* Add other reducers here
       addresses: address.reducer,
       orders: order.reducer,
       payments: payment.reducer,
       products: product.reducer,
-      categories: category.reducer,
-      brands: brand.reducer,
+
       users: user.reducer,
       cart: cart.reducer,
       wishlist: wishlist.reducer,

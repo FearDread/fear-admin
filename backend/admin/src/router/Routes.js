@@ -78,7 +78,8 @@ export const routes = {
   ],
   admin: [
     { path: "/admin/dashboard", label: "Dashboard", layout: "/admin", icon: 'zmdi zmdi-view-dashboard', element: <Dashboard /> },
-    { path: "/admin/products", label: "Products", lalyout: "/admin", icon: "zmdi zmdi-view-products", element: <ProductList /> },
+    { path: "/admin/products", label: "Products", lalyout: "/admin", icon: "zmdi zmdi-view-calendar", element: <ProductList /> },
+    { path: "/admin/product/new", layout: '/admin', element: <Wizard /> }
   ],
 };
 

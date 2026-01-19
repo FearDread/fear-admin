@@ -7,16 +7,7 @@ export const SpotLight = (props) => {
         
         <>
         <div className="spotlight-container">
-                        <div className="tmp-banner-circle">
-                <img class="tmp-banner-circle-1" src="/assets/images/circle-iamge/01.svg" alt="circle-image"/>
-                <img class="tmp-banner-circle-2" src="/assets/images/circle-iamge/02.svg" alt="circle-image"/>
-                <img class="tmp-banner-circle-3" src="/assets/images/circle-iamge/03.svg" alt="circle-image"/>
-                <img class="tmp-banner-circle-4" src="/assets/images/circle-iamge/04.svg" alt="circle-image"/>
-            
-                <img class="tmp-banner-circle-2" src="/assets/images/circle-iamge/02.svg" alt="circle-image"/>
-                <img class="tmp-banner-circle-3" src="/assets/images/circle-iamge/03.svg" alt="circle-image"/>
-               
-            </div>
+
                        <div className="separator-animated-border animated-true"></div>
             <div className="slider-bg-light">
                 

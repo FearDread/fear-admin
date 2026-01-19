@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Select from "react-select";
 
 // reactstrap components
-import { FormGroup, Input, Row, Col, InputGroup, InputGroupAddon, InputGroupText } from "reactstrap";
+import { FormGroup, Input, Row, Col, InputGroup, InputGroupText } from "reactstrap";
 
 const Step3 = React.forwardRef((props, ref) => {
   const [country, setCountryCode] = useState();
@@ -30,11 +30,11 @@ const Step3 = React.forwardRef((props, ref) => {
           <Col sm="5">
             <InputGroup
               className="input-group-focus">
-              <InputGroupAddon addonType="prepend">
+
                 <InputGroupText>
                   <i className="tim-icons icon-single-02" />
                 </InputGroupText>
-              </InputGroupAddon>
+
               <Input
                 name="price"
                 placeholder="Total Price ..."
@@ -46,11 +46,11 @@ const Step3 = React.forwardRef((props, ref) => {
           <Col sm="5">
             <InputGroup
               className="input-group-focus">
-              <InputGroupAddon addonType="prepend">
+
                 <InputGroupText>
                   <i className="tim-icons icon-single-02" />
                 </InputGroupText>
-              </InputGroupAddon>
+
               <Input
                 name="# In Stock"
                 placeholder="# In Stock"
@@ -62,11 +62,11 @@ const Step3 = React.forwardRef((props, ref) => {
                     <Col sm="5">
             <InputGroup
               className="input-group-focus">
-              <InputGroupAddon addonType="prepend">
+
                 <InputGroupText>
                   <i className="tim-icons icon-single-02" />
                 </InputGroupText>
-              </InputGroupAddon>
+
               <Input
                 name="country"
                 placeholder="Country Code"
@@ -78,11 +78,11 @@ const Step3 = React.forwardRef((props, ref) => {
           <Col sm="5">
             <InputGroup
               className="input-group-focus">
-              <InputGroupAddon addonType="prepend">
+
                 <InputGroupText>
                   <i className="tim-icons icon-single-02" />
                 </InputGroupText>
-              </InputGroupAddon>
+
               <Input
                 name="discount"
                 placeholder="Discount %"
