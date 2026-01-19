@@ -1,381 +1,449 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  Card,
+  CardHeader,
+  CardBody,
+  CardTitle,
+  Row,
+  Col,
+  Badge,
+  Button,
+} from 'reactstrap';
 
+// Import order slice
+import {
+  fetchOrders,
+  fetchRecentOrders,
+  selectAllOrders,
+  selectRecentOrders,
+  selectOrdersLoading,
+  selectOrderStatistics,
+  selectPendingOrders,
+  selectShippedOrders,
+  selectDeliveredOrders,
+} from '../features/orders/slice';
 
-const RecentOrdersTable = () => {
-  const orders = [
-    { product: 'Iphone 5', id: '#9405822', amount: '$1250.00', date: '03 Aug 2017', progress: 90 },
-    { product: 'Earphone GL', id: '#9405820', amount: '$1500.00', date: '03 Aug 2017', progress: 60 },
-    { product: 'HD Hand Camera', id: '#9405830', amount: '$1400.00', date: '03 Aug 2017', progress: 70 },
-    { product: 'Clasic Shoes', id: '#9405825', amount: '$1200.00', date: '03 Aug 2017', progress: 100 },
-    { product: 'Hand Watch', id: '#9405840', amount: '$1800.00', date: '03 Aug 2017', progress: 40 },
-    { product: 'Clasic Shoes', id: '#9405825', amount: '$1200.00', date: '03 Aug 2017', progress: 100 }
-  ];
+// Import product slice
+import {
+  fetchProducts,
+  selectProducts,
+  selectLoading as selectProductsLoading,
+} from '../features/products/slice';
+
+import Loader from '../components/Loader/Loading';
+
+const Dashboard = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  // Redux selectors
+  const orders = useSelector(selectAllOrders);
+  const recentOrders = useSelector(selectRecentOrders);
+  const ordersLoading = useSelector(selectOrdersLoading);
+  const statistics = useSelector(selectOrderStatistics);
+  const pendingOrders = useSelector(selectPendingOrders);
+  const shippedOrders = useSelector(selectShippedOrders);
+  const deliveredOrders = useSelector(selectDeliveredOrders);
+  const products = useSelector(selectProducts);
+  const productsLoading = useSelector(selectProductsLoading);
+
+  // Order status configuration
+  const ORDER_STATUS = {
+    pending: { color: 'warning', icon: 'fa-clock-o', label: 'Pending' },
+    processing: { color: 'info', icon: 'fa-refresh', label: 'Processing' },
+    shipped: { color: 'primary', icon: 'fa-truck', label: 'Shipped' },
+    delivered: { color: 'success', icon: 'fa-check-circle', label: 'Delivered' },
+    cancelled: { color: 'danger', icon: 'fa-times-circle', label: 'Cancelled' },
+  };
+
+  // Fetch data on mount
+  useEffect(() => {
+    dispatch(fetchOrders());
+    dispatch(fetchRecentOrders(6));
+    dispatch(fetchProducts());
+  }, [dispatch]);
+
+  // Calculate total revenue from orders
+  const totalRevenue = useMemo(() => {
+    if (!orders || orders.length === 0) return 0;
+    return orders.reduce((sum, order) => sum + (order.total || 0), 0);
+  }, [orders]);
+
+  // Calculate low stock products
+  const lowStockProducts = useMemo(() => {
+    if (!products || products.length === 0) return 0;
+    return products.filter(p => p.quantity < 10).length;
+  }, [products]);
+
+  // Format currency
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+    }).format(amount || 0);
+  };
+
+  // Format date
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
+  };
+
+  // Show loader while fetching initial data
+  if ((ordersLoading || productsLoading) && (!orders || orders.length === 0)) {
+    return <Loader />;
+  }
 
   return (
-    <div className="card">
-      <div className="card-header bg-dark text-white d-flex justify-content-between align-items-center">
-        <span>Recent Order Tables</span>
-        <button className="btn btn-sm btn-link text-white">
-          <i className="fas fa-ellipsis-v"></i>
-        </button>
-      </div>
-      <div className="table-responsive">
-        <table className="table table-hover mb-0">
-          <thead className="bg-secondary text-white">
-            <tr>
-              <th>Product</th>
-              <th>Photo</th>
-              <th>Product ID</th>
-              <th>Amount</th>
-              <th>Date</th>
-              <th>Shipping</th>
-            </tr>
-          </thead>
-          <tbody>
-            {orders.map((order, idx) => (
-              <tr key={idx}>
-                <td>{order.product}</td>
-                <td>
-                  <img src="https://via.placeholder.com/50x50" alt={order.product} style={{ width: '50px', height: '50px' }} />
-                </td>
-                <td>{order.id}</td>
-                <td>{order.amount}</td>
-                <td>{order.date}</td>
-                <td>
-                  <div className="progress" style={{ height: '3px' }}>
-                    <div className="progress-bar" style={{ width: `${order.progress}%` }}></div>
+    <div className="container-fluid">
+      {/* Statistics Cards */}
+      <Row className="mb-4">
+        <Col lg="3" md="6">
+          <Card className="card-stats">
+            <CardBody>
+              <Row>
+                <Col xs="5">
+                  <div className="icon-big text-center circle-1 bg-primary-light2">
+                    <i className="fa fa-shopping-cart text-primary"></i>
                   </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+                </Col>
+                <Col xs="7">
+                  <div className="numbers">
+                    <p className="card-category text-light-2">Total Orders</p>
+                    <CardTitle tag="h3" className="text-white">
+                      {orders?.length || 0}
+                    </CardTitle>
+                    <p className="mb-0">
+                      <span className="text-success">
+                        <i className="fa fa-arrow-up mr-1"></i>
+                        4.2%
+                      </span>
+                    </p>
+                  </div>
+                </Col>
+              </Row>
+            </CardBody>
+          </Card>
+        </Col>
+
+        <Col lg="3" md="6">
+          <Card className="card-stats">
+            <CardBody>
+              <Row>
+                <Col xs="5">
+                  <div className="icon-big text-center circle-1 bg-success-light2">
+                    <i className="fa fa-dollar text-success"></i>
+                  </div>
+                </Col>
+                <Col xs="7">
+                  <div className="numbers">
+                    <p className="card-category text-light-2">Total Revenue</p>
+                    <CardTitle tag="h3" className="text-white">
+                      {formatCurrency(totalRevenue).replace('.00', '')}
+                    </CardTitle>
+                    <p className="mb-0">
+                      <span className="text-success">
+                        <i className="fa fa-arrow-up mr-1"></i>
+                        1.2%
+                      </span>
+                    </p>
+                  </div>
+                </Col>
+              </Row>
+            </CardBody>
+          </Card>
+        </Col>
+
+        <Col lg="3" md="6">
+          <Card className="card-stats">
+            <CardBody>
+              <Row>
+                <Col xs="5">
+                  <div className="icon-big text-center circle-1 bg-info-light2">
+                    <i className="fa fa-shopping-bag text-info"></i>
+                  </div>
+                </Col>
+                <Col xs="7">
+                  <div className="numbers">
+                    <p className="card-category text-light-2">Products</p>
+                    <CardTitle tag="h3" className="text-white">
+                      {products?.length || 0}
+                    </CardTitle>
+                    <p className="mb-0">
+                      <span className="text-warning">
+                        <i className="fa fa-exclamation-triangle mr-1"></i>
+                        {lowStockProducts} low stock
+                      </span>
+                    </p>
+                  </div>
+                </Col>
+              </Row>
+            </CardBody>
+          </Card>
+        </Col>
+
+        <Col lg="3" md="6">
+          <Card className="card-stats">
+            <CardBody>
+              <Row>
+                <Col xs="5">
+                  <div className="icon-big text-center circle-1 bg-warning-light2">
+                    <i className="fa fa-clock-o text-warning"></i>
+                  </div>
+                </Col>
+                <Col xs="7">
+                  <div className="numbers">
+                    <p className="card-category text-light-2">Pending</p>
+                    <CardTitle tag="h3" className="text-white">
+                      {pendingOrders?.length || 0}
+                    </CardTitle>
+                    <p className="mb-0">
+                      <span className="text-info">
+                        <i className="fa fa-info-circle mr-1"></i>
+                        Needs attention
+                      </span>
+                    </p>
+                  </div>
+                </Col>
+              </Row>
+            </CardBody>
+          </Card>
+        </Col>
+      </Row>
+
+      {/* Order Status Overview */}
+      <Row className="mb-4">
+        <Col lg="8">
+          <Card className="media-object">
+            <CardHeader>
+              <CardTitle tag="h4" className="mb-0">
+                <i className="fa fa-bar-chart mr-2"></i>
+                Order Status Overview
+              </CardTitle>
+              <small className="text-light-2">Current order distribution</small>
+            </CardHeader>
+            <CardBody>
+              <Row>
+                <Col md="4">
+                  <div className="text-center p-3">
+                    <div className="icon-big text-center circle-1 bg-warning-light2 mx-auto mb-3">
+                      <i className="fa fa-clock-o text-warning"></i>
+                    </div>
+                    <h3 className="text-white mb-1">{pendingOrders?.length || 0}</h3>
+                    <p className="text-light-2 mb-0">Pending Orders</p>
+                  </div>
+                </Col>
+                <Col md="4">
+                  <div className="text-center p-3">
+                    <div className="icon-big text-center circle-1 bg-primary-light2 mx-auto mb-3">
+                      <i className="fa fa-truck text-primary"></i>
+                    </div>
+                    <h3 className="text-white mb-1">{shippedOrders?.length || 0}</h3>
+                    <p className="text-light-2 mb-0">Shipped Orders</p>
+                  </div>
+                </Col>
+                <Col md="4">
+                  <div className="text-center p-3">
+                    <div className="icon-big text-center circle-1 bg-success-light2 mx-auto mb-3">
+                      <i className="fa fa-check-circle text-success"></i>
+                    </div>
+                    <h3 className="text-white mb-1">{deliveredOrders?.length || 0}</h3>
+                    <p className="text-light-2 mb-0">Delivered Orders</p>
+                  </div>
+                </Col>
+              </Row>
+            </CardBody>
+          </Card>
+        </Col>
+
+        <Col lg="4">
+          <Card className="media-object">
+            <CardHeader>
+              <CardTitle tag="h4" className="mb-0">
+                <i className="fa fa-line-chart mr-2"></i>
+                Quick Stats
+              </CardTitle>
+              <small className="text-light-2">Performance metrics</small>
+            </CardHeader>
+            <CardBody>
+              <div className="mb-3 pb-3 border-bottom border-light-3">
+                <div className="d-flex justify-content-between align-items-center">
+                  <span className="text-light-1">Average Order Value</span>
+                  <span className="text-success font-weight-bold">
+                    {formatCurrency(totalRevenue / (orders?.length || 1))}
+                  </span>
+                </div>
+              </div>
+              <div className="mb-3 pb-3 border-bottom border-light-3">
+                <div className="d-flex justify-content-between align-items-center">
+                  <span className="text-light-1">Completion Rate</span>
+                  <span className="text-info font-weight-bold">
+                    {orders?.length > 0
+                      ? Math.round(
+                          ((deliveredOrders?.length || 0) / orders.length) * 100
+                        )
+                      : 0}
+                    %
+                  </span>
+                </div>
+              </div>
+              <div>
+                <div className="d-flex justify-content-between align-items-center">
+                  <span className="text-light-1">Active Products</span>
+                  <span className="text-white font-weight-bold">
+                    {products?.filter(p => p.quantity > 0).length || 0}
+                  </span>
+                </div>
+              </div>
+            </CardBody>
+          </Card>
+        </Col>
+      </Row>
+
+      {/* Recent Orders Table */}
+      <Row>
+        <Col md="12">
+          <Card className="media-object">
+            <CardHeader className="d-flex justify-content-between align-items-center">
+              <div>
+                <CardTitle tag="h4" className="mb-0">
+                  <i className="fa fa-shopping-cart mr-2"></i>
+                  Recent Orders
+                </CardTitle>
+                <small className="text-light-2">Latest customer orders</small>
+              </div>
+              <Button
+                color="primary"
+                size="sm"
+                className="btn-round"
+                onClick={() => navigate('/admin/orders')}
+              >
+                <i className="fa fa-list mr-2"></i>
+                View All
+              </Button>
+            </CardHeader>
+            <CardBody>
+              {recentOrders && recentOrders.length > 0 ? (
+                <div className="table-responsive">
+                  <table className="table table-hover mb-0">
+                    <thead className="bg-secondary text-white">
+                      <tr>
+                        <th>Order #</th>
+                        <th>Customer</th>
+                        <th>Status</th>
+                        <th>Items</th>
+                        <th>Total</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {recentOrders.map((order) => {
+                        const statusConfig =
+                          ORDER_STATUS[order.orderStatus] || ORDER_STATUS.pending;
+                        return (
+                          <tr key={order._id}>
+                            <td>
+                              <div className="d-flex flex-column">
+                                <span className="text-white font-weight-bold">
+                                  #{order.orderNumber}
+                                </span>
+                                <code className="text-info small">
+                                  {order._id?.substring(0, 8)}
+                                </code>
+                              </div>
+                            </td>
+                            <td>
+                              <div className="d-flex flex-column">
+                                <span className="text-white">
+                                  {order.customerName || 'Guest'}
+                                </span>
+                                <small className="text-light-2">
+                                  {order.customerEmail}
+                                </small>
+                              </div>
+                            </td>
+                            <td>
+                              <Badge color={statusConfig.color} pill className="px-3">
+                                <i className={`fa ${statusConfig.icon} mr-2`}></i>
+                                {statusConfig.label}
+                              </Badge>
+                            </td>
+                            <td>
+                              <Badge color="light" pill>
+                                {order.itemsCount || order.items?.length || 0} items
+                              </Badge>
+                            </td>
+                            <td>
+                              <span className="text-success font-weight-bold">
+                                {formatCurrency(order.total)}
+                              </span>
+                            </td>
+                            <td>
+                              <div className="d-flex flex-column">
+                                <span className="text-light-1">
+                                  {formatDate(order.orderDate)}
+                                </span>
+                                <small className="text-light-2">
+                                  {new Date(order.orderDate).toLocaleTimeString(
+                                    'en-US',
+                                    {
+                                      hour: '2-digit',
+                                      minute: '2-digit',
+                                    }
+                                  )}
+                                </small>
+                              </div>
+                            </td>
+                            <td>
+                              <Button
+                                color="info"
+                                size="sm"
+                                className="btn-round"
+                                onClick={() =>
+                                  navigate(`/admin/order/view/${order._id}`)
+                                }
+                                title="View Order"
+                              >
+                                <i className="fa fa-eye"></i>
+                              </Button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className="text-center py-5">
+                  <i
+                    className="fa fa-shopping-cart"
+                    style={{ fontSize: '64px', opacity: 0.3 }}
+                  ></i>
+                  <p className="text-light-2 mt-3">No recent orders found</p>
+                  <Button
+                    color="primary"
+                    onClick={() => navigate('/admin/order/new')}
+                    className="btn-round mt-3"
+                  >
+                    <i className="fa fa-plus mr-2"></i>
+                    Create First Order
+                  </Button>
+                </div>
+              )}
+            </CardBody>
+          </Card>
+        </Col>
+      </Row>
     </div>
   );
 };
 
-
-const Dashboard = function () {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-
-  const statsData = [
-    { value: '9526', label: 'Total Orders', icon: 'fas fa-shopping-cart', change: '+4.2%', progress: 55 },
-    { value: '8323', label: 'Total Revenue', icon: 'fas fa-dollar-sign', change: '+1.2%', progress: 55 },
-    { value: '6200', label: 'Visitors', icon: 'fas fa-eye', change: '+5.2%', progress: 55 },
-    { value: '5630', label: 'Messages', icon: 'fas fa-leaf', change: '+2.2%', progress: 55 }
-  ];
-
-  return (
-    <>
-      <div className="container-fluid">
-        <div className="card mt-3 media-object">
-          <div className="card-content">
-            <div className="row row-group m-0">
-              <div className="col-12 col-lg-6 col-xl-3 border-light">
-                <div className="card-body">
-                  <h5 className="text-white mb-0">9526 <span className="float-right"><i className="fa fa-shopping-cart"></i></span></h5>
-                  <div className="progress my-3" style={{ 'height': '3px' }}>
-                    <div className="progress-bar" style={{ 'width': '55%' }}></div>
-                  </div>
-                  <p className="mb-0 text-white small-font">Total Orders <span className="float-right">+4.2% <i className="zmdi zmdi-long-arrow-up"></i></span></p>
-                </div>
-              </div>
-              <div className="col-12 col-lg-6 col-xl-3 border-light">
-                <div className="card-body">
-                  <h5 className="text-white mb-0">8323 <span className="float-right"><i className="fa fa-usd"></i></span></h5>
-                  <div className="progress my-3" style={{ 'height': '3px' }}>
-                    <div className="progress-bar" style={{ 'width': '55%' }}></div>
-                  </div>
-                  <p className="mb-0 text-white small-font">Total Revenue <span className="float-right">+1.2% <i className="zmdi zmdi-long-arrow-up"></i></span></p>
-                </div>
-              </div>
-              <div className="col-12 col-lg-6 col-xl-3 border-light">
-                <div className="card-body">
-                  <h5 className="text-white mb-0">6200 <span className="float-right"><i className="fa fa-eye"></i></span></h5>
-                  <div className="progress my-3" style={{ 'height': '3px' }}>
-                    <div className="progress-bar" style={{ 'width': '55%' }}></div>
-                  </div>
-                  <p className="mb-0 text-white small-font">Visitors <span className="float-right">+5.2% <i className="zmdi zmdi-long-arrow-up"></i></span></p>
-                </div>
-              </div>
-              <div className="col-12 col-lg-6 col-xl-3 border-light">
-                <div className="card-body">
-                  <h5 className="text-white mb-0">5630 <span className="float-right"><i className="fa fa-envira"></i></span></h5>
-                  <div className="progress my-3" style={{ 'height': '3px' }}>
-                    <div className="progress-bar" style={{ 'width': '55%' }}></div>
-                  </div>
-                  <p className="mb-0 text-white small-font">Messages <span className="float-right">+2.2% <i className="zmdi zmdi-long-arrow-up"></i></span></p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="row">
-          <div className="col-12 col-lg-8 col-xl-8">
-            <div className="card media-object">
-              <div className="card-header">Site Traffic
-                <div className="card-action">
-                  <div className="dropdown">
-                    <a href="javascript:void();" className="dropdown-toggle dropdown-toggle-nocaret" data-toggle="dropdown">
-                      <i className="icon-options"></i>
-                    </a>
-                    <div className="dropdown-menu dropdown-menu-right">
-                      <a className="dropdown-item" href="javascript:void();">Action</a>
-                      <a className="dropdown-item" href="javascript:void();">Another action</a>
-                      <a className="dropdown-item" href="javascript:void();">Something else here</a>
-                      <div className="dropdown-divider"></div>
-                      <a className="dropdown-item" href="javascript:void();">Separated link</a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="card-body">
-                <ul className="list-inline">
-                  <li className="list-inline-item"><i className="fa fa-circle mr-2 text-white"></i>New Visitor</li>
-                  <li className="list-inline-item"><i className="fa fa-circle mr-2 text-light"></i>Old Visitor</li>
-                </ul>
-                <div className="chart-container-1">
-                  <canvas id="chart1"></canvas>
-                </div>
-              </div>
-              <div className="row m-0 row-group text-center border-top border-light-3">
-                <div className="col-12 col-lg-4">
-                  <div className="p-3">
-                    <h5 className="mb-0">45.87M</h5>
-                    <small className="mb-0">Overall Visitor <span> <i className="fa fa-arrow-up"></i> 2.43%</span></small>
-                  </div>
-                </div>
-                <div className="col-12 col-lg-4">
-                  <div className="p-3">
-                    <h5 className="mb-0">15:48</h5>
-                    <small className="mb-0">Visitor Duration <span> <i className="fa fa-arrow-up"></i> 12.65%</span></small>
-                  </div>
-                </div>
-                <div className="col-12 col-lg-4">
-                  <div className="p-3">
-                    <h5 className="mb-0">245.65</h5>
-                    <small className="mb-0">Pages/Visit <span> <i className="fa fa-arrow-up"></i> 5.62%</span></small>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="col-12 col-lg-4 col-xl-4">
-            <div className="card">
-              <div className="card-header">Weekly sales
-                <div className="card-action">
-                  <div className="dropdown">
-                    <a href="javascript:void();" className="dropdown-toggle dropdown-toggle-nocaret" data-toggle="dropdown">
-                      <i className="icon-options"></i>
-                    </a>
-                    <div className="dropdown-menu dropdown-menu-right">
-                      <a className="dropdown-item" href="javascript:void();">Action</a>
-                      <a className="dropdown-item" href="javascript:void();">Another action</a>
-                      <a className="dropdown-item" href="javascript:void();">Something else here</a>
-                      <div className="dropdown-divider"></div>
-                      <a className="dropdown-item" href="javascript:void();">Separated link</a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="card-body">
-                <div className="chart-container-2">
-                  <canvas id="chart2"></canvas>
-                </div>
-              </div>
-              <div className="table-responsive">
-                <table className="table align-items-center">
-                  <tbody>
-                    <tr>
-                      <td><i className="fa fa-circle text-white mr-2"></i> Direct</td>
-                      <td>$5856</td>
-                      <td>+55%</td>
-                    </tr>
-                    <tr>
-                      <td><i className="fa fa-circle text-light-1 mr-2"></i>Affiliate</td>
-                      <td>$2602</td>
-                      <td>+25%</td>
-                    </tr>
-                    <tr>
-                      <td><i className="fa fa-circle text-light-2 mr-2"></i>E-mail</td>
-                      <td>$1802</td>
-                      <td>+15%</td>
-                    </tr>
-                    <tr>
-                      <td><i className="fa fa-circle text-light-3 mr-2"></i>Other</td>
-                      <td>$1105</td>
-                      <td>+5%</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="row">
-          <div className="col-12 col-lg-12">
-            <div className="card">
-              <div className="card-header">Recent Order Tables
-                <div className="card-action">
-                  <div className="dropdown">
-                    <a href="javascript:void();" className="dropdown-toggle dropdown-toggle-nocaret" data-toggle="dropdown">
-                      <i className="icon-options"></i>
-                    </a>
-                    <div className="dropdown-menu dropdown-menu-right">
-                      <a className="dropdown-item" href="javascript:void();">Action</a>
-                      <a className="dropdown-item" href="javascript:void();">Another action</a>
-                      <a className="dropdown-item" href="javascript:void();">Something else here</a>
-                      <div className="dropdown-divider"></div>
-                      <a className="dropdown-item" href="javascript:void();">Separated link</a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              {/* 
-              <div className="table-responsive">
-                <table className="table align-items-center table-flush table-borderless">
-                  <thead>
-                    <tr>
-                      <th>Product</th>
-                      <th>Photo</th>
-                      <th>Product ID</th>
-                      <th>Amount</th>
-                      <th>Date</th>
-                      <th>Shipping</th>
-                    </tr>
-                  </thead>
-                  <tbody><tr>
-                    <td>Iphone 5</td>
-                    <td><img src="https://via.placeholder.com/110x110" className="product-img" alt="product img" /></td>
-                    <td>#9405822</td>
-                    <td>$ 1250.00</td>
-                    <td>03 Aug 2017</td>
-                    <td><div className="progress shadow" style={{ 'height': '3px' }}>
-                      <div className="progress-bar" role="progressbar" style={{ 'width': '90%' }}></div>
-                    </div></td>
-                  </tr>
-                    <tr>
-                      <td>Earphone GL</td>
-                      <td><img src="https://via.placeholder.com/110x110" className="product-img" alt="product img" /></td>
-                      <td>#9405820</td>
-                      <td>$ 1500.00</td>
-                      <td>03 Aug 2017</td>
-                      <td><div className="progress shadow" style={{ 'height': '3px' }}>
-                        <div className="progress-bar" role="progressbar" style={{ 'width': '60%' }}></div>
-                      </div></td>
-                    </tr>
-                    <tr>
-                      <td>HD Hand Camera</td>
-                      <td><img src="https://via.placeholder.com/110x110" className="product-img" alt="product img" /></td>
-                      <td>#9405830</td>
-                      <td>$ 1400.00</td>
-                      <td>03 Aug 2017</td>
-                      <td><div className="progress shadow" style={{ 'height': '3px' }}>
-                        <div className="progress-bar" role="progressbar" style={{ 'width': '70%' }}></div>
-                      </div></td>
-                    </tr>
-                    <tr>
-                      <td>Clasic Shoes</td>
-                      <td><img src="https://via.placeholder.com/110x110" className="product-img" alt="product img" /></td>
-                      <td>#9405825</td>
-                      <td>$ 1200.00</td>
-                      <td>03 Aug 2017</td>
-                      <td><div className="progress shadow" style={{ 'height': '3px' }}>
-                        <div className="progress-bar" role="progressbar" style={{ 'width': '100%' }}></div>
-                      </div></td>
-                    </tr>
-                    <tr>
-                      <td>Hand Watch</td>
-                      <td><img src="https://via.placeholder.com/110x110" className="product-img" alt="product img" /></td>
-                      <td>#9405840</td>
-                      <td>$ 1800.00</td>
-                      <td>03 Aug 2017</td>
-                      <td><div className="progress shadow" style={{ 'height': '3px' }}>
-                        <div className="progress-bar" role="progressbar" style={{ 'width': '40%' }}></div>
-                      </div></td>
-                    </tr>
-                    <tr>
-                      <td>Clasic Shoes</td>
-                      <td><img src="https://via.placeholder.com/110x110" className="product-img" alt="product img" /></td>
-                      <td>#9405825</td>
-                      <td>$ 1200.00</td>
-                      <td>03 Aug 2017</td>
-                      <td><div className="progress shadow" style={{ 'height': '3px' }}>
-                        <div className="progress-bar" role="progressbar" style={{ 'width': '100%' }}></div>
-                      </div></td>
-                    </tr>
-                  </tbody></table>
-              </div>
-              */}
-            </div>
-          </div>
-        </div>
-        <div className="overlay toggle-menu"></div>
-      </div>
-    </>
-  )
-}
-
 export default Dashboard;
-/*
-<div className="bg-dark text-white min-vh-100">
-<Sidebar isOpen={sidebarOpen} />
- 
-<div style={{ marginLeft: sidebarOpen ? '250px' : '0', transition: 'margin-left 0.3s' }}>
-<Header onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
- 
-<div className="contai
-          <div className="row g-3 mt-2">
-    {statsData.map((stat, idx) => (
-      <StatsCard key={idx} {...stat} />
-    ))}
-  </div>
-
-  <div className="row g-3 mt-3">
-    <div className="col-12 col-lg-8">
-      <SiteTrafficCard />
-    </div>
-    <div className="col-12 col-lg-4">
-      <WeeklySalesCard />
-    </div>
-  </div>
-
-  <div className="row g-3 mt-3">
-    <div className="col-12">
-      <RecentOrdersTable />
-    </div>
-  </div>
-</div>
-
-<Footer />
-</div>
-
-<style>{`
-body {
-  background-color: #1a1a2e;
-  color: #ffffff;
-}
-.card {
-  background-color: #16213e;
-  border: 1px solid #0f3460;
-  color: #ffffff;
-}
-.table {
-  color: #ffffff;
-}
-.table tbody tr:hover {
-  background-color: #0f3460;
-}
-.bg-dark {
-  background-color: #0f3460 !important;
-}
-.btn-link:hover {
-  opacity: 0.8;
-}
-a:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-`}</style>
-</div>
-*/

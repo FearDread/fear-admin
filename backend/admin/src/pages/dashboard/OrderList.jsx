@@ -17,9 +17,9 @@ import {
   DropdownItem,
 } from "reactstrap";
 import ReactBSAlert from "react-bootstrap-sweetalert";
-import ReactTable from "components/ReactTable/ReactTable.js";
-import ReactTableActions from "components/ReactTable/ReactTableActions.js";
-import Loader from "components/Loader/Loading";
+import ReactTable from "../../components/ReactTable/ReactTable.jsx";
+import ReactTableActions from "../../components/ReactTable/ReactTableActions.js";
+import Loader from "../../components/Loader/Loading";
 
 // Import order slice actions and selectors
 import {
@@ -356,7 +356,7 @@ function OrderList() {
 
   return (
     <>
-      <div className="content">
+      <div className="container-fluid">
         {alert}
         
         {/* Statistics Cards */}
@@ -450,7 +450,7 @@ function OrderList() {
         {/* Orders Table */}
         <Row>
           <Col md="12">
-            <Card className="animated-border-box-glow">
+            <Card className="media-object">
               <CardHeader className="d-flex justify-content-between align-items-center">
                 <div>
                   <CardTitle tag="h4" className="mb-0">
@@ -472,8 +472,6 @@ function OrderList() {
                 </Button>
               </CardHeader>
 
-              {/* Separator Animation */}
-              <div className="separator-animated-border animated-true"></div>
 
               <CardBody>
                 {/* Search and Filter Section */}

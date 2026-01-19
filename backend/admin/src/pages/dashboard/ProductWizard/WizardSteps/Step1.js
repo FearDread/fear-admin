@@ -7,7 +7,8 @@ import {
   Col,
   FormGroup,
   Label,
-  FormFeedback
+  FormFeedback,
+  Button
 } from "reactstrap";
 
 /**
@@ -15,7 +16,9 @@ import {
  * Uses controlled components with validation
  */
 const Step1 = React.forwardRef((props, ref) => {
-  const { categories = [], brands = [], title, subtitle } = props;
+  const { categories = [], brands = [], title, subtitle, nextStep, 
+    previousStep, 
+    currentStep,  } = props;
 
   // Form state
   const [formData, setFormData] = useState({

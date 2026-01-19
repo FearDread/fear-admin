@@ -7,6 +7,7 @@ import Register from "../pages/auth/Register";
 /* ------------------------------------ */
 import Dashboard from "../pages/Dashboard";
 import ProductList from "../pages/dashboard/ProductList";
+import OrderList from "../pages/dashboard/OrderList";
 import Wizard from "../pages/dashboard/ProductWizard/Wizard";
 /*
 import Profile from "_dashboard/Profile.jsx";
@@ -78,7 +79,8 @@ export const routes = {
   ],
   admin: [
     { path: "/admin/dashboard", label: "Dashboard", layout: "/admin", icon: 'zmdi zmdi-view-dashboard', element: <Dashboard /> },
-    { path: "/admin/products", label: "Products", lalyout: "/admin", icon: "zmdi zmdi-view-calendar", element: <ProductList /> },
+    { path: "/admin/products", label: "Products", lalyout: "/admin", icon: "zmdi zmdi-view-book", element: <ProductList /> },
+        { path: "/admin/orders", label: "Orders", lalyout: "/admin", icon: "zmdi zmdi-view-calendar", element: <OrderList /> },
     { path: "/admin/product/new", layout: '/admin', element: <Wizard /> }
   ],
 };

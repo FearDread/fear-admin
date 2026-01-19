@@ -7,6 +7,7 @@ import user, { restoreUser } from './user/slice';
 import product from './products/slice';
 import category from "./categories/slice";
 import brand from "./brands/slice";
+import order from "./orders/slice";
 
 
 export const initializeStore = () => {
@@ -17,9 +18,10 @@ export const initializeStore = () => {
     products: product.reducer,
     categories: category.reducer,
     brands: brand.reducer,
+    orders: order.reducer,
     /* Add other reducers here
       addresses: address.reducer,
-      orders: order.reducer,
+
       payments: payment.reducer,
       products: product.reducer,
 
