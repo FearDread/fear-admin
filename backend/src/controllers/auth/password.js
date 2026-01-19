@@ -1,6 +1,6 @@
 const crypto = require('crypto');
-const User = require("../../models/user")
-//const ObjectId = require('../../libs/db');
+const User = require('../../models/user');
+//const { validateMongoDbId } = require('../utils/validateMongoDbId');
 
 // Response helper
 const response = {
@@ -11,6 +11,7 @@ const response = {
             data
         });
     },
+
     error: (res, statusCode, message, error = null) => {
         const responseObj = { success: false, message };
         if (error && process.env.NODE_ENV === "development") {
@@ -20,87 +21,132 @@ const response = {
     }
 };
 
+// Update password for authenticated user
 exports.updatePassword = (req, res) => {
     const { _id } = req.user;
-    const { password } = req.body;
+    const { currentPassword, newPassword } = req.body;
 
-    //ObjectId.validate(_id);
+    //validateMongoDbId(_id);
 
-    if (!password) return response.error(res, 400, 'Password is required');
+    if (!currentPassword || !newPassword) {
+        return response.error(res, 400, 'Current password and new password are required');
+    }
 
     User.findById(_id)
         .then((user) => {
-            if (!user) return response.error(res, 404, 'User not found');
+            if (!user) {
+                return response.error(res, 404, 'User not found');
+            }
 
-            user.password = password;
-            return user.save();
+            // Verify current password
+            return user.isPasswordMatched(currentPassword)
+                .then((isMatch) => {
+                    if (!isMatch) {
+                        return response.error(res, 401, 'Current password is incorrect');
+                    }
+
+                    user.password = newPassword;
+                    return user.save();
+                })
+                .then((updatedUser) => {
+                    // Send confirmation email
+                    const mailService = req.app.get('mailService');
+                    
+                    return mailService.sendEmail({
+                        to: updatedUser.email,
+                        subject: 'Password Changed Successfully',
+                        html: mailService.templates.passwordResetSuccessTemplate(updatedUser.email),
+                        text: mailService.templates.generatePlainText({ email: updatedUser.email }, 'passwordResetSuccess')
+                    })
+                    .then(() => {
+                        const userResponse = updatedUser.toJSON();
+                        return response.success(res, { user: userResponse }, 200, 'Password updated successfully');
+                    })
+                    .catch((emailError) => {
+                        // Log error but don't fail the password update
+                        console.error('Failed to send confirmation email:', emailError);
+                        const userResponse = updatedUser.toJSON();
+                        return response.success(res, { user: userResponse }, 200, 'Password updated successfully');
+                    });
+                });
         })
-        .then((updatedUser) => {
-            const userResponse = updatedUser.toJSON();
-            return response.success(res, { user: userResponse }, 200, 'Password updated successfully');
-        })
-        .catch((err) => {
-            return response.error(res, 500, 'Error updating password', err.message);
+        .catch((error) => {
+            return response.error(res, 500, 'Error updating password', error.message);
         });
 };
 
-exports.token = (req, res) => {
-    let foundUser;
+// Request password reset token
+exports.forgotPasswordToken = (req, res) => {
     const { email } = req.body;
 
-    if (!email) return response.error(res, 400, 'Email is required');
+    if (!email) {
+        return response.error(res, 400, 'Email is required');
+    }
 
     User.findOne({ email })
         .then((user) => {
-            if (!user) return response.error(res, 404, 'User not found with this email');
+            if (!user) {
+                return response.error(res, 404, 'User not found with this email');
+            }
 
-            foundUser = user;
-            return user.createPasswordResetToken();
+            // Create reset token
+            return user.createPasswordResetToken()
+                .then((token) => {
+                    return user.save()
+                        .then(() => ({ user, token }));
+                });
         })
-        .then((token) => foundUser.save().then(() => token))
-        .then((token) => {
+        .then(({ user, token }) => {
+            // Construct reset URL
             const resetURL = `${req.protocol}://${req.get('host')}/reset-password/${token}`;
-            const mailService = req.app.get('mailService');
 
+            // Send email
+            const mailService = req.app.get('mailService');
+            
             return mailService.sendEmail({
-                to: email,
+                to: user.email,
                 subject: 'Password Reset Request',
-                html: mailService.templates.passwordResetTemplate(resetURL, email),
-                text: mailService.templates.generatePlainText({ resetURL, email }, 'passwordReset')
+                html: mailService.templates.passwordResetTemplate(resetURL, user.email),
+                text: mailService.templates.generatePlainText({ resetURL, email: user.email }, 'passwordReset')
+            })
+            .then(() => {
+                return response.success(
+                    res,
+                    {
+                        message: 'Password reset link sent to email',
+                        expiresIn: '10 minutes'
+                    },
+                    200,
+                    'Password reset email sent successfully'
+                );
+            })
+            .catch((emailError) => {
+                // Clear reset token if email fails
+                user.passwordResetToken = undefined;
+                user.passwordResetExpires = undefined;
+                return user.save()
+                    .then(() => {
+                        return response.error(res, 500, 'Error sending password reset email', emailError.message);
+                    });
             });
         })
-        .then(() => {
-            return response.success(res,
-                {
-                    message: 'Password reset link sent to email',
-                    expiresIn: '10 minutes'
-                },200,'Password reset email sent successfully'
-            );
-        })
         .catch((error) => {
-            if (foundUser) {
-                foundUser.passwordResetToken = undefined;
-                foundUser.passwordResetExpires = undefined;
-                foundUser.save()
-                    .then(() => {
-                        return response.error(res, 500, 'Error sending password reset email', error.message)
-                    })
-                    .catch((saveError) => {
-                        return response.error(res, 500, 'Error sending password reset email', error.message)
-                    });
-            } else {
-                return response.error(res, 500, 'Error processing password reset request', error.message);
-            }
+            return response.error(res, 500, 'Error processing password reset request', error.message);
         });
 };
 
-exports.reset = (req, res) => {
-    let foundUser;
+// Reset password with token
+exports.resetPassword = (req, res) => {
     const { password } = req.body;
     const { token } = req.params;
 
-    if (!password) return response.error(res, 400, 'New password is required');
-    if (!token)  return response.error(res, 400, 'Reset token is required');
+    if (!password) {
+        return response.error(res, 400, 'New password is required');
+    }
+
+    if (!token) {
+        return response.error(res, 400, 'Reset token is required');
+    }
 
     const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
@@ -113,36 +159,79 @@ exports.reset = (req, res) => {
                 return response.error(res, 400, 'Token expired or invalid. Please try again');
             }
 
-            foundUser = user;
+            // Update password and clear reset token
             user.password = password;
             user.passwordResetToken = undefined;
             user.passwordResetExpires = undefined;
+
             return user.save();
         })
-        .then((savedUser) => {
+        .then((updatedUser) => {
+            // Send confirmation email
             const mailService = req.app.get('mailService');
-            
-            mailService.sendEmail({
-                to: foundUser.email,
-                subject: 'Password Changed Successfully',
-                html: mailService.templates.passwordResetSuccessTemplate(foundUser.email),
-                text: mailService.templates.generatePlainText({ email: foundUser.email }, 'passwordResetSuccess')
-            })
-                .catch((emailError) => {
-                    console.error('Failed to send confirmation email:', emailError);
-                });
 
-            const userResponse = savedUser.toJSON();
-            return response.success(res,
-                { user: userResponse }, 200, 'Password reset successfully');
+            return mailService.sendEmail({
+                to: updatedUser.email,
+                subject: 'Password Changed Successfully',
+                html: mailService.templates.passwordResetSuccessTemplate(updatedUser.email),
+                text: mailService.templates.generatePlainText({ email: updatedUser.email }, 'passwordResetSuccess')
+            })
+            .then(() => {
+                const userResponse = updatedUser.toJSON();
+                return response.success(
+                    res,
+                    { user: userResponse },
+                    200,
+                    'Password reset successfully'
+                );
+            })
+            .catch((emailError) => {
+                // Log error but don't fail the password reset
+                console.error('Failed to send confirmation email:', emailError);
+                const userResponse = updatedUser.toJSON();
+                return response.success(
+                    res,
+                    { user: userResponse },
+                    200,
+                    'Password reset successfully'
+                );
+            });
         })
         .catch((error) => {
             return response.error(res, 500, 'Error resetting password', error.message);
         });
 };
 
-module.exports = {
-    resetPassword: exports.reset,
-    updatePassword: exports.updatePassword,
-    forgotPasswordToken: exports.token,
+// Verify reset token validity (optional)
+exports.verifyResetToken = (req, res) => {
+    const { token } = req.params;
+
+    if (!token) {
+        return response.error(res, 400, 'Reset token is required');
+    }
+
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
+    User.findOne({
+        passwordResetToken: hashedToken,
+        passwordResetExpires: { $gt: Date.now() }
+    })
+        .then((user) => {
+            if (!user) {
+                return response.error(res, 400, 'Token expired or invalid');
+            }
+
+            return response.success(
+                res,
+                {
+                    valid: true,
+                    email: user.email.replace(/(.{2})(.*)(@.*)/, '$1***$3') // Partially masked email
+                },
+                200,
+                'Token is valid'
+            );
+        })
+        .catch((error) => {
+            return response.error(res, 500, 'Error verifying token', error.message);
+        });
 };

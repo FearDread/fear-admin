@@ -207,7 +207,7 @@ module.exports = function (fear) {
             padding: 0;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             line-height: 1.6;
-            color: #333;
+            color: #242424;
             background-color: #f4f4f4;
         }
         .container {
@@ -219,7 +219,7 @@ module.exports = function (fear) {
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #ea6666 0%, #410182 100%);
             color: white;
             padding: 30px;
             text-align: center;

@@ -2,13 +2,14 @@
 
 const path = require('path');
 const express = require('express');
-require("dotenv").config();
+const fs = require('fs');
+const dotenv = require('dotenv');
 
 const FearServer = (function () {
   // Private constants
   const DEFAULT_PATHS = {
     root: path.resolve(),
-    app: '/backend/dashboard/build', 
+    app: 'backend/dashboard/build', 
     build: 'backend/dashboard/build'
   };
 
@@ -22,40 +23,191 @@ const FearServer = (function () {
     this.Router = null;
     this.isShuttingDown = false;
     this.rootDir = path.resolve();
+    this.reactApps = []; // Track multiple React apps
+    this.envLoaded = false;
   }
 
   FearServer.prototype = {
     constructor: FearServer,
 
     /**
+     * Load environment variables from .env file
+     * @param {string|Object} envConfig - Path to .env file or dotenv config object
+     */
+    loadEnv(envConfig) {
+      let envPath;
+      let options = {};
+
+      // Handle different config formats
+      if (typeof envConfig === 'string') {
+        envPath = envConfig;
+      } else if (typeof envConfig === 'object') {
+        envPath = envConfig.path;
+        options = envConfig;
+      }
+
+      // Auto-detect .env file if not specified
+      if (!envPath) {
+        const possiblePaths = [
+          path.join(this.rootDir, '.env'),
+          path.join(this.rootDir, '.env.local'),
+          path.join(this.rootDir, '.env.development'),
+          path.join(this.rootDir, '.env.production'),
+          path.join(process.cwd(), '.env'),
+        ];
+
+        // Check NODE_ENV for environment-specific files
+        if (process.env.NODE_ENV) {
+          possiblePaths.unshift(
+            path.join(this.rootDir, `.env.${process.env.NODE_ENV}`),
+            path.join(this.rootDir, `.env.${process.env.NODE_ENV}.local`)
+          );
+        }
+
+        // Find first existing .env file
+        envPath = possiblePaths.find(p => fs.existsSync(p));
+      }
+
+      if (envPath && !fs.existsSync(envPath)) {
+        console.warn(`⚠️  Warning: .env file not found at ${envPath}`);
+        return false;
+      }
+
+      if (!envPath) {
+        console.warn('⚠️  Warning: No .env file found in common locations');
+        console.warn('   Checked:', [
+          path.join(this.rootDir, '.env'),
+          path.join(this.rootDir, `.env.${process.env.NODE_ENV || 'development'}`),
+          path.join(process.cwd(), '.env')
+        ]);
+        return false;
+      }
+
+      // Load the .env file
+      const result = dotenv.config({ path: envPath, ...options });
+
+      if (result.error) {
+        console.error('❌ Error loading .env file:', result.error);
+        return false;
+      }
+
+      console.log(`✓ Environment variables loaded from: ${envPath}`);
+      
+      // Log loaded variables (hide sensitive values)
+      if (result.parsed && Object.keys(result.parsed).length > 0) {
+        console.log('📋 Loaded environment variables:');
+        Object.keys(result.parsed).forEach(key => {
+          const isSensitive = /secret|key|password|token|private/i.test(key);
+          const value = isSensitive ? '***' : result.parsed[key];
+          console.log(`   ${key}=${value}`);
+        });
+      }
+
+      this.envLoaded = true;
+      return true;
+    },
+
+    /**
+     * Validate that required files exist for React app
+     * @param {string} buildPath - Path to build directory
+     * @param {string} indexPath - Path to index.html
+     */
+    validateReactApp(buildPath, indexPath) {
+      if (!fs.existsSync(buildPath)) {
+        throw new Error(`Build directory not found: ${buildPath}`);
+      }
+
+      if (!fs.existsSync(indexPath)) {
+        throw new Error(`index.html not found: ${indexPath}`);
+      }
+
+      this.fear.getLogger().info('✓ React app files validated');
+      return true;
+    },
+
+    /**
      * Configure static file serving for React SPA
      * @param {string} root - Root directory path
-     * @param {string} app - App directory path
-     * @param {string} build - Build directory path
-     * @param {string} basePath - Base path for the app (e.g., '/fear/sites/ghap')
+     * @param {string} app - App directory path relative to root
+     * @param {string} build - Build directory path for index.html
+     * @param {string} basePath - Base path for the app (e.g., '/admin', '/dashboard')
      */
     setupStaticFiles(root, app, build, basePath = '') {
       this.rootDir = root || path.resolve();
-      const buildPath = path.join(this.rootDir, app);
-      const indexPath = path.resolve(this.rootDir, build, "index.html");
+      
+      // Construct paths - handle both absolute and relative paths
+      const buildPath = path.isAbsolute(app) 
+        ? app 
+        : path.join(this.rootDir, app);
+      
+      const indexPath = path.isAbsolute(build)
+        ? path.join(build, "index.html")
+        : path.join(this.rootDir, build, "index.html");
 
+      // Normalize base path
       const normalizedBasePath = basePath
         ? `/${basePath.replace(/^\/+|\/+$/g, '')}`
         : '';
 
-        
-      this.fear.getLogger().info(`Serving static files from: ${buildPath}`);
-      this.fear.getLogger().info(`Base URL path: ${normalizedBasePath || '/'}`);
+      // Debug logging
+      this.fear.getLogger().info('═══════════════════════════════════════');
+      this.fear.getLogger().info('🔍 React App Path Resolution:');
+      this.fear.getLogger().info(`   Root dir: ${this.rootDir}`);
+      this.fear.getLogger().info(`   App param: ${app}`);
+      this.fear.getLogger().info(`   Build param: ${build}`);
+      this.fear.getLogger().info(`   → Build path: ${buildPath}`);
+      this.fear.getLogger().info(`   → Index path: ${indexPath}`);
+      this.fear.getLogger().info(`   → Base path: ${normalizedBasePath || '/'}`);
 
+      // Validate React app exists
+      try {
+        this.validateReactApp(buildPath, indexPath);
+      } catch (error) {
+        this.fear.getLogger().error('React app validation failed:', error.message);
+        throw error;
+      }
+
+      this.fear.getLogger().info(`📁 Serving static files from: ${buildPath}`);
+      this.fear.getLogger().info(`🌐 Base URL path: ${normalizedBasePath || '/'}`);
+      this.fear.getLogger().info(`📄 Index file: ${indexPath}`);
+
+      // Serve static files with caching headers
       this.fear.getApp().use(
         normalizedBasePath,
+        (req, res, next) => {
+          this.fear.getLogger().debug(`Static file request: ${req.path}`);
+          next();
+        },
         express.static(buildPath, {
           index: false,
-          fallthrough: true 
+          fallthrough: true,
+          maxAge: '1h', // Cache static assets
+          etag: true,
+          lastModified: true,
+          setHeaders: (res, filePath) => {
+            // Don't cache index.html
+            if (filePath.endsWith('index.html')) {
+              res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+            }
+            // Cache JS/CSS files aggressively
+            else if (filePath.match(/\.(js|css|woff2?|ttf|eot)$/)) {
+              res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+            }
+          }
         })
       );
 
-      this.fear.getApp().get(`${normalizedBasePath}/*`, (req, res) => {
+      // Handle React Router - serve index.html for all non-API routes
+      this.fear.getApp().get(`${normalizedBasePath}/*`, (req, res, next) => {
+        this.fear.getLogger().debug(`Route request: ${req.path}`);
+        
+        // Skip if it's an API route
+        if (req.path.startsWith('/api')) {
+          this.fear.getLogger().debug('Skipping - API route');
+          return next();
+        }
+
+        this.fear.getLogger().debug(`Serving index.html for: ${req.path}`);
         res.sendFile(indexPath, (err) => {
           if (err) {
             this.fear.getLogger().error('Error serving index.html:', err);
@@ -63,6 +215,85 @@ const FearServer = (function () {
           }
         });
       });
+
+      // Track registered React apps
+      this.reactApps.push({
+        basePath: normalizedBasePath || '/',
+        buildPath,
+        indexPath
+      });
+
+      this.fear.getLogger().info(`✓ React app configured at: ${normalizedBasePath || '/'}`);
+    },
+
+    /**
+     * Add multiple React apps at different base paths
+     * @param {Array} apps - Array of app configurations
+     * Example: [{root: __dirname, app: '/build', build: 'build', basePath: '/admin'}]
+     */
+    setupMultipleReactApps(apps) {
+      if (!Array.isArray(apps)) {
+        throw new Error('setupMultipleReactApps expects an array of app configurations');
+      }
+
+      apps.forEach((appConfig, index) => {
+        this.fear.getLogger().info(`Setting up React app ${index + 1}/${apps.length}`);
+        this.setupStaticFiles(
+          appConfig.root,
+          appConfig.app,
+          appConfig.build,
+          appConfig.basePath
+        );
+      });
+    },
+
+    /**
+     * Setup CORS for React development
+     * @param {Object} options - CORS options
+     */
+    setupCORS(options = {}) {
+      const defaultOptions = {
+        origin: options.origin || '*',
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+        allowedHeaders: ['Content-Type', 'Authorization'],
+        credentials: options.credentials || false
+      };
+
+      this.fear.getApp().use((req, res, next) => {
+        res.header('Access-Control-Allow-Origin', defaultOptions.origin);
+        res.header('Access-Control-Allow-Methods', defaultOptions.methods.join(', '));
+        res.header('Access-Control-Allow-Headers', defaultOptions.allowedHeaders.join(', '));
+        
+        if (defaultOptions.credentials) {
+          res.header('Access-Control-Allow-Credentials', 'true');
+        }
+
+        // Handle preflight
+        if (req.method === 'OPTIONS') {
+          return res.sendStatus(200);
+        }
+
+        next();
+      });
+
+      this.fear.getLogger().info('✓ CORS configured for React development');
+    },
+
+    /**
+     * Setup API routes prefix (useful to avoid conflicts with React routes)
+     * @param {string} prefix - API prefix (e.g., '/api')
+     */
+    setupAPIPrefix(prefix = '/api') {
+      const normalizedPrefix = `/${prefix.replace(/^\/+|\/+$/g, '')}`;
+      
+      this.fear.getApp().use(normalizedPrefix, (req, res, next) => {
+        // Mark as API route
+        req.isAPIRoute = true;
+        next();
+      });
+
+      this.fear.getLogger().info(`✓ API routes configured with prefix: ${normalizedPrefix}`);
+      return normalizedPrefix;
     },
 
     /**
@@ -106,7 +337,7 @@ const FearServer = (function () {
               return reject(err);
             }
 
-            this.fear.getLogger().info('Database initialized successfully');
+            this.fear.getLogger().info('✓ Database initialized successfully');
             resolve();
           });
         } catch (error) {
@@ -172,7 +403,7 @@ const FearServer = (function () {
         })
         .then(() => {
           clearTimeout(forceShutdownTimeout);
-          this.fear.getLogger().info('Graceful shutdown completed');
+          this.fear.getLogger().info('✓ Graceful shutdown completed');
           process.exit(0);
         })
         .catch((error) => {
@@ -183,15 +414,46 @@ const FearServer = (function () {
 
     /**
      * Initialize FEAR application
+     * @param {Object} paths - Path configuration
+     * @param {boolean} ADD_PAYMENTS - Whether to add payment routes
+     * @param {Object} reactConfig - Additional React configuration
+     * @param {string|Object} envConfig - Environment file configuration
      */
-    initialize(paths = DEFAULT_PATHS, ADD_PAYMENTS = false) {
+    initialize(paths = DEFAULT_PATHS, ADD_PAYMENTS = false, reactConfig = {}, envConfig = null) {
       try {
+        // Set root directory first
+        this.rootDir = paths.root || path.resolve();
+
+        // Load environment variables if config provided
+        if (envConfig) {
+          this.loadEnv(envConfig);
+        } else if (!this.envLoaded) {
+          // Try auto-loading if not already loaded
+          this.loadEnv();
+        }
+
         // Import FEAR after dotenv is configured
         const FearFactory = require("./FEAR");
         this.fear = new FearFactory({ADD_PAYMENTS});
         this.Router = this.fear.Router;
 
-        this.setupStaticFiles(paths.root, paths.app, paths.build, paths.basePath);
+        // Setup CORS if enabled
+        if (reactConfig.enableCORS) {
+          this.setupCORS(reactConfig.corsOptions);
+        }
+
+        // Setup API prefix if provided
+        if (reactConfig.apiPrefix) {
+          this.setupAPIPrefix(reactConfig.apiPrefix);
+        }
+
+        // Setup React app(s)
+        if (reactConfig.multipleApps && Array.isArray(reactConfig.apps)) {
+          this.setupMultipleReactApps(reactConfig.apps);
+        } else {
+          this.setupStaticFiles(paths.root, paths.app, paths.build, paths.basePath);
+        }
+
         this.setupProcessHandlers();
 
         return Promise.resolve(this.fear);
@@ -212,6 +474,10 @@ const FearServer = (function () {
       if (this.fear.logo) {
         logger.warn(this.fear.logo);
       }
+
+      logger.info('🚀 Starting FEAR Server...');
+      logger.info('═══════════════════════════════════════');
+
       // Initialize database connection
       return this.initializeDatabase()
         .then(() => {
@@ -220,7 +486,19 @@ const FearServer = (function () {
         })
         .then((server) => {
           this.server = server;
-          logger.info(`FEAR API Initialized :: Port ${port}`);
+          logger.info('═══════════════════════════════════════');
+          logger.info(`✓ FEAR API Server Running on Port ${port}`);
+          logger.info('═══════════════════════════════════════');
+          
+          // Display registered React apps
+          if (this.reactApps.length > 0) {
+            logger.info('📱 React Apps:');
+            this.reactApps.forEach(app => {
+              logger.info(`   • http://localhost:${port}${app.basePath}`);
+            });
+            logger.info('═══════════════════════════════════════');
+          }
+
           return server;
         })
         .catch((error) => {
@@ -269,6 +547,20 @@ const FearServer = (function () {
      */
     getRootDir() {
       return this.rootDir;
+    },
+
+    /**
+     * Get registered React apps
+     */
+    getReactApps() {
+      return this.reactApps;
+    },
+
+    /**
+     * Check if environment variables are loaded
+     */
+    isEnvLoaded() {
+      return this.envLoaded;
     }
   };
 
