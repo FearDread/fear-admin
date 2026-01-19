@@ -1,6 +1,7 @@
 import { ThunkFactory } from "@feardread/feature-factory";
 
 
+ThunkFactory.setApiUrl('http://localhost:4000/fear/api');
 /**
  * Create custom async thunks for products
  */

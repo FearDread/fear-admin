@@ -5,7 +5,8 @@ import PrivateRoute from "./contexts/routes/PrivateRoute";
 import PublicRoute from "./contexts/routes/PublicRoute";
 // Layout
 import Layout from "./pages/Layout";
-
+// Account pages (lazy loaded)
+import Dashboard from "./pages/account/Dashboard"
 // Eager-loaded components (critical for initial render)
 import Home from './pages/Home';
 import Login from "./pages/auth/Login";
@@ -30,13 +31,14 @@ const ProductComparison = lazy(() => import("./pages/products/ProductComparison"
 const ProductDetails = lazy(() => import("./pages/products/ProductDetails"));
 const Wishlist = lazy(() => import('./pages/Wishlist'));
 
-// Account pages (lazy loaded)
-const Dashboard = lazy(() => import("./pages/account/Dashboard"));
+
+//const Dashboard = lazy(() => import("./pages/account/Dashboard"));
 const Orders = lazy(() => import("./pages/account/Orders"));
 const UserDetails = lazy(() => import("./pages/account/UserDetails"));
 const AccountPayment = lazy(() => import("./pages/account/PaymentMethods"));
 const Addresses = lazy(() => import("./pages/account/Addresses"));
 const ForgotPassword = lazy(() => import("./pages/auth/ForgotPassword"));
+const ResetPassword = lazy(() => import("./pages/auth/ResetPassword"));
 
 const TermsOfService = lazy(() => import("./pages/policies/Terms"));
 const PrivacyPolicy = lazy(() => import("./pages/policies/Privacy"));
@@ -97,6 +99,7 @@ const routeConfig = {
     { path: "/login", element: <Login /> },
     { path: "/register", element: <Register /> },
     { path: "/forgot-password", element: <ForgotPassword /> },
+    { path: "/reset-password/:token", element: <ResetPassword /> },
   ],
   protected: [
     { path: "/account/dashboard", element: <Dashboard /> },

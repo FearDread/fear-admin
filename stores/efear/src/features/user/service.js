@@ -27,12 +27,12 @@ export const UserService = {
   }),
   
   // Forgot password
-  forgotPassword: ThunkFactory.custom('auth', 'forgot-password', {
-    method: 'POST',
+  forgotPassword: ThunkFactory.custom('password', 'forgot-password', {
+    method: 'GET',
   }),
   
   // Reset password
-  resetPassword: ThunkFactory.custom('auth', 'reset-password', {
+  resetPassword: ThunkFactory.custom('password', 'reset-password', {
     method: 'POST',
   }),
   
