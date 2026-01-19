@@ -2,7 +2,7 @@ const Fear = require("@feardread/fear");
 const FearServer = require('./src/FEARServer');
 
 // Main execution
-const main = () => {
+async function main() {
   const env = process.env.NODE_ENV;
   const server = (env === 'development') ? new FearServer() : new Fear.FearServer();
 
