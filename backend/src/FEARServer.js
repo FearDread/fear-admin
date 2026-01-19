@@ -89,10 +89,7 @@ const FearServer = (function () {
       if (result.error) {
         console.error('❌ Error loading .env file:', result.error);
         return false;
-      }
-
-      console.log(`✓ Environment variables loaded from: ${envPath}`);
-      
+      } 
       // Log loaded variables (hide sensitive values)
       if (result.parsed && Object.keys(result.parsed).length > 0) {
         console.log('📋 Loaded environment variables:');
