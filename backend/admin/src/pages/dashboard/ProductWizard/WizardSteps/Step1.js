@@ -1,4 +1,4 @@
-import React, { useState, useImperativeHandle, useEffect } from "react";
+import React, { useState, useImperativeHandle } from "react";
 import {
   Input,
   InputGroupText,
@@ -13,12 +13,22 @@ import {
 
 /**
  * Modern Step 1 - Basic Information
- * Uses controlled components with validation
+ * Updated for react-step-wizard
  */
 const Step1 = React.forwardRef((props, ref) => {
-  const { categories = [], brands = [], title, subtitle, nextStep, 
-    previousStep, 
-    currentStep,  } = props;
+  const { 
+    categories = [], 
+    brands = [], 
+    title, 
+    subtitle,
+    nextStep,
+    previousStep,
+    currentStep,
+    totalSteps,
+    firstStep,
+    lastStep,
+    goToStep
+  } = props;
 
   // Form state
   const [formData, setFormData] = useState({
@@ -135,6 +145,15 @@ const Step1 = React.forwardRef((props, ref) => {
   };
 
   /**
+   * Handle next button click
+   */
+  const handleNextClick = () => {
+    if (validateAll()) {
+      nextStep();
+    }
+  };
+
+  /**
    * Expose validation and state to parent (Wizard)
    */
   useImperativeHandle(ref, () => ({
@@ -149,7 +168,6 @@ const Step1 = React.forwardRef((props, ref) => {
    */
   const getCharCount = (field, max) => {
     const current = formData[field]?.length || 0;
-    const remaining = max - current;
     const percentage = (current / max) * 100;
     
     let color = "text-success";
@@ -183,9 +201,6 @@ const Step1 = React.forwardRef((props, ref) => {
               Product Title <span className="text-danger">*</span>
             </Label>
             <InputGroup className={errors.title && touched.title ? "has-danger" : ""}>
-                <InputGroupText>
-                  <i className="fa fa-tag" />
-                </InputGroupText>
               <Input
                 name="title"
                 placeholder="Enter product title..."
@@ -194,7 +209,7 @@ const Step1 = React.forwardRef((props, ref) => {
                 onChange={handleChange("title")}
                 onBlur={handleBlur("title")}
                 invalid={!!(errors.title && touched.title)}
-                className="form-control-rounded"
+                className="form-control"
               />
               {errors.title && touched.title && (
                 <FormFeedback>{errors.title}</FormFeedback>
@@ -211,11 +226,6 @@ const Step1 = React.forwardRef((props, ref) => {
               Category <span className="text-danger">*</span>
             </Label>
             <InputGroup className={errors.category && touched.category ? "has-danger" : ""}>
-
-                <InputGroupText>
-                  <i className="fa fa-folder-open" />
-                </InputGroupText>
-
               <Input
                 type="select"
                 name="category"
@@ -223,7 +233,7 @@ const Step1 = React.forwardRef((props, ref) => {
                 onChange={handleChange("category")}
                 onBlur={handleBlur("category")}
                 invalid={!!(errors.category && touched.category)}
-                className="form-control-rounded"
+                className="form-control"
               >
                 <option value="">Select Category...</option>
                 {categories.map((cat) => (
@@ -246,11 +256,9 @@ const Step1 = React.forwardRef((props, ref) => {
               Brand <span className="text-danger">*</span>
             </Label>
             <InputGroup className={errors.brand && touched.brand ? "has-danger" : ""}>
-
-                <InputGroupText>
-                  <i className="fa fa-certificate" />
-                </InputGroupText>
-
+              <InputGroupText>
+                <i className="fa fa-certificate" />
+              </InputGroupText>
               <Input
                 type="select"
                 name="brand"
@@ -258,7 +266,7 @@ const Step1 = React.forwardRef((props, ref) => {
                 onChange={handleChange("brand")}
                 onBlur={handleBlur("brand")}
                 invalid={!!(errors.brand && touched.brand)}
-                className="form-control-rounded"
+                className="form-control"
               >
                 <option value="">Select Brand...</option>
                 {brands.map((brand) => (
@@ -281,16 +289,13 @@ const Step1 = React.forwardRef((props, ref) => {
               Tags <span className="text-light-2">(optional)</span>
             </Label>
             <InputGroup>
-                <InputGroupText>
-                  <i className="fa fa-tags" />
-                </InputGroupText>
               <Input
                 name="tags"
                 placeholder="Separate tags with commas..."
                 type="text"
                 value={formData.tags}
                 onChange={handleChange("tags")}
-                className="form-control-rounded"
+                className="form-control"
               />
             </InputGroup>
             <small className="text-light-2">
@@ -306,11 +311,6 @@ const Step1 = React.forwardRef((props, ref) => {
               Product Description <span className="text-danger">*</span>
             </Label>
             <InputGroup className={errors.description && touched.description ? "has-danger" : ""}>
-
-                <InputGroupText>
-                  <i className="fa fa-align-left" />
-                </InputGroupText>
-
               <Input
                 type="textarea"
                 name="description"
@@ -320,7 +320,7 @@ const Step1 = React.forwardRef((props, ref) => {
                 onChange={handleChange("description")}
                 onBlur={handleBlur("description")}
                 invalid={!!(errors.description && touched.description)}
-                className="form-control-rounded"
+                className="form-control"
                 style={{ minHeight: "120px" }}
               />
               {errors.description && touched.description && (
@@ -354,7 +354,7 @@ const Step1 = React.forwardRef((props, ref) => {
       {/* Help Text */}
       <Row className="justify-content-center mt-4">
         <Col sm="10">
-          <div className="bg-dark-light p-3 rounded">
+          <div className="bg-dark-light p-3">
             <h6 className="text-primary mb-2">
               <i className="fa fa-lightbulb-o mr-2"></i>
               Tips for Better Product Listings
@@ -365,6 +365,40 @@ const Step1 = React.forwardRef((props, ref) => {
               <li>Select the most accurate category and brand for your product</li>
               <li>Add relevant tags to help customers find your product</li>
             </ul>
+          </div>
+        </Col>
+      </Row>
+
+      {/* Navigation Buttons */}
+      <Row className="justify-content-center mt-5">
+        <Col sm="10">
+          <div className="d-flex justify-content-between">
+            <Button
+              color="secondary"
+              className="btn-round"
+              onClick={firstStep}
+              disabled={currentStep === 1}
+              style={{ minWidth: '120px', visibility: currentStep === 1 ? 'hidden' : 'visible' }}
+            >
+              <i className="fa fa-arrow-left mr-2"></i>
+              Previous
+            </Button>
+
+            <div className="text-center">
+              <small className="text-light-2">
+                Step {currentStep} of {totalSteps}
+              </small>
+            </div>
+
+            <Button
+              color="primary"
+              className="btn-round"
+              onClick={handleNextClick}
+              style={{ minWidth: '120px' }}
+            >
+              Next
+              <i className="fa fa-arrow-right ml-2"></i>
+            </Button>
           </div>
         </Col>
       </Row>

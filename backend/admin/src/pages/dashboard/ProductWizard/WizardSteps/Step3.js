@@ -13,22 +13,12 @@ import {
   Button
 } from "reactstrap";
 
-/**
- * Modern Step 3 - Price & Stock
- * Works with react-step-wizard
- */
 const Step3 = React.forwardRef((props, ref) => {
   const { 
     title, 
     subtitle, 
-    onFinish,
-    nextStep, 
+    onFinish, 
     previousStep, 
-    currentStep, 
-    totalSteps,
-    firstStep,
-    lastStep,
-    goToStep 
   } = props;
 
   // Form state
@@ -223,9 +213,6 @@ const Step3 = React.forwardRef((props, ref) => {
               Price <span className="text-danger">*</span>
             </Label>
             <InputGroup className={errors.price && touched.price ? "has-danger" : ""}>
-              <InputGroupText>
-                <i className="fa fa-dollar" />
-              </InputGroupText>
               <Input
                 name="price"
                 placeholder="0.00"
@@ -236,7 +223,7 @@ const Step3 = React.forwardRef((props, ref) => {
                 onChange={handleChange("price")}
                 onBlur={handleBlur("price")}
                 invalid={!!(errors.price && touched.price)}
-                className="form-control-rounded"
+                className="form-control"
               />
               {errors.price && touched.price && (
                 <FormFeedback>{errors.price}</FormFeedback>
@@ -255,9 +242,6 @@ const Step3 = React.forwardRef((props, ref) => {
               Stock Quantity <span className="text-danger">*</span>
             </Label>
             <InputGroup className={errors.quantity && touched.quantity ? "has-danger" : ""}>
-              <InputGroupText>
-                <i className="fa fa-cubes" />
-              </InputGroupText>
               <Input
                 name="quantity"
                 placeholder="0"
@@ -267,7 +251,7 @@ const Step3 = React.forwardRef((props, ref) => {
                 onChange={handleChange("quantity")}
                 onBlur={handleBlur("quantity")}
                 invalid={!!(errors.quantity && touched.quantity)}
-                className="form-control-rounded"
+                className="form-control"
               />
               {errors.quantity && touched.quantity && (
                 <FormFeedback>{errors.quantity}</FormFeedback>
@@ -286,9 +270,6 @@ const Step3 = React.forwardRef((props, ref) => {
               Country Code <span className="text-danger">*</span>
             </Label>
             <InputGroup className={errors.country && touched.country ? "has-danger" : ""}>
-              <InputGroupText>
-                <i className="fa fa-globe" />
-              </InputGroupText>
               <Input
                 name="country"
                 placeholder="US"
@@ -318,9 +299,6 @@ const Step3 = React.forwardRef((props, ref) => {
               Discount % <span className="text-light-2">(optional)</span>
             </Label>
             <InputGroup className={errors.discount && touched.discount ? "has-danger" : ""}>
-              <InputGroupText>
-                <i className="fa fa-percent" />
-              </InputGroupText>
               <Input
                 name="discount"
                 placeholder="0"
@@ -332,7 +310,7 @@ const Step3 = React.forwardRef((props, ref) => {
                 onChange={handleChange("discount")}
                 onBlur={handleBlur("discount")}
                 invalid={!!(errors.discount && touched.discount)}
-                className="form-control-rounded"
+                className="form-control"
               />
               {errors.discount && touched.discount && (
                 <FormFeedback>{errors.discount}</FormFeedback>

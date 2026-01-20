@@ -3,10 +3,21 @@ import { Row, Col, Button, Card, CardBody, Progress, Badge } from "reactstrap";
 
 /**
  * Modern Step 2 - Product Images
- * Uses modern file upload with drag-and-drop and preview
+ * Updated for react-step-wizard
  */
 const Step2 = React.forwardRef((props, ref) => {
-  const { title, subtitle } = props;
+  const { 
+    title, 
+    subtitle,
+    nextStep,
+    previousStep,
+    currentStep,
+    totalSteps,
+    firstStep,
+    lastStep,
+    goToStep
+  } = props;
+
   const [images, setImages] = useState([]);
   const [imagesPreviews, setImagesPreviews] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
@@ -15,7 +26,6 @@ const Step2 = React.forwardRef((props, ref) => {
   const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
   const MAX_FILES = 5;
   const ACCEPTED_FORMATS = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
-
 
   const validateFile = (file) => {
     const errors = [];
@@ -52,7 +62,7 @@ const Step2 = React.forwardRef((props, ref) => {
 
     if (validationErrors.length > 0) {
       setErrors(validationErrors);
-      setTimeout(() => setErrors([]), 5000); // Clear errors after 5s
+      setTimeout(() => setErrors([]), 5000);
       return;
     }
 
@@ -193,6 +203,17 @@ const Step2 = React.forwardRef((props, ref) => {
     const sizes = ['Bytes', 'KB', 'MB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+  };
+
+  /**
+   * Handle next button click
+   */
+  const handleNextClick = () => {
+    if (images.length === 0) {
+      setErrors(["Please upload at least one product image"]);
+      return;
+    }
+    nextStep();
   };
 
   /**
@@ -434,6 +455,35 @@ const Step2 = React.forwardRef((props, ref) => {
               <li>Use a clean, neutral background for best results</li>
               <li>Recommended resolution: 1200x1200 pixels or higher</li>
             </ul>
+          </div>
+
+          {/* Navigation Buttons */}
+          <div className="d-flex justify-content-between mt-5">
+            <Button
+              color="secondary"
+              className="btn-round"
+              onClick={previousStep}
+              style={{ minWidth: '120px' }}
+            >
+              <i className="fa fa-arrow-left mr-2"></i>
+              Previous
+            </Button>
+
+            <div className="text-center">
+              <small className="text-light-2">
+                Step {currentStep} of {totalSteps}
+              </small>
+            </div>
+
+            <Button
+              color="primary"
+              className="btn-round"
+              onClick={handleNextClick}
+              style={{ minWidth: '120px' }}
+            >
+              Next
+              <i className="fa fa-arrow-right ml-2"></i>
+            </Button>
           </div>
         </Col>
       </Row>

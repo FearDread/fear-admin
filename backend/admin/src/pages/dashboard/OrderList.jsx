@@ -16,12 +16,8 @@ import {
   DropdownMenu,
   DropdownItem,
 } from "reactstrap";
-import ReactBSAlert from "react-bootstrap-sweetalert";
 import ReactTable from "../../components/ReactTable/ReactTable.jsx";
-import ReactTableActions from "../../components/ReactTable/ReactTableActions.js";
 import Loader from "../../components/Loader/Loading";
-
-// Import order slice actions and selectors
 import {
   fetchOrders,
   fetchOrdersWithFilters,
@@ -40,15 +36,13 @@ import {
 } from "../../features/orders/slice";
 
 
-function OrderList() {
+const OrderList = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  
   // Local state
   const [alert, setAlert] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-
   // Redux state from order slice
   const orders = useSelector(selectAllOrders);
   const loading = useSelector(selectOrdersLoading);
@@ -59,9 +53,6 @@ function OrderList() {
   const shippedOrders = useSelector(selectShippedOrders);
   const deliveredOrders = useSelector(selectDeliveredOrders);
 
-  /**
-   * Order status configuration with colors
-   */
   const ORDER_STATUS = {
     pending: { color: "warning", icon: "fa-clock-o", label: "Pending" },
     processing: { color: "info", icon: "fa-refresh", label: "Processing" },
@@ -71,9 +62,6 @@ function OrderList() {
     refunded: { color: "secondary", icon: "fa-undo", label: "Refunded" },
   };
 
-  /**
-   * Payment status configuration
-   */
   const PAYMENT_STATUS = {
     pending: { color: "warning", label: "Pending" },
     paid: { color: "success", label: "Paid" },
@@ -81,7 +69,6 @@ function OrderList() {
     refunded: { color: "secondary", label: "Refunded" },
   };
 
-  // Table columns configuration
   const columns = useMemo(() => [
     { Header: "Order #", accessor: "number" },
     { Header: "Customer", accessor: "customer" },
@@ -93,17 +80,13 @@ function OrderList() {
     { Header: "Actions", accessor: "actions", sortable: false, filterable: false }
   ], []);
 
-  /**
-   * Fetch orders on component mount
-   */
   useEffect(() => {
+
     dispatch(fetchOrders());
+
   }, [dispatch]);
 
-  /**
-   * Handle window resize for responsive behavior
-   */
-  useEffect(() => {
+ useEffect(() => {
     const handleResize = () => {
       // Add responsive logic if needed
     };
@@ -130,66 +113,14 @@ function OrderList() {
    * Cancel order with confirmation and reason
    */
   const handleCancelOrder = async (orderId, orderNumber) => {
-    try {
-      const result = await dispatch(cancelOrder(orderId, "Cancelled by admin"));
-      
-      if (result.success) {
-        hideAlert();
-        setAlert(
-          <ReactBSAlert
-            success
-            style={{ display: "block", marginTop: "-100px" }}
-            title="Cancelled!"
-            onConfirm={hideAlert}
-            confirmBtnBsStyle="success"
-            btnSize=""
-          >
-            Order #{orderNumber} has been cancelled successfully.
-          </ReactBSAlert>
-        );
-      } else {
-        throw new Error(result.error);
-      }
-    } catch (err) {
-      hideAlert();
-      setAlert(
-        <ReactBSAlert
-          danger
-          style={{ display: "block", marginTop: "-100px" }}
-          title="Error!"
-          onConfirm={hideAlert}
-          confirmBtnBsStyle="danger"
-          btnSize=""
-        >
-          {err.message || "Failed to cancel order"}
-        </ReactBSAlert>
-      );
-    }
+
   };
 
   /**
    * Show cancellation confirmation dialog
    */
   const confirmCancelOrder = (orderId, order) => {
-    setAlert(
-      <ReactBSAlert
-        warning
-        style={{ display: "block", marginTop: "-100px" }}
-        title="Cancel Order?"
-        onConfirm={() => handleCancelOrder(orderId, order.orderNumber)}
-        onCancel={hideAlert}
-        confirmBtnBsStyle="warning"
-        cancelBtnBsStyle="secondary"
-        confirmBtnText="Yes, cancel order"
-        cancelBtnText="Keep order"
-        showCancel
-        btnSize=""
-      >
-        Are you sure you want to cancel order #{order.orderNumber}?
-        <br />
-        <small className="text-muted">This action cannot be undone.</small>
-      </ReactBSAlert>
-    );
+
   };
 
   /**
@@ -357,12 +288,9 @@ function OrderList() {
   return (
     <>
       <div className="container-fluid">
-        {alert}
-        
-        {/* Statistics Cards */}
         <Row className="mb-4">
           <Col lg="3" md="6">
-            <Card className="card-stats">
+            <Card className="card-stats media-object">
               <CardBody>
                 <Row>
                   <Col xs="5">
@@ -383,7 +311,7 @@ function OrderList() {
             </Card>
           </Col>
           <Col lg="3" md="6">
-            <Card className="card-stats">
+            <Card className="card-stats media-object">
               <CardBody>
                 <Row>
                   <Col xs="5">
@@ -404,7 +332,7 @@ function OrderList() {
             </Card>
           </Col>
           <Col lg="3" md="6">
-            <Card className="card-stats">
+            <Card className="card-stats media-object">
               <CardBody>
                 <Row>
                   <Col xs="5">
@@ -425,7 +353,7 @@ function OrderList() {
             </Card>
           </Col>
           <Col lg="3" md="6">
-            <Card className="card-stats">
+            <Card className="card-stats media-object">
               <CardBody>
                 <Row>
                   <Col xs="5">

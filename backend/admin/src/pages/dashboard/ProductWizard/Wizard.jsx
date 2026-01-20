@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import StepWizard from "react-step-wizard";
-import ReactBSAlert from "react-bootstrap-sweetalert";
 import { Col, Card, CardBody, Row, Button } from "reactstrap";
 
 // Import Feature Factory actions
@@ -12,17 +11,17 @@ import {
   selectLoading,
   selectError,
   selectSuccess
-} from "../../../features/products/slice";
+} from "../../../features/products/slice.js";
 
 import {
   fetchCategories,
   selectAllCategories
-} from "../../../features/categories/slice";
+} from "../../../features/categories/slice.js";
 
 import {
   fetchBrands,
   selectAllBrands
-} from "../../../features/brands/slice";
+} from "../../../features/brands/slice.js";
 
 // Import wizard steps
 import Step1 from "./WizardSteps/Step1.js";
@@ -112,7 +111,7 @@ const WizardNav = ({
         ))}
       </div>
 
-      {/* Navigation Buttons */}
+      {/* Navigation Buttons 
       <div className="d-flex justify-content-between mt-4">
         <Button
           color="secondary"
@@ -160,6 +159,7 @@ const WizardNav = ({
           </Button>
         )}
       </div>
+      */}
     </div>
   );
 };
@@ -283,16 +283,12 @@ const Wizard = () => {
   /**
    * Process and submit wizard data
    */
-  const handleFinish = async () => {
-    try {
-      // Validate final step
-      if (!validateStep(3)) {
-        return;
-      }
+  const handleFinish = () => {
+
+      if (!validateStep(3)) return;
 
       setIsSubmitting(true);
 
-      // Collect all data
       const wizardData = collectWizardData();
       const { info, images, pricing } = wizardData;
 
@@ -354,16 +350,14 @@ const Wizard = () => {
         }
       });
 
-      // Dispatch create action
-      await dispatch(createProduct(productData)).unwrap();
+    // Dispatch create action
+    const result = dispatch(createProduct({productData}));
+    console.log('product creation result = ', result);
 
-    } catch (err) {
-      console.error("Product creation failed:", err);
+      //console.error("Product creation failed:", err);
       setIsSubmitting(false);
-      showErrorAlert(err.message || "Failed to create product");
-    }
+      //showErrorAlert(err.message || "Failed to create product");
   };
-
   /**
    * Validate product data before submission
    */
@@ -403,47 +397,14 @@ const Wizard = () => {
    * Show success alert
    */
   const showSuccessAlert = () => {
-    setAlert(
-      <ReactBSAlert
-        success
-        style={{ display: "block", marginTop: "-100px" }}
-        title="Success!"
-        onConfirm={() => {
-          hideAlert();
-          navigate("/admin/products");
-        }}
-        confirmBtnBsStyle="success"
-        confirmBtnText="View Products"
-        btnSize=""
-      >
-        <div className="text-center">
-          <i className="fa fa-check-circle" style={{ fontSize: '48px', color: '#04b962' }}></i>
-          <p className="mt-3">Product has been added to your store successfully!</p>
-        </div>
-      </ReactBSAlert>
-    );
+
   };
 
   /**
    * Show error alert
    */
   const showErrorAlert = (errorMessage) => {
-    setAlert(
-      <ReactBSAlert
-        danger
-        style={{ display: "block", marginTop: "-100px" }}
-        title="Error!"
-        onConfirm={hideAlert}
-        confirmBtnBsStyle="danger"
-        confirmBtnText="Try Again"
-        btnSize=""
-      >
-        <div className="text-center">
-          <i className="fa fa-exclamation-triangle" style={{ fontSize: '48px', color: '#f43643' }}></i>
-          <p className="mt-3">{errorMessage}</p>
-        </div>
-      </ReactBSAlert>
-    );
+
   };
 
   /**
@@ -484,6 +445,7 @@ const Wizard = () => {
                       nav={
                         <WizardNav 
                           isSubmitting={isSubmitting}
+                          lastStep={step3Ref}
                         />
                       }
                     >

@@ -80,7 +80,7 @@ export const routes = {
   admin: [
     { path: "/admin/dashboard", label: "Dashboard", layout: "/admin", icon: 'zmdi zmdi-view-dashboard', element: <Dashboard /> },
     { path: "/admin/products", label: "Products", lalyout: "/admin", icon: "zmdi zmdi-view-book", element: <ProductList /> },
-        { path: "/admin/orders", label: "Orders", lalyout: "/admin", icon: "zmdi zmdi-view-calendar", element: <OrderList /> },
+    { path: "/admin/orders", label: "Orders", lalyout: "/admin", icon: "zmdi zmdi-view-calendar", element: <OrderList /> },
     { path: "/admin/product/new", layout: '/admin', element: <Wizard /> }
   ],
 };

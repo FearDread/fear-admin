@@ -31,6 +31,11 @@ export const ProductService = {
     method: 'GET',
     useParams: true,
   }),
+
+  create: ThunkFactory.custom('product', 'create', {
+    method:'POST',
+    useParams: false
+  }),
 };
 
 export default ProductService;

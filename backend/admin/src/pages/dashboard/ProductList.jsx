@@ -15,9 +15,7 @@ import {
   DropdownMenu,
   DropdownItem,
 } from "reactstrap";
-import ReactBSAlert from "react-bootstrap-sweetalert";
 import ReactTable from "../../components/ReactTable/ReactTable";
-import ReactTableActions from "../../components/ReactTable/ReactTableActions";
 import Loader from "../../components/Loader/Loading";
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -29,8 +27,6 @@ import {
   setViewMode,
   setSorting,
   fetchProducts,
-  selectProducts,
-  selectCurrentProduct,
   selectLoading,
   selectError,
   selectSuccess,
@@ -44,14 +40,10 @@ import {
   selectAllCategories
 } from "../../features/categories/slice.js";
 
-/**
- * Modern ProductList Component
- * Uses React Router v6, FeatureFactory patterns, and App.css styling
- */
-function ProductList() {
+
+const ProductList = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  
   // Redux state
   const error = useSelector(selectError);
   const loading = useSelector(selectLoading);
@@ -60,21 +52,16 @@ function ProductList() {
   const searchTerm = useSelector(selectSearchTerm);
   const filters = useSelector(selectFilters);
   const categories = useSelector(selectAllCategories);
-  
   // Local state
   const [alert, setAlert] = useState(null);
   const [categoryFilter, setCategoryFilter] = useState("all");
 
-  /**
-   * Product status configuration
-   */
   const STOCK_STATUS = {
     inStock: { color: "success", icon: "fa-check-circle", label: "In Stock" },
     lowStock: { color: "warning", icon: "fa-exclamation-triangle", label: "Low Stock" },
     outOfStock: { color: "danger", icon: "fa-times-circle", label: "Out of Stock" },
   };
 
-  // Table column configuration
   const columns = useMemo(() => [
     {
       Header: "Image",
@@ -96,12 +83,12 @@ function ProductList() {
     }
   ], []);
 
-  /**
-   * Fetch products and categories on mount
-   */
   useEffect(() => {
+
     dispatch(fetchProducts());
+   
     dispatch(fetchCategories());
+
   }, [dispatch]);
 
   /**
@@ -136,33 +123,9 @@ function ProductList() {
   const handleDeleteProduct = async (id, productTitle) => {
     try {
       await dispatch(deleteProduct(id));
-      hideAlert();
-      setAlert(
-        <ReactBSAlert
-          success
-          style={{ display: "block", marginTop: "-100px" }}
-          title="Deleted!"
-          onConfirm={hideAlert}
-          confirmBtnBsStyle="success"
-          btnSize=""
-        >
-          Product "{productTitle}" has been deleted successfully.
-        </ReactBSAlert>
-      );
+
     } catch (err) {
-      hideAlert();
-      setAlert(
-        <ReactBSAlert
-          danger
-          style={{ display: "block", marginTop: "-100px" }}
-          title="Error!"
-          onConfirm={hideAlert}
-          confirmBtnBsStyle="danger"
-          btnSize=""
-        >
-          {err.message || "Failed to delete product"}
-        </ReactBSAlert>
-      );
+      console.log('error deleting product ::', err);
     }
   };
 
@@ -170,25 +133,7 @@ function ProductList() {
    * Show delete confirmation dialog
    */
   const confirmDelete = (id, product) => {
-    setAlert(
-      <ReactBSAlert
-        warning
-        style={{ display: "block", marginTop: "-100px" }}
-        title="Delete Product?"
-        onConfirm={() => handleDeleteProduct(id, product.title)}
-        onCancel={hideAlert}
-        confirmBtnBsStyle="warning"
-        cancelBtnBsStyle="secondary"
-        confirmBtnText="Yes, delete product"
-        cancelBtnText="Cancel"
-        showCancel
-        btnSize=""
-      >
-        Are you sure you want to delete "{product.title}"?
-        <br />
-        <small className="text-muted">This action cannot be undone.</small>
-      </ReactBSAlert>
-    );
+
   };
 
   /**
@@ -375,12 +320,9 @@ function ProductList() {
   return (
     <>
       <div className="container-fluid">
-        {alert}
-
-        {/* Statistics Cards */}
         <Row className="mb-4">
           <Col lg="3" md="6">
-            <Card className="card-stats">
+            <Card className="card-stats media-object">
               <CardBody>
                 <Row>
                   <Col xs="5">
@@ -401,7 +343,7 @@ function ProductList() {
             </Card>
           </Col>
           <Col lg="3" md="6">
-            <Card className="card-stats">
+            <Card className="card-stats media-object">
               <CardBody>
                 <Row>
                   <Col xs="5">
@@ -422,7 +364,7 @@ function ProductList() {
             </Card>
           </Col>
           <Col lg="3" md="6">
-            <Card className="card-stats">
+            <Card className="card-stats media-object">
               <CardBody>
                 <Row>
                   <Col xs="5">
@@ -443,7 +385,7 @@ function ProductList() {
             </Card>
           </Col>
           <Col lg="3" md="6">
-            <Card className="card-stats">
+            <Card className="card-stats media-object">
               <CardBody>
                 <Row>
                   <Col xs="5">
@@ -464,8 +406,6 @@ function ProductList() {
             </Card>
           </Col>
         </Row>
-
-        {/* Products Table */}
         <Row>
           <Col md="12">
             <Card className="media-object">
