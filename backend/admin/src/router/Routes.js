@@ -9,6 +9,7 @@ import Dashboard from "../pages/Dashboard";
 import ProductList from "../pages/dashboard/ProductList";
 import OrderList from "../pages/dashboard/OrderList";
 import Wizard from "../pages/dashboard/ProductWizard/Wizard";
+import Calendar from "../pages/dashboard/Calendar";
 /*
 import Profile from "_dashboard/Profile.jsx";
 import UserList from "_dashboard/UserList.jsx";
@@ -25,51 +26,6 @@ import BlogNew from "_dashboard/BlogNew.jsx";
 import TaskList from "_dashboard/TaskList.jsx";
 import TaskNew from "_dashboard/TaskNew.jsx";
 import OrderList from "_dashboard/OrderList.jsx";
-
-
-//import CouponsList from "_dashboard/CouponsList.jsx";
-//import CouponNew from "_dashboard/CouponNew.jsx";
-
-const newRoutes = [
-  {
-    path:'/auth',
-    layout: <AuthLayout />,
-    routes: [
-      {
-        path: '/auth/login',
-        element: <Login />,
-        label: 'Login'
-      },
-      {
-        path: '/auth/register',
-        element: <Register />,
-        label: 'Register'
-      }
-    ]
-  },
-  {
-    path: "/admin",
-    layout: <AdminLayout />,
-    label: "admin",
-    routes: [
-      {
-        path: '/admin/dashboard',
-        icon: 'zmdi zmdi-view-dashboard',
-        element: <Dashboard />,
-        label: "Dashboard"
-      },
-      {
-        path: '/admin/dashboard',
-        icon: 'zmdi zmdi-view-',
-        element: <ProductList />,
-        label: "Dashboard"
-      },
-    ]
-  }
-];
-export const getRoutes = () => (newRoutes);
-
-
 */
 export const routes = {
   auth: [
@@ -79,8 +35,9 @@ export const routes = {
   ],
   admin: [
     { path: "/admin/dashboard", label: "Dashboard", layout: "/admin", icon: 'zmdi zmdi-view-dashboard', element: <Dashboard /> },
-    { path: "/admin/products", label: "Products", lalyout: "/admin", icon: "zmdi zmdi-view-book", element: <ProductList /> },
-    { path: "/admin/orders", label: "Orders", lalyout: "/admin", icon: "zmdi zmdi-view-calendar", element: <OrderList /> },
+    { path: "/admin/products", label: "Products", lalyout: "/admin", icon: "fa fa-certificate", element: <ProductList /> },
+    { path: "/admin/orders", label: "Orders", lalyout: "/admin", icon: "fa fa-shopping-cart", element: <OrderList /> },
+    { path: "/admin/calendar", label: "Calendar", lalyout: "/admin", icon: "fa fa-calendar", element: <Calendar /> },
     { path: "/admin/product/new", layout: '/admin', element: <Wizard /> }
   ],
 };

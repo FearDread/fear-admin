@@ -6,40 +6,32 @@ import { Col, Card, CardBody, Row, Button } from "reactstrap";
 
 // Import Feature Factory actions
 import { 
-  createProduct, 
   clearError,
   selectLoading,
   selectError,
-  selectSuccess
+  selectSuccess,
+  customCreateProduct
 } from "../../../features/products/slice.js";
-
 import {
   fetchCategories,
   selectAllCategories
 } from "../../../features/categories/slice.js";
-
 import {
   fetchBrands,
   selectAllBrands
 } from "../../../features/brands/slice.js";
+import {
+  selectCurrentUser
+} from "../../../features/user/slice.js";
 
-// Import wizard steps
 import Step1 from "./WizardSteps/Step1.js";
 import Step2 from "./WizardSteps/Step2.js";
 import Step3 from "./WizardSteps/Step3.js";
 
-/**
- * Custom Navigation Component
- */
+
 const WizardNav = ({ 
   currentStep, 
-  totalSteps, 
-  nextStep, 
-  previousStep, 
   goToStep,
-  firstStep,
-  lastStep,
-  isSubmitting
 }) => {
   const steps = [
     { name: 'Basic Info', icon: 'fa-info-circle' },
@@ -49,7 +41,6 @@ const WizardNav = ({
 
   return (
     <div className="wizard-navigation mb-4">
-      {/* Progress Steps */}
       <div className="d-flex justify-content-between align-items-center mb-4">
         {steps.map((step, index) => (
           <React.Fragment key={index}>
@@ -110,101 +101,44 @@ const WizardNav = ({
           </React.Fragment>
         ))}
       </div>
-
-      {/* Navigation Buttons 
-      <div className="d-flex justify-content-between mt-4">
-        <Button
-          color="secondary"
-          className="btn-round"
-          onClick={previousStep}
-          disabled={currentStep === 1}
-          style={{ minWidth: '120px' }}
-        >
-          <i className="fa fa-arrow-left mr-2"></i>
-          Previous
-        </Button>
-
-        <div className="text-center text-light-2">
-          <small>Step {currentStep} of {totalSteps}</small>
-        </div>
-
-        {!lastStep ? (
-          <Button
-            color="primary"
-            className="btn-round"
-            onClick={nextStep}
-            style={{ minWidth: '120px' }}
-          >
-            Next
-            <i className="fa fa-arrow-right ml-2"></i>
-          </Button>
-        ) : (
-          <Button
-            color="success"
-            className="btn-round"
-            disabled={isSubmitting}
-            style={{ minWidth: '120px' }}
-          >
-            {isSubmitting ? (
-              <>
-                <span className="spinner-border spinner-border-sm mr-2"></span>
-                Creating...
-              </>
-            ) : (
-              <>
-                <i className="fa fa-check mr-2"></i>
-                Create Product
-              </>
-            )}
-          </Button>
-        )}
-      </div>
-      */}
     </div>
   );
 };
 
-/**
- * Modern Product Wizard Component
- * Uses FeatureFactory for state management
- */
 const Wizard = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const wizardRef = useRef(null);
-  
   // Refs for each step
   const step1Ref = useRef(null);
   const step2Ref = useRef(null);
   const step3Ref = useRef(null);
-
   // Local state
   const [alert, setAlert] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [wizardInstance, setWizardInstance] = useState(null);
-
   // Redux state from FeatureFactory slices
+  const currentUser = useSelector(selectCurrentUser);
   const loading = useSelector(selectLoading);
   const error = useSelector(selectError);
   const success = useSelector(selectSuccess);
   const categories = useSelector(selectAllCategories);
   const brands = useSelector(selectAllBrands);
 
-  /**
-   * Fetch required data on mount
-   */
   useEffect(() => {
     const fetchData = async () => {
-      try {
         await Promise.all([
           dispatch(fetchCategories()).unwrap(),
           dispatch(fetchBrands()).unwrap()
-        ]);
-      } catch (err) {
-        console.error("Failed to fetch initial data:", err);
-        showErrorAlert("Failed to load categories and brands");
-      }
+        ])
+          .then((result) => {
+            console.log('fetch data result : ', result);
+          })
+          .catch((err) => {
+            console.error("Failed to fetch initial data:", err);
+            showErrorAlert("Failed to load categories and brands");
+          });
     };
 
     fetchData();
@@ -296,6 +230,8 @@ const Wizard = () => {
 
       // Prepare product payload
       const productData = {
+        // current user 
+        userId: currentUser._id,
         // Step 1 - Basic Info
         title: info.title,
         slug: info.title?.toLowerCase().replace(/\s+/g, "-"),
@@ -351,7 +287,7 @@ const Wizard = () => {
       });
 
     // Dispatch create action
-    const result = dispatch(createProduct({productData}));
+    const result = dispatch(customCreateProduct(formData));
     console.log('product creation result = ', result);
 
       //console.error("Product creation failed:", err);
@@ -417,14 +353,11 @@ const Wizard = () => {
 
   return (
     <>
-      {alert}
-      
       <div className="container-fluid">
         <Row>
           <Col className="mr-auto ml-auto" md="10">
             <Card className="media-object">
               <CardBody>
-                {/* Header */}
                 <div className="text-center mb-4">
                   <h2 className="text-white font-weight-bold">
                     <i className="fa fa-magic mr-2"></i>
@@ -435,7 +368,6 @@ const Wizard = () => {
                   </p>
                 </div>
 
-                {/* Wizard Container */}
                 <Card className="media-object">
                   <CardBody>
                     <StepWizard
@@ -449,7 +381,6 @@ const Wizard = () => {
                         />
                       }
                     >
-                      {/* Step 1 - Basic Information */}
                       <Step1
                         ref={step1Ref}
                         categories={categories}
@@ -457,15 +388,11 @@ const Wizard = () => {
                         title="Basic Information"
                         subtitle="Enter product title, description, and category"
                       />
-
-                      {/* Step 2 - Product Images */}
                       <Step2
                         ref={step2Ref}
                         title="Product Media"
                         subtitle="Upload product images and media files"
                       />
-
-                      {/* Step 3 - Pricing */}
                       <Step3
                         ref={step3Ref}
                         title="Price & Stock"

@@ -70,6 +70,7 @@ export const {
   getProductsByBrand,
   getFeaturedProducts,
   getRecommendations,
+  customCreateProduct,
   create: createProduct,
   update: updateProduct,
   delete: deleteProduct,

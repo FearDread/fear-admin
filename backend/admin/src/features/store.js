@@ -8,6 +8,7 @@ import product from './products/slice';
 import category from "./categories/slice";
 import brand from "./brands/slice";
 import order from "./orders/slice";
+import event from "./orders/slice";
 
 
 export const initializeStore = () => {
@@ -19,6 +20,7 @@ export const initializeStore = () => {
     categories: category.reducer,
     brands: brand.reducer,
     orders: order.reducer,
+    events: event.reducer,
     /* Add other reducers here
       addresses: address.reducer,
 

@@ -4,7 +4,6 @@ import { useSelector } from "react-redux";
 import AuthLayout from "./layouts/Auth";
 import AdminLayout from "./layouts/Admin";
 import routes from "./router/Routes";
-import "./assets/css/App.css";
 import {
   selectIsAuthenticated,
   selectCurrentUser

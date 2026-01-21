@@ -85,7 +85,7 @@ const ProductList = () => {
 
   useEffect(() => {
 
-    dispatch(fetchProducts());
+    dispatch(fetchProducts()).unwrap();
    
     dispatch(fetchCategories());
 

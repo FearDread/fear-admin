@@ -1,10 +1,6 @@
 import React, { useState, useImperativeHandle, useCallback } from "react";
 import { Row, Col, Button, Card, CardBody, Progress, Badge } from "reactstrap";
 
-/**
- * Modern Step 2 - Product Images
- * Updated for react-step-wizard
- */
 const Step2 = React.forwardRef((props, ref) => {
   const { 
     title, 
@@ -13,9 +9,6 @@ const Step2 = React.forwardRef((props, ref) => {
     previousStep,
     currentStep,
     totalSteps,
-    firstStep,
-    lastStep,
-    goToStep
   } = props;
 
   const [images, setImages] = useState([]);
@@ -23,6 +16,7 @@ const Step2 = React.forwardRef((props, ref) => {
   const [isDragging, setIsDragging] = useState(false);
   const [uploadProgress, setUploadProgress] = useState({});
   const [errors, setErrors] = useState([]);
+
   const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
   const MAX_FILES = 5;
   const ACCEPTED_FORMATS = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
@@ -40,9 +34,6 @@ const Step2 = React.forwardRef((props, ref) => {
     return errors;
   };
 
-  /**
-   * Process and add images
-   */
   const processFiles = useCallback((files) => {
     const fileArray = Array.from(files);
     const validationErrors = [];

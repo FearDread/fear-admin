@@ -74,7 +74,7 @@ const FearServer = (function () {
       }
 
       if (!envPath) {
-        console.warn('⚠️  Warning: No .env file found in common locations');
+        console.warn('Warning: No .env file found in common locations');
         console.warn('   Checked:', [
           path.join(this.rootDir, '.env'),
           path.join(this.rootDir, `.env.${process.env.NODE_ENV || 'development'}`),
@@ -87,18 +87,9 @@ const FearServer = (function () {
       const result = dotenv.config({ path: envPath, ...options });
 
       if (result.error) {
-        console.error('❌ Error loading .env file:', result.error);
+        console.error('Error loading .env file:', result.error);
         return false;
       } 
-      // Log loaded variables (hide sensitive values)
-      if (result.parsed && Object.keys(result.parsed).length > 0) {
-        console.log('📋 Loaded environment variables:');
-        Object.keys(result.parsed).forEach(key => {
-          const isSensitive = /secret|key|password|token|private/i.test(key);
-          const value = isSensitive ? '***' : result.parsed[key];
-          console.log(`   ${key}=${value}`);
-        });
-      }
 
       this.envLoaded = true;
       return true;
@@ -148,7 +139,7 @@ const FearServer = (function () {
 
       // Debug logging
       this.fear.getLogger().info('═══════════════════════════════════════');
-      this.fear.getLogger().info('🔍 React App Path Resolution:');
+      this.fear.getLogger().info('React App Path Resolution:');
       this.fear.getLogger().info(`   Root dir: ${this.rootDir}`);
       this.fear.getLogger().info(`   App param: ${app}`);
       this.fear.getLogger().info(`   Build param: ${build}`);
@@ -199,7 +190,7 @@ const FearServer = (function () {
         this.fear.getLogger().debug(`Route request: ${req.path}`);
         
         // Skip if it's an API route
-        if (req.path.startsWith('/api')) {
+        if (req.path.startsWith('/fear/api')) {
           this.fear.getLogger().debug('Skipping - API route');
           return next();
         }
@@ -280,16 +271,16 @@ const FearServer = (function () {
      * Setup API routes prefix (useful to avoid conflicts with React routes)
      * @param {string} prefix - API prefix (e.g., '/api')
      */
-    setupAPIPrefix(prefix = '/api') {
+    setupAPIPrefix(prefix = '/fear/api') {
       const normalizedPrefix = `/${prefix.replace(/^\/+|\/+$/g, '')}`;
       
       this.fear.getApp().use(normalizedPrefix, (req, res, next) => {
-        // Mark as API route
+
         req.isAPIRoute = true;
         next();
       });
 
-      this.fear.getLogger().info(`✓ API routes configured with prefix: ${normalizedPrefix}`);
+      this.fear.getLogger().info(`API routes configured with prefix: ${normalizedPrefix}`);
       return normalizedPrefix;
     },
 
@@ -472,7 +463,7 @@ const FearServer = (function () {
         logger.warn(this.fear.logo);
       }
 
-      logger.info('🚀 Starting FEAR Server...');
+      logger.info('Starting FEAR Server...');
       logger.info('═══════════════════════════════════════');
 
       // Initialize database connection
@@ -484,7 +475,7 @@ const FearServer = (function () {
         .then((server) => {
           this.server = server;
           logger.info('═══════════════════════════════════════');
-          logger.info(`✓ FEAR API Server Running on Port ${port}`);
+          logger.info(`FEAR API Server Running on Port ${port}`);
           logger.info('═══════════════════════════════════════');
           
           // Display registered React apps
