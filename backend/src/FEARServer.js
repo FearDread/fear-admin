@@ -140,12 +140,9 @@ const FearServer = (function () {
       // Debug logging
       this.fear.getLogger().info('═══════════════════════════════════════');
       this.fear.getLogger().info('React App Path Resolution:');
-      this.fear.getLogger().info(`   Root dir: ${this.rootDir}`);
-      this.fear.getLogger().info(`   App param: ${app}`);
-      this.fear.getLogger().info(`   Build param: ${build}`);
-      this.fear.getLogger().info(`   → Build path: ${buildPath}`);
-      this.fear.getLogger().info(`   → Index path: ${indexPath}`);
-      this.fear.getLogger().info(`   → Base path: ${normalizedBasePath || '/'}`);
+      this.fear.getLogger().info(`→ Build path: ${buildPath}`);
+      this.fear.getLogger().info(`→ Index path: ${indexPath}`);
+      this.fear.getLogger().info(`→ Base path: ${normalizedBasePath || '/'}`);
 
       // Validate React app exists
       try {
@@ -154,10 +151,6 @@ const FearServer = (function () {
         this.fear.getLogger().error('React app validation failed:', error.message);
         throw error;
       }
-
-      this.fear.getLogger().info(`📁 Serving static files from: ${buildPath}`);
-      this.fear.getLogger().info(`🌐 Base URL path: ${normalizedBasePath || '/'}`);
-      this.fear.getLogger().info(`📄 Index file: ${indexPath}`);
 
       // Serve static files with caching headers
       this.fear.getApp().use(
@@ -185,7 +178,6 @@ const FearServer = (function () {
         })
       );
 
-      // Handle React Router - serve index.html for all non-API routes
       this.fear.getApp().get(`${normalizedBasePath}/*`, (req, res, next) => {
         this.fear.getLogger().debug(`Route request: ${req.path}`);
         
@@ -195,7 +187,6 @@ const FearServer = (function () {
           return next();
         }
 
-        this.fear.getLogger().debug(`Serving index.html for: ${req.path}`);
         res.sendFile(indexPath, (err) => {
           if (err) {
             this.fear.getLogger().error('Error serving index.html:', err);
@@ -211,7 +202,7 @@ const FearServer = (function () {
         indexPath
       });
 
-      this.fear.getLogger().info(`✓ React app configured at: ${normalizedBasePath || '/'}`);
+      this.fear.getLogger().info(`React app configured at: ${normalizedBasePath || '/'}`);
     },
 
     /**
@@ -264,7 +255,7 @@ const FearServer = (function () {
         next();
       });
 
-      this.fear.getLogger().info('✓ CORS configured for React development');
+      this.fear.getLogger().info('CORS configured for React development');
     },
 
     /**
@@ -325,7 +316,7 @@ const FearServer = (function () {
               return reject(err);
             }
 
-            this.fear.getLogger().info('✓ Database initialized successfully');
+            this.fear.getLogger().info('Database initialized successfully');
             resolve();
           });
         } catch (error) {
@@ -391,7 +382,7 @@ const FearServer = (function () {
         })
         .then(() => {
           clearTimeout(forceShutdownTimeout);
-          this.fear.getLogger().info('✓ Graceful shutdown completed');
+          this.fear.getLogger().info('Graceful shutdown completed');
           process.exit(0);
         })
         .catch((error) => {
@@ -482,7 +473,7 @@ const FearServer = (function () {
           if (this.reactApps.length > 0) {
             logger.info('📱 React Apps:');
             this.reactApps.forEach(app => {
-              logger.info(`   • http://localhost:${port}${app.basePath}`);
+              logger.info(`• http://localhost:${port}${app.basePath}`);
             });
             logger.info('═══════════════════════════════════════');
           }
