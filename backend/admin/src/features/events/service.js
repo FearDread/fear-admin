@@ -35,6 +35,11 @@ export const EventService = {
   batchUpdate: ThunkFactory.custom('event', 'batch-update', {
     method: 'PUT',
   }),
+  
+  customCreateEvent: ThunkFactory.custom('event', 'new', {
+    method: 'POST',
+    useParams: false
+  })
 };
 
 export default EventService;

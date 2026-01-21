@@ -25,11 +25,12 @@ import {
 import {
   Modal,
   Button as RSButton,
+  useToaster,
+  Message
 } from "rsuite";
 import Step1 from "./ProductSteps/Step1.js";
 import Step2 from "./ProductSteps/Step2.js";
 import Step3 from "./ProductSteps/Step3.js";
-import ReactAlert from "../../../components/ReactAlert/ReactAlert";
 
 const WizardNav = ({
   currentStep,
@@ -53,10 +54,10 @@ const WizardNav = ({
             >
               <div
                 className={`wizard-step-icon mx-auto mb-2 ${index + 1 === currentStep
-                    ? 'active'
-                    : index < currentStep
-                      ? 'completed'
-                      : ''
+                  ? 'active'
+                  : index < currentStep
+                    ? 'completed'
+                    : ''
                   }`}
                 style={{
                   width: '50px',
@@ -107,7 +108,7 @@ const WizardNav = ({
 
 const Wizard = ({ steps }) => {
   const wizardType = steps || 'product';
-
+  const toaster = useToaster();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const wizardRef = useRef(null);
@@ -147,321 +148,308 @@ const Wizard = ({ steps }) => {
           showErrorAlert("Failed to load categories and brands");
         });
     };
-
     fetchData();
-
-    // Cleanup
     return () => {
       dispatch(clearError());
     };
   }, [dispatch]);
 
-  /**
-   * Handle successful product creation
-   */
   useEffect(() => {
     if (success && isSubmitting) {
       setIsSubmitting(false);
-      showSuccessAlert();
+      toaster.push(
+        <Message showIcon type="success" closable>
+          <strong>Success!</strong> Operation completed successfully
+        </Message>,
+        { placement: 'topEnd', duration: 3000 }
+      );
     }
-  }, [success, isSubmitting]);
+  }, [success, isSubmitting, toaster]);
 
-  /**
-   * Handle errors
-   */
-  useEffect(() => {
-    if (error && isSubmitting) {
-      setIsSubmitting(false);
-      showErrorAlert(error);
-    }
-  }, [error, isSubmitting]);
-
-  /**
-   * Handle step change
-   */
-  const onStepChange = (stats) => {
-    setCurrentStep(stats.activeStep);
-  };
-
-  /**
-   * Validate current step before moving forward
-   */
-  const validateStep = (stepNumber) => {
-    const refs = [step1Ref, step2Ref, step3Ref];
-    const currentRef = refs[stepNumber - 1];
-
-    if (currentRef.current?.isValidated) {
-      return currentRef.current.isValidated();
-    }
-
-    return true; // If no validation function, allow proceeding
-  };
-
-  /**
-   * Custom next step handler with validation
-   */
-  const handleNextStep = () => {
-    if (validateStep(currentStep)) {
-      wizardInstance?.nextStep();
-    }
-  };
-
-  /**
-   * Collect all wizard data
-   */
-  const collectWizardData = () => {
-    const step1Data = step1Ref.current?.state?.data || {};
-    const step2Data = step2Ref.current?.state?.data || {};
-    const step3Data = step3Ref.current?.state?.data || {};
-
-    return {
-      info: step1Data,
-      images: step2Data,
-      pricing: step3Data
-    };
-  };
-
-  /**
-   * Process and submit wizard data
-   */
-  const handleFinish = () => {
-
-    if (!validateStep(3)) return;
-
-    setIsSubmitting(true);
-
-    const wizardData = collectWizardData();
-    const { info, images, pricing } = wizardData;
-
-    console.log('Collected Wizard Data:', wizardData);
-
-    // Prepare product payload
-    const productData = {
-      // current user 
-      userId: currentUser._id,
-      // Step 1 - Basic Info
-      title: info.title,
-      slug: info.title?.toLowerCase().replace(/\s+/g, "-"),
-      description: info.description,
-      category: info.category,
-      brand: info.brand,
-      tags: info.tags ? info.tags.split(",").map(t => t.trim()) : [],
-
-      // Step 2 - Images
-      images: images.images || [],
-
-      // Step 3 - Pricing
-      price: parseFloat(pricing.price) || 0,
-      quantity: parseInt(pricing.quantity) || 0,
-      countryCode: pricing.country?.toUpperCase(),
-      discount: parseFloat(pricing.discount) || 0,
-
-      // Calculate final price
-      finalPrice: pricing.price && pricing.discount
-        ? parseFloat(pricing.price) * (1 - parseFloat(pricing.discount) / 100)
-        : parseFloat(pricing.price) || 0,
-      status: "active",
-      inStock: parseInt(pricing.quantity) > 0,
-      createdAt: new Date().toISOString()
-    };
-
-    // Validate required fields
-    const validation = validateProductData(productData);
-    if (!validation.isValid) {
-      showErrorAlert(validation.error);
-      setIsSubmitting(false);
-      return;
-    }
-
-    const formData = new FormData();
-
-    Object.keys(productData).forEach(key => {
-      if (key === 'images' && Array.isArray(productData.images)) {
-        productData.images.forEach(image => {
-          formData.append('images', image);
-        });
-      } else if (key === 'tags' && Array.isArray(productData.tags)) {
-        formData.append('tags', JSON.stringify(productData.tags));
-      } else {
-        formData.append(key, productData[key]);
-      }
-    });
-
-    // Dispatch create action
-    const result = dispatch(customCreateProduct(formData));
-    console.log('product creation result = ', result);
-
-    //console.error("Product creation failed:", err);
+useEffect(() => {
+  if (error && isSubmitting) {
     setIsSubmitting(false);
-    showSuccessAlert();
-    //showErrorAlert(err.message || "Failed to create product");
+    showErrorAlert(error);
+  }
+}, [error, isSubmitting]);
+
+const onStepChange = (stats) => {
+  setCurrentStep(stats.activeStep);
+};
+
+/**
+ * Validate current step before moving forward
+ */
+const validateStep = (stepNumber) => {
+  const refs = [step1Ref, step2Ref, step3Ref];
+  const currentRef = refs[stepNumber - 1];
+
+  if (currentRef.current?.isValidated) {
+    return currentRef.current.isValidated();
+  }
+
+  return true; // If no validation function, allow proceeding
+};
+
+/**
+ * Custom next step handler with validation
+ */
+const handleNextStep = () => {
+  if (validateStep(currentStep)) {
+    wizardInstance?.nextStep();
+  }
+};
+
+/**
+ * Collect all wizard data
+ */
+const collectWizardData = () => {
+  const step1Data = step1Ref.current?.state?.data || {};
+  const step2Data = step2Ref.current?.state?.data || {};
+  const step3Data = step3Ref.current?.state?.data || {};
+
+  return {
+    info: step1Data,
+    images: step2Data,
+    pricing: step3Data
   };
-  /**
-   * Validate product data before submission
-   */
-  const validateProductData = (data) => {
-    if (!data.title || data.title.trim().length < 3) {
-      return { isValid: false, error: "Product title must be at least 3 characters" };
-    }
+};
 
-    if (!data.description || data.description.trim().length < 10) {
-      return { isValid: false, error: "Product description must be at least 10 characters" };
-    }
+/**
+ * Process and submit wizard data
+ */
+const handleFinish = () => {
 
-    if (!data.category) {
-      return { isValid: false, error: "Please select a category" };
-    }
+  if (!validateStep(3)) return;
 
-    if (!data.brand) {
-      return { isValid: false, error: "Please select a brand" };
-    }
+  setIsSubmitting(true);
 
-    if (!data.price || data.price <= 0) {
-      return { isValid: false, error: "Price must be greater than 0" };
-    }
+  const wizardData = collectWizardData();
+  const { info, images, pricing } = wizardData;
 
-    if (data.quantity === undefined || data.quantity < 0) {
-      return { isValid: false, error: "Quantity must be 0 or greater" };
-    }
+  console.log('Collected Wizard Data:', wizardData);
 
-    if (!data.images || data.images.length === 0) {
-      return { isValid: false, error: "Please upload at least one product image" };
-    }
+  // Prepare product payload
+  const productData = {
+    // current user 
+    userId: currentUser._id,
+    // Step 1 - Basic Info
+    title: info.title,
+    slug: info.title?.toLowerCase().replace(/\s+/g, "-"),
+    description: info.description,
+    category: info.category,
+    brand: info.brand,
+    tags: info.tags ? info.tags.split(",").map(t => t.trim()) : [],
 
-    return { isValid: true };
+    // Step 2 - Images
+    images: images.images || [],
+
+    // Step 3 - Pricing
+    price: parseFloat(pricing.price) || 0,
+    quantity: parseInt(pricing.quantity) || 0,
+    countryCode: pricing.country?.toUpperCase(),
+    discount: parseFloat(pricing.discount) || 0,
+
+    // Calculate final price
+    finalPrice: pricing.price && pricing.discount
+      ? parseFloat(pricing.price) * (1 - parseFloat(pricing.discount) / 100)
+      : parseFloat(pricing.price) || 0,
+    status: "active",
+    inStock: parseInt(pricing.quantity) > 0,
+    createdAt: new Date().toISOString()
   };
 
-  /**
-   * Show success alert
-   */
-  const showSuccessAlert = () => {
-    setShowSuccessModal(true);
-  };
+  // Validate required fields
+  const validation = validateProductData(productData);
+  if (!validation.isValid) {
+    showErrorAlert(validation.error);
+    setIsSubmitting(false);
+    return;
+  }
 
-  /**
-   * Show error alert
-   */
-  const showErrorAlert = (errorMessage) => {
+  const formData = new FormData();
 
-  };
+  Object.keys(productData).forEach(key => {
+    if (key === 'images' && Array.isArray(productData.images)) {
+      productData.images.forEach(image => {
+        formData.append('images', image);
+      });
+    } else if (key === 'tags' && Array.isArray(productData.tags)) {
+      formData.append('tags', JSON.stringify(productData.tags));
+    } else {
+      formData.append(key, productData[key]);
+    }
+  });
 
-  /**
-   * Hide alert
-   */
-  const hideAlert = () => {
-    setShowSuccessModal(false);
-    dispatch(clearError());
-    navigate('/admin/products');
-  };
+  // Dispatch create action
+  dispatch(customCreateProduct(formData));
+};
+/**
+ * Validate product data before submission
+ */
+const validateProductData = (data) => {
+  if (!data.title || data.title.trim().length < 3) {
+    return { isValid: false, error: "Product title must be at least 3 characters" };
+  }
 
-  return (
-    <>
-      <div className="container-fluid">
-        <Row>
-          <Col className="mr-auto ml-auto" md="10">
-            <Card className="media-object">
-              <CardBody>
-                <div className="text-center mb-4">
-                  <h2 className="text-white font-weight-bold">
-                    <i className="fa fa-magic mr-2"></i>
-                    Create New Product
-                  </h2>
-                  <p className="text-light-2">
-                    Follow the steps to add a new product to your store
-                  </p>
-                </div>
+  if (!data.description || data.description.trim().length < 10) {
+    return { isValid: false, error: "Product description must be at least 10 characters" };
+  }
 
-                <Card className="media-object">
-                  <CardBody>
-                    <StepWizard
-                      ref={wizardRef}
-                      instance={setWizardInstance}
-                      onStepChange={onStepChange}
-                      nav={
-                        <WizardNav
-                          isSubmitting={isSubmitting}
-                          lastStep={step3Ref}
-                        />
-                      }
-                    >
-                      <Step1
-                        ref={step1Ref}
-                        categories={categories}
-                        brands={brands}
-                        title="Basic Information"
-                        subtitle="Enter product title, description, and category"
+  if (!data.category) {
+    return { isValid: false, error: "Please select a category" };
+  }
+
+  if (!data.brand) {
+    return { isValid: false, error: "Please select a brand" };
+  }
+
+  if (!data.price || data.price <= 0) {
+    return { isValid: false, error: "Price must be greater than 0" };
+  }
+
+  if (data.quantity === undefined || data.quantity < 0) {
+    return { isValid: false, error: "Quantity must be 0 or greater" };
+  }
+
+  if (!data.images || data.images.length === 0) {
+    return { isValid: false, error: "Please upload at least one product image" };
+  }
+
+  return { isValid: true };
+};
+
+/**
+ * Show success alert
+ */
+const showSuccessAlert = () => {
+  setShowSuccessModal(true);
+};
+
+/**
+ * Show error alert
+ */
+const showErrorAlert = (errorMessage) => {
+
+};
+
+/**
+ * Hide alert
+ */
+const hideAlert = () => {
+  setShowSuccessModal(false);
+  dispatch(clearError());
+  navigate('/admin/products');
+};
+
+return (
+  <>
+    <div className="container-fluid">
+      <Row>
+        <Col className="mr-auto ml-auto" md="10">
+          <Card className="media-object">
+            <CardBody>
+              <div className="text-center mb-4">
+                <h2 className="text-white font-weight-bold">
+                  <i className="fa fa-magic mr-2"></i>
+                  Create New Product
+                </h2>
+                <p className="text-light-2">
+                  Follow the steps to add a new product to your store
+                </p>
+              </div>
+
+              <Card className="media-object">
+                <CardBody>
+                  <StepWizard
+                    ref={wizardRef}
+                    instance={setWizardInstance}
+                    onStepChange={onStepChange}
+                    nav={
+                      <WizardNav
+                        isSubmitting={isSubmitting}
+                        lastStep={step3Ref}
                       />
-                      <Step2
-                        ref={step2Ref}
-                        title="Product Media"
-                        subtitle="Upload product images and media files"
-                      />
-                      <Step3
-                        ref={step3Ref}
-                        title="Price & Stock"
-                        subtitle="Set pricing, stock quantity, and discount"
-                        onFinish={handleFinish}
-                      />
-                    </StepWizard>
-                  </CardBody>
-                </Card>
-
-                {/* Loading Overlay */}
-                {(loading || isSubmitting) && (
-                  <div
-                    className="position-absolute w-100 h-100 d-flex justify-content-center align-items-center"
-                    style={{
-                      top: 0,
-                      left: 0,
-                      background: 'rgba(0,0,0,0.7)',
-                      zIndex: 9999,
-                      borderRadius: '0.25rem'
-                    }}
+                    }
                   >
-                    <div className="text-center">
-                      <div className="spinner-border text-primary mb-3" role="status" style={{ width: '3rem', height: '3rem' }}>
-                        <span className="sr-only">Loading...</span>
-                      </div>
-                      <p className="text-white">
-                        {isSubmitting ? "Creating your product..." : "Loading..."}
-                      </p>
+                    <Step1
+                      ref={step1Ref}
+                      categories={categories}
+                      brands={brands}
+                      title="Basic Information"
+                      subtitle="Enter product title, description, and category"
+                    />
+                    <Step2
+                      ref={step2Ref}
+                      title="Product Media"
+                      subtitle="Upload product images and media files"
+                    />
+                    <Step3
+                      ref={step3Ref}
+                      title="Price & Stock"
+                      subtitle="Set pricing, stock quantity, and discount"
+                      onFinish={handleFinish}
+                    />
+                  </StepWizard>
+                </CardBody>
+              </Card>
+
+              {/* Loading Overlay */}
+              {(loading || isSubmitting) && (
+                <div
+                  className="position-absolute w-100 h-100 d-flex justify-content-center align-items-center"
+                  style={{
+                    top: 0,
+                    left: 0,
+                    background: 'rgba(0,0,0,0.7)',
+                    zIndex: 9999,
+                    borderRadius: '0.25rem'
+                  }}
+                >
+                  <div className="text-center">
+                    <div className="spinner-border text-primary mb-3" role="status" style={{ width: '3rem', height: '3rem' }}>
+                      <span className="sr-only">Loading...</span>
                     </div>
+                    <p className="text-white">
+                      {isSubmitting ? "Creating your product..." : "Loading..."}
+                    </p>
                   </div>
-                )}
-              </CardBody>
-            </Card>
-          </Col>
-        </Row>
-      </div>
-      {/* Success Confirmation Modal */}
-      <Modal
-        open={showSuccessModal}
-        onClose={() => setShowSuccessModal(false)}
-        size="xs"
-        className="rs-theme-dark"
-      >
-        <Modal.Header>
-          <Modal.Title>
-            Success!
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <p style={{ color: "rgba(255,255,255,0.7)" }}>
-            You have successfully added new product to catelog!
-          </p>
-        </Modal.Body>
-        <Modal.Footer>
-          <RSButton onClick={hideAlert} appearance="primary" color="blue">
-            <i className="fa fa-trash mr-2"></i>
-            OK
-          </RSButton>
-          <RSButton onClick={() => setShowSuccessModal(false)} appearance="subtle">
-            Cancel
-          </RSButton>
-        </Modal.Footer>
-      </Modal>
-    </>
-  );
+                </div>
+              )}
+            </CardBody>
+          </Card>
+        </Col>
+      </Row>
+    </div>
+    {/* Success Confirmation Modal */}
+    <Modal
+      open={showSuccessModal}
+      onClose={() => setShowSuccessModal(false)}
+      size="xs"
+      className="rs-theme-dark"
+    >
+      <Modal.Header>
+        <Modal.Title>
+          Success!
+        </Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <p style={{ color: "rgba(255,255,255,0.7)" }}>
+          You have successfully added new product to catelog!
+        </p>
+      </Modal.Body>
+      <Modal.Footer>
+        <RSButton onClick={hideAlert} appearance="primary" color="blue">
+          <i className="fa fa-trash mr-2"></i>
+          OK
+        </RSButton>
+        <RSButton onClick={() => setShowSuccessModal(false)} appearance="subtle">
+          Cancel
+        </RSButton>
+      </Modal.Footer>
+    </Modal>
+  </>
+);
 };
 
 export default Wizard;

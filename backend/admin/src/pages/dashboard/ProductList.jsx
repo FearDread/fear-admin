@@ -104,9 +104,6 @@ const ProductList = () => {
 
   }, [dispatch]);
 
-  /**
-   * Handle window resize for responsive behavior
-   */
   useEffect(() => {
     const handleResize = () => {
       // Add any resize logic if needed

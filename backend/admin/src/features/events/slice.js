@@ -123,10 +123,11 @@ export const {
   fetch: fetchEvents,
   fetchOne: fetchEvent,
   search: searchEvents,
-  create: createEvent,
+  //create: createEvent,
   update: updateEvent,
   patch: patchEvent,
   delete: deleteEvent,
+  customCreateEvent: createEvent
 } = Event;
 
 export const fetchUpcomingEvents = (limit = 10) => async (dispatch) => {
