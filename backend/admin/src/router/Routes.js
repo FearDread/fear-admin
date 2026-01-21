@@ -39,8 +39,8 @@ export const routes = {
     { path: "/admin/orders", label: "Orders", icon: "fa fa-shopping-cart", element: <OrderList /> },
     { path: "/admin/blog", label: "Blog", icon: "fa fa-book", element: <BlogList /> },
     { path: "/admin/calendar", label: "Calendar", icon: "fa fa-calendar", element: <Calendar /> },
-    { path: "/admin/product/new", element: <Wizard steps="product" /> },
-    { path: "/admin/blog/new", element: <Wizard steps="blog" /> }
+    { path: "/admin/product/new", element: <Wizard type="product" /> },
+    { path: "/admin/blog/new", element: <Wizard type="blog" /> }
   ],
 };
 
