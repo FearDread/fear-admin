@@ -4,8 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import StepWizard from "react-step-wizard";
 import { Col, Card, CardBody, Row, Button } from "reactstrap";
 
-// Import Feature Factory actions
-import { 
+import {
   clearError,
   selectLoading,
   selectError,
@@ -23,14 +22,17 @@ import {
 import {
   selectCurrentUser
 } from "../../../features/user/slice.js";
+import {
+  Modal,
+  Button as RSButton,
+} from "rsuite";
+import Step1 from "./ProductSteps/Step1.js";
+import Step2 from "./ProductSteps/Step2.js";
+import Step3 from "./ProductSteps/Step3.js";
+import ReactAlert from "../../../components/ReactAlert/ReactAlert";
 
-import Step1 from "./WizardSteps/Step1.js";
-import Step2 from "./WizardSteps/Step2.js";
-import Step3 from "./WizardSteps/Step3.js";
-
-
-const WizardNav = ({ 
-  currentStep, 
+const WizardNav = ({
+  currentStep,
   goToStep,
 }) => {
   const steps = [
@@ -44,19 +46,18 @@ const WizardNav = ({
       <div className="d-flex justify-content-between align-items-center mb-4">
         {steps.map((step, index) => (
           <React.Fragment key={index}>
-            <div 
+            <div
               className="text-center flex-fill"
               style={{ cursor: index < currentStep ? 'pointer' : 'default' }}
               onClick={() => index < currentStep && goToStep(index + 1)}
             >
-              <div 
-                className={`wizard-step-icon mx-auto mb-2 ${
-                  index + 1 === currentStep 
-                    ? 'active' 
-                    : index < currentStep 
-                    ? 'completed' 
-                    : ''
-                }`}
+              <div
+                className={`wizard-step-icon mx-auto mb-2 ${index + 1 === currentStep
+                    ? 'active'
+                    : index < currentStep
+                      ? 'completed'
+                      : ''
+                  }`}
                 style={{
                   width: '50px',
                   height: '50px',
@@ -77,18 +78,17 @@ const WizardNav = ({
                   <i className={`fa ${step.icon}`}></i>
                 )}
               </div>
-              <small 
-                className={`d-block ${
-                  index + 1 === currentStep ? 'text-primary' : 'text-light-2'
-                }`}
+              <small
+                className={`d-block ${index + 1 === currentStep ? 'text-primary' : 'text-light-2'
+                  }`}
                 style={{ fontSize: '0.85rem' }}
               >
                 {step.name}
               </small>
             </div>
-            
+
             {index < steps.length - 1 && (
-              <div 
+              <div
                 className="flex-fill mx-3"
                 style={{
                   height: '2px',
@@ -105,7 +105,9 @@ const WizardNav = ({
   );
 };
 
-const Wizard = () => {
+const Wizard = ({ steps }) => {
+  const wizardType = steps || 'product';
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const wizardRef = useRef(null);
@@ -125,24 +127,29 @@ const Wizard = () => {
   const success = useSelector(selectSuccess);
   const categories = useSelector(selectAllCategories);
   const brands = useSelector(selectAllBrands);
-
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const productSteps = [
+    Step1,
+    Step2,
+    Step3
+  ]
   useEffect(() => {
     const fetchData = async () => {
-        await Promise.all([
-          dispatch(fetchCategories()).unwrap(),
-          dispatch(fetchBrands()).unwrap()
-        ])
-          .then((result) => {
-            console.log('fetch data result : ', result);
-          })
-          .catch((err) => {
-            console.error("Failed to fetch initial data:", err);
-            showErrorAlert("Failed to load categories and brands");
-          });
+      await Promise.all([
+        dispatch(fetchCategories()).unwrap(),
+        dispatch(fetchBrands()).unwrap()
+      ])
+        .then((result) => {
+          console.log('fetch data result : ', result);
+        })
+        .catch((err) => {
+          console.error("Failed to fetch initial data:", err);
+          showErrorAlert("Failed to load categories and brands");
+        });
     };
 
     fetchData();
-    
+
     // Cleanup
     return () => {
       dispatch(clearError());
@@ -186,7 +193,7 @@ const Wizard = () => {
     if (currentRef.current?.isValidated) {
       return currentRef.current.isValidated();
     }
-    
+
     return true; // If no validation function, allow proceeding
   };
 
@@ -219,80 +226,75 @@ const Wizard = () => {
    */
   const handleFinish = () => {
 
-      if (!validateStep(3)) return;
+    if (!validateStep(3)) return;
 
-      setIsSubmitting(true);
+    setIsSubmitting(true);
 
-      const wizardData = collectWizardData();
-      const { info, images, pricing } = wizardData;
+    const wizardData = collectWizardData();
+    const { info, images, pricing } = wizardData;
 
-      console.log('Collected Wizard Data:', wizardData);
+    console.log('Collected Wizard Data:', wizardData);
 
-      // Prepare product payload
-      const productData = {
-        // current user 
-        userId: currentUser._id,
-        // Step 1 - Basic Info
-        title: info.title,
-        slug: info.title?.toLowerCase().replace(/\s+/g, "-"),
-        description: info.description,
-        category: info.category,
-        brand: info.brand,
-        tags: info.tags ? info.tags.split(",").map(t => t.trim()) : [],
+    // Prepare product payload
+    const productData = {
+      // current user 
+      userId: currentUser._id,
+      // Step 1 - Basic Info
+      title: info.title,
+      slug: info.title?.toLowerCase().replace(/\s+/g, "-"),
+      description: info.description,
+      category: info.category,
+      brand: info.brand,
+      tags: info.tags ? info.tags.split(",").map(t => t.trim()) : [],
 
-        // Step 2 - Images
-        images: images.images || [],
+      // Step 2 - Images
+      images: images.images || [],
 
-        // Step 3 - Pricing
-        price: parseFloat(pricing.price) || 0,
-        quantity: parseInt(pricing.quantity) || 0,
-        countryCode: pricing.country?.toUpperCase(),
-        discount: parseFloat(pricing.discount) || 0,
+      // Step 3 - Pricing
+      price: parseFloat(pricing.price) || 0,
+      quantity: parseInt(pricing.quantity) || 0,
+      countryCode: pricing.country?.toUpperCase(),
+      discount: parseFloat(pricing.discount) || 0,
 
-        // Calculate final price
-        finalPrice: pricing.price && pricing.discount 
-          ? parseFloat(pricing.price) * (1 - parseFloat(pricing.discount) / 100)
-          : parseFloat(pricing.price) || 0,
+      // Calculate final price
+      finalPrice: pricing.price && pricing.discount
+        ? parseFloat(pricing.price) * (1 - parseFloat(pricing.discount) / 100)
+        : parseFloat(pricing.price) || 0,
+      status: "active",
+      inStock: parseInt(pricing.quantity) > 0,
+      createdAt: new Date().toISOString()
+    };
 
-        // Additional metadata
-        status: "active",
-        inStock: parseInt(pricing.quantity) > 0,
-        createdAt: new Date().toISOString()
-      };
+    // Validate required fields
+    const validation = validateProductData(productData);
+    if (!validation.isValid) {
+      showErrorAlert(validation.error);
+      setIsSubmitting(false);
+      return;
+    }
 
-      // Validate required fields
-      const validation = validateProductData(productData);
-      if (!validation.isValid) {
-        showErrorAlert(validation.error);
-        setIsSubmitting(false);
-        return;
+    const formData = new FormData();
+
+    Object.keys(productData).forEach(key => {
+      if (key === 'images' && Array.isArray(productData.images)) {
+        productData.images.forEach(image => {
+          formData.append('images', image);
+        });
+      } else if (key === 'tags' && Array.isArray(productData.tags)) {
+        formData.append('tags', JSON.stringify(productData.tags));
+      } else {
+        formData.append(key, productData[key]);
       }
-
-      console.log('Final Product Data:', productData);
-
-      // Create FormData for file upload
-      const formData = new FormData();
-      
-      // Append all fields to FormData
-      Object.keys(productData).forEach(key => {
-        if (key === 'images' && Array.isArray(productData.images)) {
-          productData.images.forEach(image => {
-            formData.append('images', image);
-          });
-        } else if (key === 'tags' && Array.isArray(productData.tags)) {
-          formData.append('tags', JSON.stringify(productData.tags));
-        } else {
-          formData.append(key, productData[key]);
-        }
-      });
+    });
 
     // Dispatch create action
     const result = dispatch(customCreateProduct(formData));
     console.log('product creation result = ', result);
 
-      //console.error("Product creation failed:", err);
-      setIsSubmitting(false);
-      //showErrorAlert(err.message || "Failed to create product");
+    //console.error("Product creation failed:", err);
+    setIsSubmitting(false);
+    showSuccessAlert();
+    //showErrorAlert(err.message || "Failed to create product");
   };
   /**
    * Validate product data before submission
@@ -333,7 +335,7 @@ const Wizard = () => {
    * Show success alert
    */
   const showSuccessAlert = () => {
-
+    setShowSuccessModal(true);
   };
 
   /**
@@ -347,8 +349,9 @@ const Wizard = () => {
    * Hide alert
    */
   const hideAlert = () => {
-    setAlert(null);
+    setShowSuccessModal(false);
     dispatch(clearError());
+    navigate('/admin/products');
   };
 
   return (
@@ -375,7 +378,7 @@ const Wizard = () => {
                       instance={setWizardInstance}
                       onStepChange={onStepChange}
                       nav={
-                        <WizardNav 
+                        <WizardNav
                           isSubmitting={isSubmitting}
                           lastStep={step3Ref}
                         />
@@ -405,11 +408,11 @@ const Wizard = () => {
 
                 {/* Loading Overlay */}
                 {(loading || isSubmitting) && (
-                  <div 
+                  <div
                     className="position-absolute w-100 h-100 d-flex justify-content-center align-items-center"
-                    style={{ 
-                      top: 0, 
-                      left: 0, 
+                    style={{
+                      top: 0,
+                      left: 0,
                       background: 'rgba(0,0,0,0.7)',
                       zIndex: 9999,
                       borderRadius: '0.25rem'
@@ -430,6 +433,33 @@ const Wizard = () => {
           </Col>
         </Row>
       </div>
+      {/* Success Confirmation Modal */}
+      <Modal
+        open={showSuccessModal}
+        onClose={() => setShowSuccessModal(false)}
+        size="xs"
+        className="rs-theme-dark"
+      >
+        <Modal.Header>
+          <Modal.Title>
+            Success!
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p style={{ color: "rgba(255,255,255,0.7)" }}>
+            You have successfully added new product to catelog!
+          </p>
+        </Modal.Body>
+        <Modal.Footer>
+          <RSButton onClick={hideAlert} appearance="primary" color="blue">
+            <i className="fa fa-trash mr-2"></i>
+            OK
+          </RSButton>
+          <RSButton onClick={() => setShowSuccessModal(false)} appearance="subtle">
+            Cancel
+          </RSButton>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 };

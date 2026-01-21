@@ -11,10 +11,17 @@ import {
   Button,
   Badge,
   ButtonGroup,
-  Input,
-  FormGroup,
-  Label
 } from "reactstrap";
+import { 
+  Modal, 
+  Form, 
+  Input, 
+  Button as RSButton,
+  ButtonToolbar,
+  SelectPicker,
+  Message,
+  useToaster
+} from "rsuite";
 import moment from "moment";
 import {
   fetchEvents,
@@ -27,15 +34,16 @@ import {
   selectSuccess,
   clearError
 } from "../../features/events/slice";
-
 import Loader from "../../components/Loader/Loading";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 
 const localizer = momentLocalizer(moment);
-
+const { Group: FormGroup, Control: FormControl, ControlLabel } = Form;
+const Textarea = React.forwardRef((props, ref) => <Input {...props} as="textarea" ref={ref} />);
 
 const Calendar = () => {
   const dispatch = useDispatch();
+  const toaster = useToaster();
 
   // Redux state from FeatureFactory
   const events = useSelector(selectAllEvents);
@@ -43,12 +51,23 @@ const Calendar = () => {
   const error = useSelector(selectError);
   const success = useSelector(selectSuccess);
 
-  // Local state
-  const [alert, setAlert] = useState(null);
+  // Local state for modals
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  
+  // Form state
+  const [formValue, setFormValue] = useState({
+    title: '',
+    description: '',
+    color: 'default'
+  });
+  
+  const [selectedSlot, setSelectedSlot] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [view, setView] = useState("month");
   const [date, setDate] = useState(new Date());
-  const [eventColor, setEventColor] = useState("default");
 
   // Event color options
   const EVENT_COLORS = {
@@ -59,6 +78,11 @@ const Calendar = () => {
     red: { bg: "#f44336", label: "Danger" },
     rose: { bg: "#e91e63", label: "Rose" }
   };
+
+  const colorOptions = Object.entries(EVENT_COLORS).map(([key, { label }]) => ({
+    label,
+    value: key
+  }));
 
   /**
    * Fetch events on mount
@@ -72,13 +96,33 @@ const Calendar = () => {
   }, [dispatch]);
 
   /**
-   * Handle errors
+   * Handle errors with toast notifications
    */
   useEffect(() => {
     if (error) {
-      showErrorAlert(error);
+      toaster.push(
+        <Message showIcon type="error" closable>
+          <strong>Error!</strong> {error}
+        </Message>,
+        { placement: 'topEnd', duration: 5000 }
+      );
+      dispatch(clearError());
     }
-  }, [error]);
+  }, [error, toaster, dispatch]);
+
+  /**
+   * Handle success with toast notifications
+   */
+  useEffect(() => {
+    if (success) {
+      toaster.push(
+        <Message showIcon type="success" closable>
+          <strong>Success!</strong> Operation completed successfully
+        </Message>,
+        { placement: 'topEnd', duration: 3000 }
+      );
+    }
+  }, [success, toaster]);
 
   /**
    * Transform events for BigCalendar
@@ -119,15 +163,21 @@ const Calendar = () => {
    */
   const handleSelectEvent = useCallback((event) => {
     setSelectedEvent(event);
-    showEventDetailsAlert(event);
+    setShowDetailsModal(true);
   }, []);
 
   /**
    * Handle slot selection (create new event)
    */
   const handleSelectSlot = useCallback((slotInfo) => {
-    showAddEventAlert(slotInfo);
-  }, [eventColor]);
+    setSelectedSlot(slotInfo);
+    setFormValue({
+      title: '',
+      description: '',
+      color: 'default'
+    });
+    setShowCreateModal(true);
+  }, []);
 
   /**
    * Event styling
@@ -151,439 +201,167 @@ const Calendar = () => {
   }, []);
 
   /**
-   * Show add event alert
-   */
-  const showAddEventAlert = (slotInfo) => {
-    let eventTitle = "";
-    let eventDescription = "";
-    let selectedColor = eventColor;
-
-    setAlert(
-      <Card
-        custom
-        showCancel
-        style={{ display: "block", marginTop: "-100px" }}
-        title="Create New Event"
-        onConfirm={() => handleCreateEvent(eventTitle, eventDescription, selectedColor, slotInfo)}
-        onCancel={hideAlert}
-        confirmBtnBsStyle="primary"
-        cancelBtnBsStyle="secondary"
-        confirmBtnText="Create Event"
-        cancelBtnText="Cancel"
-      >
-        <div className="text-left">
-          {/* Event Title */}
-          <FormGroup>
-            <Label className="text-white">Event Title *</Label>
-            <Input
-              type="text"
-              placeholder="Enter event title..."
-              onChange={(e) => eventTitle = e.target.value}
-              autoFocus
-            />
-          </FormGroup>
-
-          {/* Event Description */}
-          <FormGroup>
-            <Label className="text-white">Description</Label>
-            <Input
-              type="textarea"
-              rows="3"
-              placeholder="Enter event description..."
-              onChange={(e) => eventDescription = e.target.value}
-            />
-          </FormGroup>
-
-          {/* Event Color */}
-          <FormGroup>
-            <Label className="text-white">Color</Label>
-            <div className="d-flex gap-2">
-              {Object.entries(EVENT_COLORS).map(([key, { bg, label }]) => (
-                <div
-                  key={key}
-                  onClick={() => selectedColor = key}
-                  style={{
-                    width: "40px",
-                    height: "40px",
-                    backgroundColor: bg,
-                    borderRadius: "50%",
-                    cursor: "pointer",
-                    border: selectedColor === key ? "3px solid white" : "2px solid transparent",
-                    transition: "all 0.2s"
-                  }}
-                  title={label}
-                />
-              ))}
-            </div>
-          </FormGroup>
-
-          {/* Event Details */}
-          <div className="bg-dark-light p-3 rounded mt-3">
-            <p className="text-light-2 mb-2">
-              <i className="fa fa-calendar mr-2"></i>
-              <strong>Start:</strong> {moment(slotInfo.start).format("MMM DD, YYYY h:mm A")}
-            </p>
-            <p className="text-light-2 mb-0">
-              <i className="fa fa-calendar mr-2"></i>
-              <strong>End:</strong> {moment(slotInfo.end).format("MMM DD, YYYY h:mm A")}
-            </p>
-          </div>
-        </div>
-      </Card>
-    );
-  };
-
-  /**
-   * Show event details alert
-   */
-  const showEventDetailsAlert = (event) => {
-    const duration = moment(event.end).diff(moment(event.start), "minutes");
-    const hours = Math.floor(duration / 60);
-    const minutes = duration % 60;
-
-    setAlert(
-      <Card
-        custom
-        style={{ display: "block", marginTop: "-100px" }}
-        title={
-          <div className="d-flex align-items-center justify-content-center">
-            <div
-              style={{
-                width: "12px",
-                height: "12px",
-                backgroundColor: EVENT_COLORS[event.color]?.bg || EVENT_COLORS.default.bg,
-                borderRadius: "50%",
-                marginRight: "10px"
-              }}
-            />
-            {event.title}
-          </div>
-        }
-        onConfirm={hideAlert}
-        confirmBtnBsStyle="primary"
-        confirmBtnText="Close"
-        customButtons={
-          <div className="d-flex justify-content-center gap-2 mt-3">
-            <Button
-              color="info"
-              onClick={() => handleEditEvent(event)}
-              className="btn-round"
-            >
-              <i className="fa fa-edit mr-2"></i>
-              Edit
-            </Button>
-            <Button
-              color="danger"
-              onClick={() => handleDeleteEventConfirm(event)}
-              className="btn-round"
-            >
-              <i className="fa fa-trash mr-2"></i>
-              Delete
-            </Button>
-          </div>
-        }
-      >
-        <div className="text-left mt-3">
-          {event.description && (
-            <div className="mb-3 p-3 bg-dark-light rounded">
-              <p className="text-light-2 mb-0">{event.description}</p>
-            </div>
-          )}
-
-          <div className="mb-2">
-            <i className="fa fa-calendar text-primary mr-2"></i>
-            <strong className="text-white">Start:</strong>{" "}
-            <span className="text-light-2">
-              {moment(event.start).format("MMM DD, YYYY h:mm A")}
-            </span>
-          </div>
-
-          <div className="mb-2">
-            <i className="fa fa-calendar text-primary mr-2"></i>
-            <strong className="text-white">End:</strong>{" "}
-            <span className="text-light-2">
-              {moment(event.end).format("MMM DD, YYYY h:mm A")}
-            </span>
-          </div>
-
-          <div className="mb-2">
-            <i className="fa fa-clock-o text-primary mr-2"></i>
-            <strong className="text-white">Duration:</strong>{" "}
-            <span className="text-light-2">
-              {hours > 0 && `${hours}h `}
-              {minutes > 0 && `${minutes}m`}
-              {hours === 0 && minutes === 0 && "Less than 1 minute"}
-            </span>
-          </div>
-
-          {event.color && (
-            <div className="mb-2">
-              <i className="fa fa-palette text-primary mr-2"></i>
-              <strong className="text-white">Label:</strong>{" "}
-              <Badge 
-                style={{ 
-                  backgroundColor: EVENT_COLORS[event.color]?.bg,
-                  color: "white"
-                }}
-                className="ml-2"
-              >
-                {EVENT_COLORS[event.color]?.label || "Default"}
-              </Badge>
-            </div>
-          )}
-
-          {event.createdAt && (
-            <div className="mb-2">
-              <i className="fa fa-info-circle text-primary mr-2"></i>
-              <strong className="text-white">Created:</strong>{" "}
-              <span className="text-light-2">
-                {moment(event.createdAt).format("MMM DD, YYYY h:mm A")}
-              </span>
-            </div>
-          )}
-        </div>
-      </Card>
-    );
-  };
-
-  /**
-   * Show edit event alert
-   */
-  const handleEditEvent = (event) => {
-    let eventTitle = event.title;
-    let eventDescription = event.description || "";
-    let selectedColor = event.color || "default";
-
-    setAlert(
-      <Card
-        custom
-        showCancel
-        style={{ display: "block", marginTop: "-100px" }}
-        title="Edit Event"
-        onConfirm={() => handleUpdateEvent(event, eventTitle, eventDescription, selectedColor)}
-        onCancel={hideAlert}
-        confirmBtnBsStyle="info"
-        cancelBtnBsStyle="secondary"
-        confirmBtnText="Update Event"
-        cancelBtnText="Cancel"
-      >
-        <div className="text-left">
-          <FormGroup>
-            <Label className="text-white">Event Title *</Label>
-            <Input
-              type="text"
-              defaultValue={event.title}
-              onChange={(e) => eventTitle = e.target.value}
-              autoFocus
-            />
-          </FormGroup>
-
-          <FormGroup>
-            <Label className="text-white">Description</Label>
-            <Input
-              type="textarea"
-              rows="3"
-              defaultValue={event.description}
-              onChange={(e) => eventDescription = e.target.value}
-            />
-          </FormGroup>
-
-          <FormGroup>
-            <Label className="text-white">Color</Label>
-            <div className="d-flex gap-2">
-              {Object.entries(EVENT_COLORS).map(([key, { bg, label }]) => (
-                <div
-                  key={key}
-                  onClick={() => selectedColor = key}
-                  style={{
-                    width: "40px",
-                    height: "40px",
-                    backgroundColor: bg,
-                    borderRadius: "50%",
-                    cursor: "pointer",
-                    border: selectedColor === key || event.color === key ? "3px solid white" : "2px solid transparent",
-                    transition: "all 0.2s"
-                  }}
-                  title={label}
-                />
-              ))}
-            </div>
-          </FormGroup>
-        </div>
-      </Card>
-    );
-  };
-
-  /**
-   * Show delete confirmation
-   */
-  const handleDeleteEventConfirm = (event) => {
-    setAlert(
-      <Card
-        warning
-        showCancel
-        style={{ display: "block", marginTop: "-100px" }}
-        title="Delete Event?"
-        onConfirm={() => handleDeleteEvent(event)}
-        onCancel={hideAlert}
-        confirmBtnBsStyle="danger"
-        cancelBtnBsStyle="secondary"
-        confirmBtnText="Yes, Delete It"
-        cancelBtnText="Cancel"
-      >
-        <p className="text-light-2">
-          Are you sure you want to delete "<strong>{event.title}</strong>"? This action cannot be undone.
-        </p>
-      </Card>
-    );
-  };
-
-  /**
    * Create new event
    */
-  const handleCreateEvent = async (title, description, color, slotInfo) => {
-    if (!title || title.trim() === "") {
-      showErrorAlert("Event title is required");
+  const handleCreateEvent = async () => {
+    if (!formValue.title || formValue.title.trim() === "") {
+      toaster.push(
+        <Message showIcon type="warning">
+          Event title is required
+        </Message>,
+        { placement: 'topEnd' }
+      );
       return;
     }
 
     try {
       const newEvent = {
-        title: title.trim(),
-        description: description?.trim() || "",
-        start: slotInfo.start.toISOString(),
-        end: slotInfo.end.toISOString(),
-        color: color || "default",
-        allDay: slotInfo.slots && slotInfo.slots.length === 1,
+        title: formValue.title.trim(),
+        description: formValue.description?.trim() || "",
+        start: selectedSlot.start.toISOString(),
+        end: selectedSlot.end.toISOString(),
+        color: formValue.color || "default",
+        allDay: selectedSlot.slots && selectedSlot.slots.length === 1,
         createdAt: new Date().toISOString()
       };
 
       await dispatch(createEvent(newEvent)).unwrap();
       
-      hideAlert();
-      showSuccessAlert("Event created successfully!");
+      setShowCreateModal(false);
+      toaster.push(
+        <Message showIcon type="success">
+          Event created successfully!
+        </Message>,
+        { placement: 'topEnd' }
+      );
       
       // Refresh events
       dispatch(fetchEvents());
     } catch (err) {
       console.error("Failed to create event:", err);
-      showErrorAlert(err.message || "Failed to create event");
+      toaster.push(
+        <Message showIcon type="error">
+          {err.message || "Failed to create event"}
+        </Message>,
+        { placement: 'topEnd' }
+      );
     }
+  };
+
+  /**
+   * Open edit modal
+   */
+  const handleOpenEditModal = () => {
+    setFormValue({
+      title: selectedEvent.title,
+      description: selectedEvent.description || '',
+      color: selectedEvent.color || 'default'
+    });
+    setShowDetailsModal(false);
+    setShowEditModal(true);
   };
 
   /**
    * Update event
    */
-  const handleUpdateEvent = async (event, newTitle, newDescription, newColor) => {
-    if (!newTitle || newTitle.trim() === "") {
-      showErrorAlert("Event title is required");
+  const handleUpdateEvent = async () => {
+    if (!formValue.title || formValue.title.trim() === "") {
+      toaster.push(
+        <Message showIcon type="warning">
+          Event title is required
+        </Message>,
+        { placement: 'topEnd' }
+      );
       return;
     }
 
     try {
       const updatedEvent = {
-        ...event,
-        title: newTitle.trim(),
-        description: newDescription?.trim() || "",
-        color: newColor,
+        ...selectedEvent,
+        title: formValue.title.trim(),
+        description: formValue.description?.trim() || "",
+        color: formValue.color,
         updatedAt: new Date().toISOString()
       };
 
       await dispatch(updateEvent({
-        id: event.id || event._id,
+        id: selectedEvent.id || selectedEvent._id,
         data: updatedEvent
       })).unwrap();
 
-      hideAlert();
-      showSuccessAlert("Event updated successfully!");
+      setShowEditModal(false);
+      toaster.push(
+        <Message showIcon type="success">
+          Event updated successfully!
+        </Message>,
+        { placement: 'topEnd' }
+      );
       
       // Refresh events
       dispatch(fetchEvents());
     } catch (err) {
       console.error("Failed to update event:", err);
-      showErrorAlert(err.message || "Failed to update event");
+      toaster.push(
+        <Message showIcon type="error">
+          {err.message || "Failed to update event"}
+        </Message>,
+        { placement: 'topEnd' }
+      );
     }
+  };
+
+  /**
+   * Open delete confirmation
+   */
+  const handleOpenDeleteModal = () => {
+    setShowDetailsModal(false);
+    setShowDeleteModal(true);
   };
 
   /**
    * Delete event
    */
-  const handleDeleteEvent = async (event) => {
+  const handleDeleteEvent = async () => {
     try {
-      await dispatch(deleteEvent(event.id || event._id)).unwrap();
+      await dispatch(deleteEvent(selectedEvent.id || selectedEvent._id)).unwrap();
       
-      hideAlert();
-      showSuccessAlert("Event deleted successfully!");
+      setShowDeleteModal(false);
+      toaster.push(
+        <Message showIcon type="success">
+          Event deleted successfully!
+        </Message>,
+        { placement: 'topEnd' }
+      );
       
       // Refresh events
       dispatch(fetchEvents());
     } catch (err) {
       console.error("Failed to delete event:", err);
-      showErrorAlert(err.message || "Failed to delete event");
+      toaster.push(
+        <Message showIcon type="error">
+          {err.message || "Failed to delete event"}
+        </Message>,
+        { placement: 'topEnd' }
+      );
     }
   };
 
-  /**
-   * Show success alert
-   */
-  const showSuccessAlert = (message) => {
-    setAlert(
-      <Card
-        success
-        style={{ display: "block", marginTop: "-100px" }}
-        title="Success!"
-        onConfirm={hideAlert}
-        confirmBtnBsStyle="success"
-        confirmBtnText="OK"
-        timeout={2000}
-      >
-        <i className="fa fa-check-circle" style={{ fontSize: "48px", color: "#4caf50" }}></i>
-        <p className="text-light-2 mt-3">{message}</p>
-      </Card>
-    );
-  };
-
-  /**
-   * Show error alert
-   */
-  const showErrorAlert = (message) => {
-    setAlert(
-      <Card
-        danger
-        style={{ display: "block", marginTop: "-100px" }}
-        title="Error!"
-        onConfirm={() => {
-          hideAlert();
-          dispatch(clearError());
-        }}
-        confirmBtnBsStyle="danger"
-        confirmBtnText="OK"
-      >
-        <i className="fa fa-exclamation-triangle" style={{ fontSize: "48px", color: "#f44336" }}></i>
-        <p className="text-light-2 mt-3">{message}</p>
-      </Card>
-    );
-  };
-
-  /**
-   * Hide alert
-   */
-  const hideAlert = () => {
-    setAlert(null);
-  };
-
-  /**
-   * Handle view change
-   */
   const handleViewChange = (newView) => {
     setView(newView);
   };
 
-  /**
-   * Handle navigation
-   */
   const handleNavigate = (newDate) => {
     setDate(newDate);
+  };
+
+  // Calculate event duration
+  const getEventDuration = (event) => {
+    const duration = moment(event.end).diff(moment(event.start), "minutes");
+    const hours = Math.floor(duration / 60);
+    const minutes = duration % 60;
+    
+    if (hours === 0 && minutes === 0) return "Less than 1 minute";
+    return `${hours > 0 ? `${hours}h ` : ''}${minutes > 0 ? `${minutes}m` : ''}`;
   };
 
   // Show loader while fetching initial data
@@ -593,9 +371,7 @@ const Calendar = () => {
 
   return (
     <>
-      {alert}
-      
-      <div className="container-fluid">
+      <div className="container-fluid ">
         {/* Statistics Cards */}
         <Row className="mb-4">
           <Col lg="3" md="6">
@@ -787,6 +563,329 @@ const Calendar = () => {
           </Col>
         </Row>
       </div>
+
+      {/* Create Event Modal */}
+      <Modal 
+        open={showCreateModal} 
+        onClose={() => setShowCreateModal(false)}
+        size="md"
+        theme="dark"
+        className="rs-theme-dark"
+      >
+        <Modal.Header>
+          <Modal.Title>
+            <i className="fa fa-plus-circle mr-2"></i>
+            Create New Event
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form fluid formValue={formValue} onChange={setFormValue}>
+            <FormGroup>
+              <ControlLabel>Event Title *</ControlLabel>
+              <FormControl name="title" placeholder="Enter event title..." />
+            </FormGroup>
+            
+            <FormGroup>
+              <ControlLabel>Description</ControlLabel>
+              <FormControl 
+                name="description" 
+                rows={3} 
+                accepter={Textarea}
+                placeholder="Enter event description..."
+              />
+            </FormGroup>
+
+            <FormGroup>
+              <ControlLabel>Color Label</ControlLabel>
+              <FormControl
+                name="color"
+                accepter={SelectPicker}
+                data={colorOptions}
+                block
+                placeholder="Select color"
+                renderMenuItem={(label, item) => (
+                  <div className="d-flex align-items-center">
+                    <div
+                      style={{
+                        width: "16px",
+                        height: "16px",
+                        backgroundColor: EVENT_COLORS[item.value]?.bg,
+                        borderRadius: "3px",
+                        marginRight: "8px"
+                      }}
+                    />
+                    {label}
+                  </div>
+                )}
+                renderValue={(value, item) => (
+                  <div className="d-flex align-items-center">
+                    <div
+                      style={{
+                        width: "16px",
+                        height: "16px",
+                        backgroundColor: EVENT_COLORS[value]?.bg,
+                        borderRadius: "3px",
+                        marginRight: "8px"
+                      }}
+                    />
+                    {item?.label}
+                  </div>
+                )}
+              />
+            </FormGroup>
+
+            {selectedSlot && (
+              <div 
+                style={{ 
+                  backgroundColor: "rgba(255,255,255,0.05)", 
+                  padding: "15px", 
+                  borderRadius: "8px",
+                  marginTop: "15px"
+                }}
+              >
+                <p style={{ marginBottom: "10px", color: "rgba(255,255,255,0.7)" }}>
+                  <i className="fa fa-calendar mr-2"></i>
+                  <strong>Start:</strong> {moment(selectedSlot.start).format("MMM DD, YYYY h:mm A")}
+                </p>
+                <p style={{ marginBottom: "0", color: "rgba(255,255,255,0.7)" }}>
+                  <i className="fa fa-calendar mr-2"></i>
+                  <strong>End:</strong> {moment(selectedSlot.end).format("MMM DD, YYYY h:mm A")}
+                </p>
+              </div>
+            )}
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <RSButton onClick={handleCreateEvent} appearance="primary">
+            <i className="fa fa-check mr-2"></i>
+            Create Event
+          </RSButton>
+          <RSButton onClick={() => setShowCreateModal(false)} appearance="subtle">
+            Cancel
+          </RSButton>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Event Details Modal */}
+      <Modal 
+        open={showDetailsModal} 
+        onClose={() => setShowDetailsModal(false)}
+        size="md"
+                className="rs-theme-dark"
+      >
+        <Modal.Header>
+          <Modal.Title>
+            <div className="d-flex align-items-center">
+              <div
+                style={{
+                  width: "12px",
+                  height: "12px",
+                  backgroundColor: EVENT_COLORS[selectedEvent?.color]?.bg || EVENT_COLORS.default.bg,
+                  borderRadius: "50%",
+                  marginRight: "10px"
+                }}
+              />
+              {selectedEvent?.title}
+            </div>
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {selectedEvent && (
+            <div>
+              {selectedEvent.description && (
+                <div 
+                  style={{ 
+                    marginBottom: "20px", 
+                    padding: "15px", 
+                    backgroundColor: "rgba(255,255,255,0.05)",
+                    borderRadius: "8px"
+                  }}
+                >
+                  <p style={{ margin: 0, color: "rgba(255,255,255,0.8)" }}>
+                    {selectedEvent.description}
+                  </p>
+                </div>
+              )}
+
+              <div style={{ marginBottom: "15px" }}>
+                <i className="fa fa-calendar text-primary mr-2"></i>
+                <strong style={{ color: "white" }}>Start:</strong>{" "}
+                <span style={{ color: "rgba(255,255,255,0.7)" }}>
+                  {moment(selectedEvent.start).format("MMM DD, YYYY h:mm A")}
+                </span>
+              </div>
+
+              <div style={{ marginBottom: "15px" }}>
+                <i className="fa fa-calendar text-primary mr-2"></i>
+                <strong style={{ color: "white" }}>End:</strong>{" "}
+                <span style={{ color: "rgba(255,255,255,0.7)" }}>
+                  {moment(selectedEvent.end).format("MMM DD, YYYY h:mm A")}
+                </span>
+              </div>
+
+              <div style={{ marginBottom: "15px" }}>
+                <i className="fa fa-clock-o text-primary mr-2"></i>
+                <strong style={{ color: "white" }}>Duration:</strong>{" "}
+                <span style={{ color: "rgba(255,255,255,0.7)" }}>
+                  {getEventDuration(selectedEvent)}
+                </span>
+              </div>
+
+              {selectedEvent.color && (
+                <div style={{ marginBottom: "15px" }}>
+                  <i className="fa fa-palette text-primary mr-2"></i>
+                  <strong style={{ color: "white" }}>Label:</strong>{" "}
+                  <Badge 
+                    style={{ 
+                      backgroundColor: EVENT_COLORS[selectedEvent.color]?.bg,
+                      color: "white",
+                      marginLeft: "8px"
+                    }}
+                  >
+                    {EVENT_COLORS[selectedEvent.color]?.label || "Default"}
+                  </Badge>
+                </div>
+              )}
+
+              {selectedEvent.createdAt && (
+                <div style={{ marginBottom: "15px" }}>
+                  <i className="fa fa-info-circle text-primary mr-2"></i>
+                  <strong style={{ color: "white" }}>Created:</strong>{" "}
+                  <span style={{ color: "rgba(255,255,255,0.7)" }}>
+                    {moment(selectedEvent.createdAt).format("MMM DD, YYYY h:mm A")}
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <ButtonToolbar>
+            <RSButton onClick={handleOpenEditModal} appearance="primary" color="blue">
+              <i className="fa fa-edit mr-2"></i>
+              Edit
+            </RSButton>
+            <RSButton onClick={handleOpenDeleteModal} appearance="primary" color="red">
+              <i className="fa fa-trash mr-2"></i>
+              Delete
+            </RSButton>
+            <RSButton onClick={() => setShowDetailsModal(false)} appearance="subtle">
+              Close
+            </RSButton>
+          </ButtonToolbar>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Edit Event Modal */}
+      <Modal 
+        open={showEditModal} 
+        onClose={() => setShowEditModal(false)}
+        size="md"
+                className="rs-theme-dark"
+      >
+        <Modal.Header>
+          <Modal.Title>
+            <i className="fa fa-edit mr-2"></i>
+            Edit Event
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form fluid formValue={formValue} onChange={setFormValue}>
+            <FormGroup>
+              <ControlLabel>Event Title *</ControlLabel>
+              <FormControl name="title" placeholder="Enter event title..." />
+            </FormGroup>
+            
+            <FormGroup>
+              <ControlLabel>Description</ControlLabel>
+              <FormControl 
+                name="description" 
+                rows={3} 
+                accepter={Textarea}
+                placeholder="Enter event description..."
+              />
+            </FormGroup>
+
+            <FormGroup>
+              <ControlLabel>Color Label</ControlLabel>
+              <FormControl
+                name="color"
+                accepter={SelectPicker}
+                data={colorOptions}
+                block
+                placeholder="Select color"
+                renderMenuItem={(label, item) => (
+                  <div className="d-flex align-items-center">
+                    <div
+                      style={{
+                        width: "16px",
+                        height: "16px",
+                        backgroundColor: EVENT_COLORS[item.value]?.bg,
+                        borderRadius: "3px",
+                        marginRight: "8px"
+                      }}
+                    />
+                    {label}
+                  </div>
+                )}
+                renderValue={(value, item) => (
+                  <div className="d-flex align-items-center">
+                    <div
+                      style={{
+                        width: "16px",
+                        height: "16px",
+                        backgroundColor: EVENT_COLORS[value]?.bg,
+                        borderRadius: "3px",
+                        marginRight: "8px"
+                      }}
+                    />
+                    {item?.label}
+                  </div>
+                )}
+              />
+            </FormGroup>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <RSButton onClick={handleUpdateEvent} appearance="primary">
+            <i className="fa fa-check mr-2"></i>
+            Update Event
+          </RSButton>
+          <RSButton onClick={() => setShowEditModal(false)} appearance="subtle">
+            Cancel
+          </RSButton>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Delete Confirmation Modal */}
+      <Modal 
+        open={showDeleteModal} 
+        onClose={() => setShowDeleteModal(false)}
+        size="xs"
+                className="rs-theme-dark"
+      >
+        <Modal.Header>
+          <Modal.Title>
+            <i className="fa fa-exclamation-triangle mr-2 text-danger"></i>
+            Delete Event?
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p style={{ color: "rgba(255,255,255,0.7)" }}>
+            Are you sure you want to delete "<strong style={{ color: "white" }}>{selectedEvent?.title}</strong>"? 
+            This action cannot be undone.
+          </p>
+        </Modal.Body>
+        <Modal.Footer>
+          <RSButton onClick={handleDeleteEvent} appearance="primary" color="red">
+            <i className="fa fa-trash mr-2"></i>
+            Yes, Delete It
+          </RSButton>
+          <RSButton onClick={() => setShowDeleteModal(false)} appearance="subtle">
+            Cancel
+          </RSButton>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 };

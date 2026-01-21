@@ -8,7 +8,6 @@ import {
   Row,
   Col,
   Button,
-  Input,
   Badge,
   UncontrolledDropdown,
   DropdownToggle,
@@ -35,6 +34,16 @@ import {
   setFilters,
   clearError,
 } from "../../features/products/slice.js";
+import { 
+  Modal, 
+  Form, 
+  Input, 
+  Button as RSButton,
+  ButtonToolbar,
+  SelectPicker,
+  Message,
+  useToaster
+} from "rsuite";
 import {
   fetchCategories,
   selectAllCategories
@@ -44,6 +53,8 @@ import {
 const ProductList = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const toaster = useToaster();
+  
   // Redux state
   const error = useSelector(selectError);
   const loading = useSelector(selectLoading);
@@ -55,7 +66,9 @@ const ProductList = () => {
   // Local state
   const [alert, setAlert] = useState(null);
   const [categoryFilter, setCategoryFilter] = useState("all");
-
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
   const STOCK_STATUS = {
     inStock: { color: "success", icon: "fa-check-circle", label: "In Stock" },
     lowStock: { color: "warning", icon: "fa-exclamation-triangle", label: "Low Stock" },
@@ -133,7 +146,8 @@ const ProductList = () => {
    * Show delete confirmation dialog
    */
   const confirmDelete = (id, product) => {
-
+    setSelectedProduct(product);
+    setShowDeleteModal(true);
   };
 
   /**
@@ -665,6 +679,36 @@ const ProductList = () => {
           </Col>
         </Row>
       </div>
+
+            {/* Delete Confirmation Modal */}
+            <Modal 
+              open={showDeleteModal} 
+              onClose={() => setShowDeleteModal(false)}
+              size="xs"
+                      className="rs-theme-dark"
+            >
+              <Modal.Header>
+                <Modal.Title>
+                  <i className="fa fa-exclamation-triangle mr-2 text-danger"></i>
+                  Delete Product?
+                </Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <p style={{ color: "rgba(255,255,255,0.7)" }}>
+                  Are you sure you want to delete "<strong style={{ color: "white" }}>{selectedProduct?.title}</strong>"? 
+                  This action cannot be undone.
+                </p>
+              </Modal.Body>
+              <Modal.Footer>
+                <RSButton onClick={handleDeleteProduct} appearance="primary" color="red">
+                  <i className="fa fa-trash mr-2"></i>
+                  Yes, Delete It
+                </RSButton>
+                <RSButton onClick={() => setShowDeleteModal(false)} appearance="subtle">
+                  Cancel
+                </RSButton>
+              </Modal.Footer>
+            </Modal>
     </>
   );
 }

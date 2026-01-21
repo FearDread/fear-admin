@@ -9,12 +9,9 @@ import { Card,
    Row, 
    Col } from "reactstrap";
 import Loader from "components/Loader/Loading.js";
-import * as BrandActions from "../_redux/brand/actions"; 
-import * as BrandTypes from "../_redux/brand/types";
-import logo from "assets/img/FEAR/logo.png";
 import ReactTable from "components/ReactTable/ReactTable.js";
 import ReactTableActions from "components/ReactTable/ReactTableActions.js";
-import ReactBSAlert from "react-bootstrap-sweetalert";
+
 
 
 const Brandlist = () => {

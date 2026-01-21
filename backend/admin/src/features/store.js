@@ -8,30 +8,21 @@ import product from './products/slice';
 import category from "./categories/slice";
 import brand from "./brands/slice";
 import order from "./orders/slice";
-import event from "./orders/slice";
+import event from "./events/slice";
+import blogposts from "./blog/slice";
 
 
 export const initializeStore = () => {
 
   const store = configureStore({
       reducer: {
-    users: user.reducer,
-    products: product.reducer,
-    categories: category.reducer,
-    brands: brand.reducer,
-    orders: order.reducer,
-    events: event.reducer,
-    /* Add other reducers here
-      addresses: address.reducer,
-
-      payments: payment.reducer,
-      products: product.reducer,
-
-      users: user.reducer,
-      cart: cart.reducer,
-      wishlist: wishlist.reducer,
-      mail: mail.reducer,
-      */
+        users: user.reducer,
+        products: product.reducer,
+        categories: category.reducer,
+        brands: brand.reducer,
+        orders: order.reducer,
+        events: event.reducer,
+        blog: blogposts.reducer,
   },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({
