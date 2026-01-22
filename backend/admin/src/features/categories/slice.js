@@ -10,6 +10,27 @@ export const {
   selectAll,
   setActiveCategory,
   toggleCategoryVisibility,
+  clearError,
+  setFilters,
+  setEntity,
+  clearEntity,
+  appendData,
+  prependData,
+  updateDataItem,
+  removeDataItem,
+  setLoading,
+  setSuccess,
+  resetState,
+  resetData,
+  resetStatus,
+  setPagination,
+  setCurrentPage,
+  setPageSize,
+  clearFilters,
+  setSearchTerm,
+  setSorting,
+  toggleSortOrder,
+
 } = slice.actions;
 
 // Export async actions
@@ -17,15 +38,22 @@ export const {
   fetch: fetchCategories,
   fetchOne: fetchCategory,
   search: searchCategories,
+  create: createCategory,
+  update: updateCategory,
+  patch: patchCategory,
+  delete: deleteCategory,
 } = Categories;
 
-// Export selectors
 export const selectAllCategories = (state) => state.categories.data;
 export const selectCurrentCategory = (state) => state.categories.categories || state.categories.category;
 export const selectCategoriesLoading = (state) => state.categories.loading;
 export const selectCategoriesSuccess = (state) => state.categories.success;
 export const selectActiveCategory = (state) => state.categories.activeCategory;
-// Advanced selectors
+export const selectError = (state) => state.categories.error;
+export const selectLoading = (state) => state.categories.loading;
+export const selectSuccess = (state) => state.categories.success;
+export const selectFilters = (state) => state.categories.filtering?.filters || {};
+export const selectSearchTerm = (state) => state.categories.filtering?.searchTerm || '';
 export const selectCategoryById = (state, categoryId) =>
   state.categories.data.find(category => category.id === categoryId);
 

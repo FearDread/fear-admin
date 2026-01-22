@@ -11,23 +11,9 @@ import OrderList from "../pages/dashboard/OrderList";
 import Wizard from "../pages/dashboard/Wizard/Wizard";
 import Calendar from "../pages/dashboard/Calendar";
 import BlogList from "../pages/dashboard/BlogList.jsx";
-/*
-import Profile from "_dashboard/Profile.jsx";
-import UserList from "_dashboard/UserList.jsx";
-import UserNew from "_dashboard/UserList.jsx";
-import Calendar from "_dashboard/Calendar.jsx"
+import BrandsList from "../pages/dashboard/BrandsList.jsx";
+import CategoryList from "../pages/dashboard/CategoryList.jsx";
 
-import NewProduct from "_dashboard/ProductNew.jsx";
-import BrandsList from "_dashboard/BrandsList.jsx";
-import BrandNew from "_dashboard/BrandNew.jsx";
-import CategoryList from "_dashboard/CategoryList.jsx";
-import CategoryNew from "_dashboard/CategoryNew.jsx";
-
-import BlogNew from "_dashboard/BlogNew.jsx";
-import TaskList from "_dashboard/TaskList.jsx";
-import TaskNew from "_dashboard/TaskNew.jsx";
-import OrderList from "_dashboard/OrderList.jsx";
-*/
 export const routes = {
   auth: [
     { path: "/auth/login", label: 'Login', element: <Login /> },
@@ -38,6 +24,8 @@ export const routes = {
     { path: "/admin/products", label: "Products", icon: "fa fa-shopping-bag", element: <ProductList /> },
     { path: "/admin/orders", label: "Orders", icon: "fa fa-shopping-cart", element: <OrderList /> },
     { path: "/admin/blog", label: "Blog", icon: "fa fa-book", element: <BlogList /> },
+    { path: "/admin/brand", label: "Brands", icon: "fa fa-brand", element: <BrandsList /> },
+    { path: "/admin/category", label: "Categories", icon: "fa fa-certificate", element: <CategoryList /> },
     { path: "/admin/calendar", label: "Calendar", icon: "fa fa-calendar", element: <Calendar /> },
     { path: "/admin/product/new", element: <Wizard type="product" /> },
     { path: "/admin/blog/new", element: <Wizard type="blog" /> }

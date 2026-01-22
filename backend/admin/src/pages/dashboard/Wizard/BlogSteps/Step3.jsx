@@ -1,193 +1,52 @@
 import React, { useState, useImperativeHandle } from "react";
 import {
   Input,
-  InputGroupText,
-  InputGroup,
   Row,
   Col,
   FormGroup,
   Label,
-  FormFeedback,
+  Button,
   Card,
   CardBody,
-  Button
 } from "reactstrap";
 
-const Step3 = React.forwardRef((props, ref) => {
+const BlogStep3 = React.forwardRef((props, ref) => {
   const { 
-    title, 
-    subtitle, 
     onFinish, 
-    previousStep, 
+    previousStep,
+    currentStep,
+    totalSteps
   } = props;
 
-  // Form state
   const [formData, setFormData] = useState({
-    price: "",
-    quantity: "",
-    country: "",
-    discount: ""
+    published: false,
+    featured: false,
+    allowComments: true,
+    visibility: "public",
+    metaTitle: "",
+    metaDescription: ""
   });
 
-  // Validation state
-  const [errors, setErrors] = useState({});
-  const [touched, setTouched] = useState({});
   const [isValidating, setIsValidating] = useState(false);
 
-  /**
-   * Handle input changes
-   */
   const handleChange = (field) => (e) => {
-    const value = e.target.value;
+    const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
     setFormData(prev => ({
       ...prev,
       [field]: value
     }));
-    
-    // Clear error when user starts typing
-    if (errors[field]) {
-      setErrors(prev => ({
-        ...prev,
-        [field]: ""
-      }));
-    }
   };
 
-  /**
-   * Handle input blur for validation
-   */
-  const handleBlur = (field) => () => {
-    setTouched(prev => ({
-      ...prev,
-      [field]: true
-    }));
-    validateField(field, formData[field]);
-  };
-
-  /**
-   * Validate individual field
-   */
-  const validateField = (field, value) => {
-    let error = "";
-
-    switch (field) {
-      case "price":
-        const priceNum = parseFloat(value);
-        if (!value || isNaN(priceNum) || priceNum <= 0) {
-          error = "Price must be greater than 0";
-        } else if (priceNum > 1000000) {
-          error = "Price seems unreasonably high";
-        }
-        break;
-
-      case "quantity":
-        const qtyNum = parseInt(value);
-        if (value === "" || isNaN(qtyNum) || qtyNum < 0) {
-          error = "Quantity must be 0 or greater";
-        } else if (qtyNum > 100000) {
-          error = "Quantity seems unreasonably high";
-        }
-        break;
-
-      case "country":
-        if (!value || value.length !== 2) {
-          error = "Enter valid 2-letter country code (e.g., US, GB)";
-        } else if (!/^[A-Z]{2}$/i.test(value)) {
-          error = "Country code must contain only letters";
-        }
-        break;
-
-      case "discount":
-        if (value) {
-          const discNum = parseFloat(value);
-          if (isNaN(discNum) || discNum < 0 || discNum > 100) {
-            error = "Discount must be between 0 and 100";
-          }
-        }
-        break;
-
-      default:
-        break;
-    }
-
-    setErrors(prev => ({
-      ...prev,
-      [field]: error
-    }));
-
-    return !error;
-  };
-
-  /**
-   * Validate all required fields
-   */
-  const validateAll = () => {
-    const fields = ["price", "quantity", "country"];
-    let isValid = true;
-
-    fields.forEach(field => {
-      const fieldIsValid = validateField(field, formData[field]);
-      if (!fieldIsValid) {
-        isValid = false;
-      }
-    });
-
-    if (formData.discount) {
-      const discountValid = validateField("discount", formData.discount);
-      if (!discountValid) {
-        isValid = false;
-      }
-    }
-
-    const allTouched = fields.reduce((acc, field) => {
-      acc[field] = true;
-      return acc;
-    }, {});
-    setTouched(allTouched);
-
-    return isValid;
-  };
-
-  /**
-   * Handle finish button click
-   */
   const handleFinishClick = async () => {
     setIsValidating(true);
-    
-    if (validateAll()) {
-      if (onFinish) {
-        await onFinish();
-      }
+    if (onFinish) {
+      await onFinish();
     }
-    
     setIsValidating(false);
   };
 
-  /**
-   * Calculate final price with discount
-   */
-  const getFinalPrice = () => {
-    if (!formData.price || errors.price) return null;
-    
-    const price = parseFloat(formData.price);
-    const discount = parseFloat(formData.discount) || 0;
-    
-    return {
-      original: price,
-      discount: discount,
-      discountAmount: price * (discount / 100),
-      final: price * (1 - discount / 100),
-      savings: price * (discount / 100)
-    };
-  };
-
-  const priceInfo = getFinalPrice();
-
-  /**
-   * Expose validation and state to parent (Wizard)
-   */
   useImperativeHandle(ref, () => ({
-    isValidated: () => validateAll(),
+    isValidated: () => true, // Settings are all optional
     state: {
       data: formData
     }
@@ -197,223 +56,192 @@ const Step3 = React.forwardRef((props, ref) => {
     <>
       <div className="text-center mb-4">
         <h5 className="info-text text-white">
-          <i className="fa fa-dollar mr-2"></i>
-          {title || "Price & Stock"}
+          <i className="fa fa-cog mr-2"></i>
+          Post Settings
         </h5>
         <p className="text-light-2 small">
-          {subtitle || "Set pricing, stock quantity, and discount"}
+          Configure publishing options and SEO settings
         </p>
       </div>
 
       <Row className="justify-content-center mt-4">
-        {/* Price */}
-        <Col sm="10" md="5">
-          <FormGroup>
-            <Label className="text-light-1">
-              Price <span className="text-danger">*</span>
-            </Label>
-            <InputGroup className={errors.price && touched.price ? "has-danger" : ""}>
-              <Input
-                name="price"
-                placeholder="0.00"
-                type="number"
-                step="0.01"
-                min="0"
-                value={formData.price}
-                onChange={handleChange("price")}
-                onBlur={handleBlur("price")}
-                invalid={!!(errors.price && touched.price)}
-                className="form-control"
-              />
-              {errors.price && touched.price && (
-                <FormFeedback>{errors.price}</FormFeedback>
-              )}
-            </InputGroup>
-            <small className="text-light-2">
-              Enter product price in USD
-            </small>
-          </FormGroup>
+        {/* Publishing Options */}
+        <Col sm="10">
+          <Card className="mb-4">
+            <CardBody>
+              <h6 className="text-primary mb-3">
+                <i className="fa fa-globe mr-2"></i>
+                Publishing Options
+              </h6>
+
+              <Row>
+                <Col md="6">
+                  <FormGroup>
+                    <Input
+                      type="switch"
+                      id="published"
+                      name="published"
+                      label="Publish immediately"
+                      checked={formData.published}
+                      onChange={handleChange("published")}
+                    />
+                    <small className="text-light-2">
+                      {formData.published ? 'Post will be published now' : 'Save as draft'}
+                    </small>
+                  </FormGroup>
+                </Col>
+
+                <Col md="6">
+                  <FormGroup>
+                    <Input
+                      type="switch"
+                      id="featured"
+                      name="featured"
+                      label="Mark as featured"
+                      checked={formData.featured}
+                      onChange={handleChange("featured")}
+                    />
+                    <small className="text-light-2">
+                      Featured posts appear in highlighted sections
+                    </small>
+                  </FormGroup>
+                </Col>
+
+                <Col md="6">
+                  <FormGroup>
+                    <Input
+                      type="switch"
+                      id="allowComments"
+                      name="allowComments"
+                      label="Allow comments"
+                      checked={formData.allowComments}
+                      onChange={handleChange("allowComments")}
+                    />
+                    <small className="text-light-2">
+                      Readers can leave comments on this post
+                    </small>
+                  </FormGroup>
+                </Col>
+
+                <Col md="6">
+                  <FormGroup>
+                    <Label className="text-light-1">Visibility</Label>
+                    <Input
+                      type="select"
+                      name="visibility"
+                      value={formData.visibility}
+                      onChange={handleChange("visibility")}
+                      className="form-control"
+                    >
+                      <option value="public">Public</option>
+                      <option value="private">Private</option>
+                      <option value="password">Password Protected</option>
+                      <option value="members-only">Members Only</option>
+                    </Input>
+                    <small className="text-light-2">
+                      Control who can view this post
+                    </small>
+                  </FormGroup>
+                </Col>
+              </Row>
+            </CardBody>
+          </Card>
         </Col>
 
-        {/* Quantity */}
-        <Col sm="10" md="5">
-          <FormGroup>
-            <Label className="text-light-1">
-              Stock Quantity <span className="text-danger">*</span>
-            </Label>
-            <InputGroup className={errors.quantity && touched.quantity ? "has-danger" : ""}>
-              <Input
-                name="quantity"
-                placeholder="0"
-                type="number"
-                min="0"
-                value={formData.quantity}
-                onChange={handleChange("quantity")}
-                onBlur={handleBlur("quantity")}
-                invalid={!!(errors.quantity && touched.quantity)}
-                className="form-control"
-              />
-              {errors.quantity && touched.quantity && (
-                <FormFeedback>{errors.quantity}</FormFeedback>
-              )}
-            </InputGroup>
-            <small className="text-light-2">
-              Available units in stock
-            </small>
-          </FormGroup>
-        </Col>
+        {/* SEO Settings */}
+        <Col sm="10">
+          <Card>
+            <CardBody>
+              <h6 className="text-primary mb-3">
+                <i className="fa fa-search mr-2"></i>
+                SEO Settings
+              </h6>
 
-        {/* Country Code */}
-        <Col sm="10" md="5">
-          <FormGroup>
-            <Label className="text-light-1">
-              Country Code <span className="text-danger">*</span>
-            </Label>
-            <InputGroup className={errors.country && touched.country ? "has-danger" : ""}>
-              <Input
-                name="country"
-                placeholder="US"
-                type="text"
-                maxLength="2"
-                value={formData.country}
-                onChange={handleChange("country")}
-                onBlur={handleBlur("country")}
-                invalid={!!(errors.country && touched.country)}
-                className="form-control-rounded text-uppercase"
-                style={{ textTransform: 'uppercase' }}
-              />
-              {errors.country && touched.country && (
-                <FormFeedback>{errors.country}</FormFeedback>
-              )}
-            </InputGroup>
-            <small className="text-light-2">
-              Example: US, GB, CA, AU, DE
-            </small>
-          </FormGroup>
-        </Col>
+              <FormGroup>
+                <Label className="text-light-1">
+                  Meta Title <span className="text-light-2">(optional)</span>
+                </Label>
+                <Input
+                  name="metaTitle"
+                  placeholder="Custom meta title for search engines..."
+                  type="text"
+                  value={formData.metaTitle}
+                  onChange={handleChange("metaTitle")}
+                  className="form-control"
+                  maxLength="70"
+                />
+                <small className="text-light-2">
+                  {formData.metaTitle.length}/70 characters (defaults to post title)
+                </small>
+              </FormGroup>
 
-        {/* Discount */}
-        <Col sm="10" md="5">
-          <FormGroup>
-            <Label className="text-light-1">
-              Discount % <span className="text-light-2">(optional)</span>
-            </Label>
-            <InputGroup className={errors.discount && touched.discount ? "has-danger" : ""}>
-              <Input
-                name="discount"
-                placeholder="0"
-                type="number"
-                step="0.01"
-                min="0"
-                max="100"
-                value={formData.discount}
-                onChange={handleChange("discount")}
-                onBlur={handleBlur("discount")}
-                invalid={!!(errors.discount && touched.discount)}
-                className="form-control"
-              />
-              {errors.discount && touched.discount && (
-                <FormFeedback>{errors.discount}</FormFeedback>
-              )}
-            </InputGroup>
-            <small className="text-light-2">
-              Promotional discount (0-100%)
-            </small>
-          </FormGroup>
+              <FormGroup>
+                <Label className="text-light-1">
+                  Meta Description <span className="text-light-2">(optional)</span>
+                </Label>
+                <Input
+                  type="textarea"
+                  name="metaDescription"
+                  value={formData.metaDescription}
+                  placeholder="Custom meta description for search engines..."
+                  rows="3"
+                  onChange={handleChange("metaDescription")}
+                  className="form-control"
+                  maxLength="160"
+                />
+                <small className="text-light-2">
+                  {formData.metaDescription.length}/160 characters (defaults to excerpt)
+                </small>
+              </FormGroup>
+            </CardBody>
+          </Card>
         </Col>
       </Row>
 
-      {/* Price Summary Card */}
-      {priceInfo && (
-        <Row className="justify-content-center mt-4">
-          <Col sm="10">
-            <Card className="bg-primary-light border-primary">
-              <CardBody>
-                <h6 className="text-primary mb-3">
-                  <i className="fa fa-calculator mr-2"></i>
-                  Price Summary
-                </h6>
-                
-                <div className="mb-2">
-                  <div className="d-flex justify-content-between align-items-center mb-2">
-                    <span className="text-light-1">Original Price:</span>
-                    <span className="font-weight-bold text-white h5 mb-0">
-                      ${priceInfo.original.toFixed(2)}
-                    </span>
-                  </div>
-                  
-                  {priceInfo.discount > 0 && (
-                    <>
-                      <div className="d-flex justify-content-between align-items-center mb-2">
-                        <span className="text-light-1">
-                          Discount ({priceInfo.discount}%):
-                        </span>
-                        <span className="text-danger font-weight-semibold">
-                          -${priceInfo.discountAmount.toFixed(2)}
-                        </span>
-                      </div>
-                      
-                      <hr className="my-2 border-light-2" />
-                      
-                      <div className="d-flex justify-content-between align-items-center">
-                        <span className="text-success font-weight-bold h6 mb-0">
-                          Final Price:
-                        </span>
-                        <span className="text-success font-weight-bold h4 mb-0">
-                          ${priceInfo.final.toFixed(2)}
-                        </span>
-                      </div>
-                      
-                      <div className="mt-2 text-center">
-                        <small className="text-success">
-                          <i className="fa fa-check-circle mr-1"></i>
-                          You save ${priceInfo.savings.toFixed(2)}!
-                        </small>
-                      </div>
-                    </>
-                  )}
+      {/* Summary */}
+      <Row className="justify-content-center mt-4">
+        <Col sm="10">
+          <Card className="bg-primary-light border-primary">
+            <CardBody>
+              <h6 className="text-primary mb-3">
+                <i className="fa fa-info-circle mr-2"></i>
+                Publishing Summary
+              </h6>
+              
+              <div className="d-flex justify-content-between align-items-center mb-2">
+                <span className="text-light-1">Status:</span>
+                <span className={`font-weight-bold ${formData.published ? 'text-success' : 'text-warning'}`}>
+                  {formData.published ? 'Will Publish' : 'Save as Draft'}
+                </span>
+              </div>
+
+              {formData.featured && (
+                <div className="d-flex justify-content-between align-items-center mb-2">
+                  <span className="text-light-1">Featured:</span>
+                  <span className="text-warning">
+                    <i className="fa fa-star mr-1"></i>
+                    Yes
+                  </span>
                 </div>
+              )}
 
-                {formData.quantity && !errors.quantity && (
-                  <div className="mt-3 pt-3 border-top border-light-2">
-                    <div className="d-flex justify-content-between align-items-center">
-                      <span className="text-light-1">
-                        <i className="fa fa-box mr-2"></i>
-                        Total Stock Value:
-                      </span>
-                      <span className="font-weight-bold text-info">
-                        ${(priceInfo.final * parseInt(formData.quantity)).toFixed(2)}
-                      </span>
-                    </div>
-                    <small className="text-light-2">
-                      {formData.quantity} units × ${priceInfo.final.toFixed(2)}
-                    </small>
-                  </div>
-                )}
-              </CardBody>
-            </Card>
-          </Col>
-        </Row>
-      )}
+              <div className="d-flex justify-content-between align-items-center mb-2">
+                <span className="text-light-1">Visibility:</span>
+                <span className="text-info text-capitalize">
+                  {formData.visibility.replace('-', ' ')}
+                </span>
+              </div>
 
-      {/* Validation Summary */}
-      {Object.keys(errors).length > 0 && Object.keys(touched).length > 0 && (
-        <Row className="justify-content-center mt-3">
-          <Col sm="10">
-            <div className="alert alert-warning">
-              <i className="fa fa-exclamation-triangle mr-2"></i>
-              <strong>Please fix the following errors:</strong>
-              <ul className="mb-0 mt-2">
-                {Object.entries(errors)
-                  .filter(([key, value]) => value && touched[key])
-                  .map(([key, value]) => (
-                    <li key={key}>{value}</li>
-                  ))}
-              </ul>
-            </div>
-          </Col>
-        </Row>
-      )}
+              <div className="d-flex justify-content-between align-items-center">
+                <span className="text-light-1">Comments:</span>
+                <span className={formData.allowComments ? 'text-success' : 'text-danger'}>
+                  {formData.allowComments ? 'Enabled' : 'Disabled'}
+                </span>
+              </div>
+            </CardBody>
+          </Card>
+        </Col>
+      </Row>
 
       {/* Help Text */}
       <Row className="justify-content-center mt-4">
@@ -421,20 +249,20 @@ const Step3 = React.forwardRef((props, ref) => {
           <div className="bg-dark-light p-3 rounded">
             <h6 className="text-primary mb-2">
               <i className="fa fa-lightbulb-o mr-2"></i>
-              Pricing Guidelines
+              Publishing Tips
             </h6>
             <ul className="text-light-2 small mb-0">
-              <li>Set competitive prices based on market research</li>
-              <li>Ensure stock quantity reflects actual inventory</li>
-              <li>Use country code for region-specific pricing (ISO 3166-1 alpha-2)</li>
-              <li>Discounts are optional but can boost sales significantly</li>
-              <li>Consider profit margins when setting discount percentages</li>
+              <li>Publish immediately to make your post live right away</li>
+              <li>Save as draft to preview and edit before publishing</li>
+              <li>Featured posts get more visibility on your site</li>
+              <li>Optimize meta title and description for better search rankings</li>
+              <li>Use visibility settings to control access to your content</li>
             </ul>
           </div>
         </Col>
       </Row>
 
-      {/* Navigation Buttons - react-step-wizard style */}
+      {/* Navigation */}
       <Row className="justify-content-center mt-5">
         <Col sm="10">
           <div className="d-flex justify-content-between">
@@ -458,12 +286,12 @@ const Step3 = React.forwardRef((props, ref) => {
               {isValidating ? (
                 <>
                   <span className="spinner-border spinner-border-sm mr-2"></span>
-                  Validating...
+                  Creating...
                 </>
               ) : (
                 <>
                   <i className="fa fa-check mr-2"></i>
-                  Create Product
+                  {formData.published ? 'Publish Post' : 'Save Draft'}
                 </>
               )}
             </Button>
@@ -474,6 +302,6 @@ const Step3 = React.forwardRef((props, ref) => {
   );
 });
 
-Step3.displayName = "Step3";
+BlogStep3.displayName = "BlogStep3";
 
-export default Step3;
+export default BlogStep3;
