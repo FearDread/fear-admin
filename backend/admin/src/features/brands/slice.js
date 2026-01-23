@@ -62,6 +62,10 @@ export const {
   search: searchBrands,
   getFeaturedBrands,
   getPopularBrands,
+  create: createBrand,
+  update: updateBrand,
+  patch: patchBrand,
+  delete: deleteBrand,
 } = Brands;
 
 // Export basic selectors

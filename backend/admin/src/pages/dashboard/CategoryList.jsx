@@ -61,7 +61,7 @@ const CategoryList = () => {
   const filters = useSelector(selectFilters);
 
   // Local state
-  const [viewMode, setViewMode] = useState("grid");
+  const [viewMode, setViewMode] = useState("list");
   const [statusFilter, setStatusFilter] = useState("all");
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -164,9 +164,6 @@ const CategoryList = () => {
     }
   }, [success, showAddModal, showEditModal]);
 
-  /**
-   * Handle status filter
-   */
   const handleStatusFilter = (status) => {
     setStatusFilter(status);
     if (status === "active") {
@@ -177,7 +174,6 @@ const CategoryList = () => {
       dispatch(setFilters({ ...filters, isActive: undefined }));
     }
   };
-
 
   const getCategoryStatus = (isActive) => {
     return isActive !== false ? CATEGORY_STATUS.active : CATEGORY_STATUS.inactive;
@@ -260,8 +256,11 @@ const CategoryList = () => {
     setShowDeleteModal(true);
   };
 
-  const handleCloseModals = () => {
+  const handleCloseAddModal = () => {
     setShowAddModal(false);
+  }
+  const handleCloseModals = () => {
+
     setShowEditModal(false);
     setShowDeleteModal(false);
     setSelectedCategory(null);
@@ -835,8 +834,9 @@ const CategoryList = () => {
       {/* Add Category Modal */}
       <Modal
         open={showAddModal}
-        onClose={handleCloseModals}
+        onClose={() => handleCloseAddModal()}
         size="md"
+        className="rs-theme-dark"
       >
         <Modal.Header>
           <Modal.Title>
@@ -990,7 +990,7 @@ const CategoryList = () => {
             <i className="fa fa-check mr-2"></i>
             Create Category
           </RSButton>
-          <RSButton onClick={handleCloseModals} appearance="subtle">
+          <RSButton onClick={() => handleCloseAddModal()} appearance="subtle">
             Cancel
           </RSButton>
         </Modal.Footer>

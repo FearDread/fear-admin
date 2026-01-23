@@ -3819,10 +3819,10 @@ table.grid td {
 	}
 }
 
-.product-card {
-    width: 200px;
-}
-
 .content-card {
     min-heigth: 800px !important;
+}
+
+.container-fluid {
+    min-height: 100vh !important;
 }

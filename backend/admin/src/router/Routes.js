@@ -24,8 +24,8 @@ export const routes = {
     { path: "/admin/products", label: "Products", icon: "fa fa-shopping-bag", element: <ProductList /> },
     { path: "/admin/orders", label: "Orders", icon: "fa fa-shopping-cart", element: <OrderList /> },
     { path: "/admin/blog", label: "Blog", icon: "fa fa-book", element: <BlogList /> },
-    { path: "/admin/brand", label: "Brands", icon: "fa fa-brand", element: <BrandsList /> },
-    { path: "/admin/category", label: "Categories", icon: "fa fa-certificate", element: <CategoryList /> },
+    { path: "/admin/brand", label: "Brands", icon: "fa fa-certificate", element: <BrandsList /> },
+    { path: "/admin/category", label: "Categories", icon: "fa fa-tag", element: <CategoryList /> },
     { path: "/admin/calendar", label: "Calendar", icon: "fa fa-calendar", element: <Calendar /> },
     { path: "/admin/product/new", element: <Wizard type="product" /> },
     { path: "/admin/blog/new", element: <Wizard type="blog" /> }

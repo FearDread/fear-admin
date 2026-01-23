@@ -595,7 +595,7 @@ const ProductList = () => {
                     {filteredProducts.map(product => {
                       const stockStatus = getStockStatus(product.quantity);
                       return (
-                        <Col md="4" lg="3" key={product._id} className="mb-4">
+                        <Col md="3" lg="2" key={product._id} className="mb-4">
                           <Card className="product-card h-100">
                             <div className="position-relative">
                               <img 

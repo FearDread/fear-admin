@@ -11,6 +11,23 @@ import {
   Badge,
   Button,
 } from 'reactstrap';
+import {
+  LineChart,
+  Line,
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  Cell,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+} from 'recharts';
 
 // Import order slice
 import {
@@ -57,6 +74,41 @@ const Dashboard = () => {
     delivered: { color: 'success', icon: 'fa-check-circle', label: 'Delivered' },
     cancelled: { color: 'danger', icon: 'fa-times-circle', label: 'Cancelled' },
   };
+
+  // Mock data for charts
+  const revenueData = [
+    { month: 'Jan', revenue: 12400, orders: 45 },
+    { month: 'Feb', revenue: 15800, orders: 52 },
+    { month: 'Mar', revenue: 18900, orders: 61 },
+    { month: 'Apr', revenue: 16200, orders: 48 },
+    { month: 'May', revenue: 21500, orders: 68 },
+    { month: 'Jun', revenue: 24800, orders: 75 },
+  ];
+
+  const orderStatusData = [
+    { name: 'Pending', value: pendingOrders?.length || 12, color: '#ffc107' },
+    { name: 'Shipped', value: shippedOrders?.length || 8, color: '#007bff' },
+    { name: 'Delivered', value: deliveredOrders?.length || 25, color: '#28a745' },
+    { name: 'Processing', value: 5, color: '#17a2b8' },
+  ];
+
+  const topProductsData = [
+    { name: 'Product A', sales: 45 },
+    { name: 'Product B', sales: 38 },
+    { name: 'Product C', sales: 32 },
+    { name: 'Product D', sales: 28 },
+    { name: 'Product E', sales: 22 },
+  ];
+
+  const dailyOrdersData = [
+    { day: 'Mon', orders: 12 },
+    { day: 'Tue', orders: 19 },
+    { day: 'Wed', orders: 15 },
+    { day: 'Thu', orders: 22 },
+    { day: 'Fri', orders: 28 },
+    { day: 'Sat', orders: 18 },
+    { day: 'Sun', orders: 14 },
+  ];
 
   // Fetch data on mount
   useEffect(() => {
@@ -213,6 +265,154 @@ const Dashboard = () => {
                   </div>
                 </Col>
               </Row>
+            </CardBody>
+          </Card>
+        </Col>
+      </Row>
+
+      {/* Charts Row 1 */}
+      <Row className="mb-4">
+        <Col lg="8">
+          <Card className="media-object">
+            <CardHeader>
+              <CardTitle tag="h4" className="mb-0">
+                <i className="fa fa-line-chart mr-2"></i>
+                Revenue & Orders Trend
+              </CardTitle>
+              <small className="text-light-2">Last 6 months performance</small>
+            </CardHeader>
+            <CardBody>
+              <ResponsiveContainer width="100%" height={300}>
+                <AreaChart data={revenueData}>
+                  <defs>
+                    <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#28a745" stopOpacity={0.8}/>
+                      <stop offset="95%" stopColor="#28a745" stopOpacity={0}/>
+                    </linearGradient>
+                    <linearGradient id="colorOrders" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#007bff" stopOpacity={0.8}/>
+                      <stop offset="95%" stopColor="#007bff" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#444" />
+                  <XAxis dataKey="month" stroke="#999" />
+                  <YAxis yAxisId="left" stroke="#28a745" />
+                  <YAxis yAxisId="right" orientation="right" stroke="#007bff" />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: '#2b2b2b', border: '1px solid #444' }}
+                    formatter={(value, name) => {
+                      if (name === 'revenue') return formatCurrency(value);
+                      return value;
+                    }}
+                  />
+                  <Legend />
+                  <Area 
+                    yAxisId="left"
+                    type="monotone" 
+                    dataKey="revenue" 
+                    stroke="#28a745" 
+                    fillOpacity={1} 
+                    fill="url(#colorRevenue)" 
+                  />
+                  <Area 
+                    yAxisId="right"
+                    type="monotone" 
+                    dataKey="orders" 
+                    stroke="#007bff" 
+                    fillOpacity={1} 
+                    fill="url(#colorOrders)" 
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </CardBody>
+          </Card>
+        </Col>
+
+        <Col lg="4">
+          <Card className="media-object">
+            <CardHeader>
+              <CardTitle tag="h4" className="mb-0">
+                <i className="fa fa-pie-chart mr-2"></i>
+                Order Status Distribution
+              </CardTitle>
+              <small className="text-light-2">Current breakdown</small>
+            </CardHeader>
+            <CardBody>
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={orderStatusData}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="value"
+                  >
+                    {orderStatusData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip contentStyle={{ backgroundColor: '#2b2b2b', border: '1px solid #444' }} />
+                </PieChart>
+              </ResponsiveContainer>
+            </CardBody>
+          </Card>
+        </Col>
+      </Row>
+
+      {/* Charts Row 2 */}
+      <Row className="mb-4">
+        <Col lg="6">
+          <Card className="media-object">
+            <CardHeader>
+              <CardTitle tag="h4" className="mb-0">
+                <i className="fa fa-bar-chart mr-2"></i>
+                Top Selling Products
+              </CardTitle>
+              <small className="text-light-2">This month's best performers</small>
+            </CardHeader>
+            <CardBody>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={topProductsData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#444" />
+                  <XAxis dataKey="name" stroke="#999" />
+                  <YAxis stroke="#999" />
+                  <Tooltip contentStyle={{ backgroundColor: '#2b2b2b', border: '1px solid #444' }} />
+                  <Bar dataKey="sales" fill="#007bff" radius={[8, 8, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardBody>
+          </Card>
+        </Col>
+
+        <Col lg="6">
+          <Card className="media-object">
+            <CardHeader>
+              <CardTitle tag="h4" className="mb-0">
+                <i className="fa fa-calendar mr-2"></i>
+                Weekly Order Activity
+              </CardTitle>
+              <small className="text-light-2">Orders by day of week</small>
+            </CardHeader>
+            <CardBody>
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={dailyOrdersData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#444" />
+                  <XAxis dataKey="day" stroke="#999" />
+                  <YAxis stroke="#999" />
+                  <Tooltip contentStyle={{ backgroundColor: '#2b2b2b', border: '1px solid #444' }} />
+                  <Line 
+                    type="monotone" 
+                    dataKey="orders" 
+                    stroke="#ffc107" 
+                    strokeWidth={3}
+                    dot={{ fill: '#ffc107', r: 5 }}
+                    activeDot={{ r: 8 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
             </CardBody>
           </Card>
         </Col>

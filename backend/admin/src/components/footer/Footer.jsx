@@ -1,5 +1,5 @@
+import { Link } from "react-router-dom";
 
-// Footer Component
 export const Footer = () => {
   return (
     <>
@@ -8,7 +8,7 @@ export const Footer = () => {
     <footer className="bg-dark text-white text-center py-3 mt-4">
 
       <div className="container">
-        Copyright © 2018 Dashtreme Admin
+        Copyright © 2025 <Link to="https://feard.vercel.app">Fear-Admin</Link>
       </div>
     </footer>
     </>

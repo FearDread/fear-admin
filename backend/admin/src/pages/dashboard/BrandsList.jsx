@@ -15,47 +15,72 @@ import {
   DropdownMenu,
   DropdownItem,
 } from "reactstrap";
+import {
+  Modal,
+  Form,
+  Input as RSInput,
+  Button as RSButton,
+  useToaster,
+  Message,
+  SelectPicker,
+  Toggle,
+  Uploader
+} from "rsuite";
 import ReactTable from "../../components/ReactTable/ReactTable";
 import Loader from "../../components/Loader/Loading";
 import { useSelector, useDispatch } from "react-redux";
 import {
   selectSortedBrands,
-  selectBrandViewType,
   selectBrandsSearchTerm,
   selectBrandsFilters,
   setSearchTerm,
-  setBrandViewType,
-  setSorting,
   fetchBrands,
+  createBrand,
+  updateBrand,
+  deleteBrand,
   selectBrandsLoading,
   selectBrandsError,
   selectBrandsSuccess,
-  selectFilteredBrands,
   selectAllBrands,
   setFilters,
   clearError,
-  selectActiveBrands,
   selectFeaturedBrands,
 } from "../../features/brands/slice.js";
+
+const { Group: FormGroup, Control: FormControl, ControlLabel } = Form;
+const Textarea = React.forwardRef((props, ref) => <RSInput {...props} as="textarea" ref={ref} />);
 
 const BrandList = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  
+  const toaster = useToaster();
+
   // Redux state
   const error = useSelector(selectBrandsError);
   const loading = useSelector(selectBrandsLoading);
+  const success = useSelector(selectBrandsSuccess);
   const brands = useSelector(selectSortedBrands);
   const allBrands = useSelector(selectAllBrands);
-  const viewMode = useSelector(selectBrandViewType);
   const searchTerm = useSelector(selectBrandsSearchTerm);
   const filters = useSelector(selectBrandsFilters);
-  const activeBrands = useSelector(selectActiveBrands);
   const featuredBrands = useSelector(selectFeaturedBrands);
-  
-  // Local state
-  const [alert, setAlert] = useState(null);
+
+  // Local State
+  const [viewMode, setViewMode] = useState("list");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedBrand, setSelectedBrand] = useState(null);
+
+  // Form state
+  const [formValue, setFormValue] = useState({
+    name: '',
+    slug: '',
+    website: '',
+    isActive: true,
+    featured: false,
+  });
 
   const BRAND_STATUS = {
     active: { color: "success", icon: "fa-check-circle", label: "Active" },
@@ -70,7 +95,6 @@ const BrandList = () => {
       filterable: false
     },
     { Header: "Brand Name", accessor: "name", sortable: true },
-    { Header: "Description", accessor: "description", sortable: false },
     { Header: "Status", accessor: "status", sortable: true },
     { Header: "Products", accessor: "products", sortable: true },
     { Header: "Featured", accessor: "featured", sortable: false },
@@ -86,61 +110,31 @@ const BrandList = () => {
     dispatch(fetchBrands()).unwrap();
   }, [dispatch]);
 
-  /**
-   * Handle window resize for responsive behavior
-   */
   useEffect(() => {
-    const handleResize = () => {
-      // Add any resize logic if needed
-    };
-
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  /**
-   * Handle brand edit navigation
-   */
-  const handleEditBrand = (id) => {
-    navigate(`/admin/brand/edit/${id}`);
-  };
-
-  /**
-   * Handle brand view navigation
-   */
-  const handleViewBrand = (id) => {
-    navigate(`/admin/brand/view/${id}`);
-  };
-
-  /**
-   * Handle brand deletion with confirmation
-   */
-  const handleDeleteBrand = async (id, brandName) => {
-    try {
-      // await dispatch(deleteBrand(id));
-      console.log('Deleting brand:', id);
-    } catch (err) {
-      console.log('error deleting brand ::', err);
+    if (error) {
+      toaster.push(
+        <Message showIcon type="error" closable>
+          <strong>Error!</strong> {error}
+        </Message>,
+        { placement: 'topEnd', duration: 5000 }
+      );
+      dispatch(clearError());
     }
-  };
+  }, [error, toaster, dispatch]);
 
-  /**
-   * Show delete confirmation dialog
-   */
-  const confirmDelete = (id, brand) => {
-    // Add confirmation logic here
-  };
+  useEffect(() => {
+    if (success && (showAddModal || showEditModal)) {
+      toaster.push(
+        <Message showIcon type="success" closable>
+          <strong>Success!</strong> Brand {showAddModal ? 'created' : 'updated'} successfully
+        </Message>,
+        { placement: 'topEnd', duration: 3000 }
+      );
+      handleCloseModals();
+      dispatch(fetchBrands());
+    }
+  }, [success, showAddModal, showEditModal]);
 
-  /**
-   * Hide alert dialog
-   */
-  const hideAlert = () => {
-    setAlert(null);
-  };
-
-  /**
-   * Handle status filter
-   */
   const handleStatusFilter = (status) => {
     setStatusFilter(status);
     if (status === "active") {
@@ -152,16 +146,10 @@ const BrandList = () => {
     }
   };
 
-  /**
-   * Get brand status
-   */
   const getBrandStatus = (active) => {
     return active !== false ? BRAND_STATUS.active : BRAND_STATUS.inactive;
   };
 
-  /**
-   * Filter and search brands
-   */
   const filteredBrands = useMemo(() => {
     if (!brands || brands.length === 0) return [];
 
@@ -177,7 +165,6 @@ const BrandList = () => {
         const searchLower = searchTerm.toLowerCase();
         return (
           brand.name?.toLowerCase().includes(searchLower) ||
-          brand.description?.toLowerCase().includes(searchLower) ||
           brand.slug?.toLowerCase().includes(searchLower) ||
           brand._id?.toLowerCase().includes(searchLower)
         );
@@ -187,9 +174,6 @@ const BrandList = () => {
     });
   }, [brands, searchTerm, statusFilter]);
 
-  /**
-   * Calculate statistics
-   */
   const statistics = useMemo(() => {
     if (!allBrands || allBrands.length === 0) {
       return {
@@ -208,13 +192,124 @@ const BrandList = () => {
     };
   }, [allBrands, featuredBrands]);
 
-  /**
-   * Transform brands data for table display
-   */
+  const handleOpenAddModal = () => {
+    setFormValue({
+      name: '',
+      slug: '',
+      website: '',
+      isActive: true,
+      featured: false,
+      verified: false
+    });
+    setShowAddModal(true);
+  };
+
+  const handleOpenEditModal = (brand) => {
+    setSelectedBrand(brand);
+    setFormValue({
+      name: brand.name || brand.title || '',
+      slug: brand.slug || '',
+      website: brand.website || brand.contactInfo?.website || '',
+      isActive: brand.isActive !== false,
+      featured: brand.isFeatured || false,
+      verified: brand.verified || false
+    });
+    setShowEditModal(true);
+  };
+
+  const handleOpenDeleteModal = (brand) => {
+    setSelectedBrand(brand);
+    setShowDeleteModal(true);
+  };
+
+  const handleCloseAddModal = () => {
+    setShowAddModal(false);
+  };
+
+  const handleCloseModals = () => {
+    setShowEditModal(false);
+    setShowDeleteModal(false);
+    setSelectedBrand(null);
+  };
+
+  const handleCreateBrand = async () => {
+    if (!formValue.name || formValue.name.trim().length < 2) {
+      toaster.push(
+        <Message showIcon type="warning">
+          Brand name must be at least 2 characters
+        </Message>,
+        { placement: 'topEnd' }
+      );
+      return;
+    }
+
+    const brandData = {
+      name: formValue.name.trim(),
+      slug: formValue.slug?.trim(),
+      website: formValue.website?.trim() || '',
+      isActive: formValue.isActive,
+      isFeatured: formValue.featured,
+      verified: formValue.verified
+    };
+
+    await dispatch(createBrand(brandData))
+      .unwrap()
+      .then(() => handleCloseAddModal())
+      .catch((err) => console.error("Failed to create brand:", err));
+  };
+
+  const handleUpdateBrand = async () => {
+    if (!formValue.name || formValue.name.trim().length < 2) {
+      toaster.push(
+        <Message showIcon type="warning">
+          Brand name must be at least 2 characters
+        </Message>,
+        { placement: 'topEnd' }
+      );
+      return;
+    }
+
+    try {
+      const brandData = {
+        name: formValue.name.trim(),
+        slug: formValue.slug?.trim(),
+        website: formValue.website?.trim() || '',
+        isActive: formValue.isActive,
+        isFeatured: formValue.featured,
+        verified: formValue.verified
+      };
+
+      await dispatch(updateBrand({
+        id: selectedBrand._id || selectedBrand.id,
+        data: brandData
+      })).unwrap();
+    } catch (err) {
+      console.error("Failed to update brand:", err);
+    }
+  };
+
+  const handleDeleteBrand = async () => {
+    try {
+      await dispatch(deleteBrand(selectedBrand._id || selectedBrand.id)).unwrap();
+
+      toaster.push(
+        <Message showIcon type="success">
+          Brand deleted successfully
+        </Message>,
+        { placement: 'topEnd' }
+      );
+
+      handleCloseModals();
+      dispatch(fetchBrands());
+    } catch (err) {
+      console.error("Failed to delete brand:", err);
+    }
+  };
+
   const tableData = useMemo(() => {
     return filteredBrands.map((item) => {
       const brandStatus = getBrandStatus(item.active);
-      
+
       return {
         logo: (
           <div className="position-relative">
@@ -264,7 +359,7 @@ const BrandList = () => {
         products: (
           <span className="text-light-1">
             <i className="fa fa-shopping-bag mr-2"></i>
-            {item.productCount || item.products?.length || 0} products
+            {item.productCount || item.products?.length || item.stats?.productCount || 0} products
           </span>
         ),
         featured: (
@@ -282,19 +377,10 @@ const BrandList = () => {
         actions: (
           <div className="d-flex gap-2">
             <Button
-              color="info"
-              size="sm"
-              className="btn-round"
-              onClick={() => handleViewBrand(item._id || item.id)}
-              title="View Brand"
-            >
-              <i className="fa fa-eye"></i>
-            </Button>
-            <Button
               color="primary"
               size="sm"
               className="btn-round"
-              onClick={() => handleEditBrand(item._id || item.id)}
+              onClick={() => handleOpenEditModal(item)}
               title="Edit Brand"
             >
               <i className="fa fa-edit"></i>
@@ -303,7 +389,7 @@ const BrandList = () => {
               color="danger"
               size="sm"
               className="btn-round"
-              onClick={() => confirmDelete(item._id || item.id, item)}
+              onClick={() => handleOpenDeleteModal(item)}
               title="Delete Brand"
             >
               <i className="fa fa-trash"></i>
@@ -426,7 +512,7 @@ const BrandList = () => {
                     <Button
                       color={viewMode === "list" ? "info" : "secondary"}
                       size="sm"
-                      onClick={() => dispatch(setBrandViewType("list"))}
+                      onClick={() => setViewMode("list")}
                       className="btn-round"
                     >
                       <i className="fa fa-list"></i>
@@ -434,7 +520,7 @@ const BrandList = () => {
                     <Button
                       color={viewMode === "grid" ? "info" : "secondary"}
                       size="sm"
-                      onClick={() => dispatch(setBrandViewType("grid"))}
+                      onClick={() => setViewMode("grid")}
                       className="btn-round"
                     >
                       <i className="fa fa-th"></i>
@@ -443,7 +529,7 @@ const BrandList = () => {
                   <Button
                     color="primary"
                     size="sm"
-                    onClick={() => navigate('/admin/brand/new')}
+                    onClick={handleOpenAddModal}
                     className="btn-round"
                   >
                     <i className="fa fa-plus mr-2"></i>
@@ -465,11 +551,11 @@ const BrandList = () => {
                         className="form-control-rounded"
                         style={{ paddingLeft: '35px' }}
                       />
-                      <i 
-                        className="fa fa-search" 
-                        style={{ 
-                          position: 'absolute', 
-                          left: '12px', 
+                      <i
+                        className="fa fa-search"
+                        style={{
+                          position: 'absolute',
+                          left: '12px',
                           top: '12px',
                           color: 'rgba(255,255,255,0.5)'
                         }}
@@ -478,14 +564,14 @@ const BrandList = () => {
                   </Col>
                   <Col md="3">
                     <UncontrolledDropdown>
-                      <DropdownToggle 
-                        caret 
-                        color="light" 
+                      <DropdownToggle
+                        caret
+                        color="light"
                         className="w-100 text-left"
                       >
                         <i className="fa fa-filter mr-2"></i>
-                        {statusFilter === "all" 
-                          ? "All Status" 
+                        {statusFilter === "all"
+                          ? "All Status"
                           : statusFilter === "active" ? "Active" : "Inactive"}
                       </DropdownToggle>
                       <DropdownMenu>
@@ -535,9 +621,9 @@ const BrandList = () => {
                   <div className="alert alert-danger alert-dismissible fade show" role="alert">
                     <i className="fa fa-exclamation-triangle mr-2"></i>
                     {error}
-                    <button 
-                      type="button" 
-                      className="close" 
+                    <button
+                      type="button"
+                      className="close"
                       onClick={() => dispatch(clearError())}
                     >
                       <span>&times;</span>
@@ -565,13 +651,13 @@ const BrandList = () => {
                       <i className="fa fa-tag" style={{ fontSize: '64px', opacity: 0.3 }}></i>
                       <p className="text-light-2 mt-3">
                         {searchTerm || statusFilter !== 'all'
-                          ? 'No brands match your filters' 
+                          ? 'No brands match your filters'
                           : 'No brands found. Create your first brand!'}
                       </p>
                       {!searchTerm && statusFilter === 'all' && (
-                        <Button 
-                          color="primary" 
-                          onClick={() => navigate('/admin/brand/new')}
+                        <Button
+                          color="primary"
+                          onClick={handleOpenAddModal}
                           className="btn-round mt-3"
                         >
                           <i className="fa fa-plus mr-2"></i>
@@ -585,27 +671,27 @@ const BrandList = () => {
                     {filteredBrands.map(brand => {
                       const brandStatus = getBrandStatus(brand.active);
                       const isFeatured = brand.featured || featuredBrands.includes(brand.id || brand._id);
-                      
+
                       return (
                         <Col md="4" lg="3" key={brand._id || brand.id} className="mb-4">
                           <Card className="brand-card h-100">
                             <div className="position-relative" style={{ padding: '20px', backgroundColor: 'white' }}>
-                              <img 
-                                src={brand.avatar?.url || brand.logo?.url || '../../assets/images/placeholder.png'} 
+                              <img
+                                src={brand.avatar?.url || brand.logo?.url || '../../assets/images/placeholder.png'}
                                 className="card-img-top"
                                 alt={brand.name || brand.title}
                                 style={{ height: '120px', objectFit: 'contain' }}
                               />
-                              <Badge 
-                                color={brandStatus.color} 
+                              <Badge
+                                color={brandStatus.color}
                                 className="position-absolute"
                                 style={{ top: '10px', right: '10px' }}
                               >
                                 {brandStatus.label}
                               </Badge>
                               {isFeatured && (
-                                <Badge 
-                                  color="warning" 
+                                <Badge
+                                  color="warning"
                                   className="position-absolute"
                                   style={{ top: '10px', left: '10px' }}
                                 >
@@ -625,34 +711,26 @@ const BrandList = () => {
                               <div className="d-flex justify-content-between align-items-center mb-3">
                                 <Badge color="light" pill>
                                   <i className="fa fa-shopping-bag mr-1"></i>
-                                  {brand.productCount || brand.products?.length || 0}
+                                  {brand.productCount || brand.products?.length || brand.stats?.productCount || 0}
                                 </Badge>
                                 {brand.slug && (
                                   <small className="text-light-2">/{brand.slug}</small>
                                 )}
                               </div>
                               <div className="d-flex justify-content-between gap-2">
-                                <Button 
-                                  color="info" 
-                                  size="sm" 
+                                <Button
+                                  color="primary"
+                                  size="sm"
                                   className="btn-round flex-fill"
-                                  onClick={() => handleViewBrand(brand._id || brand.id)}
-                                >
-                                  <i className="fa fa-eye"></i>
-                                </Button>
-                                <Button 
-                                  color="primary" 
-                                  size="sm" 
-                                  className="btn-round flex-fill"
-                                  onClick={() => handleEditBrand(brand._id || brand.id)}
+                                  onClick={() => handleOpenEditModal(brand)}
                                 >
                                   <i className="fa fa-edit"></i>
                                 </Button>
-                                <Button 
-                                  color="danger" 
-                                  size="sm" 
+                                <Button
+                                  color="danger"
+                                  size="sm"
                                   className="btn-round flex-fill"
-                                  onClick={() => confirmDelete(brand._id || brand.id, brand)}
+                                  onClick={() => handleOpenDeleteModal(brand)}
                                 >
                                   <i className="fa fa-trash"></i>
                                 </Button>
@@ -667,11 +745,11 @@ const BrandList = () => {
 
                 {/* Loading Overlay */}
                 {loading && brands && brands.length > 0 && (
-                  <div 
+                  <div
                     className="position-absolute w-100 h-100 d-flex justify-content-center align-items-center"
-                    style={{ 
-                      top: 0, 
-                      left: 0, 
+                    style={{
+                      top: 0,
+                      left: 0,
                       background: 'rgba(0,0,0,0.5)',
                       zIndex: 999
                     }}
@@ -686,8 +764,228 @@ const BrandList = () => {
           </Col>
         </Row>
       </div>
+      {/* Add Brand Modal */}
+      <Modal
+        open={showAddModal}
+        onClose={handleCloseAddModal}
+        size="md"
+        className="rs-theme-dark"
+      >
+        <Modal.Header>
+          <Modal.Title>
+            <i className="fa fa-plus-circle mr-2"></i>
+            Add New Brand
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form fluid formValue={formValue} onChange={setFormValue}>
+            <FormGroup>
+              <ControlLabel>Brand Name *</ControlLabel>
+              <FormControl name="name" placeholder="Enter brand name..." />
+            </FormGroup>
+
+            <FormGroup>
+              <ControlLabel>Tagline</ControlLabel>
+              <FormControl
+                name="tagline"
+                placeholder="Brand tagline or slogan..."
+              />
+            </FormGroup>
+            <FormGroup>
+              <ControlLabel>Website</ControlLabel>
+              <FormControl
+                name="website"
+                placeholder="https://www.example.com"
+              />
+            </FormGroup>
+            <FormGroup>
+              <ControlLabel>Slug</ControlLabel>
+              <FormControl
+                name="slug"
+                placeholder="brand-slug (leave empty for auto-generate)"
+              />
+            </FormGroup>
+            <Row>
+              <Col md={6}>
+                <FormGroup>
+                  <ControlLabel>Active Status</ControlLabel>
+                  <div className="mt-2">
+                    <Toggle
+                      checked={formValue.isActive}
+                      onChange={(checked) => setFormValue({ ...formValue, isActive: checked, active: checked })}
+                      checkedChildren="Active"
+                      unCheckedChildren="Inactive"
+                    />
+                  </div>
+                </FormGroup>
+              </Col>
+
+              <Col md={6}>
+                <FormGroup>
+                  <ControlLabel>Featured</ControlLabel>
+                  <div className="mt-2">
+                    <Toggle
+                      checked={formValue.featured}
+                      onChange={(checked) => setFormValue({ ...formValue, featured: checked })}
+                      checkedChildren="Featured"
+                      unCheckedChildren="Normal"
+                    />
+                  </div>
+                </FormGroup>
+              </Col>
+
+              <Col md={6}>
+                <FormGroup>
+                  <ControlLabel>Verified</ControlLabel>
+                  <div className="mt-2">
+                    <Toggle
+                      checked={formValue.verified}
+                      onChange={(checked) => setFormValue({ ...formValue, verified: checked })}
+                      checkedChildren="Verified"
+                      unCheckedChildren="Unverified"
+                    />
+                  </div>
+                </FormGroup>
+              </Col>
+            </Row>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <RSButton onClick={handleCreateBrand} appearance="primary">
+            <i className="fa fa-check mr-2"></i>
+            Create Brand
+          </RSButton>
+          <RSButton onClick={handleCloseAddModal} appearance="subtle">
+            Cancel
+          </RSButton>
+        </Modal.Footer>
+      </Modal>
+      {/* Edit Brand Modal */}
+      <Modal
+        open={showEditModal}
+        onClose={handleCloseModals}
+        size="md"
+        className="rs-theme-dark"
+      >
+        <Modal.Header>
+          <Modal.Title>
+            <i className="fa fa-edit mr-2"></i>
+            Edit Brand
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form fluid formValue={formValue} onChange={setFormValue}>
+            <FormGroup>
+              <ControlLabel>Brand Name *</ControlLabel>
+              <FormControl name="name" placeholder="Enter brand name..." />
+            </FormGroup>
+            <Row>
+              <FormGroup>
+                <ControlLabel>Tagline</ControlLabel>
+                <FormControl
+                  name="tagline"
+                  placeholder="Brand tagline or slogan..."
+                />
+              </FormGroup>
+              <FormGroup>
+                <ControlLabel>Website</ControlLabel>
+                <FormControl
+                  name="website"
+                  placeholder="https://www.example.com"
+                />
+              </FormGroup>
+              <FormGroup>
+                <ControlLabel>Slug</ControlLabel>
+                <FormControl
+                  name="slug"
+                  placeholder="brand-slug"
+                />
+              </FormGroup>
+            </Row>
+            <Row>
+              <Col md={6}>
+                <FormGroup>
+                  <ControlLabel>Active Status</ControlLabel>
+                  <div className="mt-2">
+                    <Toggle
+                      checked={formValue.isActive}
+                      onChange={(checked) => setFormValue({ ...formValue, isActive: checked, active: checked })}
+                      checkedChildren="Active"
+                      unCheckedChildren="Inactive"
+                    />
+                  </div>
+                </FormGroup>
+              </Col>
+              <Col md={6}>
+                <FormGroup>
+                  <ControlLabel>Featured</ControlLabel>
+                  <div className="mt-2">
+                    <Toggle
+                      checked={formValue.featured}
+                      onChange={(checked) => setFormValue({ ...formValue, featured: checked })}
+                      checkedChildren="Featured"
+                      unCheckedChildren="Normal"
+                    />
+                  </div>
+                </FormGroup>
+              </Col>
+              <Col md={6}>
+                <FormGroup>
+                  <ControlLabel>Verified</ControlLabel>
+                  <div className="mt-2">
+                    <Toggle
+                      checked={formValue.verified}
+                      onChange={(checked) => setFormValue({ ...formValue, verified: checked })}
+                      checkedChildren="Verified"
+                      unCheckedChildren="Unverified"
+                    />
+                  </div>
+                </FormGroup>
+              </Col>
+            </Row>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <RSButton onClick={handleUpdateBrand} appearance="primary">
+            <i className="fa fa-check mr-2"></i>
+            Update Brand
+          </RSButton>
+          <RSButton onClick={handleCloseModals} appearance="subtle">
+            Cancel
+          </RSButton>
+        </Modal.Footer>
+      </Modal>
+      {/* Delete Confirmation Modal */}
+      <Modal
+        open={showDeleteModal}
+        onClose={handleCloseModals}
+        size="xs"
+        className="rs-theme-dark"
+      >
+        <Modal.Header>
+          <Modal.Title>
+            <i className="fa fa-exclamation-triangle mr-2 text-danger"></i>
+            Delete Brand?
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p style={{ color: "rgba(255,255,255,0.7)" }}>
+            Are you sure you want to delete "<strong style={{ color: "white" }}>
+              {selectedBrand?.name || selectedBrand?.title}
+            </strong>"? This action cannot be undone.
+          </p>
+        </Modal.Body>
+        <Modal.Footer>
+          <RSButton onClick={handleDeleteBrand} appearance="primary" color="red">
+            <i className="fa fa-trash mr-2"></i>
+            Yes, Delete It
+          </RSButton>
+          <RSButton onClick={handleCloseModals} appearance="subtle">
+            Cancel
+          </RSButton>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 }
-
 export default BrandList;
