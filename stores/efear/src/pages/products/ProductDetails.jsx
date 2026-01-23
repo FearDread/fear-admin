@@ -90,8 +90,6 @@ export const ProductDetails = () => {
         product?.id ? selectIsInWishlist(state, product.id) : false
     );
 
-    console.log('product =- ', product);
-
     useEffect(() => {
         if (product) {
             if (product.categoryId) {

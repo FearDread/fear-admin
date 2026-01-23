@@ -66,7 +66,7 @@ export const Blog = () => {
                                 )}
 
                                 {!loading && displayPosts.map((post, index) => (
-                                    <div className="card" key={post._id || index}>
+                                    <div className="card media-object" key={post._id || index}>
                                         <img
                                             src={post.images ? post.images[0].url : `assets/images/posts/0${index + 1}.png`}
                                             className="blog-card-img-top"

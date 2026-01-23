@@ -1,6 +1,7 @@
 // features/blog/BlogList.jsx
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 import {
   Card,
   CardHeader,
@@ -18,7 +19,11 @@ import {
 } from "reactstrap";
 import ReactTable from "../../components/ReactTable/ReactTable";
 import Loader from "../../components/Loader/Loading";
-import { useSelector, useDispatch } from "react-redux";
+import { 
+  Modal,
+  Button as RSButton,
+  useToaster
+} from "rsuite";
 import {
   selectSortedPosts,
   selectViewMode,
@@ -37,6 +42,7 @@ import {
   clearError,
   togglePublished,
   toggleFeatured,
+  selectCurrentPost,
 } from "../../features/blog/slice.js";
 import {
   fetchCategories,
@@ -56,6 +62,8 @@ const BlogList = () => {
   const categories = useSelector(selectAllCategories);
   // Local state
   const [alert, setAlert] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedPost, setSelectedPost] = useState(null);
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
 
@@ -105,20 +113,18 @@ const BlogList = () => {
     navigate(`/admin/blog/edit/${id}`);
   };
 
-  const handleDeletePost = async (id, postTitle) => {
+  const handleDeletePost = async (id) => {
     try {
-      await dispatch(deletePost(id));
+      await dispatch(deletePost({id: id}));
+      setShowDeleteModal(false);
     } catch (err) {
       console.log('error deleting post ::', err);
     }
   };
 
   const confirmDelete = (id, post) => {
-    // Add confirmation logic here
-  };
-
-  const hideAlert = () => {
-    setAlert(null);
+    setSelectedPost(post);
+    setShowDeleteModal(true);
   };
 
   const handleCategoryFilter = (categoryId) => {
@@ -228,12 +234,12 @@ const BlogList = () => {
   const tableData = useMemo(() => {
     return filteredPosts.map((item) => {
       const postStatus = getPostStatus(item);
-      
+
       return {
         featuredImage: (
           <div className="position-relative">
             <img
-              src={item.featuredImage?.url || '../../assets/images/placeholder.png'}
+              src={item.images[0]?.url || '../../assets/images/placeholder.png'}
               alt={item.title}
               className="post-img rounded"
               style={{
@@ -244,7 +250,7 @@ const BlogList = () => {
               }}
             />
             {item.featured && (
-              <i 
+              <i
                 className="fa fa-star position-absolute text-warning"
                 style={{ top: '-5px', right: '-5px', fontSize: '14px' }}
               ></i>
@@ -502,11 +508,11 @@ const BlogList = () => {
                         className="form-control-rounded"
                         style={{ paddingLeft: '35px' }}
                       />
-                      <i 
-                        className="fa fa-search" 
-                        style={{ 
-                          position: 'absolute', 
-                          left: '12px', 
+                      <i
+                        className="fa fa-search"
+                        style={{
+                          position: 'absolute',
+                          left: '12px',
                           top: '12px',
                           color: 'rgba(255,255,255,0.5)'
                         }}
@@ -515,14 +521,14 @@ const BlogList = () => {
                   </Col>
                   <Col md="3">
                     <UncontrolledDropdown>
-                      <DropdownToggle 
-                        caret 
-                        color="light" 
+                      <DropdownToggle
+                        caret
+                        color="light"
                         className="w-100 text-left"
                       >
                         <i className="fa fa-filter mr-2"></i>
-                        {categoryFilter === "all" 
-                          ? "All Categories" 
+                        {categoryFilter === "all"
+                          ? "All Categories"
                           : categories?.find(c => c._id === categoryFilter)?.title || "Category"}
                       </DropdownToggle>
                       <DropdownMenu>
@@ -531,7 +537,7 @@ const BlogList = () => {
                         </DropdownItem>
                         <DropdownItem divider />
                         {categories?.map(category => (
-                          <DropdownItem 
+                          <DropdownItem
                             key={category._id}
                             onClick={() => handleCategoryFilter(category._id)}
                           >
@@ -544,9 +550,9 @@ const BlogList = () => {
                   </Col>
                   <Col md="2">
                     <UncontrolledDropdown>
-                      <DropdownToggle 
-                        caret 
-                        color="light" 
+                      <DropdownToggle
+                        caret
+                        color="light"
                         className="w-100 text-left"
                       >
                         <i className="fa fa-circle mr-2"></i>
@@ -600,9 +606,9 @@ const BlogList = () => {
                   <div className="alert alert-danger alert-dismissible fade show" role="alert">
                     <i className="fa fa-exclamation-triangle mr-2"></i>
                     {error}
-                    <button 
-                      type="button" 
-                      className="close" 
+                    <button
+                      type="button"
+                      className="close"
                       onClick={() => dispatch(clearError())}
                     >
                       <span>&times;</span>
@@ -630,12 +636,12 @@ const BlogList = () => {
                       <i className="fa fa-newspaper" style={{ fontSize: '64px', opacity: 0.3 }}></i>
                       <p className="text-light-2 mt-3">
                         {searchTerm || categoryFilter !== 'all' || statusFilter !== 'all'
-                          ? 'No posts match your filters' 
+                          ? 'No posts match your filters'
                           : 'No posts found. Create your first post!'}
                       </p>
                       {!searchTerm && categoryFilter === 'all' && statusFilter === 'all' && (
-                        <Button 
-                          color="primary" 
+                        <Button
+                          color="primary"
                           onClick={() => navigate('/admin/blog/new')}
                           className="btn-round mt-3"
                         >
@@ -653,22 +659,22 @@ const BlogList = () => {
                         <Col md="6" lg="4" key={post._id} className="mb-4">
                           <Card className="post-card h-100">
                             <div className="position-relative">
-                              <img 
-                                src={post.featuredImage?.url || '../../assets/images/placeholder.png'} 
+                              <img
+                                src={post.featuredImage?.url || '../../assets/images/placeholder.png'}
                                 className="card-img-top"
                                 alt={post.title}
                                 style={{ height: '200px', objectFit: 'cover' }}
                               />
-                              <Badge 
-                                color={postStatus.color} 
+                              <Badge
+                                color={postStatus.color}
                                 className="position-absolute"
                                 style={{ top: '10px', right: '10px' }}
                               >
                                 {postStatus.label}
                               </Badge>
                               {post.featured && (
-                                <Badge 
-                                  color="warning" 
+                                <Badge
+                                  color="warning"
                                   className="position-absolute"
                                   style={{ top: '10px', left: '10px' }}
                                 >
@@ -714,36 +720,36 @@ const BlogList = () => {
                                 </small>
                               </div>
                               <div className="d-flex justify-content-between gap-2">
-                                <Button 
-                                  color="primary" 
-                                  size="sm" 
+                                <Button
+                                  color="primary"
+                                  size="sm"
                                   className="btn-round"
                                   onClick={() => handleEditPost(post._id)}
                                   title="Edit"
                                 >
                                   <i className="fa fa-edit"></i>
                                 </Button>
-                                <Button 
+                                <Button
                                   color={post.featured ? "warning" : "secondary"}
-                                  size="sm" 
+                                  size="sm"
                                   className="btn-round"
                                   onClick={() => handleToggleFeatured(post._id)}
                                   title="Featured"
                                 >
                                   <i className="fa fa-star"></i>
                                 </Button>
-                                <Button 
+                                <Button
                                   color={post.published ? "success" : "warning"}
-                                  size="sm" 
+                                  size="sm"
                                   className="btn-round"
                                   onClick={() => handleTogglePublished(post._id)}
                                   title="Publish"
                                 >
                                   <i className={`fa ${post.published ? 'fa-toggle-on' : 'fa-toggle-off'}`}></i>
                                 </Button>
-                                <Button 
-                                  color="danger" 
-                                  size="sm" 
+                                <Button
+                                  color="danger"
+                                  size="sm"
                                   className="btn-round"
                                   onClick={() => confirmDelete(post._id, post)}
                                   title="Delete"
@@ -761,11 +767,11 @@ const BlogList = () => {
 
                 {/* Loading Overlay */}
                 {loading && posts && posts.length > 0 && (
-                  <div 
+                  <div
                     className="position-absolute w-100 h-100 d-flex justify-content-center align-items-center"
-                    style={{ 
-                      top: 0, 
-                      left: 0, 
+                    style={{
+                      top: 0,
+                      left: 0,
                       background: 'rgba(0,0,0,0.5)',
                       zIndex: 999
                     }}
@@ -780,6 +786,35 @@ const BlogList = () => {
           </Col>
         </Row>
       </div>
+      {/* Delete Confirmation Modal */}
+      <Modal
+        open={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        size="xs"
+        className="rs-theme-dark"
+      >
+        <Modal.Header>
+          <Modal.Title>
+            <i className="fa fa-exclamation-triangle mr-2 text-danger"></i>
+            Delete Post?
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p style={{ color: "rgba(255,255,255,0.7)" }}>
+            Are you sure you want to delete this "<strong style={{ color: "white" }}>post</strong>"?
+            This action cannot be undone.
+          </p>
+        </Modal.Body>
+        <Modal.Footer>
+          <RSButton onClick={() => handleDeletePost(selectedPost._id)} appearance="primary" color="red">
+            <i className="fa fa-trash mr-2"></i>
+            Yes, Delete It
+          </RSButton>
+          <RSButton onClick={() => setShowDeleteModal(false)} appearance="subtle">
+            Cancel
+          </RSButton>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 }

@@ -121,11 +121,11 @@ const BlogPost = () => {
         <div className="container">
           <div className="row">
             <div className="col-12 col-lg-9">
-              <div className="blog-right-sidebar p-3">
-                <div className="card shadow-none bg-transparent">
+              <div className="card media-object blog-right-sidebar p-3">
+                <div className="card-body shadow-none bg-transparent">
                   <img 
                     src={post.images ? post.images[0].url : "assets/images/posts/01.png"} 
-                    className="card-img-top" 
+                    className="blog-card-img-top" 
                     alt={post.title || "Post image"} 
                   />
                   <div className="card-body p-0">
@@ -146,12 +146,10 @@ const BlogPost = () => {
                     
                     <h4 className="mt-4">{post.title || "Post Title Here"}</h4>
                     
-                    {post.content ? (
-                      <div dangerouslySetInnerHTML={{ __html: post.content }} />
-                    ) : (
+                    {post.content && (
                       <>
-                        <p>There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text.</p>
-                        <p>Nam dolor ligula, faucibus id sodales in, auctor fringilla libero. Pellentesque pellentesque tempor tellus eget hendrerit. Morbi id aliquam ligula. Aliquam id dui sem. Proin rhoncus consequat nisl, eu ornare mauris tincidunt vitae.</p>
+                      <div dangerouslySetInnerHTML={{ __html: post.content }} />
+                      <br />
                       </>
                     )}
 
@@ -245,7 +243,8 @@ const BlogPost = () => {
                     </div>
                   </div>
                 </div>
-
+                </div>
+                <div className="blog-right-sidebar p-3">
                 <div className="product-grid mt-4">
                   <h5 className="text-uppercase mb-4">Latest Posts</h5>
                   <div className="row">
@@ -253,25 +252,25 @@ const BlogPost = () => {
                       const dateParts = getDateParts(latestPost.publishedDate || latestPost.createdAt);
                       return (
                         <div className="col-md-6 col-lg-4 mb-4" key={latestPost.id || index}>
-                          <div className="card rounded-0 product-card border">
+                          <div className="card product-card media-object">
                             <div className="news-date">
                               <div className="date-number">{dateParts.day}</div>
                               <div className="date-month">{dateParts.month}</div>
                             </div>
-                            <a href={`single.html?id=${latestPost.id}`}>
+                            <Link to={`/blog/${latestPost._id}`}>
                               <img 
                                 src={latestPost.images[0].url || `assets/images/blogs/0${(index % 6) + 1}.png`} 
                                 className="card-img-top border-bottom bg-dark-1" 
                                 alt={latestPost.title || "Blog post"} 
                               />
-                            </a>
+                            </Link>
                             <div className="card-body">
                               <div className="news-title">
-                                <a href={`single.html?id=${latestPost.id}`}>
+                            <Link to={`/blog/${latestPost._id}`}>
                                   <h5 className="mb-3 text-capitalize">
                                     {latestPost.title || "Blog Short Title"}
                                   </h5>
-                                </a>
+                                </Link>
                               </div>
                               <p className="news-content mb-0">
                                 {latestPost.excerpt 

@@ -113,50 +113,28 @@ const ProductList = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  /**
-   * Handle product edit navigation
-   */
   const handleEditProduct = (id) => {
     navigate(`/admin/product/edit/${id}`);
   };
 
-  /**
-   * Handle product view navigation
-   */
   const handleViewProduct = (id) => {
     navigate(`/admin/product/view/${id}`);
   };
 
-  /**
-   * Handle product deletion with confirmation
-   */
   const handleDeleteProduct = async (id, productTitle) => {
     try {
       await dispatch(deleteProduct(id));
-
+      setShowDeleteModal(false);
     } catch (err) {
       console.log('error deleting product ::', err);
     }
   };
 
-  /**
-   * Show delete confirmation dialog
-   */
   const confirmDelete = (id, product) => {
     setSelectedProduct(product);
     setShowDeleteModal(true);
   };
 
-  /**
-   * Hide alert dialog
-   */
-  const hideAlert = () => {
-    setAlert(null);
-  };
-
-  /**
-   * Handle category filter
-   */
   const handleCategoryFilter = (categoryId) => {
     setCategoryFilter(categoryId);
     if (categoryId !== "all") {
