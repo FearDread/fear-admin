@@ -21,6 +21,7 @@ import CheckoutComplete from "./pages/checkout/CheckoutComplete";
 
 // Lazy-loaded components (code splitting for better performance)
 const Blog = lazy(() => import("./pages/Blog"));
+const BlogPost = lazy(() => import("./pages/BlogPost"));
 const About = lazy(() => import("./pages/About"));
 const Contact = lazy(() => import("./pages/Contact"));
 const FAQ = lazy(() => import("./pages/Faq"));
@@ -82,6 +83,7 @@ const routeConfig = {
     { path: "/about", element: <About /> },
     { path: "/contact", element: <Contact /> },
     { path: "/blog", element: <Blog /> },
+    { path: "/blog/:id", element:<BlogPost />},
     { path: "/shop", element: <Shop /> },
     { path: "/faq", element: <FAQ /> },
     { path: "/cart", element: <ShopCart /> },

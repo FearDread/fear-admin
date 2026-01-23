@@ -1786,6 +1786,11 @@ body.bg-theme-fear {
 	padding-left: 10px;
 	padding-right: 10px;
 }
+.blog-card-img-top {
+		object-fit: cover;
+	max-height: 300px;
+
+}
 
 h6.product-name {
 	overflow: hidden;

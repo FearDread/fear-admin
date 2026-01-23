@@ -12,6 +12,7 @@ import wishlist from './wishlist/slice';
 import order from "./orders/slice";
 import payment from "./payments/slice";
 import mail from "./mail/slice";
+import blog from "./blog/slice";
 import Storage from './storage';
 
 export const initializeStore = () => {
@@ -20,6 +21,7 @@ export const initializeStore = () => {
     reducer: {
       addresses: address.reducer,
       orders: order.reducer,
+      blog: blog.reducer,
       payments: payment.reducer,
       products: product.reducer,
       categories: category.reducer,
