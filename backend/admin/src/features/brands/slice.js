@@ -1,9 +1,10 @@
 // features/brands/brandSlice.js
 import { FeatureFactory } from '@feardread/feature-factory';
-
+import { BrandService } from "./service";
 
 const brandFactory = FeatureFactory('brand', {});
 const { slice, asyncActions: Brands } = brandFactory.create({
+  service: BrandService,
   stateOptions: {
     includeFiltering: true,
     includeSorting: true,
@@ -62,6 +63,7 @@ export const {
   search: searchBrands,
   getFeaturedBrands,
   getPopularBrands,
+  customCreateBrand,
   create: createBrand,
   update: updateBrand,
   patch: patchBrand,

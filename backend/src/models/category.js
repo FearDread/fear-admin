@@ -125,15 +125,13 @@ categorySchema.virtual("postCount", {
 // Pre-save middleware
 categorySchema.pre("save", async function(next) {
   // Generate slug
-  if (this.isModified("name") || this.isModified("title")) {
-    const nameToSlugify = this.title || this.name;
+  if (this.isModified("title")) {
+    const nameToSlugify = this.title;
     this.slug = slugify(nameToSlugify, {
       lower: true,
       strict: true,
       remove: /[*+~.()'"!:@]/g
     });
-
-    // Ensure unique slug
     const slugRegEx = new RegExp(`^${this.slug}(-[0-9]*)?$`, "i");
     const categoriesWithSlug = await this.constructor.find({ 
       slug: slugRegEx,
@@ -143,22 +141,6 @@ categorySchema.pre("save", async function(next) {
     if (categoriesWithSlug.length > 0) {
       this.slug = `${this.slug}-${categoriesWithSlug.length}`;
     }
-  }
-
-  // Sync name and title if one is missing
-  if (!this.name && this.title) {
-    this.name = this.title;
-  }
-  if (!this.title && this.name) {
-    this.title = this.name;
-  }
-
-  // Sync isActive with active
-  if (this.isModified("isActive")) {
-    this.active = this.isActive;
-  }
-  if (this.isModified("active")) {
-    this.isActive = this.active;
   }
 
   // Calculate level and build ancestors
@@ -187,31 +169,6 @@ categorySchema.pre("save", async function(next) {
   }
   next();
 });
-
-// Pre-update middleware
-categorySchema.pre("findOneAndUpdate", async function(next) {
-  const update = this.getUpdate();
-  
-  if (update.name || update.title) {
-    const nameToSlugify = update.title || update.name;
-    update.slug = slugify(nameToSlugify, {
-      lower: true,
-      strict: true,
-      remove: /[*+~.()'"!:@]/g
-    });
-  }
-  
-  if (update.isActive !== undefined) {
-    update.active = update.isActive;
-  }
-  
-  if (update.active !== undefined) {
-    update.isActive = update.active;
-  }
-  
-  next();
-});
-
 // Post-remove middleware to clean up references
 categorySchema.post("remove", async function(doc) {
   // Remove from parent's children

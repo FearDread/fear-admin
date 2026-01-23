@@ -45,6 +45,7 @@ import {
   setFilters,
   clearError,
   selectFeaturedBrands,
+  customCreateBrand
 } from "../../features/brands/slice.js";
 
 const { Group: FormGroup, Control: FormControl, ControlLabel } = Form;
@@ -252,10 +253,12 @@ const BrandList = () => {
       verified: formValue.verified
     };
 
-    await dispatch(createBrand(brandData))
+    await dispatch(customCreateBrand(brandData))
       .unwrap()
-      .then(() => handleCloseAddModal())
+      .then(() => setShowAddModal(false))
       .catch((err) => console.error("Failed to create brand:", err));
+
+      setShowAddModal(false);
   };
 
   const handleUpdateBrand = async () => {
