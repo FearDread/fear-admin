@@ -167,7 +167,7 @@ module.exports = FEAR = (() => {
     },
 
     setupMailer() {
-      const mailService = (this.env.NODE_ENV === 'production') ? 'mailgun' : 'smtp';
+      const mailService = (this.env.NODE_ENV === 'production') ? 'mailgun' : 'google';
       const mailinfo = require('./libs/emailer/info');
       const smtp = require('./libs/emailer/smtp')
 
