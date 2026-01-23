@@ -46,7 +46,6 @@ import {
 const BlogList = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  
   // Redux state
   const error = useSelector(selectError);
   const loading = useSelector(selectLoading);
@@ -55,7 +54,6 @@ const BlogList = () => {
   const searchTerm = useSelector(selectSearchTerm);
   const filters = useSelector(selectFilters);
   const categories = useSelector(selectAllCategories);
-  
   // Local state
   const [alert, setAlert] = useState(null);
   const [categoryFilter, setCategoryFilter] = useState("all");
@@ -93,9 +91,6 @@ const BlogList = () => {
     dispatch(fetchCategories());
   }, [dispatch]);
 
-  /**
-   * Handle window resize for responsive behavior
-   */
   useEffect(() => {
     const handleResize = () => {
       // Add any resize logic if needed
@@ -105,23 +100,11 @@ const BlogList = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  /**
-   * Handle post edit navigation
-   */
+
   const handleEditPost = (id) => {
     navigate(`/admin/blog/edit/${id}`);
   };
 
-  /**
-   * Handle post view navigation
-   */
-  const handleViewPost = (id) => {
-    navigate(`/admin/blog/view/${id}`);
-  };
-
-  /**
-   * Handle post deletion with confirmation
-   */
   const handleDeletePost = async (id, postTitle) => {
     try {
       await dispatch(deletePost(id));
@@ -130,23 +113,14 @@ const BlogList = () => {
     }
   };
 
-  /**
-   * Show delete confirmation dialog
-   */
   const confirmDelete = (id, post) => {
     // Add confirmation logic here
   };
 
-  /**
-   * Hide alert dialog
-   */
   const hideAlert = () => {
     setAlert(null);
   };
 
-  /**
-   * Handle category filter
-   */
   const handleCategoryFilter = (categoryId) => {
     setCategoryFilter(categoryId);
     if (categoryId !== "all") {
@@ -156,9 +130,6 @@ const BlogList = () => {
     }
   };
 
-  /**
-   * Handle status filter
-   */
   const handleStatusFilter = (status) => {
     setStatusFilter(status);
     if (status !== "all") {
@@ -168,9 +139,6 @@ const BlogList = () => {
     }
   };
 
-  /**
-   * Get post status
-   */
   const getPostStatus = (post) => {
     if (post.scheduledDate && new Date(post.scheduledDate) > new Date()) {
       return POST_STATUS.scheduled;
@@ -181,9 +149,6 @@ const BlogList = () => {
     return POST_STATUS.draft;
   };
 
-  /**
-   * Toggle post published status
-   */
   const handleTogglePublished = async (postId) => {
     try {
       await dispatch(togglePublished(postId));
@@ -192,9 +157,6 @@ const BlogList = () => {
     }
   };
 
-  /**
-   * Toggle post featured status
-   */
   const handleToggleFeatured = async (postId) => {
     try {
       await dispatch(toggleFeatured(postId));
@@ -203,9 +165,6 @@ const BlogList = () => {
     }
   };
 
-  /**
-   * Filter and search posts
-   */
   const filteredPosts = useMemo(() => {
     if (!posts || posts.length === 0) return [];
 
@@ -237,9 +196,6 @@ const BlogList = () => {
     });
   }, [posts, searchTerm, categoryFilter, statusFilter]);
 
-  /**
-   * Calculate statistics
-   */
   const statistics = useMemo(() => {
     if (!posts || posts.length === 0) {
       return {
@@ -260,9 +216,6 @@ const BlogList = () => {
     };
   }, [posts]);
 
-  /**
-   * Format date
-   */
   const formatDate = (date) => {
     if (!date) return 'N/A';
     return new Date(date).toLocaleDateString('en-US', {
@@ -272,9 +225,6 @@ const BlogList = () => {
     });
   };
 
-  /**
-   * Transform posts data for table display
-   */
   const tableData = useMemo(() => {
     return filteredPosts.map((item) => {
       const postStatus = getPostStatus(item);
@@ -359,15 +309,6 @@ const BlogList = () => {
         ),
         actions: (
           <div className="d-flex gap-2">
-            <Button
-              color="info"
-              size="sm"
-              className="btn-round"
-              onClick={() => handleViewPost(item._id)}
-              title="View Post"
-            >
-              <i className="fa fa-eye"></i>
-            </Button>
             <Button
               color="primary"
               size="sm"
@@ -773,15 +714,6 @@ const BlogList = () => {
                                 </small>
                               </div>
                               <div className="d-flex justify-content-between gap-2">
-                                <Button 
-                                  color="info" 
-                                  size="sm" 
-                                  className="btn-round"
-                                  onClick={() => handleViewPost(post._id)}
-                                  title="View"
-                                >
-                                  <i className="fa fa-eye"></i>
-                                </Button>
                                 <Button 
                                   color="primary" 
                                   size="sm" 

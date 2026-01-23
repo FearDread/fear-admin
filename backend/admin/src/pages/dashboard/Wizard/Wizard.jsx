@@ -9,7 +9,6 @@ import {
   useToaster,
   Message
 } from "rsuite";
-
 // Product Steps
 import ProductStep1 from "./ProductSteps/Step1";
 import ProductStep2 from "./ProductSteps/Step2";
@@ -19,8 +18,6 @@ import ProductStep3 from "./ProductSteps/Step3";
 import BlogStep1 from "./BlogSteps/Step1";
 import BlogStep2 from "./BlogSteps/Step2";
 import BlogStep3 from "./BlogSteps/Step3";
-
-// Product imports
 import {
   clearError as clearProductError,
   selectLoading as selectProductLoading,
@@ -28,16 +25,13 @@ import {
   selectSuccess as selectProductSuccess,
   customCreateProduct
 } from "../../../features/products/slice.js";
-
-// Blog imports
 import {
   clearError as clearBlogError,
   selectLoading as selectBlogLoading,
   selectError as selectBlogError,
   selectSuccess as selectBlogSuccess,
-  createPost
+  customCreatePost
 } from "../../../features/blog/slice.js";
-
 import {
   fetchCategories,
   selectAllCategories
@@ -151,22 +145,17 @@ const Wizard = ( props ) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const wizardRef = useRef(null);
-  console.log('config = ', config);
-  // Dynamic refs for steps
   const stepRefs = useRef([]);
   stepRefs.current = config.steps.map((_, i) => stepRefs.current[i] || React.createRef());
-  
   // Local state
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [wizardInstance, setWizardInstance] = useState(null);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  
   // Redux state
   const currentUser = useSelector(selectCurrentUser);
   const categories = useSelector(selectAllCategories);
   const brands = useSelector(selectAllBrands);
-  
   // Dynamic selectors based on type
   const loading = useSelector(type === 'product' ? selectProductLoading : selectBlogLoading);
   const error = useSelector(type === 'product' ? selectProductError : selectBlogError);
@@ -254,6 +243,23 @@ const Wizard = ( props ) => {
     }
   };
 
+  const formatData = (data) => { 
+    const formData = new FormData();
+    Object.keys(data).forEach(key => {
+      if (key === 'images' && Array.isArray(data.images)) {
+        data.images.forEach(image => {
+          formData.append('images', image);
+        });
+      } else if (key === 'tags' && Array.isArray(data.tags)) {
+        formData.append('tags', JSON.stringify(data.tags));
+      } else {
+        formData.append(key, data[key]);
+      }
+    });
+
+    return formData;
+  }
+
   const handleProductSubmit = (wizardData) => {
     const { step1: info, step2: images, step3: pricing } = wizardData;
 
@@ -285,19 +291,7 @@ const Wizard = ( props ) => {
       return;
     }
 
-    const formData = new FormData();
-    Object.keys(productData).forEach(key => {
-      if (key === 'images' && Array.isArray(productData.images)) {
-        productData.images.forEach(image => {
-          formData.append('images', image);
-        });
-      } else if (key === 'tags' && Array.isArray(productData.tags)) {
-        formData.append('tags', JSON.stringify(productData.tags));
-      } else {
-        formData.append(key, productData[key]);
-      }
-    });
-
+    const formData = formatData(productData);
     dispatch(customCreateProduct(formData));
   };
 
@@ -315,7 +309,8 @@ const Wizard = ( props ) => {
       category: content.category,
       tags: content.tags ? content.tags.split(",").map(t => t.trim()) : [],
       featuredImage: media.featuredImage || null,
-      images: media.images || [],
+      //TODO: change this back to media.images || [] 
+      images: media.featuredImage || [],
       published: settings.published || false,
       status: settings.published ? "published" : "draft",
       featured: settings.featured || false,
@@ -329,15 +324,14 @@ const Wizard = ( props ) => {
       publishedAt: settings.published ? new Date().toISOString() : null,
       createdAt: new Date().toISOString()
     };
-
     const validation = validateBlogData(blogData);
     if (!validation.isValid) {
       showErrorAlert(validation.error);
       setIsSubmitting(false);
       return;
     }
-
-    dispatch(createPost(blogData));
+    const formData = formatData(blogData);
+    dispatch(customCreatePost(formData));
   };
 
   const validateProductData = (data) => {

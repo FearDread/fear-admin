@@ -85,7 +85,7 @@ export const {
   getPostsByTag,
   getFeaturedPosts,
   getRelatedPosts,
-  create: createPost,
+  customCreatePost,
   update: updatePost,
   delete: deletePost,
 } = Blog;
