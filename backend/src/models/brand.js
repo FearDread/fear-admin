@@ -3,80 +3,22 @@ const slugify = require("slugify");
 
 const brandSchema = new mongoose.Schema(
   {
-    // Basic Information
-    name: {
-      type: String,
+    name: { type: String, unique: true, trim: true, index: true,
       required: [true, "Brand name is required"],
-      unique: true,
-      trim: true,
-      index: true,
       maxlength: [100, "Brand name cannot exceed 100 characters"]
     },
-    
-    slug: {
-      type: String,
-      unique: true,
-      lowercase: true,
-      index: true
-    },
-    
-    title: {
-      type: String,
-      trim: true,
-      maxlength: [150, "Title cannot exceed 150 characters"]
-    },
-    
-    logo: {
-      public_id: { type: String, default: "" },
-      url: { type: String, default: "" },
-      secure_url: { type: String, default: "" }
-    },
-    // Status and Visibility
-    isActive: {
-      type: Boolean,
-      default: true,
-      index: true
-    },
-    
-    featured: {
-      type: Boolean,
-      default: false,
-      index: true
-    },
-    
-    status: {
-      type: String,
-      enum: ["active", "inactive", "pending", "archived"],
-      default: "active",
-      index: true
-    },
-
-    // Relationships
-    categories: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Category"
-    }],
-    
-    products: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Product"
-    }],
-
-    // Tags and Classification
-    tags: [{
-      type: String,
-      trim: true,
-      lowercase: true
-    }],
-// Admin and Management
-    createdBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User"
-    },
-    
-    notes: [{
-      content: { type: String },
-      createdBy: {
+    slug: { type: String, unique: true, lowercase: true, index: true },
+    website: {type: String, unique: true, trim: true },
+    logo: { public_id: { type: String, default: "" }, url: { type: String, default: "" }, secure_url: { type: String, default: "" }},
+    isActive: { type: Boolean, default: true, index: true },
+    isFeatured: {  type: Boolean, default: false, index: true },
+    status: { type: String, enum: ["active", "inactive", "pending", "archived"], default: "active", index: true },
+    categories: [{ type: mongoose.Schema.Types.ObjectId, ref: "Category" }],
+    products: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
+    tags: [{ type: String, trim: true, lowercase: true }],
+    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    notes: [{ content: { type: String },
+       createdBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
       },
@@ -90,7 +32,6 @@ const brandSchema = new mongoose.Schema(
   }
 );
 
-// Indexes for better query performance
 brandSchema.index({ name: 1, isActive: 1 });
 brandSchema.index({ featured: 1, isActive: 1 });
 brandSchema.index({ slug: 1, isActive: 1 });
