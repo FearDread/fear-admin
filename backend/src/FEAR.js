@@ -167,20 +167,17 @@ module.exports = FEAR = (() => {
     },
 
     setupMailer() {
-      const mailService = (this.env.NODE_ENV === 'production') ? 'mailgun' : 'google';
+      const mailService = (this.env.NODE_ENV === 'production') ? 'mailgun' : 'smtp';
       const mailinfo = require('./libs/emailer/info');
       const smtp = require('./libs/emailer/smtp')
 
       mailinfo.service = mailService;
       this.mailinfo = mailinfo;
-
       if ( !this.mailer ) {
         this.mailer = new smtp(this);
       }
     },
-    /**
-     * Parse allowed origins from environment
-     */
+
     getAllowedOrigins() {
       if (!this.env.ALLOWED_ORIGINS) return [];
 
@@ -190,9 +187,6 @@ module.exports = FEAR = (() => {
         .filter(origin => origin.length > 0);
     },
 
-    /**
-     * Get CORS configuration object
-     */
     getCorsConfig() {
       return {
         credentials: true,
@@ -209,9 +203,6 @@ module.exports = FEAR = (() => {
       };
     },
 
-    /**
-     * Auto-load routes from routes directory
-     */
     setupRoutes() {
       const routesDir = path.join(__dirname, "routes");
 
@@ -241,9 +232,6 @@ module.exports = FEAR = (() => {
       }
     },
 
-    /**
-     * Register a single router
-     */
     useRouter(router, routePath = DEFAULT_ROUTE_PATH, corsOptions = null) {
       if (!router || typeof router !== 'function') {
         throw new Error('Router must be a valid Express router instance');
@@ -264,9 +252,6 @@ module.exports = FEAR = (() => {
       return this;
     },
 
-    /**
-     * Register multiple routers
-     */
     useRouters(routers) {
       if (!Array.isArray(routers)) {
         throw new Error('Routers must be an array');
@@ -285,9 +270,6 @@ module.exports = FEAR = (() => {
       return this;
     },
 
-    /**
-     * Create a new router with FEAR utilities attached
-     */
     createRouter() {
       const router = express.Router();
 
@@ -305,9 +287,6 @@ module.exports = FEAR = (() => {
       return router;
     },
 
-    /**
-     * Get list of registered routers
-     */
     getRegisteredRouters() {
       return this.registeredRouters.map(info => ({
         path: info.path,
@@ -315,9 +294,6 @@ module.exports = FEAR = (() => {
       }));
     },
 
-    /**
-     * Start the HTTP server
-     */
     start(port = null) {
       const serverPort = port || this.app.get("PORT") || DEFAULT_PORT;
 
@@ -340,9 +316,6 @@ module.exports = FEAR = (() => {
       });
     },
 
-    /**
-     * Gracefully shutdown the server
-     */
     shutdown() {
       this.logger.info('Initiating graceful shutdown...');
 
@@ -382,9 +355,6 @@ module.exports = FEAR = (() => {
       });
     },
 
-    /**
-     * Close database connections
-     */
     closeDatabase() {
       return new Promise((resolve, reject) => {
         if (this.db && typeof this.db.disconnect === 'function') {
@@ -400,9 +370,6 @@ module.exports = FEAR = (() => {
       });
     },
 
-    /**
-     * Set FEAR utilities as global
-     */
     setAsGlobal() {
       global.FearRouter = {
         createRouter: () => this.createRouter(),
@@ -420,9 +387,6 @@ module.exports = FEAR = (() => {
   return FEAR;
 })();
 
-/**
- * Factory function to create new FEAR instance
- */
 exports.FearFactory = () => {
   return new FEAR();
 };

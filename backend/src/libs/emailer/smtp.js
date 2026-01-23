@@ -24,7 +24,7 @@ module.exports = function (fear) {
                 throw new Error('Mailgun requires apiKey and domain in configuration.');
             }
 
-            const mailgun = new Mailgun(FormData);
+            const mailgun = new Mailgun(_this.mailConfig.mailgun);
             const clientOptions = {
                 username: 'api',
                 key: apiKey
