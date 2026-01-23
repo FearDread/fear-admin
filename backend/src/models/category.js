@@ -185,16 +185,6 @@ categorySchema.pre("save", async function(next) {
       this.path = this.slug;
     }
   }
-
-  // Set SEO defaults
-  if (!this.seo.metaTitle) {
-    this.seo.metaTitle = (this.title || this.name).substring(0, 70);
-  }
-  
-  if (!this.seo.metaDescription && this.description) {
-    this.seo.metaDescription = this.description.substring(0, 160);
-  }
-
   next();
 });
 

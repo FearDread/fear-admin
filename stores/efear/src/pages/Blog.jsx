@@ -11,6 +11,11 @@ import {
     selectSearchTerm,
     selectFilters
 } from "../features/blog/slice";
+import {
+    fetchCategories,
+    selectVisibleCategories,
+    selectCategoriesLoading
+} from "../features/categories/slice";
 
 export const Blog = () => {
     const navigate = useNavigate();
@@ -20,11 +25,14 @@ export const Blog = () => {
     const error = useSelector(selectError);
     const searchTerm = useSelector(selectSearchTerm);
     const filters = useSelector(selectFilters);
+    const categories = useSelector(selectVisibleCategories);
+    const categoriesLoading = useSelector(selectCategoriesLoading);
 
     const [localSearchTerm, setLocalSearchTerm] = useState("");
 
     useEffect(() => {
         dispatch(fetchPosts());
+        dispatch(fetchCategories());
     }, [dispatch]);
 
     const handleSearch = (e) => {
@@ -32,8 +40,14 @@ export const Blog = () => {
         dispatch(setSearchTerm(localSearchTerm));
     };
 
-    const handleCategoryFilter = (category) => {
-        dispatch(setFilters({ ...filters, categoryId: category }));
+    const handleCategoryFilter = (categoryId) => {
+        dispatch(setFilters({ ...filters, categoryId }));
+    };
+
+    const clearFilters = () => {
+        dispatch(setFilters({ categoryId: null }));
+        dispatch(setSearchTerm(""));
+        setLocalSearchTerm("");
     };
 
     const displayPosts = posts.slice(0, 3);
@@ -136,59 +150,57 @@ export const Blog = () => {
 
                                     <div className="blog-categories mb-3">
                                         <h5 className="mb-4">Blog Categories</h5>
+                                        {filters.categoryId && (
+                                            <button 
+                                                className="btn btn-sm btn-outline-secondary mb-3 w-100"
+                                                onClick={clearFilters}
+                                            >
+                                                <i className='bx bx-x me-1'></i> Clear Filter
+                                            </button>
+                                        )}
                                         <div className="list-group list-group-flush">
-                                            <a
-                                                href="javascript:;"
-                                                className="list-group-item bg-transparent"
-                                                onClick={() => handleCategoryFilter('fashion')}
-                                            >
-                                                <i className='bx bx-chevron-right me-1'></i> Fashion
-                                            </a>
-                                            <a
-                                                href="javascript:;"
-                                                className="list-group-item bg-transparent"
-                                                onClick={() => handleCategoryFilter('electronics')}
-                                            >
-                                                <i className='bx bx-chevron-right me-1'></i> Electronics
-                                            </a>
-                                            <a
-                                                href="javascript:;"
-                                                className="list-group-item bg-transparent"
-                                                onClick={() => handleCategoryFilter('accessories')}
-                                            >
-                                                <i className='bx bx-chevron-right me-1'></i> Accessories
-                                            </a>
-                                            <a
-                                                href="javascript:;"
-                                                className="list-group-item bg-transparent"
-                                                onClick={() => handleCategoryFilter('kitchen')}
-                                            >
-                                                <i className='bx bx-chevron-right me-1'></i> Kitchen & Table
-                                            </a>
-                                            <a
-                                                href="javascript:;"
-                                                className="list-group-item bg-transparent"
-                                                onClick={() => handleCategoryFilter('furniture')}
-                                            >
-                                                <i className='bx bx-chevron-right me-1'></i> Furniture
-                                            </a>
+                                            {categoriesLoading ? (
+                                                <div className="text-center py-3">
+                                                    <div className="spinner-border spinner-border-sm" role="status">
+                                                        <span className="visually-hidden">Loading...</span>
+                                                    </div>
+                                                </div>
+                                            ) : categories && categories.length > 0 && (
+                                                categories.map((category) => (
+                                                    <Link
+                                                        key={category.id || category._id}
+                                                        to="/blog"
+                                                        className={`list-group-item bg-transparent ${
+                                                            filters.categoryId === (category.id || category._id) ? 'active' : ''
+                                                        }`}
+                                                        onClick={() => handleCategoryFilter(category.id || category._id)}
+                                                    >
+                                                        <i className='bx bx-chevron-right me-1'></i> 
+                                                        {category.name || category.title}
+                                                    </Link>
+                                                ))
+                                            )}
                                         </div>
                                     </div>
 
                                     <div className="blog-categories mb-3">
                                         <h5 className="mb-4">Recent Posts</h5>
                                         {posts.slice(0, 4).map((post, index) => (
-                                            <React.Fragment key={post.id || index}>
+                                            <React.Fragment key={post._id || post.id || index}>
                                                 <div className="d-flex align-items-center">
                                                     <img
-                                                        src={post.thumbnail || `assets/images/gallery/0${(index % 4) + 1}.png`}
+                                                        src={post.thumbnail || (post.images && post.images[0]?.url) || `assets/images/gallery/0${(index % 4) + 1}.png`}
                                                         width="75"
                                                         alt={post.title || "Recent post"}
                                                     />
                                                     <div className="ms-3">
-                                                        <a href={`single.html?id=${post.id}`} className="fs-6">
-                                                            {post.title || "Post title here"}
-                                                        </a>
+                                                        <Link 
+                                                            to={`/blog/${post._id || post.id}`} 
+                                                            className="fs-6"
+                                                        >
+                                                            {(post.title || "Post title here").substring(0, 50)}
+                                                            {post.title && post.title.length > 50 ? '...' : ''}
+                                                        </Link>
                                                         <p className="mb-0">
                                                             {post.publishedDate || post.createdAt
                                                                 ? new Date(post.publishedDate || post.createdAt).toLocaleDateString('en-US', {

@@ -1,8 +1,14 @@
 // features/categories/categorySlice.js
-import { FeatureFactory } from '@feardread/feature-factory';
+import { FeatureFactory, ThunkFactory } from '@feardread/feature-factory';
 
 const reportsFactory = FeatureFactory('category', {});
-const { slice, asyncActions: Categories } = reportsFactory.createBasic();
+const { slice, asyncActions: Categories } = reportsFactory.create({
+  service: {
+    createCustomCat: ThunkFactory.custom('category', 'new', {
+      method:'POST',
+      useParams: false,
+    })}
+    });
 
 // Export all actions
 export const {
@@ -42,6 +48,7 @@ export const {
   update: updateCategory,
   patch: patchCategory,
   delete: deleteCategory,
+  createCustomCat
 } = Categories;
 
 export const selectAllCategories = (state) => state.categories.data;

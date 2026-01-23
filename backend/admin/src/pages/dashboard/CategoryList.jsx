@@ -42,6 +42,7 @@ import {
   selectFilters,
   setFilters,
   clearError,
+  createCustomCat,
 } from "../../features/categories/slice.js";
 
 const { Group: FormGroup, Control: FormControl, ControlLabel } = Form;
@@ -300,7 +301,7 @@ const CategoryList = () => {
         color: formValue.color
       };
 
-      await dispatch(createCategory(categoryData)).unwrap();
+      await dispatch(createCustomCat(categoryData)).unwrap();
     } catch (err) {
       console.error("Failed to create category:", err);
     }
@@ -860,9 +861,6 @@ const CategoryList = () => {
                 placeholder="Enter category description..."
               />
             </FormGroup>
-
-            <Row>
-              <Col md={12}>
                 <FormGroup>
                   <ControlLabel>Slug</ControlLabel>
                   <FormControl
@@ -870,9 +868,6 @@ const CategoryList = () => {
                     placeholder="category-slug (leave empty for auto-generate)"
                   />
                 </FormGroup>
-              </Col>
-
-              <Col md={12}>
                 <FormGroup>
                   <ControlLabel>Parent Category</ControlLabel>
                   <FormControl
@@ -884,12 +879,8 @@ const CategoryList = () => {
                     searchable
                   />
                 </FormGroup>
-              </Col>
-            </Row>
-
-            <Row>
-              <Col md={6}>
                 <FormGroup>
+                  <FormGroup>
                   <ControlLabel>Icon</ControlLabel>
                   <FormControl
                     name="icon"
@@ -911,8 +902,6 @@ const CategoryList = () => {
                     )}
                   />
                 </FormGroup>
-              </Col>
-              <Col md={6}>
                 <FormGroup>
                   <ControlLabel>Color</ControlLabel>
                   <FormControl
@@ -951,11 +940,6 @@ const CategoryList = () => {
                     )}
                   />
                 </FormGroup>
-              </Col>
-            </Row>
-
-            <Row>
-              <Col md={6}>
                 <FormGroup>
                   <ControlLabel>Active Status</ControlLabel>
                   <div className="mt-2">
@@ -967,9 +951,6 @@ const CategoryList = () => {
                     />
                   </div>
                 </FormGroup>
-              </Col>
-
-              <Col md={6}>
                 <FormGroup>
                   <ControlLabel>Featured</ControlLabel>
                   <div className="mt-2">
@@ -981,8 +962,8 @@ const CategoryList = () => {
                     />
                   </div>
                 </FormGroup>
-              </Col>
-            </Row>
+            </FormGroup>
+
           </Form>
         </Modal.Body >
         <Modal.Footer>
