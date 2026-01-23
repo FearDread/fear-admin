@@ -9,8 +9,8 @@ const FearServer = (function () {
   // Private constants
   const DEFAULT_PATHS = {
     root: path.resolve(),
-    app: 'backend/dashboard/build', 
-    build: 'backend/dashboard/build'
+    app: 'backend/admin/build', 
+    build: 'backend/admin/build'
   };
 
   const DEFAULT_PORT = 4000;
