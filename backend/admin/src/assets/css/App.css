@@ -3826,3 +3826,9 @@ table.grid td {
 .container-fluid {
     min-height: 100vh !important;
 }
+
+.btn-search-mag {
+    position: absolute;
+    top: 0;
+    right: 0;
+}

@@ -14,6 +14,8 @@ import BlogList from "../pages/dashboard/BlogList.jsx";
 import BrandsList from "../pages/dashboard/BrandsList.jsx";
 import CategoryList from "../pages/dashboard/CategoryList.jsx";
 
+import ProfilePage from "../pages/dashboard/Profile/Profile.jsx";
+
 export const routes = {
   auth: [
     { path: "/auth/login", label: 'Login', element: <Login /> },
@@ -27,6 +29,7 @@ export const routes = {
     { path: "/admin/brand", label: "Brands", icon: "fa fa-certificate", element: <BrandsList /> },
     { path: "/admin/category", label: "Categories", icon: "fa fa-tag", element: <CategoryList /> },
     { path: "/admin/calendar", label: "Calendar", icon: "fa fa-calendar", element: <Calendar /> },
+    { path: "/admin/profile", element: <ProfilePage /> },
     { path: "/admin/product/new", element: <Wizard type="product" /> },
     { path: "/admin/blog/new", element: <Wizard type="blog" /> }
   ],
