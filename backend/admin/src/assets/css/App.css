@@ -3832,3 +3832,7 @@ table.grid td {
     top: 0;
     right: 0;
 }
+
+.button-flex-row {
+    flex-direction: row !important;
+}

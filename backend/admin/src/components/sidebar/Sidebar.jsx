@@ -136,12 +136,14 @@ export const Sidebar = (props) => {
         <ul className="sidebar-menu do-nicescrol">
           <li className="sidebar-header">MAIN NAVIGATION</li>
           {routes.admin.map((item, idx) => (
+            (item.label ? (
             <li key={idx}>
               <Link to={item.path}>
                 <i className={item.icon}></i> <span className="ms-2">{item.label}</span>
                 {item.badge && <span className="badge bg-light text-light float-end">{item.badge}</span>}
               </Link>
             </li>
+            ) : (null))
           ))}
           <li className="">Labels</li>
           {labels.map((item, idx) => (

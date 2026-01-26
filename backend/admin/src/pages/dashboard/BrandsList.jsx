@@ -76,7 +76,7 @@ const BrandList = () => {
 
   // Form state
   const [formValue, setFormValue] = useState({
-    name: '',
+    title: '',
     slug: '',
     website: '',
     isActive: true,
@@ -194,14 +194,6 @@ const BrandList = () => {
   }, [allBrands, featuredBrands]);
 
   const handleOpenAddModal = () => {
-    setFormValue({
-      name: '',
-      slug: '',
-      website: '',
-      isActive: true,
-      featured: false,
-      verified: false
-    });
     setShowAddModal(true);
   };
 
@@ -226,9 +218,11 @@ const BrandList = () => {
   const handleCloseAddModal = () => {
     setShowAddModal(false);
   };
+  const handleCloseEditModal = () => {
+    setShowEditModal(false);
+  }
 
   const handleCloseModals = () => {
-    setShowEditModal(false);
     setShowDeleteModal(false);
     setSelectedBrand(null);
   };
@@ -258,7 +252,7 @@ const BrandList = () => {
       .then(() => setShowAddModal(false))
       .catch((err) => console.error("Failed to create brand:", err));
 
-      setShowAddModal(false);
+    setShowAddModal(false);
   };
 
   const handleUpdateBrand = async () => {
@@ -808,8 +802,8 @@ const BrandList = () => {
                 placeholder="brand-slug (leave empty for auto-generate)"
               />
             </FormGroup>
-            <Row>
-              <Col md={6}>
+            <FormGroup className="button-flex-row">
+              <Col md={3}>
                 <FormGroup>
                   <ControlLabel>Active Status</ControlLabel>
                   <div className="mt-2">
@@ -823,7 +817,7 @@ const BrandList = () => {
                 </FormGroup>
               </Col>
 
-              <Col md={6}>
+              <Col md={3}>
                 <FormGroup>
                   <ControlLabel>Featured</ControlLabel>
                   <div className="mt-2">
@@ -837,7 +831,7 @@ const BrandList = () => {
                 </FormGroup>
               </Col>
 
-              <Col md={6}>
+              <Col md={3}>
                 <FormGroup>
                   <ControlLabel>Verified</ControlLabel>
                   <div className="mt-2">
@@ -850,7 +844,7 @@ const BrandList = () => {
                   </div>
                 </FormGroup>
               </Col>
-            </Row>
+            </FormGroup>
           </Form>
         </Modal.Body>
         <Modal.Footer>
@@ -866,7 +860,7 @@ const BrandList = () => {
       {/* Edit Brand Modal */}
       <Modal
         open={showEditModal}
-        onClose={handleCloseModals}
+        onClose={handleCloseEditModal}
         size="md"
         className="rs-theme-dark"
       >
@@ -882,31 +876,29 @@ const BrandList = () => {
               <ControlLabel>Brand Name *</ControlLabel>
               <FormControl name="name" placeholder="Enter brand name..." />
             </FormGroup>
-            <Row>
-              <FormGroup>
-                <ControlLabel>Tagline</ControlLabel>
-                <FormControl
-                  name="tagline"
-                  placeholder="Brand tagline or slogan..."
-                />
-              </FormGroup>
-              <FormGroup>
-                <ControlLabel>Website</ControlLabel>
-                <FormControl
-                  name="website"
-                  placeholder="https://www.example.com"
-                />
-              </FormGroup>
-              <FormGroup>
-                <ControlLabel>Slug</ControlLabel>
-                <FormControl
-                  name="slug"
-                  placeholder="brand-slug"
-                />
-              </FormGroup>
-            </Row>
-            <Row>
-              <Col md={6}>
+            <FormGroup>
+              <ControlLabel>Tagline</ControlLabel>
+              <FormControl
+                name="tagline"
+                placeholder="Brand tagline or slogan..."
+              />
+            </FormGroup>
+            <FormGroup>
+              <ControlLabel>Website</ControlLabel>
+              <FormControl
+                name="website"
+                placeholder="https://www.example.com"
+              />
+            </FormGroup>
+            <FormGroup>
+              <ControlLabel>Slug</ControlLabel>
+              <FormControl
+                name="slug"
+                placeholder="brand-slug"
+              />
+            </FormGroup>
+            <FormGroup className="button-flex-row">
+              <Col md={3}>
                 <FormGroup>
                   <ControlLabel>Active Status</ControlLabel>
                   <div className="mt-2">
@@ -919,7 +911,7 @@ const BrandList = () => {
                   </div>
                 </FormGroup>
               </Col>
-              <Col md={6}>
+              <Col md={3}>
                 <FormGroup>
                   <ControlLabel>Featured</ControlLabel>
                   <div className="mt-2">
@@ -932,7 +924,7 @@ const BrandList = () => {
                   </div>
                 </FormGroup>
               </Col>
-              <Col md={6}>
+              <Col md={3}>
                 <FormGroup>
                   <ControlLabel>Verified</ControlLabel>
                   <div className="mt-2">
@@ -945,7 +937,7 @@ const BrandList = () => {
                   </div>
                 </FormGroup>
               </Col>
-            </Row>
+            </FormGroup>
           </Form>
         </Modal.Body>
         <Modal.Footer>
@@ -953,7 +945,7 @@ const BrandList = () => {
             <i className="fa fa-check mr-2"></i>
             Update Brand
           </RSButton>
-          <RSButton onClick={handleCloseModals} appearance="subtle">
+          <RSButton onClick={handleCloseEditModal} appearance="subtle">
             Cancel
           </RSButton>
         </Modal.Footer>

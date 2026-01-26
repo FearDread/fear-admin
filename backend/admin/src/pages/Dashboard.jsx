@@ -530,7 +530,7 @@ const Dashboard = () => {
               </Button>
             </CardHeader>
             <CardBody>
-              {recentOrders && recentOrders.length > 0 ? (
+              {orders && orders.length > 0 ? (
                 <div className="table-responsive">
                   <table className="table table-hover mb-0">
                     <thead className="bg-secondary text-white">
@@ -545,7 +545,7 @@ const Dashboard = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {recentOrders.map((order) => {
+                      {orders.slice(0,5).map((order) => {
                         const statusConfig =
                           ORDER_STATUS[order.orderStatus] || ORDER_STATUS.pending;
                         return (

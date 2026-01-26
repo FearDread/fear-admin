@@ -224,20 +224,11 @@ const CategoryList = () => {
   }, [categories]);
 
   const handleOpenAddModal = () => {
-    setFormValue({
-      title: '',
-      description: '',
-      slug: '',
-      parent: '',
-      isActive: true,
-      featured: false,
-      icon: 'fa-tag',
-      color: '#7934f3'
-    });
     setShowAddModal(true);
   };
 
   const handleOpenEditModal = (category) => {
+
     setSelectedCategory(category);
     setFormValue({
       title: category.title || category.name,
@@ -249,6 +240,7 @@ const CategoryList = () => {
       icon: category.icon || 'fa-tag',
       color: category.color || '#7934f3'
     });
+    console.log('edit');
     setShowEditModal(true);
   };
 
@@ -260,11 +252,13 @@ const CategoryList = () => {
   const handleCloseAddModal = () => {
     setShowAddModal(false);
   }
-  const handleCloseModals = () => {
 
+  const handleCloseEditModal = () => {
     setShowEditModal(false);
+  }
+
+  const handleCloseModals = () => {
     setShowDeleteModal(false);
-    setSelectedCategory(null);
     setFormValue({
       title: '',
       description: '',
@@ -978,10 +972,12 @@ const CategoryList = () => {
       </Modal >
 
       {/* Edit Category Modal */}
+
       < Modal
         open={showEditModal}
-        onClose={handleCloseModals}
+        onClose={handleCloseEditModal}
         size="md"
+        className="rs-theme-dark"
       >
         <Modal.Header>
           <Modal.Title>
@@ -993,7 +989,7 @@ const CategoryList = () => {
           <Form fluid formValue={formValue} onChange={setFormValue}>
             <FormGroup>
               <ControlLabel>Category Name *</ControlLabel>
-              <FormControl name="title" placeholder="Enter category name..." />
+              <FormControl name="title" value={(selectedCategory) ? selectedCategory.title : formValue.title} placeholder="Enter category name..." />
             </FormGroup>
 
             <FormGroup>
@@ -1001,6 +997,7 @@ const CategoryList = () => {
               <FormControl
                 name="description"
                 rows={3}
+                value={(selectedCategory) ? selectedCategory.description : formValue.description}
                 accepter={Textarea}
                 placeholder="Enter category description..."
               />
@@ -1012,6 +1009,7 @@ const CategoryList = () => {
                   <ControlLabel>Slug</ControlLabel>
                   <FormControl
                     name="slug"
+                    value={(selectedCategory) ? selectedCategory.slug : "category-slug"}
                     placeholder="category-slug"
                   />
                 </FormGroup>
@@ -1136,16 +1134,18 @@ const CategoryList = () => {
             <i className="fa fa-check mr-2"></i>
             Update Category
           </RSButton>
-          <RSButton onClick={handleCloseModals} appearance="subtle">
+          <RSButton onClick={handleCloseEditModal} appearance="subtle">
             Cancel
           </RSButton>
         </Modal.Footer>
       </Modal >
 
+
       {/* Delete Confirmation Modal */}
       < Modal
         open={showDeleteModal}
         onClose={handleCloseModals}
+        className="rs-theme-dark"
         size="xs"
       >
         <Modal.Header>
