@@ -124,17 +124,20 @@ const BrandList = () => {
   }, [error, toaster, dispatch]);
 
   useEffect(() => {
-    if (success && (showAddModal || showEditModal)) {
+    if (success && (showAddModal)) {
       toaster.push(
         <Message showIcon type="success" closable>
           <strong>Success!</strong> Brand {showAddModal ? 'created' : 'updated'} successfully
         </Message>,
-        { placement: 'topEnd', duration: 3000 }
+        { placement: 'topCenter', duration: 3000 }
       );
       handleCloseModals();
+
+    }
+    if (!brands || brands.length === 0) {
       dispatch(fetchBrands());
     }
-  }, [success, showAddModal, showEditModal]);
+  }, [success, showAddModal]);
 
   const handleStatusFilter = (status) => {
     setStatusFilter(status);
@@ -224,22 +227,19 @@ const BrandList = () => {
 
   const handleCloseModals = () => {
     setShowDeleteModal(false);
+    setFormValue({
+      name: '',
+      slug: '',
+      website: '',
+      isActive: true,
+      featured: false,
+    })
     setSelectedBrand(null);
   };
 
-  const handleCreateBrand = async () => {
-    if (!formValue.name || formValue.name.trim().length < 2) {
-      toaster.push(
-        <Message showIcon type="warning">
-          Brand name must be at least 2 characters
-        </Message>,
-        { placement: 'topEnd' }
-      );
-      return;
-    }
-
+  const handleBrand = (method) => {
     const brandData = {
-      name: formValue.name.trim(),
+      name: formValue.name?.trim(),
       slug: formValue.slug?.trim(),
       website: formValue.website?.trim() || '',
       isActive: formValue.isActive,
@@ -247,61 +247,37 @@ const BrandList = () => {
       verified: formValue.verified
     };
 
-    await dispatch(customCreateBrand(brandData))
-      .unwrap()
-      .then(() => setShowAddModal(false))
-      .catch((err) => console.error("Failed to create brand:", err));
+    if (method === 'CREATE' && showAddModal) {
+        setShowAddModal(false)
+        dispatch(customCreateBrand(brandData))
+          .unwrap()
+          .then(() => setShowAddModal(false))
+          .finally(() => dispatch(fetchBrands()))
+          .catch((err) => console.error("Failed to create brand:", err));
 
-    setShowAddModal(false);
-  };
+    } else if (method === 'UPDATE' && showEditModal && selectedBrand) {
+          dispatch(updateBrand({ id: selectedBrand._id, data: brandData }))
+            .unwrap()
+            .then(() => setShowEditModal(false))
+            .finally(() => dispatch(fetchBrands()))
+            .catch((err) => console.log('Error updating brand : ', err));
 
-  const handleUpdateBrand = async () => {
-    if (!formValue.name || formValue.name.trim().length < 2) {
-      toaster.push(
-        <Message showIcon type="warning">
-          Brand name must be at least 2 characters
-        </Message>,
-        { placement: 'topEnd' }
-      );
-      return;
+    } else if (method === 'DELETE' && showDeleteModal && selectedBrand) {
+          dispatch(deleteBrand({ id: selectedBrand._id }))
+            .unwrap()
+            .then(() => {
+              toaster.push(
+                <Message showIcon type="success" closable>
+                  <strong>Brand Removed Successfully!</strong>
+                </Message>,
+                { placement: 'topCenter', duration: 3000 }
+              );
+            })
+            .finally(() => dispatch(fetchBrands()))
+            .catch((err) => console.log('Error removing brand : ', err));
+          setShowDeleteModal(false);
     }
-
-    try {
-      const brandData = {
-        name: formValue.name.trim(),
-        slug: formValue.slug?.trim(),
-        website: formValue.website?.trim() || '',
-        isActive: formValue.isActive,
-        isFeatured: formValue.featured,
-        verified: formValue.verified
-      };
-
-      await dispatch(updateBrand({
-        id: selectedBrand._id || selectedBrand.id,
-        data: brandData
-      })).unwrap();
-    } catch (err) {
-      console.error("Failed to update brand:", err);
-    }
-  };
-
-  const handleDeleteBrand = async () => {
-    try {
-      await dispatch(deleteBrand(selectedBrand._id || selectedBrand.id)).unwrap();
-
-      toaster.push(
-        <Message showIcon type="success">
-          Brand deleted successfully
-        </Message>,
-        { placement: 'topEnd' }
-      );
-
-      handleCloseModals();
-      dispatch(fetchBrands());
-    } catch (err) {
-      console.error("Failed to delete brand:", err);
-    }
-  };
+  }
 
   const tableData = useMemo(() => {
     return filteredBrands.map((item) => {
@@ -361,7 +337,7 @@ const BrandList = () => {
         ),
         featured: (
           <div>
-            {item.featured || featuredBrands.includes(item.id || item._id) ? (
+            {item.isFeatured || featuredBrands.includes(item.id || item._id) ? (
               <Badge color="warning" pill>
                 <i className="fa fa-star mr-1"></i>
                 Featured
@@ -377,7 +353,10 @@ const BrandList = () => {
               color="primary"
               size="sm"
               className="btn-round"
-              onClick={() => handleOpenEditModal(item)}
+              onClick={(e) => {
+                e.preventDefault();
+                handleOpenEditModal(item)
+              }}
               title="Edit Brand"
             >
               <i className="fa fa-edit"></i>
@@ -386,7 +365,10 @@ const BrandList = () => {
               color="danger"
               size="sm"
               className="btn-round"
-              onClick={() => handleOpenDeleteModal(item)}
+              onClick={(e) => {
+                e.preventDefault();
+                handleOpenDeleteModal(item)
+              }}
               title="Delete Brand"
             >
               <i className="fa fa-trash"></i>
@@ -698,7 +680,7 @@ const BrandList = () => {
                               )}
                             </div>
                             <CardBody>
-                              <h6 className="text-white mb-2">{brand.name || brand.title}</h6>
+                              <h6 className="text-white mb-2">{brand.name}</h6>
                               {brand.description && (
                                 <p className="text-light-2 mb-3" style={{ fontSize: '12px', minHeight: '40px' }}>
                                   {brand.description.substring(0, 80)}
@@ -719,7 +701,11 @@ const BrandList = () => {
                                   color="primary"
                                   size="sm"
                                   className="btn-round flex-fill"
-                                  onClick={() => handleOpenEditModal(brand)}
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    console.log('edit brand', brand);
+                                    handleOpenEditModal(brand)
+                                  }}
                                 >
                                   <i className="fa fa-edit"></i>
                                 </Button>
@@ -848,7 +834,7 @@ const BrandList = () => {
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <RSButton onClick={handleCreateBrand} appearance="primary">
+          <RSButton onClick={() => handleBrand('CREATE')} appearance="primary">
             <i className="fa fa-check mr-2"></i>
             Create Brand
           </RSButton>
@@ -941,7 +927,7 @@ const BrandList = () => {
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <RSButton onClick={handleUpdateBrand} appearance="primary">
+          <RSButton onClick={() => handleBrand('UPDATE')} appearance="primary">
             <i className="fa fa-check mr-2"></i>
             Update Brand
           </RSButton>
@@ -971,7 +957,7 @@ const BrandList = () => {
           </p>
         </Modal.Body>
         <Modal.Footer>
-          <RSButton onClick={handleDeleteBrand} appearance="primary" color="red">
+          <RSButton onClick={() => handleBrand("DELETE")} appearance="primary" color="red">
             <i className="fa fa-trash mr-2"></i>
             Yes, Delete It
           </RSButton>
