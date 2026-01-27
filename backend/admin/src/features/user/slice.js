@@ -62,7 +62,7 @@ const userReducers = {
 /**
  * Create the user feature factory
  */
-const userFactory = FeatureFactory('users', userReducers);
+const userFactory = FeatureFactory('user', userReducers);
 
 export const { slice, asyncActions: User } = userFactory.create({
   service: UserService,
@@ -95,6 +95,10 @@ export const {
   clearError,
   resetState,
   updateMetadata,
+  setFilters,
+  clearFilters,
+  setSearchTerm,
+  setSorting,
   // Custom user reducers
   setCurrentUser,
   setIsAuthenticated,
@@ -109,12 +113,14 @@ export const {
 
 // Export async actions
 export const {
+  fetch: fetchUsers,
   fetchOne: fetchUser,
   login,
   loginWithGoogle,
   loginWithFacebook,
   register,
   logout,
+  deleteUser,
   forgotPassword,
   resetPassword,
   verifyEmail,
@@ -273,11 +279,14 @@ export const registerUser = (userData, rememberMe = false) => async (dispatch) =
 };
 
 // Export selectors
+export const selectAllUsers = (state) => state.users.data;
 export const selectCurrentUser = (state) => state.users.currentUser;
 export const selectIsAuthenticated = (state) => state.users.isAuthenticated;
 export const selectUserToken = (state) => state.users.token;
 export const selectUserLoading = (state) => state.users.loading;
 export const selectUserError = (state) => state.users.error;
+export const selectFilters = (state) => state.users.filtering?.filters || {};
+export const selectSearchTerm = (state) => state.users.filtering?.searchTerm || '';
 export const selectUserSuccess = (state) => state.users.success;
 export const selectRememberMe = (state) => state.users.rememberMe;
 export const selectUserPreferences = (state) => state.users.preferences;

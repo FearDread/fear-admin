@@ -13,7 +13,7 @@ import Calendar from "../pages/dashboard/Calendar";
 import BlogList from "../pages/dashboard/BlogList.jsx";
 import BrandsList from "../pages/dashboard/BrandsList.jsx";
 import CategoryList from "../pages/dashboard/CategoryList.jsx";
-
+import UserList from "../pages/dashboard/UserList.jsx";
 import ProfilePage from "../pages/dashboard/Profile/Profile.jsx";
 
 export const routes = {
@@ -23,6 +23,7 @@ export const routes = {
   ],
   admin: [
     { path: "/admin/dashboard", label: "Dashboard", icon: 'zmdi zmdi-view-dashboard', element: <Dashboard /> },
+    { path: "/admin/users", label: "Users", icon: "fa fa-user", element: <UserList /> },
     { path: "/admin/products", label: "Products", icon: "fa fa-shopping-bag", element: <ProductList /> },
     { path: "/admin/orders", label: "Orders", icon: "fa fa-shopping-cart", element: <OrderList /> },
     { path: "/admin/blog", label: "Blog", icon: "fa fa-book", element: <BlogList /> },
