@@ -5,7 +5,7 @@ module.exports = (fear) => {
 
       router.post("/new", Review.review)
             .get("/rating", Review.rating)
-            .get("/product/:id", Review.getProductReviews);
-            
+            //.get("/by-product/:productId", Review.getProductReviews);
+      router.get("/by-product", Review.getProductReviews);
       return router;
 };

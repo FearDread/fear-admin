@@ -35,6 +35,21 @@ import {
     selectIsInWishlist,
     moveToCart,
 } from '../../features/wishlist/slice';
+import {
+    fetchReviews,
+    getReviewsByProduct,
+    toggleHelpful,
+    setViewMode,
+    selectReviewsByProduct,
+    selectFilteredReviews,
+    selectSortedReviews,
+    selectReviewsLoading,
+    selectReviewsViewMode,
+    selectAverageRatingByProduct,
+    selectRatingDistribution,
+    submitReview,
+} from '../../features/review/slice';
+import ReviewService from '../../features/review/service';
 import ImageGallery from '../../components/common/ImageGallery';
 
 export const ProductDetails = () => {
@@ -57,11 +72,13 @@ export const ProductDetails = () => {
     const [activeTab, setActiveTab] = useState('description');
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
     const [reviewForm, setReviewForm] = useState({
-        name: '',
+        userName: '',
         email: '',
-        rating: '',
-        comment: '',
+        rating: 5,
+        title: '',
+        content: '',
     });
+    const [reviewSortMode, setReviewSortMode] = useState('recent'); // 'recent', 'helpful', 'rating'
 
     // Select product data from Redux store
     const product = useSelector(selectCurrentProduct);
@@ -90,6 +107,20 @@ export const ProductDetails = () => {
         product?.id ? selectIsInWishlist(state, product.id) : false
     );
 
+    // Reviews state
+    const productReviews = useSelector(state =>
+        product?._id ? selectReviewsByProduct(state, product._id) : []
+    );
+    const sortedReviews = useSelector(selectSortedReviews);
+    const reviewsLoading = useSelector(selectReviewsLoading);
+    const reviewViewMode = useSelector(selectReviewsViewMode);
+    const averageRating = useSelector(state =>
+        product?._id ? selectAverageRatingByProduct(state, product._id) : 0
+    );
+    const ratingDistribution = useSelector(state =>
+        product?._id ? selectRatingDistribution(state, product._id) : { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }
+    );
+
     useEffect(() => {
         if (product) {
             if (product.categoryId) {
@@ -106,6 +137,13 @@ export const ProductDetails = () => {
             dispatch(fetchProduct({ id: id }));
         }
     }, [id]);
+
+    useEffect(() => {
+        if (product?._id) {
+            // Fetch reviews for this product
+            dispatch(getReviewsByProduct({ productId: product._id }));
+        }
+    }, [product?._id]);
 
     // Handle quantity change
     const handleQuantityChange = (e) => {
@@ -204,19 +242,58 @@ export const ProductDetails = () => {
     };
 
     // Handle review submission
-    const handleSubmitReview = () => {
-        console.log('Submitting review:', reviewForm);
-        // TODO: Dispatch review submission action
-        // dispatch(submitReview({ id, ...reviewForm }));
+    const handleSubmitReview = async () => {
+        if (!product?._id) return;
+        
+        // Validate form
+        if (!reviewForm.userName || !reviewForm.email || !reviewForm.content) {
+            addToast('Please fill in all required fields', 'error');
+            return;
+        }
 
-        // Reset form
-        setReviewForm({
-            name: '',
-            email: '',
-            rating: '',
-            comment: '',
-        });
-        alert('Review submitted successfully!');
+        try {
+            const reviewData = {
+                productId: product._id,
+                username: reviewForm.userName,
+                email: reviewForm.email,
+                rating: parseInt(reviewForm.rating),
+                title: reviewForm.title,
+                comment: reviewForm.content,
+                verified: false,
+                helpfulCount: 0,
+                createdAt: new Date().toISOString(),
+            };
+
+            await dispatch(ReviewService.create(reviewData)).unwrap();
+            
+            // Reset form
+            setReviewForm({
+                userName: '',
+                email: '',
+                rating: 5,
+                title: '',
+                content: '',
+            });
+            
+            addToast('Review submitted successfully!', 'success');
+            
+            // Refresh reviews
+            dispatch(getReviewsByProduct({ productId: product._id }));
+        } catch (error) {
+            console.error('Failed to submit review:', error);
+            addToast('Failed to submit review. Please try again.', 'error');
+        }
+    };
+
+    // Handle helpful vote on review
+    const handleHelpfulClick = (reviewId) => {
+        dispatch(toggleHelpful(reviewId));
+    };
+
+    // Handle review sort change
+    const handleReviewSortChange = (mode) => {
+        setReviewSortMode(mode);
+        dispatch(setViewMode(mode));
     };
 
     // Handle social share
@@ -234,8 +311,6 @@ export const ProductDetails = () => {
             window.open(shareUrls[platform], '_blank', 'width=600,height=400');
         }
     };
-
-    // Navigation handlers
     const handleCategoryClick = (categoryId) => {
         navigate(`/categories/${categoryId}`);
     };
@@ -587,7 +662,7 @@ export const ProductDetails = () => {
                                     >
                                         <div className="d-flex align-items-center">
                                             <div className="tab-title text-uppercase fw-500">
-                                                ({product.reviews?.length || 3}) Reviews
+                                                ({productReviews.length}) Reviews
                                             </div>
                                         </div>
                                     </a>
@@ -662,12 +737,130 @@ export const ProductDetails = () => {
                                     <div className="row">
                                         <div className="col col-lg-8">
                                             <div className="product-review">
-                                                <h5 className="mb-4">
-                                                    {product.reviews?.length || 3} Reviews For The Product
-                                                </h5>
+                                                <div className="d-flex justify-content-between align-items-center mb-4">
+                                                    <h5 className="mb-0">
+                                                        {productReviews.length} Reviews For The Product
+                                                    </h5>
+                                                    <div className="btn-group" role="group">
+                                                        <button
+                                                            type="button"
+                                                            className={`btn btn-sm ${reviewSortMode === 'recent' ? 'btn-primary' : 'btn-outline-primary'}`}
+                                                            onClick={() => handleReviewSortChange('recent')}
+                                                        >
+                                                            Recent
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            className={`btn btn-sm ${reviewSortMode === 'helpful' ? 'btn-primary' : 'btn-outline-primary'}`}
+                                                            onClick={() => handleReviewSortChange('helpful')}
+                                                        >
+                                                            Most Helpful
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            className={`btn btn-sm ${reviewSortMode === 'rating' ? 'btn-primary' : 'btn-outline-primary'}`}
+                                                            onClick={() => handleReviewSortChange('rating')}
+                                                        >
+                                                            Highest Rating
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+                                                {/* Rating Summary */}
+                                                {productReviews.length > 0 && (
+                                                    <div className="rating-summary mb-4 p-3 bg-light">
+                                                        <div className="row">
+                                                            <div className="col-md-4 text-center">
+                                                                <h2 className="display-4">{averageRating}</h2>
+                                                                <div className="rating-stars mb-2">
+                                                                    {[...Array(5)].map((_, i) => (
+                                                                        <i
+                                                                            key={i}
+                                                                            className={`bi bi-star${i < Math.round(averageRating) ? '-fill' : ''} text-warning`}
+                                                                        ></i>
+                                                                    ))}
+                                                                </div>
+                                                                <p className="text-muted">{productReviews.length} reviews</p>
+                                                            </div>
+                                                            <div className="col-md-8">
+                                                                {Object.entries(ratingDistribution)
+                                                                    .sort(([a], [b]) => b - a)
+                                                                    .map(([rating, count]) => (
+                                                                        <div key={rating} className="d-flex align-items-center mb-2">
+                                                                            <span className="me-2">{rating} ★</span>
+                                                                            <div className="progress flex-grow-1 me-2" style={{ height: '8px' }}>
+                                                                                <div
+                                                                                    className="progress-bar bg-warning"
+                                                                                    style={{
+                                                                                        width: `${productReviews.length > 0 ? (count / productReviews.length) * 100 : 0}%`
+                                                                                    }}
+                                                                                ></div>
+                                                                            </div>
+                                                                            <span className="text-muted" style={{ minWidth: '30px' }}>{count}</span>
+                                                                        </div>
+                                                                    ))}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                )}
+
+                                                {/* Review List */}
                                                 <div className="review-list">
-                                                    {/* Review content here */}
-                                                    <p>Reviews section - integrate with your reviews system</p>
+                                                    {reviewsLoading && (
+                                                        <div className="text-center py-4">
+                                                            <div className="spinner-border" role="status">
+                                                                <span className="visually-hidden">Loading reviews...</span>
+                                                            </div>
+                                                        </div>
+                                                    )}
+
+                                                    {!reviewsLoading && productReviews.length === 0 && (
+                                                        <div className="text-center py-4">
+                                                            <p className="text-muted">No reviews yet. Be the first to review this product!</p>
+                                                        </div>
+                                                    )}
+
+                                                    {!reviewsLoading && sortedReviews.map((review) => (
+                                                        <div key={review.id} className="review-item border-bottom pb-4 mb-4">
+                                                            <div className="d-flex justify-content-between align-items-start mb-2">
+                                                                <div>
+                                                                    <h6 className="mb-1">{review.userName}</h6>
+                                                                    {review.verified && (
+                                                                        <span className="badge bg-success me-2">Verified Purchase</span>
+                                                                    )}
+                                                                    <div className="rating-stars">
+                                                                        {[...Array(5)].map((_, i) => (
+                                                                            <i
+                                                                                key={i}
+                                                                                className={`bi bi-star${i < review.rating ? '-fill' : ''} text-warning`}
+                                                                            ></i>
+                                                                        ))}
+                                                                    </div>
+                                                                </div>
+                                                                <small className="text-muted">
+                                                                    {new Date(review.createdAt).toLocaleDateString()}
+                                                                </small>
+                                                            </div>
+                                                            {review.title && (
+                                                                <h6 className="mb-2">{review.title}</h6>
+                                                            )}
+                                                            <p className="mb-2">{review.content}</p>
+                                                            <div className="review-actions">
+                                                                <button
+                                                                    className="btn btn-sm btn-outline-secondary me-2"
+                                                                    onClick={() => handleHelpfulClick(review.id)}
+                                                                >
+                                                                    <i className="bi bi-hand-thumbs-up me-1"></i>
+                                                                    Helpful ({review.helpfulCount || 0})
+                                                                </button>
+                                                                {review.replies && review.replies.length > 0 && (
+                                                                    <span className="text-muted">
+                                                                        {review.replies.length} {review.replies.length === 1 ? 'reply' : 'replies'}
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    ))}
                                                 </div>
                                             </div>
                                         </div>
@@ -678,45 +871,57 @@ export const ProductDetails = () => {
                                                 <div className="form-body p-3">
                                                     <h4 className="mb-4">Write a Review</h4>
                                                     <div className="mb-3">
-                                                        <label className="form-label">Your Name</label>
+                                                        <label className="form-label">Your Name *</label>
                                                         <input
                                                             type="text"
                                                             className="form-control rounded-0"
-                                                            value={reviewForm.name}
-                                                            onChange={(e) => handleReviewFormChange('name', e.target.value)}
+                                                            value={reviewForm.userName}
+                                                            onChange={(e) => handleReviewFormChange('userName', e.target.value)}
+                                                            placeholder="Enter your name"
                                                         />
                                                     </div>
                                                     <div className="mb-3">
-                                                        <label className="form-label">Your Email</label>
+                                                        <label className="form-label">Your Email *</label>
                                                         <input
                                                             type="email"
                                                             className="form-control rounded-0"
                                                             value={reviewForm.email}
                                                             onChange={(e) => handleReviewFormChange('email', e.target.value)}
+                                                            placeholder="Enter your email"
                                                         />
                                                     </div>
                                                     <div className="mb-3">
-                                                        <label className="form-label">Rating</label>
+                                                        <label className="form-label">Rating *</label>
                                                         <select
                                                             className="form-select rounded-0"
                                                             value={reviewForm.rating}
                                                             onChange={(e) => handleReviewFormChange('rating', e.target.value)}
                                                         >
-                                                            <option value="">Choose Rating</option>
-                                                            <option value="1">1</option>
-                                                            <option value="2">2</option>
-                                                            <option value="3">3</option>
-                                                            <option value="4">4</option>
-                                                            <option value="5">5</option>
+                                                            <option value="5">5 - Excellent</option>
+                                                            <option value="4">4 - Good</option>
+                                                            <option value="3">3 - Average</option>
+                                                            <option value="2">2 - Poor</option>
+                                                            <option value="1">1 - Terrible</option>
                                                         </select>
                                                     </div>
                                                     <div className="mb-3">
-                                                        <label className="form-label">Your Review</label>
+                                                        <label className="form-label">Review Title</label>
+                                                        <input
+                                                            type="text"
+                                                            className="form-control rounded-0"
+                                                            value={reviewForm.title}
+                                                            onChange={(e) => handleReviewFormChange('title', e.target.value)}
+                                                            placeholder="Summary of your review"
+                                                        />
+                                                    </div>
+                                                    <div className="mb-3">
+                                                        <label className="form-label">Your Review *</label>
                                                         <textarea
                                                             className="form-control rounded-0"
-                                                            rows="3"
-                                                            value={reviewForm.comment}
-                                                            onChange={(e) => handleReviewFormChange('comment', e.target.value)}
+                                                            rows="4"
+                                                            value={reviewForm.content}
+                                                            onChange={(e) => handleReviewFormChange('content', e.target.value)}
+                                                            placeholder="Share your thoughts about this product..."
                                                         ></textarea>
                                                     </div>
                                                     <div className="d-grid">
@@ -725,7 +930,7 @@ export const ProductDetails = () => {
                                                             className="btn btn-light btn-ecomm"
                                                             onClick={handleSubmitReview}
                                                         >
-                                                            Submit a Review
+                                                            Submit Review
                                                         </button>
                                                     </div>
                                                 </div>

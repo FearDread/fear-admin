@@ -8,9 +8,9 @@ const Product = require("../models/product");
  * @param {Object} res - Express response object
  */
 exports.review = tryCatch(async (req, res) => {
-  const { rating, comment } = req.body;
-  const productId = req.params.id;
-  const userId = req.user._id;
+  const { username, email, rating, comment } = req.body;
+  const productId = req.params.productId || req.body.productId;
+  //const userId = req.user._id;
 
   // Validate required fields
   if (!rating || rating < 1 || rating > 5) {
@@ -42,8 +42,9 @@ exports.review = tryCatch(async (req, res) => {
   );
 
   const reviewData = {
-    user: userId,
-    product: productId,
+    productId: productId,
+    username,
+    email,
     rating: Number(rating),
     comment: comment.trim(),
     createdAt: new Date()
@@ -74,7 +75,7 @@ exports.review = tryCatch(async (req, res) => {
     if (existingReviewIndex !== -1) {
       // Update existing review in Review collection
       await Review.findOneAndUpdate(
-        { user: userId, product: productId },
+        { username, productId },
         reviewData,
         { upsert: true, new: true }
       );
