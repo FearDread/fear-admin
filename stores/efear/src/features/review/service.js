@@ -6,7 +6,7 @@ export const ReviewService = {
   // Get reviews by product
   getReviewsByProduct: ThunkFactory.custom('review', 'by-product', {
     method: 'GET',
-    useParams: true,
+    useParams: false,
   }),
   
   // Get reviews by user
@@ -34,7 +34,7 @@ export const ReviewService = {
   // Create a new review
   create: ThunkFactory.custom('review', 'new', {
     method: 'POST',
-    useParams: true
+    useParams: false
   }),
 
   // Update a review

@@ -37,6 +37,7 @@ import {
 } from '../../features/wishlist/slice';
 import {
     fetchReviews,
+    fetchReview,
     getReviewsByProduct,
     toggleHelpful,
     setViewMode,
@@ -108,9 +109,13 @@ export const ProductDetails = () => {
     );
 
     // Reviews state
+    const productReviews = product?.reviews || [];
+    /*
     const productReviews = useSelector(state =>
         product?._id ? selectReviewsByProduct(state, product._id) : []
     );
+    */
+    console.log('product reviews = ', productReviews);
     const sortedReviews = useSelector(selectSortedReviews);
     const reviewsLoading = useSelector(selectReviewsLoading);
     const reviewViewMode = useSelector(selectReviewsViewMode);
@@ -139,9 +144,9 @@ export const ProductDetails = () => {
     }, [id]);
 
     useEffect(() => {
-        if (product?._id) {
+        if (product?.reviews && product?.reviews.length === 0) {
             // Fetch reviews for this product
-            dispatch(getReviewsByProduct({ productId: product._id }));
+            //dispatch(fetchReview({ id: product._id }));
         }
     }, [product?._id]);
 
@@ -244,7 +249,7 @@ export const ProductDetails = () => {
     // Handle review submission
     const handleSubmitReview = async () => {
         if (!product?._id) return;
-        
+
         // Validate form
         if (!reviewForm.userName || !reviewForm.email || !reviewForm.content) {
             addToast('Please fill in all required fields', 'error');
@@ -265,7 +270,7 @@ export const ProductDetails = () => {
             };
 
             await dispatch(ReviewService.create(reviewData)).unwrap();
-            
+
             // Reset form
             setReviewForm({
                 userName: '',
@@ -274,11 +279,13 @@ export const ProductDetails = () => {
                 title: '',
                 content: '',
             });
-            
+
             addToast('Review submitted successfully!', 'success');
-            
+
             // Refresh reviews
+
             dispatch(getReviewsByProduct({ productId: product._id }));
+            //dispatch(fetchReview({id: product._id}));
         } catch (error) {
             console.error('Failed to submit review:', error);
             addToast('Failed to submit review. Please try again.', 'error');
@@ -741,68 +748,7 @@ export const ProductDetails = () => {
                                                     <h5 className="mb-0">
                                                         {productReviews.length} Reviews For The Product
                                                     </h5>
-                                                    <div className="btn-group" role="group">
-                                                        <button
-                                                            type="button"
-                                                            className={`btn btn-sm ${reviewSortMode === 'recent' ? 'btn-primary' : 'btn-outline-primary'}`}
-                                                            onClick={() => handleReviewSortChange('recent')}
-                                                        >
-                                                            Recent
-                                                        </button>
-                                                        <button
-                                                            type="button"
-                                                            className={`btn btn-sm ${reviewSortMode === 'helpful' ? 'btn-primary' : 'btn-outline-primary'}`}
-                                                            onClick={() => handleReviewSortChange('helpful')}
-                                                        >
-                                                            Most Helpful
-                                                        </button>
-                                                        <button
-                                                            type="button"
-                                                            className={`btn btn-sm ${reviewSortMode === 'rating' ? 'btn-primary' : 'btn-outline-primary'}`}
-                                                            onClick={() => handleReviewSortChange('rating')}
-                                                        >
-                                                            Highest Rating
-                                                        </button>
-                                                    </div>
                                                 </div>
-
-                                                {/* Rating Summary */}
-                                                {productReviews.length > 0 && (
-                                                    <div className="rating-summary mb-4 p-3 bg-light">
-                                                        <div className="row">
-                                                            <div className="col-md-4 text-center">
-                                                                <h2 className="display-4">{averageRating}</h2>
-                                                                <div className="rating-stars mb-2">
-                                                                    {[...Array(5)].map((_, i) => (
-                                                                        <i
-                                                                            key={i}
-                                                                            className={`bi bi-star${i < Math.round(averageRating) ? '-fill' : ''} text-warning`}
-                                                                        ></i>
-                                                                    ))}
-                                                                </div>
-                                                                <p className="text-muted">{productReviews.length} reviews</p>
-                                                            </div>
-                                                            <div className="col-md-8">
-                                                                {Object.entries(ratingDistribution)
-                                                                    .sort(([a], [b]) => b - a)
-                                                                    .map(([rating, count]) => (
-                                                                        <div key={rating} className="d-flex align-items-center mb-2">
-                                                                            <span className="me-2">{rating} ★</span>
-                                                                            <div className="progress flex-grow-1 me-2" style={{ height: '8px' }}>
-                                                                                <div
-                                                                                    className="progress-bar bg-warning"
-                                                                                    style={{
-                                                                                        width: `${productReviews.length > 0 ? (count / productReviews.length) * 100 : 0}%`
-                                                                                    }}
-                                                                                ></div>
-                                                                            </div>
-                                                                            <span className="text-muted" style={{ minWidth: '30px' }}>{count}</span>
-                                                                        </div>
-                                                                    ))}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                )}
 
                                                 {/* Review List */}
                                                 <div className="review-list">
@@ -820,21 +766,24 @@ export const ProductDetails = () => {
                                                         </div>
                                                     )}
 
-                                                    {!reviewsLoading && sortedReviews.map((review) => (
+                                                    {!reviewsLoading && productReviews.map((review) => (
                                                         <div key={review.id} className="review-item border-bottom pb-4 mb-4">
                                                             <div className="d-flex justify-content-between align-items-start mb-2">
                                                                 <div>
-                                                                    <h6 className="mb-1">{review.userName}</h6>
+                                                                    <h6 className="mb-1">{review.username}</h6>
                                                                     {review.verified && (
                                                                         <span className="badge bg-success me-2">Verified Purchase</span>
                                                                     )}
+
                                                                     <div className="rating-stars">
-                                                                        {[...Array(5)].map((_, i) => (
-                                                                            <i
-                                                                                key={i}
-                                                                                className={`bi bi-star${i < review.rating ? '-fill' : ''} text-warning`}
-                                                                            ></i>
-                                                                        ))}
+                                                                        <div className="product-rating d-flex align-items-center mt-2">
+                                                                            <div className="rates cursor-pointer font-13">
+                                                                                {renderStars(review.rating || 4)}
+                                                                            </div>
+                                                                            <div className="ms-1">
+                                                                                <p className="mb-0">{review.rating || 0} Stars</p>
+                                                                            </div>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                                 <small className="text-muted">
@@ -844,15 +793,8 @@ export const ProductDetails = () => {
                                                             {review.title && (
                                                                 <h6 className="mb-2">{review.title}</h6>
                                                             )}
-                                                            <p className="mb-2">{review.content}</p>
+                                                            <p className="mb-2">{review.comment}</p>
                                                             <div className="review-actions">
-                                                                <button
-                                                                    className="btn btn-sm btn-outline-secondary me-2"
-                                                                    onClick={() => handleHelpfulClick(review.id)}
-                                                                >
-                                                                    <i className="bi bi-hand-thumbs-up me-1"></i>
-                                                                    Helpful ({review.helpfulCount || 0})
-                                                                </button>
                                                                 {review.replies && review.replies.length > 0 && (
                                                                     <span className="text-muted">
                                                                         {review.replies.length} {review.replies.length === 1 ? 'reply' : 'replies'}

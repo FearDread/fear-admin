@@ -1,11 +1,12 @@
 const Fear = require("@feardread/fear");
 const FearServer = require('./src/FEARServer');
+require('dotenv').config();
 
 // Main execution
 async function main() {
   const env = process.env.NODE_ENV;
   const server = (env === 'development') ? new FearServer() : new Fear.FearServer();
-
+  
   server.initialize()
         .then(() => server.startServer())
         .catch((error) => {
