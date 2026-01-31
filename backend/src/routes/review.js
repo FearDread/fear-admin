@@ -2,12 +2,14 @@ const Review = require("../controllers/review");
 
 module.exports = (fear) => {
       const router = fear.createRouter();
-
-      router.post("/new", Review.add)
-            .get("/rating", Review.rating)
-            .get("/:id", Review.getProductReviews);
-
-      router.get("/by-product", Review.getProductReviews);
+      const handler = fear.getHandler();
+      
+      router.get("/all", handler.async(Review.all));
+      router.post("/new", handler.async(Review.add));
+      router.route("/:id")
+            .put(Review.update)
+            .delete(Review.delete)
+            .get(Review.getProductReviews);
       
       return router;
 };

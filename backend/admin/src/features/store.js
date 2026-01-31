@@ -9,6 +9,7 @@ import category from "./categories/slice";
 import brand from "./brands/slice";
 import order from "./orders/slice";
 import event from "./events/slice";
+import review from "./review/slice";
 import blogposts from "./blog/slice";
 
 
@@ -17,6 +18,7 @@ export const initializeStore = () => {
   const store = configureStore({
       reducer: {
         users: user.reducer,
+        reviews: review.reducer,
         products: product.reducer,
         categories: category.reducer,
         brands: brand.reducer,

@@ -108,6 +108,8 @@ export const {
   fetchOne: fetchReview,
   search: searchReviews,
   create: submitReview,
+  update: updateReview,
+  delete: deleteReview,
   getReviewsByProduct,
   getReviewsByUser,
   getVerifiedReviews,
@@ -135,10 +137,8 @@ export const selectReviewsRatingFilter = (state) => state.reviews.ratingFilter |
 export const selectReviewById = (state, reviewId) => 
   state.reviews.data.find(review => review.id === reviewId);
 
-export const selectReviewsByProduct = (state, productId) => {
-  let reviews = selectReviews;
-  return reviews.filter(review => review.productId === productId);
-}
+export const selectReviewsByProduct = (state, productId) =>
+  state.reviews.data.filter(review => review.productId === productId);
 
 export const selectReviewsByUser = (state, userId) =>
   state.reviews.data.filter(review => review.userId === userId);

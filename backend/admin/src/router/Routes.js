@@ -12,6 +12,7 @@ import BrandsList from "../pages/dashboard/BrandsList.jsx";
 import CategoryList from "../pages/dashboard/CategoryList.jsx";
 import UserList from "../pages/dashboard/UserList.jsx";
 import ProfilePage from "../pages/dashboard/Profile/Profile.jsx";
+import ReviewList from "../pages/dashboard/ReviewList.jsx";
 
 export const routes = {
   auth: [
@@ -22,6 +23,7 @@ export const routes = {
     { path: "/admin/dashboard", label: "Dashboard", icon: 'zmdi zmdi-view-dashboard', element: <Dashboard /> },
     { path: "/admin/users", label: "Users", icon: "fa fa-user", element: <UserList /> },
     { path: "/admin/products", label: "Products", icon: "fa fa-shopping-bag", element: <ProductList /> },
+    { path: "/admin/reviews", label: "Reviews", icon: "fa fa-star", element: <ReviewList /> },
     { path: "/admin/orders", label: "Orders", icon: "fa fa-shopping-cart", element: <OrderList /> },
     { path: "/admin/blog", label: "Blog", icon: "fa fa-book", element: <BlogList /> },
     { path: "/admin/brand", label: "Brands", icon: "fa fa-certificate", element: <BrandsList /> },

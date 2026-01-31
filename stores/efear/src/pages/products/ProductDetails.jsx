@@ -36,18 +36,14 @@ import {
     moveToCart,
 } from '../../features/wishlist/slice';
 import {
-    fetchReviews,
-    fetchReview,
     getReviewsByProduct,
     toggleHelpful,
     setViewMode,
     selectReviewsByProduct,
-    selectFilteredReviews,
     selectSortedReviews,
     selectReviewsLoading,
     selectReviewsViewMode,
     selectAverageRatingByProduct,
-    selectRatingDistribution,
     submitReview,
 } from '../../features/review/slice';
 import ReviewService from '../../features/review/service';
@@ -109,22 +105,10 @@ export const ProductDetails = () => {
     );
 
     // Reviews state
-    const productReviews = product?.reviews || [];
-    /*
-    const productReviews = useSelector(state =>
-        product?._id ? selectReviewsByProduct(state, product._id) : []
-    );
-    */
-    console.log('product reviews = ', productReviews);
+    const productReviews = product?.reviews;
+    const selectedProductReviews = useSelector(selectReviewsByProduct);
     const sortedReviews = useSelector(selectSortedReviews);
     const reviewsLoading = useSelector(selectReviewsLoading);
-    const reviewViewMode = useSelector(selectReviewsViewMode);
-    const averageRating = useSelector(state =>
-        product?._id ? selectAverageRatingByProduct(state, product._id) : 0
-    );
-    const ratingDistribution = useSelector(state =>
-        product?._id ? selectRatingDistribution(state, product._id) : { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }
-    );
 
     useEffect(() => {
         if (product) {
@@ -262,13 +246,13 @@ export const ProductDetails = () => {
                 username: reviewForm.userName,
                 email: reviewForm.email,
                 rating: parseInt(reviewForm.rating),
-                title: reviewForm.title,
                 comment: reviewForm.content,
                 verified: false,
                 helpfulCount: 0,
                 createdAt: new Date().toISOString(),
             };
-
+            // Refresh reviews
+            productReviews.push(reviewData);
             await dispatch(ReviewService.create(reviewData)).unwrap();
 
             // Reset form
@@ -276,16 +260,14 @@ export const ProductDetails = () => {
                 userName: '',
                 email: '',
                 rating: 5,
-                title: '',
                 content: '',
             });
 
-            addToast('Review submitted successfully!', 'success');
+            if (productReviews && !reviewsLoading) {
+                productReviews.push(reviewData);
+                addToast('Review submitted successfully!', 'success');
+            }
 
-            // Refresh reviews
-
-            dispatch(getReviewsByProduct({ productId: product._id }));
-            //dispatch(fetchReview({id: product._id}));
         } catch (error) {
             console.error('Failed to submit review:', error);
             addToast('Failed to submit review. Please try again.', 'error');
@@ -622,6 +604,21 @@ export const ProductDetails = () => {
                             <ul className="nav nav-tabs mb-0" role="tablist">
                                 <li className="nav-item" role="presentation">
                                     <a
+                                        className={`nav-link ${activeTab === 'reviews' ? 'active' : ''}`}
+                                        data-bs-toggle="tab"
+                                        href="#reviews"
+                                        role="tab"
+                                        onClick={() => setActiveTab('reviews')}
+                                    >
+                                        <div className="d-flex align-items-center">
+                                            <div className="tab-title text-uppercase fw-500">
+                                                ({productReviews.length}) Reviews
+                                            </div>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li className="nav-item" role="presentation">
+                                    <a
                                         className={`nav-link ${activeTab === 'description' ? 'active' : ''}`}
                                         data-bs-toggle="tab"
                                         href="#discription"
@@ -659,21 +656,7 @@ export const ProductDetails = () => {
                                         </div>
                                     </a>
                                 </li>
-                                <li className="nav-item" role="presentation">
-                                    <a
-                                        className={`nav-link ${activeTab === 'reviews' ? 'active' : ''}`}
-                                        data-bs-toggle="tab"
-                                        href="#reviews"
-                                        role="tab"
-                                        onClick={() => setActiveTab('reviews')}
-                                    >
-                                        <div className="d-flex align-items-center">
-                                            <div className="tab-title text-uppercase fw-500">
-                                                ({productReviews.length}) Reviews
-                                            </div>
-                                        </div>
-                                    </a>
-                                </li>
+
                             </ul>
 
                             <div className="tab-content pt-3">
@@ -845,16 +828,6 @@ export const ProductDetails = () => {
                                                             <option value="2">2 - Poor</option>
                                                             <option value="1">1 - Terrible</option>
                                                         </select>
-                                                    </div>
-                                                    <div className="mb-3">
-                                                        <label className="form-label">Review Title</label>
-                                                        <input
-                                                            type="text"
-                                                            className="form-control rounded-0"
-                                                            value={reviewForm.title}
-                                                            onChange={(e) => handleReviewFormChange('title', e.target.value)}
-                                                            placeholder="Summary of your review"
-                                                        />
                                                     </div>
                                                     <div className="mb-3">
                                                         <label className="form-label">Your Review *</label>

@@ -8,39 +8,45 @@ const Product = require("../models/product");
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
  */
-exports.add = tryCatch((req, res) => {
+exports.add = async (req, res) => {
   const { username, email, rating, comment } = req.body;
   const productId = req.params.id || req.body.productId;
   
   // Validate required fields
   if (!rating || rating < 1 || rating > 5) {
-    return res.status(400).json({
-      success: false, 
-      message: "Rating must be between 1 and 5" 
-    });
+    return Promise.resolve(
+      res.status(400).json({
+        success: false, 
+        message: "Rating must be between 1 and 5" 
+    }));
   }
-
   if (!comment || comment.trim().length === 0) {
-    return res.status(400).json({ 
-      success: false, 
-      message: "Comment is required" 
-    });
+    return Promise.resolve(
+      res.status(400).json({
+        success: false, 
+        message: "Comment is required"
+    }));
   }
   
+  const reviewData = {
+    productId: productId,
+    username,
+    email,
+    rating: Number(rating),
+    comment: comment.trim(),
+    createdAt: new Date()
+  };
+
   // Find product and check if it exists
-  Product.findById(productId)
+  return Product.findById(productId)
     .then(product => {
-      if (!product) return res.status(404).json({  success: false,  message: "Product not found" });
-      
-      const existingReviewIndex = -1; // Set to -1
-      const reviewData = {
-        productId: productId,
-        username,
-        email,
-        rating: Number(rating),
-        comment: comment.trim(),
-        createdAt: new Date()
-      };
+      if (!product) {
+        res.status(400).json({ 
+          success: false, 
+          message: "Product not found" 
+        });
+        return Promise.reject(new Error("Product not found"));
+      }
 
       product.reviews.push(reviewData);
 
@@ -49,36 +55,25 @@ exports.add = tryCatch((req, res) => {
       product.rating = Number((totalRating / product.reviews.length).toFixed(1));
       product.totalReviews = product.reviews.length;
 
-      // Save product and return the promise
       return product.save();
     })
-    .then(updatedProduct => {
-      // Extract review data from the updated product
-      const reviewData = updatedProduct.reviews[updatedProduct.reviews.length - 1];
-      
-      // Also save to Review collection if it exists
-      return Review.create(reviewData)
-        .then(() => {
-          return res.status(200).json({ 
-            success: true, 
-            message: "Review added successfully", 
-            result: updatedProduct,
-            review: reviewData 
-          });
-        })
-        .catch(reviewError => {
-          console.warn('Failed to sync review to Review collection:', reviewError.message);
-        });
+    .then(() => {
+
+      return Review.create(reviewData);
+    })
+    .then(review => {
+        return res.status(200).json({ 
+          success: true, 
+          message: "Review added successfully", 
+          result: review,
+      });
+      //return Promise.resolve(review);
     })
     .catch(error => {
       console.error('Error in review process:', error);
-      return res.status(500).json({
-        success: false,
-        message: "Failed to process review",
-        error: error.message
-      });
+      return Promise.reject(error);
     });
-});
+};
 
 /**
  * Add or update product rating (alternative rating system)
