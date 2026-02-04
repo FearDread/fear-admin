@@ -221,20 +221,17 @@ const FearServer = (function () {
         
         const settingsPath = config.settingsPath || path.join(this.rootDir, '.small-tech.org');
         
-        // Configure Auto Encrypt options
-        const autoEncryptOptions = {
+        // Auto Encrypt doesn't need separate initialization
+        // It's used directly when creating the HTTPS server
+        this.autoEncryptOptions = {
           domains: [config.domain],
-          staging: config.staging || false
+          settingsPath: settingsPath
         };
 
-        // Set settings path if specified
-        if (config.settingsPath) {
-          autoEncryptOptions.settingsPath = settingsPath;
+        // Store staging mode for server creation
+        if (config.staging) {
+          this.autoEncryptOptions.staging = true;
         }
-
-        // Initialize Auto Encrypt
-        this.autoEncrypt = AutoEncrypt;
-        this.autoEncryptOptions = autoEncryptOptions;
 
         if (this.fear && this.fear.getLogger()) {
           this.fear.getLogger().info(`Auto Encrypt configured for domain: ${config.domain}`);
@@ -566,22 +563,22 @@ const FearServer = (function () {
      * Start HTTPS server
      * @private
      */
-    _startHttpsServer() {
-      return new Promise((resolve, reject) => {
-        const logger = this.fear.getLogger();
-        const httpsPort = this.httpsConfig.httpsPort;
+    async _startHttpsServer() {
+      const logger = this.fear.getLogger();
+      const httpsPort = this.httpsConfig.httpsPort;
 
-        let httpsServer;
+      let httpsServer;
 
-        if (this.httpsConfig.mode === 'greenlock') {
-          // Greenlock handles server creation
-          logger.info('Starting HTTPS server with Greenlock auto-encryption...');
-          
-          // Serve the app through Greenlock
-          httpsServer = this.greenlock.httpsServer({
-            app: this.fear.getApp()
-          });
+      if (this.httpsConfig.mode === 'greenlock') {
+        // Greenlock handles server creation
+        logger.info('Starting HTTPS server with Greenlock auto-encryption...');
+        
+        // Serve the app through Greenlock
+        httpsServer = this.greenlock.httpsServer({
+          app: this.fear.getApp()
+        });
 
+        return new Promise((resolve, reject) => {
           httpsServer.listen(httpsPort, (err) => {
             if (err) {
               logger.error(`Failed to start HTTPS server on port ${httpsPort}:`, err);
@@ -602,45 +599,84 @@ const FearServer = (function () {
             });
           }
 
-        } else if (this.httpsConfig.mode === 'auto-encrypt') {
-          // Auto Encrypt mode
-          logger.info('Starting HTTPS server with Auto Encrypt...');
-          
-          const AutoEncrypt = this.autoEncrypt;
-          const options = this.autoEncryptOptions;
-
-          // Create HTTPS server with Auto Encrypt
-          httpsServer = https.createServer(
-            AutoEncrypt.https.createSecureContext(options),
-            this.fear.getApp()
-          );
-
-          httpsServer.listen(httpsPort, (err) => {
-            if (err) {
-              logger.error(`Failed to start HTTPS server on port ${httpsPort}:`, err);
-              return reject(err);
+          httpsServer.on('error', (err) => {
+            if (err.code === 'EADDRINUSE') {
+              logger.error(`Port ${httpsPort} is already in use`);
+            } else {
+              logger.error('HTTPS server error:', err);
             }
-            
-            logger.info(`HTTPS server running on port ${httpsPort} with Auto Encrypt`);
-            resolve(httpsServer);
+            reject(err);
           });
+        });
 
-          // Setup HTTP redirect server if enabled
-          if (this.httpsConfig.redirectHttp) {
-            const httpRedirectPort = this.fear.getApp().get("PORT") || DEFAULT_PORT;
-            this.httpRedirectServer = this._createHttpRedirectServer(httpsPort);
-            
-            this.httpRedirectServer.listen(httpRedirectPort, () => {
-              logger.info(`HTTP redirect server running on port ${httpRedirectPort} → HTTPS`);
-            });
-          }
+      } else if (this.httpsConfig.mode === 'auto-encrypt') {
+        // Auto Encrypt mode
+        logger.info('Starting HTTPS server with Auto Encrypt...');
+        
+        const AutoEncrypt = require('@small-tech/auto-encrypt');
+        
+        // Auto Encrypt.https.createServer expects domain(s) and returns a configured server
+        const options = {
+          domains: [this.httpsConfig.domain]
+        };
 
-        } else if (this.httpsConfig.mode === 'manual') {
-          // Manual certificate mode
-          logger.info('Starting HTTPS server with manual certificates...');
+        if (this.httpsConfig.staging) {
+          options.staging = true;
+        }
+
+        if (this.autoEncryptOptions && this.autoEncryptOptions.settingsPath) {
+          options.settingsPath = this.autoEncryptOptions.settingsPath;
+        }
+        
+        // Create HTTPS server with Auto Encrypt
+        try {
+          httpsServer = await AutoEncrypt.https.createServer(options);
           
-          httpsServer = this._createManualHttpsServer();
+          // Add Express app as request handler
+          httpsServer.on('request', this.fear.getApp());
+          
+          return new Promise((resolve, reject) => {
+            httpsServer.listen(httpsPort, (err) => {
+              if (err) {
+                logger.error(`Failed to start HTTPS server on port ${httpsPort}:`, err);
+                return reject(err);
+              }
+              
+              logger.info(`HTTPS server running on port ${httpsPort} with Auto Encrypt`);
+              resolve(httpsServer);
+            });
 
+            // Setup HTTP redirect server if enabled
+            if (this.httpsConfig.redirectHttp) {
+              const httpRedirectPort = this.fear.getApp().get("PORT") || DEFAULT_PORT;
+              this.httpRedirectServer = this._createHttpRedirectServer(httpsPort);
+              
+              this.httpRedirectServer.listen(httpRedirectPort, () => {
+                logger.info(`HTTP redirect server running on port ${httpRedirectPort} → HTTPS`);
+              });
+            }
+
+            httpsServer.on('error', (err) => {
+              if (err.code === 'EADDRINUSE') {
+                logger.error(`Port ${httpsPort} is already in use`);
+              } else {
+                logger.error('HTTPS server error:', err);
+              }
+              reject(err);
+            });
+          });
+        } catch (error) {
+          logger.error('Failed to create Auto Encrypt server:', error);
+          throw error;
+        }
+
+      } else if (this.httpsConfig.mode === 'manual') {
+        // Manual certificate mode
+        logger.info('Starting HTTPS server with manual certificates...');
+        
+        httpsServer = this._createManualHttpsServer();
+
+        return new Promise((resolve, reject) => {
           httpsServer.listen(httpsPort, (err) => {
             if (err) {
               logger.error(`Failed to start HTTPS server on port ${httpsPort}:`, err);
@@ -660,17 +696,17 @@ const FearServer = (function () {
               logger.info(`HTTP redirect server running on port ${httpRedirectPort} → HTTPS`);
             });
           }
-        }
 
-        httpsServer.on('error', (err) => {
-          if (err.code === 'EADDRINUSE') {
-            logger.error(`Port ${httpsPort} is already in use`);
-          } else {
-            logger.error('HTTPS server error:', err);
-          }
-          reject(err);
+          httpsServer.on('error', (err) => {
+            if (err.code === 'EADDRINUSE') {
+              logger.error(`Port ${httpsPort} is already in use`);
+            } else {
+              logger.error('HTTPS server error:', err);
+            }
+            reject(err);
+          });
         });
-      });
+      }
     },
 
     /**
