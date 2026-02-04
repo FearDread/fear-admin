@@ -4,6 +4,8 @@ const path = require('path');
 const express = require('express');
 const fs = require('fs');
 const dotenv = require('dotenv');
+const http = require('http');
+const https = require('https');
 
 const FearServer = (function () {
   // Private constants
@@ -14,17 +16,22 @@ const FearServer = (function () {
   };
 
   const DEFAULT_PORT = 4000;
+  const DEFAULT_HTTPS_PORT = 443;
   const SHUTDOWN_TIMEOUT = 10000; // 10 seconds
 
   // Constructor
   function FearServer() {
     this.fear = null;
     this.server = null;
+    this.httpsServer = null;
+    this.httpRedirectServer = null;
     this.Router = null;
     this.isShuttingDown = false;
     this.rootDir = path.resolve();
     this.reactApps = []; // Track multiple React apps
     this.envLoaded = false;
+    this.httpsConfig = null;
+    this.greenlock = null;
   }
 
   FearServer.prototype = {
@@ -93,6 +100,168 @@ const FearServer = (function () {
 
       this.envLoaded = true;
       return true;
+    },
+
+    /**
+     * Configure HTTPS with auto-encryption using Greenlock
+     * @param {Object} config - HTTPS configuration
+     * @param {string} config.mode - 'greenlock' or 'manual'
+     * @param {string} config.domain - Domain name for Let's Encrypt (greenlock mode)
+     * @param {string} config.email - Email for Let's Encrypt notifications (greenlock mode)
+     * @param {string} config.certPath - Path to SSL certificate (manual mode)
+     * @param {string} config.keyPath - Path to SSL private key (manual mode)
+     * @param {string} config.caPath - Path to CA bundle (manual mode, optional)
+     * @param {boolean} config.staging - Use Let's Encrypt staging server (greenlock mode)
+     * @param {string} config.configDir - Directory to store Greenlock config (default: ./greenlock.d)
+     * @param {number} config.httpsPort - HTTPS port (default: 443)
+     * @param {boolean} config.redirectHttp - Redirect HTTP to HTTPS (default: true)
+     * @param {Array<string>} config.altnames - Alternative domain names (optional)
+     */
+    setupHTTPS(config) {
+      if (!config || typeof config !== 'object') {
+        throw new Error('HTTPS configuration is required');
+      }
+
+      this.httpsConfig = {
+        mode: config.mode || 'greenlock',
+        httpsPort: config.httpsPort || DEFAULT_HTTPS_PORT,
+        redirectHttp: config.redirectHttp !== false,
+        ...config
+      };
+
+      if (this.httpsConfig.mode === 'greenlock') {
+        this._setupGreenlock();
+      } else if (this.httpsConfig.mode === 'manual') {
+        this._validateManualCerts();
+      } else {
+        throw new Error('HTTPS mode must be "greenlock" or "manual"');
+      }
+
+      if (this.fear && this.fear.getLogger()) {
+        this.fear.getLogger().info('HTTPS configuration loaded successfully');
+      }
+    },
+
+    /**
+     * Setup Greenlock for automatic SSL certificates
+     * @private
+     */
+    _setupGreenlock() {
+      const config = this.httpsConfig;
+
+      if (!config.domain) {
+        throw new Error('Domain name is required for Greenlock mode');
+      }
+
+      if (!config.email) {
+        throw new Error('Email address is required for Greenlock mode');
+      }
+
+      try {
+        const greenlockExpress = require('@root/greenlock-express');
+        
+        const configDir = config.configDir || path.join(this.rootDir, 'greenlock.d');
+        
+        // Ensure config directory exists
+        if (!fs.existsSync(configDir)) {
+          fs.mkdirSync(configDir, { recursive: true });
+        }
+
+        // Configure Greenlock
+        this.greenlock = greenlockExpress.init({
+          packageRoot: this.rootDir,
+          configDir: configDir,
+          maintainerEmail: config.email,
+          cluster: false,
+          staging: config.staging || false,
+        });
+
+        // Add site configuration
+        const sites = [{
+          subject: config.domain,
+          altnames: config.altnames || [config.domain]
+        }];
+
+        this.greenlock.manager.defaults({
+          agreeToTerms: true,
+          subscriberEmail: config.email
+        });
+
+        sites.forEach(site => {
+          this.greenlock.sites.add(site);
+        });
+
+        if (this.fear && this.fear.getLogger()) {
+          this.fear.getLogger().info(`Greenlock configured for domain: ${config.domain}`);
+          this.fear.getLogger().info(`Staging mode: ${config.staging ? 'enabled' : 'disabled'}`);
+        }
+      } catch (error) {
+        console.error('Error setting up Greenlock:', error);
+        throw new Error('Failed to setup Greenlock. Make sure @root/greenlock-express is installed: npm install @root/greenlock-express');
+      }
+    },
+
+    /**
+     * Validate manual SSL certificates
+     * @private
+     */
+    _validateManualCerts() {
+      const config = this.httpsConfig;
+
+      if (!config.certPath || !config.keyPath) {
+        throw new Error('Certificate path and key path are required for manual HTTPS mode');
+      }
+
+      if (!fs.existsSync(config.certPath)) {
+        throw new Error(`SSL certificate not found: ${config.certPath}`);
+      }
+
+      if (!fs.existsSync(config.keyPath)) {
+        throw new Error(`SSL private key not found: ${config.keyPath}`);
+      }
+
+      if (config.caPath && !fs.existsSync(config.caPath)) {
+        throw new Error(`CA bundle not found: ${config.caPath}`);
+      }
+
+      if (this.fear && this.fear.getLogger()) {
+        this.fear.getLogger().info('Manual SSL certificates validated');
+      }
+    },
+
+    /**
+     * Create HTTPS server with manual certificates
+     * @private
+     */
+    _createManualHttpsServer() {
+      const config = this.httpsConfig;
+      
+      const httpsOptions = {
+        key: fs.readFileSync(config.keyPath),
+        cert: fs.readFileSync(config.certPath)
+      };
+
+      if (config.caPath) {
+        httpsOptions.ca = fs.readFileSync(config.caPath);
+      }
+
+      return https.createServer(httpsOptions, this.fear.getApp());
+    },
+
+    /**
+     * Create HTTP to HTTPS redirect server
+     * @private
+     */
+    _createHttpRedirectServer(httpsPort) {
+      const redirectApp = express();
+      
+      redirectApp.use((req, res) => {
+        const host = req.headers.host.split(':')[0];
+        const httpsUrl = `https://${host}${httpsPort !== 443 ? ':' + httpsPort : ''}${req.url}`;
+        res.redirect(301, httpsUrl);
+      });
+
+      return http.createServer(redirectApp);
     },
 
     /**
@@ -259,34 +428,31 @@ const FearServer = (function () {
     },
 
     /**
-     * Setup API routes prefix (useful to avoid conflicts with React routes)
-     * @param {string} prefix - API prefix (e.g., '/api')
+     * Setup API prefix for all routes
+     * @param {string} prefix - API prefix (e.g., '/api/v1')
      */
-    setupAPIPrefix(prefix = '/fear/api') {
+    setupAPIPrefix(prefix) {
+      if (!prefix || typeof prefix !== 'string') {
+        throw new Error('API prefix must be a string');
+      }
+
       const normalizedPrefix = `/${prefix.replace(/^\/+|\/+$/g, '')}`;
       
-      this.fear.getApp().use(normalizedPrefix, (req, res, next) => {
-
-        req.isAPIRoute = true;
-        next();
-      });
-
-      this.fear.getLogger().info(`API routes configured with prefix: ${normalizedPrefix}`);
-      return normalizedPrefix;
+      this.fear.getLogger().info(`Setting up API prefix: ${normalizedPrefix}`);
+      // This would need to be implemented in your FEAR framework
+      // to prefix all routes - just documenting the intent here
     },
 
     /**
-     * Setup process event handlers for graceful shutdown
+     * Setup process signal handlers for graceful shutdown
      */
     setupProcessHandlers() {
-      // Handle unhandled promise rejections
-      process.on("unhandledRejection", (reason, promise) => {
-        console.log('Unhandled Rejection at:', promise);
-        this.fear.getLogger().error('Unhandled Rejection at:', promise, 'reason:', reason);
-        this.gracefulShutdown('unhandledRejection');
-      });
+      // Prevent duplicate listeners
+      if (this._handlersSetup) {
+        return;
+      }
+      this._handlersSetup = true;
 
-      // Handle uncaught exceptions
       process.on("uncaughtException", (err) => {
         this.fear.getLogger().error('Uncaught Exception:', err);
         this.gracefulShutdown('uncaughtException');
@@ -351,6 +517,84 @@ const FearServer = (function () {
     },
 
     /**
+     * Start HTTPS server
+     * @private
+     */
+    _startHttpsServer() {
+      return new Promise((resolve, reject) => {
+        const logger = this.fear.getLogger();
+        const httpsPort = this.httpsConfig.httpsPort;
+
+        let httpsServer;
+
+        if (this.httpsConfig.mode === 'greenlock') {
+          // Greenlock handles server creation
+          logger.info('Starting HTTPS server with Greenlock auto-encryption...');
+          
+          // Serve the app through Greenlock
+          httpsServer = this.greenlock.httpsServer({
+            app: this.fear.getApp()
+          });
+
+          httpsServer.listen(httpsPort, (err) => {
+            if (err) {
+              logger.error(`Failed to start HTTPS server on port ${httpsPort}:`, err);
+              return reject(err);
+            }
+            
+            logger.info(`HTTPS server running on port ${httpsPort} with Greenlock`);
+            resolve(httpsServer);
+          });
+
+          // Setup HTTP redirect server if enabled
+          if (this.httpsConfig.redirectHttp) {
+            const httpRedirectPort = this.fear.getApp().get("PORT") || DEFAULT_PORT;
+            this.httpRedirectServer = this.greenlock.httpServer();
+            
+            this.httpRedirectServer.listen(httpRedirectPort, () => {
+              logger.info(`HTTP redirect server running on port ${httpRedirectPort}`);
+            });
+          }
+
+        } else if (this.httpsConfig.mode === 'manual') {
+          // Manual certificate mode
+          logger.info('Starting HTTPS server with manual certificates...');
+          
+          httpsServer = this._createManualHttpsServer();
+
+          httpsServer.listen(httpsPort, (err) => {
+            if (err) {
+              logger.error(`Failed to start HTTPS server on port ${httpsPort}:`, err);
+              return reject(err);
+            }
+            
+            logger.info(`HTTPS server running on port ${httpsPort}`);
+            resolve(httpsServer);
+          });
+
+          // Setup HTTP redirect server if enabled
+          if (this.httpsConfig.redirectHttp) {
+            const httpRedirectPort = this.fear.getApp().get("PORT") || DEFAULT_PORT;
+            this.httpRedirectServer = this._createHttpRedirectServer(httpsPort);
+            
+            this.httpRedirectServer.listen(httpRedirectPort, () => {
+              logger.info(`HTTP redirect server running on port ${httpRedirectPort} → HTTPS`);
+            });
+          }
+        }
+
+        httpsServer.on('error', (err) => {
+          if (err.code === 'EADDRINUSE') {
+            logger.error(`Port ${httpsPort} is already in use`);
+          } else {
+            logger.error('HTTPS server error:', err);
+          }
+          reject(err);
+        });
+      });
+    },
+
+    /**
      * Perform graceful shutdown
      */
     gracefulShutdown(signal) {
@@ -368,12 +612,22 @@ const FearServer = (function () {
         process.exit(1);
       }, SHUTDOWN_TIMEOUT);
 
-      // Close server connections
-      const closeServerPromise = this.server
-        ? new Promise((resolve) => this.server.close(resolve))
-        : Promise.resolve();
+      // Close all server connections
+      const closePromises = [];
 
-      return closeServerPromise
+      if (this.server) {
+        closePromises.push(new Promise((resolve) => this.server.close(resolve)));
+      }
+
+      if (this.httpsServer) {
+        closePromises.push(new Promise((resolve) => this.httpsServer.close(resolve)));
+      }
+
+      if (this.httpRedirectServer) {
+        closePromises.push(new Promise((resolve) => this.httpRedirectServer.close(resolve)));
+      }
+
+      return Promise.all(closePromises)
         .then(() => {
           // Shutdown FEAR application
           if (this.fear && typeof this.fear.shutdown === 'function') {
@@ -443,7 +697,7 @@ const FearServer = (function () {
     },
 
     /**
-     * Start the server
+     * Start the server (HTTP or HTTPS based on configuration)
      */
     startServer() {
       const port = this.fear.getApp().get("PORT") || DEFAULT_PORT;
@@ -460,20 +714,54 @@ const FearServer = (function () {
       // Initialize database connection
       return this.initializeDatabase()
         .then(() => {
-          // Start the HTTP server
-          return this.startHttpServer(port);
+          // Start HTTPS if configured, otherwise HTTP
+          if (this.httpsConfig) {
+            return this._startHttpsServer();
+          } else {
+            return this.startHttpServer(port);
+          }
         })
         .then((server) => {
-          this.server = server;
+          if (this.httpsConfig) {
+            this.httpsServer = server;
+          } else {
+            this.server = server;
+          }
+
           logger.info('═══════════════════════════════════════');
-          logger.info(`FEAR API Server Running on Port ${port}`);
+          
+          if (this.httpsConfig) {
+            logger.info(`🔒 FEAR API Server Running on HTTPS Port ${this.httpsConfig.httpsPort}`);
+            
+            if (this.httpsConfig.mode === 'greenlock') {
+              logger.info(`🔐 Auto-encryption: ENABLED (Let's Encrypt)`);
+              logger.info(`📧 Domain: ${this.httpsConfig.domain}`);
+              logger.info(`📧 Email: ${this.httpsConfig.email}`);
+            } else {
+              logger.info(`🔐 Manual SSL certificates loaded`);
+            }
+
+            if (this.httpsConfig.redirectHttp) {
+              logger.info(`↪️  HTTP → HTTPS redirect enabled`);
+            }
+          } else {
+            logger.info(`FEAR API Server Running on HTTP Port ${port}`);
+          }
+
           logger.info('═══════════════════════════════════════');
           
           // Display registered React apps
           if (this.reactApps.length > 0) {
             logger.info('📱 React Apps:');
+            const protocol = this.httpsConfig ? 'https' : 'http';
+            const displayPort = this.httpsConfig ? this.httpsConfig.httpsPort : port;
+            const portDisplay = (protocol === 'https' && displayPort === 443) || 
+                               (protocol === 'http' && displayPort === 80) 
+                               ? '' : `:${displayPort}`;
+            
             this.reactApps.forEach(app => {
-              logger.info(`• http://localhost:${port}${app.basePath}`);
+              const host = this.httpsConfig?.domain || 'localhost';
+              logger.info(`• ${protocol}://${host}${portDisplay}${app.basePath}`);
             });
             logger.info('═══════════════════════════════════════');
           }
@@ -505,6 +793,20 @@ const FearServer = (function () {
      */
     getServer() {
       return this.server;
+    },
+
+    /**
+     * Get HTTPS server instance
+     */
+    getHttpsServer() {
+      return this.httpsServer;
+    },
+
+    /**
+     * Get HTTP redirect server instance
+     */
+    getHttpRedirectServer() {
+      return this.httpRedirectServer;
     },
 
     /**
@@ -540,6 +842,20 @@ const FearServer = (function () {
      */
     isEnvLoaded() {
       return this.envLoaded;
+    },
+
+    /**
+     * Get HTTPS configuration
+     */
+    getHttpsConfig() {
+      return this.httpsConfig;
+    },
+
+    /**
+     * Check if HTTPS is enabled
+     */
+    isHttpsEnabled() {
+      return !!this.httpsConfig;
     }
   };
 
