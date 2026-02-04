@@ -1,47 +1,51 @@
 #!/usr/bin/env node
+
+/**
+ * Simple FEAR Server with Auto Encrypt
+ * 
+ * This is the simplest way to get HTTPS running with FEAR Server.
+ * Perfect for single-domain applications.
+ */
+
 const path = require('path');
 const FearServer = require('./src/FEARServer');
 
-async function main() {
+async function startServer() {
   const server = new FearServer();
 
   try {
-    // Initialize with environment variables
+    console.log('🚀 Starting Simple HTTPS Server with Auto Encrypt\n');
+
+    // 1. Initialize FEAR application
     await server.initialize(
       {
         root: path.resolve(),
         app: 'backend/admin/build',
         build: 'backend/admin/build'
       },
-      true, // ADD_PAYMENTS
-      {
-        enableCORS: true,
-        corsOptions: {
-          origin: 'https://fear.dedyn.io',
-          credentials: true
-        }
-      },
-      '.env' // Load environment variables
+      false // No payment routes needed
     );
 
-    // Setup HTTPS with Greenlock
+    // 2. Setup HTTPS with Auto Encrypt (just 3 required settings!)
     server.setupHTTPS({
-      mode: 'greenlock',
-      domain: 'fear.dedyn.io',
-      email: 'ghaptonstall@gmail.com',
-      httpsPort: 443,
-      redirectHttp: true,
-      staging: process.env.NODE_ENV !== 'production',
-      altnames: ['www.fear.dedyn.io', 'fear.dedyn.io']
+      mode: 'auto-encrypt',
+      domain: process.env.DOMAIN || 'efear.shop',
+      staging: process.env.NODE_ENV !== 'production'
     });
 
-    // Start the server
+    // 3. Start!
     await server.startServer();
 
+    console.log('\n✅ Server started successfully!');
+    console.log('\nYour site is now available at:');
+    console.log(`   https://${process.env.DOMAIN || 'yourdomain.com'}\n`);
+    console.log('Press CTRL+C to stop the server.\n');
+
   } catch (error) {
-    console.error('Failed to start server:', error);
+    console.error('❌ Failed to start server:', error.message);
     process.exit(1);
   }
 }
 
-main();
+// Start the server
+startServer();

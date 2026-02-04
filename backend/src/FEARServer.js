@@ -32,6 +32,7 @@ const FearServer = (function () {
     this.envLoaded = false;
     this.httpsConfig = null;
     this.greenlock = null;
+    this.autoEncrypt = null;
   }
 
   FearServer.prototype = {
@@ -103,19 +104,20 @@ const FearServer = (function () {
     },
 
     /**
-     * Configure HTTPS with auto-encryption using Greenlock
+     * Configure HTTPS with auto-encryption using Greenlock or Auto Encrypt
      * @param {Object} config - HTTPS configuration
-     * @param {string} config.mode - 'greenlock' or 'manual'
-     * @param {string} config.domain - Domain name for Let's Encrypt (greenlock mode)
-     * @param {string} config.email - Email for Let's Encrypt notifications (greenlock mode)
+     * @param {string} config.mode - 'greenlock', 'auto-encrypt', or 'manual'
+     * @param {string} config.domain - Domain name for Let's Encrypt (greenlock/auto-encrypt mode)
+     * @param {string} config.email - Email for Let's Encrypt notifications (greenlock/auto-encrypt mode)
      * @param {string} config.certPath - Path to SSL certificate (manual mode)
      * @param {string} config.keyPath - Path to SSL private key (manual mode)
      * @param {string} config.caPath - Path to CA bundle (manual mode, optional)
-     * @param {boolean} config.staging - Use Let's Encrypt staging server (greenlock mode)
-     * @param {string} config.configDir - Directory to store Greenlock config (default: ./greenlock.d)
+     * @param {boolean} config.staging - Use Let's Encrypt staging server (greenlock/auto-encrypt mode)
+     * @param {string} config.configDir - Directory to store Greenlock config (greenlock mode, default: ./greenlock.d)
+     * @param {string} config.settingsPath - Path to Auto Encrypt settings (auto-encrypt mode, default: .small-tech.org)
      * @param {number} config.httpsPort - HTTPS port (default: 443)
      * @param {boolean} config.redirectHttp - Redirect HTTP to HTTPS (default: true)
-     * @param {Array<string>} config.altnames - Alternative domain names (optional)
+     * @param {Array<string>} config.altnames - Alternative domain names (greenlock mode, optional)
      */
     setupHTTPS(config) {
       if (!config || typeof config !== 'object') {
@@ -131,10 +133,12 @@ const FearServer = (function () {
 
       if (this.httpsConfig.mode === 'greenlock') {
         this._setupGreenlock();
+      } else if (this.httpsConfig.mode === 'auto-encrypt') {
+        this._setupAutoEncrypt();
       } else if (this.httpsConfig.mode === 'manual') {
         this._validateManualCerts();
       } else {
-        throw new Error('HTTPS mode must be "greenlock" or "manual"');
+        throw new Error('HTTPS mode must be "greenlock", "auto-encrypt", or "manual"');
       }
 
       if (this.fear && this.fear.getLogger()) {
@@ -198,6 +202,48 @@ const FearServer = (function () {
       } catch (error) {
         console.error('Error setting up Greenlock:', error);
         throw new Error('Failed to setup Greenlock. Make sure @root/greenlock-express is installed: npm install @root/greenlock-express');
+      }
+    },
+
+    /**
+     * Setup Auto Encrypt for automatic SSL certificates
+     * @private
+     */
+    _setupAutoEncrypt() {
+      const config = this.httpsConfig;
+
+      if (!config.domain) {
+        throw new Error('Domain name is required for Auto Encrypt mode');
+      }
+
+      try {
+        const AutoEncrypt = require('@small-tech/auto-encrypt');
+        
+        const settingsPath = config.settingsPath || path.join(this.rootDir, '.small-tech.org');
+        
+        // Configure Auto Encrypt options
+        const autoEncryptOptions = {
+          domains: [config.domain],
+          staging: config.staging || false
+        };
+
+        // Set settings path if specified
+        if (config.settingsPath) {
+          autoEncryptOptions.settingsPath = settingsPath;
+        }
+
+        // Initialize Auto Encrypt
+        this.autoEncrypt = AutoEncrypt;
+        this.autoEncryptOptions = autoEncryptOptions;
+
+        if (this.fear && this.fear.getLogger()) {
+          this.fear.getLogger().info(`Auto Encrypt configured for domain: ${config.domain}`);
+          this.fear.getLogger().info(`Staging mode: ${config.staging ? 'enabled' : 'disabled'}`);
+          this.fear.getLogger().info(`Settings path: ${settingsPath}`);
+        }
+      } catch (error) {
+        console.error('Error setting up Auto Encrypt:', error);
+        throw new Error('Failed to setup Auto Encrypt. Make sure @small-tech/auto-encrypt is installed: npm install @small-tech/auto-encrypt');
       }
     },
 
@@ -556,6 +602,39 @@ const FearServer = (function () {
             });
           }
 
+        } else if (this.httpsConfig.mode === 'auto-encrypt') {
+          // Auto Encrypt mode
+          logger.info('Starting HTTPS server with Auto Encrypt...');
+          
+          const AutoEncrypt = this.autoEncrypt;
+          const options = this.autoEncryptOptions;
+
+          // Create HTTPS server with Auto Encrypt
+          httpsServer = https.createServer(
+            AutoEncrypt.https.createSecureContext(options),
+            this.fear.getApp()
+          );
+
+          httpsServer.listen(httpsPort, (err) => {
+            if (err) {
+              logger.error(`Failed to start HTTPS server on port ${httpsPort}:`, err);
+              return reject(err);
+            }
+            
+            logger.info(`HTTPS server running on port ${httpsPort} with Auto Encrypt`);
+            resolve(httpsServer);
+          });
+
+          // Setup HTTP redirect server if enabled
+          if (this.httpsConfig.redirectHttp) {
+            const httpRedirectPort = this.fear.getApp().get("PORT") || DEFAULT_PORT;
+            this.httpRedirectServer = this._createHttpRedirectServer(httpsPort);
+            
+            this.httpRedirectServer.listen(httpRedirectPort, () => {
+              logger.info(`HTTP redirect server running on port ${httpRedirectPort} → HTTPS`);
+            });
+          }
+
         } else if (this.httpsConfig.mode === 'manual') {
           // Manual certificate mode
           logger.info('Starting HTTPS server with manual certificates...');
@@ -734,9 +813,12 @@ const FearServer = (function () {
             logger.info(`🔒 FEAR API Server Running on HTTPS Port ${this.httpsConfig.httpsPort}`);
             
             if (this.httpsConfig.mode === 'greenlock') {
-              logger.info(`🔐 Auto-encryption: ENABLED (Let's Encrypt)`);
+              logger.info(`🔐 Auto-encryption: ENABLED (Greenlock/Let's Encrypt)`);
               logger.info(`📧 Domain: ${this.httpsConfig.domain}`);
               logger.info(`📧 Email: ${this.httpsConfig.email}`);
+            } else if (this.httpsConfig.mode === 'auto-encrypt') {
+              logger.info(`🔐 Auto-encryption: ENABLED (Auto Encrypt/Let's Encrypt)`);
+              logger.info(`📧 Domain: ${this.httpsConfig.domain}`);
             } else {
               logger.info(`🔐 Manual SSL certificates loaded`);
             }
