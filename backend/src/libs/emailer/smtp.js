@@ -21,7 +21,8 @@ module.exports = function (fear) {
             const { apiKey, domain, region } = _this.mailConfig.mailgun;
 
             if (!apiKey || !domain) {
-                throw new Error('Mailgun requires apiKey and domain in configuration.');
+                logger.error('Mailgun requires apiKey and domain in configuration.')
+                return;
             }
 
             const mailgun = new Mailgun(_this.mailConfig.mailgun);
