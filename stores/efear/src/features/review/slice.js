@@ -136,7 +136,7 @@ export const selectReviewById = (state, reviewId) =>
   state.reviews.data.find(review => review.id === reviewId);
 
 export const selectReviewsByProduct = (state, productId) => {
-  let reviews = selectReviews;
+  let reviews = state.reviews.data || [];
   return reviews.filter(review => review.productId === productId);
 }
 

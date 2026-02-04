@@ -19,6 +19,7 @@ import {
   updateCurrentOrder,
 } from '../../features/orders/slice';
 import StripePayment from "./components/StripePayment";
+import PayPalCardPayment from "./components/PayPalPayment";
 import CheckoutSteps from "./components/CheckoutSteps";
 import { createPaymentIntent } from "../../features/payments/slice";
 
@@ -63,9 +64,8 @@ export const CheckoutPayment = () => {
 
   // Create payment intent when component mounts
   useEffect(() => {
-    const initializePayment = async () => {
+    const initializePayment = () => {
       if (paymentMethod === 'card' && orderTotal > 0 && !clientSecret) {
-        try {
           const paymentData = {
             amount: Math.round(orderTotal * 100), // Convert to cents
             currency: 'usd',
@@ -76,15 +76,18 @@ export const CheckoutPayment = () => {
             currentUser
           };
 
-          const result = await dispatch(createPaymentIntent(paymentData)).unwrap();
-          console.log('pay intent init result = ', result);
-          if (result.client_secret) {
-            setClientSecret(result.client_secret);
-            setPaymentIntentId(result.id);
-          }
-        } catch (error) {
-          console.error('Failed to create payment intent:', error);
-        }
+          dispatch(createPaymentIntent(paymentData))
+            .unwrap()
+            .then((result) => {
+                  console.log('pay intent init result = ', result);
+              if (result.client_secret) {
+                setClientSecret(result.client_secret);
+                setPaymentIntentId(result.id);
+              }
+            })
+            .catch((error) => {
+              console.error('Failed to create payment intent:', error);
+          });
       }
     };
 
@@ -284,12 +287,12 @@ export const CheckoutPayment = () => {
                       {/* PayPal Form */}
                       {paymentMethod === 'paypal-payment' && (
                         <div className="p-3 border">
-                          <div className="mb-3">
-                            <p className="text-muted">
-                              <i className="bx bx-info-circle me-2"></i>
-                              PayPal integration coming soon
-                            </p>
-                          </div>
+                          <PayPalCardPayment 
+                            order={currentOrder}
+                            amount={orderTotal}
+                            onSuccess={handlePayPalPayment}
+                            onError={() => console.log('paypal error')}
+                          />
                           <div className="d-grid">
                             <button
                               onClick={handlePayPalPayment}

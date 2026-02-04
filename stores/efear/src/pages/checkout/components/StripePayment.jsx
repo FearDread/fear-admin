@@ -91,7 +91,7 @@ const StripePayment = ({ clientSecret, amount, onSuccess, onError }) => {
           placeholder="John Doe"
           value={cardholderName}
           onChange={(e) => setCardholderName(e.target.value)}
-          disabled={isProcessing}
+          disabled={false}
           required
         />
       </div>

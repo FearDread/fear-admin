@@ -20,7 +20,7 @@ import { fetchCategories, selectAllCategories } from '../features/categories/sli
 import ProductQuickView from "../components/products/ProductQuickView";
 
 // Load Stripe with publishable key from environment variable
-const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY);
+const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_API_KEY);
 
 const Layout = () => {
   // Select data from store
