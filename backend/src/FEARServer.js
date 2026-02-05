@@ -6,6 +6,7 @@ const fs = require('fs');
 const dotenv = require('dotenv');
 const http = require('http');
 const https = require('https');
+const AutoEncrypt = require('@small-tech/auto-encrypt');
 
 const FearServer = (function () {
   // Private constants
@@ -202,7 +203,7 @@ const FearServer = (function () {
       }
 
       try {
-        const AutoEncrypt = require('@small-tech/auto-encrypt');
+        //const AutoEncrypt = require('@small-tech/auto-encrypt');
         
         const settingsPath = config.settingsPath || path.join(this.rootDir, '.small-tech.org');
         
@@ -614,8 +615,8 @@ const FearServer = (function () {
         logger.info('Starting HTTPS server with Auto Encrypt...');
         
         try {
-          const AutoEncrypt = require('@small-tech/auto-encrypt');
-          
+
+          console.log('auto ', AutoEncrypt);
           // Auto Encrypt wraps and manages the HTTPS server
           // It expects the Express app and domain configuration
           const autoEncrypt = new AutoEncrypt({
@@ -657,7 +658,7 @@ const FearServer = (function () {
           });
         } catch (error) {
           logger.error('Failed to create Auto Encrypt server:', error);
-          throw error;
+          //throw error;
         }
 
       } else if (this.httpsConfig.mode === 'manual') {

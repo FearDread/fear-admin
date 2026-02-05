@@ -17,19 +17,17 @@ function main() {
     root: path.resolve(),
     app: 'backend/admin/build',
     build: 'backend/admin/build'
-  }, true
-  )
+  }, false)
 
+  if (process.env.NODE_ENV !== 'development') {
+    server.setupHTTPS({
+      mode: process.env.HTTPS_MODE || 'auto-encrypt',
+      domain: process.env.HTTPS_DOMAIN || 'fear.dedyn.io',
+      email: process.env.HTTPS_EMAIL || "ghaptonstall@gmail.com",
+      staging: process.env.NODE_ENV !== 'production'
+    });
+  }
 
-
-  // 2. Setup HTTPS with Auto Encrypt (just 3 required settings!)
-
-  server.setupHTTPS({
-    mode: process.env.HTTPS_MODE || 'auto-encrypt',
-    domain: process.env.HTTPS_DOMAIN || 'fear.dedyn.io',
-    email: process.env.HTTPS_EMAIL || "ghaptonstall@gmail.com",
-    staging: process.env.NODE_ENV !== 'production'
-  });
 
   // 3. Start!
   Promise.resolve(server.startServer())
