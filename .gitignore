@@ -7,6 +7,8 @@ package-lock.json
 yarn.lock
 .eslintcache
 .env
+.greenlockrc
+greenlock.d/
 build/
 dork-results/
 

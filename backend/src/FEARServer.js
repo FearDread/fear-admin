@@ -162,38 +162,23 @@ const FearServer = (function () {
       }
 
       try {
-        const greenlockExpress = require('@root/greenlock-express');
-        
-        const configDir = config.configDir || path.join(this.rootDir, 'greenlock.d');
-        
-        // Ensure config directory exists
-        if (!fs.existsSync(configDir)) {
-          fs.mkdirSync(configDir, { recursive: true });
-        }
-
-        // Configure Greenlock
-        this.greenlock = greenlockExpress.init({
+        // Greenlock Express uses a different pattern
+        // We don't initialize it here, we do it when starting the server
+        this.greenlockConfig = {
           packageRoot: this.rootDir,
-          configDir: configDir,
+          configDir: config.configDir || path.join(this.rootDir, 'greenlock.d'),
           maintainerEmail: config.email,
           cluster: false,
           staging: config.staging || false,
-        });
-
-        // Add site configuration
-        const sites = [{
-          subject: config.domain,
+          domain: config.domain,
           altnames: config.altnames || [config.domain]
-        }];
+        };
 
-        this.greenlock.manager.defaults({
-          agreeToTerms: true,
-          subscriberEmail: config.email
-        });
-
-        sites.forEach(site => {
-          this.greenlock.sites.add(site);
-        });
+        // Ensure config directory exists
+        const configDir = this.greenlockConfig.configDir;
+        if (!fs.existsSync(configDir)) {
+          fs.mkdirSync(configDir, { recursive: true });
+        }
 
         if (this.fear && this.fear.getLogger()) {
           this.fear.getLogger().info(`Greenlock configured for domain: ${config.domain}`);
@@ -566,49 +551,53 @@ const FearServer = (function () {
     async _startHttpsServer() {
       const logger = this.fear.getLogger();
       const httpsPort = this.httpsConfig.httpsPort;
-
+      
       let httpsServer;
 
       if (this.httpsConfig.mode === 'greenlock') {
-        // Greenlock handles server creation
-        logger.info('Starting HTTPS server with Greenlock auto-encryption...');
+       logger.info('Starting HTTPS server with Greenlock auto-encryption...');
         
-        // Serve the app through Greenlock
-        httpsServer = this.greenlock.httpsServer({
-          app: this.fear.getApp()
+        const greenlockExpress = require('@root/greenlock-express');
+        
+        // Initialize Greenlock
+        const greenlock = greenlockExpress.init({
+          packageRoot: this.greenlockConfig.packageRoot,
+          configDir: this.greenlockConfig.configDir,
+          maintainerEmail: this.greenlockConfig.maintainerEmail,
+          cluster: this.greenlockConfig.cluster,
+          staging: this.greenlockConfig.staging
         });
 
         return new Promise((resolve, reject) => {
-          httpsServer.listen(httpsPort, (err) => {
-            if (err) {
-              logger.error(`Failed to start HTTPS server on port ${httpsPort}:`, err);
-              return reject(err);
-            }
+          // Use Greenlock's ready callback to configure and start
+          greenlock.ready((glx) => {
+            console.log('greenlock = ', greenlock);
+            console.log('this.greenlock = ', this.greenlock)
+            console.log('manager = ', glx);
+            // Add the site/domain configuration
+            glx.manager.add({
+              subject: this.greenlockConfig.domain,
+              altnames: this.greenlockConfig.altnames
+            }).then(() => {
+              logger.info(`Domain ${this.greenlockConfig.domain} added to Greenlock`);
+            }).catch((err) => {
+              logger.warn('Could not add domain (may already exist):', err.message);
+            });
+
+            // Serve the app with Greenlock
+            // Greenlock manages both HTTP (port 80) and HTTPS (port 443)
+            glx.serve(this.fear.getApp());
             
             logger.info(`HTTPS server running on port ${httpsPort} with Greenlock`);
+            logger.info(`HTTP server running on port 80 (managed by Greenlock)`);
+            
+            // Store reference (though Greenlock manages the actual servers)
+            httpsServer = { greenlockManaged: true, greenlock: glx };
+            this.greenlock = glx;
+            
             resolve(httpsServer);
           });
-
-          // Setup HTTP redirect server if enabled
-          if (this.httpsConfig.redirectHttp) {
-            const httpRedirectPort = this.fear.getApp().get("PORT") || DEFAULT_PORT;
-            this.httpRedirectServer = this.greenlock.httpServer();
-            
-            this.httpRedirectServer.listen(httpRedirectPort, () => {
-              logger.info(`HTTP redirect server running on port ${httpRedirectPort}`);
-            });
-          }
-
-          httpsServer.on('error', (err) => {
-            if (err.code === 'EADDRINUSE') {
-              logger.error(`Port ${httpsPort} is already in use`);
-            } else {
-              logger.error('HTTPS server error:', err);
-            }
-            reject(err);
-          });
         });
-
       } else if (this.httpsConfig.mode === 'auto-encrypt') {
         // Auto Encrypt mode
         logger.info('Starting HTTPS server with Auto Encrypt...');
