@@ -20,16 +20,18 @@ function main() {
   }, false)
 
   if (process.env.NODE_ENV !== 'development') {
+    console.log('path = ', path.join(path.resolve(), 'certificates'));
     server.setupHTTPS({
-      mode: process.env.HTTPS_MODE || 'auto-encrypt',
+      mode: process.env.HTTPS_MODE || 'manual',
       domain: process.env.HTTPS_DOMAIN || 'fear.dedyn.io',
       email: process.env.HTTPS_EMAIL || "ghaptonstall@gmail.com",
-      staging: process.env.NODE_ENV !== 'production'
+      staging: process.env.NODE_ENV !== 'production',
+          certPath: path.join(path.resolve(), 'certificates', 'fear.dedyn.io.crt'),
+          caPath: path.join(path.resolve(), 'certificates', 'fear.dedyn.io.ca-bundle'),
+          keyPath: path.join(path.resolve(), 'certificates', 'fear.dedyn.io.key.txt'),
     });
   }
 
-
-  // 3. Start!
   Promise.resolve(server.startServer())
     .then(() => {
       console.log('\n✅ Server started successfully!');

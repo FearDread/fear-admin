@@ -11,5 +11,6 @@ yarn.lock
 greenlock.d/
 build/
 dork-results/
+certificates/
 
 

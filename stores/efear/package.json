@@ -3,7 +3,7 @@
   "author": "Garrett Haptonstall ( FearDread )",
   "version": "1.1.0",
   "dependencies": {
-    "@feardread/fear": "^1.1.7",
+    "@feardread/fear": "^2.0.6",
     "@feardread/feature-factory": "^5.2.3",
     "@paypal/react-paypal-js": "^8.9.2",
     "@react-oauth/google": "^0.13.4",

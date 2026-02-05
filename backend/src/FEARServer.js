@@ -129,6 +129,7 @@ const FearServer = (function () {
         mode: config.mode || 'greenlock',
         httpsPort: config.httpsPort || DEFAULT_HTTPS_PORT,
         redirectHttp: config.redirectHttp !== false,
+        certPath: config.certPath || process.env.SSL_CERT_PATH,
         ...config
       };
 
