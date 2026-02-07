@@ -8,14 +8,14 @@
  */
 
 const path = require('path');
-const Fear = require('@feardread/fear');
+const FearServer = require('../../backend/src/FEARServer.js');
 
 function main() {
-  const server =  new Fear.FearServer();
+  const server =  new FearServer();
   console.log('🚀 Starting Simple HTTPS Server with Manual SSL \n');
   server.initialize({
     root: __dirname,
-    app: 'build',
+    app: 'stores/efear/build',
     build: '/build'
   }, true)
 
