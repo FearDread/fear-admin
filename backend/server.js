@@ -1,12 +1,3 @@
-#!/usr/bin/env node
-
-/**
- * Simple FEAR Server with Auto Encrypt
- * 
- * This is the simplest way to get HTTPS running with FEAR Server.
- * Perfect for single-domain applications.
- */
-
 const path = require('path');
 const FearServer = require('./src/FEARServer');
 
@@ -19,8 +10,7 @@ function main() {
     build: 'backend/admin/build'
   }, false)
 
-  if (process.env.NODE_ENV !== 'development') {
-    console.log('path = ', path.join(path.resolve(), 'certificates'));
+  if (process.env.NODE_ENV === 'production' && proces.env.HTTPS_ENABLED) {
     server.setupHTTPS({
       mode: process.env.HTTPS_MODE || 'manual',
       domain: process.env.HTTPS_DOMAIN || 'fear.dedyn.io',

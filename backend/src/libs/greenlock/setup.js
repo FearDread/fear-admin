@@ -67,7 +67,7 @@ try {
   
   greenlock.ready((manager) => {
     console.log('manager = ', manager);
-  manager.defaults({
+  manager.serveApp({
     agreeToTerms: true,
     subscriberEmail: email
   }).then(() => {
