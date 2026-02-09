@@ -291,12 +291,11 @@ const Wizard = ( props ) => {
       return;
     }
 
-    const formData = formatData(productData);
-    dispatch(customCreateProduct(formData));
+    dispatch(customCreateProduct(productData));
   };
 
   const handleBlogSubmit = (wizardData) => {
-    const { step1: content, step2: media, step3: settings } = wizardData;
+    const { step1: content, step2: images, step3: settings } = wizardData;
 
     const blogData = {
       author: currentUser._id,
@@ -308,9 +307,9 @@ const Wizard = ( props ) => {
       content: content.content,
       category: content.category,
       tags: content.tags ? content.tags.split(",").map(t => t.trim()) : [],
-      featuredImage: media.featuredImage || null,
+      featuredImage: images.featuredImage || null,
       //TODO: change this back to media.images || [] 
-      images: media.featuredImage || [],
+      images: images.images || [],
       published: settings.published || false,
       status: settings.published ? "published" : "draft",
       featured: settings.featured || false,
@@ -330,8 +329,8 @@ const Wizard = ( props ) => {
       setIsSubmitting(false);
       return;
     }
-    const formData = formatData(blogData);
-    dispatch(customCreatePost(formData));
+
+    dispatch(customCreatePost(blogData));
   };
 
   const validateProductData = (data) => {

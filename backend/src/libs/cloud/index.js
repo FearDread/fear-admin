@@ -26,21 +26,21 @@ const convertToBase64 = (file) => {
  * @param {string} file - Base64 encoded file or file path
  * @returns {Promise<Object>} Avatar object with public_id and url
  */
-const uploadAvatar = async (file) => {
-  try {
-    const result = await cloudinary.uploader.upload(file, {
-      folder: "avatar",
-      width: 150,
-      crop: "scale",
+const uploadAvatar = (file) => {
+  return cloudinary.uploader.upload(file, {
+    folder: "avatar",
+    width: 150,
+    crop: "scale",
+  })
+    .then((result) => {
+      return {
+        public_id: result.public_id,
+        url: result.secure_url,
+      };
+    })
+    .catch((error) => {
+      throw new Error(`Avatar upload failed: ${error.message}`);
     });
-
-    return {
-      public_id: result.public_id,
-      url: result.secure_url,
-    };
-  } catch (error) {
-    throw new Error(`Avatar upload failed: ${error.message}`);
-  }
 };
 
 /**
@@ -49,41 +49,49 @@ const uploadAvatar = async (file) => {
  * @param {number} chunkSize - Number of files to upload concurrently
  * @returns {Promise<Object[]>} Array of image objects with public_id and url
  */
-const uploadImages = async (files, chunkSize = 3) => {
-  try {
-    // Normalize input to array
-    const imageArray = Array.isArray(files) ? [...files] : [files];
-    
-    if (imageArray.length === 0) {
-      return [];
-    }
+const uploadImages = (files, chunkSize = 3) => {
+  // Normalize input to array
+  const imageArray = Array.isArray(files) ? [...files] : [files];
+  
+  if (imageArray.length === 0) {
+    return Promise.resolve([]);
+  }
 
-    const imageLinks = [];
+  const imageLinks = [];
+  
+  // Create a promise chain for sequential chunk processing
+  let promiseChain = Promise.resolve();
+  
+  // Process images in chunks to avoid overwhelming the API
+  for (let i = 0; i < imageArray.length; i += chunkSize) {
+    const chunk = imageArray.slice(i, i + chunkSize);
     
-    // Process images in chunks to avoid overwhelming the API
-    for (let i = 0; i < imageArray.length; i += chunkSize) {
-      const chunk = imageArray.slice(i, i + chunkSize);
-      
+    promiseChain = promiseChain.then(() => {
       const uploadPromises = chunk.map((image) =>
         cloudinary.uploader.upload(image, {
           folder: "products",
         })
       );
 
-      const results = await Promise.all(uploadPromises);
-      
-      const chunkResults = results.map((result) => ({
-        product_id: result.public_id,
-        url: result.secure_url,
-      }));
-      
-      imageLinks.push(...chunkResults);
-    }
-
-    return imageLinks;
-  } catch (error) {
-    throw new Error(`Image upload failed: ${error}`);
+      return Promise.all(uploadPromises)
+        .then((results) => {
+          const chunkResults = results.map((result) => ({
+            public_id: result.public_id,
+            url: result.secure_url,
+          }));
+          
+          imageLinks.push(...chunkResults);
+        });
+    });
   }
+  
+  return promiseChain
+    .then(() => {
+      return imageLinks;
+    })
+    .catch((error) => {
+      throw new Error('Image upload failed: ', error);
+    });
 };
 
 /**
@@ -130,56 +138,55 @@ const uploadPhoto = multer({
  * @param {Object} res - Express response object
  * @param {Function} next - Express next function
  */
-const resizeImages = async (req, res, next) => {
-  try {
-    // Skip if no files uploaded or no directory specified
-    if (!req.files || !req.directory) {
-      return next();
-    }
+const resizeImages = (req, res, next) => {
+  // Skip if no files uploaded or no directory specified
+  if (!req.files || !req.directory) {
+    return next();
+  }
 
-    // Ensure directory exists
-    const targetDir = path.join("public/images", req.directory);
-    if (!fs.existsSync(targetDir)) {
-      fs.mkdirSync(targetDir, { recursive: true });
-    }
+  // Ensure directory exists
+  const targetDir = path.join("public/images", req.directory);
+  if (!fs.existsSync(targetDir)) {
+    fs.mkdirSync(targetDir, { recursive: true });
+  }
 
-    // Process all files concurrently
-    await Promise.all(
-      req.files.map(async (file) => {
-        const originalPath = file.path;
-        const targetPath = path.join(targetDir, file.filename);
+  // Process all files concurrently
+  const processPromises = req.files.map((file) => {
+    const originalPath = file.path;
+    const targetPath = path.join(targetDir, file.filename);
 
-        try {
-          // Resize and convert image
-          await sharp(originalPath)
-            .resize(300, 300, { 
-              fit: 'cover',
-              position: 'center'
-            })
-            .jpeg({ quality: 90 })
-            .toFile(targetPath);
-
-          // Clean up original file
-          if (fs.existsSync(originalPath)) {
-            fs.unlinkSync(originalPath);
-          }
-        } catch (imageError) {
-          console.error(`Failed to process image ${file.filename}:`, imageError);
-          // Clean up files on error
-          [originalPath, targetPath].forEach(filePath => {
-            if (fs.existsSync(filePath)) {
-              fs.unlinkSync(filePath);
-            }
-          });
-          throw imageError;
+    return sharp(originalPath)
+      .resize(300, 300, { 
+        fit: 'cover',
+        position: 'center'
+      })
+      .jpeg({ quality: 90 })
+      .toFile(targetPath)
+      .then(() => {
+        // Clean up original file
+        if (fs.existsSync(originalPath)) {
+          fs.unlinkSync(originalPath);
         }
       })
-    );
+      .catch((imageError) => {
+        console.error(`Failed to process image ${file.filename}:`, imageError);
+        // Clean up files on error
+        [originalPath, targetPath].forEach(filePath => {
+          if (fs.existsSync(filePath)) {
+            fs.unlinkSync(filePath);
+          }
+        });
+        throw imageError;
+      });
+  });
 
-    next();
-  } catch (error) {
-    next(new Error(`Image resize failed: ${error.message}`));
-  }
+  Promise.all(processPromises)
+    .then(() => {
+      next();
+    })
+    .catch((error) => {
+      next(new Error(`Image resize failed: ${error.message}`));
+    });
 };
 
 /**
@@ -187,13 +194,14 @@ const resizeImages = async (req, res, next) => {
  * @param {string} publicId - Public ID of the image to delete
  * @returns {Promise<Object>} Deletion result
  */
-const deleteImage = async (publicId) => {
-  try {
-    const result = await cloudinary.uploader.destroy(publicId);
-    return result;
-  } catch (error) {
-    throw new Error(`Image deletion failed: ${error.message}`);
-  }
+const deleteImage = (publicId) => {
+  return cloudinary.uploader.destroy(publicId)
+    .then((result) => {
+      return result;
+    })
+    .catch((error) => {
+      throw new Error(`Image deletion failed: ${error.message}`);
+    });
 };
 
 /**

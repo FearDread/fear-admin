@@ -43,10 +43,6 @@ const blogSchema = new mongoose.Schema(
     images: [{
       public_id: { type: String },
       url: { type: String },
-      secure_url: { type: String },
-      alt: { type: String },
-      caption: { type: String },
-      order: { type: Number, default: 0 }
     }],
 
     video: {

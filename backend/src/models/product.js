@@ -19,7 +19,12 @@ const productSchema = new mongoose.Schema({
         url: String
       },
     ],
-    tags: String,
+    tags: [{
+      type: String,
+      trim: true,
+      lowercase: true,
+      index: true
+    }],
     ratings: [{
         star: Number,
         comment: String,

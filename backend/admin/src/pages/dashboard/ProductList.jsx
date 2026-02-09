@@ -121,16 +121,18 @@ const ProductList = () => {
     navigate(`/admin/product/view/${id}`);
   };
 
-  const handleDeleteProduct = async (id, productTitle) => {
+  const handleDeleteProduct = async () => {
+    const productId = selectedProduct._id;
+    console.log('current prod = ', selectedProduct);
     try {
-      await dispatch(deleteProduct(id));
+      await dispatch(deleteProduct({id: productId}));
       setShowDeleteModal(false);
     } catch (err) {
       console.log('error deleting product ::', err);
     }
   };
 
-  const confirmDelete = (id, product) => {
+  const confirmDelete = (product) => {
     setSelectedProduct(product);
     setShowDeleteModal(true);
   };
@@ -290,7 +292,7 @@ const ProductList = () => {
               color="danger"
               size="sm"
               className="btn-round"
-              onClick={() => confirmDelete(item._id, item)}
+              onClick={() => confirmDelete(item)}
               title="Delete Product"
             >
               <i className="fa fa-trash"></i>

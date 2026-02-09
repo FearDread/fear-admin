@@ -34,7 +34,7 @@ const sanitizeUpdateData = (data) => {
  */
 const processImages = (images) => {
   if (!images) return Promise.resolve(null);
-  
+  console.log('processing images = ', images);
   const imageArray = Array.isArray(images) 
     ? images 
     : images.split(',').map(item => item.trim());
@@ -132,34 +132,39 @@ exports.read = tryCatch((Model, req, res) => {
  */
 exports.create = tryCatch((Model, req, res) => {
   const documentData = { ...req.body };
+  
+  const imagePromise = (documentData.images)
+    ? processImages(documentData.images)
+    : Promise.resolve(null);
 
-  return processImages(documentData.images)
-    .then(imageLinks => {
+  return imagePromise
+  .then((imageLinks) => {
+    console.log('links =', imageLinks);
       if (imageLinks) {
         documentData.images = imageLinks;
       }
       
-      console.log('Creating document:', documentData);
+      //console.log('Creating document:', documentData);
       const document = new Model(documentData);
       
       return document.save();
-    })
-    .then(result => {
+  })
+  .then((result) => {
       return res.status(201).json({
         result,
         success: true,
         message: `Document created successfully in ${Model.modelName} collection`
       });
-    })
-    .catch(error => {
-      console.error('Error creating document:', error);
+  })
+  .catch((error) => {
+      //console.error('Error creating document:', error);
       return res.status(500).json({
         result: null,
         success: false,
         message: "Error creating document",
         error: error.message
       });
-    });
+  })
 });
 
 /**
