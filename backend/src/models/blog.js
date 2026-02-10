@@ -3,13 +3,9 @@ const slugify = require("slugify");
 
 const blogSchema = new mongoose.Schema(
   {
-    // Basic Information
-    title: {
-      type: String,
+    title: {type: String, trim: true, index: true,
       required: [true, "Blog title is required"],
-      trim: true,
-      maxlength: [200, "Title cannot exceed 200 characters"],
-      index: true
+      maxlength: [300, "Title cannot exceed 200 characters"],
     },
 
     slug: {
@@ -22,13 +18,13 @@ const blogSchema = new mongoose.Schema(
     subtitle: {
       type: String,
       trim: true,
-      maxlength: [250, "Subtitle cannot exceed 250 characters"]
+      maxlength: [350, "Subtitle cannot exceed 250 characters"]
     },
 
     excerpt: {
       type: String,
       trim: true,
-      maxlength: [500, "Excerpt cannot exceed 500 characters"]
+      maxlength: [600, "Excerpt cannot exceed 500 characters"]
     },
 
     content: {
@@ -281,11 +277,11 @@ const blogSchema = new mongoose.Schema(
     seo: {
       metaTitle: {
         type: String,
-        maxlength: [70, "Meta title cannot exceed 70 characters"]
+        maxlength: [170, "Meta title cannot exceed 170 characters"]
       },
       metaDescription: {
         type: String,
-        maxlength: [160, "Meta description cannot exceed 160 characters"]
+        maxlength: [260, "Meta description cannot exceed 260 characters"]
       },
       metaKeywords: [{ type: String }],
       focusKeyword: { type: String },

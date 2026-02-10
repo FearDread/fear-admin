@@ -43,7 +43,6 @@ brandSchema.index({ createdAt: -1 });
 // Text index for search
 brandSchema.index({
   name: "text",
-  title: "text",
   tags: "text"
 });
 
@@ -83,11 +82,6 @@ brandSchema.pre("save", async function(next) {
     this.active = this.isActive;
   }
 
-  // Set title to name if not provided
-  if (!this.title) {
-    this.title = this.name;
-  }
-  
   next();
 });
 
