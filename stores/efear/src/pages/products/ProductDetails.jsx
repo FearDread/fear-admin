@@ -105,7 +105,7 @@ export const ProductDetails = () => {
     );
 
     // Reviews state
-    const productReviews = product?.reviews;
+    const productReviews = useSelector(state => state.product?.reviews);
     const selectedProductReviews = useSelector(selectReviewsByProduct);
     const sortedReviews = useSelector(selectSortedReviews);
     const reviewsLoading = useSelector(selectReviewsLoading);
@@ -252,8 +252,19 @@ export const ProductDetails = () => {
                 createdAt: new Date().toISOString(),
             };
             // Refresh reviews
-            productReviews.push(reviewData);
-            await dispatch(ReviewService.create(reviewData)).unwrap();
+
+            dispatch(ReviewService
+                .create(reviewData))
+                .unwrap()
+                .then((result) => {
+                    console.log('save review result = ', result);
+                    if (result) {
+                        product.reviews.push(reviewData);
+                    }
+                })
+                .catch((err) => {
+                    console.log('Error saving review. ', err);
+                });
 
             // Reset form
             setReviewForm({
@@ -612,7 +623,7 @@ export const ProductDetails = () => {
                                     >
                                         <div className="d-flex align-items-center">
                                             <div className="tab-title text-uppercase fw-500">
-                                                ({productReviews.length}) Reviews
+                                                ({productReviews ? productReviews.length : 0}) Reviews
                                             </div>
                                         </div>
                                     </a>
@@ -702,7 +713,7 @@ export const ProductDetails = () => {
                                     role="tabpanel"
                                 >
                                     <div className="tags-box w-50">
-                                        {product.tags && product.tags.split(',').map((tag, index) => (
+                                        {product.tags && product.tags.map((tag, index) => (
                                             <a key={index} href="#" className="tag-link" onClick={(e) => e.preventDefault()}>
                                                 {tag}
                                             </a>
@@ -729,7 +740,7 @@ export const ProductDetails = () => {
                                             <div className="product-review">
                                                 <div className="d-flex justify-content-between align-items-center mb-4">
                                                     <h5 className="mb-0">
-                                                        {productReviews.length} Reviews For The Product
+                                                        {productReviews ? productReviews.length : 0} Reviews For The Product
                                                     </h5>
                                                 </div>
 
@@ -743,13 +754,13 @@ export const ProductDetails = () => {
                                                         </div>
                                                     )}
 
-                                                    {!reviewsLoading && productReviews.length === 0 && (
+                                                    {!reviewsLoading && product.reviews.length === 0 && (
                                                         <div className="text-center py-4">
                                                             <p className="text-muted">No reviews yet. Be the first to review this product!</p>
                                                         </div>
                                                     )}
 
-                                                    {!reviewsLoading && productReviews.map((review) => (
+                                                    {!reviewsLoading && product.reviews.map((review) => (
                                                         <div key={review.id} className="review-item border-bottom pb-4 mb-4">
                                                             <div className="d-flex justify-content-between align-items-start mb-2">
                                                                 <div>

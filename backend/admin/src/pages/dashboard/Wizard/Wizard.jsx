@@ -296,7 +296,6 @@ const Wizard = ( props ) => {
 
   const handleBlogSubmit = (wizardData) => {
     const { step1: content, step2: images, step3: settings } = wizardData;
-
     const blogData = {
       author: currentUser._id,
       authorName: currentUser.name || currentUser.username,
@@ -329,7 +328,8 @@ const Wizard = ( props ) => {
       setIsSubmitting(false);
       return;
     }
-
+    const formData = formatData(blogData);
+    console.log('blog data = ', blogData);
     dispatch(customCreatePost(blogData));
   };
 

@@ -240,6 +240,7 @@ const BrandList = () => {
   const handleBrand = (method) => {
     const brandData = {
       name: formValue.name?.trim(),
+      title: formValue.name?.trim(),
       slug: formValue.slug?.trim(),
       website: formValue.website?.trim() || '',
       isActive: formValue.isActive,
