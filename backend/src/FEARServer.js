@@ -278,10 +278,6 @@ const FearServer = (function () {
       return https.createServer(httpsOptions, this.fear.getApp());
     },
 
-    /**
-     * Create HTTP to HTTPS redirect server
-     * @private
-     */
     _createHttpRedirectServer(httpsPort) {
       const redirectApp = express();
       

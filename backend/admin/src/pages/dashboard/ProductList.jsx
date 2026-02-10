@@ -123,7 +123,7 @@ const ProductList = () => {
 
   const handleDeleteProduct = async () => {
     const productId = selectedProduct._id;
-    console.log('current prod = ', selectedProduct);
+
     try {
       await dispatch(deleteProduct({id: productId}));
       setShowDeleteModal(false);
