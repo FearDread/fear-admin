@@ -91,11 +91,11 @@ export const selectProductsViewMode = (state) => state.products.viewMode || 'gri
 export const selectProductById = (state, productId) => 
   state.products.data.find(product => product.id === productId);
 
-export const selectProductsByCategory = (state, categoryId) =>
-  state.products.data.filter(product => product.categoryId === categoryId);
+export const selectProductsByCategory = (state, category) =>
+  state.products.data.filter(product => product.category === category);
 
-export const selectProductsByBrand = (state, brandId) =>
-  state.products.data.filter(product => product.brandId === brandId);
+export const selectProductsByBrand = (state, brand) =>
+  state.products.data.filter(product => product.brand === brand);
 
 export const selectFeaturedProducts = (state) => {
   let products = selectAllProducts(state);
@@ -108,16 +108,15 @@ export const selectInStockProducts = (state) =>
   state.products.data.filter(product => product.inStock === true);
 
 export const selectFilteredProducts = (state) => {
-  let products = selectAllProducts(state);
+  let products = selectAllProducts(state).toReversed();
   const filters = state.products.filtering?.filters || {};
   const searchTerm = state.products.filtering?.searchTerm || '';
-  
   // Apply filters
-  if (filters.categoryId) {
-    products = products.filter(p => p.categoryId === filters.categoryId);
+  if (filters.category) {
+    products = products.filter(p => p.category === filters.category);
   }
-  if (filters.brandId) {
-    products = products.filter(p => p.brandId === filters.brandId);
+  if (filters.brand) {
+    products = products.filter(p => p.brand === filters.brand);
   }
   if (filters.minPrice) {
     products = products.filter(p => p.price >= filters.minPrice);

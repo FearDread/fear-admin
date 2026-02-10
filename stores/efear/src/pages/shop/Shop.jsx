@@ -48,10 +48,8 @@ export const Shop = ({ data }) => {
   const [localFilters, setLocalFilters] = useState({
     categoryId: '',
     brandId: '',
-    minPrice: 200,
-    maxPrice: 900,
-    sizes: [],
-    colors: [],
+    minPrice: 1,
+    maxPrice: 200,
   });
   const productData = useMemo(() => {
     return data || products;
@@ -61,23 +59,16 @@ export const Shop = ({ data }) => {
   const [sortBy, setSortByLocal] = useState('menu_order');
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
 
-  // Fetch data on mount
-  useEffect(() => {
-        dispatch(fetchBrands());
-            dispatch(fetchCategories());
-    if (products.length === 0) {
-
-    dispatch(fetchProducts());
-
-    }
-    console.log('products ', productData);
-
-  }, [dispatch]);
 
   // Handle category filter
-  const handleCategoryChange = (categoryId) => {
-    const newFilters = { ...currentFilters, categoryId: categoryId || undefined };
-    setLocalFilters(prev => ({ ...prev, categoryId }));
+  const handleCategoryChange = (category) => {
+    console.log('handle cat change ', category);
+    const categoryId = category._id;
+    const catTitle = category.title;
+    const newFilters = { ...currentFilters, category : catTitle || undefined };
+
+    console.log('new filters = ', newFilters);
+    setLocalFilters(prev => ({ ...prev, catTitle }));
     dispatch(setFilters(newFilters));
   };
 
@@ -93,30 +84,6 @@ export const Shop = ({ data }) => {
     dispatch(setFilters(newFilters));
   };
 
-  // Handle size filter
-  const handleSizeChange = (size, checked) => {
-    let newSizes = [...(localFilters.sizes || [])];
-    if (checked) {
-      newSizes.push(size);
-    } else {
-      newSizes = newSizes.filter(s => s !== size);
-    }
-    setLocalFilters(prev => ({ ...prev, sizes: newSizes }));
-    dispatch(setFilters({ ...currentFilters, sizes: newSizes.length > 0 ? newSizes : undefined }));
-  };
-
-  // Handle color filter
-  const handleColorChange = (color, checked) => {
-    let newColors = [...(localFilters.colors || [])];
-    if (checked) {
-      newColors.push(color);
-    } else {
-      newColors = newColors.filter(c => c !== color);
-    }
-    setLocalFilters(prev => ({ ...prev, colors: newColors }));
-    dispatch(setFilters({ ...currentFilters, colors: newColors.length > 0 ? newColors : undefined }));
-  };
-
   // Handle price filter
   const handlePriceFilter = () => {
     dispatch(setFilters({
@@ -129,12 +96,10 @@ export const Shop = ({ data }) => {
   // Handle clear filters
   const handleClearFilters = () => {
     setLocalFilters({
-      categoryId: '',
-      brandId: '',
-      minPrice: 200,
-      maxPrice: 900,
-      sizes: [],
-      colors: [],
+      category: '',
+      brand: '',
+      minPrice: 1,
+      maxPrice: 200,
     });
     dispatch(clearFilters());
   };
@@ -144,7 +109,7 @@ export const Shop = ({ data }) => {
     setSortByLocal(value);
     
     const sortConfig = {
-      'menu_order': { sortBy: null, sortOrder: 'asc' },
+      'menu_order': { sortBy: null, sortOrder: 'desc' },
       'popularity': { sortBy: 'popularity', sortOrder: 'desc' },
       'rating': { sortBy: 'rating', sortOrder: 'desc' },
       'date': { sortBy: 'createdAt', sortOrder: 'desc' },
@@ -181,20 +146,32 @@ export const Shop = ({ data }) => {
   }, [products, currentPage, pageSize]);
 
   // Count products by category
-  const getCategoryCount = (categoryId) => {
-    return products?.filter(p => p.categoryId === categoryId).length || 0;
+  const getCategoryCount = (category) => {
+    return products?.filter(p => p.category === category.title).length || 0;
   };
 
   // Count products by brand
-  const getBrandCount = (brandId) => {
-    return products?.filter(p => p.brandId === brandId).length || 0;
+  const getBrandCount = (brand) => {
+    return products?.filter(p => p.brand === (brand.name || brand.title)).length || 0;
   };
 
   // Toggle mobile filter
   const toggleMobileFilter = () => {
     setMobileFilterOpen(!mobileFilterOpen);
   };
+  // Fetch data on mount
+  useEffect(() => {
+        dispatch(fetchBrands());
+        dispatch(fetchCategories());
+    
+    if (products.length === 0) {
+      dispatch(fetchProducts());
+    }
+  }, [dispatch]);
 
+  useEffect(() => {
+    setSorting({'menu_order': { sortBy: null, sortOrder: 'asc' }})
+  }, [dispatch]);
   // Loading state
   const isLoading = productsLoading || categoriesLoading || brandsLoading;
 
@@ -294,13 +271,13 @@ export const Shop = ({ data }) => {
                               href="#" 
                               onClick={(e) => { 
                                 e.preventDefault(); 
-                                handleCategoryChange(category._id); 
+                                handleCategoryChange(category); 
                               }}
                               className={localFilters.categoryId === category._id ? 'active' : ''}
                             >
                               {category.title}
                               <span className="float-end badge rounded-pill bg-light">
-                                {getCategoryCount(category._id)}
+                                {getCategoryCount(category)}
                               </span>
                             </a>
                           </li>
@@ -319,8 +296,8 @@ export const Shop = ({ data }) => {
                             type="range"
                             className="form-range"
                             min="0"
-                            max="2000"
-                            step="50"
+                            max="200"
+                            step="1"
                             value={localFilters.minPrice}
                             onChange={(e) => setLocalFilters(prev => ({ 
                               ...prev, 
@@ -334,8 +311,8 @@ export const Shop = ({ data }) => {
                             type="range"
                             className="form-range"
                             min="0"
-                            max="2000"
-                            step="50"
+                            max="200"
+                            step="1"
                             value={localFilters.maxPrice}
                             onChange={(e) => setLocalFilters(prev => ({ 
                               ...prev, 
@@ -366,21 +343,21 @@ export const Shop = ({ data }) => {
                       <h6 className="text-uppercase mb-3">Brands</h6>
                       <ul className="list-unstyled mb-0 categories-list">
                         {brands.map((brand) => (
-                          <li key={brand.id}>
+                          <li key={brand._id}>
                             <div className="form-check">
                               <input 
                                 className="form-check-input" 
                                 type="checkbox" 
-                                value={brand.id}
-                                id={`brand-${brand.id}`}
-                                checked={localFilters.brandId === brand.id}
-                                onChange={(e) => handleBrandChange(brand.id, e.target.checked)}
+                                value={brand._id}
+                                id={`brand-${brand._id}`}
+                                checked={localFilters.brandId === brand._id}
+                                onChange={(e) => handleBrandChange(brand._id, e.target.checked)}
                               />
                               <label 
                                 className="form-check-label" 
-                                htmlFor={`brand-${brand.id}`}
+                                htmlFor={`brand-${brand._id}`}
                               >
-                                {brand.title} ({getBrandCount(brand.id)})
+                                {brand.name || brand.title} ({getBrandCount(brand)})
                               </label>
                             </div>
                           </li>
