@@ -11,12 +11,13 @@ const path = require('path');
 const FearServer = require('../../backend/src/FEARServer.js');
 
 function main() {
+  console.log('efear path = ', path.resolve());
   const server =  new FearServer();
   console.log('🚀 Starting Simple HTTPS Server with Manual SSL \n');
   server.initialize({
-    root: __dirname,
-    app: 'stores/efear/build',
-    build: '/build'
+    root: path.resolve(),
+    app: 'build',
+    build: 'build'
   }, true)
 
   if (process.env.NODE_ENV !== 'development') {
