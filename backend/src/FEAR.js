@@ -15,6 +15,15 @@ module.exports = FEAR = (() => {
   const DEFAULT_JSON_LIMIT = '10mb';
   const DEFAULT_ROUTE_PATH = '/fear/api';
   const AGENT_ROUTE_PATH = '/fear/api/agent';
+  const FEAR_LOGO=`
+_________________________
+|  ___| ____|  / \  |  _ \ 
+| |_  |  _|   / _ \ | |_) |
+|  _| | |___ / ___ \|  _ < 
+|_|   |_____/_/   \_\_| \_\
+----The Quieter we become----
+-- the more we are able to hear.--
+`
 
   // Constructor function
   const FEAR = function (config) {
@@ -46,7 +55,6 @@ module.exports = FEAR = (() => {
     this.corsConfig = this.getCorsConfig();
     this.setupRoutes();
   };
-
 
   FEAR.prototype = {
     constructor: FEAR,
@@ -114,7 +122,7 @@ module.exports = FEAR = (() => {
       this.db = require("./libs/db");
       this.handler = require("./libs/handler");
       this.validator = require("./libs/validator");
-      this.logo = this.env.FEAR_LOGO;
+      this.logo = FEAR_LOGO;
       this.origins = this.getAllowedOrigins();
     },
 

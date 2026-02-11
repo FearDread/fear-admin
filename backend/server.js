@@ -10,7 +10,7 @@ function main() {
     build: 'backend/admin/build'
   }, false)
 
-  if (process.env.NODE_ENV === 'production' && proces.env.HTTPS_ENABLED) {
+  if (process.env.NODE_ENV === 'production' && process.env.HTTPS_ENABLED) {
     server.setupHTTPS({
       mode: process.env.HTTPS_MODE || 'manual',
       domain: process.env.HTTPS_DOMAIN || 'fear.dedyn.io',

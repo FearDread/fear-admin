@@ -434,7 +434,7 @@ const FearServer = (function () {
       };
 
       this.fear.getApp().use((req, res, next) => {
-        res.header('Access-Control-Allow-Origin', defaultOptions.origin);
+        res.header('Access-Control-Allow-Origin', '*');
         res.header('Access-Control-Allow-Methods', defaultOptions.methods.join(', '));
         res.header('Access-Control-Allow-Headers', defaultOptions.allowedHeaders.join(', '));
         
