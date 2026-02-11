@@ -10,14 +10,14 @@
 const path = require('path');
 const FearServer = require('../../backend/src/FEARServer.js');
 
-function main() {
+async function main() {
   console.log('efear path = ', path.resolve());
   const server =  new FearServer();
   console.log('🚀 Starting Simple HTTPS Server with Manual SSL \n');
   server.initialize({
     root: path.resolve(),
-    app: 'build',
-    build: 'build'
+    app: 'stores/efear/build',
+    build: 'stores/efear/build'
   }, true)
 
   if (process.env.NODE_ENV !== 'development') {
@@ -31,12 +31,11 @@ function main() {
           keyPath: path.join(path.resolve(), 'certificates', 'efear.shop_key.txt'),
     });
   }
-
-  Promise.resolve(server.startServer())
+  server.startServer()
     .then(() => {
       console.log('\n✅ Server started successfully!');
       console.log('\nYour site is now available at:');
-      console.log(`   https://${process.env.DOMAIN || 'yourdomain.com'}\n`);
+      console.log(`   https://${process.env.DOMAIN || 'efear.store'}\n`);
       console.log('Press CTRL+C to stop the server.\n');
     })
     .catch((error) => {
@@ -46,4 +45,4 @@ function main() {
 }
 
 // Start the server
-main();
+main().catch(err => console.log('Error Starting Fear Server', err));
