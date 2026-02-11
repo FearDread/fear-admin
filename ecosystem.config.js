@@ -1,7 +1,7 @@
 module.exports = {
   apps: [{
     name: 'fear-api',
-    script: 'server.js',
+    script: 'backend/server.js',
     instances: 'max',
     exec_mode: 'cluster',
     env: {
