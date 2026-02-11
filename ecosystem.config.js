@@ -9,12 +9,12 @@ module.exports = {
       max_memory_restart: '500M',
       env: {
         NODE_ENV: 'development',
-        PORT: 3000,
+        PORT: 4000,
         API_URL: 'http://localhost:4000'
       },
       env_production: {
         NODE_ENV: 'production',
-        PORT: 3000,
+        PORT: 4000,
         API_URL: 'https://fear.dedyn.io'
       },
       error_file: './logs/api-error.log',
@@ -27,19 +27,20 @@ module.exports = {
     },
     {
       name: 'efear.shop',
+      cwd: '/home/feardread/_workspace/_git/fear-admin/stores/efear',
       script: './stores/efear/server.js',
       instances: 2,
       exec_mode: 'cluster',
-      watch: false,
+      watch: true,
       max_memory_restart: '300M',
       env: {
         NODE_ENV: 'development',
-        PORT: 8080,
+        PORT: 3000,
         API_URL: 'http://localhost:3000'
       },
       env_production: {
         NODE_ENV: 'production',
-        PORT: 8080,
+        PORT: 3000,
         API_URL: 'https://www.efear.shop'
       },
       error_file: './logs/frontend-error.log',
