@@ -29,12 +29,12 @@ module.exports = {
       name: 'efear.shop',
       cwd: '/home/feardread/_workspace/_git/fear-admin/stores/efear',
       script: './server.js',
-      instances: 1,
+      instances: 2,
       exec_mode: 'cluster',
       watch: true,
       max_memory_restart: '300M',
       env: {
-        NODE_ENV: 'development',
+        NODE_ENV: 'production',
         PORT: 3000,
         API_URL: 'http://localhost:3000'
       },

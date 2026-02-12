@@ -10,7 +10,7 @@
 const path = require('path');
 const FearServer = require('../../backend/src/FEARServer.js');
 
-async function main() {
+function main() {
   console.log('efear path = ', path.resolve());
   const server =  new FearServer();
   console.log('🚀 Starting Simple HTTPS Server with Manual SSL \n');
@@ -31,7 +31,7 @@ async function main() {
           keyPath: path.join(path.resolve(), 'certificates', 'efear.shop_key.txt'),
     });
   }
-  server.startServer()
+  Promise.resolve(server.startServer())
     .then(() => {
       console.log('\n✅ Server started successfully!');
       console.log('\nYour site is now available at:');
@@ -45,4 +45,4 @@ async function main() {
 }
 
 // Start the server
-main().catch(err => console.log('Error Starting Fear Server', err));
+main();
