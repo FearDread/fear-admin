@@ -28,8 +28,8 @@ module.exports = {
     {
       name: 'efear.shop',
       cwd: '/home/feardread/_workspace/_git/fear-admin/stores/efear',
-      script: './stores/efear/server.js',
-      instances: 2,
+      script: './server.js',
+      instances: 1,
       exec_mode: 'cluster',
       watch: true,
       max_memory_restart: '300M',
