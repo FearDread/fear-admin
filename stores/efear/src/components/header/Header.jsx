@@ -17,11 +17,11 @@ import SearchBar from "./SearchBar";
 
 // Configuration objects for dynamic content
 const topMenuLinks = [
-  { label: 'Track Order', path: '/order-tracking' },
-  { label: 'About', path: '/about' },
-  { label: 'Our Stores', path: '/shop-categories' },
+  { label: 'Compare Products', path: '/product-comparison' },
+  { label: 'About eFear', path: '/about' },
+  { label: 'Our Store', path: '/store' },
   { label: 'Blog', path: '/blog' },
-  { label: 'Contact', path: '/contact' },
+  { label: 'Contact Us', path: '/contact' },
   { label: 'Help & FAQs', path: '/faq' }
 ];
 
@@ -44,7 +44,7 @@ const socialLinks = [
 
 const categories = {
   'Comics & Books': [
-    { label: 'Comic Books', path: '/shop?category=Comics' },
+    { label: 'Comic Books', path: '/shop?search=category=Comics' },
     { label: 'E-Books', path: '/shop?category=Ebooks' },
     { label: 'Graphic Novels', path: '/shop?category=GraphicNovels' },
     { label: 'Manga', path: '/shop?category=Manga' },

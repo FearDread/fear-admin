@@ -52,7 +52,7 @@ export const ProductComparison = () => {
   useEffect(() => {
     if (productIds.length > 0) {
       productIds.forEach(id => {
-        dispatch(fetchProduct({ id }));
+        dispatch(fetchProduct({ _id: id }));
       });
     }
     if ( products && products.length > 0 ) {
@@ -86,7 +86,7 @@ export const ProductComparison = () => {
     const updatedIds = productIds.filter(id => id !== productId);
     
     if (updatedIds.length === 0) {
-      navigate('/products');
+      navigate('/shop');
     } else {
       navigate(`/comparison?products=${updatedIds.join(',')}`);
     }

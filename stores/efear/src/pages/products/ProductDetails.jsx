@@ -64,8 +64,6 @@ export const ProductDetails = () => {
     };
     // Local state
     const [quantity, setQuantity] = useState(1);
-    const [selectedSize, setSelectedSize] = useState('');
-    const [selectedColor, setSelectedColor] = useState('');
     const [activeTab, setActiveTab] = useState('description');
     const [selectedImageIndex, setSelectedImageIndex] = useState(0);
     const [reviewForm, setReviewForm] = useState({
@@ -75,7 +73,7 @@ export const ProductDetails = () => {
         title: '',
         content: '',
     });
-    const [reviewSortMode, setReviewSortMode] = useState('recent'); // 'recent', 'helpful', 'rating'
+    const [reviewSortMode, setReviewSortMode] = useState('recent'); 
 
     // Select product data from Redux store
     const product = useSelector(selectCurrentProduct);

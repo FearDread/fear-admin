@@ -89,7 +89,7 @@ const routeConfig = {
     { path: "/cart", element: <ShopCart /> },
     { path: "/shop-categories", element: <ShopCategories /> },
     { path: "/product/:id", element: <ProductDetails /> },
-    { path: "/compare", element: <ProductComparison /> },
+    { path: "/product-comparison", element: <ProductComparison /> },
     { path: "/wishlist", element: <Wishlist />},
   ],
   policy: [
