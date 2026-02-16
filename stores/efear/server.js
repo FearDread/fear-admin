@@ -1,5 +1,6 @@
 const path = require('path');
 const FearServer = require('../../backend/src/FEARServer');
+require('dotenv').config();
 
 async function main() {
   const server = new FearServer();
@@ -29,7 +30,7 @@ async function main() {
   .then(() => {
     if (process.env.NODE_ENV !== 'development' && process.env.HTTPS_ENABLED) {
       console.log('\nYour site is now available at:');
-      console.log(`   https://${process.env.DOMAIN || 'efear.store'}\n`);
+      console.log(`   https://${process.env.HTTPS_DOMAIN || 'efear.store'}\n`);
     }
   })
   .catch((error) => {
