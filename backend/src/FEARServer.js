@@ -120,17 +120,22 @@ const FearServer = (function () {
      * @param {boolean} config.redirectHttp - Redirect HTTP to HTTPS (default: true)
      * @param {Array<string>} config.altnames - Alternative domain names (greenlock mode, optional)
      */
-    setupHTTPS(config) {
-      if (!config || typeof config !== 'object') {
-        throw new Error('HTTPS configuration is required');
-      }
+    setupHTTPS(config = {
+      mode: 'auto-encrypt',
+      domain: 'fear.dedyn.io',
+      email: 'fear.dread@underworld.dog',
+    }) {
+      if (!config) throw Error('Missing config for HTTPS setup');
 
       this.httpsConfig = {
-        mode: config.mode || 'greenlock',
-        httpsPort: config.httpsPort || DEFAULT_HTTPS_PORT,
+        mode: config.mode || 'manual',
+        domain: config.domain || process.env.HTTPS_DOMAIN,
+        email: config.email || process.env.HTTPS_EMAIL,
+        httpsPort: config.httpsPort || process.env.HTTPS_PORT,
         redirectHttp: config.redirectHttp !== false,
-        certPath: config.certPath || process.env.SSL_CERT_PATH,
-        ...config
+        certPath: path.join(path.resolve(), 'certificates', config.cert || process.env.SSL_CERT),
+        caPath: path.join(path.resolve(), 'certificates', config.ca || process.env.SSL_CA),
+        keyPath: path.join(path.resolve(), 'certificates', config.key || process.env.SSL_KEY),
       };
 
       if (this.httpsConfig.mode === 'greenlock') {
