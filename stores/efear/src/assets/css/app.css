@@ -1798,6 +1798,7 @@ body.bg-theme-fear {
 }
 .card-img-full {
 	object-fit: cover;
+	height: 500px;
 }
 .ad-img-top {
 	width: 100%;

@@ -36,7 +36,7 @@ export const AdSection = () => {
                             </div>
                             <div className="col d-flex">
                                 <div className="card rounded-0 w-100 media-object">
-                                    <img src="assets/images/comics/background.gif" className="card-img-full h-100" alt="..." />
+                                    <img src="assets/images/comics/background.gif" className="card-img-full" alt="..." />
                                     <div className="card-img-overlay text-center top-20">
                                         <div className="border border-white border-3 py-3 bg-dark-3">
                                             <h5 className="card-title">Marvel Summer Sale</h5>
