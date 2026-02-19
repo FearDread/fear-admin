@@ -2303,3 +2303,25 @@ h6.product-name {
 .account-sidebar a:hover {
 	background: rgba(106, 106, 106, 0.385);
 }
+
+.search-suggestions {
+	background: transparent;
+	color: white !important;
+}
+.search-suggestions ul {
+	background: rgba(0,0,0,.7) !important;
+	color: white;
+}
+.search-suggestions.bg-dark {
+	background: rgba(0,0,0,.7) !important;
+	color: white;
+}
+.search-suggestions .bg-dark {
+	background: rgba(0,0,0,.7) !important;
+	color: white;
+}
+
+.search-suggestions ul li:hover {
+	background: white;
+	color: white;
+}

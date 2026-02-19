@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from "react-redux";
 import { Link, useLocation } from 'react-router-dom';
 import {
@@ -19,7 +19,7 @@ import SearchBar from "./SearchBar";
 const topMenuLinks = [
   { label: 'Compare Products', path: '/product-comparison' },
   { label: 'About eFear', path: '/about' },
-  { label: 'Our Store', path: '/store' },
+  { label: 'Our Store', path: '/shop' },
   { label: 'Blog', path: '/blog' },
   { label: 'Contact Us', path: '/contact' },
   { label: 'Help & FAQs', path: '/faq' }
@@ -44,18 +44,18 @@ const socialLinks = [
 
 const categories = {
   'Comics & Books': [
-    { label: 'Comic Books', path: '/shop?search=category=Comics' },
-    { label: 'E-Books', path: '/shop?category=Ebooks' },
-    { label: 'Graphic Novels', path: '/shop?category=GraphicNovels' },
-    { label: 'Manga', path: '/shop?category=Manga' },
-    { label: 'Anime', path: '/shop?category=Anime' }
+    { label: 'Comic Books', term:'comics', path: '/shop?search=comics' },
+    { label: 'E-Books', term: 'e-books', path: '/shop?search=E-Books' },
+    { label: 'Graphic Novels', path: '/shop?search=GraphicNovels' },
+    { label: 'Manga', term:'manga', path: '/shop?search=Manga' },
+    { label: 'Anime', term: 'anime', path: '/shop?category=Anime' }
   ],
   'Trading Cards': [
-    { label: 'Basketball', path: '/shop?category=Basketball' },
-    { label: 'Football', path: '/shop?category=Football' },
-    { label: 'Magic The Gathering', path: '/shop?category=MTG' },
-    { label: 'Baseball', path: '/shop?category=Baseball' },
-    { label: 'Pokemon', path: '/shop?category=Pokemon' }
+    { label: 'Basketball', term:'basketball', path: '/shop?category=Basketball' },
+    { label: 'Football', term:'football', path: '/shop?category=Football' },
+    { label: 'Magic The Gathering', term:'mtg', path: '/shop?category=MTG' },
+    { label: 'Baseball', term:'baseball', path: '/shop?category=Baseball' },
+    { label: 'Pokemon', term:'pokemon', path: '/shop?search=pokemon' }
   ]
 };
 
@@ -96,8 +96,13 @@ export const Header = () => {
     return location.pathname === path ? 'active' : '';
   };
 
-  const searchCategories = ['Comics', 'E-Books', 'Trading Cards'];
+  useEffect(() => {
+    setMobileMenuOpen(false);
+    if (mobileMenuOpen) {
 
+    }
+
+  }, [mobileMenuOpen]);
   return (
     <div className="wrapper">
       <div className="header-wrapper bg-dark-1">
@@ -196,7 +201,7 @@ export const Header = () => {
 
               {/* Search Bar */}
               <div className="col-12 col-md order-4 order-md-2">
-                <SearchBar categories={searchCategories} />
+                <SearchBar />
               </div>
 
               {/* Contact Info */}
