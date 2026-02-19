@@ -18,6 +18,7 @@ import {
   setPageSize,
   selectProductsFilters,
   selectAllProducts,
+  selectProductsSearchTerm,
 } from "../../features/products/slice";
 import {
   fetchCategories,
@@ -170,7 +171,7 @@ export const Shop = ({ data }) => {
   }, [dispatch]);
 
   useEffect(() => {
-    setSorting({'menu_order': { sortBy: null, sortOrder: 'asc' }})
+    setSorting({'menu_order': { sortBy: 'newest', sortOrder: 'asc' }})
   }, [dispatch]);
   // Loading state
   const isLoading = productsLoading || categoriesLoading || brandsLoading;

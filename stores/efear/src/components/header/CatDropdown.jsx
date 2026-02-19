@@ -1,9 +1,44 @@
-import React, { useState } from 'react';
-import { useSelector } from "react-redux";
-import { Link, useLocation } from 'react-router-dom';
+import React, { useState, useRef } from 'react';
+import { useSelector, useDispatch } from "react-redux";
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+
+import { 
+  setSearchTerm,
+  setFilters,
+  selectAllProducts 
+} from '../../features/products/slice';
+import { 
+  fetchCategories,
+  selectAllCategories 
+} from '../../features/categories/slice';
 
 
 export const CatDropdown = ({ categories: categoryData }) => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const searchRef = useRef(null);
+   // Redux selector
+    const categories = useSelector(selectAllCategories);
+    const products = useSelector(selectAllProducts);
+    const categoriesLoading = useSelector(state => state.categories?.loading);
+  
+    // Local state
+    const [searchTerm, setSearchTermLocal] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState('');
+    const [suggestions, setSuggestions] = useState([]);
+    const [showSuggestions, setShowSuggestions] = useState(false);
+    const [selectedIndex, setSelectedIndex] = useState(-1);
+  
+  const handleCat = (term) => {
+    term.trim().toLowerCase();
+    setSearchTerm(term);
+        console.log('search with ', term);
+    dispatch(setSearchTerm(term))
+    //handleSearch();
+
+
+  }
+
   return (
     <div className="dropdown-menu dropdown-large-menu">
       <div className="row">
@@ -13,7 +48,7 @@ export const CatDropdown = ({ categories: categoryData }) => {
             <ul>
               {items.map((item) => (
                 <li key={item.label}>
-                  <Link to={item.path} className="dropdown-item">{item.label}</Link>
+                  <Link to={item.path} onClick={() => handleCat(item.term)} className="dropdown-item">{item.label}</Link>
                 </li>
               ))}
             </ul>

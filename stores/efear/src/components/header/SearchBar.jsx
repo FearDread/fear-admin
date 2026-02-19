@@ -286,7 +286,7 @@ export const SearchBar = ({
       {/* Search Suggestions Dropdown */}
       {showSuggestions && suggestions.length > 0 && (
         <div 
-          className="search-suggestions position-absolute w-100 bg-white border shadow-lg mt-1 rounded"
+          className="search-suggestions position-absolute w-100 bg-dark border shadow-lg mt-1 rounded"
           style={{ 
             zIndex: 9999, 
             maxHeight: '400px', 
@@ -295,7 +295,7 @@ export const SearchBar = ({
             right: 0
           }}
         >
-          <div className="p-2 border-bottom bg-light">
+          <div className="p-2 border-bottom bg-dark">
             <small className="text-muted px-2 fw-500">
               Suggestions {selectedCategory && `in ${selectedCategory}`}
             </small>
@@ -329,7 +329,7 @@ export const SearchBar = ({
                     />
                   ) : (
                     <div 
-                      className="me-3 d-flex align-items-center justify-content-center bg-light rounded" 
+                      className="me-3 d-flex align-items-center justify-content-center bg-dark rounded" 
                       style={{ width: '50px', height: '50px' }}
                     >
                       <i className='bx bx-package text-primary fs-4'></i>
@@ -339,7 +339,7 @@ export const SearchBar = ({
                   {/* Product Info */}
                   <div className="flex-grow-1">
                     <div className="d-flex align-items-center justify-content-between">
-                      <span className="text-dark fw-500">{suggestion.text}</span>
+                      <span className="text-light fw-500">{suggestion.text}</span>
                       {suggestion.price && (
                         <span className="text-primary fw-bold ms-2">
                           ${suggestion.price.toFixed(2)}
@@ -359,7 +359,7 @@ export const SearchBar = ({
 
           {/* View All Results */}
           {searchTerm && (
-            <div className="border-top p-2 bg-light">
+            <div className="border-top p-2 bg-dark">
               <button
                 type="button"
                 className="btn btn-link text-decoration-none w-100 text-start text-primary"
@@ -379,7 +379,7 @@ export const SearchBar = ({
       {/* No Results Message */}
       {showSuggestions && searchTerm.length >= 2 && suggestions.length === 0 && (
         <div 
-          className="search-suggestions position-absolute w-100 bg-white border shadow-lg mt-1 rounded"
+          className="search-suggestions position-absolute w-100 bg-dark border shadow-lg mt-1 rounded"
           style={{ zIndex: 9999, left: 0, right: 0 }}
         >
           <div className="p-4 text-center text-muted">

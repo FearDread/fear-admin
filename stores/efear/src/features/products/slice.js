@@ -89,7 +89,7 @@ export const selectProductsViewMode = (state) => state.products.viewMode || 'gri
 
 // Advanced selectors
 export const selectProductById = (state, productId) => 
-  state.products.data.find(product => product.id === productId);
+  state.products.data.find(product => product._id === productId);
 
 export const selectProductsByCategory = (state, category) =>
   state.products.data.filter(product => product.category === category);
