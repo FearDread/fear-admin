@@ -1,4 +1,3 @@
-// components/products/ProductCard.jsx
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -17,12 +16,6 @@ import ProductQuickView from './ProductQuickView';
 const MAX_COMPARE_PRODUCTS = 4;
 const COMPARE_STORAGE_KEY = 'comparisonProductIds';
 
-/**
- * ProductCard Component
- * Displays product information with cart and wishlist functionality
- *
- * @param {Object} product - Product data object
- */
 export const ProductCard = (product) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -51,8 +44,6 @@ export const ProductCard = (product) => {
     selectIsInWishlist(state, productId)
   );
 
-  // ─── Helpers ────────────────────────────────────────────────────────────────
-
   const renderStars = (rating = 4) =>
     Array.from({ length: 5 }, (_, i) => (
       <i
@@ -69,12 +60,6 @@ export const ProductCard = (product) => {
   const removeToast = (id) =>
     setToasts((prev) => prev.filter((t) => t.id !== id));
 
-  // ─── Comparison helpers ──────────────────────────────────────────────────────
-
-  /**
-   * Read the current list of comparison IDs from localStorage.
-   * Returns an array of id strings.
-   */
   const getStoredCompareIds = () => {
     try {
       const raw = localStorage.getItem(COMPARE_STORAGE_KEY);
@@ -84,15 +69,10 @@ export const ProductCard = (product) => {
     }
   };
 
-  /**
-   * Persist the updated list and return it.
-   */
   const saveCompareIds = (ids) => {
     localStorage.setItem(COMPARE_STORAGE_KEY, JSON.stringify(ids));
     return ids;
   };
-
-  // ─── Handlers ───────────────────────────────────────────────────────────────
 
   const handleWishlist = async (e) => {
     e.preventDefault();
@@ -159,23 +139,14 @@ export const ProductCard = (product) => {
       .finally(() => addToast('Product added to cart!', 'success'));
   };
 
-  /**
-   * handleCompare – accumulates product IDs in localStorage (max 4) then
-   * navigates to the comparison page with all accumulated IDs in the URL.
-   */
   const handleCompare = (e) => {
     e.preventDefault();
     e.stopPropagation();
-
     const existingIds = getStoredCompareIds();
-
-    // Already in comparison list → just navigate to comparison page
     if (existingIds.includes(productId)) {
       navigate(`/product-comparison?products=${existingIds.join(',')}`);
       return;
     }
-
-    // Enforce maximum
     if (existingIds.length >= MAX_COMPARE_PRODUCTS) {
       addToast(
         `You can compare up to ${MAX_COMPARE_PRODUCTS} products at a time. Remove one first.`,
@@ -192,8 +163,6 @@ export const ProductCard = (product) => {
     setSelectedProduct(product);
     setShowQuickView(true);
   };
-
-  // ─── Render ──────────────────────────────────────────────────────────────────
 
   return (
     <>
@@ -213,8 +182,6 @@ export const ProductCard = (product) => {
                   </span>
                 </div>
               </button>
-
-              {/* Wishlist */}
               <button
                 onClick={handleWishlist}
                 className="btn btn-link p-0 text-decoration-none"

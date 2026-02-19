@@ -2,48 +2,32 @@ import React, { useEffect, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import {
-  fetchProduct,
-  selectProductById,
   selectProductsLoading,
 } from '../../features/products/slice';
 import {
   addItem,
-  selectIsInCart,
 } from '../../features/cart/slice';
 import {
   addToWishlist,
   removeFromWishlist,
-  selectIsInWishlist,
 } from '../../features/wishlist/slice';
 import Breadcrumbs from '../../components/common/Breadcrumbs';
 import ProductComparisonCard from '../../components/products/ProductComparisonCard';
+import BrandSection from '../../components/home/BrandSection';
 
 const COMPARE_STORAGE_KEY = 'comparisonProductIds';
 
-
-// ─── ProductComparison (page) ─────────────────────────────────────────────────
 export const ProductComparison = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-
-  // Parse ?products=id1,id2,id3,id4
   const productIdsParam = searchParams.get('products');
   const productIds = useMemo(
     () => (productIdsParam ? productIdsParam.split(',').filter(Boolean) : []),
     [productIdsParam]
   );
-
-  // Fetch all products + keep localStorage in sync
-  /*
-  useEffect(() => {
-    productIds.forEach((id) => dispatch(fetchProduct({ _id: id })));
-    localStorage.setItem(COMPARE_STORAGE_KEY, JSON.stringify(productIds));
-  }, [dispatch, productIds]);
-*/
   const loading = useSelector(selectProductsLoading);
 
-  // ── Handlers ─────────────────────────────────────────────────────────────
   const handleAddToCart = (product) => {
     if (!product) return;
     dispatch(
@@ -85,8 +69,6 @@ export const ProductComparison = () => {
       dispatch(addToWishlist(item));
     }
   };
-
-  // ── Shared breadcrumb ─────────────────────────────────────────────────────
   const BreadcrumbSection = () => (
     <section className="py-3 border-bottom d-none d-md-flex">
       <div className="container">
@@ -102,7 +84,6 @@ export const ProductComparison = () => {
     </section>
   );
 
-  // ── Loading ───────────────────────────────────────────────────────────────
   if (loading && productIds.length > 0) {
     return (
       <>
@@ -117,7 +98,6 @@ export const ProductComparison = () => {
     );
   }
 
-  // ── Empty ─────────────────────────────────────────────────────────────────
   if (productIds.length === 0) {
     return (
       <>
@@ -139,7 +119,6 @@ export const ProductComparison = () => {
     );
   }
 
-  // ── Main render ───────────────────────────────────────────────────────────
   return (
     <>
       <BreadcrumbSection />
@@ -172,11 +151,11 @@ export const ProductComparison = () => {
           </div>
 
           {/* Tips */}
-          <div className="alert alert-info mt-4">
+          <div className="alert alert-info mt-4 bg-dark-4">
             <h6 className="alert-heading">
               <i className="bx bx-info-circle me-2" />Comparison Tips
             </h6>
-            <ul className="mb-0">
+            <ul className="mb-0 text-light">
               <li>Compare up to 4 products at once for better decision making</li>
               <li>Click product images or titles to view full details</li>
               <li>Add to cart or wishlist directly from the product cards</li>
@@ -186,6 +165,7 @@ export const ProductComparison = () => {
 
         </div>
       </section>
+            <BrandSection />
     </>
   );
 };
