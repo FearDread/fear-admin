@@ -25,17 +25,17 @@ const HeroSection = () => {
       image: "assets/images/ebooks/01.jpg",
       buttonText: "Shop Now",
       category: "books",
-      gradient: "linear-gradient(135deg, #2223293e 0%, #0f07173e 100%"
+      gradient: ""
     },
     {
       id: 3,
       title: "Trading Cards!",
       heading: "Collectables",
       description: "NFL & NBA Cards, Pokemon, Baseball & much more...",
-      image: "assets/images/comics/trade01.jpg",
+      image: "assets/images/comics/banner/05.svg",
       buttonText: "Shop Now",
       category: "cards",
-      gradient: "linear-gradient(135deg, #1a1d2ba8 0%, #160d1e57 100%"
+      gradient: ""
     }
   ];
 

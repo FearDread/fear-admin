@@ -106,12 +106,10 @@ export const About = () => {
                     <div className="row align-items-center mt-5 mt-lg-0">
                         <div className="col-lg-3">
                             <div className="comon-shape">
-                                <h4>01</h4>
                                 <h5 className="text-center"> Competitive Pricing </h5>
                             </div>
 
                             <div className="comon-shape">
-                                <h4>02</h4>
                                 <h5 className="text-center"> High Value Collections </h5>
                             </div>
 
@@ -123,13 +121,11 @@ export const About = () => {
                         </div>
                         <div className="col-lg-3">
                             <div className="comon-shape">
-                                <h4>03</h4>
-                                <h5 className="text-center"> All Comics shipped with board and sleve! </h5>
+                                <h5 className="text-center"> All Comics come with board and sleve! </h5>
                             </div>
 
                             <div className="comon-shape">
-                                <h4>04</h4>
-                                <h5 className="text-center"> Near Mint ( NM ) Quality! </h5>
+                                <h5 className="text-center"> Mint ( NM ) Quality! </h5>
                             </div>
 
                         </div>

@@ -10,6 +10,7 @@ import CategorySection from '../components/home/CategorySection';
 import LatestNews from '../components/home/LatestNews';
 import BrandSection from '../components/home/BrandSection';
 import AdSection2 from "../components/home/AdSection2";
+//import LatestNews from "../components/home/LatestNews";
 
 const Home = () => {
   return (
@@ -19,19 +20,15 @@ const Home = () => {
       <InfoSection1 />
       
       <AdSection2 />
-
       <FeaturedProducts />
-
+     {/*  <NewArrivals /> */}
       <InfoSection2 />
 
-      <BrandSection />
-
-      <NewArrivals />
-
-      <CategorySection />
-    
       <AdSection />
-
+    
+      <LatestNews />
+      { /* <CategorySection /> */}
+      <BrandSection />
     </>
   );
 };

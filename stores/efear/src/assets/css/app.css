@@ -319,7 +319,7 @@ body.offcanvas-active {
 	width: 3.0rem;
 	padding: .6rem .6rem;
 	color: #fff;
-	background: rgb(255 255 255 / 8%);
+	background: rgba(0,0,0,.7);
 	text-align: center;
 	text-transform: uppercase;
 }
@@ -1786,10 +1786,23 @@ body.bg-theme-fear {
 	padding-left: 10px;
 	padding-right: 10px;
 }
+.blog-img-top {
+	height: 200px;
+	object-fit: cover;
+	width:100%;
+}
 .blog-card-img-top {
 		object-fit: cover;
 	max-height: 300px;
 
+}
+.card-img-full {
+	object-fit: cover;
+}
+.ad-img-top {
+	width: 100%;
+	object-fit: cover;
+	max-height: 300px;
 }
 
 h6.product-name {
