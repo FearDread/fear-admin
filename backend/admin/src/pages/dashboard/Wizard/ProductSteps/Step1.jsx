@@ -270,8 +270,8 @@ const Step1 = React.forwardRef((props, ref) => {
               >
                 <option value="">Select Brand...</option>
                 {brands.map((brand) => (
-                  <option key={brand._id || brand.id} value={brand.title}>
-                    {brand.title}
+                  <option key={brand._id || brand.id} value={brand.title || brand.name}>
+                    {brand.title || brand.name}
                   </option>
                 ))}
               </Input>
