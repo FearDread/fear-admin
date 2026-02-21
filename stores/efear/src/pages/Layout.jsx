@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import { Outlet, useLocation } from "react-router-dom";
 import { loadStripe } from "@stripe/stripe-js";
@@ -9,7 +9,7 @@ import Footer from "../components/common/Footer";
 import BestSelling from "../components/products/BestSelling";
 
 import { dispatch } from "../features/store";
-import { Product, selectProductsSuccess } from "../features/products/slice";
+import { selectProductsSuccess } from "../features/products/slice";
 import {
   fetchProducts,
   selectAllProducts,
@@ -18,47 +18,66 @@ import {
 } from '../features/products/slice';
 import { fetchCategories, selectAllCategories } from '../features/categories/slice';
 import ProductQuickView from "../components/products/ProductQuickView";
+import CookieBanner from "../components/common/CookieBanner";
 
-// Load Stripe with publishable key from environment variable
+
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_API_KEY);
+const currentEnv = process.env.NODE_ENV;
 
 const Layout = () => {
-  // Select data from store
-  const products = useSelector(selectAllProducts); // Now includes filtering & sorting
+  const products = useSelector(selectAllProducts);
   const categories = useSelector(selectAllCategories);
   const loading = useSelector(selectProductsLoading);
   const success = useSelector(selectProductsSuccess);
   const error = useSelector(selectProductsError);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [showQuickView, setShowQuickView] = useState(false);
+  const [status, setStatus] = useState(null); // null | 'visible' | 'accepted' | 'rejected'
+  const [acceptedPrefs, setAcceptedPrefs] = useState(null);
 
-
-const ScrollToTop = () => {
-  const { pathname } = useLocation();
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
-
-  return null;
-}
-  const handleQuickView = (product) => {
-    setSelectedProduct(product);
-    setShowQuickView(true);
+  const handleAccept = (prefs) => {
+    localStorage.setItem("cookie-consent", JSON.stringify(prefs));
+    setAcceptedPrefs(prefs);
+    setStatus("accepted");
   };
 
-  // Manual refresh
-  const handleRefresh = () => {
-    dispatch(fetchProducts());
+  const handleReject = () => {
+    localStorage.setItem("cookie-consent", JSON.stringify({ essential: true }));
+    setAcceptedPrefs({ essential: true });
+    setStatus("rejected");
   };
 
-  // Fetch data on component mount
+  const reset = () => {
+    localStorage.removeItem("cookie-consent");
+    setStatus("visible");
+    setAcceptedPrefs(null);
+  };
+
+  const ScrollToTop = () => {
+    const { pathname } = useLocation();
+
+    useEffect(() => {
+      window.scrollTo(0, 0);
+    }, [pathname]);
+
+    return null;
+  }
+
   useEffect(() => {
     dispatch(fetchProducts());
     dispatch(fetchCategories());
   }, []);
 
-  // Stripe options configuration
+  useEffect(() => {
+    const saved = localStorage.getItem("cookie-consent");
+    if (!saved) {
+      setTimeout(() => setStatus("visible"), 600);
+    } else {
+      setStatus("accepted");
+      setAcceptedPrefs(JSON.parse(saved));
+    }
+  }, []);
+
   const stripeOptions = useMemo(() => ({
     // Stripe Elements appearance customization
     appearance: {
@@ -94,7 +113,35 @@ const ScrollToTop = () => {
         </div>
       </div>
       <Footer categories={(!loading) ? categories : []} products={products}/>
+      
+      {(currentEnv === 'development' && (
+        <div className="consent-container">
+          {status !== "visible" && (
+            <button className="demo-btn" onClick={reset}>
+              ↩ Reset consent
+            </button>
+          )}
+          {status !== null && status !== "visible" && (
 
+            <p style={{ marginTop: "1rem", fontSize: "0.8rem", color: "#555" }}>
+              Consent status: <span style={{ color: "#c9a96e" }}>{status}</span>
+              {acceptedPrefs && ` · ${Object.entries(acceptedPrefs).filter(([,v])=>v).map(([k])=>k).join(", ")}`}
+            </p>
+
+          )}
+        </div>
+
+
+      ))}
+        {status === "rejected" && currentEnv === 'development' && (
+          <div className="accepted-msg">
+            <strong>Cookies declined</strong> — only essential cookies active.
+          </div>
+        )}
+      {status === "visible" && (
+        <CookieBanner onAccept={handleAccept} onReject={handleReject} />
+      )}
+      
       {selectedProduct && (
         <ProductQuickView 
           product={selectedProduct}
