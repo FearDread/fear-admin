@@ -33,7 +33,7 @@ import {
 
 // ── Constants ────────────────────────────────────────────────────────────────
 
-const API_BASE = '/api/analytics';
+const API_BASE = 'http://localhost:4000/fear/api' // production -> 'https://fear.dedyn.io/fear/api';
 
 const DATE_RANGES = [
   { label: '7 Days',   value: '7daysAgo'  },
