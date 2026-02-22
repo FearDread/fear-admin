@@ -117,6 +117,7 @@ module.exports = {
       // ── GET /auth/connect
       // Redirects the seller browser to the eBay OAuth consent page.
       connect: async (req, res) => {
+        console.log('attempting to connect to ebay');
             const params = new URLSearchParams({
                   client_id:     CLIENT_ID,
                   response_type: "code",

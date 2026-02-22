@@ -27,7 +27,7 @@ import {
 
 import Loader from '../../components/Loader/Loading';
 
-const EBAY_API_BASE = '/ebay'; 
+const EBAY_API_BASE = 'http://localhost:4000/fear/api/ebay'; // production -> 'https://fear.dedyn.io/fear/api/ebay'; 
 const ebayApi = {
   /** Kick off the eBay OAuth flow — your server should redirect to eBay's consent page */
   connect: () => window.open(`${EBAY_API_BASE}/auth/connect`, '_blank', 'width=600,height=700'),
