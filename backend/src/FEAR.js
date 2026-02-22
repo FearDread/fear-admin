@@ -52,7 +52,7 @@ _________________________
     if (this.env.ADD_PAYMENTS) this.setupProcessors();
     this.setupMailer();
     this.setupMiddleware();
-    this.corsConfig = this.getCorsConfig();
+
     this.setupRoutes();
   };
 
@@ -115,6 +115,7 @@ _________________________
      * Setup core dependencies
      */
     setupDependencies() {
+      this.logo = FEAR_LOGO;
       this.logger = require("./libs/logger");
       this.passport = require('./libs/passport');
       this.morgan = require("./libs/logger/morgan");
@@ -122,8 +123,8 @@ _________________________
       this.db = require("./libs/db");
       this.handler = require("./libs/handler");
       this.validator = require("./libs/validator");
-      this.logo = FEAR_LOGO;
       this.origins = this.getAllowedOrigins();
+      this.corsConfig = this.getCorsConfig();
     },
 
     setupProcessors() {
@@ -302,64 +303,14 @@ _________________________
       }));
     },
 
-    start(port = null) {
-      const serverPort = port || this.app.get("PORT") || DEFAULT_PORT;
-
-      return new Promise((resolve, reject) => {
-        this.server = this.app.listen(serverPort, (err) => {
-          if (err) {
-            this.logger.error(`Failed to start server on port ${serverPort}:`, err);
-            return reject(err);
-          }
-
-          this.logger.info(`FEAR server started on port ${serverPort}`);
-
-          // Log agent interface status
-          if (this.agentWebInterface) {
-            this.logger.info(`Agent Web Interface available at ${AGENT_ROUTE_PATH}`);
-          }
-
-          resolve(this.server);
-        });
-      });
-    },
-
     shutdown() {
       this.logger.info('Initiating graceful shutdown...');
-
+      
       return new Promise((resolve) => {
         if (!this.server) {
           this.logger.warn('No server instance to close.');
           return resolve();
         }
-
-        this.server.close((err) => {
-          if (err) {
-            this.logger.error('Error closing HTTP server:', err);
-          } else {
-            this.logger.info('HTTP server closed.');
-          }
-
-          // Shutdown agent web interface
-          const agentShutdown = this.agentWebInterface &&
-            typeof this.agentWebInterface.shutdown === 'function' ?
-            this.agentWebInterface.shutdown() :
-            Promise.resolve();
-
-          agentShutdown
-            .then(() => {
-              return this.closeDatabase();
-            })
-            .then(() => {
-              this.logger.info('Database connections closed.');
-              this.logger.info('Graceful shutdown completed.');
-              resolve();
-            })
-            .catch((error) => {
-              this.logger.error('Error during shutdown:', error);
-              resolve();
-            });
-        });
       });
     },
 

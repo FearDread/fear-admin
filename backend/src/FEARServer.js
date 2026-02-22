@@ -6,7 +6,6 @@ const fs = require('fs');
 const dotenv = require('dotenv');
 const http = require('http');
 const https = require('https');
-const AutoEncrypt = require('@small-tech/auto-encrypt');
 
 const FearServer = (function () {
   // Private constants
@@ -121,7 +120,7 @@ const FearServer = (function () {
      * @param {Array<string>} config.altnames - Alternative domain names (greenlock mode, optional)
      */
     setupHTTPS(config = {
-      mode: 'auto-encrypt',
+      mode: 'manual',
       domain: 'fear.dedyn.io',
       email: 'fear.dread@underworld.dog',
     }) {
@@ -137,110 +136,17 @@ const FearServer = (function () {
         caPath: path.join(path.resolve(), 'certificates', config.ca || process.env.SSL_CA),
         keyPath: path.join(path.resolve(), 'certificates', config.key || process.env.SSL_KEY),
       };
-
-      if (this.httpsConfig.mode === 'greenlock') {
-        this._setupGreenlock();
-      } else if (this.httpsConfig.mode === 'auto-encrypt') {
-        this._setupAutoEncrypt();
-      } else if (this.httpsConfig.mode === 'manual') {
-        this._validateManualCerts();
-      } else {
-        throw new Error('HTTPS mode must be "greenlock", "auto-encrypt", or "manual"');
-      }
+      
+      if ( this._validateCerts(this.httpsConfig) ) {
+        this._createHttpsServer();
+      };
 
       if (this.fear && this.fear.getLogger()) {
         this.fear.getLogger().info('HTTPS configuration loaded successfully');
       }
     },
 
-    /**
-     * Setup Greenlock for automatic SSL certificates
-     * @private
-     */
-    _setupGreenlock() {
-      const config = this.httpsConfig;
-
-      if (!config.domain) {
-        throw new Error('Domain name is required for Greenlock mode');
-      }
-
-      if (!config.email) {
-        throw new Error('Email address is required for Greenlock mode');
-      }
-
-      try {
-        // Greenlock Express uses a different pattern
-        // We don't initialize it here, we do it when starting the server
-        this.greenlockConfig = {
-          packageRoot: this.rootDir,
-          configDir: config.configDir || path.join(this.rootDir, 'greenlock.d'),
-          maintainerEmail: config.email,
-          cluster: false,
-          staging: config.staging || false,
-          domain: config.domain,
-          altnames: config.altnames || [config.domain]
-        };
-
-        // Ensure config directory exists
-        const configDir = this.greenlockConfig.configDir;
-        if (!fs.existsSync(configDir)) {
-          fs.mkdirSync(configDir, { recursive: true });
-        }
-
-        if (this.fear && this.fear.getLogger()) {
-          this.fear.getLogger().info(`Greenlock configured for domain: ${config.domain}`);
-          this.fear.getLogger().info(`Staging mode: ${config.staging ? 'enabled' : 'disabled'}`);
-        }
-      } catch (error) {
-        console.error('Error setting up Greenlock:', error);
-        throw new Error('Failed to setup Greenlock. Make sure @root/greenlock-express is installed: npm install @root/greenlock-express');
-      }
-    },
-
-    /**
-     * Setup Auto Encrypt for automatic SSL certificates
-     * @private
-     */
-    _setupAutoEncrypt() {
-      const config = this.httpsConfig;
-
-      if (!config.domain) {
-        throw new Error('Domain name is required for Auto Encrypt mode');
-      }
-
-      try {
-        //const AutoEncrypt = require('@small-tech/auto-encrypt');
-        
-        const settingsPath = config.settingsPath || path.join(this.rootDir, '.small-tech.org');
-        
-        // Auto Encrypt doesn't need separate initialization
-        // It's used directly when creating the HTTPS server
-        this.autoEncryptOptions = {
-          domains: [config.domain],
-          settingsPath: settingsPath
-        };
-
-        // Store staging mode for server creation
-        if (config.staging) {
-          this.autoEncryptOptions.staging = true;
-        }
-
-        if (this.fear && this.fear.getLogger()) {
-          this.fear.getLogger().info(`Auto Encrypt configured for domain: ${config.domain}`);
-          this.fear.getLogger().info(`Staging mode: ${config.staging ? 'enabled' : 'disabled'}`);
-          this.fear.getLogger().info(`Settings path: ${settingsPath}`);
-        }
-      } catch (error) {
-        console.error('Error setting up Auto Encrypt:', error);
-        throw new Error('Failed to setup Auto Encrypt. Make sure @small-tech/auto-encrypt is installed: npm install @small-tech/auto-encrypt');
-      }
-    },
-
-    /**
-     * Validate manual SSL certificates
-     * @private
-     */
-    _validateManualCerts() {
+    _validateCerts() {
       const config = this.httpsConfig;
 
       if (!config.certPath || !config.keyPath) {
@@ -262,13 +168,11 @@ const FearServer = (function () {
       if (this.fear && this.fear.getLogger()) {
         this.fear.getLogger().info('Manual SSL certificates validated');
       }
+
+      return true;
     },
 
-    /**
-     * Create HTTPS server with manual certificates
-     * @private
-     */
-    _createManualHttpsServer() {
+    _createHttpsServer() {
       const config = this.httpsConfig;
       
       const httpsOptions = {
@@ -283,7 +187,7 @@ const FearServer = (function () {
       return https.createServer(httpsOptions, this.fear.getApp());
     },
 
-    _createHttpRedirectServer(httpsPort) {
+    _createRedirectServer(httpsPort) {
       const redirectApp = express();
       
       redirectApp.use((req, res) => {
@@ -362,15 +266,13 @@ const FearServer = (function () {
         express.static(buildPath, {
           index: false,
           fallthrough: true,
-          maxAge: '1h', // Cache static assets
+          maxAge: '1h',
           etag: true,
           lastModified: true,
           setHeaders: (res, filePath) => {
-            // Don't cache index.html
             if (filePath.endsWith('index.html')) {
               res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
             }
-            // Cache JS/CSS files aggressively
             else if (filePath.match(/\.(js|css|woff2?|ttf|eot)$/)) {
               res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
             }
@@ -474,9 +376,6 @@ const FearServer = (function () {
       // to prefix all routes - just documenting the intent here
     },
 
-    /**
-     * Setup process signal handlers for graceful shutdown
-     */
     setupProcessHandlers() {
       // Prevent duplicate listeners
       if (this._handlersSetup) {
@@ -526,7 +425,7 @@ const FearServer = (function () {
     /**
      * Start HTTP server on specified port
      */
-    startHttpServer(port) {
+    async _startHttpServer(port) {
       return new Promise((resolve, reject) => {
         const server = this.fear.getApp().listen(port, (err) => {
           if (err) {
@@ -556,150 +455,39 @@ const FearServer = (function () {
       const httpsPort = this.httpsConfig.httpsPort;
 
       let httpsServer;
+      httpsServer = this._createManualHttpsServer();
 
-      if (this.httpsConfig.mode === 'greenlock') {
-        // Greenlock Express initialization and startup
-        logger.info('Starting HTTPS server with Greenlock auto-encryption...');
-        
-        const greenlockExpress = require('@root/greenlock-express');
-        
-        return new Promise((resolve, reject) => {
-          try {
-            // Initialize Greenlock with full configuration
-            const greenlock = greenlockExpress.init({
-              packageRoot: this.greenlockConfig.packageRoot,
-              configDir: this.greenlockConfig.configDir,
-              maintainerEmail: this.greenlockConfig.maintainerEmail,
-              cluster: false,
-              
-              // Notify callback for errors
-              notify: (event, details) => {
-                if (event === 'error') {
-                  logger.error('Greenlock error:', details);
-                } else if (event === 'warning') {
-                  logger.warn('Greenlock warning:', details);
-                }
-              }
-            });
-
-            // Store greenlock instance
-            this.greenlock = greenlock;
-
-            // Serve the app - Greenlock handles everything automatically
-            // It will listen on port 80 (HTTP) and 443 (HTTPS)
-            greenlock.serve(this.fear.getApp());
-            
-            logger.info(`✓ Greenlock HTTPS server started`);
-            logger.info(`✓ Listening on port 443 (HTTPS)`);
-            logger.info(`✓ Listening on port 80 (HTTP → HTTPS redirect)`);
-            logger.info(`✓ Staging mode: ${this.greenlockConfig.staging ? 'ENABLED' : 'DISABLED'}`);
-            logger.info('');
-            logger.info('⚠️  IMPORTANT: Configure your domain using Greenlock CLI:');
-            logger.info(`   npx greenlock add --subject ${this.greenlockConfig.domain} --altnames ${this.greenlockConfig.altnames.join(',')}`);
-            logger.info('');
-            
-            // Mark server as started
-            httpsServer = { 
-              greenlockManaged: true, 
-              greenlock: greenlock 
-            };
-            
-            resolve(httpsServer);
-            
-          } catch (error) {
-            logger.error('Failed to initialize Greenlock:', error);
-            reject(error);
+      logger.info('Starting HTTPS server ...');
+      return new Promise((resolve, reject) => {
+        httpsServer.listen(httpsPort, (err) => {
+          if (err) {
+            logger.error(`Failed to start HTTPS server on port ${httpsPort}:`, err);
+            return reject(err);
           }
+
+          logger.info(`HTTPS server running on port ${httpsPort}`);
+          resolve(httpsServer);
         });
 
-      } else if (this.httpsConfig.mode === 'auto-encrypt') {
-        // Auto Encrypt mode
-        logger.info('Starting HTTPS server with Auto Encrypt...');
-        
-        try {
+        // Setup HTTP redirect server if enabled
+        if (this.httpsConfig.redirectHttp) {
+          const httpRedirectPort = this.fear.getApp().get("PORT") || DEFAULT_PORT;
+          this.httpRedirectServer = this._createRedirectServer(httpsPort);
 
-          console.log('auto ', AutoEncrypt);
-          // Auto Encrypt wraps and manages the HTTPS server
-          // It expects the Express app and domain configuration
-          const autoEncrypt = new AutoEncrypt({
-            domains: [this.httpsConfig.domain],
-            server: this.fear.getApp()
+          this.httpRedirectServer.listen(httpRedirectPort, () => {
+            logger.info(`HTTP redirect server running on port ${httpRedirectPort} → HTTPS`);
           });
-
-          if (this.httpsConfig.staging) {
-            autoEncrypt.staging = true;
-          }
-
-          if (this.autoEncryptOptions && this.autoEncryptOptions.settingsPath) {
-            autoEncrypt.settingsPath = this.autoEncryptOptions.settingsPath;
-          }
-          
-          return new Promise((resolve, reject) => {
-            // Auto Encrypt's serve() method starts the server
-            autoEncrypt.serve(httpsPort)
-              .then((server) => {
-                httpsServer = server;
-                logger.info(`HTTPS server running on port ${httpsPort} with Auto Encrypt`);
-                
-                // Setup HTTP redirect server if enabled
-                if (this.httpsConfig.redirectHttp) {
-                  const httpRedirectPort = this.fear.getApp().get("PORT") || DEFAULT_PORT;
-                  this.httpRedirectServer = this._createHttpRedirectServer(httpsPort);
-                  
-                  this.httpRedirectServer.listen(httpRedirectPort, () => {
-                    logger.info(`HTTP redirect server running on port ${httpRedirectPort} → HTTPS`);
-                  });
-                }
-                
-                resolve(server);
-              })
-              .catch((err) => {
-                logger.error(`Failed to start HTTPS server on port ${httpsPort}:`, err);
-                reject(err);
-              });
-          });
-        } catch (error) {
-          logger.error('Failed to create Auto Encrypt server:', error);
-          //throw error;
         }
 
-      } else if (this.httpsConfig.mode === 'manual') {
-        // Manual certificate mode
-        logger.info('Starting HTTPS server with manual certificates...');
-        
-        httpsServer = this._createManualHttpsServer();
-
-        return new Promise((resolve, reject) => {
-          httpsServer.listen(httpsPort, (err) => {
-            if (err) {
-              logger.error(`Failed to start HTTPS server on port ${httpsPort}:`, err);
-              return reject(err);
-            }
-            
-            logger.info(`HTTPS server running on port ${httpsPort}`);
-            resolve(httpsServer);
-          });
-
-          // Setup HTTP redirect server if enabled
-          if (this.httpsConfig.redirectHttp) {
-            const httpRedirectPort = this.fear.getApp().get("PORT") || DEFAULT_PORT;
-            this.httpRedirectServer = this._createHttpRedirectServer(httpsPort);
-            
-            this.httpRedirectServer.listen(httpRedirectPort, () => {
-              logger.info(`HTTP redirect server running on port ${httpRedirectPort} → HTTPS`);
-            });
+        httpsServer.on('error', (err) => {
+          if (err.code === 'EADDRINUSE') {
+            logger.error(`Port ${httpsPort} is already in use`);
+          } else {
+            logger.error('HTTPS server error:', err);
           }
-
-          httpsServer.on('error', (err) => {
-            if (err.code === 'EADDRINUSE') {
-              logger.error(`Port ${httpsPort} is already in use`);
-            } else {
-              logger.error('HTTPS server error:', err);
-            }
-            reject(err);
-          });
+          reject(err);
         });
-      }
+      });
     },
 
     /**
@@ -762,14 +550,11 @@ const FearServer = (function () {
      */
     initialize(paths = DEFAULT_PATHS, ADD_PAYMENTS = false, reactConfig = {}, envConfig = null) {
       try {
-        // Set root directory first
         this.rootDir = paths.root || path.resolve();
-
-        // Load environment variables if config provided
+        
         if (envConfig) {
           this.loadEnv(envConfig);
         } else if (!this.envLoaded) {
-          // Try auto-loading if not already loaded
           this.loadEnv();
         }
 
@@ -804,9 +589,6 @@ const FearServer = (function () {
       }
     },
 
-    /**
-     * Start the server (HTTP or HTTPS based on configuration)
-     */
     startServer() {
       const port = this.fear.getApp().get("PORT") || DEFAULT_PORT;
       const logger = this.fear.getLogger();
@@ -826,7 +608,7 @@ const FearServer = (function () {
           if (this.httpsConfig) {
             return this._startHttpsServer();
           } else {
-            return this.startHttpServer(port);
+            return this._startHttpServer(port);
           }
         })
         .then((server) => {
@@ -840,17 +622,6 @@ const FearServer = (function () {
           
           if (this.httpsConfig) {
             logger.info(`🔒 FEAR API Server Running on HTTPS Port ${this.httpsConfig.httpsPort}`);
-            
-            if (this.httpsConfig.mode === 'greenlock') {
-              logger.info(`🔐 Auto-encryption: ENABLED (Greenlock/Let's Encrypt)`);
-              logger.info(`📧 Domain: ${this.httpsConfig.domain}`);
-              logger.info(`📧 Email: ${this.httpsConfig.email}`);
-            } else if (this.httpsConfig.mode === 'auto-encrypt') {
-              logger.info(`🔐 Auto-encryption: ENABLED (Auto Encrypt/Let's Encrypt)`);
-              logger.info(`📧 Domain: ${this.httpsConfig.domain}`);
-            } else {
-              logger.info(`🔐 Manual SSL certificates loaded`);
-            }
 
             if (this.httpsConfig.redirectHttp) {
               logger.info(`↪️  HTTP → HTTPS redirect enabled`);

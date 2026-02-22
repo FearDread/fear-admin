@@ -5,7 +5,7 @@ async function main() {
   const server = new FearServer();
   const dir = 'backend/admin/build';
 
-  console.log('🚀 Starting Simple HTTPS Server with Auto Encrypt\n');
+  console.log('* Starting Express HTTP / HTTPS Server with FEAR-Server * \n');
 
   server
     .initialize({ root: path.resolve(), app: dir, build: dir }, false)
