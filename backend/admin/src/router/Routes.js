@@ -13,6 +13,7 @@ import CategoryList from "../pages/dashboard/CategoryList.jsx";
 import UserList from "../pages/dashboard/UserList.jsx";
 import ProfilePage from "../pages/dashboard/Profile/Profile.jsx";
 import ReviewList from "../pages/dashboard/ReviewList.jsx";
+import Ebay from "../pages/integrations/Ebay.jsx";
 
 export const routes = {
   auth: [
@@ -33,6 +34,10 @@ export const routes = {
     { path: "/admin/product/new", element: <Wizard type="product" /> },
     { path: "/admin/blog/new", element: <Wizard type="blog" /> }
   ],
+  apps: [
+    { path: "/admin/ebay", label: 'EBay', icon: 'zmdi zmdi-ebay', element: <Ebay />},
+    {}
+  ]
 };
 
 export default routes;

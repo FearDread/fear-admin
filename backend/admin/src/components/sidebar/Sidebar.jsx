@@ -134,7 +134,7 @@ export const Sidebar = (props) => {
         </div>
 
         <ul className="sidebar-menu do-nicescrol">
-          <li className="sidebar-header">MAIN NAVIGATION</li>
+          <h5 className="sidebar-header">E-Commerce</h5>
           {routes.admin.map((item, idx) => (
             (item.label ? (
             <li key={idx}>
@@ -145,10 +145,10 @@ export const Sidebar = (props) => {
             </li>
             ) : (null))
           ))}
-          <li className="">Labels</li>
-          {labels.map((item, idx) => (
+          <h5 className="">Integrations</h5>
+          {routes.apps.map((item, idx) => (
             <li key={idx}>
-              <Link to="#">
+              <Link to={item.path}>
                 <i className={item.icon}></i> <span className="ms-2">{item.label}</span>
               </Link>
             </li>

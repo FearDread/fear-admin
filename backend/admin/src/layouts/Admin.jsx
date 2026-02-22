@@ -10,6 +10,19 @@ import routes from "../router/Routes";
 
 const AdminLayout = ({children}) => {
 
+  const handleSidebar = () => {
+
+  }
+
+  const handleToTop = () => {
+
+  }
+
+  useEffect(() => {
+
+  }, []);
+
+
   return (
     <>
       
@@ -18,12 +31,12 @@ const AdminLayout = ({children}) => {
         routes={routes} 
         />
       
-      <Header />
+      <Header onToggleSidebar={handleSidebar}/>
       <div className="clearfix"></div>
       <div className="content-wrapper">
-      {(children) ? children : <Outlet />}
+        {(children) ? children : <Outlet />}
       </div>
-      <a href="javaScript:void();" className="back-to-top"><i className="fa fa-angle-double-up"></i> </a>
+      <button onClick={handleToTop} className="back-to-top"><i className="fa fa-angle-double-up"></i> </button>
       <Footer />
       </div>
     </>

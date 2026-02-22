@@ -1,4 +1,4 @@
-import React, { useEffect, Suspense } from "react";
+import { useEffect, Suspense } from "react";
 import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { useSelector } from "react-redux";
 import AuthLayout from "./layouts/Auth";
@@ -6,10 +6,7 @@ import AdminLayout from "./layouts/Admin";
 import routes from "./router/Routes";
 import {
   selectIsAuthenticated,
-  selectCurrentUser
 } from "./features/user/slice";
-import { PrivateRoute } from "./router/PrivateRoute";
-import { PublicRoute } from "./router/PublicRoute";
 
 const LoadingFallback = () => (
   <div className="d-flex justify-content-center align-items-center min-vh-100">
@@ -42,29 +39,30 @@ export const App = () => {
 
   return (
     <>
-    
       <AppNavigator />
       <Suspense fallback={<LoadingFallback />}>
         <Routes>
-          {/* Root redirect */}
+
           <Route path="/" element={<Navigate to={(isAuthenticated) ? "/admin/dashboard" : "/auth/login"} replace />} />
           
-          {/* Auth routes - redirect to dashboard if already logged in */}
            <Route path="/auth" exact element={<AuthLayout />}>
             {routes.auth.map((route, idx) => (
               <Route key={idx} path={route.path} element={route.element} />
             ))}
           </Route>
 
-          {/* Protected admin routes */}
           <Route path="/admin" exact element={<AdminLayout />} >
             {routes.admin.map((route, idx) => (
               <Route key={idx} path={route.path} element={route.element} />
             ))}
           </Route>
 
-          
-          {/* 404 Not Found - catch all unmatched routes */}
+          <Route path="/admin" exact element={<AdminLayout />} >
+            {routes.apps.map((route, idx) => (
+              <Route key={idx} path={route.path} element={route.element} />
+            ))}
+          </Route>
+
         { <Route path="/*" element={<Navigate to="/admin/dashboard" replace />} />}
         { <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />}
         </Routes>
