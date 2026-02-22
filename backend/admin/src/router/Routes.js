@@ -1,7 +1,6 @@
 import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
 
-/* ------------------------------------ */
 import Dashboard from "../pages/Dashboard";
 import ProductList from "../pages/dashboard/ProductList";
 import OrderList from "../pages/dashboard/OrderList";
@@ -14,6 +13,7 @@ import UserList from "../pages/dashboard/UserList.jsx";
 import ProfilePage from "../pages/dashboard/Profile/Profile.jsx";
 import ReviewList from "../pages/dashboard/ReviewList.jsx";
 import Ebay from "../pages/integrations/Ebay.jsx";
+import GoogleAnalytics from "../pages/integrations/Analytics.jsx";
 
 export const routes = {
   auth: [
@@ -36,7 +36,7 @@ export const routes = {
   ],
   apps: [
     { path: "/admin/ebay", label: 'EBay', icon: 'zmdi zmdi-ebay', element: <Ebay />},
-    {}
+    { path: "/admin/analytics", label: 'Analytics', icon: 'zmdi zmdi-google', element: <GoogleAnalytics />}
   ]
 };
 
