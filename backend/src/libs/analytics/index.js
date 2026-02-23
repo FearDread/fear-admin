@@ -127,6 +127,7 @@ const Analytics = {
       // ── GET /auth/connect
       // Redirects the user's browser to Google's OAuth consent page.
       connect: async (req, res) => {
+        console.log('google analytics connect :: ', req);
             const params = new URLSearchParams({
                   client_id:     CLIENT_ID,
                   redirect_uri:  REDIRECT_URI,
