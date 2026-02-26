@@ -1,5 +1,5 @@
 import React from 'react';
-import PopularBrands from "../common/PopularBrands";
+import PopularBrands from "../../common/PopularBrands";
 
 export const BrandSection = () => {
 

@@ -5,7 +5,9 @@ import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 
 import Header from "../components/header/Header";
+import Header2 from "../components/header/Header2";
 import Footer from "../components/common/Footer";
+import Footer2 from "../components/common/Footer2";
 import BestSelling from "../components/products/BestSelling";
 
 import { dispatch } from "../features/store";
@@ -100,7 +102,7 @@ const Layout = () => {
     <Elements stripe={stripePromise} options={stripeOptions}>
       <b className="screen-overlay"></b>
       <div className="wrapper">
-        <Header />
+        <Header2 />
       </div>
       <div className="page-wrapper">
         <div className="page-content">
@@ -112,32 +114,8 @@ const Layout = () => {
           <BestSelling />
         </div>
       </div>
-      <Footer categories={(!loading) ? categories : []} products={products}/>
-      
-      {(currentEnv === 'development' && (
-        <div className="consent-container">
-          {status !== "visible" && (
-            <button className="demo-btn" onClick={reset}>
-              ↩ Reset consent
-            </button>
-          )}
-          {status !== null && status !== "visible" && (
+      <Footer2 categories={(!loading) ? categories : []} products={products}/>
 
-            <p style={{ marginTop: "1rem", fontSize: "0.8rem", color: "#555" }}>
-              Consent status: <span style={{ color: "#c9a96e" }}>{status}</span>
-              {acceptedPrefs && ` · ${Object.entries(acceptedPrefs).filter(([,v])=>v).map(([k])=>k).join(", ")}`}
-            </p>
-
-          )}
-        </div>
-
-
-      ))}
-        {status === "rejected" && currentEnv === 'development' && (
-          <div className="accepted-msg">
-            <strong>Cookies declined</strong> — only essential cookies active.
-          </div>
-        )}
       {status === "visible" && (
         <CookieBanner onAccept={handleAccept} onReject={handleReject} />
       )}

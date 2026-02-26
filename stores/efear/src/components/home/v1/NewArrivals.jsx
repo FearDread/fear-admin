@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import OwlCarousel from 'react-owl-carousel';
-import ProductCard from "../products/ProductCard";
+import ProductCard from "../../products/ProductCard";
 import 'owl.carousel/dist/assets/owl.carousel.css';
 import 'owl.carousel/dist/assets/owl.theme.default.css';
 

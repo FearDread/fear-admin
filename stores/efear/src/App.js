@@ -7,6 +7,7 @@ import Layout from "./pages/Layout";
 import Dashboard from "./pages/account/Dashboard"
 
 import Home from './pages/Home';
+import Home2 from "./pages/Home2";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 
@@ -19,9 +20,11 @@ import CheckoutComplete from "./pages/checkout/CheckoutComplete";
 const Blog = lazy(() => import("./pages/Blog"));
 const BlogPost = lazy(() => import("./pages/BlogPost"));
 const About = lazy(() => import("./pages/About"));
+const AboutUs = lazy(() => import("./pages/AboutUs"));
 const Contact = lazy(() => import("./pages/Contact"));
 const FAQ = lazy(() => import("./pages/Faq"));
 const Shop = lazy(() => import("./pages/shop/Shop"));
+const Shop2 = lazy(() => import("./pages/shop/Shop2"));
 const ShopCart = lazy(() => import("./pages/shop/ShopCart"));
 const ShopCategories = lazy(() => import("./pages/shop/ShopCategories"));
 const ProductComparison = lazy(() => import("./pages/products/ProductComparison"));
@@ -39,12 +42,12 @@ const ReturnPolicy = lazy(() => import("./pages/policies/Returns"));
 
 const APP_ROUTES = {
   public: [
-    { path: "/", element: <Home />, exact: true },
-    { path: "/about", element: <About /> },
+    { path: "/", element: <Home2 />, exact: true },
+    { path: "/about", element: <AboutUs /> },
     { path: "/contact", element: <Contact /> },
     { path: "/blog", element: <Blog /> },
     { path: "/blog/:id", element:<BlogPost />},
-    { path: "/shop", element: <Shop /> },
+    { path: "/shop", element: <Shop2 /> },
     { path: "/faq", element: <FAQ /> },
     { path: "/cart", element: <ShopCart /> },
     { path: "/shop-categories", element: <ShopCategories /> },

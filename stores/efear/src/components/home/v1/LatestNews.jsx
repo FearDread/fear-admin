@@ -5,7 +5,7 @@ import {
   selectPosts,
   selectLoading,
   selectError,
-} from '../../features/blog/slice';
+} from '../../../features/blog/slice';
 
 const VISIBLE_ITEMS = 3;
 const AUTO_PLAY_INTERVAL = 4000;
