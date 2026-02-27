@@ -13,6 +13,7 @@ import './assets/css/icons.css';
 import './assets/css/pace.min.css';
 import './assets/css/app.css';
 import './assets/css/index.css';
+import './assets/css/efear.css';
 
 
 function Providers({ children }) {
