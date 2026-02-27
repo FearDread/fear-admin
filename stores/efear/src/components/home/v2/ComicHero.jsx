@@ -44,27 +44,36 @@ export const HeroSection = () => {
     },
   ];
 
+  const handleNext = useCallback(() => {
+    if (isTransitioning) return;
+    setIsTransitioning(true);
+    setCurrentSlide(prev => (prev + 1) % slides.length);
+    setTextKey(prev => prev + 1);
+    setTimeout(() => setIsTransitioning(false), 600);
+  }, [isTransitioning, slides.length]);
+
+  const handlePrev = useCallback(() => {
+    if (isTransitioning) return;
+    setIsTransitioning(true);
+    setCurrentSlide(prev => (prev - 1 + slides.length) % slides.length);
+    setTextKey(prev => prev + 1);
+    setTimeout(() => setIsTransitioning(false), 600);
+  }, [isTransitioning, slides.length]);
+
+  const goToSlide = useCallback((index) => {
+    if (isTransitioning || index === currentSlide) return;
+    setIsTransitioning(true);
+    setCurrentSlide(index);
+    setTextKey(prev => prev + 1);
+    setTimeout(() => setIsTransitioning(false), 600);
+  }, [isTransitioning, currentSlide]);
+
+  // Single auto-play effect
   useEffect(() => {
     if (!isAutoPlaying) return;
-    const t = setInterval(advance, 5500);
-    return () => clearInterval(t);
-  }, [currentSlide, isAutoPlaying]);
-
-  const advance = useCallback(() => {
-    if (isTransitioning) return;
-    setIsTransitioning(true);
-    setCurrentSlide(p => (p + 1) % slides.length);
-    setTextKey(k => k + 1);
-    setTimeout(() => setIsTransitioning(false), 600);
-  }, [isTransitioning]);
-
-  const retreat = useCallback(() => {
-    if (isTransitioning) return;
-    setIsTransitioning(true);
-    setCurrentSlide(p => (p - 1 + slides.length) % slides.length);
-    setTextKey(k => k + 1);
-    setTimeout(() => setIsTransitioning(false), 600);
-  }, [isTransitioning]);
+    const interval = setInterval(handleNext, 5000);
+    return () => clearInterval(interval);
+  }, [isAutoPlaying, handleNext]);
 
   const s = slides[currentSlide];
 
@@ -78,7 +87,7 @@ export const HeroSection = () => {
       {/* halftone texture overlay */}
       <div className="hero-halftone" />
 
-      <div className="hero-inner container" key={textKey}>
+      <div className="hero-inner container" key={`inner-${textKey}`}>
         {/* ── Text ── */}
         <div className="hero-text">
           <span className="hero-eyebrow">{s.eyebrow}</span>
@@ -99,8 +108,8 @@ export const HeroSection = () => {
       </div>
 
       {/* nav */}
-      <button className="hero-nav prev" onClick={retreat} disabled={isTransitioning}>&#8592;</button>
-      <button className="hero-nav next" onClick={advance} disabled={isTransitioning}>&#8594;</button>
+      <button className="hero-nav prev" onClick={handlePrev} disabled={isTransitioning}>&#8592;</button>
+      <button className="hero-nav next" onClick={handleNext} disabled={isTransitioning}>&#8594;</button>
 
       {/* dots */}
       <div className="hero-dots">
@@ -108,13 +117,13 @@ export const HeroSection = () => {
           <button
             key={sl.id}
             className={`hero-dot${i === currentSlide ? ' active' : ''}`}
-            onClick={() => { if (!isTransitioning) { setCurrentSlide(i); setTextKey(k => k + 1); } }}
+            onClick={() => goToSlide(i)}
           />
         ))}
       </div>
 
       {/* progress bar */}
-      {isAutoPlaying && <div className="hero-progress" key={currentSlide} />}
+      {isAutoPlaying && <div className="hero-progress" key={`progress-${currentSlide}`} />}
     </section>
   );
 };

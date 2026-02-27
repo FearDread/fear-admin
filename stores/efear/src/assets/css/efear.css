@@ -268,7 +268,7 @@ a { transition: color .2s; }
       .trust-item span { font-size: .75rem; color: rgba(255,255,255,.45); }
     
 
-        .cat-section { padding: 5rem 0; background: #0d0d0d; }
+        .cat-section { padding: 5rem 0; }
         .cat-header { text-align: center; margin-bottom: 3rem; }
         .cat-eyebrow {
           font-family: 'Courier New', monospace;
@@ -433,7 +433,7 @@ a { transition: color .2s; }
       .btn-cta-text:hover { color: #fff; border-color: #fff; }
     
 
-        .offers-section { padding: 5rem 0; background: #0d0d0d; }
+        .offers-section { padding: 5rem 0; }
         .offers-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; }
         .offer-card {
           position: relative; overflow: hidden;
@@ -2115,7 +2115,7 @@ a { transition: color .2s; }
 ═══════════════════════════════════════════════════════════════════════════ */
 
 
-  .ct-page { background: #0d0d0d; min-height: 100vh; }
+  .ct-page { min-height: 100vh; }
 
   /* ── Page Hero ── */
   .ct-hero {
@@ -2442,7 +2442,6 @@ a { transition: color .2s; }
   /* ── Page shell ── */
   .auth-page {
     min-height: 100vh;
-    background: #0d0d0d;
     display: flex;
   }
 
