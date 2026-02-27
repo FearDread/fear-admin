@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { dispatch } from "../../features/store";
+import { dispatch } from '../../features/store';
 import {
   loginUser,
   loginWithGoogle,
@@ -14,331 +14,239 @@ import {
   selectRememberMe,
   clearError,
   setCurrentUser,
-  setIsAuthenticated
+  setIsAuthenticated,
 } from '../../features/user/slice';
-import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
-import GoogleAuth from "./components/GoogleAuth";
+import GoogleAuth from './components/GoogleAuth';
+import { T, authStyles } from '../../components/styles';
 
+/* ─────────────────────────────────────────────
+   LOGIN PAGE
+───────────────────────────────────────────────*/
 export const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Redux selectors
   const isAuthenticated = useSelector(selectIsAuthenticated);
-  const loading = useSelector(selectUserLoading);
-  const error = useSelector(selectUserError);
-  const rememberMe = useSelector(selectRememberMe);
+  const loading         = useSelector(selectUserLoading);
+  const error           = useSelector(selectUserError);
 
-  // Local form state
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-  });
+  const [formData, setFormData]         = useState({ email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
-  const [localRememberMe, setLocalRememberMe] = useState(false);
+  const [localRemember, setLocalRemember] = useState(false);
   const [validationErrors, setValidationErrors] = useState({});
 
-  // Redirect path after login (from location state or default to home)
   const from = location.state?.from?.pathname || '/';
 
-  // Redirect if already authenticated
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate(from, { replace: true });
-    }
-  }, [isAuthenticated, navigate, from]);
+  useEffect(() => { if (isAuthenticated) navigate(from, { replace: true }); }, [isAuthenticated]);
+  useEffect(() => { dispatch(clearError()); }, []);
 
-  // Clear errors on mount
-  useEffect(() => {
-    dispatch(clearError());
-  }, [dispatch]);
-
-  // Handle input change
-  const handleInputChange = (e) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    
-    // Clear validation error for this field
-    if (validationErrors[name]) {
-      setValidationErrors(prev => ({ ...prev, [name]: '' }));
-    }
+    if (validationErrors[name]) setValidationErrors(prev => ({ ...prev, [name]: '' }));
   };
 
-  // Handle remember me toggle
-  const handleRememberMeChange = (e) => {
-    setLocalRememberMe(e.target.checked);
-  };
-
-  // Toggle password visibility
-  const togglePasswordVisibility = () => {
-    setShowPassword(prev => !prev);
-  };
-
-  // Validate form
-  const validateForm = () => {
+  const validate = () => {
     const errors = {};
-
-    // Email validation
-    if (!formData.email) {
-      errors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      errors.email = 'Email is invalid';
-    }
-
-    // Password validation
-    if (!formData.password) {
-      errors.password = 'Password is required';
-    } else if (formData.password.length < 6) {
-      errors.password = 'Password must be at least 6 characters';
-    }
-
+    if (!formData.email)                               errors.email    = 'Email is required';
+    else if (!/\S+@\S+\.\S+/.test(formData.email))    errors.email    = 'Email is invalid';
+    if (!formData.password)                            errors.password = 'Password is required';
+    else if (formData.password.length < 6)             errors.password = 'Password must be at least 6 characters';
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
   };
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Validate form
-    if (!validateForm()) {
-      return;
-    }
-
-    // Dispatch login action
+    if (!validate()) return;
     const result = await dispatch(loginUser({
-      email: formData.email,
-      password: formData.password,
-      rememberMe: localRememberMe,
+      email: formData.email, password: formData.password, rememberMe: localRemember,
     }));
-
     if (result.success) {
-      // Store remember me preference
-      dispatch(setRememberMe(localRememberMe));
+      dispatch(setRememberMe(localRemember));
       dispatch(setCurrentUser(result.user));
       dispatch(setIsAuthenticated(true));
-
-      // Navigation is handled by useEffect when isAuthenticated changes
-      console.log('Login successful');
       navigate('/account/dashboard', { replace: true });
     }
   };
 
-  // Handle Google login
   const handleGoogleLogin = async () => {
-    try {
-      const result = await dispatch(loginWithGoogle());
-      if (loginWithGoogle.fulfilled.match(result)) {
-        console.log('Google login successful');
-      }
-    } catch (error) {
-      console.error('Google login error:', error);
-    }
+    try { await dispatch(loginWithGoogle()); } catch (err) { console.error(err); }
   };
-
-  // Handle Facebook login
   const handleFacebookLogin = async () => {
-    try {
-      const result = await dispatch(loginWithFacebook());
-      if (loginWithFacebook.fulfilled.match(result)) {
-        console.log('Facebook login successful');
-      }
-    } catch (error) {
-      console.error('Facebook login error:', error);
-    }
+    try { await dispatch(loginWithFacebook()); } catch (err) { console.error(err); }
   };
 
   return (
     <>
-      <section>
-        <div className="container">
-          <div className="section-authentication-signin d-flex align-items-center justify-content-center my-5 my-lg-0">
-            <div className="row row-cols-1 row-cols-xl-2">
-              <div className="col mx-auto">
-                <div className="card">
-                  <div className="card-body">
-                    <div className="border p-4 rounded">
-                      <div className="text-center">
-                        <h3>Sign in</h3>
-                        <p>
-                          Don't have an account yet?{' '}
-                          <Link to="/register">Sign up here</Link>
-                        </p>
-                      </div>
+      <style>{authStyles}</style>
+      <link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Mono:ital@0;1&display=swap" rel="stylesheet" />
 
-                      {/* Error Alert */}
-                      {error && (
-                        <div className="alert alert-danger alert-dismissible fade show" role="alert">
-                          <i className='bx bx-error-circle me-2'></i>
-                          {error}
-                          <button 
-                            type="button" 
-                            className="btn-close" 
-                            onClick={() => dispatch(clearError())}
-                          ></button>
-                        </div>
-                      )}
+      <div className="auth-page">
 
-                      {/* Success message if coming from registration */}
-                      {location.state?.message && (
-                        <div className="alert alert-success alert-dismissible fade show" role="alert">
-                          <i className='bx bx-check-circle me-2'></i>
-                          {location.state.message}
-                          <button 
-                            type="button" 
-                            className="btn-close"
-                          ></button>
-                        </div>
-                      )}
+        {/* ── LEFT BRAND PANEL ── */}
+        <aside className="auth-left">
+          <div className="auth-left-stripe" />
+          <span className="auth-left-ghost" aria-hidden="true">LOGIN</span>
+          <div className="auth-left-inner">
+            <Link to="/" className="auth-left-logo">e<span>Fear</span></Link>
 
-                      {/* Social Login Buttons */}
-                      <div className="d-grid">
-                        <GoogleAuth />
-                        <button 
-                          className="btn btn-light"
-                          onClick={handleFacebookLogin}
-                          disabled={loading}
-                        >
-                          <i className="bx bxl-facebook"></i>
-                          Sign in with Facebook
-                        </button>
-                      </div>
+            <h2 className="auth-left-heading">
+              Your Stash<br /><span>Awaits.</span>
+            </h2>
+            <p className="auth-left-sub">
+              Comics bagged and boarded. E-books ready to download. Cards waiting to be graded. Log in before someone else snags that book you've been eyeing.
+            </p>
 
-                      <div className="login-separater text-center mb-4">
-                        <span>OR SIGN IN WITH EMAIL</span>
-                        <hr />
-                      </div>
-
-                      {/* Login Form */}
-                      <div className="form-body">
-                        <form className="row g-3" onSubmit={handleSubmit}>
-                          {/* Email Field */}
-                          <div className="col-12">
-                            <label htmlFor="inputEmailAddress" className="form-label">
-                              Email Address
-                            </label>
-                            <input 
-                              type="email" 
-                              className={`form-control ${validationErrors.email ? 'is-invalid' : ''}`}
-                              id="inputEmailAddress" 
-                              name="email"
-                              placeholder="Email Address"
-                              value={formData.email}
-                              onChange={handleInputChange}
-                              disabled={loading}
-                              autoComplete="email"
-                            />
-                            {validationErrors.email && (
-                              <div className="invalid-feedback">
-                                {validationErrors.email}
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Password Field */}
-                          <div className="col-12">
-                            <label htmlFor="inputChoosePassword" className="form-label">
-                              Enter Password
-                            </label>
-                            <div className="input-group" id="show_hide_password">
-                              <input 
-                                type={showPassword ? "text" : "password"}
-                                className={`form-control border-end-0 ${validationErrors.password ? 'is-invalid' : ''}`}
-                                id="inputChoosePassword"
-                                name="password"
-                                placeholder="Enter Password"
-                                value={formData.password}
-                                onChange={handleInputChange}
-                                disabled={loading}
-                                autoComplete="current-password"
-                              />
-                              <button 
-                                type="button"
-                                className="input-group-text bg-transparent"
-                                onClick={togglePasswordVisibility}
-                                disabled={loading}
-                              >
-                                <i className={`bx ${showPassword ? 'bx-show' : 'bx-hide'}`}></i>
-                              </button>
-                              {validationErrors.password && (
-                                <div className="invalid-feedback d-block">
-                                  {validationErrors.password}
-                                </div>
-                              )}
-                            </div>
-                          </div>
-
-                          {/* Remember Me and Forgot Password */}
-                          <div className="col-md-6">
-                            <div className="form-check form-switch">
-                              <input 
-                                className="form-check-input" 
-                                type="checkbox" 
-                                id="flexSwitchCheckChecked"
-                                checked={localRememberMe}
-                                onChange={handleRememberMeChange}
-                                disabled={loading}
-                              />
-                              <label 
-                                className="form-check-label" 
-                                htmlFor="flexSwitchCheckChecked"
-                              >
-                                Remember Me
-                              </label>
-                            </div>
-                          </div>
-                          <div className="col-md-6 text-end">
-                            <Link to="/forgot-password">Forgot Password?</Link>
-                          </div>
-
-                          {/* Submit Button */}
-                          <div className="col-12">
-                            <div className="d-grid">
-                              <button 
-                                type="submit" 
-                                className="btn btn-light"
-                                disabled={loading}
-                              >
-                                {loading ? (
-                                  <>
-                                    <span 
-                                      className="spinner-border spinner-border-sm me-2" 
-                                      role="status" 
-                                      aria-hidden="true"
-                                    ></span>
-                                    Signing in...
-                                  </>
-                                ) : (
-                                  <>
-                                    <i className="bx bxs-lock-open"></i>
-                                    Sign in
-                                  </>
-                                )}
-                              </button>
-                            </div>
-                          </div>
-                        </form>
-                      </div>
-
-                      {/* Additional Links */}
-                      <div className="text-center mt-4">
-                        <p className="mb-0">
-                          <small className="text-muted">
-                            By signing in, you agree to our{' '}
-                            <Link to="/terms">Terms of Service</Link>
-                            {' '}and{' '}
-                            <Link to="/privacy">Privacy Policy</Link>
-                          </small>
-                        </p>
-                      </div>
-                    </div>
+            <div className="auth-features">
+              {[
+                { icon: '📦', title: 'Free Shipping',    desc: 'On all orders over $49. No tricks, no asterisks.', accent: T.red    },
+                { icon: '🧤', title: 'Mint Condition',   desc: 'Every comic arrives bagged, boarded, near-mint.',  accent: T.orange },
+                { icon: '🔄', title: '30-Day Returns',   desc: "Regret your choices? So do we. Send it back.",     accent: T.teal   },
+                { icon: '💬', title: '24/7 Support',     desc: "We can't sleep either. Send us a message.",        accent: T.red    },
+              ].map(f => (
+                <div className="auth-feature" key={f.title} style={{ '--feat-accent': f.accent }}>
+                  <span className="auth-feature-icon">{f.icon}</span>
+                  <div>
+                    <p className="auth-feature-title">{f.title}</p>
+                    <p className="auth-feature-desc">{f.desc}</p>
                   </div>
                 </div>
+              ))}
+            </div>
+
+            <div className="auth-left-foot">
+              <div className="auth-left-foot-label">By the numbers</div>
+              <div className="auth-stat-row">
+                {[['1000+','Titles'], ['NM','Quality'], ['30','Day Returns']].map(([v, l]) => (
+                  <div key={l}>
+                    <span className="auth-stat-val">{v}</span>
+                    <span className="auth-stat-lbl">{l}</span>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </aside>
+
+        {/* ── RIGHT FORM PANEL ── */}
+        <main className="auth-right">
+          <div className="auth-form-wrap">
+            <span className="auth-form-eyebrow">Welcome back</span>
+            <h1 className="auth-form-title">Sign <span>In</span></h1>
+            <p className="auth-form-sub">
+              Don't have an account? <Link to="/register">Create one here →</Link>
+            </p>
+
+            {/* Redux error alert */}
+            {error && (
+              <div className="auth-alert error">
+                <span className="auth-alert-icon">⚠</span>
+                <span style={{ flex: 1 }}>{error}</span>
+                <button className="auth-alert-close" onClick={() => dispatch(clearError())}>✕</button>
+              </div>
+            )}
+
+            {/* Success from registration redirect */}
+            {location.state?.message && (
+              <div className="auth-alert success">
+                <span className="auth-alert-icon">✓</span>
+                <span>{location.state.message}</span>
+              </div>
+            )}
+
+            {/* Social login */}
+            <div className="auth-socials">
+              <GoogleAuth />
+              <button className="auth-social-btn" onClick={handleFacebookLogin} disabled={loading}>
+                <span className="auth-social-icon">𝒇</span>
+                Continue with Facebook
+              </button>
+            </div>
+
+            <div className="auth-divider">
+              <div className="auth-divider-line" />
+              <span className="auth-divider-text">Or sign in with email</span>
+              <div className="auth-divider-line" />
+            </div>
+
+            {/* Login form */}
+            <form onSubmit={handleSubmit} noValidate>
+              {/* Email */}
+              <div className="auth-field">
+                <label htmlFor="lg-email" className="auth-label">Email Address <span className="auth-label-req">*</span></label>
+                <input
+                  id="lg-email" type="email" name="email"
+                  className={`auth-input${validationErrors.email ? ' error' : ''}`}
+                  placeholder="you@example.com"
+                  value={formData.email}
+                  onChange={handleChange}
+                  disabled={loading}
+                  autoComplete="email"
+                />
+                {validationErrors.email && <div className="auth-field-error">{validationErrors.email}</div>}
+              </div>
+
+              {/* Password */}
+              <div className="auth-field">
+                <label htmlFor="lg-password" className="auth-label">Password <span className="auth-label-req">*</span></label>
+                <div className="auth-pw-wrap">
+                  <input
+                    id="lg-password"
+                    type={showPassword ? 'text' : 'password'}
+                    name="password"
+                    className={`auth-input${validationErrors.password ? ' error' : ''}`}
+                    placeholder="Enter your password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    disabled={loading}
+                    autoComplete="current-password"
+                  />
+                  <button
+                    type="button" className="auth-pw-toggle"
+                    onClick={() => setShowPassword(p => !p)}
+                    disabled={loading}
+                    title={showPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showPassword ? '🙈' : '👁'}
+                  </button>
+                </div>
+                {validationErrors.password && <div className="auth-field-error">{validationErrors.password}</div>}
+              </div>
+
+              {/* Remember me + Forgot */}
+              <div className="auth-remember-row">
+                <div
+                  className="auth-check-row"
+                  onClick={() => setLocalRemember(r => !r)}
+                  style={{ cursor: 'pointer', userSelect: 'none' }}
+                >
+                  <div className={`auth-check-box${localRemember ? ' checked' : ''}`} />
+                  <span className="auth-check-label">Remember me</span>
+                </div>
+                <Link to="/forgot-password" className="auth-forgot">Forgot Password?</Link>
+              </div>
+
+              {/* Submit */}
+              <button type="submit" className="auth-submit" disabled={loading}>
+                {loading
+                  ? <><div className="auth-spinner" /> Signing In...</>
+                  : <>🔓 &nbsp; Sign In</>
+                }
+              </button>
+            </form>
+
+            <div className="auth-form-foot">
+              By signing in you agree to our{' '}
+              <Link to="/terms">Terms of Service</Link> and{' '}
+              <Link to="/privacy">Privacy Policy</Link>.
+            </div>
+          </div>
+        </main>
+      </div>
+
+      {/* Animated bottom border */}
+      <div className="auth-animated-border" />
     </>
   );
 };

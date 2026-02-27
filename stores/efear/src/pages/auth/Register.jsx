@@ -11,559 +11,355 @@ import {
   selectUserError,
   clearError,
 } from '../../features/user/slice';
+import { T, authStyles } from '../../components/styles';
 
+const countries = [
+  'United States','United Kingdom','Canada','Australia','India',
+  'Germany','France','Spain','Italy','Japan','China','Brazil',
+  'Mexico','South Africa','Dubai',
+];
+
+const calcStrength = (pw) => {
+  let s = 0;
+  if (pw.length >= 8)                           s++;
+  if (pw.length >= 12)                          s++;
+  if (/[a-z]/.test(pw) && /[A-Z]/.test(pw))    s++;
+  if (/\d/.test(pw))                            s++;
+  if (/[^a-zA-Z0-9]/.test(pw))                 s++;
+  const labels = ['', 'Very Weak', 'Weak', 'Fair', 'Good', 'Strong'];
+  const colors = ['', T.red, T.red, T.orange, T.orange, T.teal];
+  return { score: s, label: labels[s], color: colors[s] };
+};
+
+/* ─────────────────────────────────────────────
+   REGISTER PAGE
+───────────────────────────────────────────────*/
 export const Register = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // Redux selectors
   const isAuthenticated = useSelector(selectIsAuthenticated);
-  const loading = useSelector(selectUserLoading);
-  const error = useSelector(selectUserError);
+  const loading         = useSelector(selectUserLoading);
+  const error           = useSelector(selectUserError);
 
-  // Local form state
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    displayName: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    country: 'United States',
-    agreeToTerms: false,
+    firstName: '', lastName: '', email: '',
+    password: '', confirmPassword: '',
+    country: 'United States', agreeToTerms: false,
   });
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showPw,        setShowPw]        = useState(false);
+  const [showConfirmPw, setShowConfirmPw] = useState(false);
   const [validationErrors, setValidationErrors] = useState({});
-  const [passwordStrength, setPasswordStrength] = useState({
-    score: 0,
-    label: '',
-    color: '',
-  });
+  const [strength, setStrength] = useState({ score: 0, label: '', color: '' });
 
-  // Country list
-  const countries = [
-    'United States',
-    'United Kingdom',
-    'Canada',
-    'Australia',
-    'India',
-    'Germany',
-    'France',
-    'Spain',
-    'Italy',
-    'Japan',
-    'China',
-    'Brazil',
-    'Mexico',
-    'South Africa',
-    'Dubai',
-  ];
-
-  // Redirect if already authenticated
+  useEffect(() => { if (isAuthenticated) navigate('/', { replace: true }); }, [isAuthenticated]);
+  useEffect(() => { dispatch(clearError()); }, []);
   useEffect(() => {
-    if (isAuthenticated) {
-      navigate('/', { replace: true });
-    }
-  }, [isAuthenticated, navigate]);
-
-  // Clear errors on mount
-  useEffect(() => {
-    dispatch(clearError());
-  }, [dispatch]);
-
-  // Calculate password strength
-  useEffect(() => {
-    if (formData.password) {
-      const strength = calculatePasswordStrength(formData.password);
-      setPasswordStrength(strength);
-    } else {
-      setPasswordStrength({ score: 0, label: '', color: '' });
-    }
+    setStrength(formData.password ? calcStrength(formData.password) : { score: 0, label: '', color: '' });
   }, [formData.password]);
 
-  // Password strength calculator
-  const calculatePasswordStrength = (password) => {
-    let score = 0;
-    
-    if (password.length >= 8) score++;
-    if (password.length >= 12) score++;
-    if (/[a-z]/.test(password) && /[A-Z]/.test(password)) score++;
-    if (/\d/.test(password)) score++;
-    if (/[^a-zA-Z0-9]/.test(password)) score++;
-
-    const strengths = [
-      { score: 0, label: '', color: '' },
-      { score: 1, label: 'Very Weak', color: 'danger' },
-      { score: 2, label: 'Weak', color: 'warning' },
-      { score: 3, label: 'Fair', color: 'info' },
-      { score: 4, label: 'Good', color: 'primary' },
-      { score: 5, label: 'Strong', color: 'success' },
-    ];
-
-    return strengths[score];
-  };
-
-  // Handle input change
-  const handleInputChange = (e) => {
+  const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value,
-    }));
-    
-    // Clear validation error for this field
-    if (validationErrors[name]) {
-      setValidationErrors(prev => ({ ...prev, [name]: '' }));
-    }
+    setFormData(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
+    if (validationErrors[name]) setValidationErrors(prev => ({ ...prev, [name]: '' }));
   };
 
-  // Toggle password visibility
-  const togglePasswordVisibility = (field) => {
-    if (field === 'password') {
-      setShowPassword(prev => !prev);
-    } else {
-      setShowConfirmPassword(prev => !prev);
-    }
-  };
-
-  // Validate form
-  const validateForm = () => {
+  const validate = () => {
     const errors = {};
-
-    // First name validation
-    if (!formData.firstName.trim()) {
-      errors.firstName = 'First name is required';
-    } else if (formData.firstName.trim().length < 2) {
-      errors.firstName = 'First name must be at least 2 characters';
-    }
-
-    // Last name validation
-    if (!formData.lastName.trim()) {
-      errors.lastName = 'Last name is required';
-    } else if (formData.lastName.trim().length < 2) {
-      errors.lastName = 'Last name must be at least 2 characters';
-    }
-
-    // Email validation
-    if (!formData.email) {
-      errors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      errors.email = 'Email is invalid';
-    }
-
-    // Password validation
-    if (!formData.password) {
-      errors.password = 'Password is required';
-    } else if (formData.password.length < 8) {
-      errors.password = 'Password must be at least 8 characters';
-    } else if (passwordStrength.score < 3) {
-      errors.password = 'Password is too weak. Use a stronger password';
-    }
-
-    // Confirm password validation
-    if (!formData.confirmPassword) {
-      errors.confirmPassword = 'Please confirm your password';
-    } else if (formData.password !== formData.confirmPassword) {
-      errors.confirmPassword = 'Passwords do not match';
-    }
-
-    // Country validation
-    if (!formData.country) {
-      errors.country = 'Please select a country';
-    }
-
-    // Terms agreement validation
-    if (!formData.agreeToTerms) {
-      errors.agreeToTerms = 'You must agree to the Terms & Conditions';
-    }
-
+    if (!formData.firstName.trim())                         errors.firstName       = 'First name is required';
+    else if (formData.firstName.trim().length < 2)          errors.firstName       = 'At least 2 characters';
+    if (!formData.lastName.trim())                          errors.lastName        = 'Last name is required';
+    else if (formData.lastName.trim().length < 2)           errors.lastName        = 'At least 2 characters';
+    if (!formData.email)                                    errors.email           = 'Email is required';
+    else if (!/\S+@\S+\.\S+/.test(formData.email))         errors.email           = 'Email is invalid';
+    if (!formData.password)                                 errors.password        = 'Password is required';
+    else if (formData.password.length < 8)                  errors.password        = 'Minimum 8 characters';
+    else if (strength.score < 3)                            errors.password        = 'Password is too weak';
+    if (!formData.confirmPassword)                          errors.confirmPassword = 'Please confirm your password';
+    else if (formData.password !== formData.confirmPassword) errors.confirmPassword = 'Passwords do not match';
+    if (!formData.country)                                  errors.country         = 'Please select a country';
+    if (!formData.agreeToTerms)                             errors.agreeToTerms    = 'You must agree to the terms';
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
   };
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Validate form
-    if (!validateForm()) {
-      return;
-    }
-
-    // Prepare registration data
-    const registrationData = {
-      displayName: formData.firstName.trim() + ' ' + formData.lastName.trim(),
-      firstName: formData.firstName.trim(),
-      lastName: formData.lastName.trim(),
-      email: formData.email.trim().toLowerCase(),
-      password: formData.password,
-      country: formData.country,
-    };
-
-    // Dispatch register action
-    const result = await dispatch(register(registrationData));
-
+    if (!validate()) return;
+    const result = await dispatch(register({
+      displayName: `${formData.firstName.trim()} ${formData.lastName.trim()}`,
+      firstName:   formData.firstName.trim(),
+      lastName:    formData.lastName.trim(),
+      email:       formData.email.trim().toLowerCase(),
+      password:    formData.password,
+      country:     formData.country,
+    }));
     if (register.fulfilled.match(result)) {
-      // Registration successful
-      console.log('Registration successful');
-      
-      // Redirect to login with success message
-      navigate('/login', {
-        state: {
-          message: 'Registration successful! Please sign in with your credentials.',
-        },
-      });
+      navigate('/login', { state: { message: 'Account created! Please sign in.' } });
     }
   };
 
-  // Handle Google signup
-  const handleGoogleSignup = async () => {
-    try {
-      const result = await dispatch(loginWithGoogle());
-      if (loginWithGoogle.fulfilled.match(result)) {
-        console.log('Google signup successful');
-      }
-    } catch (error) {
-      console.error('Google signup error:', error);
-    }
-  };
+  const handleGoogle   = async () => { try { await dispatch(loginWithGoogle());   } catch (e) {} };
+  const handleFacebook = async () => { try { await dispatch(loginWithFacebook()); } catch (e) {} };
 
-  // Handle Facebook signup
-  const handleFacebookSignup = async () => {
-    try {
-      const result = await dispatch(loginWithFacebook());
-      if (loginWithFacebook.fulfilled.match(result)) {
-        console.log('Facebook signup successful');
-      }
-    } catch (error) {
-      console.error('Facebook signup error:', error);
-    }
-  };
+  const pwMatch = formData.confirmPassword && formData.password === formData.confirmPassword;
 
   return (
     <>
-      <section className="py-0 py-lg-5">
-        <div className="container">
-          <div className="section-authentication-signin d-flex align-items-center justify-content-center my-5 my-lg-0">
-            <div className="row row-cols-1 row-cols-lg-1 row-cols-xl-2">
-              <div className="col mx-auto">
-                <div className="card mb-0">
-                  <div className="card-body">
-                    <div className="border p-4 rounded">
-                      <div className="text-center">
-                        <h3>Sign Up</h3>
-                        <p>
-                          Already have an account?{' '}
-                          <Link to="/login">Sign in here</Link>
-                        </p>
-                      </div>
+      <style>{authStyles}</style>
+      <link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Mono:ital@0;1&display=swap" rel="stylesheet" />
 
-                      {/* Error Alert */}
-                      {error && (
-                        <div className="alert alert-danger alert-dismissible fade show" role="alert">
-                          <i className='bx bx-error-circle me-2'></i>
-                          {error}
-                          <button 
-                            type="button" 
-                            className="btn-close" 
-                            onClick={() => dispatch(clearError())}
-                          ></button>
-                        </div>
-                      )}
+      <div className="auth-page">
 
-                      {/* Social Signup Buttons */}
-                      <div className="d-grid">
-                        <button 
-                          className="btn my-4 shadow-sm btn-light"
-                          onClick={handleGoogleSignup}
-                          disabled={loading}
-                        >
-                          <span className="d-flex justify-content-center align-items-center">
-                            <img 
-                              className="me-2" 
-                              src="assets/images/icons/search.svg" 
-                              width="16" 
-                              alt="Google" 
-                            />
-                            <span>Sign Up with Google</span>
-                          </span>
-                        </button>
-                        <button 
-                          className="btn btn-light"
-                          onClick={handleFacebookSignup}
-                          disabled={loading}
-                        >
-                          <i className="bx bxl-facebook"></i>
-                          Sign Up with Facebook
-                        </button>
-                      </div>
+        {/* ── LEFT BRAND PANEL ── */}
+        <aside className="auth-left">
+          <div className="auth-left-stripe" />
+          <span className="auth-left-ghost" aria-hidden="true">JOIN</span>
+          <div className="auth-left-inner">
+            <Link to="/" className="auth-left-logo">e<span>Fear</span></Link>
 
-                      <div className="login-separater text-center mb-4">
-                        <span>OR SIGN UP WITH EMAIL</span>
-                        <hr />
-                      </div>
+            <h2 className="auth-left-heading">
+              Join The<br /><span>Collector's</span><br />Guild.
+            </h2>
+            <p className="auth-left-sub">
+              Create an account and get early access to new arrivals, exclusive deals, and the quiet satisfaction of knowing your pull list is being handled by people who genuinely care.
+            </p>
 
-                      {/* Registration Form */}
-                      <div className="form-body">
-                        <form className="row g-3" onSubmit={handleSubmit} noValidate>
-                          {/* First Name */}
-                          <div className="col-sm-6">
-                            <label htmlFor="inputFirstName" className="form-label">
-                              First Name <span className="text-danger">*</span>
-                            </label>
-                            <input 
-                              type="text" 
-                              className={`form-control ${validationErrors.firstName ? 'is-invalid' : ''}`}
-                              id="inputFirstName"
-                              name="firstName"
-                              placeholder="John"
-                              value={formData.firstName}
-                              onChange={handleInputChange}
-                              disabled={loading}
-                              autoComplete="given-name"
-                            />
-                            {validationErrors.firstName && (
-                              <div className="invalid-feedback">
-                                {validationErrors.firstName}
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Last Name */}
-                          <div className="col-sm-6">
-                            <label htmlFor="inputLastName" className="form-label">
-                              Last Name <span className="text-danger">*</span>
-                            </label>
-                            <input 
-                              type="text" 
-                              className={`form-control ${validationErrors.lastName ? 'is-invalid' : ''}`}
-                              id="inputLastName"
-                              name="lastName"
-                              placeholder="Doe"
-                              value={formData.lastName}
-                              onChange={handleInputChange}
-                              disabled={loading}
-                              autoComplete="family-name"
-                            />
-                            {validationErrors.lastName && (
-                              <div className="invalid-feedback">
-                                {validationErrors.lastName}
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Email */}
-                          <div className="col-12">
-                            <label htmlFor="inputEmailAddress" className="form-label">
-                              Email Address <span className="text-danger">*</span>
-                            </label>
-                            <input 
-                              type="email" 
-                              className={`form-control ${validationErrors.email ? 'is-invalid' : ''}`}
-                              id="inputEmailAddress"
-                              name="email"
-                              placeholder="example@user.com"
-                              value={formData.email}
-                              onChange={handleInputChange}
-                              disabled={loading}
-                              autoComplete="email"
-                            />
-                            {validationErrors.email && (
-                              <div className="invalid-feedback">
-                                {validationErrors.email}
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Password */}
-                          <div className="col-12">
-                            <label htmlFor="inputChoosePassword" className="form-label">
-                              Password <span className="text-danger">*</span>
-                            </label>
-                            <div className="input-group">
-                              <input 
-                                type={showPassword ? "text" : "password"}
-                                className={`form-control border-end-0 ${validationErrors.password ? 'is-invalid' : ''}`}
-                                id="inputChoosePassword"
-                                name="password"
-                                placeholder="Enter Password"
-                                value={formData.password}
-                                onChange={handleInputChange}
-                                disabled={loading}
-                                autoComplete="new-password"
-                              />
-                              <button 
-                                type="button"
-                                className="input-group-text bg-transparent"
-                                onClick={() => togglePasswordVisibility('password')}
-                                disabled={loading}
-                              >
-                                <i className={`bx ${showPassword ? 'bx-show' : 'bx-hide'}`}></i>
-                              </button>
-                              {validationErrors.password && (
-                                <div className="invalid-feedback d-block">
-                                  {validationErrors.password}
-                                </div>
-                              )}
-                            </div>
-                            
-                            {/* Password Strength Indicator */}
-                            {formData.password && passwordStrength.label && (
-                              <div className="mt-2">
-                                <div className="progress" style={{ height: '5px' }}>
-                                  <div 
-                                    className={`progress-bar bg-${passwordStrength.color}`}
-                                    role="progressbar"
-                                    style={{ width: `${(passwordStrength.score / 5) * 100}%` }}
-                                    aria-valuenow={passwordStrength.score}
-                                    aria-valuemin="0"
-                                    aria-valuemax="5"
-                                  ></div>
-                                </div>
-                                <small className={`text-${passwordStrength.color}`}>
-                                  Password Strength: {passwordStrength.label}
-                                </small>
-                              </div>
-                            )}
-                            <small className="text-muted">
-                              Use 8+ characters with a mix of letters, numbers & symbols
-                            </small>
-                          </div>
-
-                          {/* Confirm Password */}
-                          <div className="col-12">
-                            <label htmlFor="inputConfirmPassword" className="form-label">
-                              Confirm Password <span className="text-danger">*</span>
-                            </label>
-                            <div className="input-group">
-                              <input 
-                                type={showConfirmPassword ? "text" : "password"}
-                                className={`form-control border-end-0 ${validationErrors.confirmPassword ? 'is-invalid' : ''}`}
-                                id="inputConfirmPassword"
-                                name="confirmPassword"
-                                placeholder="Confirm Password"
-                                value={formData.confirmPassword}
-                                onChange={handleInputChange}
-                                disabled={loading}
-                                autoComplete="new-password"
-                              />
-                              <button 
-                                type="button"
-                                className="input-group-text bg-transparent"
-                                onClick={() => togglePasswordVisibility('confirm')}
-                                disabled={loading}
-                              >
-                                <i className={`bx ${showConfirmPassword ? 'bx-show' : 'bx-hide'}`}></i>
-                              </button>
-                              {validationErrors.confirmPassword && (
-                                <div className="invalid-feedback d-block">
-                                  {validationErrors.confirmPassword}
-                                </div>
-                              )}
-                            </div>
-                          </div>
-
-                          {/* Country */}
-                          <div className="col-12">
-                            <label htmlFor="inputSelectCountry" className="form-label">
-                              Country <span className="text-danger">*</span>
-                            </label>
-                            <select 
-                              className={`form-select ${validationErrors.country ? 'is-invalid' : ''}`}
-                              id="inputSelectCountry"
-                              name="country"
-                              value={formData.country}
-                              onChange={handleInputChange}
-                              disabled={loading}
-                            >
-                              <option value="">Select Country</option>
-                              {countries.map((country) => (
-                                <option key={country} value={country}>
-                                  {country}
-                                </option>
-                              ))}
-                            </select>
-                            {validationErrors.country && (
-                              <div className="invalid-feedback">
-                                {validationErrors.country}
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Terms and Conditions */}
-                          <div className="col-12">
-                            <div className="form-check form-switch">
-                              <input 
-                                className={`form-check-input ${validationErrors.agreeToTerms ? 'is-invalid' : ''}`}
-                                type="checkbox"
-                                id="flexSwitchCheckChecked"
-                                name="agreeToTerms"
-                                checked={formData.agreeToTerms}
-                                onChange={handleInputChange}
-                                disabled={loading}
-                              />
-                              <label className="form-check-label" htmlFor="flexSwitchCheckChecked">
-                                I read and agree to{' '}
-                                <Link to="/terms" target="_blank">Terms & Conditions</Link>
-                                {' '}and{' '}
-                                <Link to="/privacy" target="_blank">Privacy Policy</Link>
-                                <span className="text-danger"> *</span>
-                              </label>
-                              {validationErrors.agreeToTerms && (
-                                <div className="invalid-feedback d-block">
-                                  {validationErrors.agreeToTerms}
-                                </div>
-                              )}
-                            </div>
-                          </div>
-
-                          {/* Submit Button */}
-                          <div className="col-12">
-                            <div className="d-grid">
-                              <button 
-                                type="submit" 
-                                className="btn btn-light"
-                                disabled={loading}
-                              >
-                                {loading ? (
-                                  <>
-                                    <span 
-                                      className="spinner-border spinner-border-sm me-2" 
-                                      role="status" 
-                                      aria-hidden="true"
-                                    ></span>
-                                    Creating Account...
-                                  </>
-                                ) : (
-                                  <>
-                                    <i className='bx bx-user'></i>
-                                    Sign up
-                                  </>
-                                )}
-                              </button>
-                            </div>
-                          </div>
-                        </form>
-                      </div>
-
-                      {/* Additional Info */}
-                      <div className="text-center mt-4">
-                        <p className="mb-0">
-                          <small className="text-muted">
-                            By signing up, you agree to receive marketing emails and updates.
-                            You can unsubscribe at any time.
-                          </small>
-                        </p>
-                      </div>
-                    </div>
+            <div className="auth-features">
+              {[
+                { icon: '⚡', title: 'Early Access',    desc: 'New arrivals and restocks, your inbox first.',    accent: T.red    },
+                { icon: '🏷️', title: 'Member Discounts',desc: 'Subscriber-only pricing on select titles.',       accent: T.orange },
+                { icon: '📋', title: 'Order Tracking',  desc: 'Know exactly where your books are at all times.', accent: T.teal   },
+                { icon: '🎁', title: 'Wishlist',        desc: 'Save items, share lists, get notified on drops.',  accent: T.red    },
+              ].map(f => (
+                <div className="auth-feature" key={f.title} style={{ '--feat-accent': f.accent }}>
+                  <span className="auth-feature-icon">{f.icon}</span>
+                  <div>
+                    <p className="auth-feature-title">{f.title}</p>
+                    <p className="auth-feature-desc">{f.desc}</p>
                   </div>
                 </div>
+              ))}
+            </div>
+
+            <div className="auth-left-foot">
+              <div className="auth-left-foot-label">Already part of the stash</div>
+              <div className="auth-stat-row">
+                {[['1000+','Titles'], ['NM','Quality'], ['24/7','Support']].map(([v, l]) => (
+                  <div key={l}>
+                    <span className="auth-stat-val">{v}</span>
+                    <span className="auth-stat-lbl">{l}</span>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </aside>
+
+        {/* ── RIGHT FORM PANEL ── */}
+        <main className="auth-right">
+          <div className="auth-form-wrap">
+            <span className="auth-form-eyebrow">New here?</span>
+            <h1 className="auth-form-title">Create <span>Account</span></h1>
+            <p className="auth-form-sub">
+              Already have an account? <Link to="/login">Sign in here →</Link>
+            </p>
+
+            {/* Error */}
+            {error && (
+              <div className="auth-alert error">
+                <span className="auth-alert-icon">⚠</span>
+                <span style={{ flex: 1 }}>{error}</span>
+                <button className="auth-alert-close" onClick={() => dispatch(clearError())}>✕</button>
+              </div>
+            )}
+
+            {/* Social signup */}
+            <div className="auth-socials">
+              <button className="auth-social-btn" onClick={handleGoogle} disabled={loading}>
+                <span className="auth-social-icon">G</span>
+                Continue with Google
+              </button>
+              <button className="auth-social-btn" onClick={handleFacebook} disabled={loading}>
+                <span className="auth-social-icon">𝒇</span>
+                Continue with Facebook
+              </button>
+            </div>
+
+            <div className="auth-divider">
+              <div className="auth-divider-line" />
+              <span className="auth-divider-text">Or register with email</span>
+              <div className="auth-divider-line" />
+            </div>
+
+            {/* Registration form */}
+            <form onSubmit={handleSubmit} noValidate>
+
+              {/* First + Last name */}
+              <div className="auth-field-row" style={{ marginBottom: '1.1rem' }}>
+                <div className="auth-field" style={{ marginBottom: 0 }}>
+                  <label htmlFor="rg-first" className="auth-label">First Name <span className="auth-label-req">*</span></label>
+                  <input
+                    id="rg-first" type="text" name="firstName"
+                    className={`auth-input${validationErrors.firstName ? ' error' : ''}`}
+                    placeholder="John"
+                    value={formData.firstName}
+                    onChange={handleChange}
+                    disabled={loading}
+                    autoComplete="given-name"
+                  />
+                  {validationErrors.firstName && <div className="auth-field-error">{validationErrors.firstName}</div>}
+                </div>
+                <div className="auth-field" style={{ marginBottom: 0 }}>
+                  <label htmlFor="rg-last" className="auth-label">Last Name <span className="auth-label-req">*</span></label>
+                  <input
+                    id="rg-last" type="text" name="lastName"
+                    className={`auth-input${validationErrors.lastName ? ' error' : ''}`}
+                    placeholder="Doe"
+                    value={formData.lastName}
+                    onChange={handleChange}
+                    disabled={loading}
+                    autoComplete="family-name"
+                  />
+                  {validationErrors.lastName && <div className="auth-field-error">{validationErrors.lastName}</div>}
+                </div>
+              </div>
+
+              {/* Email */}
+              <div className="auth-field">
+                <label htmlFor="rg-email" className="auth-label">Email Address <span className="auth-label-req">*</span></label>
+                <input
+                  id="rg-email" type="email" name="email"
+                  className={`auth-input${validationErrors.email ? ' error' : ''}`}
+                  placeholder="example@user.com"
+                  value={formData.email}
+                  onChange={handleChange}
+                  disabled={loading}
+                  autoComplete="email"
+                />
+                {validationErrors.email && <div className="auth-field-error">{validationErrors.email}</div>}
+              </div>
+
+              {/* Password */}
+              <div className="auth-field">
+                <label htmlFor="rg-pw" className="auth-label">Password <span className="auth-label-req">*</span></label>
+                <div className="auth-pw-wrap">
+                  <input
+                    id="rg-pw" type={showPw ? 'text' : 'password'} name="password"
+                    className={`auth-input${validationErrors.password ? ' error' : ''}`}
+                    placeholder="Choose a strong password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    disabled={loading}
+                    autoComplete="new-password"
+                  />
+                  <button type="button" className="auth-pw-toggle" onClick={() => setShowPw(p => !p)} disabled={loading}>
+                    {showPw ? '🙈' : '👁'}
+                  </button>
+                </div>
+
+                {/* Strength indicator */}
+                {formData.password && (
+                  <div className="auth-pw-strength">
+                    <div className="auth-pw-bars">
+                      {[1,2,3,4,5].map(n => (
+                        <div
+                          key={n}
+                          className={`auth-pw-bar${strength.score >= n ? ` fill-${n}` : ''}`}
+                          style={strength.score >= n ? { background: strength.color } : {}}
+                        />
+                      ))}
+                    </div>
+                    {strength.label && (
+                      <span className="auth-pw-label" style={{ color: strength.color }}>
+                        Strength: {strength.label}
+                      </span>
+                    )}
+                  </div>
+                )}
+                {validationErrors.password && <div className="auth-field-error">{validationErrors.password}</div>}
+                <p className="auth-pw-hint">Use 8+ characters with letters, numbers & symbols</p>
+              </div>
+
+              {/* Confirm password */}
+              <div className="auth-field">
+                <label htmlFor="rg-confirm-pw" className="auth-label">
+                  Confirm Password <span className="auth-label-req">*</span>
+                  {pwMatch && <span style={{ color: T.teal, marginLeft: '.5rem' }}>✓ Match</span>}
+                </label>
+                <div className="auth-pw-wrap">
+                  <input
+                    id="rg-confirm-pw" type={showConfirmPw ? 'text' : 'password'} name="confirmPassword"
+                    className={`auth-input${validationErrors.confirmPassword ? ' error' : pwMatch ? '' : ''}`}
+                    placeholder="Repeat your password"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    disabled={loading}
+                    autoComplete="new-password"
+                  />
+                  <button type="button" className="auth-pw-toggle" onClick={() => setShowConfirmPw(p => !p)} disabled={loading}>
+                    {showConfirmPw ? '🙈' : '👁'}
+                  </button>
+                </div>
+                {validationErrors.confirmPassword && <div className="auth-field-error">{validationErrors.confirmPassword}</div>}
+              </div>
+
+              {/* Country */}
+              <div className="auth-field">
+                <label htmlFor="rg-country" className="auth-label">Country <span className="auth-label-req">*</span></label>
+                <select
+                  id="rg-country" name="country"
+                  className={`auth-select${validationErrors.country ? ' error' : ''}`}
+                  value={formData.country}
+                  onChange={handleChange}
+                  disabled={loading}
+                >
+                  <option value="">Select your country</option>
+                  {countries.map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
+                {validationErrors.country && <div className="auth-field-error">{validationErrors.country}</div>}
+              </div>
+
+              {/* Terms */}
+              <div className="auth-field">
+                <div
+                  className="auth-check-row"
+                  onClick={() => {
+                    setFormData(prev => ({ ...prev, agreeToTerms: !prev.agreeToTerms }));
+                    if (validationErrors.agreeToTerms) setValidationErrors(prev => ({ ...prev, agreeToTerms: '' }));
+                  }}
+                >
+                  <div className={`auth-check-box${formData.agreeToTerms ? ' checked' : ''}${validationErrors.agreeToTerms ? ' error' : ''}`} />
+                  <span className="auth-check-label">
+                    I agree to the{' '}
+                    <Link to="/terms" target="_blank" onClick={e => e.stopPropagation()}>Terms & Conditions</Link>
+                    {' '}and{' '}
+                    <Link to="/privacy" target="_blank" onClick={e => e.stopPropagation()}>Privacy Policy</Link>
+                    <span style={{ color: T.red }}> *</span>
+                  </span>
+                </div>
+                {validationErrors.agreeToTerms && <div className="auth-field-error" style={{ marginTop: '.45rem' }}>{validationErrors.agreeToTerms}</div>}
+              </div>
+
+              {/* Submit */}
+              <button type="submit" className="auth-submit" disabled={loading}>
+                {loading
+                  ? <><div className="auth-spinner" /> Creating Account...</>
+                  : <>✦ &nbsp; Create Account</>
+                }
+              </button>
+            </form>
+
+            <div className="auth-form-foot">
+              By signing up you agree to receive marketing emails. You can unsubscribe any time.<br />
+              <Link to="/privacy">Privacy Policy</Link> · <Link to="/terms">Terms of Service</Link>
+            </div>
+          </div>
+        </main>
+      </div>
+
+      {/* Animated bottom border */}
+      <div className="auth-animated-border" />
     </>
   );
 };

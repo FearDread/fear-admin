@@ -22,6 +22,7 @@ const BlogPost = lazy(() => import("./pages/BlogPost"));
 const About = lazy(() => import("./pages/About"));
 const AboutUs = lazy(() => import("./pages/AboutUs"));
 const Contact = lazy(() => import("./pages/Contact"));
+const ContactUs = lazy(() => import("./pages/ContactUs"));
 const FAQ = lazy(() => import("./pages/Faq"));
 const Shop = lazy(() => import("./pages/shop/Shop"));
 const Shop2 = lazy(() => import("./pages/shop/Shop2"));
@@ -44,7 +45,7 @@ const APP_ROUTES = {
   public: [
     { path: "/", element: <Home2 />, exact: true },
     { path: "/about", element: <AboutUs /> },
-    { path: "/contact", element: <Contact /> },
+    { path: "/contact", element: <ContactUs /> },
     { path: "/blog", element: <Blog /> },
     { path: "/blog/:id", element:<BlogPost />},
     { path: "/shop", element: <Shop2 /> },
