@@ -17,7 +17,7 @@ export const HeroSection = () => {
       body: "Thousands of titles. Every one bagged, boarded, and mint. Your pull list just got dangerous.",
       cta: "Browse Comics",
       ctaLink: "/shop?cat=comics",
-      accent: "#e63946",
+      accent: "#c40717",
       image: "assets/images/comics/home04.png",
     },
     {
@@ -28,7 +28,7 @@ export const HeroSection = () => {
       body: "Words that hit harder than a Mjolnir swing. Available instantly — no shipping required.",
       cta: "Explore E-Books",
       ctaLink: "/shop?cat=books",
-      accent: "#f4a261",
+      accent: "#6f11e1",
       image: "assets/images/ebooks/01.jpg",
     },
     {
@@ -39,7 +39,7 @@ export const HeroSection = () => {
       body: "Rare cards. Graded slabs. Pack pulls that will either make your day or haunt your dreams.",
       cta: "Shop Collectibles",
       ctaLink: "/shop?cat=cards",
-      accent: "#2a9d8f",
+      accent: "#1081a7",
       image: "assets/images/comics/banner/05.svg",
     },
   ];

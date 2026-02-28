@@ -2,16 +2,14 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import HeroSection from "../components/home/v2/ComicHero";
 import TrustBar from "../components/home/v2/TrustBar";
-/* ─────────────────────────────────────────────
-   CATEGORY CARDS  –  3 bold shop-by-category
-───────────────────────────────────────────────*/
+
 const CategoryCards = () => {
   const cats = [
     {
       label: 'Comics',
       tagline: 'Marvel, DC & beyond',
       blurb: 'From first prints to modern variants. Every issue bagged, boarded, near-mint.',
-      accent: '#e63946',
+      accent: "#c40717",
       image: 'assets/images/comics/super1.png',
       link: '/shop?cat=comics',
     },
@@ -19,7 +17,7 @@ const CategoryCards = () => {
       label: 'E-Books',
       tagline: 'Starting at $9',
       blurb: 'Cookbooks, manifestos, graphic novels, and more. Also available on Amazon.',
-      accent: '#f4a261',
+      accent: "#6f11e1",
       image: 'assets/images/ebooks/01.jpg',
       link: '/shop?cat=books',
     },
@@ -27,7 +25,7 @@ const CategoryCards = () => {
       label: 'Collectibles',
       tagline: 'Cards, slabs & rarities',
       blurb: 'Pokémon, NFL, NBA, Baseball. Some packs will make you cry. All of them will.',
-      accent: '#2a9d8f',
+      accent: "#1081a7",
       image: 'assets/images/comics/super3.png',
       link: '/shop?cat=cards',
     },
@@ -135,7 +133,7 @@ const MarqueeBand = () => {
         ))}
       </div>
       <style>{`
-        .marquee-wrap { background: #e63946; overflow: hidden; padding: .75rem 0; }
+        .marquee-wrap { background: #b30e1c; overflow: hidden; padding: .75rem 0; }
         .marquee-track {
           display: flex; width: max-content;
           animation: marqueeScroll 28s linear infinite;
@@ -201,7 +199,7 @@ const WhyUs = () => (
       .why-eyebrow {
         font-family: 'Courier New', monospace; font-size: .75rem;
         letter-spacing: .2em; text-transform: uppercase;
-        color: #e63946; margin-bottom: .75rem;
+        color: #b30e1c; margin-bottom: .75rem;
       }
       .why-title {
         font-family: 'Anton', 'Impact', sans-serif;
@@ -215,7 +213,7 @@ const WhyUs = () => (
         display: inline-block; margin-top: .5rem;
         font-family: 'Courier New', monospace; font-size: .78rem;
         letter-spacing: .12em; text-transform: uppercase;
-        color: #e63946; text-decoration: none; border-bottom: 1px solid #e63946;
+        color: #b30e1c; text-decoration: none; border-bottom: 1px solid #b30e1c;
         padding-bottom: 2px; transition: opacity .2s;
       }
       .btn-text-link:hover { opacity: .7; }
@@ -227,7 +225,7 @@ const WhyUs = () => (
         padding: 1.5rem;
         transition: border-color .3s;
       }
-      .why-card:hover { border-color: #e63946; }
+      .why-card:hover { border-color: #b30e1c; }
       .why-icon { font-size: 1.75rem; display: block; margin-bottom: .75rem; }
       .why-card-title {
         font-family: 'Anton', 'Impact', sans-serif;
@@ -257,7 +255,7 @@ const CtaBanner = () => (
     <style>{`
       .cta-banner {
         position: relative;
-        background: #e63946;
+        background: #b30e1c;
         overflow: hidden;
         padding: 5rem 0;
       }
@@ -281,14 +279,14 @@ const CtaBanner = () => (
       .cta-actions { display: flex; flex-direction: column; gap: 1rem; align-items: flex-start; }
       .btn-cta-main {
         display: inline-block; padding: 1rem 2.5rem;
-        background: #fff; color: #e63946;
+        background: #fff; color: #b30e1c;
         font-family: 'Courier New', monospace; font-size: .85rem;
         letter-spacing: .1em; text-transform: uppercase;
         text-decoration: none; white-space: nowrap;
         clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
         transition: opacity .2s;
       }
-      .btn-cta-main:hover { opacity: .88; color: #e63946; }
+      .btn-cta-main:hover { opacity: .88; color: #b30e1c; }
       .btn-cta-text {
         font-family: 'Courier New', monospace; font-size: .78rem;
         letter-spacing: .1em; text-transform: uppercase;
@@ -348,7 +346,7 @@ const OfferHighlights = () => {
         .offer-note {
           font-family: 'Courier New', monospace; font-size: .7rem;
           letter-spacing: .15em; text-transform: uppercase;
-          color: #e63946; margin-bottom: .35rem;
+          color: #b30e1c; margin-bottom: .35rem;
         }
         .offer-cat {
           font-family: 'Anton', 'Impact', sans-serif;

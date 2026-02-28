@@ -1,9 +1,9 @@
 
 export const T = {
-  red:     '#b92c37',
-  orange:  '#f4a261',
+  red:     '#980b16',
+  orange:  '#6120d9',
   teal:    '#2a9d8f',
-  dark0:   '#0d0d0d',
+  dark0:   'rgba(0,0,0,.9)',
   dark1:   '#111111',
   dark2:   '#141414',
   dark3:   '#1a1a1a',
@@ -503,7 +503,7 @@ export const headerStyles = `
   /* ── Top bar ── */
   .hdr-topbar {
     height: 38px;
-    background: ${T.dark0};
+    background: #0d0d0d;
     border-bottom: 1px solid ${T.border};
     display: flex; align-items: center;
     transition: height .3s, opacity .3s;
@@ -854,7 +854,7 @@ export const footerStyles = `
 
   /* ── Main footer body ── */
   .ftr-body {
-    background:${T.dark1};
+
     border-top:2px solid ${T.red};
     padding:4.5rem 0 2.5rem;
     position:relative; overflow:hidden;
@@ -1235,6 +1235,7 @@ export const authStyles = `
   }
   .auth-form-wrap {
     width: 100%; max-width: 480px;
+    padding: 15px;
   }
 
   /* Form header */
@@ -1252,7 +1253,7 @@ export const authStyles = `
   .auth-form-sub {
     font-family: 'Space Mono',monospace;
     font-size: .72rem; color: ${T.textMid}; line-height: 1.6;
-    margin: 0 0 2rem;
+    margin: 0 0 0rem;
   }
   .auth-form-sub a {
     color: ${T.red}; text-decoration: none; border-bottom: 1px solid rgba(230,57,70,.3);

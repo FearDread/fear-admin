@@ -2,8 +2,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, Link } from 'react-router-dom';
-import { dispatch } from "../../features/store";
-import ProductCard from "../../components/products/ProductCard";
+import { dispatch } from "../features/store";
+import ProductCard from "../components/products/ProductCard";
 import {
   fetchProducts,
   selectSortedProducts,
@@ -19,18 +19,18 @@ import {
   selectProductsFilters,
   selectAllProducts,
   selectProductsSearchTerm,
-} from "../../features/products/slice";
+} from "../features/products/slice";
 import {
   fetchCategories,
   selectAllCategories,
   selectCategoriesLoading,
-} from "../../features/categories/slice";
+} from "../features/categories/slice";
 import {
   fetchBrands,
   selectAllBrands,
   selectBrandsLoading,
-} from "../../features/brands/slice";
-import { T, shopStyles } from "../../components/styles";
+} from "../features/brands/slice";
+import { T, shopStyles } from "../components/styles";
 
 const FilterPanel = ({
   categories, brands,
