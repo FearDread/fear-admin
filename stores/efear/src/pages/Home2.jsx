@@ -120,9 +120,6 @@ const CategoryCards = () => {
   );
 };
 
-/* ─────────────────────────────────────────────
-   MARQUEE BAND  –  scrolling brand names
-───────────────────────────────────────────────*/
 const MarqueeBand = () => {
   const items = ['Marvel', 'DC Comics', 'Dark Horse', 'Image Comics', 'IDW', 'Boom! Studios', 'Pokémon', 'Vertigo', 'Valiant', 'Dynamite', 'BOOM!', 'Fantagraphics'];
   return (

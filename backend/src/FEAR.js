@@ -46,13 +46,13 @@ _________________________
     this.passport = null;
     this.mailer = null;
 
-
     this.setupEnvironment();
     this.setupDependencies();
+
     if (this.env.ADD_PAYMENTS) this.setupProcessors();
+
     this.setupMailer();
     this.setupMiddleware();
-
     this.setupRoutes();
   };
 
@@ -111,9 +111,6 @@ _________________________
       this.env = envResult.parsed;
     },
 
-    /**
-     * Setup core dependencies
-     */
     setupDependencies() {
       this.logo = FEAR_LOGO;
       this.logger = require("./libs/logger");
@@ -139,9 +136,6 @@ _________________________
       this.paypal = new PayPal(this);
     },
 
-    /**
-     * Setup Express middleware
-     */
     setupMiddleware() {
       this.app.set("PORT", this.env.NODE_PORT || DEFAULT_PORT);
       this.app.use(express.json({ limit: DEFAULT_JSON_LIMIT }));
