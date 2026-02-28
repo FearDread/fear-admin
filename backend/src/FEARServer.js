@@ -280,7 +280,7 @@ const FearServer = (function () {
         })
       );
 
-      this.fear.getApp().get(`${normalizedBasePath}/*`, (req, res, next) => {
+      this.fear.getApp().use(`${normalizedBasePath}/*`, (req, res, next) => {
         this.fear.getLogger().debug(`Route request: ${req.path}`);
         
         // Skip if it's an API route

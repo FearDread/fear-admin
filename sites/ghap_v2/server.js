@@ -8,10 +8,9 @@ async function main() {
             root: path.resolve(), 
             app: 'public',
             build: 'public',
-            basePath: '/'
         })
         .then(() => server.startServer())
-	.then(() => server.getLogger().info('GHAP Server Running'))
+	    .then(() => server.getLogger().info('GHAP Server Running'))
         .catch((error) => process.exit(1))
 }
 
