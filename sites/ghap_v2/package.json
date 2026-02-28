@@ -2,15 +2,15 @@
   "name": "jbird",
   "version": "1.0.0",
   "description": "Single page Art Portfolio Site ",
-  "main": "App.js",
+  "main": "server.js",
   "scripts": {
-    "start": "node App.js",
+    "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "FearDread",
   "license": "MIT",
   "dependencies": {
-    "@feardread/fear-ai-agent": "^1.0.3",
+    "@feardread/fear": "^1.0.3",
     "ejs": "^3.1.10",
     "express": "^5.1.0"
   }

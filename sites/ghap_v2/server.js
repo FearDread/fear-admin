@@ -1,15 +1,17 @@
 const FearServer = require('../../backend/src/FEARServer');
+const path = require('path');
 
 async function main() {
     const server = new FearServer();
     
     server.initialize({
-            root: __dirname,
-            app: '/public',
+            root: path.resolve(), 
+            app: 'public',
             build: 'public',
-            basePath: '/fear/sites/ghap'
+            basePath: '/'
         })
         .then(() => server.startServer())
+	.then(() => server.getLogger().info('GHAP Server Running'))
         .catch((error) => process.exit(1))
 }
 
