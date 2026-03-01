@@ -1,4 +1,5 @@
 const Auth = require("../controllers/auth");
+const GA = require('../libs/google');
 const passport = require("passport");
 
 module.exports = (fear) => {
@@ -15,5 +16,14 @@ module.exports = (fear) => {
     router.post('/google/link',handler.async(Auth.linkGoogleAccount));
     router.delete('/google/unlink',handler.async(Auth.unlinkGoogleAccount));
 
-    return router;
+    router.get('/google/url', handler.async(GA.auth));
+    router.get('/google/callback', handler.async(GA.callback));
+ 
+    /*
+googleAuthRouter.get("/google/url",      getGoogleAuthUrl);
+googleAuthRouter.get("/google/callback", handleGoogleCallback);
+googleAuthRouter.post("/google/refresh", refreshGoogleToken);
+googleAuthRouter.post("/google/logout",  logoutGoogle);
+*/    
+return router;
 }

@@ -50,6 +50,7 @@
     "express-validator": "^7.0.1",
     "fast-glob": "^3.3.2",
     "google-auth-library": "^10.5.0",
+    "googleapis": "^171.4.0",
     "joi": "^17.11.0",
     "jsonwebtoken": "^9.0.0",
     "mailgun": "^0.5.0",

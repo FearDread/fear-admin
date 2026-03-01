@@ -2,6 +2,9 @@ const User = require("../../models/user");
 const TokenService = require('./token');
 const validator = require('../../libs/validator');
 const logger = require('../../libs/logger');
+const { OAuth2Client } = require('google-auth-library');
+
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 
 /**
@@ -510,118 +513,125 @@ exports.optionalAuth = (req, res, next) => {
  * @description Handles Google OAuth login/registration. Creates new user if doesn't exist, or logs in existing user
  * @tags authentication, oauth
  */
-exports.googleAuth = (req, res) => {
-  const { googleToken, googleId, email, firstName, lastName, avatar } = req.body;
+exports.googleAuth = async (req, res) => {
+  const { credential, clientId } = req.body;
 
-  // Validate required fields
-  if (!email || !googleId) {
-    return response.error(res, 400, "Google ID and email are required");
+  if (!credential) {
+    return response.error(res, 400, "Google credential is required");
   }
 
-  // Validate email format (assuming validator has email method)
-  const emailValidation = validator.input.email ? validator.input.email(email) : { isValid: true };
-  if (!emailValidation.isValid) {
-    return response.error(res, 400, "Invalid email format");
-  }
-
-  logger.info('Google authentication attempt for:', email);
-
-  // Find user by email or googleId
-  User.findOne({
-    $or: [
-      { email: email.toLowerCase() },
-      { 'oauth.google.id': googleId }
-    ],
-    status: { $ne: 'deleted' }
-  })
-    .then(user => {
-      // If user exists - login flow
-      if (user) {
-        // Check account status
-        if (user.status === 'suspended') {
-          return response.error(res, 403, "Your account has been suspended. Please contact support.");
-        }
-
-        if (user.status === 'inactive') {
-          return response.error(res, 403, "Your account is inactive. Please contact support to reactivate.");
-        }
-
-        // Update Google OAuth info if not already set
-        if (!user.oauth || !user.oauth.google || !user.oauth.google.id) {
-          user.oauth = user.oauth || {};
-          user.oauth.google = {
-            id: googleId,
-            email: email.toLowerCase(),
-            connectedAt: new Date()
-          };
-        }
-
-        // Update last login info
-        user.lastLoginAt = new Date();
-        user.lastLoginIP = req.ip || req.connection.remoteAddress;
-
-        // Update avatar if provided and user doesn't have one
-        if (avatar && !user.avatar) {
-          user.avatar = avatar;
-        }
-
-        return user.save()
-          .then(savedUser => {
-            logger.info('Google login successful for:', savedUser.email);
-            
-            // Generate token and send response
-            const token = TokenService.generateToken(savedUser);
-            return response.success(res, savedUser, token, 200, "Google login successful");
-          });
-      }
-
-      // User doesn't exist - registration flow
-      const userData = {
-        email: email.toLowerCase(),
-        firstName: firstName?.trim() || 'User',
-        lastName: lastName?.trim() || '',
-        displayName: firstName && lastName ? `${firstName} ${lastName}`.trim() : email.split('@')[0],
-        avatar: avatar || undefined,
-        role: 'user',
-        status: 'active',
-        oauth: {
-          google: {
-            id: googleId,
-            email: email.toLowerCase(),
-            connectedAt: new Date()
-          }
-        },
-        isEmailVerified: true, // Google emails are already verified
-        lastLoginAt: new Date(),
-        lastLoginIP: req.ip || req.connection.remoteAddress
-      };
-
-      // Create new user (no password required for OAuth users)
-      return User.create(userData)
-        .then(newUser => {
-          logger.info('New user registered via Google:', newUser.email);
-
-          // Generate token and send response
-          const token = TokenService.generateToken(newUser);
-          return response.success(res, newUser, token, 201, "Google registration successful");
-        });
-    })
-    .catch(error => {
-      logger.error('Google authentication error:', error);
-
-      // Handle duplicate key error
-      if (error.code === 11000) {
-        return response.error(res, 409, "User with this email already exists");
-      }
-
-      // Handle validation errors
-      if (error.name === 'ValidationError') {
-        const messages = Object.values(error.errors).map(err => err.message);
-        return response.error(res, 400, messages.join(', '));
-      }
-
-      return response.error(res, 500, "Google authentication failed", error.message);
+  try {
+    // Verify the Google ID token and extract user info from it
+    const ticket = await googleClient.verifyIdToken({
+      idToken: credential,
+      audience: clientId,
     });
+
+    const payload = ticket.getPayload();
+    const {
+      sub: googleId,
+      email,
+      given_name: firstName,
+      family_name: lastName,
+      picture: avatar,
+      email_verified,
+    } = payload;
+
+    if (!email_verified) {
+      return response.error(res, 401, "Google email is not verified");
+    }
+
+    logger.info('Google authentication attempt for:', email);
+
+    // Find user by email or googleId
+    const user = await User.findOne({
+      $or: [
+        { email: email.toLowerCase() },
+        { 'oauth.google.id': googleId }
+      ],
+      status: { $ne: 'deleted' }
+    });
+
+    // ── Existing user — login flow ────────────────────────────────────────────
+    if (user) {
+      if (user.status === 'suspended') {
+        return response.error(res, 403, "Your account has been suspended. Please contact support.");
+      }
+      if (user.status === 'inactive') {
+        return response.error(res, 403, "Your account is inactive. Please contact support to reactivate.");
+      }
+
+      // Link Google OAuth info if not already set
+      if (!user.oauth?.google?.id) {
+        user.oauth = user.oauth || {};
+        user.oauth.google = {
+          id: googleId,
+          email: email.toLowerCase(),
+          connectedAt: new Date()
+        };
+      }
+
+      user.lastLoginAt = new Date();
+      user.lastLoginIP = req.ip || req.connection.remoteAddress;
+
+      // Backfill avatar if the user doesn't have one yet
+      if (avatar && !user.avatar) {
+        user.avatar = avatar;
+      }
+
+      const savedUser = await user.save();
+      logger.info('Google login successful for:', savedUser.email);
+
+      const token = TokenService.generateToken(savedUser);
+      return response.success(res, savedUser, token, 200, "Google login successful");
+    }
+
+    // ── New user — registration flow ──────────────────────────────────────────
+    const userData = {
+      email: email.toLowerCase(),
+      firstName: firstName?.trim() || email.split('@')[0],
+      lastName: lastName?.trim() || '',
+      displayName: firstName && lastName
+        ? `${firstName} ${lastName}`.trim()
+        : email.split('@')[0],
+      avatar: avatar || undefined,
+      role: 'user',
+      status: 'active',
+      oauth: {
+        google: {
+          id: googleId,
+          email: email.toLowerCase(),
+          connectedAt: new Date()
+        }
+      },
+      isEmailVerified: true,
+      lastLoginAt: new Date(),
+      lastLoginIP: req.ip || req.connection.remoteAddress
+    };
+
+    const newUser = await User.create(userData);
+    logger.info('New user registered via Google:', newUser.email);
+
+    const token = TokenService.generateToken(newUser);
+    return response.success(res, newUser, token, 201, "Google registration successful");
+
+  } catch (error) {
+    logger.error('Google authentication error:', error);
+
+    // Token verification failure
+    if (error.message?.includes('Token used too late') || error.message?.includes('Invalid token')) {
+      return response.error(res, 401, "Invalid or expired Google credential");
+    }
+    if (error.code === 11000) {
+      return response.error(res, 409, "User with this email already exists");
+    }
+    if (error.name === 'ValidationError') {
+      const messages = Object.values(error.errors).map(err => err.message);
+      return response.error(res, 400, messages.join(', '));
+    }
+
+    return response.error(res, 500, "Google authentication failed", error.message);
+  }
 };
 
 /**
