@@ -5,7 +5,7 @@ import logger from 'redux-logger';
 import product from './products/slice';
 import category from './categories/slice';
 import brand from './brands/slice';
-import user, { restoreUser } from './user/slice';
+import user, { restoreUser, setCurrentUser } from './user/slice';
 import cart from './cart/slice';
 import address from "./address/slice";
 import wishlist from './wishlist/slice';
@@ -45,7 +45,8 @@ export const initializeStore = () => {
   const storedAuth = Storage.load();
   if (storedAuth) {
     store.dispatch(restoreUser(storedAuth));
-    console.log('User session restored from storage');
+    store.dispatch(setCurrentUser(storedAuth.currentUser))
+    console.log('User session restored from storage', storedAuth);
   }
 
   return store;

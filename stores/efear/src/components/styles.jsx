@@ -759,6 +759,10 @@ export const headerStyles = `
     border-bottom: 1px solid ${T.border};
     position: sticky; top: 0; background: ${T.dark1}; z-index: 1;
   }
+  .hdr-category-dropdown {
+    position: fixed;
+    top: 152px;
+  }
   .hdr-drawer-title {
     font-family: 'Anton', 'Impact', sans-serif;
     font-size: 1.2rem; text-transform: uppercase; color: #fff; margin: 0;

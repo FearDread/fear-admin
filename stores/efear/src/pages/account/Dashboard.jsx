@@ -1,211 +1,179 @@
 // pages/account/AccountDashboard.jsx
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import {
-  selectCurrentUser,
-  selectUserFullName,
-  selectIsAuthenticated,
-  selectUserLoading,
-  selectLastLoginAt,
+    selectCurrentUser,
+    selectUserFullName,
+    selectIsAuthenticated,
+    selectUserLoading,
+    selectLastLoginAt,
 } from '../../features/user/slice';
 import AccountSidebar from './components/AccountSidebar';
-
-
+import { T, dashStyles } from "./styles";
+/* ─────────────────────────────────────────────
+   DASHBOARD COMPONENT
+───────────────────────────────────────────────*/
 export const AccountDashboard = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const dispatch = useDispatch();
-  // Redux selectors
-  const currentUser = useSelector(selectCurrentUser);
-  const userFullName = useSelector(selectUserFullName);
-  const isAuthenticated = useSelector(selectIsAuthenticated);
-  const loading = useSelector(selectUserLoading);
-  const lastLoginAt = useSelector(selectLastLoginAt);
+    const navigate  = useNavigate();
+    const location  = useLocation();
+    const dispatch  = useDispatch();
 
-  // Redirect if not authenticated
-  useEffect(() => {
-    if (!isAuthenticated && !loading) {
-      navigate('/login', { 
-        state: { 
-          from: location,
-          message: 'Please login to access your account' 
-        } 
-      });
-    }
-  }, [isAuthenticated, loading, navigate, location]);
+    const currentUser    = useSelector(selectCurrentUser);
+    const userFullName   = useSelector(selectUserFullName);
+    const isAuthenticated = useSelector(selectIsAuthenticated);
+    const loading        = useSelector(selectUserLoading);
+    const lastLoginAt    = useSelector(selectLastLoginAt);
 
+    // Redirect if not authenticated
+    useEffect(() => {
+        if (!isAuthenticated && !loading) {
+            navigate('/login', { state: { from: location, message: 'Please login to access your account' } });
+        }
+    }, [isAuthenticated, loading, navigate, location]);
 
-  const sidebarProps = {
-    currentUser,
-    userFullName,
-    lastLoginAt,
-  }
+    const sidebarProps = { currentUser, userFullName, lastLoginAt };
 
-  // Show loading state
-  if (loading) {
-    return (
-      <div className="container py-5 text-center">
-        <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Loading...</span>
-        </div>
-      </div>
-    );
-  }
-
-  if (!currentUser && !loading)  {
-    return null;
-  }
-  return (
-    <>
-      {/* Breadcrumb Section */}
-      <section className="py-3 border-bottom d-none d-md-flex">
-        <div className="container">
-          <div className="page-breadcrumb d-flex align-items-center">
-            <h3 className="breadcrumb-title pe-3">Account Dashboard</h3>
-            <div className="ms-auto">
-              <nav aria-label="breadcrumb">
-                <ol className="breadcrumb mb-0 p-0">
-                  <li className="breadcrumb-item">
-                    <Link to="/">
-                      <i className="bx bx-home-alt"></i> Home
-                    </Link>
-                  </li>
-                  <li className="breadcrumb-item active" aria-current="page">
-                    Dashboard
-                  </li>
-                </ol>
-              </nav>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Main Account Section */}
-      <section className="py-4">
-        <div className="container">
-          <h3 className="d-none">Account</h3>
-          <div className="bg-dark-2 card-body media-object">
-            <div className="card-body">
-              <div className="row">
-                {/* Sidebar Menu */}
-                <AccountSidebar {...sidebarProps} />
-
-
-                {/* Main Content */}
-                <div className="col-lg-8">
-                  <div className="card shadow-none mb-0 bg-dark-2">
-                    <div className="card-body">
-                      {/* Welcome Message */}
-                      <div className="alert bg-transparent border" role="alert">
-                        <h5 className="alert-heading">
-                          <i className='bx bx-smile me-2'></i>
-                          Welcome back, {currentUser.firstName || userFullName}!
-                        </h5>
-                        <p className="mb-0">
-                          Good to see you again. Here's what's happening with your account.
-                        </p>
-                      </div>
-
-                      {/* Account Overview */}
-                      <div className="mb-4">
-                        <h5 className="mb-3">Account Overview</h5>
-                          <p>
-                            Hello <strong>{userFullName}</strong> 
-                          </p>
-                        <p>
-                          From your account dashboard you can view your{' '}
-                          <Link to="/account/orders">recent orders</Link>, manage your{' '}
-                          <Link to="/account/addresses">shipping and billing addresses</Link>, and{' '}
-                          <Link to="/account/details">edit your password and account details</Link>.
-                        </p>
-                      </div>
-
-                      {/* Quick Stats */}
-                      <div className="row g-3">
-                        <div className="col-md-4">
-                          <div className="card bg-light-primary border-0">
-                            <div className="card-body text-center">
-                              <i className='bx bx-cart-alt display-4 text-primary'></i>
-                              <h3 className="mb-0 mt-2">{currentUser.orderCount || 0}</h3>
-                              <p className="mb-0 text-muted">Total Orders</p>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="col-md-4">
-                          <div className="card bg-light-success border-0">
-                            <div className="card-body text-center">
-                              <i className='bx bx-heart display-4 text-success'></i>
-                              <h3 className="mb-0 mt-2">{currentUser.wishlistCount || 0}</h3>
-                              <p className="mb-0 text-muted">Wishlist Items</p>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="col-md-4">
-                          <div className="card bg-light-warning border-0">
-                            <div className="card-body text-center">
-                              <i className='bx bx-map display-4 text-warning'></i>
-                              <h3 className="mb-0 mt-2">{currentUser.addressCount || 0}</h3>
-                              <p className="mb-0 text-muted">Saved Addresses</p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Quick Actions */}
-                      <div className="mt-4">
-                        <h5 className="mb-3">Quick Actions</h5>
-                        <div className="d-flex flex-wrap gap-2">
-                          <Link to="/shop" className="btn btn-light">
-                            <i className='bx bx-shopping-bag me-2'></i>
-                            Continue Shopping
-                          </Link>
-                          <Link to="/account/orders" className="btn btn-light">
-                            <i className='bx bx-receipt me-2'></i>
-                            View Orders
-                          </Link>
-                          <Link to="/account/details" className="btn btn-light">
-                            <i className='bx bx-edit me-2'></i>
-                            Edit Profile
-                          </Link>
-                        </div>
-                      </div>
-
-                      {/* Account Info */}
-                      <div className="mt-4 pt-4 border-top">
-                        <h5 className="mb-3">Account Information</h5>
-                        <div className="row">
-                          <div className="col-md-6">
-                            <p className="mb-2">
-                              <strong>Email:</strong> {currentUser.email}
-                            </p>
-                            <p className="mb-2">
-                              <strong>Phone:</strong> {currentUser.phone || 'Not provided'}
-                            </p>
-                          </div>
-                          <div className="col-md-6">
-                            <p className="mb-2">
-                              <strong>Country:</strong> {currentUser.country || 'Not specified'}
-                            </p>
-                            <p className="mb-2">
-                              <strong>Member since:</strong>{' '}
-                              {currentUser.createdAt 
-                                ? new Date(currentUser.createdAt).toLocaleDateString() 
-                                : 'N/A'}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+    /* Loading state */
+    if (loading) {
+        return (
+            <>
+                <style>{dashStyles}</style>
+                <div className="dash-loading">
+                    <div className="dash-loading-spinner" />
+                    <span className="dash-loading-label">Loading account…</span>
                 </div>
-              </div>
+            </>
+        );
+    }
+
+    if (!currentUser && !loading) return null;
+
+    const STATS = [
+        { icon: '📦', label: 'Total Orders',     val: currentUser.orderCount    || 0, accent: T.red    },
+        { icon: '❤️', label: 'Wishlist Items',   val: currentUser.wishlistCount || 0, accent: T.orange },
+        { icon: '📍', label: 'Saved Addresses',  val: currentUser.addressCount  || 0, accent: T.teal   },
+    ];
+
+    const INFO = [
+        { label: 'Email',        val: currentUser.email                                          },
+        { label: 'Phone',        val: currentUser.phone         || null, empty: 'Not provided'   },
+        { label: 'Country',      val: currentUser.country       || null, empty: 'Not specified'  },
+        { label: 'Member Since', val: currentUser.createdAt ? new Date(currentUser.createdAt).toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' }) : null, empty: 'N/A' },
+    ];
+
+    const ACTIONS = [
+        { icon: '🛍️', label: 'Continue Shopping', to: '/shop',              primary: true },
+        { icon: '📋', label: 'View Orders',        to: '/account/orders'                  },
+        { icon: '✏️', label: 'Edit Profile',       to: '/account/details'                 },
+        { icon: '📍', label: 'Addresses',          to: '/account/addresses'               },
+    ];
+
+    return (
+        <>
+            <style>{dashStyles}</style>
+            <link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Mono:ital@0;1&display=swap" rel="stylesheet" />
+
+            <div className="dash-page">
+
+                {/* ── HERO ── */}
+                <section className="dash-hero">
+                    <div className="dash-hero-stripe" />
+                    <div className="dash-hero-ghost" aria-hidden>ACCOUNT</div>
+                    <div className="dash-hero-inner">
+                        <div className="dash-breadcrumb">
+                            <Link to="/" className="dash-bc-link">Home</Link>
+                            <span className="dash-bc-sep">✦</span>
+                            <span className="dash-bc-current">Dashboard</span>
+                        </div>
+                        <span className="dash-eyebrow">My Account</span>
+                        <h1 className="dash-hero-title">
+                            Hey, <span>{currentUser.firstName || userFullName}</span>
+                        </h1>
+                    </div>
+                </section>
+
+                {/* ── MAIN LAYOUT ── */}
+                <div className="dash-layout">
+
+                    {/* ── SIDEBAR ── */}
+                    <AccountSidebar {...sidebarProps} />
+
+                    {/* ── MAIN CONTENT ── */}
+                    <main>
+
+                        {/* Welcome banner */}
+                        <div className="dash-welcome">
+                            <span className="dash-welcome-icon">👋</span>
+                            <div>
+                                <h2 className="dash-welcome-title">
+                                    Welcome back, <span>{currentUser.firstName || userFullName}</span>!
+                                </h2>
+                                <p className="dash-welcome-sub">
+                                    Good to see you again. From here you can view your{' '}
+                                    <Link to="/account/orders">recent orders</Link>, manage your{' '}
+                                    <Link to="/account/addresses">shipping and billing addresses</Link>, and{' '}
+                                    <Link to="/account/details">edit your password and account details</Link>.
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Stats row */}
+                        <div className="dash-stats">
+                            {STATS.map(s => (
+                                <div
+                                    key={s.label}
+                                    className="dash-stat-card"
+                                    style={{ '--stat-accent': s.accent }}
+                                >
+                                    <span className="dash-stat-icon">{s.icon}</span>
+                                    <span className="dash-stat-val">{s.val}</span>
+                                    <span className="dash-stat-label">{s.label}</span>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Quick actions */}
+                        <div className="dash-section-head">
+                            <h3 className="dash-section-title">Quick Actions</h3>
+                            <div className="dash-section-line" />
+                        </div>
+                        <div className="dash-actions">
+                            {ACTIONS.map(a => (
+                                <Link
+                                    key={a.to}
+                                    to={a.to}
+                                    className={`dash-action-btn${a.primary ? ' primary' : ''}`}
+                                >
+                                    <span className="dash-action-btn-icon">{a.icon}</span>
+                                    {a.label}
+                                </Link>
+                            ))}
+                        </div>
+
+                        {/* Account information */}
+                        <div className="dash-section-head">
+                            <h3 className="dash-section-title">Account Information</h3>
+                            <div className="dash-section-line" />
+                        </div>
+                        <div className="dash-info-grid">
+                            {INFO.map(item => (
+                                <div key={item.label} className="dash-info-cell">
+                                    <span className="dash-info-label">{item.label}</span>
+                                    <span className={`dash-info-val${!item.val ? ' dash-info-empty' : ''}`}>
+                                        {item.val || item.empty}
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
+
+                    </main>
+                </div>
+
+                <div className="dash-animated-border" />
             </div>
-          </div>
-        </div>
-      </section>
-    </>
-  );
-}
+        </>
+    );
+};
 
 export default AccountDashboard;

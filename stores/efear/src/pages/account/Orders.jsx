@@ -1,378 +1,205 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import {
-  fetchOrders,
-  fetchOrdersWithFilters,
-  cancelOrder,
-  setCurrentOrder,
-  setOrderFilters,
-  clearOrderFilters,
-  selectAllOrders,
-  selectOrdersLoading,
-  selectOrdersError,
-  selectOrderFilters,
-  selectOrdersByStatus,
-  selectTotalOrderValue,
-  clearError,
+    fetchOrders, fetchOrdersWithFilters, cancelOrder, setCurrentOrder,
+    setOrderFilters, clearOrderFilters,
+    selectAllOrders, selectOrdersLoading, selectOrdersError,
+    selectOrderFilters, selectTotalOrderValue, clearError,
 } from '../../features/orders/slice';
-import {
-  selectCurrentUser,
-  selectIsAuthenticated,
-  logoutUser,
-} from '../../features/user/slice';
+import { selectCurrentUser, selectIsAuthenticated, logoutUser } from '../../features/user/slice';
 import AccountSidebar from './components/AccountSidebar';
+import { T, orderStyles } from "./styles";
+
+
+const SA={completed:'#2a9d8f',delivered:'#2a9d8f',shipped:'#4dabf7',processing:'#f4a261',pending:'rgba(255,255,255,0.32)',failed:'#e63946',cancelled:'#444'};
+const SFS=['all','pending','processing','shipped','delivered','completed','cancelled','failed'];
+const fmtDate=d=>d?new Date(d).toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'}):'—';
+const itemCount=o=>!o.items?.length?0:o.items.reduce((s,i)=>s+(i.quantity||0),0);
+
+
 
 function AccountOrders() {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  
-  // Redux selectors
-  const orders = useSelector(selectAllOrders);
-  const loading = useSelector(selectOrdersLoading);
-  const error = useSelector(selectOrdersError);
-  const filters = useSelector(selectOrderFilters);
-  const currentUser = useSelector(selectCurrentUser);
-  const isAuthenticated = useSelector(selectIsAuthenticated);
-  const totalOrderValue = useSelector(selectTotalOrderValue);
-  
-  // Local state
-  const [cancellingOrderId, setCancellingOrderId] = useState(null);
-  const [showFilters, setShowFilters] = useState(false);
-  const [statusFilter, setStatusFilter] = useState('all');
-  
-  // Redirect if not authenticated
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/login?redirect=/account/orders');
-    }
-  }, [isAuthenticated, navigate]);
-  
-  // Fetch orders on mount
-  useEffect(() => {
-    if (isAuthenticated) {
-      dispatch(fetchOrders({ sort: '-orderDate' }));
-    }
-  }, [dispatch, isAuthenticated]);
-  
-  // Apply status filter
-  useEffect(() => {
-    if (statusFilter !== 'all') {
-      dispatch(setOrderFilters({ status: statusFilter }));
-      dispatch(fetchOrdersWithFilters());
-    } else {
-      dispatch(clearOrderFilters());
-      dispatch(fetchOrders({ sort: '-orderDate' }));
-    }
-  }, [statusFilter, dispatch]);
-  
-  const handleLogout = async () => {
-    await dispatch(logoutUser());
-    navigate('/login');
-  };
-  
-  const handleViewOrder = (order) => {
-    dispatch(setCurrentOrder(order));
-    navigate(`/account/orders/${order.id}`);
-  };
-  
-  const handleCancelOrder = async (orderId) => {
-    if (window.confirm('Are you sure you want to cancel this order?')) {
-      setCancellingOrderId(orderId);
-      const result = await dispatch(cancelOrder(orderId, 'Customer requested cancellation'));
-      
-      if (result.success) {
-        // Refresh orders
-        dispatch(fetchOrders({ sort: '-orderDate' }));
-      } else {
-        alert(result.error || 'Failed to cancel order');
-      }
-      setCancellingOrderId(null);
-    }
-  };
-  
-  const handlePayOrder = (order) => {
-    dispatch(setCurrentOrder(order));
-    navigate('/checkout/payment', { state: { orderId: order.id } });
-  };
-  
-  const getStatusBadgeClass = (status) => {
-    const statusClasses = {
-      completed: 'bg-success',
-      delivered: 'bg-success',
-      shipped: 'bg-info',
-      processing: 'bg-warning',
-      pending: 'bg-secondary',
-      failed: 'bg-danger',
-      cancelled: 'bg-dark',
+    const dispatch=useDispatch(), navigate=useNavigate();
+    const orders=useSelector(selectAllOrders), loading=useSelector(selectOrdersLoading),
+          error=useSelector(selectOrdersError), currentUser=useSelector(selectCurrentUser),
+          isAuthenticated=useSelector(selectIsAuthenticated), totalOrderValue=useSelector(selectTotalOrderValue);
+    const [cancellingId,setCancellingId]=useState(null);
+    const [showFilters,setShowFilters]=useState(false);
+    const [statusFilter,setStatusFilter]=useState('all');
+
+    useEffect(()=>{if(!isAuthenticated)navigate('/login?redirect=/account/orders');},[isAuthenticated,navigate]);
+    useEffect(()=>{if(isAuthenticated)dispatch(fetchOrders({sort:'-orderDate'}));},[dispatch,isAuthenticated]);
+    useEffect(()=>{
+        if(statusFilter!=='all'){dispatch(setOrderFilters({status:statusFilter}));dispatch(fetchOrdersWithFilters());}
+        else{dispatch(clearOrderFilters());dispatch(fetchOrders({sort:'-orderDate'}));}
+    },[statusFilter,dispatch]);
+
+    const handleView=(order)=>{dispatch(setCurrentOrder(order));navigate(`/account/orders/${order.id}`);};
+    const handlePay=(order)=>{dispatch(setCurrentOrder(order));navigate('/checkout/payment',{state:{orderId:order.id}});};
+    const handleCancel=async(orderId)=>{
+        if(!window.confirm('Cancel this order?'))return;
+        setCancellingId(orderId);
+        const result=await dispatch(cancelOrder(orderId,'Customer requested cancellation'));
+        if(result.success)dispatch(fetchOrders({sort:'-orderDate'}));
+        else alert(result.error||'Failed to cancel order');
+        setCancellingId(null);
     };
-    return statusClasses[status?.toLowerCase()] || 'bg-light';
-  };
-  
-  const canCancel = (order) => {
-    return ['pending', 'processing'].includes(order.status?.toLowerCase());
-  };
-  
-  const canPay = (order) => {
-    return ['failed', 'pending'].includes(order.status?.toLowerCase());
-  };
-  
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
-    });
-  };
-  
-  const getItemCount = (order) => {
-    if (!order.items || order.items.length === 0) return 0;
-    return order.items.reduce((sum, item) => sum + (item.quantity || 0), 0);
-  };
-  
-  // Filter orders by status for display
-  const filteredOrders = statusFilter === 'all' 
-    ? orders 
-    : orders.filter(order => order.status?.toLowerCase() === statusFilter.toLowerCase());
-  
-  // Sort orders by date (newest first)
-  const sortedOrders = [...filteredOrders].sort((a, b) => 
-    new Date(b.orderDate || b.createdAt) - new Date(a.orderDate || a.createdAt)
-  );
 
-  const sidebarProps = {
-    handleLogout,
-    currentUser,
-  }
-  
-  return (
-    <>
-      <section className="py-3 border-bottom d-none d-md-flex">
-        <div className="container">
-          <div className="page-breadcrumb d-flex align-items-center">
-            <h3 className="breadcrumb-title pe-3">My Orders</h3>
-            <div className="ms-auto">
-              <button 
-                className="btn btn-sm btn-light rounded-0"
-                onClick={() => setShowFilters(!showFilters)}
-              >
-                <i className='bx bx-filter'></i> Filter
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-      
-      <section className="py-4">
-        <div className="container">
-          <h3 className="d-none">Account</h3>
-          <div className="card-body media-object bg-dark-2">
-            <div className="card-body">
-              <div className="row">
+    const canCancel=(o)=>['pending','processing'].includes(o.status?.toLowerCase());
+    const canPay=(o)=>['failed','pending'].includes(o.status?.toLowerCase());
+    const sorted=[...(statusFilter==='all'?orders:orders.filter(o=>o.status?.toLowerCase()===statusFilter))]
+        .sort((a,b)=>new Date(b.orderDate||b.createdAt)-new Date(a.orderDate||a.createdAt));
+    const activeCount=orders.filter(o=>['pending','processing'].includes(o.status?.toLowerCase())).length;
 
-                <AccountSidebar {...sidebarProps} />
+    return (
+        <>
+            <style>{orderStyles}</style>
+            <link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Mono:ital@0;1&display=swap" rel="stylesheet"/>
+            <div className="op">
 
-                <div className="col-lg-8">
-                  <div className="card shadow-none mb-0">
-                    <div className="card-body">
-                      {/* Filter Section */}
-                      {showFilters && (
-                        <div className="mb-3 p-3 border rounded">
-                          <h6 className="mb-3">Filter Orders</h6>
-                          <div className="row g-3">
-                            <div className="col-md-6">
-                              <label className="form-label">Status</label>
-                              <select 
-                                className="form-select"
-                                value={statusFilter}
-                                onChange={(e) => setStatusFilter(e.target.value)}
-                              >
-                                <option value="all">All Orders</option>
-                                <option value="pending">Pending</option>
-                                <option value="processing">Processing</option>
-                                <option value="shipped">Shipped</option>
-                                <option value="delivered">Delivered</option>
-                                <option value="completed">Completed</option>
-                                <option value="cancelled">Cancelled</option>
-                                <option value="failed">Failed</option>
-                              </select>
-                            </div>
-                            <div className="col-md-6 d-flex align-items-end">
-                              <button 
-                                className="btn btn-light rounded-0"
-                                onClick={() => {
-                                  setStatusFilter('all');
-                                  dispatch(clearOrderFilters());
-                                }}
-                              >
-                                Clear Filters
-                              </button>
-                            </div>
-                          </div>
+                {/* HERO */}
+                <section className="oh">
+                    <div className="oh-stripe"/>
+                    <div className="oh-ghost" aria-hidden>ORDERS</div>
+                    <div className="oh-inner">
+                        <div className="oh-bc">
+                            <Link to="/" className="oh-bc a" style={{fontFamily:"'Space Mono',monospace",fontSize:'.65rem',letterSpacing:'.12em',textTransform:'uppercase',color:'rgba(255,255,255,0.32)',textDecoration:'none'}}>Home</Link>
+                            <span className="oh-bc-sep">✦</span>
+                            <Link to="/account/dashboard" style={{fontFamily:"'Space Mono',monospace",fontSize:'.65rem',letterSpacing:'.12em',textTransform:'uppercase',color:'rgba(255,255,255,0.32)',textDecoration:'none'}}>Account</Link>
+                            <span className="oh-bc-sep">✦</span>
+                            <span className="oh-bc-cur">My Orders</span>
                         </div>
-                      )}
-                      
-                      {/* Order Summary Stats */}
-                      <div className="row g-3 mb-4">
-                        <div className="col-md-4">
-                          <div className="border p-3 rounded">
-                            <div className="d-flex align-items-center">
-                              <i className='bx bx-shopping-bag fs-3 text-primary'></i>
-                              <div className="ms-2">
-                                <h6 className="mb-0">{orders.length}</h6>
-                                <small className="text-muted">Total Orders</small>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="col-md-4">
-                          <div className="border p-3 rounded">
-                            <div className="d-flex align-items-center">
-                              <i className='bx bx-dollar fs-3 text-success'></i>
-                              <div className="ms-2">
-                                <h6 className="mb-0">${totalOrderValue.toFixed(2)}</h6>
-                                <small className="text-muted">Total Spent</small>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="col-md-4">
-                          <div className="border p-3 rounded">
-                            <div className="d-flex align-items-center">
-                              <i className='bx bx-time fs-3 text-warning'></i>
-                              <div className="ms-2">
-                                <h6 className="mb-0">
-                                  {orders.filter(o => ['pending', 'processing'].includes(o.status?.toLowerCase())).length}
-                                </h6>
-                                <small className="text-muted">Active Orders</small>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      {error && (
-                        <div className="alert alert-danger alert-dismissible fade show" role="alert">
-                          {error}
-                          <button 
-                            type="button" 
-                            className="btn-close" 
-                            onClick={() => dispatch(clearError())}
-                          ></button>
-                        </div>
-                      )}
-                      
-                      {loading ? (
-                        <div className="text-center py-5">
-                          <div className="spinner-border text-primary" role="status">
-                            <span className="visually-hidden">Loading...</span>
-                          </div>
-                        </div>
-                      ) : sortedOrders.length === 0 ? (
-                        <div className="text-center py-5">
-                          <i className='bx bx-cart fs-1 text-muted'></i>
-                          <p className="mt-3">
-                            {statusFilter !== 'all' 
-                              ? `No ${statusFilter} orders found.` 
-                              : 'No orders yet. Start shopping!'}
-                          </p>
-                          {statusFilter === 'all' && (
-                            <button 
-                              onClick={() => navigate('/shop')}
-                              className="btn btn-primary rounded-0"
-                            >
-                              Browse Products
-                            </button>
-                          )}
-                        </div>
-                      ) : (
-                        <div className="table-responsive">
-                          <table className="table">
-                            <thead className="table-light">
-                              <tr>
-                                <th>Order</th>
-                                <th>Date</th>
-                                <th>Status</th>
-                                <th>Total</th>
-                                <th>Actions</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {sortedOrders.map((order) => (
-                                <tr key={order.id}>
-                                  <td>
-                                    <strong>#{order.orderNumber || order.id}</strong>
-                                  </td>
-                                  <td>
-                                    {formatDate(order.orderDate || order.createdAt)}
-                                  </td>
-                                  <td>
-                                    <div className={`badge rounded-pill ${getStatusBadgeClass(order.status)} w-100 text-white`}>
-                                      {order.status?.charAt(0).toUpperCase() + order.status?.slice(1) || 'Pending'}
-                                    </div>
-                                  </td>
-                                  <td>
-                                    ${(order.total || 0).toFixed(2)} for {getItemCount(order)} item{getItemCount(order) !== 1 ? 's' : ''}
-                                  </td>
-                                  <td>
-                                    <div className="d-flex gap-2 flex-wrap">
-                                      <button 
-                                        onClick={() => handleViewOrder(order)}
-                                        className="btn btn-light btn-sm rounded-0"
-                                      >
-                                        View
-                                      </button>
-                                      
-                                      {canPay(order) && (
-                                        <button 
-                                          onClick={() => handlePayOrder(order)}
-                                          className="btn btn-primary btn-sm rounded-0"
-                                        >
-                                          Pay
-                                        </button>
-                                      )}
-                                      
-                                      {canCancel(order) && (
-                                        <button 
-                                          onClick={() => handleCancelOrder(order.id)}
-                                          className="btn btn-danger btn-sm rounded-0"
-                                          disabled={cancellingOrderId === order.id}
-                                        >
-                                          {cancellingOrderId === order.id ? (
-                                            <span className="spinner-border spinner-border-sm"></span>
-                                          ) : (
-                                            'Cancel'
-                                          )}
-                                        </button>
-                                      )}
-                                      
-                                      {order.trackingNumber && (
-                                        <button 
-                                          onClick={() => window.open(`/track/${order.trackingNumber}`, '_blank')}
-                                          className="btn btn-info btn-sm rounded-0"
-                                        >
-                                          <i className='bx bx-package'></i> Track
-                                        </button>
-                                      )}
-                                    </div>
-                                  </td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
-                      )}
+                        <span className="oh-eyebrow">My Account</span>
+                        <h1 className="oh-title">My <span>Orders</span></h1>
                     </div>
-                  </div>
+                </section>
+
+                {/* LAYOUT */}
+                <div className="ol">
+                    <AccountSidebar currentUser={currentUser}/>
+                    <main>
+
+                        {/* Stats */}
+                        <div className="os">
+                            {[
+                                {val:orders.length,lbl:'Total Orders',sa:T.red},
+                                {val:`$${(totalOrderValue||0).toFixed(2)}`,lbl:'Total Spent',sa:T.orange},
+                                {val:activeCount,lbl:'Active Orders',sa:T.teal},
+                            ].map(s=>(
+                                <div key={s.lbl} className="os-item" style={{'--sa':s.sa}}>
+                                    <span className="os-val">{s.val}</span>
+                                    <span className="os-lbl">{s.lbl}</span>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Toolbar */}
+                        <div className="otb">
+                            <h2 className="otb-title">
+                                Order History
+                                {statusFilter!=='all'&&<span style={{color:T.red,fontFamily:"'Space Mono',monospace",fontSize:'.7rem',marginLeft:'.75rem'}}> — {statusFilter}</span>}
+                            </h2>
+                            <button className={`otb-btn${showFilters?' act':''}`} onClick={()=>setShowFilters(s=>!s)}>
+                                ▼ Filter{statusFilter!=='all'&&` (${statusFilter})`}
+                            </button>
+                        </div>
+
+                        {/* Filter drawer */}
+                        {showFilters&&(
+                            <div className="ofd">
+                                <div>
+                                    <span className="ofd-lbl">Status</span>
+                                    <select className="ofd-sel" value={statusFilter} onChange={e=>setStatusFilter(e.target.value)}>
+                                        {SFS.map(s=>(
+                                            <option key={s} value={s}>{s==='all'?'All Orders':s.charAt(0).toUpperCase()+s.slice(1)}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                {statusFilter!=='all'&&(
+                                    <button className="ofd-clr" onClick={()=>{setStatusFilter('all');dispatch(clearOrderFilters());}}>✕ Clear</button>
+                                )}
+                            </div>
+                        )}
+
+                        {/* Error */}
+                        {error&&(
+                            <div className="o-err">
+                                <span>⚠</span>
+                                <span style={{flex:1}}>{error}</span>
+                                <button className="o-err-close" onClick={()=>dispatch(clearError())}>✕</button>
+                            </div>
+                        )}
+
+                        {/* Loading */}
+                        {loading&&<div className="o-ldg"><div className="o-ldg-spin"/></div>}
+
+                        {/* Empty */}
+                        {!loading&&sorted.length===0&&(
+                            <div className="o-empty">
+                                <span className="o-empty-icon">📭</span>
+                                <h3 className="o-empty-title">No orders found</h3>
+                                <p className="o-empty-sub">
+                                    {statusFilter!=='all'
+                                        ?`No ${statusFilter} orders. Try a different filter.`
+                                        :"You haven't placed any orders yet."}
+                                </p>
+                                {statusFilter==='all'
+                                    ?<Link to="/shop" className="o-btn-primary">🛍️ Browse Products</Link>
+                                    :<button className="o-btn-primary" onClick={()=>setStatusFilter('all')}>View All Orders</button>
+                                }
+                            </div>
+                        )}
+
+                        {/* Order cards */}
+                        {!loading&&sorted.map(order=>{
+                            const sk=order.status?.toLowerCase()||'pending';
+                            const sc=SA[sk]||T.textDim;
+                            const slbl=(order.status?.charAt(0).toUpperCase()+order.status?.slice(1))||'Pending';
+                            const ic=itemCount(order);
+                            return (
+                                <div key={order.id} className="oc" style={{'--sc':sc}}>
+                                    <div className="oc-head">
+                                        <span className="oc-num">Order <span>#{order.orderNumber||order.id}</span></span>
+                                        <div className="oc-pill"><span className="oc-dot"/>{slbl}</div>
+                                    </div>
+                                    <div className="oc-body">
+                                        <div>
+                                            <span className="oc-fl">Date</span>
+                                            <span className="oc-fv">{fmtDate(order.orderDate||order.createdAt)}</span>
+                                        </div>
+                                        <div>
+                                            <span className="oc-fl">Total</span>
+                                            <span className="oc-fv" style={{color:T.orange}}>${(order.total||0).toFixed(2)}</span>
+                                        </div>
+                                        <div>
+                                            <span className="oc-fl">Items</span>
+                                            <span className="oc-fv">{ic} item{ic!==1?'s':''}</span>
+                                        </div>
+                                        <div className="oc-actions">
+                                            <button className="ob ob-v" onClick={()=>handleView(order)}>View →</button>
+                                            {canPay(order)&&<button className="ob ob-p" onClick={()=>handlePay(order)}>💳 Pay</button>}
+                                            {canCancel(order)&&(
+                                                <button className="ob ob-x" onClick={()=>handleCancel(order.id)} disabled={cancellingId===order.id}>
+                                                    {cancellingId===order.id?<><div className="o-spin"/> Cancelling…</>:'✕ Cancel'}
+                                                </button>
+                                            )}
+                                            {order.trackingNumber&&(
+                                                <button className="ob ob-t" onClick={()=>window.open(`/track/${order.trackingNumber}`,'_blank')}>📡 Track</button>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        })}
+
+                    </main>
                 </div>
-              </div>
+
+                <div className="o-ab"/>
             </div>
-          </div>
-        </div>
-      </section>
-    </>
-  );
+        </>
+    );
 }
 
 export default AccountOrders;

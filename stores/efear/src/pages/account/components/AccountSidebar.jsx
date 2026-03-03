@@ -1,185 +1,165 @@
 import React, { useState } from "react";
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { dispatch } from "../../../features/store";
-import {
-    logoutUser,
-} from '../../../features/user/slice';
+import { logoutUser } from '../../../features/user/slice';
+import { T, sidebarStyles } from "../styles";
 
-export const AccountSidebar = (props) => {
+
+const MENU_ITEMS = [
+    { label: 'Dashboard',       path: '/account/dashboard',       icon: '⊞' },
+    { label: 'Orders',          path: '/account/orders',          icon: '📦' },
+    { label: 'Addresses',       path: '/account/addresses',       icon: '📍' },
+    { label: 'Payment Methods', path: '/account/payment-methods', icon: '💳' },
+    { label: 'Account Details', path: '/account/details',         icon: '👤' },
+];
+
+export const AccountSidebar = ({ currentUser, userFullName, lastLoginAt }) => {
     const navigate = useNavigate();
     const location = useLocation();
-
-    const { currentUser, userFullName, lastLoginAt } = props;
-
-
     const [showLogoutModal, setShowLogoutModal] = useState(false);
-    const [loggingOut, setLoggingOut] = useState(false);
-    const isActiveMenuItem = (path) => {
-        return location.pathname === path;
+    const [loggingOut, setLoggingOut]           = useState(false);
+
+    const isActive = (path) => location.pathname === path;
+
+    const formatLastLogin = (dateString) => {
+        if (!dateString) return 'Recently';
+        const date = new Date(dateString);
+        const now  = new Date();
+        const diffMs    = now - date;
+        const diffMins  = Math.floor(diffMs / 60000);
+        const diffHours = Math.floor(diffMs / 3600000);
+        const diffDays  = Math.floor(diffMs / 86400000);
+        if (diffMins  < 1)  return 'Just now';
+        if (diffMins  < 60) return `${diffMins}m ago`;
+        if (diffHours < 24) return `${diffHours}h ago`;
+        if (diffDays  < 7)  return `${diffDays}d ago`;
+        return date.toLocaleDateString();
     };
 
     const handleLogout = async () => {
         setLoggingOut(true);
         try {
             await dispatch(logoutUser());
-            navigate('/login', {
-                state: { message: 'You have been logged out successfully' }
-            });
-        } catch (error) {
-            console.error('Logout error:', error);
+            navigate('/login', { state: { message: 'You have been logged out successfully' } });
+        } catch (err) {
+            console.error('Logout error:', err);
         } finally {
             setLoggingOut(false);
             setShowLogoutModal(false);
         }
     };
 
-    const formatLastLogin = (dateString) => {
-        if (!dateString) return 'Recently';
-
-        const date = new Date(dateString);
-        const now = new Date();
-        const diffMs = now - date;
-        const diffMins = Math.floor(diffMs / 60000);
-        const diffHours = Math.floor(diffMs / 3600000);
-        const diffDays = Math.floor(diffMs / 86400000);
-
-        if (diffMins < 1) return 'Just now';
-        if (diffMins < 60) return `${diffMins} minute${diffMins > 1 ? 's' : ''} ago`;
-        if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
-        if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
-
-        return date.toLocaleDateString();
-    };
-
-    // Navigation items
-    const menuItems = [
-        { label: 'Dashboard', path: '/account/dashboard', icon: 'bx-tachometer', active: true },
-        { label: 'Orders', path: '/account/orders', icon: 'bx-cart-alt' },
-        { label: 'Addresses', path: '/account/addresses', icon: 'bx-home-smile',  },
-        { label: 'Payment Methods', path: '/account/payment-methods', icon: 'bx-credit-card' },
-        { label: 'Account Details', path: '/account/details', icon: 'bx-user-circle' },
-    ];
+    const hasAvatar = currentUser?.avatar && currentUser.avatar.secure_url !== '';
 
     return (
         <>
-            <div className="col-lg-4">
-                <div className="card media-object shadow-none mb-3 mb-lg-0">
-                    <div className="card-body">
-                        {/* User Info Card */}
-                        <div className="text-center mb-4 pb-4 border-bottom">
-                            <div className="mb-3">
-                                {currentUser.avatar ? (
-                                    <img
-                                        className="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center"
-                                        src={currentUser.avatar && currentUser.avatar.secure_url !== '' ? currentUser.avatar.secure_url : '/assets/images/avatars/avatar-1.png'}
-                                        alt={userFullName}
-                                        className="rounded-circle"
-                                        width="80"
-                                        height="80"
-                                    />
-                                ) : (
-                                    <div
-                                        className="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center"
-                                        style={{ width: '80px', height: '80px', fontSize: '2rem' }}
-                                    >
-                                        {currentUser.firstName?.[0]}{currentUser.lastName?.[0]}
-                                    </div>
-                                )}
+            <style>{sidebarStyles}</style>
+            <link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Mono:ital@0;1&display=swap" rel="stylesheet" />
+
+            <div className="accsb-wrap">
+
+                {/* ── Profile section ── */}
+                <div className="accsb-profile">
+                    <div className="accsb-avatar-ring">
+                        {hasAvatar ? (
+                            <img
+                                className="accsb-avatar-img"
+                                src={currentUser.avatar.secure_url}
+                                alt={userFullName}
+                            />
+                        ) : (
+                            <div className="accsb-avatar-initials">
+                                {currentUser?.firstName?.[0]}{currentUser?.lastName?.[0]}
                             </div>
-                            <h5 className="mb-1">{userFullName}</h5>
-                            <p className="text-muted small mb-1">{currentUser.email}</p>
-                            {lastLoginAt && (
-                                <small className="text-muted">
-                                    Last login: {formatLastLogin(lastLoginAt)}
-                                </small>
-                            )}
-                        </div>
-
-                        {/* Navigation Menu */}
-                        <div className="list-group list-group-flush account-sidebar">
-                            {menuItems.map((item) => (
-                                <Link
-                                    key={item.path}
-                                    to={item.path}
-                                    className={`list-group-item d-flex justify-content-between align-items-center ${isActiveMenuItem(item.path) ? 'active' : 'bg-dark-0'
-                                        }`}
-                                >
-                                    <span>
-                                        {item.label}
-                                        {item.badge > 0 && (
-                                            <span className="badge bg-danger rounded-pill ms-2">
-                                                {item.badge}
-                                            </span>
-                                        )}
-                                    </span>
-                                    <i className={`bx ${item.icon} fs-5`}></i>
-                                </Link>
-                            ))}
-
-                            {/* Logout Button */}
-                            <button
-                                onClick={() => setShowLogoutModal(true)}
-                                className="list-group-item d-flex justify-content-between align-items-center bg-transparent text-danger"
-                                style={{ cursor: 'pointer', border: 'none' }}
-                            >
-                                <span>Logout</span>
-                                <i className='bx bx-log-out fs-5'></i>
-                            </button>
-                        </div>
+                        )}
+                        <div className="accsb-online-dot" title="Online" />
                     </div>
+
+                    <h2 className="accsb-name">{userFullName}</h2>
+                    <p className="accsb-email">{currentUser?.email}</p>
+                    {lastLoginAt && (
+                        <div className="accsb-login-badge">
+                            <span>●</span> Last login: {formatLastLogin(lastLoginAt)}
+                        </div>
+                    )}
                 </div>
+
+                {/* ── Navigation ── */}
+                <nav className="accsb-nav">
+                    {MENU_ITEMS.map((item) => (
+                        <Link
+                            key={item.path}
+                            to={item.path}
+                            className={`accsb-nav-item${isActive(item.path) ? ' active' : ''}`}
+                        >
+                            <span className="accsb-nav-left">
+                                <span className="accsb-nav-icon">{item.icon}</span>
+                                {item.label}
+                                {item.badge > 0 && (
+                                    <span className="accsb-nav-badge">{item.badge}</span>
+                                )}
+                            </span>
+                            <span className="accsb-nav-arrow">→</span>
+                        </Link>
+                    ))}
+
+                    <div className="accsb-nav-divider" />
+
+                    <button
+                        className="accsb-logout"
+                        onClick={() => setShowLogoutModal(true)}
+                    >
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '.65rem' }}>
+                            <span className="accsb-logout-icon">⏻</span>
+                            Logout
+                        </span>
+                        <span style={{ fontSize: '.5rem' }}>→</span>
+                    </button>
+                </nav>
             </div>
-            {/* Logout Confirmation Modal */}
+
+            {/* ── Logout confirmation modal ── */}
             {showLogoutModal && (
-                <div className="modal fade show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
-                    <div className="modal-dialog modal-dialog-centered">
-                        <div className="modal-content">
-                            <div className="modal-header">
-                                <h5 className="modal-title">Confirm Logout</h5>
-                                <button
-                                    type="button"
-                                    className="btn-close"
-                                    onClick={() => setShowLogoutModal(false)}
-                                    disabled={loggingOut}
-                                ></button>
-                            </div>
-                            <div className="modal-body">
-                                <p>Are you sure you want to logout?</p>
-                            </div>
-                            <div className="modal-footer">
-                                <button
-                                    type="button"
-                                    className="btn btn-secondary"
-                                    onClick={() => setShowLogoutModal(false)}
-                                    disabled={loggingOut}
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="button"
-                                    className="btn btn-danger"
-                                    onClick={handleLogout}
-                                    disabled={loggingOut}
-                                >
-                                    {loggingOut ? (
-                                        <>
-                                            <span className="spinner-border spinner-border-sm me-2" role="status"></span>
-                                            Logging out...
-                                        </>
-                                    ) : (
-                                        <>
-                                            <i className='bx bx-log-out me-2'></i>
-                                            Logout
-                                        </>
-                                    )}
-                                </button>
-                            </div>
+                <div
+                    className="accsb-modal-overlay"
+                    onClick={(e) => e.target === e.currentTarget && !loggingOut && setShowLogoutModal(false)}
+                >
+                    <div className="accsb-modal">
+                        <div className="accsb-modal-head">
+                            <h3 className="accsb-modal-title">Confirm Logout</h3>
+                            <button
+                                className="accsb-modal-close"
+                                onClick={() => setShowLogoutModal(false)}
+                                disabled={loggingOut}
+                            >✕</button>
+                        </div>
+                        <div className="accsb-modal-body">
+                            Are you sure you want to log out, <strong>{currentUser?.firstName || userFullName}</strong>? Any unsaved changes will be lost.
+                        </div>
+                        <div className="accsb-modal-foot">
+                            <button
+                                className="accsb-btn-cancel"
+                                onClick={() => setShowLogoutModal(false)}
+                                disabled={loggingOut}
+                            >
+                                Stay
+                            </button>
+                            <button
+                                className="accsb-btn-logout"
+                                onClick={handleLogout}
+                                disabled={loggingOut}
+                            >
+                                {loggingOut
+                                    ? <><div className="accsb-spinner" /> Logging out...</>
+                                    : <>⏻ &nbsp; Logout</>
+                                }
+                            </button>
                         </div>
                     </div>
                 </div>
             )}
         </>
-    )
-}
+    );
+};
 
 export default AccountSidebar;

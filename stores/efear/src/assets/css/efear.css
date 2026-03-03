@@ -5315,3 +5315,7 @@ body {
     grid-template-columns: 1fr;
   }
 }
+.hdr-category-dropdown {
+  position: fixed;
+  top: 100px;
+}
