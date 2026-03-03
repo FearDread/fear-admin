@@ -36,26 +36,37 @@ import {
   selectFilters,
   setFilters,
 } from "../../features/user/slice.js";
-import { 
-  Modal, 
-  Form, 
-  Input as RSInput, 
+import {
+  Modal,
+  Form,
+  Input as RSInput,
   Button as RSButton,
   ButtonToolbar,
   SelectPicker,
+  Toggle,
   Message,
-  useToaster
+  useToaster,
 } from "rsuite";
 import { CrudFactory } from "../../features/crud.js";
+
+const { Group: FormGroup, Control: FormControl, ControlLabel } = Form;
+
+const ROLE_OPTIONS = [
+  { label: "Admin", value: "admin" },
+  { label: "Editor", value: "editor" },
+  { label: "Moderator", value: "moderator" },
+  { label: "User", value: "user" },
+];
 
 const UsersList = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const toaster = useToaster();
-  
+
   // Redux state
   const error = useSelector(selectUserError);
   const loading = useSelector(selectUserLoading);
+  const success = useSelector(selectUserSuccess);
   const users = useSelector(selectAllUsers);
   const searchTerm = useSelector(selectSearchTerm);
   const filters = useSelector(selectFilters);
@@ -64,9 +75,18 @@ const UsersList = () => {
   const [alert, setAlert] = useState(null);
   const [roleFilter, setRoleFilter] = useState("all");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
-  const [viewMode, setViewMode] = useState("list");
+  const [viewMode, setLocalViewMode] = useState("list");
+
+  // Edit form state
+  const [formValue, setFormValue] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    role: "user",
+    isActive: true,
+  });
 
   const USER_STATUS = {
     active: { color: "success", icon: "fa-check-circle", label: "Active" },
@@ -78,7 +98,7 @@ const UsersList = () => {
       Header: "Avatar",
       accessor: "avatar",
       sortable: false,
-      filterable: false
+      filterable: false,
     },
     { Header: "User", accessor: "title", sortable: true },
     { Header: "Email", accessor: "email", sortable: true },
@@ -90,8 +110,8 @@ const UsersList = () => {
       Header: "Actions",
       accessor: "actions",
       sortable: false,
-      filterable: false
-    }
+      filterable: false,
+    },
   ], []);
 
   useEffect(() => {
@@ -99,35 +119,98 @@ const UsersList = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    const handleResize = () => {
-      // Add any resize logic if needed
-    };
-
+    const handleResize = () => {};
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const handleEditUser = (id) => {
-    navigate(`/admin/user/edit/${id}`);
+  // Show error toasts
+  useEffect(() => {
+    if (error) {
+      toaster.push(
+        <Message showIcon type="error" closable>
+          <strong>Error!</strong> {error}
+        </Message>,
+        { placement: "topEnd", duration: 5000 }
+      );
+      dispatch(clearError());
+    }
+  }, [error, toaster, dispatch]);
+
+  // Close edit modal on success
+  useEffect(() => {
+    if (success && showEditModal) {
+      toaster.push(
+        <Message showIcon type="success" closable>
+          <strong>Success!</strong> User updated successfully.
+        </Message>,
+        { placement: "topEnd", duration: 3000 }
+      );
+      handleCloseEditModal();
+      dispatch(fetchUsers());
+    }
+  }, [success, showEditModal]);
+
+  // ── Modal handlers ────────────────────────────────────────────────────────
+
+  const handleOpenEditModal = (user) => {
+    setSelectedUser(user);
+    setFormValue({
+      firstName: user.firstName || "",
+      lastName: user.lastName || "",
+      email: user.email || "",
+      role: user.role || "user",
+      isActive: user.isActive !== false,
+    });
+    setShowEditModal(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setShowEditModal(false);
+    setSelectedUser(null);
+  };
+
+  const handleCloseDeleteModal = () => {
+    setShowDeleteModal(false);
+    setSelectedUser(null);
+  };
+
+  const handleUpdateUser = async () => {
+    if (!selectedUser) return;
+    try {
+      await dispatch(updateUser({ id: selectedUser._id, data: formValue })).unwrap();
+    } catch (err) {
+      console.error("Error updating user:", err);
+    }
+  };
+
+  const handleDeleteUser = async () => {
+    if (!selectedUser) return;
+    try {
+      await dispatch(deleteUser(selectedUser._id)).unwrap();
+      toaster.push(
+        <Message showIcon type="success" closable>
+          <strong>Deleted!</strong> User removed successfully.
+        </Message>,
+        { placement: "topEnd", duration: 3000 }
+      );
+      handleCloseDeleteModal();
+      dispatch(fetchUsers());
+    } catch (err) {
+      console.error("Error deleting user:", err);
+    }
+  };
+
+  const confirmDelete = (user) => {
+    setSelectedUser(user);
+    setShowDeleteModal(true);
   };
 
   const handleViewUser = (id) => {
     navigate(`/admin/user/view/${id}`);
   };
 
-  const handleDeleteUser = async (id, userName) => {
-    try {
-      await dispatch(deleteUser(id));
-      setShowDeleteModal(false);
-    } catch (err) {
-      console.log('error deleting user ::', err);
-    }
-  };
-
-  const confirmDelete = (id, user) => {
-    setSelectedUser(user);
-    setShowDeleteModal(true);
-  };
+  // ── Filters ───────────────────────────────────────────────────────────────
 
   const handleRoleFilter = (role) => {
     setRoleFilter(role);
@@ -138,26 +221,16 @@ const UsersList = () => {
     }
   };
 
-  /**
-   * Get user status
-   */
   const getUserStatus = (isActive) => {
     return isActive !== false ? USER_STATUS.active : USER_STATUS.inactive;
   };
 
-  /**
-   * Filter and search users
-   */
   const filteredUsers = useMemo(() => {
     if (!users || users.length === 0) return [];
 
-    return users.filter(user => {
-      // Role filter
-      if (roleFilter !== "all" && user.role !== roleFilter) {
-        return false;
-      }
+    return users.filter((user) => {
+      if (roleFilter !== "all" && user.role !== roleFilter) return false;
 
-      // Search filter
       if (searchTerm) {
         const searchLower = searchTerm.toLowerCase();
         return (
@@ -173,35 +246,23 @@ const UsersList = () => {
     });
   }, [users, searchTerm, roleFilter]);
 
-  /**
-   * Calculate statistics
-   */
   const statistics = useMemo(() => {
     if (!users || users.length === 0) {
-      return {
-        totalUsers: 0,
-        active: 0,
-        inactive: 0,
-        verified: 0,
-      };
+      return { totalUsers: 0, active: 0, inactive: 0, verified: 0 };
     }
-
     return {
       totalUsers: users.length,
-      active: users.filter(u => u.isActive !== false).length,
-      inactive: users.filter(u => u.isActive === false).length,
-      verified: users.filter(u => u.emailVerified === true).length,
+      active: users.filter((u) => u.isActive !== false).length,
+      inactive: users.filter((u) => u.isActive === false).length,
+      verified: users.filter((u) => u.emailVerified === true).length,
     };
   }, [users]);
 
-  /**
-   * Transform users data for table display
-   */
   const tableData = useMemo(() => {
-    return filteredUsers.map((item, index) => {
+    return filteredUsers.map((item) => {
       const status = getUserStatus(item.isActive);
-      const fullName = `${item.firstName || ''} ${item.lastName || ''}`.trim();
-      
+      const fullName = `${item.firstName || ""} ${item.lastName || ""}`.trim();
+
       return {
         avatar: (
           <div className="position-relative">
@@ -211,50 +272,58 @@ const UsersList = () => {
                 alt={fullName}
                 className="rounded-circle"
                 style={{
-                  width: '50px',
-                  height: '50px',
-                  objectFit: 'cover',
-                  border: '2px solid rgba(255,255,255,0.2)'
+                  width: "50px",
+                  height: "50px",
+                  objectFit: "cover",
+                  border: "2px solid rgba(255,255,255,0.2)",
                 }}
               />
             ) : (
               <div
                 className="rounded-circle d-inline-flex align-items-center justify-content-center"
                 style={{
-                  width: '50px',
-                  height: '50px',
-                  backgroundColor: '#1a73e8',
-                  color: 'white',
-                  fontSize: '18px',
-                  fontWeight: 'bold',
-                  border: '2px solid rgba(255,255,255,0.2)'
+                  width: "50px",
+                  height: "50px",
+                  backgroundColor: "#1a73e8",
+                  color: "white",
+                  fontSize: "18px",
+                  fontWeight: "bold",
+                  border: "2px solid rgba(255,255,255,0.2)",
                 }}
               >
-                {item.firstName?.[0]?.toUpperCase() || item.email?.[0]?.toUpperCase() || '?'}
+                {item.firstName?.[0]?.toUpperCase() ||
+                  item.email?.[0]?.toUpperCase() ||
+                  "?"}
               </div>
             )}
           </div>
         ),
         title: (
           <div className="d-flex flex-column">
-            <span className="text-white font-weight-bold">{fullName || 'N/A'}</span>
+            <span className="text-white font-weight-bold">
+              {fullName || "N/A"}
+            </span>
             {item.username && (
-              <small className="text-light-2" style={{ fontSize: '11px' }}>
+              <small className="text-light-2" style={{ fontSize: "11px" }}>
                 @{item.username}
               </small>
             )}
           </div>
         ),
-        email: (
-          <span className="text-light-1">{item.email}</span>
-        ),
+        email: <span className="text-light-1">{item.email}</span>,
         role: (
-          <Badge 
-            color={item.role === 'admin' ? 'danger' : item.role === 'editor' ? 'warning' : 'info'} 
-            pill 
+          <Badge
+            color={
+              item.role === "admin"
+                ? "danger"
+                : item.role === "editor"
+                ? "warning"
+                : "info"
+            }
+            pill
             className="px-3"
           >
-            {item.role?.toUpperCase() || 'USER'}
+            {item.role?.toUpperCase() || "USER"}
           </Badge>
         ),
         status: (
@@ -264,23 +333,27 @@ const UsersList = () => {
           </Badge>
         ),
         verified: (
-          <Badge color={item.emailVerified ? 'success' : 'secondary'} pill className="px-3">
+          <Badge
+            color={item.emailVerified ? "success" : "secondary"}
+            pill
+            className="px-3"
+          >
             {item.emailVerified ? (
               <>
-                <i className="fa fa-check-circle mr-2"></i>
-                Verified
+                <i className="fa fa-check-circle mr-2"></i>Verified
               </>
             ) : (
               <>
-                <i className="fa fa-times-circle mr-2"></i>
-                Unverified
+                <i className="fa fa-times-circle mr-2"></i>Unverified
               </>
             )}
           </Badge>
         ),
         joined: (
           <span className="text-light-2">
-            {item.createdAt ? new Date(item.createdAt).toLocaleDateString() : 'N/A'}
+            {item.createdAt
+              ? new Date(item.createdAt).toLocaleDateString()
+              : "N/A"}
           </span>
         ),
         actions: (
@@ -298,7 +371,7 @@ const UsersList = () => {
               color="primary"
               size="sm"
               className="btn-round"
-              onClick={() => handleEditUser(item._id)}
+              onClick={() => handleOpenEditModal(item)}
               title="Edit User"
             >
               <i className="fa fa-edit"></i>
@@ -307,18 +380,17 @@ const UsersList = () => {
               color="danger"
               size="sm"
               className="btn-round"
-              onClick={() => confirmDelete(item._id, item)}
+              onClick={() => confirmDelete(item)}
               title="Delete User"
             >
               <i className="fa fa-trash"></i>
             </Button>
           </div>
-        )
+        ),
       };
     });
   }, [filteredUsers]);
 
-  // Show loader while fetching
   if (loading && (!users || users.length === 0)) {
     return <Loader />;
   }
@@ -326,6 +398,7 @@ const UsersList = () => {
   return (
     <>
       <div className="container-fluid">
+        {/* Statistics Cards */}
         <Row className="mb-4">
           <Col lg="3" md="6">
             <Card className="card-stats media-object">
@@ -412,6 +485,7 @@ const UsersList = () => {
             </Card>
           </Col>
         </Row>
+
         <Row>
           <Col md="12">
             <Card className="media-object">
@@ -430,7 +504,7 @@ const UsersList = () => {
                     <Button
                       color={viewMode === "list" ? "info" : "secondary"}
                       size="sm"
-                      onClick={() => dispatch(setViewMode("list"))}
+                      onClick={() => setLocalViewMode("list")}
                       className="btn-round"
                     >
                       <i className="fa fa-list"></i>
@@ -438,7 +512,7 @@ const UsersList = () => {
                     <Button
                       color={viewMode === "grid" ? "info" : "secondary"}
                       size="sm"
-                      onClick={() => dispatch(setViewMode("grid"))}
+                      onClick={() => setLocalViewMode("grid")}
                       className="btn-round"
                     >
                       <i className="fa fa-th"></i>
@@ -447,7 +521,7 @@ const UsersList = () => {
                   <Button
                     color="primary"
                     size="sm"
-                    onClick={() => navigate('/admin/user/new')}
+                    onClick={() => navigate("/admin/user/new")}
                     className="btn-round"
                   >
                     <i className="fa fa-plus mr-2"></i>
@@ -457,7 +531,7 @@ const UsersList = () => {
               </CardHeader>
 
               <CardBody>
-                {/* Search and Filter Section */}
+                {/* Search and Filter */}
                 <Row className="mb-4">
                   <Col md="5">
                     <div className="position-relative">
@@ -465,48 +539,59 @@ const UsersList = () => {
                         type="text"
                         placeholder="Search users, emails..."
                         value={searchTerm}
-                        onChange={(e) => dispatch(setSearchTerm(e.target.value))}
+                        onChange={(e) =>
+                          dispatch(setSearchTerm(e.target.value))
+                        }
                         className="form-control-rounded"
-                        style={{ paddingLeft: '35px' }}
+                        style={{ paddingLeft: "35px" }}
                       />
-                      <i 
-                        className="fa fa-search" 
-                        style={{ 
-                          position: 'absolute', 
-                          left: '12px', 
-                          top: '12px',
-                          color: 'rgba(255,255,255,0.5)'
+                      <i
+                        className="fa fa-search"
+                        style={{
+                          position: "absolute",
+                          left: "12px",
+                          top: "12px",
+                          color: "rgba(255,255,255,0.5)",
                         }}
                       ></i>
                     </div>
                   </Col>
                   <Col md="3">
                     <UncontrolledDropdown>
-                      <DropdownToggle 
-                        caret 
-                        color="light" 
+                      <DropdownToggle
+                        caret
+                        color="light"
                         className="w-100 text-left"
                       >
                         <i className="fa fa-filter mr-2"></i>
-                        {roleFilter === "all" 
-                          ? "All Roles" 
-                          : roleFilter.charAt(0).toUpperCase() + roleFilter.slice(1)}
+                        {roleFilter === "all"
+                          ? "All Roles"
+                          : roleFilter.charAt(0).toUpperCase() +
+                            roleFilter.slice(1)}
                       </DropdownToggle>
                       <DropdownMenu>
                         <DropdownItem onClick={() => handleRoleFilter("all")}>
                           All Roles
                         </DropdownItem>
                         <DropdownItem divider />
-                        <DropdownItem onClick={() => handleRoleFilter("admin")}>
+                        <DropdownItem
+                          onClick={() => handleRoleFilter("admin")}
+                        >
                           Admin
                         </DropdownItem>
-                        <DropdownItem onClick={() => handleRoleFilter("editor")}>
+                        <DropdownItem
+                          onClick={() => handleRoleFilter("editor")}
+                        >
                           Editor
                         </DropdownItem>
-                        <DropdownItem onClick={() => handleRoleFilter("moderator")}>
+                        <DropdownItem
+                          onClick={() => handleRoleFilter("moderator")}
+                        >
                           Moderator
                         </DropdownItem>
-                        <DropdownItem onClick={() => handleRoleFilter("user")}>
+                        <DropdownItem
+                          onClick={() => handleRoleFilter("user")}
+                        >
                           User
                         </DropdownItem>
                       </DropdownMenu>
@@ -535,22 +620,7 @@ const UsersList = () => {
                   </Col>
                 </Row>
 
-                {/* Error Display */}
-                {error && (
-                  <div className="alert alert-danger alert-dismissible fade show" role="alert">
-                    <i className="fa fa-exclamation-triangle mr-2"></i>
-                    {error}
-                    <button 
-                      type="button" 
-                      className="close" 
-                      onClick={() => dispatch(clearError())}
-                    >
-                      <span>&times;</span>
-                    </button>
-                  </div>
-                )}
-
-                {/* Users Table/Grid */}
+                {/* Users Table / Grid */}
                 {viewMode === "list" ? (
                   tableData.length > 0 ? (
                     <div className="table-responsive">
@@ -567,16 +637,19 @@ const UsersList = () => {
                     </div>
                   ) : (
                     <div className="text-center py-5">
-                      <i className="fa fa-users" style={{ fontSize: '64px', opacity: 0.3 }}></i>
+                      <i
+                        className="fa fa-users"
+                        style={{ fontSize: "64px", opacity: 0.3 }}
+                      ></i>
                       <p className="text-light-2 mt-3">
-                        {searchTerm || roleFilter !== 'all' 
-                          ? 'No users match your filters' 
-                          : 'No users found. Create your first user!'}
+                        {searchTerm || roleFilter !== "all"
+                          ? "No users match your filters"
+                          : "No users found. Create your first user!"}
                       </p>
-                      {!searchTerm && roleFilter === 'all' && (
-                        <Button 
-                          color="primary" 
-                          onClick={() => navigate('/admin/user/new')}
+                      {!searchTerm && roleFilter === "all" && (
+                        <Button
+                          color="primary"
+                          onClick={() => navigate("/admin/user/new")}
                           className="btn-round mt-3"
                         >
                           <i className="fa fa-plus mr-2"></i>
@@ -587,81 +660,103 @@ const UsersList = () => {
                   )
                 ) : (
                   <Row>
-                    {filteredUsers.map(user => {
+                    {filteredUsers.map((user) => {
                       const status = getUserStatus(user.isActive);
-                      const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim();
+                      const fullName =
+                        `${user.firstName || ""} ${user.lastName || ""}`.trim();
                       return (
                         <Col md="3" lg="2" key={user._id} className="mb-4">
                           <Card className="product-card h-100">
                             <div className="text-center pt-4">
                               {user.avatar ? (
-                                <img 
-                                  src={user.avatar} 
+                                <img
+                                  src={user.avatar}
                                   className="rounded-circle"
                                   alt={fullName}
-                                  style={{ width: '100px', height: '100px', objectFit: 'cover' }}
+                                  style={{
+                                    width: "100px",
+                                    height: "100px",
+                                    objectFit: "cover",
+                                  }}
                                 />
                               ) : (
                                 <div
                                   className="rounded-circle d-inline-flex align-items-center justify-content-center"
                                   style={{
-                                    width: '100px',
-                                    height: '100px',
-                                    backgroundColor: '#1a73e8',
-                                    color: 'white',
-                                    fontSize: '40px',
-                                    fontWeight: 'bold'
+                                    width: "100px",
+                                    height: "100px",
+                                    backgroundColor: "#1a73e8",
+                                    color: "white",
+                                    fontSize: "40px",
+                                    fontWeight: "bold",
                                   }}
                                 >
-                                  {user.firstName?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || '?'}
+                                  {user.firstName?.[0]?.toUpperCase() ||
+                                    user.email?.[0]?.toUpperCase() ||
+                                    "?"}
                                 </div>
                               )}
-                              <Badge 
-                                color={status.color} 
+                              <Badge
+                                color={status.color}
                                 className="position-absolute"
-                                style={{ top: '10px', right: '10px' }}
+                                style={{ top: "10px", right: "10px" }}
                               >
                                 {status.label}
                               </Badge>
                             </div>
                             <CardBody>
-                              <h6 className="text-white mb-2 text-center">{fullName || 'N/A'}</h6>
-                              <p className="text-light-2 small text-center mb-2">{user.email}</p>
+                              <h6 className="text-white mb-2 text-center">
+                                {fullName || "N/A"}
+                              </h6>
+                              <p className="text-light-2 small text-center mb-2">
+                                {user.email}
+                              </p>
                               <div className="d-flex justify-content-center align-items-center mb-2">
-                                <Badge 
-                                  color={user.role === 'admin' ? 'danger' : user.role === 'editor' ? 'warning' : 'info'} 
+                                <Badge
+                                  color={
+                                    user.role === "admin"
+                                      ? "danger"
+                                      : user.role === "editor"
+                                      ? "warning"
+                                      : "info"
+                                  }
                                   pill
                                 >
-                                  {user.role?.toUpperCase() || 'USER'}
+                                  {user.role?.toUpperCase() || "USER"}
                                 </Badge>
                               </div>
                               <div className="text-center mb-3">
-                                <Badge color={user.emailVerified ? 'success' : 'secondary'} pill>
-                                  {user.emailVerified ? 'Verified' : 'Unverified'}
+                                <Badge
+                                  color={
+                                    user.emailVerified ? "success" : "secondary"
+                                  }
+                                  pill
+                                >
+                                  {user.emailVerified ? "Verified" : "Unverified"}
                                 </Badge>
                               </div>
                               <div className="d-flex justify-content-between gap-2">
-                                <Button 
-                                  color="info" 
-                                  size="sm" 
+                                <Button
+                                  color="info"
+                                  size="sm"
                                   className="btn-round flex-fill"
                                   onClick={() => handleViewUser(user._id)}
                                 >
                                   <i className="fa fa-eye"></i>
                                 </Button>
-                                <Button 
-                                  color="primary" 
-                                  size="sm" 
+                                <Button
+                                  color="primary"
+                                  size="sm"
                                   className="btn-round flex-fill"
-                                  onClick={() => handleEditUser(user._id)}
+                                  onClick={() => handleOpenEditModal(user)}
                                 >
                                   <i className="fa fa-edit"></i>
                                 </Button>
-                                <Button 
-                                  color="danger" 
-                                  size="sm" 
+                                <Button
+                                  color="danger"
+                                  size="sm"
                                   className="btn-round flex-fill"
-                                  onClick={() => confirmDelete(user._id, user)}
+                                  onClick={() => confirmDelete(user)}
                                 >
                                   <i className="fa fa-trash"></i>
                                 </Button>
@@ -676,13 +771,13 @@ const UsersList = () => {
 
                 {/* Loading Overlay */}
                 {loading && users && users.length > 0 && (
-                  <div 
+                  <div
                     className="position-absolute w-100 h-100 d-flex justify-content-center align-items-center"
-                    style={{ 
-                      top: 0, 
-                      left: 0, 
-                      background: 'rgba(0,0,0,0.5)',
-                      zIndex: 999
+                    style={{
+                      top: 0,
+                      left: 0,
+                      background: "rgba(0,0,0,0.5)",
+                      zIndex: 999,
                     }}
                   >
                     <div className="spinner-border text-primary" role="status">
@@ -696,10 +791,98 @@ const UsersList = () => {
         </Row>
       </div>
 
-      {/* Delete Confirmation Modal */}
-      <Modal 
-        open={showDeleteModal} 
-        onClose={() => setShowDeleteModal(false)}
+      {/* ── Edit User Modal ─────────────────────────────────────────────────── */}
+      <Modal
+        open={showEditModal}
+        onClose={handleCloseEditModal}
+        size="md"
+        className="rs-theme-dark"
+      >
+        <Modal.Header>
+          <Modal.Title>
+            <i className="fa fa-edit mr-2"></i>
+            Edit User
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form fluid formValue={formValue} onChange={setFormValue}>
+            <Row>
+              <Col md={6}>
+                <FormGroup>
+                  <ControlLabel>First Name *</ControlLabel>
+                  <FormControl
+                    name="firstName"
+                    placeholder="Enter first name..."
+                  />
+                </FormGroup>
+              </Col>
+              <Col md={6}>
+                <FormGroup>
+                  <ControlLabel>Last Name</ControlLabel>
+                  <FormControl
+                    name="lastName"
+                    placeholder="Enter last name..."
+                  />
+                </FormGroup>
+              </Col>
+            </Row>
+
+            <FormGroup>
+              <ControlLabel>Email *</ControlLabel>
+              <FormControl
+                name="email"
+                type="email"
+                placeholder="Enter email address..."
+              />
+            </FormGroup>
+
+            <FormGroup>
+              <ControlLabel>Role</ControlLabel>
+              <FormControl
+                name="role"
+                accepter={SelectPicker}
+                data={ROLE_OPTIONS}
+                block
+                placeholder="Select role"
+                searchable={false}
+                cleanable={false}
+              />
+            </FormGroup>
+
+            <Row>
+              <Col md={6}>
+                <FormGroup>
+                  <ControlLabel>Active Status</ControlLabel>
+                  <div className="mt-2">
+                    <Toggle
+                      checked={formValue.isActive}
+                      onChange={(checked) =>
+                        setFormValue({ ...formValue, isActive: checked })
+                      }
+                      checkedChildren="Active"
+                      unCheckedChildren="Inactive"
+                    />
+                  </div>
+                </FormGroup>
+              </Col>
+            </Row>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <RSButton onClick={handleUpdateUser} appearance="primary">
+            <i className="fa fa-check mr-2"></i>
+            Update User
+          </RSButton>
+          <RSButton onClick={handleCloseEditModal} appearance="subtle">
+            Cancel
+          </RSButton>
+        </Modal.Footer>
+      </Modal>
+
+      {/* ── Delete Confirmation Modal ────────────────────────────────────────── */}
+      <Modal
+        open={showDeleteModal}
+        onClose={handleCloseDeleteModal}
         size="xs"
         className="rs-theme-dark"
       >
@@ -711,24 +894,32 @@ const UsersList = () => {
         </Modal.Header>
         <Modal.Body>
           <p style={{ color: "rgba(255,255,255,0.7)" }}>
-            Are you sure you want to delete "<strong style={{ color: "white" }}>
-              {selectedUser ? `${selectedUser.firstName || ''} ${selectedUser.lastName || ''}`.trim() : ''}
-            </strong>"? 
-            This action cannot be undone.
+            Are you sure you want to delete "
+            <strong style={{ color: "white" }}>
+              {selectedUser
+                ? `${selectedUser.firstName || ""} ${selectedUser.lastName || ""}`.trim() ||
+                  selectedUser.email
+                : ""}
+            </strong>
+            "? This action cannot be undone.
           </p>
         </Modal.Body>
         <Modal.Footer>
-          <RSButton onClick={handleDeleteUser} appearance="primary" color="red">
+          <RSButton
+            onClick={handleDeleteUser}
+            appearance="primary"
+            color="red"
+          >
             <i className="fa fa-trash mr-2"></i>
             Yes, Delete It
           </RSButton>
-          <RSButton onClick={() => setShowDeleteModal(false)} appearance="subtle">
+          <RSButton onClick={handleCloseDeleteModal} appearance="subtle">
             Cancel
           </RSButton>
         </Modal.Footer>
       </Modal>
     </>
   );
-}
+};
 
 export default UsersList;
