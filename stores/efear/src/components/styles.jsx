@@ -1,6 +1,6 @@
 
 export const T = {
-  red:     '#980b16',
+  red:     '#b30e1c',
   orange:  '#6120d9',
   teal:    '#2a9d8f',
   dark0:   'rgba(0,0,0,.9)',
@@ -473,7 +473,7 @@ export const blogStyles = `
 /* ── Animated bottom border ── */
 .blog-animated-border {
     height: 3px; width: 100%;
-    background: linear-gradient(90deg, #e63946, #f4a261, #2a9d8f, #e63946);
+    background: linear-gradient(90deg, #b30e1c, #f4a261, #2a9d8f, #b30e1c);
     background-size: 300% 100%;
     animation: blogGrad 4s linear infinite;
 }
