@@ -7,8 +7,9 @@ const { slice, asyncActions: Categories } = reportsFactory.create({
     createCustomCat: ThunkFactory.custom('category', 'new', {
       method:'POST',
       useParams: false,
-    })}
-    });
+    }),
+
+  }});
 
 // Export all actions
 export const {
@@ -48,7 +49,8 @@ export const {
   update: updateCategory,
   patch: patchCategory,
   delete: deleteCategory,
-  createCustomCat
+  createCustomCat,
+  deleteCustomCat
 } = Categories;
 
 export const selectAllCategories = (state) => state.categories.data;

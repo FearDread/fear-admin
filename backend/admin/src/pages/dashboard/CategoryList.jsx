@@ -240,7 +240,7 @@ const CategoryList = () => {
       icon: category.icon || 'fa-tag',
       color: category.color || '#7934f3'
     });
-    console.log('edit');
+    console.log('edit', selectedCategory);
     setShowEditModal(true);
   };
 
@@ -334,22 +334,23 @@ const CategoryList = () => {
     }
   };
 
-  const handleDeleteCategory = async () => {
-    try {
-      await dispatch(deleteCategory(selectedCategory._id || selectedCategory.id)).unwrap();
+  const handleDeleteCategory = () => {
+    if ( !selectedCategory ) return;
 
-      toaster.push(
-        <Message showIcon type="success">
-          Category deleted successfully
-        </Message>,
-        { placement: 'topEnd' }
-      );
+    dispatch(deleteCategory(selectedCategory._id || selectedCategory.id))
+      .unwrap()
+      .then((resp) => {
+        toaster.push(
+          <Message showIcon type="success">
+            Category deleted successfully
+          </Message>,
+          { placement: 'topEnd' }
+        );
 
-      handleCloseModals();
-      dispatch(fetchCategories());
-    } catch (err) {
-      console.error("Failed to delete category:", err);
-    }
+        handleCloseModals();
+        dispatch(fetchCategories());
+      })
+      .catch((err) => console.error("Failed to delete category:", err));
   };
 
   const parentCategoryOptions = useMemo(() => {
@@ -855,107 +856,107 @@ const CategoryList = () => {
                 placeholder="Enter category description..."
               />
             </FormGroup>
-                <FormGroup>
-                  <ControlLabel>Slug</ControlLabel>
-                  <FormControl
-                    name="slug"
-                    placeholder="category-slug (leave empty for auto-generate)"
+            <FormGroup>
+              <ControlLabel>Slug</ControlLabel>
+              <FormControl
+                name="slug"
+                placeholder="category-slug (leave empty for auto-generate)"
+              />
+            </FormGroup>
+            <FormGroup>
+              <ControlLabel>Parent Category</ControlLabel>
+              <FormControl
+                name="parent"
+                accepter={SelectPicker}
+                data={parentCategoryOptions}
+                block
+                placeholder="Select parent category (optional)"
+                searchable
+              />
+            </FormGroup>
+            <FormGroup>
+              <FormGroup>
+                <ControlLabel>Icon</ControlLabel>
+                <FormControl
+                  name="icon"
+                  accepter={SelectPicker}
+                  data={ICON_OPTIONS}
+                  block
+                  placeholder="Select icon"
+                  renderMenuItem={(label, item) => (
+                    <div className="d-flex align-items-center">
+                      <i className={`fa ${item.value} mr-2`}></i>
+                      {label}`
+                    </div>
+                  )}
+                  renderValue={(value, item) => (
+                    <div className="d-flex align-items-center">
+                      <i className={`fa ${value} mr-2`}></i>
+                      {item?.label}
+                    </div>
+                  )}
+                />
+              </FormGroup>
+              <FormGroup>
+                <ControlLabel>Color</ControlLabel>
+                <FormControl
+                  name="color"
+                  accepter={SelectPicker}
+                  data={COLOR_OPTIONS}
+                  block
+                  placeholder="Select color"
+                  renderMenuItem={(label, item) => (
+                    <div className="d-flex align-items-center">
+                      <div
+                        style={{
+                          width: '16px',
+                          height: '16px',
+                          backgroundColor: item.color,
+                          borderRadius: '3px',
+                          marginRight: '8px'
+                        }}
+                      />
+                      {label}
+                    </div>
+                  )}
+                  renderValue={(value, item) => (
+                    <div className="d-flex align-items-center">
+                      <div
+                        style={{
+                          width: '16px',
+                          height: '16px',
+                          backgroundColor: value,
+                          borderRadius: '3px',
+                          marginRight: '8px'
+                        }}
+                      />
+                      {item?.label}
+                    </div>
+                  )}
+                />
+              </FormGroup>
+              <FormGroup>
+                <ControlLabel>Active Status</ControlLabel>
+                <div className="mt-2">
+                  <Toggle
+                    checked={formValue.isActive}
+                    onChange={(checked) => setFormValue({ ...formValue, isActive: checked })}
+                    checkedChildren="Active"
+                    unCheckedChildren="Inactive"
                   />
-                </FormGroup>
-                <FormGroup>
-                  <ControlLabel>Parent Category</ControlLabel>
-                  <FormControl
-                    name="parent"
-                    accepter={SelectPicker}
-                    data={parentCategoryOptions}
-                    block
-                    placeholder="Select parent category (optional)"
-                    searchable
+                </div>
+              </FormGroup>
+              <FormGroup>
+                <ControlLabel>Featured</ControlLabel>
+                <div className="mt-2">
+                  <Toggle
+                    checked={formValue.featured}
+                    onChange={(checked) => setFormValue({ ...formValue, featured: checked })}
+                    checkedChildren="Featured"
+                    unCheckedChildren="Normal"
                   />
-                </FormGroup>
-                <FormGroup>
-                  <FormGroup>
-                  <ControlLabel>Icon</ControlLabel>
-                  <FormControl
-                    name="icon"
-                    accepter={SelectPicker}
-                    data={ICON_OPTIONS}
-                    block
-                    placeholder="Select icon"
-                    renderMenuItem={(label, item) => (
-                      <div className="d-flex align-items-center">
-                        <i className={`fa ${item.value} mr-2`}></i>
-                        {label}`
-                      </div>
-                    )}
-                    renderValue={(value, item) => (
-                      <div className="d-flex align-items-center">
-                        <i className={`fa ${value} mr-2`}></i>
-                        {item?.label}
-                      </div>
-                    )}
-                  />
-                </FormGroup>
-                <FormGroup>
-                  <ControlLabel>Color</ControlLabel>
-                  <FormControl
-                    name="color"
-                    accepter={SelectPicker}
-                    data={COLOR_OPTIONS}
-                    block
-                    placeholder="Select color"
-                    renderMenuItem={(label, item) => (
-                      <div className="d-flex align-items-center">
-                        <div
-                          style={{
-                            width: '16px',
-                            height: '16px',
-                            backgroundColor: item.color,
-                            borderRadius: '3px',
-                            marginRight: '8px'
-                          }}
-                        />
-                        {label}
-                      </div>
-                    )}
-                    renderValue={(value, item) => (
-                      <div className="d-flex align-items-center">
-                        <div
-                          style={{
-                            width: '16px',
-                            height: '16px',
-                            backgroundColor: value,
-                            borderRadius: '3px',
-                            marginRight: '8px'
-                          }}
-                        />
-                        {item?.label}
-                      </div>
-                    )}
-                  />
-                </FormGroup>
-                <FormGroup>
-                  <ControlLabel>Active Status</ControlLabel>
-                  <div className="mt-2">
-                    <Toggle
-                      checked={formValue.isActive}
-                      onChange={(checked) => setFormValue({ ...formValue, isActive: checked })}
-                      checkedChildren="Active"
-                      unCheckedChildren="Inactive"
-                    />
-                  </div>
-                </FormGroup>
-                <FormGroup>
-                  <ControlLabel>Featured</ControlLabel>
-                  <div className="mt-2">
-                    <Toggle
-                      checked={formValue.featured}
-                      onChange={(checked) => setFormValue({ ...formValue, featured: checked })}
-                      checkedChildren="Featured"
-                      unCheckedChildren="Normal"
-                    />
-                  </div>
-                </FormGroup>
+                </div>
+              </FormGroup>
             </FormGroup>
 
           </Form>

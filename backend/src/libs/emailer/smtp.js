@@ -1,6 +1,7 @@
 const nodemailer = require("nodemailer");
 const FormData = require("form-data");
 const Mailgun = require("mailgun");
+const templates = require('./templates');
 
 module.exports = function (fear) {
     const _this = {};
@@ -192,7 +193,7 @@ module.exports = function (fear) {
         }
         return _this.mailConfig.smtp[_this.mailService].auth.user;
     };
-
+    _this.efear = templates;
     _this.templates = {
         baseTemplate(content, title = "Email") {
             return `
@@ -468,28 +469,12 @@ Received: ${new Date().toLocaleString()}
             }
 
             const { subject, customMessage } = options;
-            const htmlContent = `
-            <div class="header">
-                <h1 style="margin: 0; font-size: 28px;">Welcome! 🎉</h1>
-                <p style="margin: 10px 0 0 0; opacity: 0.9;">Thank you for subscribing</p>
-            </div>
-            <div class="content">
-                <p style="font-size: 16px;">
-                    ${customMessage || "You've successfully subscribed to our newsletter. We're excited to have you on board!"}
-                </p>
-                <p style="font-size: 16px;">
-                    You'll receive updates and news directly to your inbox.
-                </p>
-            </div>
-            <div class="footer">
-                <p style="margin: 0;">If you didn't subscribe, you can safely ignore this email.</p>
-            </div>
-            `;
+            const htmlContent = templates.welcome(req.body)
 
             const emailOptions = {
                 to: email,
                 subject: subject || 'Welcome to Our Newsletter!',
-                html: _this.templates.baseTemplate(htmlContent, 'Subscription Confirmation'),
+                html: htmlContent,
                 text: customMessage || "Thank you for subscribing! You'll receive updates directly to your inbox."
             };
 

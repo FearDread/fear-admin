@@ -36,10 +36,10 @@ import {
 const API_BASE = 'http://localhost:4000/fear/api/analytics' // production -> 'https://fear.dedyn.io/fear/api';
 
 const DATE_RANGES = [
-  { label: '7 Days',   value: '7daysAgo'  },
-  { label: '30 Days',  value: '30daysAgo' },
-  { label: '90 Days',  value: '90daysAgo' },
-  { label: '1 Year',   value: '365daysAgo'},
+  { label: '7 Days', value: '7daysAgo' },
+  { label: '30 Days', value: '30daysAgo' },
+  { label: '90 Days', value: '90daysAgo' },
+  { label: '1 Year', value: '365daysAgo' },
 ];
 
 const PIE_COLORS = ['#007bff', '#28a745', '#ffc107', '#17a2b8', '#dc3545', '#6f42c1'];
@@ -51,25 +51,25 @@ const CHART_TOOLTIP_STYLE = {
 // ── API helpers ──────────────────────────────────────────────────────────────
 
 const analyticsApi = {
-  status:       ()           => fetch(`${API_BASE}/auth/status`).then(r => r.json()),
-  disconnect:   ()           => fetch(`${API_BASE}/auth/disconnect`, { method: 'POST' }).then(r => r.json()),
-  connect:      ()           => window.open(`${API_BASE}/auth/connect`, '_blank', 'width=600,height=700'),
-  properties:   ()           => fetch(`${API_BASE}/properties`).then(r => r.json()),
-  overview:     (p, s, e)    => fetch(`${API_BASE}/report/overview?propertyId=${p}&startDate=${s}&endDate=${e}`).then(r => r.json()),
-  traffic:      (p, s, e)    => fetch(`${API_BASE}/report/traffic?propertyId=${p}&startDate=${s}&endDate=${e}`).then(r => r.json()),
-  topPages:     (p, s, e)    => fetch(`${API_BASE}/report/pages?propertyId=${p}&startDate=${s}&endDate=${e}`).then(r => r.json()),
-  devices:      (p, s, e)    => fetch(`${API_BASE}/report/devices?propertyId=${p}&startDate=${s}&endDate=${e}`).then(r => r.json()),
-  geo:          (p, s, e)    => fetch(`${API_BASE}/report/geo?propertyId=${p}&startDate=${s}&endDate=${e}`).then(r => r.json()),
-  realtime:     (p)          => fetch(`${API_BASE}/report/realtime?propertyId=${p}`).then(r => r.json()),
+  status: () => fetch(`${API_BASE}/auth/status`).then(r => r.json()),
+  disconnect: () => fetch(`${API_BASE}/auth/disconnect`, { method: 'POST' }).then(r => r.json()),
+  connect: () => window.open(`${API_BASE}/auth/connect`, '_blank', 'width=600,height=700'),
+  properties: () => fetch(`${API_BASE}/properties`).then(r => r.json()),
+  overview: (p, s, e) => fetch(`${API_BASE}/report/overview?propertyId=${p}&startDate=${s}&endDate=${e}`).then(r => r.json()),
+  traffic: (p, s, e) => fetch(`${API_BASE}/report/traffic?propertyId=${p}&startDate=${s}&endDate=${e}`).then(r => r.json()),
+  topPages: (p, s, e) => fetch(`${API_BASE}/report/pages?propertyId=${p}&startDate=${s}&endDate=${e}`).then(r => r.json()),
+  devices: (p, s, e) => fetch(`${API_BASE}/report/devices?propertyId=${p}&startDate=${s}&endDate=${e}`).then(r => r.json()),
+  geo: (p, s, e) => fetch(`${API_BASE}/report/geo?propertyId=${p}&startDate=${s}&endDate=${e}`).then(r => r.json()),
+  realtime: (p) => fetch(`${API_BASE}/report/realtime?propertyId=${p}`).then(r => r.json()),
 };
 
 // ── Formatters ───────────────────────────────────────────────────────────────
 
-const fmtNum   = (n) => Number(n || 0).toLocaleString();
-const fmtPct   = (n) => `${Number(n || 0).toFixed(1)}%`;
-const fmtDur   = (s) => {
+const fmtNum = (n) => Number(n || 0).toLocaleString();
+const fmtPct = (n) => `${Number(n || 0).toFixed(1)}%`;
+const fmtDur = (s) => {
   const sec = Math.round(Number(s || 0));
-  const m   = Math.floor(sec / 60);
+  const m = Math.floor(sec / 60);
   const rem = sec % 60;
   return `${m}m ${rem}s`;
 };
@@ -123,36 +123,36 @@ const EmptyState = ({ icon = 'fa-bar-chart', text = 'No data available' }) => (
 const GoogleAnalytics = () => {
 
   // ── Auth / connection ──────────────────────────────────────────────────────
-  const [connected,          setConnected]          = useState(false);
-  const [connectionLoading,  setConnectionLoading]  = useState(true);
+  const [connected, setConnected] = useState(false);
+  const [connectionLoading, setConnectionLoading] = useState(true);
 
   // ── Property selection ─────────────────────────────────────────────────────
-  const [properties,         setProperties]         = useState([]);
-  const [selectedProperty,   setSelectedProperty]   = useState('');
-  const [propertiesLoading,  setPropertiesLoading]  = useState(false);
+  const [properties, setProperties] = useState([]);
+  const [selectedProperty, setSelectedProperty] = useState('');
+  const [propertiesLoading, setPropertiesLoading] = useState(false);
 
   // ── Date range ─────────────────────────────────────────────────────────────
-  const [dateRange,          setDateRange]          = useState('30daysAgo');
+  const [dateRange, setDateRange] = useState('30daysAgo');
 
   // ── Report data ────────────────────────────────────────────────────────────
-  const [overview,           setOverview]           = useState(null);
-  const [traffic,            setTraffic]            = useState([]);
-  const [topPages,           setTopPages]           = useState([]);
-  const [devices,            setDevices]            = useState([]);
-  const [geo,                setGeo]                = useState([]);
-  const [realtime,           setRealtime]           = useState(null);
+  const [overview, setOverview] = useState(null);
+  const [traffic, setTraffic] = useState([]);
+  const [topPages, setTopPages] = useState([]);
+  const [devices, setDevices] = useState([]);
+  const [geo, setGeo] = useState([]);
+  const [realtime, setRealtime] = useState(null);
 
   // ── Loading flags ──────────────────────────────────────────────────────────
-  const [overviewLoading,    setOverviewLoading]    = useState(false);
-  const [trafficLoading,     setTrafficLoading]     = useState(false);
-  const [pagesLoading,       setPagesLoading]       = useState(false);
-  const [devicesLoading,     setDevicesLoading]     = useState(false);
-  const [geoLoading,         setGeoLoading]         = useState(false);
-  const [realtimeLoading,    setRealtimeLoading]    = useState(false);
+  const [overviewLoading, setOverviewLoading] = useState(false);
+  const [trafficLoading, setTrafficLoading] = useState(false);
+  const [pagesLoading, setPagesLoading] = useState(false);
+  const [devicesLoading, setDevicesLoading] = useState(false);
+  const [geoLoading, setGeoLoading] = useState(false);
+  const [realtimeLoading, setRealtimeLoading] = useState(false);
 
   // ── Misc ───────────────────────────────────────────────────────────────────
-  const [alert,              setAlert]              = useState(null);
-  const [realtimeInterval,   setRealtimeInterval]   = useState(null);
+  const [alert, setAlert] = useState(null);
+  const [realtimeInterval, setRealtimeInterval] = useState(null);
 
   // ── Lifecycle ──────────────────────────────────────────────────────────────
 
@@ -230,7 +230,7 @@ const GoogleAnalytics = () => {
       // Mocked for demo — replace with real call:
       const list = [
         { id: '123456789', displayName: 'My Store — Production' },
-        { id: '987654321', displayName: 'My Store — Staging'    },
+        { id: '987654321', displayName: 'My Store — Staging' },
       ];
       setProperties(list);
       if (list.length) setSelectedProperty(list[0].id);
@@ -258,16 +258,16 @@ const GoogleAnalytics = () => {
       // Mocked:
       await delay(600);
       setOverview({
-        sessions:        42_810,
-        users:           31_204,
-        newUsers:        18_950,
-        pageviews:       128_430,
-        bounceRate:      42.3,
+        sessions: 42_810,
+        users: 31_204,
+        newUsers: 18_950,
+        pageviews: 128_430,
+        bounceRate: 42.3,
         avgSessionDuration: 187,
-        sessionsChange:  '+8.4%',
-        usersChange:     '+5.1%',
+        sessionsChange: '+8.4%',
+        usersChange: '+5.1%',
         pageviewsChange: '+12.3%',
-        bounceChange:    '-2.1%',
+        bounceChange: '-2.1%',
       });
     } catch {
       showAlert('danger', 'Failed to load overview report.');
@@ -282,8 +282,8 @@ const GoogleAnalytics = () => {
       // const data = await analyticsApi.traffic(selectedProperty, dateRange, 'today');
       await delay(800);
       setTraffic([
-        { date: 'Jan 1',  sessions: 1200, users: 980,  pageviews: 3200 },
-        { date: 'Jan 5',  sessions: 1450, users: 1120, pageviews: 3900 },
+        { date: 'Jan 1', sessions: 1200, users: 980, pageviews: 3200 },
+        { date: 'Jan 5', sessions: 1450, users: 1120, pageviews: 3900 },
         { date: 'Jan 10', sessions: 1300, users: 1050, pageviews: 3500 },
         { date: 'Jan 15', sessions: 1800, users: 1400, pageviews: 4800 },
         { date: 'Jan 20', sessions: 2100, users: 1650, pageviews: 5600 },
@@ -303,13 +303,13 @@ const GoogleAnalytics = () => {
       // const data = await analyticsApi.topPages(selectedProperty, dateRange, 'today');
       await delay(700);
       setTopPages([
-        { page: '/',               pageviews: 18_430, avgTime: '2m 14s', bounceRate: '38.2%' },
-        { page: '/products',       pageviews: 12_810, avgTime: '3m 02s', bounceRate: '28.6%' },
-        { page: '/products/:id',   pageviews:  9_204, avgTime: '4m 17s', bounceRate: '22.1%' },
-        { page: '/cart',           pageviews:  6_388, avgTime: '1m 48s', bounceRate: '44.3%' },
-        { page: '/checkout',       pageviews:  4_120, avgTime: '5m 31s', bounceRate: '15.8%' },
-        { page: '/about',          pageviews:  2_944, avgTime: '1m 22s', bounceRate: '62.4%' },
-        { page: '/contact',        pageviews:  1_802, avgTime: '1m 05s', bounceRate: '55.9%' },
+        { page: '/', pageviews: 18_430, avgTime: '2m 14s', bounceRate: '38.2%' },
+        { page: '/products', pageviews: 12_810, avgTime: '3m 02s', bounceRate: '28.6%' },
+        { page: '/products/:id', pageviews: 9_204, avgTime: '4m 17s', bounceRate: '22.1%' },
+        { page: '/cart', pageviews: 6_388, avgTime: '1m 48s', bounceRate: '44.3%' },
+        { page: '/checkout', pageviews: 4_120, avgTime: '5m 31s', bounceRate: '15.8%' },
+        { page: '/about', pageviews: 2_944, avgTime: '1m 22s', bounceRate: '62.4%' },
+        { page: '/contact', pageviews: 1_802, avgTime: '1m 05s', bounceRate: '55.9%' },
       ]);
     } catch {
       showAlert('danger', 'Failed to load top pages.');
@@ -324,9 +324,9 @@ const GoogleAnalytics = () => {
       // const data = await analyticsApi.devices(selectedProperty, dateRange, 'today');
       await delay(500);
       setDevices([
-        { name: 'Mobile',  value: 58, color: '#007bff' },
+        { name: 'Mobile', value: 58, color: '#007bff' },
         { name: 'Desktop', value: 35, color: '#28a745' },
-        { name: 'Tablet',  value:  7, color: '#ffc107' },
+        { name: 'Tablet', value: 7, color: '#ffc107' },
       ]);
     } catch {
       showAlert('danger', 'Failed to load device breakdown.');
@@ -343,11 +343,11 @@ const GoogleAnalytics = () => {
       setGeo([
         { country: 'United States', sessions: 18_420, pct: '43.0%' },
         { country: 'United Kingdom', sessions: 5_210, pct: '12.2%' },
-        { country: 'Canada',         sessions: 4_380, pct: '10.2%' },
-        { country: 'Australia',      sessions: 2_910, pct:  '6.8%' },
-        { country: 'Germany',        sessions: 2_140, pct:  '5.0%' },
-        { country: 'France',         sessions: 1_880, pct:  '4.4%' },
-        { country: 'Other',          sessions: 7_870, pct: '18.4%' },
+        { country: 'Canada', sessions: 4_380, pct: '10.2%' },
+        { country: 'Australia', sessions: 2_910, pct: '6.8%' },
+        { country: 'Germany', sessions: 2_140, pct: '5.0%' },
+        { country: 'France', sessions: 1_880, pct: '4.4%' },
+        { country: 'Other', sessions: 7_870, pct: '18.4%' },
       ]);
     } catch {
       showAlert('danger', 'Failed to load geo report.');
@@ -364,9 +364,9 @@ const GoogleAnalytics = () => {
       setRealtime({
         activeUsers: Math.floor(Math.random() * 80) + 20,
         topActivePages: [
-          { page: '/',          users: 18 },
-          { page: '/products',  users: 12 },
-          { page: '/cart',      users:  7 },
+          { page: '/', users: 18 },
+          { page: '/products', users: 12 },
+          { page: '/cart', users: 7 },
         ],
       });
     } catch { /* fail silently for realtime */ } finally {
@@ -376,8 +376,8 @@ const GoogleAnalytics = () => {
 
   // ── Helpers ───────────────────────────────────────────────────────────────
 
-  const delay      = (ms) => new Promise(r => setTimeout(r, ms));
-  const showAlert  = (type, message) => {
+  const delay = (ms) => new Promise(r => setTimeout(r, ms));
+  const showAlert = (type, message) => {
     setAlert({ type, message });
     setTimeout(() => setAlert(null), 5000);
   };
@@ -392,11 +392,10 @@ const GoogleAnalytics = () => {
       {/* Alert */}
       {alert && (
         <Alert color={alert.type} className="mb-4" toggle={() => setAlert(null)}>
-          <i className={`fa mr-2 ${
-            alert.type === 'success' ? 'fa-check-circle' :
-            alert.type === 'danger'  ? 'fa-times-circle' :
-            alert.type === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle'
-          }`} />
+          <i className={`fa mr-2 ${alert.type === 'success' ? 'fa-check-circle' :
+              alert.type === 'danger' ? 'fa-times-circle' :
+                alert.type === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle'
+            }`} />
           {alert.message}
         </Alert>
       )}
@@ -608,12 +607,12 @@ const GoogleAnalytics = () => {
                       <AreaChart data={traffic}>
                         <defs>
                           <linearGradient id="gaSessions" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%"  stopColor="#007bff" stopOpacity={0.7} />
-                            <stop offset="95%" stopColor="#007bff" stopOpacity={0}   />
+                            <stop offset="5%" stopColor="#007bff" stopOpacity={0.7} />
+                            <stop offset="95%" stopColor="#007bff" stopOpacity={0} />
                           </linearGradient>
                           <linearGradient id="gaUsers" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%"  stopColor="#28a745" stopOpacity={0.7} />
-                            <stop offset="95%" stopColor="#28a745" stopOpacity={0}   />
+                            <stop offset="5%" stopColor="#28a745" stopOpacity={0.7} />
+                            <stop offset="95%" stopColor="#28a745" stopOpacity={0} />
                           </linearGradient>
                         </defs>
                         <CartesianGrid strokeDasharray="3 3" stroke="#444" />
@@ -621,8 +620,8 @@ const GoogleAnalytics = () => {
                         <YAxis stroke="#999" />
                         <Tooltip {...CHART_TOOLTIP_STYLE} />
                         <Legend />
-                        <Area type="monotone" dataKey="sessions"  stroke="#007bff" fill="url(#gaSessions)" />
-                        <Area type="monotone" dataKey="users"     stroke="#28a745" fill="url(#gaUsers)"    />
+                        <Area type="monotone" dataKey="sessions" stroke="#007bff" fill="url(#gaSessions)" />
+                        <Area type="monotone" dataKey="users" stroke="#28a745" fill="url(#gaUsers)" />
                       </AreaChart>
                     </ResponsiveContainer>
                   ) : <EmptyState />}
@@ -766,7 +765,7 @@ const GoogleAnalytics = () => {
                         </div>
                         <Progress
                           value={parseFloat(g.pct)}
-                          color={['primary','success','info','warning','danger','secondary','light'][i]}
+                          color={['primary', 'success', 'info', 'warning', 'danger', 'secondary', 'light'][i]}
                           style={{ height: 4, borderRadius: 2 }}
                         />
                       </div>

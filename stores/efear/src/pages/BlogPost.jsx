@@ -12,30 +12,133 @@ import {
   setSearchTerm,
   setFilters,
 } from "../features/blog/slice";
+import { T } from "../components/styles";
+
+
+const SectionLabel = ({ children }) => (
+  <div style={{
+    fontFamily: T.mono, fontSize: '9px', letterSpacing: '.22em',
+    textTransform: 'uppercase', color: T.red, marginBottom: '10px',
+  }}>
+    {children}
+  </div>
+);
+
+const RedBtn = ({ children, onClick, type = 'button' }) => (
+  <button
+    type={type}
+    onClick={onClick}
+    style={{
+      padding: '12px 24px',
+      background: T.red,
+      border: 'none',
+      color: '#fff',
+      fontFamily: T.mono,
+      fontSize: '11px',
+      letterSpacing: '.12em',
+      textTransform: 'uppercase',
+      cursor: 'pointer',
+      clipPath: 'polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px))',
+      transition: 'background .15s',
+    }}
+    onMouseEnter={e => e.currentTarget.style.background = '#a01212'}
+    onMouseLeave={e => e.currentTarget.style.background = T.red}
+  >
+    {children}
+  </button>
+);
+
+const GhostBtn = ({ children, onClick }) => (
+  <button
+    type="button"
+    onClick={onClick}
+    style={{
+      padding: '11px 24px',
+      background: 'none',
+      border: `1px solid ${T.border}`,
+      color: T.mid,
+      fontFamily: T.mono,
+      fontSize: '11px',
+      letterSpacing: '.12em',
+      textTransform: 'uppercase',
+      cursor: 'pointer',
+      transition: 'border-color .15s, color .15s',
+    }}
+    onMouseEnter={e => { e.currentTarget.style.borderColor = T.red; e.currentTarget.style.color = T.white; }}
+    onMouseLeave={e => { e.currentTarget.style.borderColor = T.border; e.currentTarget.style.color = T.mid; }}
+  >
+    {children}
+  </button>
+);
+
+const Divider = () => (
+  <div style={{ height: '1px', background: T.border, margin: '28px 0' }} />
+);
+
+const inputStyle = {
+  width: '100%',
+  padding: '11px 14px',
+  background: T.dark3,
+  border: `1px solid ${T.border}`,
+  color: T.white,
+  fontFamily: T.mono,
+  fontSize: '12px',
+  outline: 'none',
+  transition: 'border-color .15s',
+};
+
+const labelStyle = {
+  display: 'block',
+  fontFamily: T.mono,
+  fontSize: '9px',
+  letterSpacing: '.16em',
+  textTransform: 'uppercase',
+  color: T.dim,
+  marginBottom: '8px',
+};
+
+// ── Blog categories relevant to eFear ───────────────────────────────────────
+const sidebarCategories = [
+  { label: 'Comics & Manga',   value: 'comics'       },
+  { label: 'Trading Cards',    value: 'trading-cards' },
+  { label: 'Graphic Novels',   value: 'graphic-novels'},
+  { label: 'Anime & Collectibles', value: 'anime'    },
+  { label: 'New Arrivals',     value: 'new-arrivals'  },
+  { label: 'News & Reviews',   value: 'news'          },
+];
+
+const popularTags = [
+  'Marvel', 'DC Comics', 'Pokemon', 'Magic: The Gathering',
+  'Manga', 'Anime', 'First Edition', 'Graded Cards',
+  'Graphic Novels', 'Limited Print', 'Variant Cover', 'Signed',
+];
+
+const socialShare = [
+  { label: 'Facebook',  icon: '𝒇', url: 'https://facebook.com'  },
+  { label: 'Twitter',   icon: '𝕏', url: 'https://twitter.com'   },
+  { label: 'LinkedIn',  icon: 'in', url: 'https://linkedin.com'  },
+  { label: 'Instagram', icon: '◈',  url: 'https://instagram.com' },
+];
+
+// ── Main component ───────────────────────────────────────────────────────────
 
 const BlogPost = () => {
-  const dispatch = useDispatch();
-  const { id } = useParams();
-  const navigate = useNavigate();
-  
+  const dispatch   = useDispatch();
+  const { id }     = useParams();
+  const navigate   = useNavigate();
+
   const currentPost = useSelector(selectCurrentPost);
-  const allPosts = useSelector(selectAllPosts);
-  const loading = useSelector(selectLoading);
-  const error = useSelector(selectError);
-  
+  const allPosts    = useSelector(selectAllPosts);
+  const loading     = useSelector(selectLoading);
+  const error       = useSelector(selectError);
+
   const [localSearchTerm, setLocalSearchTerm] = useState("");
-  const [comment, setComment] = useState({
-    text: "",
-    name: "",
-    email: "",
-    website: ""
-  });
+  const [comment, setComment] = useState({ text: '', name: '', email: '', website: '' });
+  const [focusedInput, setFocusedInput] = useState(null);
 
   useEffect(() => {
-          console.log('post id = ', id);
     if (id) {
-
-      dispatch(fetchPost({ id: id }));
+      dispatch(fetchPost({ id }));
       dispatch(incrementViews(id));
     }
     dispatch(fetchPosts());
@@ -55,9 +158,8 @@ const BlogPost = () => {
   };
 
   const handleCommentSubmit = () => {
-    console.log("Comment submitted:", comment);
-    // Add comment submission logic here
-    setComment({ text: "", name: "", email: "", website: "" });
+    dispatch(/* your submit thunk */ console.log("Comment submitted:", comment));
+    setComment({ text: '', name: '', email: '', website: '' });
   };
 
   const latestPosts = allPosts.slice(0, 6);
@@ -65,40 +167,56 @@ const BlogPost = () => {
 
   const formatDate = (dateString) => {
     if (!dateString) return "November 5, 2021";
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric', month: 'long', day: 'numeric',
     });
   };
 
   const getDateParts = (dateString) => {
-    if (!dateString) return { day: "24", month: "FEB" };
-    const date = new Date(dateString);
+    if (!dateString) return { day: '24', month: 'FEB' };
+    const d = new Date(dateString);
     return {
-      day: date.getDate().toString().padStart(2, '0'),
-      month: date.toLocaleDateString('en-US', { month: 'short' }).toUpperCase()
+      day:   d.getDate().toString().padStart(2, '0'),
+      month: d.toLocaleDateString('en-US', { month: 'short' }).toUpperCase(),
     };
   };
 
+  // ── Loading state ──────────────────────────────────────────────────────────
   if (loading && !currentPost) {
     return (
-      <div className="container py-5">
-        <div className="text-center">
-          <div className="spinner-border" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-        </div>
+      <div style={{
+        minHeight: '60vh', display: 'flex', flexDirection: 'column',
+        alignItems: 'center', justifyContent: 'center', background: T.bg,
+        gap: '20px',
+      }}>
+        <div style={{
+          width: '40px', height: '40px',
+          border: `2px solid ${T.border}`,
+          borderTopColor: T.red,
+          borderRadius: '50%',
+          animation: 'efear-spin 0.7s linear infinite',
+        }} />
+        <style>{`@keyframes efear-spin { to { transform: rotate(360deg); } }`}</style>
+        <span style={{ fontFamily: T.mono, fontSize: '10px', letterSpacing: '.18em', textTransform: 'uppercase', color: T.dim }}>
+          Loading post...
+        </span>
       </div>
     );
   }
 
+  // ── Error state ────────────────────────────────────────────────────────────
   if (error) {
     return (
-      <div className="container py-5">
-        <div className="alert alert-danger" role="alert">
-          {error}
+      <div style={{
+        minHeight: '60vh', display: 'flex', alignItems: 'center',
+        justifyContent: 'center', background: T.bg,
+      }}>
+        <div style={{
+          background: T.dark2, border: `1px solid ${T.red}`,
+          padding: '28px 36px', maxWidth: '480px',
+        }}>
+          <SectionLabel>// error</SectionLabel>
+          <div style={{ fontFamily: T.mono, fontSize: '12px', color: T.mid }}>{error}</div>
         </div>
       </div>
     );
@@ -106,307 +224,574 @@ const BlogPost = () => {
 
   const post = currentPost || {};
 
+  // ── Render ─────────────────────────────────────────────────────────────────
   return (
-    <>
-      <section className="py-3 border-bottom d-none d-md-flex">
+    <div style={{ background: T.bg, minHeight: '100vh' }}>
+
+      {/* ── Breadcrumb bar ── */}
+      <div style={{
+        background: T.dark2,
+        borderBottom: `1px solid ${T.border}`,
+        padding: '14px 0',
+        display: 'none', // shown via CSS media query on md+
+      }}
+        className="d-none d-md-block"
+      >
         <div className="container">
-          <div className="page-breadcrumb d-flex align-items-center">
-            <h3 className="breadcrumb-title pe-3">Single Post</h3>
-            <div className="ms-auto"></div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <SectionLabel style={{ margin: 0 }}>// Blog</SectionLabel>
+            <span style={{ color: T.border, fontFamily: T.mono, fontSize: '10px' }}>›</span>
+            <span style={{ fontFamily: T.mono, fontSize: '10px', letterSpacing: '.1em', color: T.dim }}>
+              Single Post
+            </span>
           </div>
         </div>
-      </section>
+      </div>
 
-      <section className="py-4">
+      {/* ── Main layout ── */}
+      <section style={{ padding: '40px 0' }}>
         <div className="container">
-          <div className="row">
+          <div className="row g-4">
+
+            {/* ════════════════════════════════════ MAIN COLUMN ══ */}
             <div className="col-12 col-lg-9">
-              <div className="card media-object blog-right-sidebar p-3">
-                <div className="card-body shadow-none bg-transparent">
-                  <img 
-                    src={post.images ? post.images[0].url : "assets/images/posts/01.png"} 
-                    className="blog-card-img-top" 
-                    alt={post.title || "Post image"} 
+
+              {/* ── Hero image ── */}
+              <div style={{
+                background: T.dark2,
+                border: `1px solid ${T.border}`,
+                overflow: 'hidden',
+                marginBottom: '0',
+              }}>
+                <img
+                  src={post.images?.[0]?.url || 'assets/images/posts/01.png'}
+                  alt={post.title || 'Post image'}
+                  style={{ width: '100%', display: 'block', objectFit: 'cover', maxHeight: '460px' }}
+                />
+
+                {/* ── Post meta bar ── */}
+                <div style={{
+                  display: 'flex', flexWrap: 'wrap', gap: '0',
+                  borderTop: `1px solid ${T.border}`,
+                }}>
+                  {[
+                    { icon: '👤', label: `By ${post.author || post.authorName || 'Admin'}` },
+                    { icon: '💬', label: `${post.commentsCount || post.comments || 0} Comments` },
+                    { icon: '📅', label: formatDate(post.publishedDate || post.createdAt) },
+                  ].map((meta, i) => (
+                    <div key={i} style={{
+                      display: 'flex', alignItems: 'center', gap: '8px',
+                      padding: '12px 20px',
+                      borderRight: `1px solid ${T.border}`,
+                      fontFamily: T.mono, fontSize: '10px',
+                      letterSpacing: '.08em', color: T.dim,
+                      cursor: 'default',
+                    }}>
+                      <span style={{ fontSize: '12px' }}>{meta.icon}</span>
+                      <span>{meta.label}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* ── Post body ── */}
+              <div style={{
+                background: T.dark2,
+                border: `1px solid ${T.border}`,
+                borderTop: 'none',
+                padding: '36px',
+                marginBottom: '4px',
+              }}>
+                {/* Title */}
+                <h1 style={{
+                  fontFamily: T.anton, fontSize: 'clamp(26px, 4vw, 42px)',
+                  color: T.white, letterSpacing: '.02em', lineHeight: 1.1,
+                  marginBottom: '28px',
+                }}>
+                  {post.title || 'Post Title Here'}
+                </h1>
+
+                {/* Content */}
+                {post.content && (
+                  <div
+                    dangerouslySetInnerHTML={{ __html: post.content }}
+                    style={{
+                      fontFamily: T.mono, fontSize: '13px', lineHeight: '1.9',
+                      color: T.mid,
+                      // Scope rich-text styles
+                    }}
                   />
-                  <div className="card-body p-0">
-                    <div className="list-inline mt-4">
-                      <a href="javascript:;" className="list-inline-item">
-                        <i className='bx bx-user me-1'></i>
-                        By {post.author || post.authorName || "Admin"}
-                      </a>
-                      <a href="javascript:;" className="list-inline-item">
-                        <i className='bx bx-comment-detail me-1'></i>
-                        {post.commentsCount || post.comments || 0} Comments
-                      </a>
-                      <a href="javascript:;" className="list-inline-item">
-                        <i className='bx bx-calendar me-1'></i>
-                        {formatDate(post.publishedDate || post.createdAt)}
-                      </a>
-                    </div>
-                    
-                    <h4 className="mt-4">{post.title || "Post Title Here"}</h4>
-                    
-                    {post.content && (
-                      <>
-                      <div dangerouslySetInnerHTML={{ __html: post.content }} />
-                      <br />
-                      </>
-                    )}
+                )}
 
-                    <div className="d-flex align-items-center gap-2 py-4 border-top border-bottom">
-                      <div>
-                        <h6 className="mb-0 text-uppercase">Share This Post</h6>
-                      </div>
-                      <div className="list-inline blog-sharing">
-                        <a href="javascript:;" className="list-inline-item">
-                          <i className='bx bxl-facebook'></i>
-                        </a>
-                        <a href="javascript:;" className="list-inline-item">
-                          <i className='bx bxl-twitter'></i>
-                        </a>
-                        <a href="javascript:;" className="list-inline-item">
-                          <i className='bx bxl-linkedin'></i>
-                        </a>
-                        <a href="javascript:;" className="list-inline-item">
-                          <i className='bx bxl-instagram'></i>
-                        </a>
-                        <a href="javascript:;" className="list-inline-item">
-                          <i className='bx bxl-tumblr'></i>
-                        </a>
-                      </div>
-                    </div>
-                  </div>
+                <style>{`
+                  .efear-post-content h2,
+                  .efear-post-content h3 {
+                    font-family: ${T.anton};
+                    color: ${T.white};
+                    letter-spacing: .03em;
+                    margin: 28px 0 12px;
+                  }
+                  .efear-post-content a { color: ${T.red}; text-decoration: none; }
+                  .efear-post-content a:hover { text-decoration: underline; }
+                  .efear-post-content blockquote {
+                    border-left: 3px solid ${T.red};
+                    padding: 12px 20px;
+                    margin: 24px 0;
+                    background: ${T.dark3};
+                    color: ${T.mid};
+                    font-style: italic;
+                  }
+                  .efear-post-content img { max-width: 100%; display: block; margin: 20px 0; }
+                  .efear-post-content p { margin-bottom: 16px; }
+                `}</style>
 
-                  {post.authorBio && (
-                    <div className="author d-flex align-items-center gap-3 py-4">
-                      <img 
-                        src={post.authorAvatar || "assets/images/avatars/avatar-1.png"} 
-                        alt={post.author || "Author"} 
-                        width="80" 
-                      />
-                      <div>
-                        <h6 className="mb-0">{post.author || post.authorName || "John Doe"}</h6>
-                        <p className="mb-0">{post.authorBio}</p>
-                      </div>
-                    </div>
-                  )}
+                <Divider />
 
-                  <div className="reply-form p-4 border bg-dark-1">
-                    <h6 className="mb-0">Leave a Reply</h6>
-                    <p>Your email address will not be published. Required fields are marked *</p>
-                    
-                    <div className="mb-3">
-                      <label className="form-label">Comment</label>
-                      <textarea 
-                        className="form-control" 
-                        rows="4"
-                        value={comment.text}
-                        onChange={(e) => handleCommentChange('text', e.target.value)}
-                      ></textarea>
-                    </div>
-                    <div className="mb-3">
-                      <label className="form-label">Name</label>
-                      <input 
-                        type="text" 
-                        className="form-control" 
-                        placeholder=""
-                        value={comment.name}
-                        onChange={(e) => handleCommentChange('name', e.target.value)}
-                      />
-                    </div>
-                    <div className="mb-3">
-                      <label className="form-label">Email</label>
-                      <input 
-                        type="email" 
-                        className="form-control"
-                        value={comment.email}
-                        onChange={(e) => handleCommentChange('email', e.target.value)}
-                      />
-                    </div>
-                    <div className="mb-3">
-                      <label className="form-label">Website</label>
-                      <input 
-                        type="text" 
-                        className="form-control"
-                        value={comment.website}
-                        onChange={(e) => handleCommentChange('website', e.target.value)}
-                      />
-                    </div>
-                    <div className="mb-3">
-                      <button 
-                        type="button" 
-                        className="btn btn-light btn-ecomm"
-                        onClick={handleCommentSubmit}
+                {/* Share bar */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '20px', flexWrap: 'wrap' }}>
+                  <span style={{
+                    fontFamily: T.mono, fontSize: '9px', letterSpacing: '.18em',
+                    textTransform: 'uppercase', color: T.dim,
+                  }}>
+                    Share This Post
+                  </span>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    {socialShare.map(s => (
+                      <a
+                        key={s.label}
+                        href={s.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title={s.label}
+                        style={{
+                          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                          width: '34px', height: '34px',
+                          background: T.dark3, border: `1px solid ${T.border}`,
+                          color: T.dim, fontFamily: T.mono, fontSize: '11px',
+                          textDecoration: 'none', transition: 'all .15s',
+                        }}
+                        onMouseEnter={e => {
+                          e.currentTarget.style.background = T.red;
+                          e.currentTarget.style.borderColor = T.red;
+                          e.currentTarget.style.color = '#fff';
+                        }}
+                        onMouseLeave={e => {
+                          e.currentTarget.style.background = T.dark3;
+                          e.currentTarget.style.borderColor = T.border;
+                          e.currentTarget.style.color = T.dim;
+                        }}
                       >
-                        Post Comment
-                      </button>
-                    </div>
+                        {s.icon}
+                      </a>
+                    ))}
                   </div>
                 </div>
+              </div>
+
+              {/* ── Author bio ── */}
+              {post.authorBio && (
+                <div style={{
+                  background: T.dark2,
+                  border: `1px solid ${T.border}`,
+                  borderTop: `3px solid ${T.red}`,
+                  padding: '28px 36px',
+                  display: 'flex', gap: '24px', alignItems: 'flex-start',
+                  marginBottom: '4px',
+                }}>
+                  <img
+                    src={post.authorAvatar || 'assets/images/avatars/avatar-1.png'}
+                    alt={post.author || 'Author'}
+                    style={{
+                      width: '72px', height: '72px',
+                      objectFit: 'cover',
+                      border: `1px solid ${T.border}`,
+                      flexShrink: 0,
+                    }}
+                  />
+                  <div>
+                    <SectionLabel>// Author</SectionLabel>
+                    <div style={{
+                      fontFamily: T.anton, fontSize: '18px',
+                      color: T.white, marginBottom: '8px',
+                    }}>
+                      {post.author || post.authorName || 'John Doe'}
+                    </div>
+                    <p style={{ fontFamily: T.mono, fontSize: '12px', color: T.mid, lineHeight: 1.8, margin: 0 }}>
+                      {post.authorBio}
+                    </p>
+                  </div>
                 </div>
-                <div className="blog-right-sidebar p-3">
-                <div className="product-grid mt-4">
-                  <h5 className="text-uppercase mb-4">Latest Posts</h5>
-                  <div className="row">
-                    {latestPosts.map((latestPost, index) => {
-                      const dateParts = getDateParts(latestPost.publishedDate || latestPost.createdAt);
-                      return (
-                        <div className="col-md-6 col-lg-4 mb-4" key={latestPost.id || index}>
-                          <div className="card product-card media-object">
-                            <div className="news-date">
-                              <div className="date-number">{dateParts.day}</div>
-                              <div className="date-month">{dateParts.month}</div>
-                            </div>
-                            <Link to={`/blog/${latestPost._id}`}>
-                              <img 
-                                src={latestPost.images[0].url || `assets/images/blogs/0${(index % 6) + 1}.png`} 
-                                className="card-img-top border-bottom bg-dark-1" 
-                                alt={latestPost.title || "Blog post"} 
+              )}
+
+              {/* ── Comment form ── */}
+              <div style={{
+                background: T.dark2,
+                border: `1px solid ${T.border}`,
+                borderTop: `3px solid ${T.red}`,
+                padding: '36px',
+                marginBottom: '4px',
+              }}>
+                <SectionLabel>// Leave a Reply</SectionLabel>
+                <h2 style={{
+                  fontFamily: T.anton, fontSize: '28px',
+                  color: T.white, marginBottom: '6px',
+                }}>
+                  Post a Comment
+                </h2>
+                <p style={{ fontFamily: T.mono, fontSize: '10px', color: T.dim, marginBottom: '28px', letterSpacing: '.06em' }}>
+                  Your email address will not be published. Required fields are marked *
+                </p>
+
+                <div style={{ marginBottom: '18px' }}>
+                  <label style={labelStyle}>Comment *</label>
+                  <textarea
+                    rows={5}
+                    value={comment.text}
+                    onChange={e => handleCommentChange('text', e.target.value)}
+                    onFocus={() => setFocusedInput('text')}
+                    onBlur={() => setFocusedInput(null)}
+                    style={{
+                      ...inputStyle,
+                      resize: 'vertical',
+                      borderColor: focusedInput === 'text' ? T.red : T.border,
+                    }}
+                  />
+                </div>
+
+                <div className="row g-3" style={{ marginBottom: '18px' }}>
+                  {[
+                    { field: 'name',    label: 'Name *',    type: 'text'    },
+                    { field: 'email',   label: 'Email *',   type: 'email'   },
+                    { field: 'website', label: 'Website',   type: 'text'    },
+                  ].map(({ field, label, type }) => (
+                    <div className="col-12 col-md-4" key={field}>
+                      <label style={labelStyle}>{label}</label>
+                      <input
+                        type={type}
+                        value={comment[field]}
+                        onChange={e => handleCommentChange(field, e.target.value)}
+                        onFocus={() => setFocusedInput(field)}
+                        onBlur={() => setFocusedInput(null)}
+                        style={{
+                          ...inputStyle,
+                          borderColor: focusedInput === field ? T.red : T.border,
+                        }}
+                      />
+                    </div>
+                  ))}
+                </div>
+
+                <RedBtn onClick={handleCommentSubmit}>Post Comment →</RedBtn>
+              </div>
+
+              {/* ── Latest Posts grid ── */}
+              <div style={{
+                background: T.dark2,
+                border: `1px solid ${T.border}`,
+                padding: '36px',
+                marginTop: '4px',
+              }}>
+                <SectionLabel>// More Reading</SectionLabel>
+                <h2 style={{
+                  fontFamily: T.anton, fontSize: '28px',
+                  color: T.white, marginBottom: '28px',
+                }}>
+                  Latest Posts
+                </h2>
+
+                <div className="row g-3">
+                  {latestPosts.map((p, index) => {
+                    const dateParts = getDateParts(p.publishedDate || p.createdAt);
+                    return (
+                      <div className="col-12 col-sm-6 col-lg-4" key={p.id || index}>
+                        <div style={{
+                          background: T.dark3,
+                          border: `1px solid ${T.border}`,
+                          overflow: 'hidden',
+                          height: '100%',
+                          transition: 'border-color .15s',
+                        }}
+                          onMouseEnter={e => e.currentTarget.style.borderColor = T.red}
+                          onMouseLeave={e => e.currentTarget.style.borderColor = T.border}
+                        >
+                          {/* Date badge + image */}
+                          <div style={{ position: 'relative' }}>
+                            <Link to={`/blog/${p._id}`}>
+                              <img
+                                src={p.images?.[0]?.url || `assets/images/blogs/0${(index % 6) + 1}.png`}
+                                alt={p.title || 'Blog post'}
+                                style={{ width: '100%', height: '160px', objectFit: 'cover', display: 'block' }}
                               />
                             </Link>
-                            <div className="card-body">
-                              <div className="news-title">
-                            <Link to={`/blog/${latestPost._id}`}>
-                                  <h5 className="mb-3 text-capitalize">
-                                    {latestPost.title || "Blog Short Title"}
-                                  </h5>
-                                </Link>
+                            {/* Date badge */}
+                            <div style={{
+                              position: 'absolute', top: '12px', left: '12px',
+                              background: T.red,
+                              padding: '6px 10px',
+                              textAlign: 'center',
+                              clipPath: 'polygon(0 0,calc(100% - 6px) 0,100% 6px,100% 100%,6px 100%,0 calc(100% - 6px))',
+                            }}>
+                              <div style={{ fontFamily: T.anton, fontSize: '18px', color: '#fff', lineHeight: 1 }}>
+                                {dateParts.day}
                               </div>
-                              <p className="news-content mb-0">
-                                {latestPost.excerpt 
-                                  ? latestPost.excerpt.substring(0, 100) + "..."
-                                  : "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras non placerat mi..."}
-                              </p>
-                            </div>
-                            <div className="card-footer border-top">
-                              <a href="javascript:;">
-                                <p className="mb-0">
-                                  <small className="text-white">
-                                    {latestPost.commentsCount || latestPost.comments || 0} Comments
-                                  </small>
-                                </p>
-                              </a>
+                              <div style={{ fontFamily: T.mono, fontSize: '8px', letterSpacing: '.1em', color: 'rgba(255,255,255,.8)', textTransform: 'uppercase' }}>
+                                {dateParts.month}
+                              </div>
                             </div>
                           </div>
+
+                          {/* Card body */}
+                          <div style={{ padding: '18px' }}>
+                            <Link
+                              to={`/blog/${p._id}`}
+                              style={{ textDecoration: 'none' }}
+                            >
+                              <h5 style={{
+                                fontFamily: T.anton, fontSize: '16px',
+                                color: T.white, marginBottom: '10px',
+                                lineHeight: 1.3, letterSpacing: '.02em',
+                                transition: 'color .15s',
+                              }}
+                                onMouseEnter={e => e.currentTarget.style.color = T.red}
+                                onMouseLeave={e => e.currentTarget.style.color = T.white}
+                              >
+                                {p.title || 'Blog Short Title'}
+                              </h5>
+                            </Link>
+                            <p style={{
+                              fontFamily: T.mono, fontSize: '10px',
+                              color: T.dim, lineHeight: 1.7, margin: 0,
+                            }}>
+                              {(p.excerpt || 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.').substring(0, 90)}...
+                            </p>
+                          </div>
+
+                          {/* Card footer */}
+                          <div style={{
+                            padding: '10px 18px',
+                            borderTop: `1px solid ${T.border}`,
+                            fontFamily: T.mono, fontSize: '9px',
+                            letterSpacing: '.1em', color: T.dim,
+                            textTransform: 'uppercase',
+                          }}>
+                            💬 {p.commentsCount || p.comments || 0} Comments
+                          </div>
                         </div>
-                      );
-                    })}
-                  </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             </div>
 
+            {/* ════════════════════════════════════ SIDEBAR ══════ */}
             <div className="col-12 col-lg-3">
-              <div className="blog-left-sidebar p-3">
-                <div>
-                  <div className="position-relative blog-search mb-3">
-                    <input 
-                      type="text" 
-                      className="form-control form-control-lg rounded-0 pe-5" 
-                      placeholder="Search posts here..."
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+
+                {/* ── Search ── */}
+                <div style={{
+                  background: T.dark2,
+                  border: `1px solid ${T.border}`,
+                  borderTop: `3px solid ${T.red}`,
+                  padding: '24px',
+                }}>
+                  <SectionLabel>// Search</SectionLabel>
+                  <form onSubmit={handleSearch} style={{ display: 'flex', gap: '0' }}>
+                    <input
+                      type="text"
+                      placeholder="Search posts..."
                       value={localSearchTerm}
-                      onChange={(e) => setLocalSearchTerm(e.target.value)}
-                      onKeyPress={(e) => e.key === 'Enter' && handleSearch(e)}
+                      onChange={e => setLocalSearchTerm(e.target.value)}
+                      onKeyDown={e => e.key === 'Enter' && handleSearch(e)}
+                      style={{
+                        ...inputStyle,
+                        flex: 1,
+                        borderRight: 'none',
+                      }}
                     />
-                    <div 
-                      className="position-absolute top-50 end-0 translate-middle"
-                      onClick={handleSearch}
-                      style={{ cursor: 'pointer' }}
+                    <button
+                      type="submit"
+                      style={{
+                        padding: '0 16px',
+                        background: T.red,
+                        border: 'none',
+                        color: '#fff',
+                        cursor: 'pointer',
+                        fontSize: '16px',
+                        flexShrink: 0,
+                        transition: 'background .15s',
+                      }}
+                      onMouseEnter={e => e.currentTarget.style.background = '#a01212'}
+                      onMouseLeave={e => e.currentTarget.style.background = T.red}
                     >
-                      <i className='bx bx-search fs-4 text-white'></i>
-                    </div>
-                  </div>
+                      🔍
+                    </button>
+                  </form>
+                </div>
 
-                  <div className="blog-categories mb-3">
-                    <h5 className="mb-4">Blog Categories</h5>
-                    <div className="list-group list-group-flush">
-                      <a 
-                        href="javascript:;" 
-                        className="list-group-item bg-transparent"
-                        onClick={() => handleCategoryFilter('fashion')}
+                {/* ── Categories ── */}
+                <div style={{
+                  background: T.dark2,
+                  border: `1px solid ${T.border}`,
+                  borderTop: `3px solid ${T.red}`,
+                  padding: '24px',
+                }}>
+                  <SectionLabel>// Browse</SectionLabel>
+                  <h3 style={{
+                    fontFamily: T.anton, fontSize: '20px',
+                    color: T.white, marginBottom: '18px',
+                  }}>
+                    Categories
+                  </h3>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                    {sidebarCategories.map(cat => (
+                      <button
+                        key={cat.value}
+                        onClick={() => handleCategoryFilter(cat.value)}
+                        style={{
+                          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                          padding: '10px 14px',
+                          background: T.dark3,
+                          border: `1px solid ${T.border}`,
+                          borderLeft: `3px solid transparent`,
+                          color: T.dim,
+                          fontFamily: T.mono, fontSize: '11px',
+                          letterSpacing: '.06em', textAlign: 'left',
+                          cursor: 'pointer', transition: 'all .15s',
+                        }}
+                        onMouseEnter={e => {
+                          e.currentTarget.style.borderLeftColor = T.red;
+                          e.currentTarget.style.color = T.white;
+                          e.currentTarget.style.background = '#1e1e1e';
+                        }}
+                        onMouseLeave={e => {
+                          e.currentTarget.style.borderLeftColor = 'transparent';
+                          e.currentTarget.style.color = T.dim;
+                          e.currentTarget.style.background = T.dark3;
+                        }}
                       >
-                        <i className='bx bx-chevron-right me-1'></i> Fashion
-                      </a>
-                      <a 
-                        href="javascript:;" 
-                        className="list-group-item bg-transparent"
-                        onClick={() => handleCategoryFilter('electronics')}
-                      >
-                        <i className='bx bx-chevron-right me-1'></i> Electronics
-                      </a>
-                      <a 
-                        href="javascript:;" 
-                        className="list-group-item bg-transparent"
-                        onClick={() => handleCategoryFilter('accessories')}
-                      >
-                        <i className='bx bx-chevron-right me-1'></i> Accessories
-                      </a>
-                      <a 
-                        href="javascript:;" 
-                        className="list-group-item bg-transparent"
-                        onClick={() => handleCategoryFilter('kitchen')}
-                      >
-                        <i className='bx bx-chevron-right me-1'></i> Kitchen & Table
-                      </a>
-                      <a 
-                        href="javascript:;" 
-                        className="list-group-item bg-transparent"
-                        onClick={() => handleCategoryFilter('furniture')}
-                      >
-                        <i className='bx bx-chevron-right me-1'></i> Furniture
-                      </a>
-                    </div>
+                        {cat.label}
+                        <span style={{ color: T.red, fontSize: '10px' }}>›</span>
+                      </button>
+                    ))}
                   </div>
+                </div>
 
-                  <div className="blog-categories mb-3">
-                    <h5 className="mb-4">Recent Posts</h5>
-                    {recentPosts.map((recentPost, index) => (
-                      <React.Fragment key={recentPost.id || index}>
-                        <div className="d-flex align-items-center">
-                          <img 
-                            src={recentPost.images[0].url || `assets/images/gallery/0${(index % 4) + 1}.png`} 
-                            width="75" 
-                            alt={recentPost.title || "Recent post"} 
+                {/* ── Recent Posts ── */}
+                <div style={{
+                  background: T.dark2,
+                  border: `1px solid ${T.border}`,
+                  borderTop: `3px solid ${T.red}`,
+                  padding: '24px',
+                }}>
+                  <SectionLabel>// Latest</SectionLabel>
+                  <h3 style={{
+                    fontFamily: T.anton, fontSize: '20px',
+                    color: T.white, marginBottom: '18px',
+                  }}>
+                    Recent Posts
+                  </h3>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
+                    {recentPosts.map((rp, index) => (
+                      <React.Fragment key={rp.id || index}>
+                        <Link
+                          to={`/blog/${rp._id}`}
+                          style={{
+                            display: 'flex', gap: '12px', alignItems: 'flex-start',
+                            textDecoration: 'none', padding: '12px 0',
+                          }}
+                        >
+                          <img
+                            src={rp.images?.[0]?.url || `assets/images/gallery/0${(index % 4) + 1}.png`}
+                            alt={rp.title || 'Post'}
+                            style={{
+                              width: '64px', height: '64px',
+                              objectFit: 'cover', flexShrink: 0,
+                              border: `1px solid ${T.border}`,
+                            }}
                           />
-                          <div className="ms-3">
-                            <a href={`single.html?id=${recentPost.id}`} className="fs-6">
-                              {recentPost.title || "Post title here"}
-                            </a>
-                            <p className="mb-0">{formatDate(recentPost.publishedDate || recentPost.createdAt)}</p>
+                          <div>
+                            <div style={{
+                              fontFamily: T.mono, fontSize: '11px',
+                              color: T.mid, lineHeight: 1.5, marginBottom: '5px',
+                              transition: 'color .15s',
+                            }}
+                              onMouseEnter={e => e.currentTarget.style.color = T.red}
+                              onMouseLeave={e => e.currentTarget.style.color = T.mid}
+                            >
+                              {rp.title || 'Post title here'}
+                            </div>
+                            <div style={{
+                              fontFamily: T.mono, fontSize: '9px',
+                              letterSpacing: '.1em', color: T.dim,
+                              textTransform: 'uppercase',
+                            }}>
+                              {formatDate(rp.publishedDate || rp.createdAt)}
+                            </div>
                           </div>
-                        </div>
-                        {index < 3 && <div className="my-3 border-bottom"></div>}
+                        </Link>
+                        {index < recentPosts.length - 1 && (
+                          <div style={{ height: '1px', background: T.border }} />
+                        )}
                       </React.Fragment>
                     ))}
                   </div>
+                </div>
 
-                  <div className="blog-categories mb-3">
-                    <h5 className="mb-4">Popular Tags</h5>
-                    <div className="tags-box">
-                      <a href="javascript:;" className="tag-link">Cloths</a>
-                      <a href="javascript:;" className="tag-link">Electronics</a>
-                      <a href="javascript:;" className="tag-link">Furniture</a>
-                      <a href="javascript:;" className="tag-link">Sports</a>
-                      <a href="javascript:;" className="tag-link">Men Wear</a>
-                      <a href="javascript:;" className="tag-link">Women Wear</a>
-                      <a href="javascript:;" className="tag-link">Laptops</a>
-                      <a href="javascript:;" className="tag-link">Formal Shirts</a>
-                      <a href="javascript:;" className="tag-link">Topwear</a>
-                      <a href="javascript:;" className="tag-link">Headphones</a>
-                      <a href="javascript:;" className="tag-link">Bottom Wear</a>
-                      <a href="javascript:;" className="tag-link">Bags</a>
-                      <a href="javascript:;" className="tag-link">Sofa</a>
-                      <a href="javascript:;" className="tag-link">Shoes</a>
-                    </div>
+                {/* ── Popular Tags ── */}
+                <div style={{
+                  background: T.dark2,
+                  border: `1px solid ${T.border}`,
+                  borderTop: `3px solid ${T.red}`,
+                  padding: '24px',
+                }}>
+                  <SectionLabel>// Tags</SectionLabel>
+                  <h3 style={{
+                    fontFamily: T.anton, fontSize: '20px',
+                    color: T.white, marginBottom: '18px',
+                  }}>
+                    Popular Tags
+                  </h3>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                    {popularTags.map(tag => (
+                      <button
+                        key={tag}
+                        onClick={() => dispatch(setSearchTerm(tag))}
+                        style={{
+                          padding: '6px 12px',
+                          background: T.dark3,
+                          border: `1px solid ${T.border}`,
+                          color: T.dim,
+                          fontFamily: T.mono, fontSize: '10px',
+                          letterSpacing: '.08em',
+                          cursor: 'pointer', transition: 'all .15s',
+                        }}
+                        onMouseEnter={e => {
+                          e.currentTarget.style.background = T.red;
+                          e.currentTarget.style.borderColor = T.red;
+                          e.currentTarget.style.color = '#fff';
+                        }}
+                        onMouseLeave={e => {
+                          e.currentTarget.style.background = T.dark3;
+                          e.currentTarget.style.borderColor = T.border;
+                          e.currentTarget.style.color = T.dim;
+                        }}
+                      >
+                        {tag}
+                      </button>
+                    ))}
                   </div>
                 </div>
+
               </div>
             </div>
+            {/* ══════════════════════════════════════════════════════ */}
+
           </div>
         </div>
       </section>
-    </>
+    </div>
   );
-}
+};
 
 export default BlogPost;

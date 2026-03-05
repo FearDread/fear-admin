@@ -162,7 +162,7 @@ const UsersList = () => {
       role: user.role || "user",
       isActive: user.isActive !== false,
     });
-    setShowEditModal(true);
+    //setShowEditModal(true);
   };
 
   const handleCloseEditModal = () => {
@@ -790,8 +790,6 @@ const UsersList = () => {
           </Col>
         </Row>
       </div>
-
-      {/* ── Edit User Modal ─────────────────────────────────────────────────── */}
       <Modal
         open={showEditModal}
         onClose={handleCloseEditModal}
