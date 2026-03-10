@@ -10,7 +10,9 @@ import {
   selectUserLoading,
   selectUserError,
   clearError,
+  registerUser
 } from '../../features/user/slice';
+
 import { T } from '../../components/styles';
 
 const countries = [
@@ -49,7 +51,7 @@ export const Register = () => {
   const [validationErrors, setValidationErrors] = useState({});
   const [strength, setStrength] = useState({ score: 0, label: '', color: '' });
 
-  useEffect(() => { if (isAuthenticated) navigate('/', { replace: true }); }, [isAuthenticated]);
+  //useEffect(() => { if (isAuthenticated) navigate('/', { replace: true }); }, [isAuthenticated]);
   useEffect(() => { dispatch(clearError()); }, []);
   useEffect(() => {
     setStrength(formData.password ? calcStrength(formData.password) : { score: 0, label: '', color: '' });
@@ -83,17 +85,24 @@ export const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
-    const result = await dispatch(register({
+    const data = {
       displayName: `${formData.firstName.trim()} ${formData.lastName.trim()}`,
       firstName: formData.firstName.trim(),
       lastName: formData.lastName.trim(),
       email: formData.email.trim().toLowerCase(),
       password: formData.password,
       country: formData.country,
-    }));
-    if (register.fulfilled.match(result)) {
-      navigate('/login', { state: { message: 'Account created! Please sign in.' } });
     }
+
+    await dispatch(registerUser(data))
+      .unwrap()
+      .then((result) => {
+        console.log('register result = ', result);
+        if (result.success) {
+          navigate('/login', { state: { message: 'Account created! Please sign in.' } })
+        }
+      })
+      .catch((err) => console.log('registration error', err));
   };
 
   const handleGoogle = async () => { try { await dispatch(loginWithGoogle()); } catch (e) { } };

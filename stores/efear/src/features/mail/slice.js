@@ -2,13 +2,17 @@ import { FeatureFactory, ThunkFactory } from "@feardread/feature-factory";
 
 
 export const { slice, asyncActions: Mail } = FeatureFactory('mail', {})
-    .create({   
+    .create({
         service: {
             sendSubscribe: ThunkFactory.custom('mail', 'subscribe', {
                 method: 'POST',
                 useParams: true
             }),
             sendContact: ThunkFactory.custom('mail', 'contact', {
+                method: 'POST',
+                useParams: true,
+            }),
+            sendRegister: ThunkFactory.custom('mail', 'welcome', {
                 method: 'POST',
                 useParams: true,
             }),
@@ -25,8 +29,10 @@ export const { slice, asyncActions: Mail } = FeatureFactory('mail', {})
 
 export const {
     sendContact,
+    sendForgotPassword,
     sendSubscribe,
-    sendTest
+    sendRegister,
+    sendTest,
 } = Mail;
 
 export const selectMailLoading = (state) => state.mail.loading;
