@@ -389,7 +389,7 @@ Received: ${new Date().toLocaleString()}
     };
 
     return {
-        templates: _this.templates,
+        templates: templates,
         sendEmail: _this.sendEmail,
 
         sendProjectEmail(req, res) {
@@ -434,7 +434,6 @@ Received: ${new Date().toLocaleString()}
             if (!$message || $message.trim().length === 0) {
                 return _this.handleError(res, 400, { message: 'Message is required' });
             }
-
             const htmlContent = _this.templates.contactTemplate(req.body);
             const textContent = _this.templates.generatePlainText(req.body, 'contact');
 
@@ -491,6 +490,26 @@ Received: ${new Date().toLocaleString()}
                 })
                 .catch((error) => _this.handleError(res, 500, error));
         },
+
+        sendWelcomeEmail(req, res) {
+            const { $email } = req.body;
+            const opts = {
+                to: $email,
+                cc:  _this.getDefaultFromAddress(),
+                from:  _this.getDefaultFromAddress(),
+                subject: subject || "Welcome to the crew!",
+                html: templates.welcome(req.body)
+            }
+            return _this.sendEmail(opts)
+                .then((result) => {
+                    if (!result.success) {
+                        return _this.handleError(res, 500, resp);
+                    }
+                    return res.status(200).json({result, success: true, message: 'Welcome email sent'})
+                })
+                .catch((err) => _this.handleError(res, 500, error));
+        },
+
         sendTestMessage(req, res) {
           const mg = _this.mailgunClient  
           

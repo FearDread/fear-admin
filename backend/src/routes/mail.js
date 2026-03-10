@@ -11,5 +11,8 @@ module.exports = (fear) => {
     router.post("/project", handler.async(mailer.sendProjectEmail))
     router.post("/subscribe", handler.async(mailer.sendSubscriptionEmail))
     router.post("/test", handler.async(mailer.sendTestEmail));
+    router.post("/welcome", handler.async(mailer.sendWelcomeEmail))
+
+
     return router;
 };
