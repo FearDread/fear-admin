@@ -31,8 +31,6 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
-// ── Constants ────────────────────────────────────────────────────────────────
-
 const API_BASE = 'http://localhost:4000/fear/api/analytics' // production -> 'https://fear.dedyn.io/fear/api';
 
 const DATE_RANGES = [
@@ -48,8 +46,6 @@ const CHART_TOOLTIP_STYLE = {
   contentStyle: { backgroundColor: '#2b2b2b', border: '1px solid #444' },
 };
 
-// ── API helpers ──────────────────────────────────────────────────────────────
-
 const analyticsApi = {
   status: () => fetch(`${API_BASE}/auth/status`).then(r => r.json()),
   disconnect: () => fetch(`${API_BASE}/auth/disconnect`, { method: 'POST' }).then(r => r.json()),
@@ -62,9 +58,6 @@ const analyticsApi = {
   geo: (p, s, e) => fetch(`${API_BASE}/report/geo?propertyId=${p}&startDate=${s}&endDate=${e}`).then(r => r.json()),
   realtime: (p) => fetch(`${API_BASE}/report/realtime?propertyId=${p}`).then(r => r.json()),
 };
-
-// ── Formatters ───────────────────────────────────────────────────────────────
-
 const fmtNum = (n) => Number(n || 0).toLocaleString();
 const fmtPct = (n) => `${Number(n || 0).toFixed(1)}%`;
 const fmtDur = (s) => {

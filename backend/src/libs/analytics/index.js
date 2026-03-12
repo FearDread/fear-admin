@@ -1,15 +1,15 @@
 const axios = require("axios");
-const qs    = require("qs");
+const qs = require("qs");
 
-const CLIENT_ID     = process.env.GA_CLIENT_ID;
+const CLIENT_ID = process.env.GA_CLIENT_ID;
 const CLIENT_SECRET = process.env.GA_CLIENT_SECRET;
-const REDIRECT_URI  = process.env.GA_REDIRECT_URI;
+const REDIRECT_URI = process.env.GA_REDIRECT_URI;
 
-const GOOGLE_AUTH_URL  = "https://accounts.google.com/o/oauth2/v2/auth";
+const GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth";
 const GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token";
 
-const GA_API_BASE      = "https://analyticsdata.googleapis.com/v1beta";
-const GA_ADMIN_BASE    = "https://analyticsadmin.googleapis.com/v1alpha";
+const GA_API_BASE = "https://analyticsdata.googleapis.com/v1beta";
+const GA_ADMIN_BASE = "https://analyticsadmin.googleapis.com/v1alpha";
 
 const SCOPES = [
       "https://www.googleapis.com/auth/analytics.readonly",
@@ -21,15 +21,15 @@ const SCOPES = [
 // ── In-memory token store (replace with DB for production) ────────────────────
 
 let tokenStore = {
-      accessToken:  null,
+      accessToken: null,
       refreshToken: null,
-      expiresAt:    null,
+      expiresAt: null,
 };
 
-const getToken    = ()     => tokenStore;
-const saveToken   = (data) => { tokenStore = { ...tokenStore, ...data }; };
-const clearToken  = ()     => { tokenStore = { accessToken: null, refreshToken: null, expiresAt: null }; };
-const isConnected = ()     => !!tokenStore.accessToken && tokenStore.expiresAt > Date.now();
+const getToken = () => tokenStore;
+const saveToken = (data) => { tokenStore = { ...tokenStore, ...data }; };
+const clearToken = () => { tokenStore = { accessToken: null, refreshToken: null, expiresAt: null }; };
+const isConnected = () => !!tokenStore.accessToken && tokenStore.expiresAt > Date.now();
 
 const ensureValidToken = async () => {
       if (!tokenStore.accessToken) throw new Error("Google Analytics account not connected.");
@@ -45,10 +45,10 @@ const fetchTokenFromCode = async (code) => {
             GOOGLE_TOKEN_URL,
             qs.stringify({
                   code,
-                  client_id:     CLIENT_ID,
+                  client_id: CLIENT_ID,
                   client_secret: CLIENT_SECRET,
-                  redirect_uri:  REDIRECT_URI,
-                  grant_type:    "authorization_code",
+                  redirect_uri: REDIRECT_URI,
+                  grant_type: "authorization_code",
             }),
             { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
       );
@@ -62,17 +62,17 @@ const refreshAccessToken = async () => {
       const { data } = await axios.post(
             GOOGLE_TOKEN_URL,
             qs.stringify({
-                  client_id:     CLIENT_ID,
+                  client_id: CLIENT_ID,
                   client_secret: CLIENT_SECRET,
                   refresh_token: refreshToken,
-                  grant_type:    "refresh_token",
+                  grant_type: "refresh_token",
             }),
             { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
       );
 
       saveToken({
             accessToken: data.access_token,
-            expiresAt:   Date.now() + data.expires_in * 1000,
+            expiresAt: Date.now() + data.expires_in * 1000,
       });
 
       return data.access_token;
@@ -109,13 +109,13 @@ const runReport = async (propertyId, body) => {
 // ── Row parsers ───────────────────────────────────────────────────────────────
 
 const parseRows = (data) => {
-      const dimHeaders    = data.dimensionHeaders?.map(h => h.name) || [];
-      const metricHeaders = data.metricHeaders?.map(h => h.name)    || [];
+      const dimHeaders = data.dimensionHeaders?.map(h => h.name) || [];
+      const metricHeaders = data.metricHeaders?.map(h => h.name) || [];
 
       return (data.rows || []).map(row => {
             const obj = {};
-            row.dimensionValues?.forEach((v, i) => { obj[dimHeaders[i]]    = v.value; });
-            row.metricValues?.forEach((v, i)    => { obj[metricHeaders[i]] = v.value; });
+            row.dimensionValues?.forEach((v, i) => { obj[dimHeaders[i]] = v.value; });
+            row.metricValues?.forEach((v, i) => { obj[metricHeaders[i]] = v.value; });
             return obj;
       });
 };
@@ -127,14 +127,14 @@ const Analytics = {
       // ── GET /auth/connect
       // Redirects the user's browser to Google's OAuth consent page.
       connect: async (req, res) => {
-        console.log('google analytics connect :: ', req);
+            console.log('google analytics connect :: ', req);
             const params = new URLSearchParams({
-                  client_id:     CLIENT_ID,
-                  redirect_uri:  REDIRECT_URI,
+                  client_id: CLIENT_ID,
+                  redirect_uri: REDIRECT_URI,
                   response_type: "code",
-                  scope:         SCOPES,
-                  access_type:   "offline",   // required to receive a refresh_token
-                  prompt:        "consent",   // force consent screen so refresh_token is always returned
+                  scope: SCOPES,
+                  access_type: "offline",   // required to receive a refresh_token
+                  prompt: "consent",   // force consent screen so refresh_token is always returned
             });
             return res.redirect(`${GOOGLE_AUTH_URL}?${params.toString()}`);
       },
@@ -158,9 +158,9 @@ const Analytics = {
             const data = await fetchTokenFromCode(code);
 
             saveToken({
-                  accessToken:  data.access_token,
+                  accessToken: data.access_token,
                   refreshToken: data.refresh_token,       // only present on first consent
-                  expiresAt:    Date.now() + data.expires_in * 1000,
+                  expiresAt: Date.now() + data.expires_in * 1000,
             });
 
             return res.send(`
@@ -178,7 +178,7 @@ const Analytics = {
       status: async (req, res) => {
             const connected = isConnected();
             return res.json({
-                  success:   true,
+                  success: true,
                   connected,
                   expiresAt: connected ? new Date(tokenStore.expiresAt).toISOString() : null,
             });
@@ -215,9 +215,9 @@ const Analytics = {
             for (const account of (data.accountSummaries || [])) {
                   for (const prop of (account.propertySummaries || [])) {
                         properties.push({
-                              id:          prop.property.replace("properties/", ""),
+                              id: prop.property.replace("properties/", ""),
                               displayName: prop.displayName,
-                              account:     account.displayName,
+                              account: account.displayName,
                         });
                   }
             }
@@ -234,12 +234,12 @@ const Analytics = {
             const data = await runReport(propertyId, {
                   dateRanges: [{ startDate, endDate }],
                   metrics: [
-                        { name: "sessions"              },
-                        { name: "totalUsers"            },
-                        { name: "newUsers"              },
-                        { name: "screenPageViews"       },
-                        { name: "bounceRate"            },
-                        { name: "averageSessionDuration"},
+                        { name: "sessions" },
+                        { name: "totalUsers" },
+                        { name: "newUsers" },
+                        { name: "screenPageViews" },
+                        { name: "bounceRate" },
+                        { name: "averageSessionDuration" },
                   ],
             });
 
@@ -249,12 +249,12 @@ const Analytics = {
             return res.json({
                   success: true,
                   overview: {
-                        sessions:              get(0),
-                        users:                 get(1),
-                        newUsers:              get(2),
-                        pageviews:             get(3),
-                        bounceRate:            (get(4) * 100).toFixed(2),
-                        avgSessionDuration:    get(5).toFixed(0),
+                        sessions: get(0),
+                        users: get(1),
+                        newUsers: get(2),
+                        pageviews: get(3),
+                        bounceRate: (get(4) * 100).toFixed(2),
+                        avgSessionDuration: get(5).toFixed(0),
                   },
             });
       },
@@ -268,18 +268,18 @@ const Analytics = {
             const data = await runReport(propertyId, {
                   dateRanges: [{ startDate, endDate }],
                   dimensions: [{ name: "date" }],
-                  metrics:    [
-                        { name: "sessions"        },
-                        { name: "totalUsers"      },
+                  metrics: [
+                        { name: "sessions" },
+                        { name: "totalUsers" },
                         { name: "screenPageViews" },
                   ],
                   orderBys: [{ dimension: { dimensionName: "date" }, desc: false }],
             });
 
             const rows = parseRows(data).map(r => ({
-                  date:      r.date,          // YYYYMMDD
-                  sessions:  parseInt(r.sessions      || 0),
-                  users:     parseInt(r.totalUsers    || 0),
+                  date: r.date,          // YYYYMMDD
+                  sessions: parseInt(r.sessions || 0),
+                  users: parseInt(r.totalUsers || 0),
                   pageviews: parseInt(r.screenPageViews || 0),
             }));
 
@@ -295,19 +295,19 @@ const Analytics = {
             const data = await runReport(propertyId, {
                   dateRanges: [{ startDate, endDate }],
                   dimensions: [{ name: "pagePath" }],
-                  metrics:    [
-                        { name: "screenPageViews"           },
-                        { name: "averageSessionDuration"    },
-                        { name: "bounceRate"                },
+                  metrics: [
+                        { name: "screenPageViews" },
+                        { name: "averageSessionDuration" },
+                        { name: "bounceRate" },
                   ],
                   orderBys: [{ metric: { metricName: "screenPageViews" }, desc: true }],
-                  limit:    parseInt(limit),
+                  limit: parseInt(limit),
             });
 
             const rows = parseRows(data).map(r => ({
-                  page:       r.pagePath,
-                  pageviews:  parseInt(r.screenPageViews || 0),
-                  avgTime:    parseFloat(r.averageSessionDuration || 0).toFixed(0),
+                  page: r.pagePath,
+                  pageviews: parseInt(r.screenPageViews || 0),
+                  avgTime: parseFloat(r.averageSessionDuration || 0).toFixed(0),
                   bounceRate: ((parseFloat(r.bounceRate || 0)) * 100).toFixed(1) + "%",
             }));
 
@@ -323,17 +323,17 @@ const Analytics = {
             const data = await runReport(propertyId, {
                   dateRanges: [{ startDate, endDate }],
                   dimensions: [{ name: "deviceCategory" }],
-                  metrics:    [{ name: "sessions" }],
-                  orderBys:   [{ metric: { metricName: "sessions" }, desc: true }],
+                  metrics: [{ name: "sessions" }],
+                  orderBys: [{ metric: { metricName: "sessions" }, desc: true }],
             });
 
-            const rows   = parseRows(data);
-            const total  = rows.reduce((s, r) => s + parseInt(r.sessions), 0) || 1;
+            const rows = parseRows(data);
+            const total = rows.reduce((s, r) => s + parseInt(r.sessions), 0) || 1;
 
             const devices = rows.map((r, i) => ({
-                  name:     r.deviceCategory.charAt(0).toUpperCase() + r.deviceCategory.slice(1),
+                  name: r.deviceCategory.charAt(0).toUpperCase() + r.deviceCategory.slice(1),
                   sessions: parseInt(r.sessions),
-                  value:    Math.round((parseInt(r.sessions) / total) * 100),
+                  value: Math.round((parseInt(r.sessions) / total) * 100),
             }));
 
             return res.json({ success: true, devices });
@@ -348,18 +348,18 @@ const Analytics = {
             const data = await runReport(propertyId, {
                   dateRanges: [{ startDate, endDate }],
                   dimensions: [{ name: "country" }],
-                  metrics:    [{ name: "sessions" }],
-                  orderBys:   [{ metric: { metricName: "sessions" }, desc: true }],
-                  limit:      parseInt(limit),
+                  metrics: [{ name: "sessions" }],
+                  orderBys: [{ metric: { metricName: "sessions" }, desc: true }],
+                  limit: parseInt(limit),
             });
 
-            const rows  = parseRows(data);
+            const rows = parseRows(data);
             const total = rows.reduce((s, r) => s + parseInt(r.sessions), 0) || 1;
 
             const geo = rows.map(r => ({
-                  country:  r.country,
+                  country: r.country,
                   sessions: parseInt(r.sessions),
-                  pct:      ((parseInt(r.sessions) / total) * 100).toFixed(1) + "%",
+                  pct: ((parseInt(r.sessions) / total) * 100).toFixed(1) + "%",
             }));
 
             return res.json({ success: true, geo });
@@ -378,19 +378,19 @@ const Analytics = {
                         { name: "sessionMedium" },
                   ],
                   metrics: [
-                        { name: "sessions"   },
+                        { name: "sessions" },
                         { name: "totalUsers" },
                         { name: "bounceRate" },
                   ],
                   orderBys: [{ metric: { metricName: "sessions" }, desc: true }],
-                  limit:    20,
+                  limit: 20,
             });
 
             const rows = parseRows(data).map(r => ({
-                  source:     r.sessionSource,
-                  medium:     r.sessionMedium,
-                  sessions:   parseInt(r.sessions   || 0),
-                  users:      parseInt(r.totalUsers  || 0),
+                  source: r.sessionSource,
+                  medium: r.sessionMedium,
+                  sessions: parseInt(r.sessions || 0),
+                  users: parseInt(r.totalUsers || 0),
                   bounceRate: ((parseFloat(r.bounceRate || 0)) * 100).toFixed(1) + "%",
             }));
 
@@ -408,22 +408,22 @@ const Analytics = {
 
             const { data } = await client.post(`/properties/${propertyId}:runRealtimeReport`, {
                   dimensions: [{ name: "unifiedPagePathScreen" }],
-                  metrics:    [{ name: "activeUsers"           }],
-                  orderBys:   [{ metric: { metricName: "activeUsers" }, desc: true }],
-                  limit:      5,
+                  metrics: [{ name: "activeUsers" }],
+                  orderBys: [{ metric: { metricName: "activeUsers" }, desc: true }],
+                  limit: 5,
             });
 
             const rows = parseRows(data).map(r => ({
-                  page:  r.unifiedPagePathScreen,
+                  page: r.unifiedPagePathScreen,
                   users: parseInt(r.activeUsers || 0),
             }));
 
             const activeUsers = rows.reduce((s, r) => s + r.users, 0);
 
             return res.json({
-                  success:         true,
+                  success: true,
                   activeUsers,
-                  topActivePages:  rows,
+                  topActivePages: rows,
             });
       },
 

@@ -191,7 +191,7 @@ module.exports = function (fear) {
         if (_this.mailService === 'mailgun') {
             return _this.mailConfig.mailgun.from || `noreply@${_this.mailgunDomain}`;
         }
-        return _this.mailConfig.smtp[_this.mailService].auth.user;
+        return _this.mailConfig.smtp[_this.mailService].auth.user || 'ghaptonstall@gmail.com';
     };
     _this.efear = templates;
     _this.templates = {
@@ -493,11 +493,12 @@ Received: ${new Date().toLocaleString()}
 
         sendWelcomeEmail(req, res) {
             const { $email } = req.body;
+            const subject = 'Welcome to the Crew!';
             const opts = {
                 to: $email,
                 cc:  _this.getDefaultFromAddress(),
                 from:  _this.getDefaultFromAddress(),
-                subject: subject || "Welcome to the crew!",
+                subject: subject,
                 html: templates.welcome(req.body)
             }
             return _this.sendEmail(opts)
