@@ -4,7 +4,6 @@ import UserService from "./service";
 import Storage, { saveUserToStorage, clearUserStorage } from '../storage';
 import { sendRegister } from '../mail/slice';
 
-
 const userReducers = {
   // Set current user
   setCurrentUser: (state, action) => {
@@ -60,12 +59,7 @@ const userReducers = {
   },
 };
 
-/**
- * Create the user feature factory
- */
-const userFactory = FeatureFactory('users', userReducers);
-
-export const { slice, asyncActions: User } = userFactory.create({
+export const { slice, asyncActions: User } = FeatureFactory('users', userReducers).create({
   service: UserService,
   stateOptions: {
     includeEntityState: true,
@@ -86,9 +80,7 @@ export const { slice, asyncActions: User } = userFactory.create({
   includeCommonReducers: true,
 });
 
-// Export all actions
 export const {
-  // Common reducers
   setData,
   setLoading,
   setSuccess,
@@ -96,7 +88,6 @@ export const {
   clearError,
   resetState,
   updateMetadata,
-  // Custom user reducers
   setCurrentUser,
   setIsAuthenticated,
   clearCurrentUser,
@@ -108,7 +99,6 @@ export const {
   restoreUser,
 } = slice.actions;
 
-// Export async actions
 export const {
   fetchOne: fetchUser,
   login,
@@ -126,153 +116,137 @@ export const {
   updateAvatar,
 } = User;
 
-// Enhanced login thunk with token storage and persistence
-export const loginUser = (credentials, rememberMe = false) => async (dispatch) => {
-  try {
-    dispatch(setLoading(true));
-    dispatch(clearError());
-
-    const result = await dispatch(login(credentials));
-
-    if (login.fulfilled.match(result)) {
-      const { token, user } = result.payload.data;
-
-      // Calculate token expiry (default 7 days for remember me, 24 hours otherwise)
-      const expiryHours = rememberMe ? 24 * 7 : 24;
-      const expiresAt = new Date(Date.now() + expiryHours * 60 * 60 * 1000).toISOString();
-
-
-      API.setAuth(token, user);
-      Storage.save(user, token, rememberMe, expiresAt);
-
-      // Update state
-      dispatch(setToken(token));
-      dispatch(setCurrentUser(user));
-      dispatch(setRememberMe(rememberMe));
-      dispatch(updateMetadata({ lastLoginAt: new Date().toISOString() }));
-
-      return { success: true, user };
-    } else {
-      throw new Error(result.error?.message || 'Login failed');
-    }
-  } catch (error) {
-    dispatch(setError(error.message));
-    return { success: false, error: error.message };
-  } finally {
-    dispatch(setLoading(false));
-  }
-};
-
-// Enhanced logout thunk with storage cleanup
-export const logoutUser = () => async (dispatch) => {
-  try {
-    dispatch(setLoading(true));
-
-    await dispatch(logout());
-
-    // Clear auth from API utility
-    API.clearAuth();
-
-    // Clear persistent storage
-    clearUserStorage();
-
-    // Clear user state
-    dispatch(clearCurrentUser());
-    dispatch(clearToken());
-    dispatch(setRememberMe(false));
-
-    return { success: true };
-  } catch (error) {
-    console.error('Logout error:', error);
-
-    // Still clear local state and storage even if API call fails
-    API.clearAuth();
-    clearUserStorage();
-    dispatch(clearCurrentUser());
-    dispatch(clearToken());
-    dispatch(setRememberMe(false));
-
-    return { success: true };
-  } finally {
-    dispatch(setLoading(false));
-  }
-};
-
-// Update profile with storage sync
-export const updateUserProfileWithStorage = (updates) => async (dispatch, getState) => {
-  try {
-    dispatch(setLoading(true));
-    dispatch(clearError());
-
-    const result = await dispatch(updateProfile(updates));
-
-    if (updateProfile.fulfilled.match(result)) {
-      const updatedUser = result.payload.data;
-
-      // Update state
-      dispatch(updateUserProfile(updatedUser));
-
-      // Sync with storage
-      const state = getState();
-      const { token, rememberMe } = state.users;
-
-      if (token && updatedUser) {
-        const expiryHours = rememberMe ? 24 * 7 : 24;
-        const expiresAt = new Date(Date.now() + expiryHours * 60 * 60 * 1000).toISOString();
-        saveUserToStorage(updatedUser, token, rememberMe, expiresAt);
-      }
-
-      return { success: true, user: updatedUser };
-    } else {
-      throw new Error(result.error?.message || 'Profile update failed');
-    }
-  } catch (error) {
-    dispatch(setError(error.message));
-    return { success: false, error: error.message };
-  } finally {
-    dispatch(setLoading(false));
-  }
-};
-
-// Register with auto-login and storage
-export const registerUser = (userData, rememberMe = false) => async (dispatch) => {
-
+export const loginUser = (credentials, rememberMe = false) => (dispatch) => {
   dispatch(setLoading(true));
   dispatch(clearError());
 
-  await dispatch(register(userData))
-    .unwrap()
+  return dispatch(login(credentials))
     .then((result) => {
-
-      if (register.fulfilled.match(result)) {
+      if (login.fulfilled.match(result)) {
         const { token, user } = result.payload.data;
 
-        // Calculate token expiry
         const expiryHours = rememberMe ? 24 * 7 : 24;
         const expiresAt = new Date(Date.now() + expiryHours * 60 * 60 * 1000).toISOString();
 
-        // Store token in API utility
         API.setAuth(token, user);
+        Storage.save(user, token, rememberMe, expiresAt);
 
-        // Save to persistent storage
-        saveUserToStorage(user, token, rememberMe, expiresAt);
-        // Update state
         dispatch(setToken(token));
         dispatch(setCurrentUser(user));
         dispatch(setRememberMe(rememberMe));
         dispatch(updateMetadata({ lastLoginAt: new Date().toISOString() }));
-      
-        dispatch(sendRegister);
-        
-        return Promise.resolve({ success: true, user });
+
+        return { success: true, user };
+      } else {
+        throw new Error(result.error?.message || 'Login failed');
       }
     })
     .catch((error) => {
       dispatch(setError(error.message));
       return { success: false, error: error.message };
+    })
+    .finally(() => {
+      dispatch(setLoading(false));
     });
 };
 
+// Enhanced logout thunk with storage cleanup
+export const logoutUser = () => (dispatch) => {
+  dispatch(setLoading(true));
+
+  const clearLocalState = () => {
+    API.clearAuth();
+    clearUserStorage();
+    dispatch(clearCurrentUser());
+    dispatch(clearToken());
+    dispatch(setRememberMe(false));
+  };
+
+  return dispatch(logout())
+    .then(() => {
+      clearLocalState();
+      return { success: true };
+    })
+    .catch((error) => {
+      console.error('Logout error:', error);
+      clearLocalState();
+      return { success: true };
+    })
+    .finally(() => {
+      dispatch(setLoading(false));
+    });
+};
+
+// Update profile with storage sync
+export const updateUserProfileWithStorage = (updates) => (dispatch, getState) => {
+  dispatch(setLoading(true));
+  dispatch(clearError());
+
+  return dispatch(updateProfile(updates))
+    .then((result) => {
+      if (updateProfile.fulfilled.match(result)) {
+        const updatedUser = result.payload.data;
+
+        dispatch(updateUserProfile(updatedUser));
+
+        const { token, rememberMe } = getState().users;
+
+        if (token && updatedUser) {
+          const expiryHours = rememberMe ? 24 * 7 : 24;
+          const expiresAt = new Date(Date.now() + expiryHours * 60 * 60 * 1000).toISOString();
+          saveUserToStorage(updatedUser, token, rememberMe, expiresAt);
+        }
+
+        return { success: true, user: updatedUser };
+      } else {
+        throw new Error(result.error?.message || 'Profile update failed');
+      }
+    })
+    .catch((error) => {
+      dispatch(setError(error.message));
+      return { success: false, error: error.message };
+    })
+    .finally(() => {
+      dispatch(setLoading(false));
+    });
+};
+
+// Register with auto-login and storage
+export const registerUser = (userData, rememberMe = false) => (dispatch) => {
+  dispatch(setLoading(true));
+  dispatch(clearError());
+
+  return dispatch(register(userData))
+    .then((result) => {
+      const { token, user } = result.payload.data;
+
+      const expiryHours = rememberMe ? 24 * 7 : 24;
+      const expiresAt = new Date(Date.now() + expiryHours * 60 * 60 * 1000).toISOString();
+
+      API.setAuth(token, user);
+      saveUserToStorage(user, token, rememberMe, expiresAt);
+
+      dispatch(setToken(token));
+      dispatch(setCurrentUser(user));
+      dispatch(setRememberMe(rememberMe));
+      dispatch(updateMetadata({ lastLoginAt: new Date().toISOString() }));
+
+      dispatch(sendRegister({
+        $email: userData.email,
+        name: userData.firstName + ' ' + userData.lastName,
+        data: user
+      }));
+
+      return { success: true, user };
+    })
+    .catch((error) => {
+      dispatch(setError(error.message));
+      return { success: false, error: error.message };
+    })
+    .finally(() => {
+      dispatch(setLoading(false));
+    });
+};
 // Export selectors
 export const selectCurrentUser = (state) => state.users.currentUser;
 export const selectIsAuthenticated = (state) => state.users.isAuthenticated;
@@ -283,10 +257,5 @@ export const selectUserSuccess = (state) => state.users.success;
 export const selectRememberMe = (state) => state.users.rememberMe;
 export const selectUserPreferences = (state) => state.users.preferences;
 export const selectLastLoginAt = (state) => state.users.lastLoginAt;
-export const selectUserFullName = (state) => {
-  const user = state.users.currentUser;
-  if (!user) return '';
-  return `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.email || 'User';
-};
 
 export default slice;

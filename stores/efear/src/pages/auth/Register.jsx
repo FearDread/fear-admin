@@ -95,7 +95,6 @@ export const Register = () => {
     }
 
     await dispatch(registerUser(data))
-      .unwrap()
       .then((result) => {
         console.log('register result = ', result);
         if (result.success) {

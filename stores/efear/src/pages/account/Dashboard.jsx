@@ -4,37 +4,33 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import {
     selectCurrentUser,
-    selectUserFullName,
     selectIsAuthenticated,
     selectUserLoading,
     selectLastLoginAt,
 } from '../../features/user/slice';
 import AccountSidebar from './components/AccountSidebar';
 import { T, dashStyles } from "./styles";
-/* ─────────────────────────────────────────────
-   DASHBOARD COMPONENT
-───────────────────────────────────────────────*/
+
 export const AccountDashboard = () => {
-    const navigate  = useNavigate();
-    const location  = useLocation();
-    const dispatch  = useDispatch();
+    const navigate = useNavigate();
+    const location = useLocation();
+    const dispatch = useDispatch();
 
-    const currentUser    = useSelector(selectCurrentUser);
-    const userFullName   = useSelector(selectUserFullName);
+    const currentUser = useSelector(selectCurrentUser);
     const isAuthenticated = useSelector(selectIsAuthenticated);
-    const loading        = useSelector(selectUserLoading);
-    const lastLoginAt    = useSelector(selectLastLoginAt);
+    const loading = useSelector(selectUserLoading);
+    const lastLoginAt = useSelector(selectLastLoginAt);
+    
+    const userFullName = currentUser.firstName + ' ' + currentUser.lastName;
+    const sidebarProps = { currentUser, userFullName, lastLoginAt };
 
-    // Redirect if not authenticated
+
     useEffect(() => {
         if (!isAuthenticated && !loading) {
             navigate('/login', { state: { from: location, message: 'Please login to access your account' } });
         }
     }, [isAuthenticated, loading, navigate, location]);
 
-    const sidebarProps = { currentUser, userFullName, lastLoginAt };
-
-    /* Loading state */
     if (loading) {
         return (
             <>
@@ -50,23 +46,23 @@ export const AccountDashboard = () => {
     if (!currentUser && !loading) return null;
 
     const STATS = [
-        { icon: '📦', label: 'Total Orders',     val: currentUser.orderCount    || 0, accent: T.red    },
-        { icon: '❤️', label: 'Wishlist Items',   val: currentUser.wishlistCount || 0, accent: T.orange },
-        { icon: '📍', label: 'Saved Addresses',  val: currentUser.addressCount  || 0, accent: T.teal   },
+        { icon: '📦', label: 'Total Orders', val: currentUser.orderCount || 0, accent: T.red },
+        { icon: '❤️', label: 'Wishlist Items', val: currentUser.wishlistCount || 0, accent: T.orange },
+        { icon: '📍', label: 'Saved Addresses', val: currentUser.addressCount || 0, accent: T.teal },
     ];
 
     const INFO = [
-        { label: 'Email',        val: currentUser.email                                          },
-        { label: 'Phone',        val: currentUser.phone         || null, empty: 'Not provided'   },
-        { label: 'Country',      val: currentUser.country       || null, empty: 'Not specified'  },
-        { label: 'Member Since', val: currentUser.createdAt ? new Date(currentUser.createdAt).toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' }) : null, empty: 'N/A' },
+        { label: 'Email', val: currentUser.email },
+        { label: 'Phone', val: currentUser.phone || null, empty: 'Not provided' },
+        { label: 'Country', val: currentUser.country || null, empty: 'Not specified' },
+        { label: 'Member Since', val: currentUser.createdAt ? new Date(currentUser.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : null, empty: 'N/A' },
     ];
 
     const ACTIONS = [
-        { icon: '🛍️', label: 'Continue Shopping', to: '/shop',              primary: true },
-        { icon: '📋', label: 'View Orders',        to: '/account/orders'                  },
-        { icon: '✏️', label: 'Edit Profile',       to: '/account/details'                 },
-        { icon: '📍', label: 'Addresses',          to: '/account/addresses'               },
+        { icon: '🛍️', label: 'Continue Shopping', to: '/shop', primary: true },
+        { icon: '📋', label: 'View Orders', to: '/account/orders' },
+        { icon: '✏️', label: 'Edit Profile', to: '/account/details' },
+        { icon: '📍', label: 'Addresses', to: '/account/addresses' },
     ];
 
     return (

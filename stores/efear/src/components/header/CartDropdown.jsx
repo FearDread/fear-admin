@@ -1,53 +1,195 @@
-import React, { useState } from 'react';
-import { useSelector } from "react-redux";
-import { Link, useLocation } from 'react-router-dom';
-
-
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { T } from '../styles';
 
 export const CartDropdown = ({ items, onRemoveItem }) => {
   const total = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
   return (
-    <div className="dropdown-menu dropdown-menu-end">
-      <Link to="/cart">
-        <div className="cart-header">
-          <p className="cart-header-title mb-0">{items.length} ITEMS</p>
-          <p className="cart-header-clear ms-auto mb-0">VIEW CART</p>
+    <div style={{
+      position: 'absolute',
+      top: 'calc(100% + 10px)',
+      right: 0,
+      width: '320px',
+      background: T.dark2,
+      border: `1px solid ${T.border}`,
+      zIndex: 9999,
+      fontFamily: "'Space Mono', monospace",
+      clipPath: 'polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px))',
+      boxShadow: `0 8px 32px rgba(0,0,0,.6)`,
+    }}>
+
+      {/* ── Header ── */}
+      <Link to="/cart" style={{ textDecoration: 'none' }}>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '.6rem 1rem',
+          borderBottom: `1px solid ${T.border}`,
+          background: 'rgba(255,255,255,.03)',
+        }}>
+          <span style={{
+            fontSize: '.62rem',
+            letterSpacing: '.12em',
+            textTransform: 'uppercase',
+            color: T.textMid,
+          }}>
+            {items.length} {items.length === 1 ? 'Item' : 'Items'}
+          </span>
+          <span style={{
+            fontSize: '.62rem',
+            letterSpacing: '.12em',
+            textTransform: 'uppercase',
+            color: T.red,
+            fontWeight: 700,
+          }}>
+            View Cart →
+          </span>
         </div>
       </Link>
-      <div className="cart-list">
-        {items.map((item) => (
-          <div key={item._id} className="dropdown-item">
-            <div className="d-flex align-items-center">
-              <div className="flex-grow-1 cart-product-container">
-                <h6 className="cart-product-title">{item.title}</h6>
-                <p className="cart-product-price">{item.quantity} X ${item.price.toFixed(2)}</p>
-              </div>
-              <div className="position-relative">
-                <button
-                  className="cart-product-cancel position-absolute"
-                  onClick={() => onRemoveItem(item._id)}
-                  style={{ background: 'none', border: 'none', cursor: 'pointer' }}
-                >
-                  <i className='bx bx-x'></i>
-                </button>
-                <div className="cart-product">
-                  
-                  <img src={(item.image) ? item.image : '/assets/images/ebooks/01.jpg'} alt={item.title} />
-                </div>
-              </div>
+
+      {/* ── Item List ── */}
+      <div style={{
+        maxHeight: '300px',
+        overflowY: 'auto',
+        overflowX: 'hidden',
+        scrollbarWidth: 'thin',
+        scrollbarColor: `${T.border} transparent`,
+      }}>
+        {items.length === 0 ? (
+          <p style={{
+            padding: '1.5rem 1rem',
+            textAlign: 'center',
+            color: T.textDim,
+            fontSize: '.7rem',
+            letterSpacing: '.08em',
+            textTransform: 'uppercase',
+            margin: 0,
+          }}>
+            Your cart is empty
+          </p>
+        ) : items.map((item) => (
+          <div key={item._id} style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '.75rem',
+            padding: '.65rem 1rem',
+            borderBottom: `1px solid ${T.border}`,
+            transition: 'background .15s',
+          }}
+            onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,.04)'}
+            onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+          >
+            {/* Thumbnail */}
+            <div style={{
+              width: '48px',
+              height: '56px',
+              flexShrink: 0,
+              overflow: 'hidden',
+              border: `1px solid ${T.border}`,
+              clipPath: 'polygon(0 0, calc(100% - 5px) 0, 100% 5px, 100% 100%, 5px 100%, 0 calc(100% - 5px))',
+            }}>
+              <img
+                src={item.image || '/assets/images/ebooks/01.jpg'}
+                alt={item.title}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+              />
             </div>
+
+            {/* Info */}
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <p style={{
+                margin: '0 0 .2rem',
+                fontSize: '.68rem',
+                letterSpacing: '.06em',
+                textTransform: 'uppercase',
+                color: T.textMid,
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}>
+                {item.title}
+              </p>
+              <p style={{
+                margin: 0,
+                fontSize: '.62rem',
+                color: T.textDim,
+                letterSpacing: '.04em',
+              }}>
+                {item.quantity} <span style={{ color: T.border }}>×</span>{' '}
+                <span style={{ color: T.red }}>${item.price.toFixed(2)}</span>
+              </p>
+            </div>
+
+            {/* Remove */}
+            <button
+              onClick={() => onRemoveItem(item._id)}
+              title="Remove item"
+              style={{
+                background: 'none',
+                border: `1px solid ${T.border}`,
+                color: T.textDim,
+                width: '22px',
+                height: '22px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                fontSize: '.75rem',
+                flexShrink: 0,
+                transition: 'border-color .15s, color .15s',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = T.red; e.currentTarget.style.color = T.red; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = T.border; e.currentTarget.style.color = T.textDim; }}
+            >
+              ✕
+            </button>
           </div>
         ))}
       </div>
-      <Link to="/cart">
-        <div className="text-center cart-footer d-flex align-items-center">
-          <h5 className="mb-0">TOTAL</h5>
-          <h5 className="mb-0 ms-auto">${total.toFixed(2)}</h5>
-        </div>
-      </Link>
-      <div className="d-grid p-3 border-top">
-        <Link to="/checkout" className="btn btn-light btn-ecomm">CHECKOUT</Link>
+
+      {/* ── Footer / Total ── */}
+      {items.length > 0 && (
+        <Link to="/cart" style={{ textDecoration: 'none' }}>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '.65rem 1rem',
+            borderTop: `1px solid ${T.border}`,
+            background: 'rgba(255,255,255,.03)',
+          }}>
+            <span style={{ fontSize: '.62rem', letterSpacing: '.12em', textTransform: 'uppercase', color: T.textMid }}>Total</span>
+            <span style={{ fontSize: '.8rem', letterSpacing: '.06em', color: T.red, fontWeight: 700 }}>${total.toFixed(2)}</span>
+          </div>
+        </Link>
+      )}
+
+      {/* ── Checkout CTA ── */}
+      <div style={{ padding: '.75rem 1rem' }}>
+        <Link
+          to="/checkout"
+          style={{
+            display: 'block',
+            textAlign: 'center',
+            padding: '.6rem 1rem',
+            background: T.red,
+            color: '#fff',
+            fontSize: '.68rem',
+            letterSpacing: '.14em',
+            textTransform: 'uppercase',
+            textDecoration: 'none',
+            fontFamily: "'Space Mono', monospace",
+            fontWeight: 700,
+            clipPath: 'polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px))',
+            transition: 'opacity .15s',
+          }}
+          onMouseEnter={e => e.currentTarget.style.opacity = '.85'}
+          onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+        >
+          Checkout
+        </Link>
       </div>
     </div>
   );

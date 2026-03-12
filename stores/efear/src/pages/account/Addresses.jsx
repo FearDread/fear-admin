@@ -4,19 +4,15 @@ import { useNavigate, Link } from 'react-router-dom';
 import {
   logoutUser,
   selectCurrentUser,
-  selectUserFullName,
   selectIsAuthenticated,
   selectUserLoading,
   selectLastLoginAt,
   selectUserError,
 } from '../../features/user/slice';
 import {
-  addAddress,
   updateAddress,
   removeAddress,
   createAddress,
-  createNewAddress,
-  setDefaultAddress,
   fetchAddresses,
   validateAddress,
   clearValidation,
@@ -34,11 +30,11 @@ export const AccountAddresses = () => {
 
   // User selectors
   const currentUser = useSelector(selectCurrentUser);
-  const userFullName = useSelector(selectUserFullName);
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const userLoading = useSelector(selectUserLoading);
   const lastLoginAt = useSelector(selectLastLoginAt);
   const userError = useSelector(selectUserError);
+  const userFullName = currentUser.firstName + ' ' + currentUser.lastName;
 
   // Address selectors
   const allAddresses = useSelector(selectAllAddresses);
@@ -92,7 +88,6 @@ export const AccountAddresses = () => {
 
   // Load addresses on mount
   useEffect(() => {
-
 
     if (currentUser && isAuthenticated) {
       dispatch(fetchAddresses());

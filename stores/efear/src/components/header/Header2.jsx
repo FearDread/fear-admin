@@ -143,9 +143,13 @@ export const Header2 = () => {
   // Toggle helpers — opening one closes the others
   const toggleCurrency   = () => { setCurrencyOpen(o=>!o);   setLanguageOpen(false); setCartOpen(false); setAccountOpen(false); };
   const toggleLanguage   = () => { setLanguageOpen(o=>!o);   setCurrencyOpen(false); setCartOpen(false); setAccountOpen(false); };
-  const toggleCart       = () => { setCartOpen(o=>!o);       setCurrencyOpen(false); setLanguageOpen(false); setAccountOpen(false); };
+
   const toggleCategories = () => { setCategoriesOpen(o=>!o); setAccountOpen(false); };
   const toggleAccount    = () => { setAccountOpen(o=>!o);    setCategoriesOpen(false); };
+
+    const toggleCart       = () => { 
+      console.log('toggle cart');
+      setCartOpen(cartOpen => !cartOpen);       setCurrencyOpen(false); setLanguageOpen(false); setAccountOpen(false); };
 
   return (
     <>

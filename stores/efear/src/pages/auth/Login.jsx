@@ -1,8 +1,6 @@
-// pages/Login.jsx
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { dispatch } from '../../features/store';
 import {
   loginUser,
   loginWithGoogle,
@@ -18,8 +16,6 @@ import {
 } from '../../features/user/slice';
 import GoogleAuth from './components/GoogleAuth';
 import { T } from '../../components/styles';
-
-
 
 export const Login = () => {
   const navigate = useNavigate();
