@@ -8,4 +8,6 @@ export { default as StateFactory } from "./factory/state.js";
 
 export { default as CacheFactory } from "./factory/cache.js";
 
+export { default as CrudFactory } from "./factory/crud.js";
+
 export { default as API } from "./factory/api.js";
