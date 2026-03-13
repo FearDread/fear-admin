@@ -147,9 +147,6 @@ const MarqueeBand = () => {
   );
 };
 
-/* ─────────────────────────────────────────────
-   WHY US  –  origin story + 4 feature cards
-───────────────────────────────────────────────*/
 const WhyUs = () => (
   <section className="why-section">
     <div className="container">

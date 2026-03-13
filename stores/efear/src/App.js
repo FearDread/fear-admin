@@ -25,7 +25,7 @@ const Contact = lazy(() => import("./pages/Contact"));
 const ContactUs = lazy(() => import("./pages/ContactUs"));
 const FAQ = lazy(() => import("./pages/Faq"));
 const Shop = lazy(() => import("./pages/shop/Shop"));
-const Shop2 = lazy(() => import("./pages/Shop2"));
+const Shop2 = lazy(() => import("./pages/shop/Shop2"));
 const ShopCart = lazy(() => import("./pages/shop/ShopCart"));
 const ShopCategories = lazy(() => import("./pages/shop/ShopCategories"));
 const ProductComparison = lazy(() => import("./pages/products/ProductComparison"));

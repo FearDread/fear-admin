@@ -144,10 +144,8 @@ export const selectFilteredProducts = (state) => {
 export const selectSortedProducts = (state) => {
   const products = selectFilteredProducts(state);
   const sorting = state.products.sorting;
-  
-  if (!sorting?.sortBy) return products;
-  
-  return [...products].sort((a, b) => {
+
+  let sortedProducts = [...products].sort((a, b) => {
     const aVal = a[sorting.sortBy];
     const bVal = b[sorting.sortBy];
     const order = sorting.sortOrder === 'asc' ? 1 : -1;
@@ -156,6 +154,8 @@ export const selectSortedProducts = (state) => {
     if (aVal > bVal) return 1 * order;
     return 0;
   });
+
+  return sortedProducts;
 };
 
 

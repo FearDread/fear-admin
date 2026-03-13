@@ -57,7 +57,7 @@ export const Shop = ({ data }) => {
   }, [data, products]);
   // View state
   const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
-  const [sortBy, setSortByLocal] = useState('menu_order');
+  const [sortBy, setSortByLocal] = useState('date');
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
 
 
@@ -110,7 +110,7 @@ export const Shop = ({ data }) => {
     setSortByLocal(value);
     
     const sortConfig = {
-      'menu_order': { sortBy: null, sortOrder: 'desc' },
+      'menu_order': { sortBy: 'createdAt', sortOrder: 'desc' },
       'popularity': { sortBy: 'popularity', sortOrder: 'desc' },
       'rating': { sortBy: 'rating', sortOrder: 'desc' },
       'date': { sortBy: 'createdAt', sortOrder: 'desc' },
@@ -118,7 +118,7 @@ export const Shop = ({ data }) => {
       'price-desc': { sortBy: 'price', sortOrder: 'desc' },
     };
 
-    const config = sortConfig[value] || sortConfig['menu_order'];
+    const config = sortConfig[value] || sortConfig['date'];
     dispatch(setSorting(config));
   };
 
@@ -143,7 +143,7 @@ export const Shop = ({ data }) => {
   const paginatedProducts = useMemo(() => {
     const startIndex = (currentPage - 1) * pageSize;
     const endIndex = startIndex + pageSize;
-    return products?.slice(startIndex, endIndex - 1) || [];
+    return productData?.slice(startIndex, endIndex - 1) || [];
   }, [products, currentPage, pageSize]);
 
   // Count products by category
@@ -171,7 +171,11 @@ export const Shop = ({ data }) => {
   }, [dispatch]);
 
   useEffect(() => {
-    setSorting({'menu_order': { sortBy: 'newest', sortOrder: 'asc' }})
+
+    dispatch(setSorting({'date': { sortBy: 'createdAt', sortOrder: 'desc' }}))
+    const sortedProducts = selectSortedProducts(paginatedProducts);
+    console.log('paginated prod = ', paginatedProducts);
+    console.log('sorted prod = ', sortedProducts);
   }, [dispatch]);
   // Loading state
   const isLoading = productsLoading || categoriesLoading || brandsLoading;

@@ -1,9 +1,7 @@
 // pages/Shop.jsx
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, Link } from 'react-router-dom';
-import { dispatch } from "../features/store";
-import ProductCard from "../components/products/ProductCard";
 import {
   fetchProducts,
   selectSortedProducts,
@@ -13,213 +11,47 @@ import {
   setFilters,
   clearFilters,
   setSorting,
-  setPagination,
   setCurrentPage,
   setPageSize,
   selectProductsFilters,
-  selectAllProducts,
-  selectProductsSearchTerm,
-} from "../features/products/slice";
+} from "../../features/products/slice";
 import {
   fetchCategories,
   selectAllCategories,
   selectCategoriesLoading,
-} from "../features/categories/slice";
+} from "../../features/categories/slice";
 import {
   fetchBrands,
   selectAllBrands,
   selectBrandsLoading,
-} from "../features/brands/slice";
-import { T, shopStyles } from "../components/styles";
+} from "../../features/brands/slice";
+import { T, shopStyles } from "../../components/styles";
+import ProductCard from "../../components/products/ProductCard";
+import FilterPanel from "./components/FilterPanel";
+import { ShopPagination } from "./components/Pagination";
 
-const FilterPanel = ({
-  categories, brands,
-  localFilters, setLocalFilters,
-  currentFilters,
-  totalProducts,
-  getCategoryCount, getBrandCount,
-  handleCategoryChange, handleBrandChange,
-  handlePriceFilter, handleClearFilters,
-}) => {
-  const minPct = (localFilters.minPrice / 200) * 100;
-  const maxPct = (localFilters.maxPrice / 200) * 100;
-
-  const hasActiveFilters = currentFilters.category || currentFilters.brandId ||
-    currentFilters.minPrice > 1 || currentFilters.maxPrice < 200;
-
-  return (
-    <div className="shop-sidebar">
-
-      {/* Active filter chips */}
-      {hasActiveFilters && (
-        <div className="sidebar-section">
-          <div className="sidebar-heading">Active</div>
-          <div className="filter-chips">
-            {currentFilters.category && (
-              <span className="filter-chip">
-                {currentFilters.category}
-                <span className="filter-chip-x" onClick={() => handleCategoryChange('')}>✕</span>
-              </span>
-            )}
-            {currentFilters.brandId && (
-              <span className="filter-chip">
-                Brand
-                <span className="filter-chip-x" onClick={() => handleBrandChange(currentFilters.brandId, false)}>✕</span>
-              </span>
-            )}
-            {(currentFilters.minPrice > 1 || currentFilters.maxPrice < 200) && (
-              <span className="filter-chip">
-                ${currentFilters.minPrice}–${currentFilters.maxPrice}
-                <span className="filter-chip-x" onClick={() => { setLocalFilters(p => ({...p, minPrice:1, maxPrice:200})); handlePriceFilter(); }}>✕</span>
-              </span>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Categories */}
-      <div className="sidebar-section">
-        <div className="sidebar-heading">Category</div>
-        <a
-          href="#"
-          className={`cat-filter-link${!currentFilters.category ? ' active' : ''}`}
-          onClick={e => { e.preventDefault(); handleCategoryChange(''); }}
-        >
-          All Products <span className="cat-count">{totalProducts}</span>
-        </a>
-        {categories.map(cat => (
-          <a
-            key={cat._id}
-            href="#"
-            className={`cat-filter-link${currentFilters.category === cat.title ? ' active' : ''}`}
-            onClick={e => { e.preventDefault(); handleCategoryChange(cat); }}
-          >
-            {cat.title} <span className="cat-count">{getCategoryCount(cat)}</span>
-          </a>
-        ))}
-      </div>
-
-      {/* Price */}
-      <div className="sidebar-section">
-        <div className="sidebar-heading">Price</div>
-        <input
-          type="range" className="shop-range"
-          min="0" max="200" step="1"
-          value={localFilters.minPrice}
-          style={{ '--pct': `${minPct}%` }}
-          onChange={e => setLocalFilters(p => ({ ...p, minPrice: parseInt(e.target.value) }))}
-        />
-        <input
-          type="range" className="shop-range"
-          min="0" max="200" step="1"
-          value={localFilters.maxPrice}
-          style={{ '--pct': `${maxPct}%` }}
-          onChange={e => setLocalFilters(p => ({ ...p, maxPrice: parseInt(e.target.value) }))}
-        />
-        <div className="price-display">
-          <span>Min: <span>${localFilters.minPrice}</span></span>
-          <span>Max: <span>${localFilters.maxPrice}</span></span>
-        </div>
-        <button className="btn-apply-price" style={{ marginTop: '1rem' }} onClick={handlePriceFilter}>
-          Apply Price
-        </button>
-      </div>
-
-      {/* Brands */}
-      <div className="sidebar-section">
-        <div className="sidebar-heading">Brand</div>
-        {brands.map(brand => {
-          const isChecked = localFilters.brandId === brand._id;
-          return (
-            <div
-              key={brand._id}
-              className="brand-check-row"
-              onClick={() => handleBrandChange(brand._id, !isChecked)}
-            >
-              <div className={`brand-check-box${isChecked ? ' checked' : ''}`} />
-              <span className="brand-check-label">{brand.name || brand.title}</span>
-              <span className="cat-count">{getBrandCount(brand)}</span>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Clear */}
-      <div className="sidebar-section">
-        <button className="btn-clear" onClick={handleClearFilters}>
-          ✕ &nbsp; Clear All Filters
-        </button>
-      </div>
-    </div>
-  );
-};
-
-const Pagination = ({ currentPage, totalPages, onPageChange }) => {
-  if (totalPages <= 1) return null;
-
-  const pages = [];
-  const maxVisible = 5;
-  let start = Math.max(1, currentPage - 2);
-  let end = Math.min(totalPages, start + maxVisible - 1);
-  if (end - start < maxVisible - 1) start = Math.max(1, end - maxVisible + 1);
-  for (let i = start; i <= end; i++) pages.push(i);
-
-  return (
-    <div className="shop-pagination">
-      <button
-        className={`page-btn${currentPage === 1 ? ' disabled' : ''}`}
-        onClick={() => currentPage > 1 && onPageChange(currentPage - 1)}
-      >←</button>
-
-      {start > 1 && (
-        <>
-          <button className="page-btn" onClick={() => onPageChange(1)}>1</button>
-          {start > 2 && <span style={{ color: T.textDim, padding: '0 .25rem' }}>…</span>}
-        </>
-      )}
-
-      {pages.map(p => (
-        <button
-          key={p}
-          className={`page-btn${p === currentPage ? ' active' : ''}`}
-          onClick={() => onPageChange(p)}
-        >{p}</button>
-      ))}
-
-      {end < totalPages && (
-        <>
-          {end < totalPages - 1 && <span style={{ color: T.textDim, padding: '0 .25rem' }}>…</span>}
-          <button className="page-btn" onClick={() => onPageChange(totalPages)}>{totalPages}</button>
-        </>
-      )}
-
-      <button
-        className={`page-btn${currentPage === totalPages ? ' disabled' : ''}`}
-        onClick={() => currentPage < totalPages && onPageChange(currentPage + 1)}
-      >→</button>
-    </div>
-  );
-};
 
 export const Shop2 = ({ data }) => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const products       = useSelector(selectSortedProducts);
-  const categories     = useSelector(selectAllCategories);
-  const brands         = useSelector(selectAllBrands);
-  const productsLoading  = useSelector(selectProductsLoading);
+  const products = useSelector(selectSortedProducts);
+  const categories = useSelector(selectAllCategories);
+  const brands = useSelector(selectAllBrands);
+  const productsLoading = useSelector(selectProductsLoading);
   const categoriesLoading = useSelector(selectCategoriesLoading);
-  const brandsLoading    = useSelector(selectBrandsLoading);
-  const error          = useSelector(selectProductsError);
-  const pagination     = useSelector(selectProductsPagination);
+  const brandsLoading = useSelector(selectBrandsLoading);
+  const error = useSelector(selectProductsError);
+  const pagination = useSelector(selectProductsPagination);
   const currentFilters = useSelector(selectProductsFilters);
   const [localFilters, setLocalFilters] = useState({
     categoryId: '', brandId: '', minPrice: 1, maxPrice: 200,
   });
-  const [viewMode, setViewMode]         = useState('grid');
-  const [sortBy, setSortByLocal]        = useState('menu_order');
+  const [viewMode, setViewMode] = useState('grid');
+  const [sortBy, setSortByLocal] = useState('date');
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
 
+  const sortedProducts = useSelector(selectSortedProducts);
   const productData = useMemo(() => data || products, [data, products]);
 
   // Handlers
@@ -250,14 +82,14 @@ export const Shop2 = ({ data }) => {
   const handleSortChange = (value) => {
     setSortByLocal(value);
     const sortConfig = {
-      'menu_order':  { sortBy: null, sortOrder: 'desc' },
-      'popularity':  { sortBy: 'popularity', sortOrder: 'desc' },
-      'rating':      { sortBy: 'rating', sortOrder: 'desc' },
-      'date':        { sortBy: 'createdAt', sortOrder: 'desc' },
-      'price':       { sortBy: 'price', sortOrder: 'asc' },
-      'price-desc':  { sortBy: 'price', sortOrder: 'desc' },
+      'menu_order': { sortBy: null, sortOrder: 'desc' },
+      'popularity': { sortBy: 'popularity', sortOrder: 'desc' },
+      'rating': { sortBy: 'rating', sortOrder: 'desc' },
+      'date': { sortBy: 'createdAt', sortOrder: 'desc' },
+      'price': { sortBy: 'price', sortOrder: 'asc' },
+      'price-desc': { sortBy: 'price', sortOrder: 'desc' },
     };
-    dispatch(setSorting(sortConfig[value] || sortConfig['menu_order']));
+    dispatch(setSorting(sortConfig[value] || sortConfig['date']));
   };
 
   const handlePageSizeChange = (size) => dispatch(setPageSize(parseInt(size)));
@@ -268,10 +100,10 @@ export const Shop2 = ({ data }) => {
   };
 
   // Pagination
-  const pageSize       = pagination?.pageSize - 1 || 9;
-  const currentPage    = pagination?.currentPage || 1;
-  const totalProducts  = products?.length || 0;
-  const totalPages     = Math.ceil(totalProducts / pageSize);
+  const pageSize = pagination?.pageSize - 1 || 9;
+  const currentPage = pagination?.currentPage || 1;
+  const totalProducts = products?.length || 0;
+  const totalPages = Math.ceil(totalProducts / pageSize);
 
   const paginatedProducts = useMemo(() => {
     const start = (currentPage - 1) * pageSize;
@@ -279,7 +111,7 @@ export const Shop2 = ({ data }) => {
   }, [products, currentPage, pageSize]);
 
   const getCategoryCount = cat => products?.filter(p => p.category === cat.title).length || 0;
-  const getBrandCount    = brand => products?.filter(p => p.brand === (brand.name || brand.title)).length || 0;
+  const getBrandCount = brand => products?.filter(p => p.brand === (brand.name || brand.title)).length || 0;
 
   // Fetch on mount
   useEffect(() => {
@@ -289,8 +121,9 @@ export const Shop2 = ({ data }) => {
   }, []);
 
   useEffect(() => {
-    setSorting({ 'menu_order': { sortBy: 'newest', sortOrder: 'asc' } });
-  }, []);
+    setSortByLocal('date');
+    dispatch(setSorting({ sortBy: 'createdAt', sortOrder: 'desc' }));
+  }, [dispatch]);
 
   const isLoading = productsLoading || categoriesLoading || brandsLoading;
 
@@ -343,7 +176,7 @@ export const Shop2 = ({ data }) => {
   }
 
   const showStart = ((currentPage - 1) * pageSize) + 1;
-  const showEnd   = Math.min(currentPage * pageSize, totalProducts);
+  const showEnd = Math.min(currentPage * pageSize, totalProducts);
 
   return (
     <>
@@ -442,7 +275,7 @@ export const Shop2 = ({ data }) => {
 
               <span className="toolbar-label" style={{ marginLeft: '.5rem' }}>Show:</span>
               <select className="shop-select" value={pageSize} onChange={e => handlePageSizeChange(e.target.value)}>
-                {[9,12,16,20,50].map(n => <option key={n} value={n}>{n}</option>)}
+                {[9, 12, 16, 20, 50].map(n => <option key={n} value={n}>{n}</option>)}
               </select>
 
               <span className="toolbar-results">
@@ -510,7 +343,7 @@ export const Shop2 = ({ data }) => {
             )}
 
             {/* Pagination */}
-            <Pagination
+            <ShopPagination
               currentPage={currentPage}
               totalPages={totalPages}
               onPageChange={handlePageChange}
