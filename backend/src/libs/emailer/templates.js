@@ -1,5 +1,3 @@
-
-
 module.exports = {
 
     welcome(data) { 
@@ -121,6 +119,7 @@ of the crew.</div>
 
 </div>
     `},
+    
     confirm(data) {
         return  `
 <meta charset="UTF-8">
@@ -413,6 +412,450 @@ You're good.</div>
   </td></tr>
 </tbody></table>
     `},
+
+    contactForm(data) {
+        return `
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Space+Mono:ital@0;1&amp;display=swap" rel="stylesheet">
+<!--[if mso]><style>td,p,a{font-family:Arial,sans-serif!important;}</style><![endif]-->
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#080808;">
+  <tbody><tr><td align="center" style="padding:24px 16px;">
+    <table width="640" cellpadding="0" cellspacing="0" border="0" style="max-width:640px;width:100%;background:#0e0e0e;border:1px solid #242424;">
+
+  <tbody><tr>
+    <td style="background:#131313;border-bottom:3px solid #c41a1a;padding:22px 32px;">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tbody><tr>
+          <td>
+            <span style="font-family:'Anton',Impact,sans-serif;font-size:28px;color:#f0f0f0;letter-spacing:.05em;">
+              e<span style="color:#c41a1a;">Fear</span>
+            </span>
+            <span style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#5a5a5a;display:inline-block;padding-left:14px;margin-left:10px;border-left:1px solid #242424;">
+              Comics · Collectibles
+            </span>
+          </td>
+          <td align="right" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;">
+            Contact Form
+          </td>
+        </tr>
+      </tbody></table>
+    </td>
+  </tr>
+
+  <tr>
+    <td style="padding:36px 32px 20px;">
+      <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:#c41a1a;margin-bottom:8px;">// message received</div>
+      <div style="font-family:'Anton',Impact,sans-serif;font-size:30px;color:#f0f0f0;letter-spacing:.03em;line-height:1.1;">We got your<br>message.</div>
+    </td>
+  </tr>
+  <tr>
+    <td style="padding:0 32px 28px;">
+      <p style="font-family:'Space Mono',monospace;font-size:12px;color:#b0b0b0;line-height:1.9;margin-bottom:0;">
+        Hey <strong style="color:#f0f0f0;">${data.firstName}</strong>,<br><br>
+        Thanks for reaching out. Our team has received your message and will get back to you within 1–2 business days. Here's a copy of what you sent.
+      </p>
+    </td>
+  </tr>
+  <tr><td style="padding:0 32px;"><div style="height:1px;background:#242424;"></div></td></tr>
+  <tr>
+    <td style="padding:24px 32px;">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#1a1a1a;border:1px solid #242424;">
+        <tbody>
+          <tr>
+            <td style="padding:14px 18px;border-bottom:1px solid #242424;">
+              <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tbody><tr>
+                  <td style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#5a5a5a;">Subject</td>
+                  <td align="right" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#5a5a5a;">Submitted</td>
+                </tr>
+                <tr>
+                  <td style="font-family:'Space Mono',monospace;font-size:13px;color:#f0f0f0;font-weight:700;padding-top:4px;">${data.subject}</td>
+                  <td align="right" style="font-family:'Space Mono',monospace;font-size:11px;color:#b0b0b0;padding-top:4px;">${data.submittedAt}</td>
+                </tr>
+              </tbody></table>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:18px 18px;">
+              <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#5a5a5a;margin-bottom:10px;">Your Message</div>
+              <div style="font-family:'Space Mono',monospace;font-size:11px;color:#b0b0b0;line-height:1.9;border-left:3px solid #c41a1a;padding-left:14px;">
+                ${data.message}
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </td>
+  </tr>
+  <tr><td style="padding:0 32px;"><div style="height:1px;background:#242424;"></div></td></tr>
+  <tr>
+    <td style="padding:24px 32px 32px;">
+      <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#5a5a5a;margin-bottom:12px;">Need faster help?</div>
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tbody><tr>
+          <td style="padding-right:12px;">
+<a href="${data.faqUrl}" style="display:inline-block;padding:13px 28px;background:#c41a1a;color:#fff;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));">
+  Browse FAQ →
+</a></td>
+          <td>
+<a href="${data.storeUrl}" style="display:inline-block;padding:12px 28px;border:1px solid #242424;color:#b0b0b0;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;">
+  Back to Store
+</a></td>
+        </tr>
+      </tbody></table>
+    </td>
+  </tr>
+
+  <tr>
+    <td style="background:#131313;border-top:1px solid #242424;padding:28px 32px;">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tbody><tr>
+          <td align="center" style="padding-bottom:16px;">
+            <span style="font-family:'Anton',Impact,sans-serif;font-size:20px;color:#5a5a5a;letter-spacing:.05em;">
+              e<span style="color:#c41a1a;">Fear</span>
+            </span>
+          </td>
+        </tr>
+        <tr>
+          <td align="center" style="padding-bottom:12px;">
+            <a href="#" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;text-decoration:none;margin:0 10px;">Shop</a>
+            <a href="#" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;text-decoration:none;margin:0 10px;">Orders</a>
+            <a href="#" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;text-decoration:none;margin:0 10px;">Contact</a>
+            <a href="#" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;text-decoration:none;margin:0 10px;">Unsubscribe</a>
+          </td>
+        </tr>
+        <tr>
+          <td align="center" style="font-family:'Space Mono',monospace;font-size:9px;color:#5a5a5a;letter-spacing:.06em;line-height:1.8;">
+            © 2026 eFear LLC · 123 Collector's Way, Waco TX · All rights reserved<br>
+            <span style="color:#3a3a3a;">You're receiving this because you submitted a contact form at efear.com</span>
+          </td>
+        </tr>
+      </tbody></table>
+    </td>
+  </tr>
+
+    </tbody></table>
+  </td></tr>
+</tbody></table>
+`},
+
+    passwordReset(data) {
+        return `
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Space+Mono:ital@0;1&amp;display=swap" rel="stylesheet">
+<!--[if mso]><style>td,p,a{font-family:Arial,sans-serif!important;}</style><![endif]-->
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#080808;">
+  <tbody><tr><td align="center" style="padding:24px 16px;">
+    <table width="640" cellpadding="0" cellspacing="0" border="0" style="max-width:640px;width:100%;background:#0e0e0e;border:1px solid #242424;">
+
+  <tbody><tr>
+    <td style="background:#131313;border-bottom:3px solid #c41a1a;padding:22px 32px;">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tbody><tr>
+          <td>
+            <span style="font-family:'Anton',Impact,sans-serif;font-size:28px;color:#f0f0f0;letter-spacing:.05em;">
+              e<span style="color:#c41a1a;">Fear</span>
+            </span>
+            <span style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#5a5a5a;display:inline-block;padding-left:14px;margin-left:10px;border-left:1px solid #242424;">
+              Comics · Collectibles
+            </span>
+          </td>
+          <td align="right" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;">
+            Password Reset
+          </td>
+        </tr>
+      </tbody></table>
+    </td>
+  </tr>
+
+  <tr>
+    <td style="padding:36px 32px 20px;">
+      <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:#c41a1a;margin-bottom:8px;">// access request</div>
+      <div style="font-family:'Anton',Impact,sans-serif;font-size:30px;color:#f0f0f0;letter-spacing:.03em;line-height:1.1;">Reset your<br>password.</div>
+    </td>
+  </tr>
+  <tr>
+    <td style="padding:0 32px 28px;">
+      <p style="font-family:'Space Mono',monospace;font-size:12px;color:#b0b0b0;line-height:1.9;margin-bottom:0;">
+        Hey <strong style="color:#f0f0f0;">${data.firstName}</strong>,<br><br>
+        We received a request to reset the password for your eFear account. Click the button below — this link expires in <strong style="color:#f0f0f0;">30 minutes</strong>. If you didn't request this, you can safely ignore this email.
+      </p>
+    </td>
+  </tr>
+  <tr><td style="padding:0 32px;"><div style="height:1px;background:#242424;"></div></td></tr>
+  <tr>
+    <td style="padding:28px 32px;">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#1a1a1a;border:1px solid #242424;">
+        <tbody>
+          <tr>
+            <td style="padding:20px 22px;border-bottom:1px solid #242424;">
+              <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:#5a5a5a;margin-bottom:6px;">Account</div>
+              <div style="font-family:'Space Mono',monospace;font-size:13px;color:#f0f0f0;font-weight:700;">${data.email}</div>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:20px 22px;border-bottom:1px solid #242424;">
+              <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:#5a5a5a;margin-bottom:6px;">Link Expires</div>
+              <div style="font-family:'Space Mono',monospace;font-size:13px;color:#c41a1a;font-weight:700;">${data.expiresAt}</div>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:22px 22px;">
+<a href="${data.resetUrl}" style="display:inline-block;padding:13px 28px;background:#c41a1a;color:#fff;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));">
+  Reset My Password →
+</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </td>
+  </tr>
+  <tr><td style="padding:0 32px;"><div style="height:1px;background:#242424;"></div></td></tr>
+  <tr>
+    <td style="padding:24px 32px 32px;">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tbody><tr>
+          <td width="33%" style="padding-right:16px;vertical-align:top;">
+            <div style="font-family:'Anton',sans-serif;font-size:22px;color:#c41a1a;margin-bottom:6px;">01</div>
+            <div style="font-family:'Space Mono',monospace;font-size:10px;font-weight:700;color:#f0f0f0;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;">Click the Link</div>
+            <div style="font-family:'Space Mono',monospace;font-size:10px;color:#5a5a5a;line-height:1.7;">Opens a secure reset page.</div>
+          </td>
+          <td width="33%" style="padding-right:16px;vertical-align:top;border-left:1px solid #242424;padding-left:16px;">
+            <div style="font-family:'Anton',sans-serif;font-size:22px;color:#c41a1a;margin-bottom:6px;">02</div>
+            <div style="font-family:'Space Mono',monospace;font-size:10px;font-weight:700;color:#f0f0f0;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;">Set New Password</div>
+            <div style="font-family:'Space Mono',monospace;font-size:10px;color:#5a5a5a;line-height:1.7;">Choose something strong.</div>
+          </td>
+          <td width="33%" style="vertical-align:top;border-left:1px solid #242424;padding-left:16px;">
+            <div style="font-family:'Anton',sans-serif;font-size:22px;color:#c41a1a;margin-bottom:6px;">03</div>
+            <div style="font-family:'Space Mono',monospace;font-size:10px;font-weight:700;color:#f0f0f0;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;">Back in Business</div>
+            <div style="font-family:'Space Mono',monospace;font-size:10px;color:#5a5a5a;line-height:1.7;">Log in and get back to the haul.</div>
+          </td>
+        </tr>
+      </tbody></table>
+    </td>
+  </tr>
+
+  <tr>
+    <td style="background:#131313;border-top:1px solid #242424;padding:28px 32px;">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tbody><tr>
+          <td align="center" style="padding-bottom:16px;">
+            <span style="font-family:'Anton',Impact,sans-serif;font-size:20px;color:#5a5a5a;letter-spacing:.05em;">
+              e<span style="color:#c41a1a;">Fear</span>
+            </span>
+          </td>
+        </tr>
+        <tr>
+          <td align="center" style="padding-bottom:12px;">
+            <a href="#" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;text-decoration:none;margin:0 10px;">Shop</a>
+            <a href="#" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;text-decoration:none;margin:0 10px;">Orders</a>
+            <a href="#" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;text-decoration:none;margin:0 10px;">Contact</a>
+            <a href="#" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;text-decoration:none;margin:0 10px;">Unsubscribe</a>
+          </td>
+        </tr>
+        <tr>
+          <td align="center" style="font-family:'Space Mono',monospace;font-size:9px;color:#5a5a5a;letter-spacing:.06em;line-height:1.8;">
+            © 2026 eFear LLC · 123 Collector's Way, Waco TX · All rights reserved<br>
+            <span style="color:#3a3a3a;">You're receiving this because a reset was requested for your account at efear.com</span>
+          </td>
+        </tr>
+      </tbody></table>
+    </td>
+  </tr>
+
+    </tbody></table>
+  </td></tr>
+</tbody></table>
+`},
+
+    orderComplete(data) {
+        return `
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Space+Mono:ital@0;1&amp;display=swap" rel="stylesheet">
+<!--[if mso]><style>td,p,a{font-family:Arial,sans-serif!important;}</style><![endif]-->
+
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#080808;">
+  <tbody><tr><td align="center" style="padding:24px 16px;">
+    <table width="640" cellpadding="0" cellspacing="0" border="0" style="max-width:640px;width:100%;background:#0e0e0e;border:1px solid #242424;">
+
+  <tbody><tr>
+    <td style="background:#131313;border-bottom:3px solid #c41a1a;padding:22px 32px;">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tbody><tr>
+          <td>
+            <span style="font-family:'Anton',Impact,sans-serif;font-size:28px;color:#f0f0f0;letter-spacing:.05em;">
+              e<span style="color:#c41a1a;">Fear</span>
+            </span>
+            <span style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#5a5a5a;display:inline-block;padding-left:14px;margin-left:10px;border-left:1px solid #242424;">
+              Comics · Collectibles
+            </span>
+          </td>
+          <td align="right" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;">
+            Order Complete
+          </td>
+        </tr>
+      </tbody></table>
+    </td>
+  </tr>
+
+  <tr>
+    <td style="background:#1a1a1a;border-bottom:1px solid #242424;padding:32px;">
+      <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:#c41a1a;margin-bottom:10px;">// delivered</div>
+      <div style="font-family:'Anton',Impact,sans-serif;font-size:36px;color:#f0f0f0;letter-spacing:.02em;line-height:1.1;margin-bottom:14px;">Your haul<br>has landed.</div>
+      <p style="font-family:'Space Mono',monospace;font-size:12px;color:#b0b0b0;line-height:1.9;margin:0;">
+        Order <strong style="color:#f0f0f0;">#${data.orderId}</strong> has been delivered. We hope everything is in perfect condition — if not, we'll make it right.
+      </p>
+    </td>
+  </tr>
+
+  <tr>
+    <td style="padding:28px 32px;">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#1a1a1a;border:1px solid #242424;">
+        <tbody>
+          <tr>
+            <td style="padding:20px 22px;border-bottom:1px solid #242424;">
+              <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tbody><tr>
+                  <td style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:#5a5a5a;">Delivered To</td>
+                  <td align="right" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:#5a5a5a;">Delivered On</td>
+                </tr>
+                <tr>
+                  <td style="font-family:'Space Mono',monospace;font-size:12px;color:#b0b0b0;padding-top:4px;line-height:1.7;">${data.fullName}<br>${data.addressLine1}<br>${data.city}, ${data.state} ${data.zip}</td>
+                  <td align="right" style="font-family:'Space Mono',monospace;font-size:13px;color:#f0f0f0;font-weight:700;padding-top:4px;vertical-align:top;">${data.deliveredDate}</td>
+                </tr>
+              </tbody></table>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:20px 22px;">
+              <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tbody><tr>
+                  <td width="33%" style="text-align:center;vertical-align:top;">
+                    <div style="width:32px;height:32px;border-radius:50%;background:#c41a1a;font-family:'Space Mono',monospace;font-size:13px;color:#fff;line-height:32px;text-align:center;margin:0 auto 8px;">✓</div>
+                    <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#f0f0f0;">Order Placed</div>
+                    <div style="font-family:'Space Mono',monospace;font-size:9px;color:#5a5a5a;margin-top:3px;">${data.placedDate}</div>
+                  </td>
+                  <td width="33%" style="text-align:center;vertical-align:top;">
+                    <div style="width:32px;height:32px;border-radius:50%;background:#c41a1a;font-family:'Space Mono',monospace;font-size:13px;color:#fff;line-height:32px;text-align:center;margin:0 auto 8px;">✓</div>
+                    <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#f0f0f0;">Dispatched</div>
+                    <div style="font-family:'Space Mono',monospace;font-size:9px;color:#5a5a5a;margin-top:3px;">${data.shippedDate}</div>
+                  </td>
+                  <td width="33%" style="text-align:center;vertical-align:top;">
+                    <div style="width:32px;height:32px;border-radius:50%;background:#c41a1a;font-family:'Space Mono',monospace;font-size:13px;color:#fff;line-height:32px;text-align:center;margin:0 auto 8px;">✓</div>
+                    <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#f0f0f0;">Delivered</div>
+                    <div style="font-family:'Space Mono',monospace;font-size:9px;color:#5a5a5a;margin-top:3px;">${data.deliveredDate}</div>
+                  </td>
+                </tr>
+              </tbody></table>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </td>
+  </tr>
+  <tr><td style="padding:0 32px;"><div style="height:1px;background:#242424;"></div></td></tr>
+
+  <tr>
+    <td style="padding:24px 32px 8px;">
+      <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#5a5a5a;margin-bottom:16px;">What Was Inside</div>
+      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#1a1a1a;border:1px solid #242424;">
+        <tbody>
+          <tr>
+            <td style="padding:14px 18px;border-bottom:1px solid #242424;">
+              <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tbody><tr>
+                  <td style="width:48px;vertical-align:middle;padding-right:14px;">
+                    <div style="width:48px;height:48px;background:#242424;border:1px solid #2e2e2e;"></div>
+                  </td>
+                  <td style="vertical-align:middle;">
+                    <div style="font-family:'Space Mono',monospace;font-size:11px;color:#f0f0f0;font-weight:700;margin-bottom:3px;">${data.itemName}</div>
+                    <div style="font-family:'Space Mono',monospace;font-size:10px;color:#5a5a5a;">Qty: ${data.qty} &nbsp;·&nbsp; ${data.variant}</div>
+                  </td>
+                  <td align="right" style="vertical-align:middle;font-family:'Space Mono',monospace;font-size:12px;color:#f0f0f0;font-weight:700;">
+                    $${data.itemPrice}
+                  </td>
+                </tr>
+              </tbody></table>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:14px 18px;">
+              <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tbody><tr>
+                  <td style="font-family:'Space Mono',monospace;font-size:10px;color:#5a5a5a;">Order Total</td>
+                  <td align="right" style="font-family:'Space Mono',monospace;font-size:12px;color:#c41a1a;font-weight:700;">$${data.total}</td>
+                </tr>
+              </tbody></table>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </td>
+  </tr>
+
+  <tr>
+    <td style="padding:20px 32px 32px;">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tbody><tr>
+          <td style="padding-right:12px;">
+<a href="${data.reviewUrl}" style="display:inline-block;padding:13px 28px;background:#c41a1a;color:#fff;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));">
+  Leave a Review →
+</a></td>
+          <td>
+<a href="${data.shopUrl}" style="display:inline-block;padding:12px 28px;border:1px solid #242424;color:#b0b0b0;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;">
+  Shop Again
+</a></td>
+        </tr>
+      </tbody></table>
+    </td>
+  </tr>
+  <tr><td style="padding:0 32px;"><div style="height:1px;background:#242424;"></div></td></tr>
+  <tr>
+    <td style="padding:22px 32px 28px;">
+      <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#5a5a5a;margin-bottom:10px;">Something not right?</div>
+      <p style="font-family:'Space Mono',monospace;font-size:11px;color:#b0b0b0;line-height:1.9;margin:0;">
+        Missing items, damage, wrong product — <a href="${data.supportUrl}" style="color:#c41a1a;text-decoration:none;">contact our team</a> within 7 days and we'll sort it out, no hassle.
+      </p>
+    </td>
+  </tr>
+
+  <tr>
+    <td style="background:#131313;border-top:1px solid #242424;padding:28px 32px;">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tbody><tr>
+          <td align="center" style="padding-bottom:16px;">
+            <span style="font-family:'Anton',Impact,sans-serif;font-size:20px;color:#5a5a5a;letter-spacing:.05em;">
+              e<span style="color:#c41a1a;">Fear</span>
+            </span>
+          </td>
+        </tr>
+        <tr>
+          <td align="center" style="padding-bottom:12px;">
+            <a href="#" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;text-decoration:none;margin:0 10px;">Shop</a>
+            <a href="#" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;text-decoration:none;margin:0 10px;">Orders</a>
+            <a href="#" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;text-decoration:none;margin:0 10px;">Contact</a>
+            <a href="#" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;text-decoration:none;margin:0 10px;">Unsubscribe</a>
+          </td>
+        </tr>
+        <tr>
+          <td align="center" style="font-family:'Space Mono',monospace;font-size:9px;color:#5a5a5a;letter-spacing:.06em;line-height:1.8;">
+            © 2026 eFear LLC · 123 Collector's Way, Waco TX · All rights reserved<br>
+            <span style="color:#3a3a3a;">You're receiving this because you placed an order at efear.com</span>
+          </td>
+        </tr>
+      </tbody></table>
+    </td>
+  </tr>
+
+    </tbody></table>
+  </td></tr>
+</tbody></table>
+`},
 
     update(data) {
 

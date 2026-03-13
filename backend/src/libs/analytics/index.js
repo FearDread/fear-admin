@@ -127,7 +127,7 @@ const Analytics = {
       // ── GET /auth/connect
       // Redirects the user's browser to Google's OAuth consent page.
       connect: async (req, res) => {
-            console.log('google analytics connect :: ', req);
+
             const params = new URLSearchParams({
                   client_id: CLIENT_ID,
                   redirect_uri: REDIRECT_URI,
@@ -136,12 +136,15 @@ const Analytics = {
                   access_type: "offline",   // required to receive a refresh_token
                   prompt: "consent",   // force consent screen so refresh_token is always returned
             });
+
+            console.log('google analytics connect :: ', `${GOOGLE_AUTH_URL}?${params.toString()}`);
             return res.redirect(`${GOOGLE_AUTH_URL}?${params.toString()}`);
       },
 
       // ── GET /auth/callback
       // Google posts the auth code here after the user grants consent.
       callback: async (req, res) => {
+            console.log('callback hit:: ', req.query);
             const { code, error } = req.query;
 
             if (error) {
@@ -156,7 +159,7 @@ const Analytics = {
             }
 
             const data = await fetchTokenFromCode(code);
-
+            console.log('token data ', data);
             saveToken({
                   accessToken: data.access_token,
                   refreshToken: data.refresh_token,       // only present on first consent

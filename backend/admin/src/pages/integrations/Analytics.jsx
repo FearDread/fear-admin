@@ -187,6 +187,7 @@ const GoogleAnalytics = () => {
 
   const handleConnect = () => {
     analyticsApi.connect();
+    
     const poll = setInterval(async () => {
       try {
         const { connected: ok } = await analyticsApi.status();
@@ -195,9 +196,10 @@ const GoogleAnalytics = () => {
           showAlert('success', 'Google Analytics connected successfully!');
           clearInterval(poll);
         }
-      } catch { /* keep polling */ }
+      } catch { }
     }, 3000);
     setTimeout(() => clearInterval(poll), 180_000);
+    
   };
 
   const handleDisconnect = async () => {

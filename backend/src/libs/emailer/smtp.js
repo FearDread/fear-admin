@@ -391,40 +391,12 @@ Received: ${new Date().toLocaleString()}
     return {
         templates: templates,
         sendEmail: _this.sendEmail,
+        sendOrderConfirmation(req, res) {
 
-        sendProjectEmail(req, res) {
-            const data = req.body;
-            const { $subject, email } = data;
-
-            if (!email || !_this.isValidEmail(email)) {
-                return _this.handleError(res, 400, { message: 'Valid email required' });
-            }
-
-            const htmlContent = _this.templates.projectTemplate(data);
-            const textContent = _this.templates.generatePlainText(data, 'project');
-            const options = {
-                from: _this.getDefaultFromAddress(),
-                replyTo: email,
-                to: _this.getDefaultFromAddress(),
-                subject: $subject || 'New Project Inquiry',
-                html: htmlContent,
-                text: textContent
-            };
-
-            return _this.sendEmail(options)
-                .then((resp) => {
-                    if (!resp.success) {
-                        return _this.handleError(res, 500, resp);
-                    }
-                    return res.status(200).json({
-                        success: true,
-                        message: 'Project email sent successfully',
-                        result: resp
-                    });
-                })
-                .catch((error) => _this.handleError(res, 500, error));
         },
+        sendResetEmail(req, res) {
 
+        },
         sendContactEmail(req, res) {
             const { $email, $message, $subject } = req.body;
 
@@ -434,78 +406,67 @@ Received: ${new Date().toLocaleString()}
             if (!$message || $message.trim().length === 0) {
                 return _this.handleError(res, 400, { message: 'Message is required' });
             }
-            const htmlContent = _this.templates.contactTemplate(req.body);
-            const textContent = _this.templates.generatePlainText(req.body, 'contact');
 
             const options = {
                 from: _this.getDefaultFromAddress(),
                 replyTo: $email,
                 to: _this.getDefaultFromAddress(),
                 subject: $subject || `Contact Form Message from ${$email}`,
-                html: htmlContent,
-                text: textContent
+                html: templates.contactForm(req.body)
             };
 
             return _this.sendEmail(options)
                 .then((resp) => {
-                    if (!resp.success) {
-                        return res.status(500).json(resp);
-                    }
-                    return res.status(200).json({
-                        success: true,
-                        message: 'Contact email sent successfully',
-                        result: resp
-                    });
+                    if (!resp.success) return res.status(500).json(resp);
+                    
+                    return res.status(200).json({ success: true, message: 'Contact email sent successfully', result: resp });
                 })
                 .catch((error) => _this.handleError(res, 500, error));
         },
 
         sendSubscriptionEmail(req, res) {
-            const { email, options = {} } = req.body;
+            const { $email, $subject = 'Welcome to our Newsletter' } = req.body;
 
-            if (!email || !_this.isValidEmail(email)) {
+            if (!$email || !_this.isValidEmail($email)) {
                 return _this.handleError(res, 400, { message: 'Valid email is required' });
             }
 
-            const { subject, customMessage } = options;
-            const htmlContent = templates.welcome(req.body)
-
             const emailOptions = {
-                to: email,
-                subject: subject || 'Welcome to Our Newsletter!',
-                html: htmlContent,
-                text: customMessage || "Thank you for subscribing! You'll receive updates directly to your inbox."
+                to: $email,
+                from: 'fear.dread@underworld.dog',
+                cc: _this.getDefaultFromAddress(),
+                subject: $subject,
+                html: templates.promo(req.body),
             };
 
             return _this.sendEmail(emailOptions)
                 .then((resp) => {
-                    if (!resp.success) {
-                        return _this.handleError(res, 500, resp);
-                    }
-                    return res.status(200).json({
-                        success: true,
-                        message: 'Subscription email sent successfully',
-                        result: resp
-                    });
+                    if (!resp.success) return _this.handleError(res, 500, resp);
+
+                    return res.status(200).json({success: true,message: 'Subscription email sent successfully',result: resp });
                 })
                 .catch((error) => _this.handleError(res, 500, error));
         },
 
         sendWelcomeEmail(req, res) {
             const { $email } = req.body;
-            const subject = 'Welcome to the Crew!';
+            const $subject = 'Welcome to the Crew!';
+
+            if (!$email || !_this.isValidEmail($email)) {
+                return _this.handleError(res, 400, { message: 'Valid email is required' });
+            }
+
             const opts = {
                 to: $email,
                 cc:  _this.getDefaultFromAddress(),
-                from:  _this.getDefaultFromAddress(),
-                subject: subject,
+                from:  'fear.dread@underworld.dog',
+                subject: $subject,
                 html: templates.welcome(req.body)
             }
             return _this.sendEmail(opts)
                 .then((result) => {
-                    if (!result.success) {
-                        return _this.handleError(res, 500, resp);
-                    }
+                    if (!result.success) return _this.handleError(res, 500, resp);
+
                     return res.status(200).json({result, success: true, message: 'Welcome email sent'})
                 })
                 .catch((err) => _this.handleError(res, 500, error));
