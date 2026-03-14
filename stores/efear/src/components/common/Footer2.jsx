@@ -28,7 +28,7 @@ export const Footer2 = ({ categories }) => {
     if (!subEmail.trim())        { addToast('Please enter an email address', 'error'); return; }
     if (!isValidEmail(subEmail)) { addToast('Please enter a valid email address', 'error'); return; }
     setSubLoading(true);
-    dispatch(sendSubscribe(JSON.stringify({ email: subEmail, options: { subject: 'E-Fear Subscription Notice' } })));
+    dispatch(sendSubscribe(JSON.stringify({ $email: subEmail, $subject: 'E-Fear Subscription Notice' })));
   };
 
   useEffect(() => {

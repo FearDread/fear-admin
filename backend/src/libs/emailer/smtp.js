@@ -449,7 +449,7 @@ Received: ${new Date().toLocaleString()}
         },
 
         sendWelcomeEmail(req, res) {
-            const { $email } = req.body;
+            const { $email, data } = req.body;
             const $subject = 'Welcome to the Crew!';
 
             if (!$email || !_this.isValidEmail($email)) {
@@ -461,7 +461,7 @@ Received: ${new Date().toLocaleString()}
                 cc:  _this.getDefaultFromAddress(),
                 from:  'fear.dread@underworld.dog',
                 subject: $subject,
-                html: templates.welcome(req.body)
+                html: templates.welcome(data)
             }
             return _this.sendEmail(opts)
                 .then((result) => {

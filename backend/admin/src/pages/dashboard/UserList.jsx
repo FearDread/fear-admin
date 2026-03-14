@@ -162,7 +162,7 @@ const UsersList = () => {
       role: user.role || "user",
       isActive: user.isActive !== false,
     });
-    //setShowEditModal(true);
+    setShowEditModal(true);
   };
 
   const handleCloseEditModal = () => {

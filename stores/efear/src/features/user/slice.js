@@ -233,8 +233,7 @@ export const registerUser = (userData, rememberMe = false) => (dispatch) => {
 
       dispatch(sendRegister({
         $email: userData.email,
-        name: userData.firstName + ' ' + userData.lastName,
-        data: user
+        data: userData
       }));
 
       return { success: true, user };

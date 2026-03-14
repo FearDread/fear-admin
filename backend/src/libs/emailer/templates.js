@@ -329,47 +329,47 @@ You're good.</div>
       <tr>
         <td style="background:#c41a1a;padding:40px 32px 36px;position:relative;overflow:hidden;">
           <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:10px;">// new drop</div>
-          <div style="font-family:'Anton',Impact,sans-serif;font-size:48px;color:#fff;letter-spacing:.02em;line-height:1;margin-bottom:12px;">[[PROMO_TITLE]]</div>
-          <div style="font-family:'Space Mono',monospace;font-size:11px;color:rgba(255,255,255,.7);line-height:1.8;margin-bottom:24px;max-width:420px;">[[PROMO_SUBTITLE]]</div>
+          <div style="font-family:'Anton',Impact,sans-serif;font-size:48px;color:#fff;letter-spacing:.02em;line-height:1;margin-bottom:12px;">Collection Update!</div>
+          <div style="font-family:'Space Mono',monospace;font-size:11px;color:rgba(255,255,255,.7);line-height:1.8;margin-bottom:24px;max-width:420px;">Check out our latest rare comics!</div>
           
-  <a href="#" style="display:inline-block;padding:13px 28px;background:#fff;color:#c41a1a;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));">
+  <a href="https://efear.shop/shop" style="display:inline-block;padding:13px 28px;background:#fff;color:#c41a1a;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));">
     Shop the Drop →
   </a>
         </td>
       </tr>
       <tr>
         <td style="padding:32px 32px 20px;">
-          <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#5a5a5a;margin-bottom:20px;">Featured Items</div>
+          <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#5a5a5a;margin-bottom:20px;">Featured Comics</div>
           <table width="100%" cellpadding="0" cellspacing="0" border="0">
             <tbody><tr>
               <!-- Product card — repeat x3 -->
               <td width="33%" style="padding-right:10px;vertical-align:top;">
                 <div style="background:#1a1a1a;border:1px solid #242424;padding:16px;">
-                  <div style="height:140px;background:#242424;margin-bottom:14px;"></div>
-                  <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;margin-bottom:4px;">[[CATEGORY]]</div>
-                  <div style="font-family:'Space Mono',monospace;font-size:11px;color:#f0f0f0;font-weight:700;margin-bottom:10px;line-height:1.4;">[[PRODUCT_NAME]]</div>
-                  <div style="font-family:'Anton',sans-serif;font-size:18px;color:#c41a1a;">$[[PRICE]]</div>
+                  <div style="height:140px;background:url(https://res.cloudinary.com/dgzxxbqa0/image/upload/v1773358297/products/hlfzruocsnoa2rg4piiv.webp);margin-bottom:14px;"></div>
+                  <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;margin-bottom:4px;">Comic Books</div>
+                  <div style="font-family:'Space Mono',monospace;font-size:11px;color:#f0f0f0;font-weight:700;margin-bottom:10px;line-height:1.4;">Spawn #1</div>
+                  <div style="font-family:'Anton',sans-serif;font-size:18px;color:#c41a1a;">$30.99</div>
                 </div>
               </td>
               <td width="33%" style="padding-right:10px;vertical-align:top;">
                 <div style="background:#1a1a1a;border:1px solid #242424;padding:16px;">
-                  <div style="height:140px;background:#242424;margin-bottom:14px;"></div>
-                  <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;margin-bottom:4px;">[[CATEGORY]]</div>
-                  <div style="font-family:'Space Mono',monospace;font-size:11px;color:#f0f0f0;font-weight:700;margin-bottom:10px;line-height:1.4;">[[PRODUCT_NAME]]</div>
-                  <div style="font-family:'Anton',sans-serif;font-size:18px;color:#c41a1a;">$[[PRICE]]</div>
+                  <div style="height:140px;background:url(https://res.cloudinary.com/dgzxxbqa0/image/upload/v1773358023/products/vcerejp5tz3d3jp57wub.webp);margin-bottom:14px;"></div>
+                  <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;margin-bottom:4px;">Comic Books</div>
+                  <div style="font-family:'Space Mono',monospace;font-size:11px;color:#f0f0f0;font-weight:700;margin-bottom:10px;line-height:1.4;">Teenage Mutant Ninja Turtles</div>
+                  <div style="font-family:'Anton',sans-serif;font-size:18px;color:#c41a1a;">$29.99</div>
                 </div>
               </td>
               <td width="33%" style="vertical-align:top;">
                 <div style="background:#1a1a1a;border:1px solid #242424;padding:16px;">
-                  <div style="height:140px;background:#242424;margin-bottom:14px;"></div>
-                  <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;margin-bottom:4px;">[[CATEGORY]]</div>
-                  <div style="font-family:'Space Mono',monospace;font-size:11px;color:#f0f0f0;font-weight:700;margin-bottom:10px;line-height:1.4;">[[PRODUCT_NAME]]</div>
-                  <div style="font-family:'Anton',sans-serif;font-size:18px;color:#c41a1a;">$[[PRICE]]</div>
+                  <div style="height:140px;background:url(https://res.cloudinary.com/dgzxxbqa0/image/upload/v1766610330/products/ja3y2gzv0ujcafqerk32.jpg);margin-bottom:14px;"></div>
+                  <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;margin-bottom:4px;">E-Books</div>
+                  <div style="font-family:'Space Mono',monospace;font-size:11px;color:#f0f0f0;font-weight:700;margin-bottom:10px;line-height:1.4;">F.E.A.R. The Vegan Manifesto</div>
+                  <div style="font-family:'Anton',sans-serif;font-size:18px;color:#c41a1a;">$5.99</div>
                 </div>
               </td>
             </tr>
           </tbody></table>
-        </td>
+        </td><
       </tr>
       <tr>
         <td style="padding:8px 32px 36px;">
@@ -430,7 +430,7 @@ You're good.</div>
         <tbody><tr>
           <td>
             <span style="font-family:'Anton',Impact,sans-serif;font-size:28px;color:#f0f0f0;letter-spacing:.05em;">
-              e<span style="color:#c41a1a;">Fear</span>
+              e<span style="color:#c41a1a;">FEAR</span>
             </span>
             <span style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#5a5a5a;display:inline-block;padding-left:14px;margin-left:10px;border-left:1px solid #242424;">
               Comics · Collectibles
@@ -447,13 +447,13 @@ You're good.</div>
   <tr>
     <td style="padding:36px 32px 20px;">
       <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:#c41a1a;margin-bottom:8px;">// message received</div>
-      <div style="font-family:'Anton',Impact,sans-serif;font-size:30px;color:#f0f0f0;letter-spacing:.03em;line-height:1.1;">We got your<br>message.</div>
+      <div style="font-family:'Anton',Impact,sans-serif;font-size:30px;color:#f0f0f0;letter-spacing:.03em;line-height:1.1;">We got your message.</div>
     </td>
   </tr>
   <tr>
     <td style="padding:0 32px 28px;">
       <p style="font-family:'Space Mono',monospace;font-size:12px;color:#b0b0b0;line-height:1.9;margin-bottom:0;">
-        Hey <strong style="color:#f0f0f0;">${data.firstName}</strong>,<br><br>
+        Hey <strong style="color:#f0f0f0;">${data.$name}</strong>,<br><br>
         Thanks for reaching out. Our team has received your message and will get back to you within 1–2 business days. Here's a copy of what you sent.
       </p>
     </td>
@@ -471,8 +471,8 @@ You're good.</div>
                   <td align="right" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#5a5a5a;">Submitted</td>
                 </tr>
                 <tr>
-                  <td style="font-family:'Space Mono',monospace;font-size:13px;color:#f0f0f0;font-weight:700;padding-top:4px;">${data.subject}</td>
-                  <td align="right" style="font-family:'Space Mono',monospace;font-size:11px;color:#b0b0b0;padding-top:4px;">${data.submittedAt}</td>
+                  <td style="font-family:'Space Mono',monospace;font-size:13px;color:#f0f0f0;font-weight:700;padding-top:4px;">${data.$subject}</td>
+                  <td align="right" style="font-family:'Space Mono',monospace;font-size:11px;color:#b0b0b0;padding-top:4px;">${new Date()}</td>
                 </tr>
               </tbody></table>
             </td>
@@ -481,7 +481,7 @@ You're good.</div>
             <td style="padding:18px 18px;">
               <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#5a5a5a;margin-bottom:10px;">Your Message</div>
               <div style="font-family:'Space Mono',monospace;font-size:11px;color:#b0b0b0;line-height:1.9;border-left:3px solid #c41a1a;padding-left:14px;">
-                ${data.message}
+                ${data.$message}
               </div>
             </td>
           </tr>
@@ -496,11 +496,11 @@ You're good.</div>
       <table cellpadding="0" cellspacing="0" border="0">
         <tbody><tr>
           <td style="padding-right:12px;">
-<a href="${data.faqUrl}" style="display:inline-block;padding:13px 28px;background:#c41a1a;color:#fff;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));">
+<a href="https://efear.shop/faq" style="display:inline-block;padding:13px 28px;background:#c41a1a;color:#fff;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));">
   Browse FAQ →
 </a></td>
           <td>
-<a href="${data.storeUrl}" style="display:inline-block;padding:12px 28px;border:1px solid #242424;color:#b0b0b0;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;">
+<a href="https://efear.shop/shop" style="display:inline-block;padding:12px 28px;border:1px solid #242424;color:#b0b0b0;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;">
   Back to Store
 </a></td>
         </tr>
@@ -514,21 +514,21 @@ You're good.</div>
         <tbody><tr>
           <td align="center" style="padding-bottom:16px;">
             <span style="font-family:'Anton',Impact,sans-serif;font-size:20px;color:#5a5a5a;letter-spacing:.05em;">
-              e<span style="color:#c41a1a;">Fear</span>
+              e<span style="color:#c41a1a;">FEAR</span>
             </span>
           </td>
         </tr>
         <tr>
           <td align="center" style="padding-bottom:12px;">
-            <a href="#" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;text-decoration:none;margin:0 10px;">Shop</a>
-            <a href="#" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;text-decoration:none;margin:0 10px;">Orders</a>
-            <a href="#" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;text-decoration:none;margin:0 10px;">Contact</a>
-            <a href="#" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;text-decoration:none;margin:0 10px;">Unsubscribe</a>
+            <a href="https://efear.shop/shop" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;text-decoration:none;margin:0 10px;">Shop</a>
+            <a href="https://efear.shop/about" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;text-decoration:none;margin:0 10px;">Orders</a>
+            <a href="https://efear.shop/contact" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;text-decoration:none;margin:0 10px;">Contact</a>
+            <a href="https://efear.shop/unsubscribe" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;text-decoration:none;margin:0 10px;">Unsubscribe</a>
           </td>
         </tr>
         <tr>
           <td align="center" style="font-family:'Space Mono',monospace;font-size:9px;color:#5a5a5a;letter-spacing:.06em;line-height:1.8;">
-            © 2026 eFear LLC · 123 Collector's Way, Waco TX · All rights reserved<br>
+            © 2026 FEAR Inc. · 2003 E. Veterans Memorial Blvd, Killeen TX · All rights reserved<br>
             <span style="color:#3a3a3a;">You're receiving this because you submitted a contact form at efear.com</span>
           </td>
         </tr>
