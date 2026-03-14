@@ -16,11 +16,12 @@ export const ProductListItem = ({ product }) => {
             <img 
               src={(product.images[0] && product.images[0].url) || 'assets/images/products/placeholder.png'} 
               width="100" 
-              alt={product.title || 'Product'} 
+              alt={product.title || 'Product'}
+              style={{"maxHeight" : 100, "objectFit" : "contain"}}
             />
           </Link>
         </div>
-        <div className="ms-0">
+        <div className="ms-10" style={{"marginLeft": 10}}>
           <h6 className="mb-0 fw-light mb-1">
             {product.title || product.name || 'Product Name'}
           </h6>
