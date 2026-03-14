@@ -1,22 +1,19 @@
 // components/ProductDetails.jsx
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useParams, useNavigate } from 'react-router-dom';
-import { dispatch } from "../../features/store";
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import { dispatch } from '../../features/store';
 import {
     fetchProduct,
-    getRecommendations,
     selectCurrentProduct,
     selectProductsLoading,
     selectProductsError,
-    selectProductById,
 } from '../../features/products/slice';
 import {
     fetchCategory,
     selectCategoryById,
-    selectCategoryBreadcrumbs,
 } from '../../features/categories/slice';
-import Toast from "../../components/common/Toast";
+import Toast from '../../components/common/Toast';
 import {
     fetchBrand,
     selectBrandById,
@@ -31,19 +28,12 @@ import {
 import {
     addToWishlist,
     removeFromWishlist,
-    toggleWishlist,
     selectIsInWishlist,
     moveToCart,
 } from '../../features/wishlist/slice';
 import {
-    getReviewsByProduct,
-    toggleHelpful,
     setViewMode,
-    selectReviewsByProduct,
-    selectSortedReviews,
     selectReviewsLoading,
-    selectReviewsViewMode,
-    selectAverageRatingByProduct,
     submitReview,
 } from '../../features/review/slice';
 import ReviewService from '../../features/review/service';
@@ -52,833 +42,525 @@ import ImageGallery from '../../components/common/ImageGallery';
 export const ProductDetails = () => {
     const { id } = useParams();
     const navigate = useNavigate();
+
+    // ── Toast helpers ───────────────────────────────────────────────────────
     const [toasts, setToasts] = useState([]);
-
     const addToast = (message, type) => {
-        const id = Date.now();
-        setToasts(prev => [...prev, { id, message, type }]);
+        const tid = Date.now();
+        setToasts(prev => [...prev, { id: tid, message, type }]);
     };
+    const removeToast = (tid) => setToasts(prev => prev.filter(t => t.id !== tid));
 
-    const removeToast = (id) => {
-        setToasts(prev => prev.filter(toast => toast.id !== id));
-    };
-    // Local state
+    // ── Local UI state ───────────────────────────────────────────────────────
     const [quantity, setQuantity] = useState(1);
     const [activeTab, setActiveTab] = useState('description');
-    const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+    const [hoverStar, setHoverStar] = useState(0);
     const [reviewForm, setReviewForm] = useState({
-        userName: '',
-        email: '',
-        rating: 5,
-        title: '',
-        content: '',
+        userName: '', email: '', rating: 5, title: '', content: '',
     });
-    const [reviewSortMode, setReviewSortMode] = useState('recent'); 
 
-    // Select product data from Redux store
+    // ── Redux selectors ──────────────────────────────────────────────────────
     const product = useSelector(selectCurrentProduct);
     const loading = useSelector(selectProductsLoading);
     const error = useSelector(selectProductsError);
-
-    // Select related data
-    const category = useSelector(state =>
-        product?.categoryId ? selectCategoryById(state, product.categoryId) : null
-    );
-    const brand = useSelector(state =>
-        product?.brandId ? selectBrandById(state, product.brandId) : null
-    );
-    const isBrandFavorite = useSelector(state =>
-        product?.brandId ? selectIsBrandFavorite(state, product.brandId) : false
-    );
-
-    // Cart and Wishlist state
-    const isInCart = useSelector(state =>
-        product?._id ? selectIsInCart(state, product._id) : false
-    );
-    const cartItem = useSelector(state =>
-        product?._id ? selectCartItemById(state, product._id) : null
-    );
-    const isInWishlist = useSelector(state =>
-        product?.id ? selectIsInWishlist(state, product.id) : false
-    );
-
-    // Reviews state
-    const productReviews = useSelector(state => state.product?.reviews);
-    const selectedProductReviews = useSelector(selectReviewsByProduct);
-    const sortedReviews = useSelector(selectSortedReviews);
+    const category = useSelector(state => product?.categoryId ? selectCategoryById(state, product.categoryId) : null);
+    const brand = useSelector(state => product?.brandId ? selectBrandById(state, product.brandId) : null);
+    const isBrandFav = useSelector(state => product?.brandId ? selectIsBrandFavorite(state, product.brandId) : false);
+    const isInCart = useSelector(state => product?._id ? selectIsInCart(state, product._id) : false);
+    const cartItem = useSelector(state => product?._id ? selectCartItemById(state, product._id) : null);
+    const isInWishlist = useSelector(state => product?.id ? selectIsInWishlist(state, product.id) : false);
     const reviewsLoading = useSelector(selectReviewsLoading);
+    const productReviews = useSelector(state => state.product?.reviews);
 
+    // ── Effects ──────────────────────────────────────────────────────────────
     useEffect(() => {
-        if (product) {
-            if (product.categoryId) {
-                dispatch(fetchCategory({ id: product.categoryId }));
-            }
-            if (product.brandId) {
-                dispatch(fetchBrand({ id: product.brandId }));
-            }
-        }
-    }, [product]);
-
-    useEffect(() => {
-        if (id && (product === null || product._id !== id)) {
-            dispatch(fetchProduct({ id: id }));
-        }
+        if (id && (product === null || product._id !== id)) dispatch(fetchProduct({ id }));
     }, [id]);
 
     useEffect(() => {
-        if (product?.reviews && product?.reviews.length === 0) {
-            // Fetch reviews for this product
-            //dispatch(fetchReview({ id: product._id }));
+        if (product) {
+            if (product.categoryId) dispatch(fetchCategory({ id: product.categoryId }));
+            if (product.brandId) dispatch(fetchBrand({ id: product.brandId }));
         }
-    }, [product?._id]);
+    }, [product]);
 
-    // Handle quantity change
+    // ── Handlers ─────────────────────────────────────────────────────────────
     const handleQuantityChange = (e) => {
-        const value = parseInt(e.target.value) || 1;
-        setQuantity(Math.max(1, Math.min(value, product?.quantity || 999)));
+        setQuantity(Math.max(1, Math.min(parseInt(e.target.value) || 1, product?.quantity || 999)));
     };
 
-    // Handle add to cart
     const handleAddToCart = () => {
         if (!product) return;
-
-        const cartItem = {
-            id: product._id,
-            productId: product._id,
-            quantity,
-            name: product.title,
-            title: product.title,
+        dispatch(addItem({
+            id: product._id, productId: product._id, quantity,
+            name: product.title, title: product.title,
             image: product.images?.[0]?.url || '',
             price: product.salePrice || product.price,
-            subtotal: product.price,
-            sku: product.sku,
-        };
-
-        dispatch(addItem(cartItem));
-        addToast('Product added to cart!', 'success');
+            subtotal: product.price, sku: product.sku,
+        }));
+        addToast('Added to cart!', 'success');
     };
 
-    // Handle add to wishlist
     const handleToggleWishlist = () => {
         if (!product) return;
-
-        const wishlistItem = {
-            id: product.id || product._id,
-            productId: product._id,
-            title: product.title,
-            name: product.title,
+        const item = {
+            id: product.id || product._id, productId: product._id,
+            title: product.title, name: product.title,
             image: product.images?.[0]?.url || '',
             price: product.salePrice || product.price,
-            originalPrice: product.price,
-            rating: product.rating,
-            sku: product.sku,
+            originalPrice: product.price, rating: product.rating, sku: product.sku,
         };
-
         if (isInWishlist) {
-            dispatch(removeFromWishlist(wishlistItem.id));
-            alert('Product removed from wishlist!');
+            dispatch(removeFromWishlist(item.id));
+            addToast('Removed from wishlist', 'info');
         } else {
-            dispatch(addToWishlist(wishlistItem));
-            alert('Product added to wishlist!');
+            dispatch(addToWishlist(item));
+            addToast('Added to wishlist!', 'success');
         }
     };
 
-    // Handle move from wishlist to cart
     const handleMoveToCart = async () => {
         if (!product || !isInWishlist) return;
-
         try {
-            // Add to cart
-            const cartItem = {
-                productId: product._id,
-                id: product._id,
-                name: product.title,
-                title: product.title,
-                image: product.images?.[0]?.url || '',
-                price: product.salePrice || product.price,
-                quantity: 1,
-            };
-
-            dispatch(addItem(cartItem));
-
-            // Remove from wishlist
+            dispatch(addItem({ productId: product._id, id: product._id, name: product.title, title: product.title, image: product.images?.[0]?.url || '', price: product.salePrice || product.price, quantity: 1 }));
             dispatch(removeFromWishlist(product.id || product._id));
-
-            // Optionally sync with server
-            await dispatch(moveToCart({
-                productId: product._id,
-                quantity: 1
-            })).unwrap();
-
-            alert('Product moved to cart!');
-        } catch (error) {
-            console.error('Failed to move to cart:', error);
-        }
+            await dispatch(moveToCart({ productId: product._id, quantity: 1 })).unwrap();
+            addToast('Moved to cart!', 'success');
+        } catch (err) { console.error(err); }
     };
 
-    // Handle brand favorite toggle
-    const handleBrandFavoriteToggle = () => {
-        if (product?.brandId) {
-            dispatch(toggleBrandFavorite(product.brandId));
-        }
+    const handleBrandFavToggle = () => {
+        if (product?.brandId) dispatch(toggleBrandFavorite(product.brandId));
     };
 
-    // Handle review form change
-    const handleReviewFormChange = (field, value) => {
-        setReviewForm(prev => ({ ...prev, [field]: value }));
-    };
-
-    // Handle review submission
-    const handleSubmitReview = async () => {
-        if (!product?._id) return;
-
-        // Validate form
-        if (!reviewForm.userName || !reviewForm.email || !reviewForm.content) {
-            addToast('Please fill in all required fields', 'error');
-            return;
-        }
-
-        try {
-            const reviewData = {
-                productId: product._id,
-                username: reviewForm.userName,
-                email: reviewForm.email,
-                rating: parseInt(reviewForm.rating),
-                comment: reviewForm.content,
-                verified: false,
-                helpfulCount: 0,
-                createdAt: new Date().toISOString(),
-            };
-            // Refresh reviews
-
-            dispatch(ReviewService
-                .create(reviewData))
-                .unwrap()
-                .then((result) => {
-                    console.log('save review result = ', result);
-                    if (result) {
-                        product.reviews.push(reviewData);
-                    }
-                })
-                .catch((err) => {
-                    console.log('Error saving review. ', err);
-                });
-
-            // Reset form
-            setReviewForm({
-                userName: '',
-                email: '',
-                rating: 5,
-                content: '',
-            });
-
-            if (productReviews && !reviewsLoading) {
-                productReviews.push(reviewData);
-                addToast('Review submitted successfully!', 'success');
-            }
-
-        } catch (error) {
-            console.error('Failed to submit review:', error);
-            addToast('Failed to submit review. Please try again.', 'error');
-        }
-    };
-
-    // Handle helpful vote on review
-    const handleHelpfulClick = (reviewId) => {
-        dispatch(toggleHelpful(reviewId));
-    };
-
-    // Handle review sort change
-    const handleReviewSortChange = (mode) => {
-        setReviewSortMode(mode);
-        dispatch(setViewMode(mode));
-    };
-
-    // Handle social share
     const handleShare = (platform) => {
         const url = window.location.href;
-        const text = `Check out ${product?.name || 'this product'}`;
-
-        const shareUrls = {
+        const text = `Check out ${product?.title || 'this product'}`;
+        const urls = {
             facebook: `https://www.facebook.com/sharer/sharer.php?u=${url}`,
             twitter: `https://twitter.com/intent/tweet?url=${url}&text=${text}`,
             linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${url}`,
         };
+        if (urls[platform]) window.open(urls[platform], '_blank', 'width=600,height=400');
+    };
 
-        if (shareUrls[platform]) {
-            window.open(shareUrls[platform], '_blank', 'width=600,height=400');
+    const handleReviewChange = (field, value) => setReviewForm(prev => ({ ...prev, [field]: value }));
+
+    const handleSubmitReview = async () => {
+        if (!product?._id) return;
+        if (!reviewForm.userName || !reviewForm.email || !reviewForm.content) {
+            addToast('Please fill in all required fields', 'error');
+            return;
+        }
+        try {
+            const reviewData = {
+                productId: product._id, username: reviewForm.userName,
+                email: reviewForm.email, rating: parseInt(reviewForm.rating),
+                comment: reviewForm.content, verified: false, helpfulCount: 0,
+                createdAt: new Date().toISOString(),
+            };
+            dispatch(ReviewService.create(reviewData))
+                .unwrap()
+                .then(result => { if (result) product.reviews.push(reviewData); })
+                .catch(err => console.error(err));
+
+            setReviewForm({ userName: '', email: '', rating: 5, title: '', content: '' });
+            if (productReviews && !reviewsLoading) {
+                productReviews.push(reviewData);
+                addToast('Review submitted!', 'success');
+            }
+        } catch (err) {
+            addToast('Failed to submit review. Please try again.', 'error');
         }
     };
-    const handleCategoryClick = (categoryId) => {
-        navigate(`/categories/${categoryId}`);
-    };
 
-    // Calculate pricing
-    const hasDiscount = product?.salePrice && product?.salePrice < product?.price;
-    const discountPercent = hasDiscount
-        ? Math.round((1 - product?.salePrice / product?.price) * 100)
-        : 0;
+    // ── Derived values ───────────────────────────────────────────────────────
+    const hasDiscount = product?.salePrice && product.salePrice < product.price;
+    const discountPercent = hasDiscount ? Math.round((1 - product.salePrice / product.price) * 100) : 0;
 
-    // Rating stars
-    const renderStars = (rating) => {
-        const stars = [];
-        for (let i = 1; i <= 5; i++) {
-            stars.push(
-                <i
-                    key={i}
-                    className={`bx bxs-star ${i <= rating ? 'text-warning' : 'text-light-4'}`}
-                ></i>
-            );
-        }
-        return stars;
-    };
+    const Stars = ({ rating, interactive = false, onPick, onHover, onLeave }) => (
+        <div className="pd-stars">
+            {[1, 2, 3, 4, 5].map(n => (
+                <span
+                    key={n}
+                    className={`pd-star${n <= (hoverStar || rating) ? ' filled' : ''}${interactive ? ' interactive' : ''}`}
+                    onClick={interactive ? () => onPick(n) : undefined}
+                    onMouseEnter={interactive ? () => onHover(n) : undefined}
+                    onMouseLeave={interactive ? onLeave : undefined}
+                >★</span>
+            ))}
+        </div>
+    );
 
-    // Loading state
+    // ── State screens ────────────────────────────────────────────────────────
     if (loading && !product) {
         return (
-            <div className="container py-5 text-center">
-                <div className="spinner-border text-primary" role="status">
-                    <span className="visually-hidden">Loading...</span>
+            <div className="pd-page">
+                <div className="efear-container">
+                    <div className="pd-state-screen">
+                        <div className="pd-spinner" />
+                        <p className="pd-state-body">Loading product details...</p>
+                    </div>
                 </div>
-                <p className="mt-3">Loading product details...</p>
             </div>
         );
     }
 
-    // Error state
     if (error && !product) {
         return (
-            <div className="container py-5 text-center">
-                <div className="alert alert-danger" role="alert">
-                    <h4 className="alert-heading">Error Loading Product</h4>
-                    <p>{error.message || error}</p>
-                    <button className="btn btn-primary" onClick={() => dispatch(fetchProduct({ id: id }))}>
-                        Try Again
-                    </button>
+            <div className="pd-page">
+                <div className="efear-container">
+                    <div className="pd-state-screen">
+                        <div className="pd-state-icon">⚠</div>
+                        <h2 className="pd-state-title">Error Loading Product</h2>
+                        <p className="pd-state-body">{error.message || error}</p>
+                        <button className="cart-dd-btn-primary" style={{ padding: '.75rem 1.5rem' }} onClick={() => dispatch(fetchProduct({ id }))}>Try Again</button>
+                    </div>
                 </div>
             </div>
         );
     }
 
-    // Product not found
     if (!product && !loading) {
         return (
-            <div className="container py-5 text-center">
-                <h2>Product Not Found</h2>
-                <p>The product you're looking for doesn't exist.</p>
-                <button className="btn btn-primary" onClick={() => navigate('/products')}>
-                    Browse Products
-                </button>
+            <div className="pd-page">
+                <div className="efear-container">
+                    <div className="pd-state-screen">
+                        <div className="pd-state-icon">🔍</div>
+                        <h2 className="pd-state-title">Product Not Found</h2>
+                        <p className="pd-state-body">The product you're looking for doesn't exist.</p>
+                        <button className="cart-dd-btn-primary" style={{ padding: '.75rem 1.5rem' }} onClick={() => navigate('/products')}>Browse Products</button>
+                    </div>
+                </div>
             </div>
         );
     }
 
-    if (!loading && product) {
-        return (
-            <>
-                {/* Breadcrumb Section */}
-                <section className="py-3 border-bottom d-none d-md-flex">
-                    <div className="container">
-                        <div className="page-breadcrumb d-flex align-items-center">
-                            <h3 className="breadcrumb-title pe-3">{product.title}</h3>
-                            <div className="ms-auto">
-                                <nav aria-label="breadcrumb">
-                                    <ol className="breadcrumb mb-0 p-0">
-                                        <li className="breadcrumb-item">
-                                            <a href="/" onClick={(e) => { e.preventDefault(); navigate('/'); }}>
-                                                <i className="bx bx-home-alt"></i> Home
-                                            </a>
-                                        </li>
-                                        <li className="breadcrumb-item">
-                                            <a href="/shop" onClick={(e) => { e.preventDefault(); navigate('/products'); }}>
-                                                Shop
-                                            </a>
-                                        </li>
-                                        <li className="breadcrumb-item active" aria-current="page">
-                                            {product.title}
-                                        </li>
-                                    </ol>
-                                </nav>
+    // ── Main render ──────────────────────────────────────────────────────────
+    return (
+        <>
+            {/* Breadcrumb */}
+            <div className="co-crumb-bar">
+                <div className="efear-container co-crumb-nav">
+                    <nav className="co-crumb-trail">
+                        <Link to="/" className="co-crumb-link">Home</Link>
+                        <span className="co-crumb-sep">›</span>
+                        <Link to="/products" className="co-crumb-link">Shop</Link>
+                        <span className="co-crumb-sep">›</span>
+                        <span className="co-crumb-current">{product.title}</span>
+                    </nav>
+                </div>
+            </div>
+
+            <div className="pd-page">
+                <div className="efear-container">
+
+                    {/* ── Hero ──────────────────────────────────────────────────── */}
+                    <div className="pd-hero">
+
+                        {/* Gallery */}
+                        <div className="pd-gallery-col">
+                            <ImageGallery images={product.images} productTitle={product.title} />
+                        </div>
+
+                        {/* Info */}
+                        <div className="pd-info-col">
+
+                            {/* Brand */}
+                            {brand && (
+                                <div className="pd-brand-row">
+                                    <span className="pd-brand-badge">{brand.name}</span>
+                                    <button
+                                        className={`pd-brand-fav${isBrandFav ? ' active' : ''}`}
+                                        onClick={handleBrandFavToggle}
+                                        title={isBrandFav ? 'Remove from favourites' : 'Favourite brand'}
+                                    >
+                                        {isBrandFav ? '♥' : '♡'}
+                                    </button>
+                                </div>
+                            )}
+
+                            {/* Title */}
+                            <h1 className="pd-title">{product.title}</h1>
+
+                            {/* Rating */}
+                            <div className="pd-rating-row">
+                                <Stars rating={product.rating || 4} />
+                                <span className="pd-rating-count">({product.reviewCount || (product.reviews?.length ?? 0)} ratings)</span>
                             </div>
+
+                            {/* Price */}
+                            <div className="pd-price-row">
+                                {hasDiscount && (
+                                    <span className="pd-price-original">${product.price?.toFixed(2)}</span>
+                                )}
+                                <span className="pd-price-main">
+                                    ${(product.salePrice || product.price)?.toFixed(2)}
+                                </span>
+                                {hasDiscount && (
+                                    <span className="pd-price-badge">{discountPercent}% OFF</span>
+                                )}
+                            </div>
+
+                            {/* Status badges */}
+                            <div className="pd-badges">
+                                {product.quantity > 0
+                                    ? <span className="pd-badge in-stock">✓ In Stock ({product.quantity})</span>
+                                    : <span className="pd-badge out-of-stock">Out of Stock</span>
+                                }
+                                {isInCart && <span className="pd-badge in-cart">In Cart ×{cartItem?.quantity}</span>}
+                                {isInWishlist && <span className="pd-badge in-wishlist">♥ Wishlisted</span>}
+                            </div>
+
+                            {/* Short description */}
+                            <p className="pd-desc">
+                                {product.description || product.shortDescription ||
+                                    'High-performance tactical gear built for the field. Precision-engineered for reliability in every condition.'}
+                            </p>
+
+                            {/* Specs */}
+                            <div className="pd-spec-table">
+                                <span className="pd-spec-key">SKU</span>
+                                <span className="pd-spec-val">#{product.sku || product._id}</span>
+                                <span className="pd-spec-key">Category</span>
+                                <span className="pd-spec-val">{category?.name || 'General'}</span>
+                                {product.deliveryInfo && (
+                                    <>
+                                        <span className="pd-spec-key">Delivery</span>
+                                        <span className="pd-spec-val">{product.deliveryInfo}</span>
+                                    </>
+                                )}
+                            </div>
+
+                            {/* Quantity */}
+                            <div className="pd-qty-row">
+                                <span className="pd-qty-label">Qty</span>
+                                <select
+                                    className="pd-qty-select"
+                                    value={quantity}
+                                    onChange={handleQuantityChange}
+                                    disabled={!product.quantity}
+                                >
+                                    {[...Array(Math.min(product.quantity || 5, 10))].map((_, i) => (
+                                        <option key={i + 1} value={i + 1}>{i + 1}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            {/* CTA buttons */}
+                            <div className="pd-actions">
+                                <button
+                                    onClick={handleAddToCart}
+                                    className="cart-dd-btn-primary"
+                                    disabled={!product.quantity}
+                                    style={{ padding: '.75rem 1.5rem', fontSize: '.72rem', letterSpacing: '.1em' }}
+                                >
+                                    {isInCart ? '✓ Added to Cart' : '+ Add to Cart'}
+                                </button>
+                                <button
+                                    onClick={handleToggleWishlist}
+                                    className="cart-dd-btn-ghost"
+                                    style={{ padding: '.75rem 1.25rem', fontSize: '.72rem', letterSpacing: '.1em' }}
+                                >
+                                    {isInWishlist ? '♥ In Wishlist' : '♡ Wishlist'}
+                                </button>
+                                {isInWishlist && (
+                                    <button
+                                        onClick={handleMoveToCart}
+                                        className="cart-dd-btn-ghost"
+                                        disabled={!product.quantity}
+                                        style={{ padding: '.75rem 1.25rem', fontSize: '.72rem', letterSpacing: '.1em' }}
+                                    >
+                                        ⇄ Move to Cart
+                                    </button>
+                                )}
+                            </div>
+
+                            <div className="pd-hr" />
+
+                            {/* Share */}
+                            <div className="pd-share-row">
+                                <span className="pd-share-label">Share</span>
+                                {[
+                                    { platform: 'facebook', label: 'f' },
+                                    { platform: 'twitter', label: '𝕏' },
+                                    { platform: 'linkedin', label: 'in' },
+                                ].map(({ platform, label }) => (
+                                    <a
+                                        key={platform}
+                                        href="#"
+                                        className="pd-share-btn"
+                                        onClick={(e) => { e.preventDefault(); handleShare(platform); }}
+                                        title={`Share on ${platform}`}
+                                        style={{ fontFamily: "'Space Mono',monospace", fontSize: '.65rem', fontWeight: 'bold' }}
+                                    >
+                                        {label}
+                                    </a>
+                                ))}
+                            </div>
+
                         </div>
                     </div>
-                </section>
 
-                {/* Product Detail Section */}
-                <section className="py-4">
-                    <div className="container">
-                        <div className="product-detail-card">
-                            <div className="product-detail-body">
-                                <div className="row g-0">
-                                    {/* Image Gallery */}
-                                    <div className="col-12 col-lg-5">
-                                        <div className="image-zoom-section">
-                                            <ImageGallery
-                                                images={product.images}
-                                                productTitle={product.title}
+                    {/* ── Tabs ─────────────────────────────────────────────────── */}
+                    <div className="pd-tabs-section">
+                        <div className="pd-tab-bar">
+                            {[
+                                { id: 'description', label: 'Description' },
+                                { id: 'more-info', label: 'More Info' },
+                                { id: 'tags', label: 'Tags' },
+                                { id: 'reviews', label: 'Reviews', count: productReviews?.length ?? product.reviews?.length ?? 0 },
+                            ].map(tab => (
+                                <button
+                                    key={tab.id}
+                                    className={`pd-tab${activeTab === tab.id ? ' active' : ''}`}
+                                    onClick={() => setActiveTab(tab.id)}
+                                    type="button"
+                                >
+                                    {tab.label}
+                                    {tab.count !== undefined && (
+                                        <span className="pd-tab-count">{tab.count}</span>
+                                    )}
+                                </button>
+                            ))}
+                        </div>
+
+                        <div className="pd-tab-body">
+
+                            {/* Description */}
+                            {activeTab === 'description' && (
+                                <>
+                                    <p className="pd-full-desc">
+                                        {product.fullDescription || product.description ||
+                                            'Raw denim you probably haven\'t heard of them jean shorts Austin. Nesciunt tofu stumptown aliqua, retro synth master cleanse. Mustache cliche tempor, williamsburg carles vegan helvetica.'}
+                                    </p>
+                                    <ul className="pd-feature-list">
+                                        {(product.features || ['Not just for commute', 'Branded tongue and cuff', 'Super fast and reliable', 'Lorem sed do eiusmod tempor']).map((f, i) => (
+                                            <li key={i}>{f}</li>
+                                        ))}
+                                    </ul>
+                                </>
+                            )}
+
+                            {/* More info */}
+                            {activeTab === 'more-info' && (
+                                <p className="pd-full-desc">
+                                    {product.additionalInfo ||
+                                        'Food truck fixie locavore, accusamus mcsweeney\'s marfa nulla single-origin coffee squid. Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan four loko farm-to-table craft beer twee.'}
+                                </p>
+                            )}
+
+                            {/* Tags */}
+                            {activeTab === 'tags' && (
+                                <div className="pd-tags">
+                                    {(product.tags || ['Airsoft', 'Tactical', 'Outdoor', 'Gear']).map((tag, i) => (
+                                        <a key={i} href="#" className="pd-tag" onClick={(e) => e.preventDefault()}>{tag}</a>
+                                    ))}
+                                </div>
+                            )}
+
+                            {/* Reviews */}
+                            {activeTab === 'reviews' && (
+                                <div className="pd-reviews-layout">
+
+                                    {/* Review list */}
+                                    <div>
+                                        <p style={{ fontFamily: "'Anton','Impact',sans-serif", fontSize: '.9rem', letterSpacing: '.14em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.92)', margin: '0 0 1.25rem' }}>
+                                            {(productReviews ?? product.reviews ?? []).length} Reviews
+                                        </p>
+
+                                        {reviewsLoading && (
+                                            <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem 0' }}>
+                                                <div className="pd-spinner" />
+                                            </div>
+                                        )}
+
+                                        {!reviewsLoading && (productReviews ?? product.reviews ?? []).length === 0 && (
+                                            <div className="pd-review-empty">No reviews yet — be the first to review this product.</div>
+                                        )}
+
+                                        <div className="pd-review-list">
+                                            {!reviewsLoading && (productReviews ?? product.reviews ?? []).map((review, i) => (
+                                                <div key={review.id || i} className="pd-review-item">
+                                                    <div className="pd-review-header">
+                                                        <div>
+                                                            <p className="pd-reviewer-name">{review.username}</p>
+                                                            <Stars rating={review.rating || 4} />
+                                                            {review.verified && <span className="pd-verified-badge">✓ Verified Purchase</span>}
+                                                        </div>
+                                                        <span className="pd-review-date">
+                                                            {new Date(review.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                                        </span>
+                                                    </div>
+                                                    {review.title && <p className="pd-review-title">{review.title}</p>}
+                                                    <p className="pd-review-body">{review.comment}</p>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* Review form */}
+                                    <div className="pd-review-form">
+                                        <h3 className="pd-review-form-title">Write a Review</h3>
+
+                                        <div className="auth-field">
+                                            <label className="auth-label">Your Name <span className="auth-label-req">*</span></label>
+                                            <input type="text" className="auth-input" value={reviewForm.userName} onChange={e => handleReviewChange('userName', e.target.value)} placeholder="Enter your name" />
+                                        </div>
+
+                                        <div className="auth-field">
+                                            <label className="auth-label">Email <span className="auth-label-req">*</span></label>
+                                            <input type="email" className="auth-input" value={reviewForm.email} onChange={e => handleReviewChange('email', e.target.value)} placeholder="Enter your email" />
+                                        </div>
+
+                                        <div className="auth-field">
+                                            <label className="auth-label">Rating <span className="auth-label-req">*</span></label>
+                                            <div className="pd-star-picker" style={{ marginBottom: '.25rem' }}>
+                                                {[1, 2, 3, 4, 5].map(n => (
+                                                    <span
+                                                        key={n}
+                                                        className={`pd-star interactive${n <= (hoverStar || reviewForm.rating) ? ' filled' : ''}`}
+                                                        style={{ fontSize: '1.2rem' }}
+                                                        onClick={() => handleReviewChange('rating', n)}
+                                                        onMouseEnter={() => setHoverStar(n)}
+                                                        onMouseLeave={() => setHoverStar(0)}
+                                                    >★</span>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        <div className="auth-field">
+                                            <label className="auth-label">Review <span className="auth-label-req">*</span></label>
+                                            <textarea
+                                                className="auth-input"
+                                                rows="4"
+                                                style={{ resize: 'vertical', height: 'auto' }}
+                                                value={reviewForm.content}
+                                                onChange={e => handleReviewChange('content', e.target.value)}
+                                                placeholder="Share your thoughts about this product..."
                                             />
                                         </div>
+
+                                        <button type="button" className="auth-submit" style={{ marginTop: '.75rem' }} onClick={handleSubmitReview}>
+                                            Submit Review
+                                        </button>
                                     </div>
 
-                                    {/* Product Info */}
-                                    <div className="col-12 col-lg-7">
-                                        <div className="product-info-section p-3">
-                                            {/* Brand */}
-                                            {brand && (
-                                                <div className="d-flex align-items-center mb-2">
-                                                    <span className="badge bg-secondary">{brand.name}</span>
-                                                    {isBrandFavorite !== undefined && (
-                                                        <button
-                                                            onClick={handleBrandFavoriteToggle}
-                                                            className="btn btn-sm ms-2"
-                                                            title={isBrandFavorite ? 'Remove from favorites' : 'Add to favorites'}
-                                                        >
-                                                            <i className={`bx ${isBrandFavorite ? 'bxs-heart' : 'bx-heart'}`}></i>
-                                                        </button>
-                                                    )}
-                                                </div>
-                                            )}
-
-                                            {/* Product Title */}
-                                            <h3 className="mt-3 mt-lg-0 mb-0">{product.title}</h3>
-
-                                            {/* Rating */}
-                                            <div className="product-rating d-flex align-items-center mt-2">
-                                                <div className="rates cursor-pointer font-13">
-                                                    {renderStars(product.rating || 4)}
-                                                </div>
-                                                <div className="ms-1">
-                                                    <p className="mb-0">({product.reviewCount || 24} Ratings)</p>
-                                                </div>
-                                            </div>
-
-                                            {/* Price */}
-                                            <div className="d-flex align-items-center mt-3 gap-2">
-                                                {hasDiscount && (
-                                                    <h5 className="mb-0 text-decoration-line-through text-light-3">
-                                                        ${product.price?.toFixed(2)}
-                                                    </h5>
-                                                )}
-                                                <h4 className="mb-0">
-                                                    ${(product.salePrice || product.price)?.toFixed(2)}
-                                                </h4>
-                                                {hasDiscount && (
-                                                    <span className="badge bg-danger">{discountPercent}% OFF</span>
-                                                )}
-                                            </div>
-
-                                            {/* Stock Status */}
-                                            <div className="mt-2 d-flex gap-2 align-items-center">
-                                                {product.quantity ? (
-                                                    <span className="badge bg-success">
-                                                        In Stock ({product.quantity || 0} available)
-                                                    </span>
-                                                ) : (
-                                                    <span className="badge bg-danger">Out of Stock</span>
-                                                )}
-                                                {isInCart && (
-                                                    <span className="badge bg-info">
-                                                        <i className="bx bx-check"></i> In Cart ({cartItem?.quantity})
-                                                    </span>
-                                                )}
-                                                {isInWishlist && (
-                                                    <span className="badge bg-warning">
-                                                        <i className="bx bx-heart"></i> In Wishlist
-                                                    </span>
-                                                )}
-                                            </div>
-
-                                            {/* Description */}
-                                            <div className="mt-3">
-                                                <h6>Description:</h6>
-                                                <p className="mb-0 p-product-description">
-                                                    {product.description || product.shortDescription ||
-                                                        "Virgil Abloh's Off-White is a streetwear-inspired collection that continues to break away from the conventions of mainstream fashion. Made in Italy, these black and brown Odsy-1000 low-top sneakers."}
-                                                </p>
-                                            </div>
-
-                                            {/* Product Info */}
-                                            <dl className="row mt-3">
-                                                <dt className="col-sm-3">Product ID</dt>
-                                                <dd className="col-sm-9">#{product.sku || product._id}</dd>
-                                                <dt className="col-sm-3">Category</dt>
-                                                <dd className="col-sm-9">{category?.name || 'General'}</dd>
-                                                {product.deliveryInfo && (
-                                                    <>
-                                                        <dt className="col-sm-3">Delivery</dt>
-                                                        <dd className="col-sm-9">{product.deliveryInfo}</dd>
-                                                    </>
-                                                )}
-                                            </dl>
-
-                                            {/* Quantity */}
-                                            <div className="row row-cols-auto align-items-center mt-3">
-                                                <div className="col">
-                                                    <label className="form-label">Quantity</label>
-                                                    <select
-                                                        className="form-select form-select-sm"
-                                                        value={quantity}
-                                                        onChange={handleQuantityChange}
-                                                        disabled={!product.quantity}
-                                                    >
-                                                        {[...Array(Math.min(product.quantity || 5, 10))].map((_, i) => (
-                                                            <option key={i + 1} value={i + 1}>{i + 1}</option>
-                                                        ))}
-                                                    </select>
-                                                </div>
-                                            </div>
-
-                                            {/* Action Buttons */}
-                                            <div className="d-flex gap-2 mt-3 flex-wrap">
-                                                <button
-                                                    onClick={handleAddToCart}
-                                                    className="btn btn-white btn-ecomm"
-                                                    disabled={!product.quantity}
-                                                >
-                                                    <i className={`bx ${isInCart ? 'bx-check' : 'bxs-cart-add'}`}></i>
-                                                    {isInCart ? 'Added to Cart' : 'Add to Cart'}
-                                                </button>
-                                                <button
-                                                    onClick={handleToggleWishlist}
-                                                    className={`btn btn-ecomm ${isInWishlist ? 'btn-warning' : 'btn-light'}`}
-                                                >
-                                                    <i className={`bx ${isInWishlist ? 'bxs-heart' : 'bx-heart'}`}></i>
-                                                    {isInWishlist ? 'In Wishlist' : 'Add to Wishlist'}
-                                                </button>
-                                                {isInWishlist && (
-                                                    <button
-                                                        onClick={handleMoveToCart}
-                                                        className="btn btn-primary btn-ecomm"
-                                                        disabled={!product.quantity}
-                                                    >
-                                                        <i className="bx bx-transfer"></i>
-                                                        Move to Cart
-                                                    </button>
-                                                )}
-                                            </div>
-
-                                            <hr />
-
-                                            {/* Social Sharing */}
-                                            <div className="product-sharing">
-                                                <ul className="list-inline">
-                                                    <li className="list-inline-item">
-                                                        <a
-                                                            href="#"
-                                                            onClick={(e) => { e.preventDefault(); handleShare('facebook'); }}
-                                                        >
-                                                            <i className='bx bxl-facebook'></i>
-                                                        </a>
-                                                    </li>
-                                                    <li className="list-inline-item">
-                                                        <a
-                                                            href="#"
-                                                            onClick={(e) => { e.preventDefault(); handleShare('linkedin'); }}
-                                                        >
-                                                            <i className='bx bxl-linkedin'></i>
-                                                        </a>
-                                                    </li>
-                                                    <li className="list-inline-item">
-                                                        <a
-                                                            href="#"
-                                                            onClick={(e) => { e.preventDefault(); handleShare('twitter'); }}
-                                                        >
-                                                            <i className='bx bxl-twitter'></i>
-                                                        </a>
-                                                    </li>
-                                                    <li className="list-inline-item">
-                                                        <a href="#" onClick={(e) => e.preventDefault()}>
-                                                            <i className='bx bxl-instagram'></i>
-                                                        </a>
-                                                    </li>
-                                                    <li className="list-inline-item">
-                                                        <a href="#" onClick={(e) => e.preventDefault()}>
-                                                            <i className='bx bxl-google'></i>
-                                                        </a>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
                                 </div>
-                            </div>
+                            )}
+
                         </div>
                     </div>
-                </section>
 
-                {/* More Info Section */}
-                <section className="py-4">
-                    <div className="container">
-                        <div className="product-more-info">
-                            <ul className="nav nav-tabs mb-0" role="tablist">
-                                <li className="nav-item" role="presentation">
-                                    <a
-                                        className={`nav-link ${activeTab === 'reviews' ? 'active' : ''}`}
-                                        data-bs-toggle="tab"
-                                        href="#reviews"
-                                        role="tab"
-                                        onClick={() => setActiveTab('reviews')}
-                                    >
-                                        <div className="d-flex align-items-center">
-                                            <div className="tab-title text-uppercase fw-500">
-                                                ({productReviews ? productReviews.length : 0}) Reviews
-                                            </div>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li className="nav-item" role="presentation">
-                                    <a
-                                        className={`nav-link ${activeTab === 'description' ? 'active' : ''}`}
-                                        data-bs-toggle="tab"
-                                        href="#discription"
-                                        role="tab"
-                                        onClick={() => setActiveTab('description')}
-                                    >
-                                        <div className="d-flex align-items-center">
-                                            <div className="tab-title text-uppercase fw-500">Description</div>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li className="nav-item" role="presentation">
-                                    <a
-                                        className={`nav-link ${activeTab === 'more-info' ? 'active' : ''}`}
-                                        data-bs-toggle="tab"
-                                        href="#more-info"
-                                        role="tab"
-                                        onClick={() => setActiveTab('more-info')}
-                                    >
-                                        <div className="d-flex align-items-center">
-                                            <div className="tab-title text-uppercase fw-500">More Info</div>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li className="nav-item" role="presentation">
-                                    <a
-                                        className={`nav-link ${activeTab === 'tags' ? 'active' : ''}`}
-                                        data-bs-toggle="tab"
-                                        href="#tags"
-                                        role="tab"
-                                        onClick={() => setActiveTab('tags')}
-                                    >
-                                        <div className="d-flex align-items-center">
-                                            <div className="tab-title text-uppercase fw-500">Tags</div>
-                                        </div>
-                                    </a>
-                                </li>
+                </div>
+            </div>
 
-                            </ul>
-
-                            <div className="tab-content pt-3">
-                                {/* Description Tab */}
-                                <div
-                                    className={`tab-pane fade ${activeTab === 'description' ? 'show active' : ''}`}
-                                    id="discription"
-                                    role="tabpanel"
-                                >
-                                    <p>{product.fullDescription || product.description ||
-                                        "Raw denim you probably haven't heard of them jean shorts Austin. Nesciunt tofu stumptown aliqua, retro synth master cleanse. Mustache cliche tempor, williamsburg carles vegan helvetica."}</p>
-                                    {product.features && (
-                                        <ul>
-                                            {product.features.map((feature, index) => (
-                                                <li key={index}>{feature}</li>
-                                            ))}
-                                        </ul>
-                                    )}
-                                    {!product.features && (
-                                        <ul>
-                                            <li>Not just for commute</li>
-                                            <li>Branded tongue and cuff</li>
-                                            <li>Super fast and amazing</li>
-                                            <li>Lorem sed do eiusmod tempor</li>
-                                        </ul>
-                                    )}
-                                </div>
-
-                                {/* More Info Tab */}
-                                <div
-                                    className={`tab-pane fade ${activeTab === 'more-info' ? 'show active' : ''}`}
-                                    id="more-info"
-                                    role="tabpanel"
-                                >
-                                    <p>{product.additionalInfo ||
-                                        "Food truck fixie locavore, accusamus mcsweeney's marfa nulla single-origin coffee squid. Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan four loko farm-to-table craft beer twee."}</p>
-                                </div>
-
-                                {/* Tags Tab */}
-                                <div
-                                    className={`tab-pane fade ${activeTab === 'tags' ? 'show active' : ''}`}
-                                    id="tags"
-                                    role="tabpanel"
-                                >
-                                    <div className="tags-box w-50">
-                                        {product.tags && product.tags.map((tag, index) => (
-                                            <a key={index} href="#" className="tag-link" onClick={(e) => e.preventDefault()}>
-                                                {tag}
-                                            </a>
-                                        ))}
-                                        {!product.tags && (
-                                            <>
-                                                <a href="#" className="tag-link" onClick={(e) => e.preventDefault()}>Cloths</a>
-                                                <a href="#" className="tag-link" onClick={(e) => e.preventDefault()}>Electronics</a>
-                                                <a href="#" className="tag-link" onClick={(e) => e.preventDefault()}>Furniture</a>
-                                                <a href="#" className="tag-link" onClick={(e) => e.preventDefault()}>Sports</a>
-                                            </>
-                                        )}
-                                    </div>
-                                </div>
-
-                                {/* Reviews Tab */}
-                                <div
-                                    className={`tab-pane fade ${activeTab === 'reviews' ? 'show active' : ''}`}
-                                    id="reviews"
-                                    role="tabpanel"
-                                >
-                                    <div className="row">
-                                        <div className="col col-lg-8">
-                                            <div className="product-review">
-                                                <div className="d-flex justify-content-between align-items-center mb-4">
-                                                    <h5 className="mb-0">
-                                                        {productReviews ? productReviews.length : 0} Reviews For The Product
-                                                    </h5>
-                                                </div>
-
-                                                {/* Review List */}
-                                                <div className="review-list">
-                                                    {reviewsLoading && (
-                                                        <div className="text-center py-4">
-                                                            <div className="spinner-border" role="status">
-                                                                <span className="visually-hidden">Loading reviews...</span>
-                                                            </div>
-                                                        </div>
-                                                    )}
-
-                                                    {!reviewsLoading && product.reviews.length === 0 && (
-                                                        <div className="text-center py-4">
-                                                            <p className="text-muted">No reviews yet. Be the first to review this product!</p>
-                                                        </div>
-                                                    )}
-
-                                                    {!reviewsLoading && product.reviews.map((review) => (
-                                                        <div key={review.id} className="review-item border-bottom pb-4 mb-4">
-                                                            <div className="d-flex justify-content-between align-items-start mb-2">
-                                                                <div>
-                                                                    <h6 className="mb-1">{review.username}</h6>
-                                                                    {review.verified && (
-                                                                        <span className="badge bg-success me-2">Verified Purchase</span>
-                                                                    )}
-
-                                                                    <div className="rating-stars">
-                                                                        <div className="product-rating d-flex align-items-center mt-2">
-                                                                            <div className="rates cursor-pointer font-13">
-                                                                                {renderStars(review.rating || 4)}
-                                                                            </div>
-                                                                            <div className="ms-1">
-                                                                                <p className="mb-0">{review.rating || 0} Stars</p>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <small className="text-muted">
-                                                                    {new Date(review.createdAt).toLocaleDateString()}
-                                                                </small>
-                                                            </div>
-                                                            {review.title && (
-                                                                <h6 className="mb-2">{review.title}</h6>
-                                                            )}
-                                                            <p className="mb-2">{review.comment}</p>
-                                                            <div className="review-actions">
-                                                                {review.replies && review.replies.length > 0 && (
-                                                                    <span className="text-muted">
-                                                                        {review.replies.length} {review.replies.length === 1 ? 'reply' : 'replies'}
-                                                                    </span>
-                                                                )}
-                                                            </div>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {/* Review Form */}
-                                        <div className="col col-lg-4">
-                                            <div className="add-review bg-dark-1">
-                                                <div className="form-body p-3">
-                                                    <h4 className="mb-4">Write a Review</h4>
-                                                    <div className="mb-3">
-                                                        <label className="form-label">Your Name *</label>
-                                                        <input
-                                                            type="text"
-                                                            className="form-control rounded-0"
-                                                            value={reviewForm.userName}
-                                                            onChange={(e) => handleReviewFormChange('userName', e.target.value)}
-                                                            placeholder="Enter your name"
-                                                        />
-                                                    </div>
-                                                    <div className="mb-3">
-                                                        <label className="form-label">Your Email *</label>
-                                                        <input
-                                                            type="email"
-                                                            className="form-control rounded-0"
-                                                            value={reviewForm.email}
-                                                            onChange={(e) => handleReviewFormChange('email', e.target.value)}
-                                                            placeholder="Enter your email"
-                                                        />
-                                                    </div>
-                                                    <div className="mb-3">
-                                                        <label className="form-label">Rating *</label>
-                                                        <select
-                                                            className="form-select rounded-0"
-                                                            value={reviewForm.rating}
-                                                            onChange={(e) => handleReviewFormChange('rating', e.target.value)}
-                                                        >
-                                                            <option value="5">5 - Excellent</option>
-                                                            <option value="4">4 - Good</option>
-                                                            <option value="3">3 - Average</option>
-                                                            <option value="2">2 - Poor</option>
-                                                            <option value="1">1 - Terrible</option>
-                                                        </select>
-                                                    </div>
-                                                    <div className="mb-3">
-                                                        <label className="form-label">Your Review *</label>
-                                                        <textarea
-                                                            className="form-control rounded-0"
-                                                            rows="4"
-                                                            value={reviewForm.content}
-                                                            onChange={(e) => handleReviewFormChange('content', e.target.value)}
-                                                            placeholder="Share your thoughts about this product..."
-                                                        ></textarea>
-                                                    </div>
-                                                    <div className="d-grid">
-                                                        <button
-                                                            type="button"
-                                                            className="btn btn-light btn-ecomm"
-                                                            onClick={handleSubmitReview}
-                                                        >
-                                                            Submit Review
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-                {toasts.map(toast => (
-                    <Toast
-                        key={toast.id}
-                        message={toast.message}
-                        type={toast.type}
-                        onClose={() => removeToast(toast.id)}
-                    />
-                ))}
-            </>
-        );
-    }
-
-
+            {/* Toasts */}
+            {toasts.map(toast => (
+                <Toast key={toast.id} message={toast.message} type={toast.type} onClose={() => removeToast(toast.id)} />
+            ))}
+        </>
+    );
 };
 
-export default ProductDetails
+export default ProductDetails;

@@ -39,76 +39,62 @@ export const ShopCart = () => {
   const [state, setState] = useState('California');
   const [zipCode, setZipCode] = useState('');
   const [isApplyingDiscount, setIsApplyingDiscount] = useState(false);
+  const [discountMsg, setDiscountMsg] = useState(null);
+  const [shippingMsg, setShippingMsg] = useState(null);
 
-  // Calculate taxes (example: 7% tax rate)
+  // Calculate taxes (7% tax rate)
   const taxRate = 0.07;
   const taxes = subtotal * taxRate;
 
-  // Handle quantity change
   const handleQuantityChange = (productId, newQuantity) => {
     if (newQuantity >= 1) {
       dispatch(updateQuantity({ productId, quantity: parseInt(newQuantity) }));
     }
   };
 
-  // Handle remove item
   const handleRemoveItem = (productId) => {
     dispatch(removeItem(productId));
   };
 
-  // Handle clear cart
   const handleClearCart = () => {
     if (window.confirm('Are you sure you want to clear your cart?')) {
       dispatch(clearCart());
     }
   };
 
-  // Handle apply discount
   const handleApplyDiscount = () => {
     if (!discountCode.trim()) {
-      alert('Please enter a discount code');
+      setDiscountMsg({ type: 'error', text: 'Please enter a discount code.' });
       return;
     }
-
     setIsApplyingDiscount(true);
+    setDiscountMsg(null);
 
-    // Simulate discount validation (in real app, this would be an API call)
     setTimeout(() => {
-      // Example discount codes
-      const validCodes = {
-        'SAVE10': 10,
-        'SAVE20': 20,
-        'WELCOME15': 15
-      };
-
+      const validCodes = { 'SAVE10': 10, 'SAVE20': 20, 'WELCOME15': 15 };
       const discountPercentage = validCodes[discountCode.toUpperCase()];
 
       if (discountPercentage) {
         const discountAmount = (subtotal * discountPercentage) / 100;
         dispatch(applyDiscount(discountAmount));
-        alert(`Discount applied! You saved $${discountAmount.toFixed(2)}`);
+        setDiscountMsg({ type: 'success', text: `Code applied — you saved $${discountAmount.toFixed(2)}!` });
       } else {
-        alert('Invalid discount code');
+        setDiscountMsg({ type: 'error', text: 'Invalid discount code.' });
       }
-
       setIsApplyingDiscount(false);
     }, 500);
   };
 
-  // Handle shipping estimation
   const handleEstimateShipping = () => {
     if (!zipCode.trim()) {
-      alert('Please enter a zip code');
+      setShippingMsg({ type: 'error', text: 'Please enter a zip code.' });
       return;
     }
-
-    // Simulate shipping calculation (in real app, this would be an API call)
     const shippingCost = country === 'United States' ? 10.00 : 25.00;
     dispatch(setShipping(shippingCost));
-    alert(`Shipping estimated: $${shippingCost.toFixed(2)}`);
+    setShippingMsg({ type: 'success', text: `Estimated shipping: $${shippingCost.toFixed(2)}` });
   };
 
-  // Handle checkout
   const handleCheckout = () => {
     if (!isAuthenticated) {
       navigate('/login', { state: { from: '/checkout' } });
@@ -117,44 +103,40 @@ export const ShopCart = () => {
     navigate('/checkout');
   };
 
-  // Handle continue shopping
   const handleContinueShopping = () => {
     navigate('/shop');
   };
 
-  // Show empty cart message
+  // ── Empty cart ──────────────────────────────────────────────────────────────
   if (cartItems.length === 0) {
     return (
       <>
-        <section className="py-3 border-bottom d-none d-md-flex">
-          <div className="container">
-            <div className="page-breadcrumb d-flex align-items-center">
-              <h3 className="breadcrumb-title pe-3">Shop Cart</h3>
-              <div className="ms-auto">
-                <nav aria-label="breadcrumb">
-                  <ol className="breadcrumb mb-0 p-0">
-                    <li className="breadcrumb-item"><a href="javascript:;"><i className="bx bx-home-alt"></i> Home</a>
-                    </li>
-                    <li className="breadcrumb-item"><a href="javascript:;">Shop</a>
-                    </li>
-                    <li className="breadcrumb-item active" aria-current="page">Shop Cart</li>
-                  </ol>
-                </nav>
-              </div>
-            </div>
+        {/* Breadcrumb */}
+        <div style={{ background: '#111111', borderBottom: '1px solid #222222', padding: '1rem 0' }}>
+          <div className="efear-container">
+            <nav className="ct-breadcrumb">
+              <a href="/" className="ct-bc-link">Home</a>
+              <span className="ct-bc-sep">›</span>
+              <a href="/shop" className="ct-bc-link">Shop</a>
+              <span className="ct-bc-sep">›</span>
+              <span className="ct-bc-current">Cart</span>
+            </nav>
           </div>
-        </section>
-        <section className="py-5">
-          <div className="container">
-            <div className="text-center py-5">
-              <i className='bx bx-shopping-bag display-1 text-muted'></i>
-              <h3 className="mt-3">Your cart is empty</h3>
-              <p className="text-muted mb-4">Add some items to get started!</p>
+        </div>
+
+        {/* Empty state */}
+        <section style={{ padding: '5rem 0' }}>
+          <div className="efear-container">
+            <div className="empty-state">
+              <div className="empty-icon">🛒</div>
+              <h2 className="empty-title">Your Cart Is Empty</h2>
+              <p className="empty-body">Add some gear to get started.</p>
               <button
                 onClick={handleContinueShopping}
-                className="btn btn-white btn-ecomm"
+                className="btn-apply-price"
+                style={{ padding: '.85rem 2.5rem', fontSize: '.8rem', letterSpacing: '.12em' }}
               >
-                <i className='bx bx-shopping-bag'></i> Start Shopping
+                Start Shopping →
               </button>
             </div>
           </div>
@@ -163,247 +145,389 @@ export const ShopCart = () => {
     );
   }
 
+  // ── Cart with items ──────────────────────────────────────────────────────────
   return (
     <>
-      <section className="py-3 border-bottom d-none d-md-flex">
-        <div className="container">
-          <div className="page-breadcrumb d-flex align-items-center">
-            <h3 className="breadcrumb-title pe-3">Shop Cart ({itemCount} items)</h3>
-            <div className="ms-auto">
-                <nav aria-label="breadcrumb">
-                  <ol className="breadcrumb mb-0 p-0">
-                    <li className="breadcrumb-item"><a href="javascript:;"><i className="bx bx-home-alt"></i> Home</a>
-                    </li>
-                    <li className="breadcrumb-item"><a href="javascript:;">Shop</a>
-                    </li>
-                    <li className="breadcrumb-item active" aria-current="page">Shop Cart</li>
-                  </ol>
-                </nav>
-            </div>
+      {/* Breadcrumb */}
+      <div style={{ background: '#111111', borderBottom: '1px solid #222222', padding: '1rem 0' }}>
+        <div className="efear-container">
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
+            <nav className="ct-breadcrumb" style={{ marginBottom: 0 }}>
+              <a href="/" className="ct-bc-link">Home</a>
+              <span className="ct-bc-sep">›</span>
+              <a href="/shop" className="ct-bc-link">Shop</a>
+              <span className="ct-bc-sep">›</span>
+              <span className="ct-bc-current">Cart ({itemCount} {itemCount === 1 ? 'item' : 'items'})</span>
+            </nav>
+            <button
+              onClick={handleClearCart}
+              style={{
+                background: 'none',
+                border: '1px solid #222222',
+                color: 'rgba(255,255,255,0.32)',
+                fontFamily: "'Space Mono', monospace",
+                fontSize: '.65rem',
+                letterSpacing: '.1em',
+                textTransform: 'uppercase',
+                padding: '.4rem .85rem',
+                cursor: 'pointer',
+                transition: 'border-color .2s, color .2s',
+              }}
+              onMouseEnter={e => { e.target.style.borderColor = '#b30e1c'; e.target.style.color = '#b30e1c'; }}
+              onMouseLeave={e => { e.target.style.borderColor = '#222222'; e.target.style.color = 'rgba(255,255,255,0.32)'; }}
+            >
+              ✕ Clear Cart
+            </button>
           </div>
         </div>
-      </section>
+      </div>
 
-      <section className="py-4">
-        <div className="container">
-          <div className="shop-cart">
-            <div className="row">
-              {/* Cart Items */}
-              <div className="col-12 col-xl-8">
-                <div className="shop-cart-list mb-3 p-3">
-                  {cartItems.map((item, index) => (
-                    <React.Fragment key={item.productId}>
-                      {index > 0 && <div className="my-4 border-top"></div>}
+      <section style={{ padding: '3rem 0' }}>
+        <div className="efear-container">
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '2rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) 340px', gap: '2rem', alignItems: 'start' }}
+              className="sc-layout">
 
-                      <div className="row align-items-center g-3">
-                        <div className="col-12 col-lg-6">
-                          <div className="d-lg-flex align-items-center gap-2">
-                            <div className="cart-img text-center text-lg-start">
-                              <img
-                                src={item.image || 'assets/images/products/placeholder.png'}
-                                width="130"
-                                alt={item.title}
-                              />
-                            </div>
-                            <div className="cart-detail text-center text-lg-start">
-                              <h6 className="mb-2">{item.name}</h6>
-                              {item.size && (
-                                <p className="mb-0">
-                                  Size: <span>{item.size}</span>
-                                </p>
-                              )}
-                              {item.color && (
-                                <p className="mb-2">
-                                  Color: <span>{item.color}</span>
-                                </p>
-                              )}
-                              <h5 className="mb-0">${item.price.toFixed(2)}</h5>
-                            </div>
-                          </div>
+              {/* ── Cart Items ── */}
+              <div className="shop-sidebar" style={{ position: 'static' }}>
+
+                {/* Column headers */}
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 120px 100px 48px',
+                  gap: '1rem',
+                  padding: '0.85rem 1.5rem',
+                  borderBottom: '1px solid #222222',
+                  background: '#0d0d0d',
+                }}>
+                  {['Product', 'Qty', 'Price', ''].map((h, i) => (
+                    <span key={i} style={{
+                      fontFamily: "'Space Mono', monospace",
+                      fontSize: '.62rem',
+                      letterSpacing: '.15em',
+                      textTransform: 'uppercase',
+                      color: 'rgba(255,255,255,0.32)',
+                    }}>{h}</span>
+                  ))}
+                </div>
+
+                {/* Items */}
+                {cartItems.map((item, index) => (
+                  <React.Fragment key={item.productId}>
+                    {index > 0 && <div style={{ borderTop: '1px solid #222222' }} />}
+                    <div style={{
+                      display: 'grid',
+                      gridTemplateColumns: '1fr 120px 100px 48px',
+                      gap: '1rem',
+                      alignItems: 'center',
+                      padding: '1.25rem 1.5rem',
+                    }}>
+                      {/* Product info */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                        <div style={{
+                          width: 80,
+                          height: 80,
+                          flexShrink: 0,
+                          background: '#1a1a1a',
+                          border: '1px solid #222222',
+                          overflow: 'hidden',
+                          clipPath: 'polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%)',
+                        }}>
+                          <img
+                            src={item.image || 'assets/images/products/placeholder.png'}
+                            alt={item.title}
+                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                          />
                         </div>
-
-                        <div className="col-12 col-lg-3">
-                          <div className="cart-action text-center">
-                            <input
-                              type="number"
-                              className="form-control rounded-0"
-                              value={item.quantity}
-                              min="1"
-                              onChange={(e) => handleQuantityChange(item.productId, e.target.value)}
-                            />
-                          </div>
-                        </div>
-
-                        <div className="col-12 col-lg-3">
-                          <div className="text-center">
-                            <div className="d-flex gap-2 justify-content-center justify-content-lg-end">
-                              <button
-                                onClick={() => handleRemoveItem(item.productId)}
-                                className="btn btn-light rounded-0 btn-ecomm"
-                              >
-                                <i className='bx bx-x-circle'></i> Remove
-                              </button>
-                              <Link
-                                to="/account/wishlist"
-                                className="btn btn-light rounded-0 btn-ecomm"
-                              >
-                                <i className='bx bx-heart me-0'></i>
-                              </Link>
-                            </div>
-                          </div>
+                        <div>
+                          <p style={{
+                            fontFamily: "'Anton', 'Impact', sans-serif",
+                            fontSize: '1rem',
+                            textTransform: 'uppercase',
+                            color: 'rgba(255,255,255,0.92)',
+                            margin: '0 0 .3rem',
+                          }}>
+                            {item.name}
+                          </p>
+                          {item.size && (
+                            <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '.65rem', color: 'rgba(255,255,255,0.32)', marginRight: '.75rem' }}>
+                              SIZE: {item.size}
+                            </span>
+                          )}
+                          {item.color && (
+                            <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '.65rem', color: 'rgba(255,255,255,0.32)' }}>
+                              COLOR: {item.color}
+                            </span>
+                          )}
+                          <Link
+                            to="/account/wishlist"
+                            style={{
+                              display: 'inline-block',
+                              marginTop: '.5rem',
+                              fontFamily: "'Space Mono', monospace",
+                              fontSize: '.62rem',
+                              letterSpacing: '.1em',
+                              textTransform: 'uppercase',
+                              color: 'rgba(255,255,255,0.32)',
+                              textDecoration: 'none',
+                              borderBottom: '1px solid #222222',
+                            }}
+                          >
+                            ♡ Save
+                          </Link>
                         </div>
                       </div>
-                    </React.Fragment>
-                  ))}
 
-                  <div className="my-4 border-top"></div>
+                      {/* Qty */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '.4rem' }}>
+                        <button
+                          onClick={() => handleQuantityChange(item.productId, item.quantity - 1)}
+                          disabled={item.quantity <= 1}
+                          style={{
+                            width: 28, height: 28, background: '#1a1a1a', border: '1px solid #222222',
+                            color: 'rgba(255,255,255,0.58)', cursor: 'pointer', fontFamily: "'Space Mono', monospace", fontSize: '.9rem',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            opacity: item.quantity <= 1 ? .3 : 1,
+                          }}
+                        >−</button>
+                        <input
+                          type="number"
+                          value={item.quantity}
+                          min="1"
+                          onChange={(e) => handleQuantityChange(item.productId, e.target.value)}
+                          style={{
+                            width: 40, textAlign: 'center', background: '#1a1a1a', border: '1px solid #222222',
+                            color: 'rgba(255,255,255,0.92)', fontFamily: "'Space Mono', monospace", fontSize: '.78rem',
+                            padding: '.35rem 0', outline: 'none',
+                          }}
+                        />
+                        <button
+                          onClick={() => handleQuantityChange(item.productId, item.quantity + 1)}
+                          style={{
+                            width: 28, height: 28, background: '#1a1a1a', border: '1px solid #222222',
+                            color: 'rgba(255,255,255,0.58)', cursor: 'pointer', fontFamily: "'Space Mono', monospace", fontSize: '.9rem',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          }}
+                        >+</button>
+                      </div>
 
-                  {/* Cart Actions */}
-                  <div className="d-lg-flex align-items-center gap-2">
-                    <button
-                      onClick={handleContinueShopping}
-                      className="btn btn-light btn-ecomm"
-                    >
-                      <i className='bx bx-shopping-bag'></i> Continue Shopping
-                    </button>
-                    <button
-                      onClick={handleClearCart}
-                      className="btn btn-light btn-ecomm ms-auto"
-                    >
-                      <i className='bx bx-x-circle'></i> Clear Cart
-                    </button>
-                  </div>
+                      {/* Price */}
+                      <p style={{
+                        fontFamily: "'Anton', 'Impact', sans-serif",
+                        fontSize: '1.1rem',
+                        color: '#b30e1c',
+                        margin: 0,
+                        letterSpacing: '.02em',
+                      }}>
+                        ${(item.price * item.quantity).toFixed(2)}
+                      </p>
+
+                      {/* Remove */}
+                      <button
+                        onClick={() => handleRemoveItem(item.productId)}
+                        title="Remove item"
+                        style={{
+                          width: 36, height: 36, background: 'transparent', border: '1px solid #222222',
+                          color: 'rgba(255,255,255,0.32)', fontSize: '1rem', cursor: 'pointer',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          transition: 'border-color .2s, color .2s',
+                        }}
+                        onMouseEnter={e => { e.currentTarget.style.borderColor = '#b30e1c'; e.currentTarget.style.color = '#b30e1c'; }}
+                        onMouseLeave={e => { e.currentTarget.style.borderColor = '#222222'; e.currentTarget.style.color = 'rgba(255,255,255,0.32)'; }}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  </React.Fragment>
+                ))}
+
+                {/* Continue shopping */}
+                <div style={{ borderTop: '1px solid #222222', padding: '1.25rem 1.5rem' }}>
+                  <button
+                    onClick={handleContinueShopping}
+                    className="btn-clear"
+                    style={{ width: 'auto', padding: '.65rem 1.5rem' }}
+                  >
+                    ← Continue Shopping
+                  </button>
                 </div>
               </div>
 
-              {/* Checkout Sidebar */}
-              <div className="col-12 col-xl-4">
-                <div className="checkout-form p-3 bg-dark-1">
-                  {/* Discount Code */}
-                  <div className="card rounded-0 border bg-transparent shadow-none">
-                    <div className="card-body">
-                      <p className="fs-5 text-white">Apply Discount Code</p>
-                      <div className="input-group">
-                        <input
-                          type="text"
-                          className="form-control rounded-0"
-                          placeholder="Enter discount code"
-                          value={discountCode}
-                          onChange={(e) => setDiscountCode(e.target.value)}
-                          disabled={isApplyingDiscount}
-                        />
-                        <button
-                          className="btn btn-light btn-ecomm"
-                          type="button"
-                          onClick={handleApplyDiscount}
-                          disabled={isApplyingDiscount}
-                        >
-                          {isApplyingDiscount ? 'Applying...' : 'Apply Discount'}
-                        </button>
+              {/* ── Sidebar / Order Summary ── */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+
+                {/* Discount Code */}
+                <div className="shop-sidebar" style={{ position: 'static' }}>
+                  <div className="sidebar-section">
+                    <h3 className="sidebar-heading">Discount Code</h3>
+                    {discountMsg && (
+                      <div className={`auth-alert ${discountMsg.type}`} style={{ marginBottom: '1rem' }}>
+                        <span className="auth-alert-icon">{discountMsg.type === 'success' ? '✓' : '⚠'}</span>
+                        {discountMsg.text}
                       </div>
-                    </div>
-                  </div>
-
-                  {/* Shipping Estimation */}
-                  <div className="card rounded-0 border bg-transparent shadow-none">
-                    <div className="card-body">
-                      <p className="fs-5 text-white">Estimate Shipping and Tax</p>
-                      <div className="my-3 border-top"></div>
-
-                      <div className="mb-3">
-                        <label className="form-label">Country Name</label>
-                        <select
-                          className="form-select rounded-0"
-                          value={country}
-                          onChange={(e) => setCountry(e.target.value)}
-                        >
-                          <option value="United States">United States</option>
-                          <option value="Australia">Australia</option>
-                          <option value="India">India</option>
-                          <option value="Canada">Canada</option>
-                        </select>
-                      </div>
-
-                      <div className="mb-3">
-                        <label className="form-label">State/Province</label>
-                        <select
-                          className="form-select rounded-0"
-                          value={state}
-                          onChange={(e) => setState(e.target.value)}
-                        >
-                          <option value="California">California</option>
-                          <option value="Texas">Texas</option>
-                          <option value="New York">New York</option>
-                        </select>
-                      </div>
-
-                      <div className="mb-3">
-                        <label className="form-label">Zip/Postal Code</label>
-                        <input
-                          type="text"
-                          className="form-control rounded-0"
-                          value={zipCode}
-                          onChange={(e) => setZipCode(e.target.value)}
-                          placeholder="Enter zip code"
-                        />
-                      </div>
-
+                    )}
+                    <div style={{ display: 'flex', gap: '.5rem' }}>
+                      <input
+                        type="text"
+                        className="price-input"
+                        placeholder="Enter code"
+                        value={discountCode}
+                        onChange={(e) => setDiscountCode(e.target.value)}
+                        disabled={isApplyingDiscount}
+                        style={{ flex: 1 }}
+                      />
                       <button
-                        onClick={handleEstimateShipping}
-                        className="btn btn-light btn-ecomm w-100"
+                        onClick={handleApplyDiscount}
+                        disabled={isApplyingDiscount}
+                        className="btn-apply-price"
+                        style={{ whiteSpace: 'nowrap' }}
                       >
-                        Estimate Shipping
+                        {isApplyingDiscount ? '...' : 'Apply'}
                       </button>
                     </div>
                   </div>
+                </div>
 
-                  {/* Order Summary */}
-                  <div className="card rounded-0 border bg-transparent mb-0 shadow-none">
-                    <div className="card-body">
-                      <p className="mb-2">
-                        Subtotal: <span className="float-end">${subtotal.toFixed(2)}</span>
-                      </p>
-                      <p className="mb-2">
-                        Shipping: <span className="float-end">
-                          {shipping > 0 ? `$${shipping.toFixed(2)}` : '--'}
-                        </span>
-                      </p>
-                      <p className="mb-2">
-                        Taxes: <span className="float-end">${taxes.toFixed(2)}</span>
-                      </p>
-                      <p className="mb-0">
-                        Discount: <span className="float-end">
-                          {discount > 0 ? `-$${discount.toFixed(2)}` : '--'}
-                        </span>
-                      </p>
-                      <div className="my-3 border-top"></div>
-                      <h5 className="mb-0">
-                        Order Total: <span className="float-end">
-                          ${(total + taxes).toFixed(2)}
-                        </span>
-                      </h5>
-                      <div className="my-4"></div>
-                      <div className="d-grid">
-                        <button
-                          onClick={handleCheckout}
-                          className="btn btn-white btn-ecomm"
-                        >
-                          {isAuthenticated ? 'Proceed to Checkout' : 'Login to Checkout'}
-                        </button>
+                {/* Shipping Estimator */}
+                <div className="shop-sidebar" style={{ position: 'static' }}>
+                  <div className="sidebar-section">
+                    <h3 className="sidebar-heading">Estimate Shipping</h3>
+                    {shippingMsg && (
+                      <div className={`auth-alert ${shippingMsg.type}`} style={{ marginBottom: '1rem' }}>
+                        <span className="auth-alert-icon">{shippingMsg.type === 'success' ? '✓' : '⚠'}</span>
+                        {shippingMsg.text}
                       </div>
-                      {!isAuthenticated && (
-                        <p className="text-center text-muted mt-2 mb-0 small">
-                          You need to login to complete checkout
-                        </p>
-                      )}
+                    )}
+
+                    <div className="auth-field">
+                      <label className="auth-label">Country</label>
+                      <select
+                        className="auth-select"
+                        value={country}
+                        onChange={(e) => setCountry(e.target.value)}
+                      >
+                        <option value="United States">United States</option>
+                        <option value="Australia">Australia</option>
+                        <option value="India">India</option>
+                        <option value="Canada">Canada</option>
+                      </select>
                     </div>
+
+                    <div className="auth-field">
+                      <label className="auth-label">State / Province</label>
+                      <select
+                        className="auth-select"
+                        value={state}
+                        onChange={(e) => setState(e.target.value)}
+                      >
+                        <option value="California">California</option>
+                        <option value="Texas">Texas</option>
+                        <option value="New York">New York</option>
+                      </select>
+                    </div>
+
+                    <div className="auth-field">
+                      <label className="auth-label">Zip / Postal Code</label>
+                      <input
+                        type="text"
+                        className="auth-input"
+                        value={zipCode}
+                        onChange={(e) => setZipCode(e.target.value)}
+                        placeholder="e.g. 90210"
+                      />
+                    </div>
+
+                    <button
+                      onClick={handleEstimateShipping}
+                      className="btn-clear"
+                      style={{ width: '100%' }}
+                    >
+                      Estimate Shipping
+                    </button>
                   </div>
                 </div>
+
+                {/* Order Summary */}
+                <div className="shop-sidebar" style={{ position: 'static' }}>
+                  <div className="sidebar-section">
+                    <h3 className="sidebar-heading">Order Summary</h3>
+
+                    {[
+                      { label: 'Subtotal', value: `$${subtotal.toFixed(2)}` },
+                      { label: 'Shipping', value: shipping > 0 ? `$${shipping.toFixed(2)}` : '—' },
+                      { label: 'Taxes (7%)', value: `$${taxes.toFixed(2)}` },
+                      { label: 'Discount', value: discount > 0 ? `-$${discount.toFixed(2)}` : '—', accent: discount > 0 },
+                    ].map(({ label, value, accent }) => (
+                      <div key={label} style={{
+                        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                        padding: '.55rem 0',
+                        borderBottom: '1px solid #1a1a1a',
+                      }}>
+                        <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '.7rem', letterSpacing: '.08em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.32)' }}>
+                          {label}
+                        </span>
+                        <span style={{ fontFamily: "'Space Mono', monospace", fontSize: '.78rem', color: accent ? '#2a9d8f' : 'rgba(255,255,255,0.92)' }}>
+                          {value}
+                        </span>
+                      </div>
+                    ))}
+
+                    {/* Total */}
+                    <div style={{
+                      display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                      padding: '1rem 0 0',
+                    }}>
+                      <span style={{ fontFamily: "'Anton', 'Impact', sans-serif", fontSize: '1rem', textTransform: 'uppercase', color: 'rgba(255,255,255,0.92)', letterSpacing: '.05em' }}>
+                        Order Total
+                      </span>
+                      <span style={{ fontFamily: "'Anton', 'Impact', sans-serif", fontSize: '1.5rem', color: '#b30e1c', letterSpacing: '.02em' }}>
+                        ${(total + taxes).toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div style={{ padding: '1.25rem 1.5rem', borderTop: '1px solid #222222' }}>
+                    <button
+                      onClick={handleCheckout}
+                      className="auth-submit"
+                      style={{ marginTop: 0 }}
+                    >
+                      {isAuthenticated ? 'Proceed to Checkout →' : 'Login to Checkout →'}
+                    </button>
+                    {!isAuthenticated && (
+                      <p style={{
+                        fontFamily: "'Space Mono', monospace",
+                        fontSize: '.62rem',
+                        color: 'rgba(255,255,255,0.32)',
+                        textAlign: 'center',
+                        marginTop: '.75rem',
+                        marginBottom: 0,
+                      }}>
+                        Login required to complete checkout
+                      </p>
+                    )}
+                  </div>
+                </div>
+
               </div>
             </div>
           </div>
         </div>
       </section>
+
+      {/* Responsive override */}
+      <style>{`
+        @media (max-width: 900px) {
+          .sc-layout {
+            grid-template-columns: 1fr !important;
+          }
+        }
+        @media (max-width: 600px) {
+          .sc-layout > div:first-child > div[style*="grid-template-columns: 1fr 120px"] {
+            grid-template-columns: 1fr 80px 80px 36px !important;
+          }
+        }
+      `}</style>
     </>
   );
 };

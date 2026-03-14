@@ -1,375 +1,222 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate, useLocation } from 'react-router-dom';
-import {
-  clearCart,
-} from "../../features/cart/slice";
-import {
-  selectCurrentUser,
-} from '../../features/user/slice';
-import {
-  clearCurrentOrder,
-} from '../../features/orders/slice';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { clearCart } from '../../features/cart/slice';
+import { selectCurrentUser } from '../../features/user/slice';
+import { clearCurrentOrder } from '../../features/orders/slice';
 
 function CheckoutComplete() {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const location = useLocation();
+  const dispatch  = useDispatch();
+  const navigate  = useNavigate();
+  const location  = useLocation();
 
-  // Get order data from navigation state
-  const orderData = location.state?.order;
-
-  // Redux selectors
+  const orderData   = location.state?.order;
   const currentUser = useSelector(selectCurrentUser);
 
-  // Local state
   const [orderNumber, setOrderNumber] = useState('');
   const [orderDetails, setOrderDetails] = useState(null);
 
-  // Process order on mount
-  useEffect(() => {
-    if (!orderData) {
-      // Redirect to cart if no order data
-      navigate('/cart');
-      return;
-    }
+  const generateOrderNumber = () => {
+    const ts  = Date.now().toString(36).toUpperCase();
+    const rnd = Math.random().toString(36).substring(2, 8).toUpperCase();
+    return `ORD-${ts}${rnd}`;
+  };
 
-    // Set order details
+  useEffect(() => {
+    if (!orderData) { navigate('/cart'); return; }
     setOrderDetails(orderData);
     setOrderNumber(orderData.orderNumber || generateOrderNumber());
-
-    // Clear current order from Redux
     dispatch(clearCart());
     dispatch(clearCurrentOrder());
-
-    // Send confirmation email (mock)
-    console.log('Order confirmation email sent to:', currentUser?.email);
   }, [orderData, currentUser, dispatch, navigate]);
 
-  // Generate order number if not provided
-  const generateOrderNumber = () => {
-    const timestamp = Date.now().toString(36).toUpperCase();
-    const random = Math.random().toString(36).substring(2, 8).toUpperCase();
-    return `ORD-${timestamp}${random}`;
-  };
-
-  // Format date
-  const formatDate = (dateString) => {
-    if (!dateString) return 'N/A';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
+  const formatDate = (ds) => {
+    if (!ds) return 'N/A';
+    return new Date(ds).toLocaleDateString('en-US', {
+      year: 'numeric', month: 'long', day: 'numeric',
+      hour: '2-digit', minute: '2-digit',
     });
-  };
-
-  // Handle navigation
-  const handleContinueShopping = () => {
-    navigate('/shop');
-  };
-
-  const handleTrackOrder = () => {
-    if (orderNumber) {
-      navigate(`/account/orders/${orderNumber}`);
-    } else {
-      navigate('/account/orders');
-    }
-  };
-
-  const handleViewOrderDetails = () => {
-    navigate('/account/orders');
   };
 
   // Loading state
   if (!orderDetails) {
     return (
-      <section className="py-5">
-        <div className="container">
-          <div className="text-center py-5">
-            <div className="spinner-border text-primary mb-3" role="status" style={{ width: '3rem', height: '3rem' }}>
-              <span className="visually-hidden">Loading...</span>
-            </div>
-            <h4>Loading order confirmation...</h4>
+      <div className="co-page">
+        <div className="efear-container">
+          <div className="co-loading-screen">
+            <div className="co-pay-spinner" />
+            <span className="co-loading-txt">Loading confirmation...</span>
           </div>
         </div>
-      </section>
+      </div>
     );
   }
 
+  const addr = orderDetails.shippingAddress || {};
+
   return (
     <>
-      <section className="py-3 border-bottom d-none d-md-flex">
-        <div className="container">
-          <div className="page-breadcrumb d-flex align-items-center">
-            <h3 className="breadcrumb-title pe-3">Order Confirmation</h3>
-            <div className="ms-auto">
-              <nav aria-label="breadcrumb">
-                <ol className="breadcrumb mb-0 p-0">
-                  <li className="breadcrumb-item">
-                    <a href="/" onClick={(e) => { e.preventDefault(); navigate('/'); }}>
-                      <i className="bx bx-home-alt"></i> Home
-                    </a>
-                  </li>
-                  <li className="breadcrumb-item">
-                    <a href="/checkout" onClick={(e) => { e.preventDefault(); navigate('/cart'); }}>
-                      Checkout
-                    </a>
-                  </li>
-                  <li className="breadcrumb-item active" aria-current="page">
-                    Complete
-                  </li>
-                </ol>
-              </nav>
-            </div>
-          </div>
+      {/* Breadcrumb */}
+      <div className="co-crumb-bar">
+        <div className="efear-container co-crumb-nav">
+          <nav className="co-crumb-trail">
+            <Link to="/" className="co-crumb-link">Home</Link>
+            <span className="co-crumb-sep">›</span>
+            <Link to="/cart" className="co-crumb-link">Checkout</Link>
+            <span className="co-crumb-sep">›</span>
+            <span className="co-crumb-current">Complete</span>
+          </nav>
+          <span className="co-crumb-title">Order Confirmation</span>
         </div>
-      </section>
+      </div>
 
-      <section className="py-4">
-        <div className="container">
-          {/* Success Message */}
-          <div className="card py-4 mt-3 border-0 shadow-lg">
-            <div className="card-body text-center">
-              <div className="mb-4">
-                <div className="success-checkmark mx-auto mb-4" style={{ 
-                  width: '100px', 
-                  height: '100px', 
-                  borderRadius: '50%', 
-                  backgroundColor: '#28a745',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  margin: '0 auto'
-                }}>
-                  <i className="bx bx-check text-white" style={{ fontSize: '60px' }}></i>
-                </div>
-                <h2 className="h3 mb-3 text-success">Order Placed Successfully!</h2>
-                <p className="lead mb-0">Thank you for your purchase</p>
+      <div className="co-page">
+        <div className="efear-container">
+
+          {/* ── Success hero ── */}
+          <div className="co-complete-hero">
+            <div className="co-complete-icon">✓</div>
+            <h1 className="co-complete-title">Order Confirmed!</h1>
+            <p className="co-complete-sub">Thank you for your purchase — your gear is on its way.</p>
+
+            <div className="co-order-pill">
+              <span className="co-order-pill-label">Order #</span>
+              <span className="co-order-pill-num">{orderNumber}</span>
+            </div>
+
+            {(orderDetails.customerEmail || currentUser?.email) && (
+              <p className="co-email-note">
+                Confirmation sent to <strong>{orderDetails.customerEmail || currentUser?.email}</strong>
+              </p>
+            )}
+          </div>
+
+          {/* ── Summary card ── */}
+          <div className="co-complete-card">
+
+            {/* Order meta row */}
+            <div className="co-complete-order-meta">
+              <div className="co-complete-meta-item">
+                <div className="co-complete-meta-label">Order Number</div>
+                <div className="co-complete-meta-val">{orderNumber}</div>
               </div>
-
-              <div className="order-confirmation-details mb-4">
-                <div className="alert alert-info mx-auto" style={{ maxWidth: '600px' }}>
-                  <h5 className="mb-3">
-                    <i className="bx bx-receipt me-2"></i>
-                    Order Number: <strong className="text-primary">{orderNumber}</strong>
-                  </h5>
-                  <p className="mb-2">
-                    Your order has been confirmed and will be processed shortly.
-                  </p>
-                  <p className="mb-0">
-                    A confirmation email has been sent to{' '}
-                    <strong>{orderDetails.customerEmail || currentUser?.email}</strong>
-                  </p>
-                </div>
-              </div>
-
-              {/* Order Summary */}
-              <div className="row justify-content-center">
-                <div className="col-lg-8">
-                  <div className="card mb-4">
-                    <div className="card-header bg-light">
-                      <h5 className="mb-0">Order Summary</h5>
-                    </div>
-                    <div className="card-body">
-                      <div className="row mb-3">
-                        <div className="col-6 text-start">
-                          <p className="mb-1 text-muted">Order Number</p>
-                          <strong>{orderNumber}</strong>
-                        </div>
-                        <div className="col-6 text-end">
-                          <p className="mb-1 text-muted">Order Date</p>
-                          <strong>{formatDate(orderDetails.createdAt || orderDetails.orderDate)}</strong>
-                        </div>
-                      </div>
-
-                      <div className="border-top pt-3 mb-3">
-                        <h6 className="mb-3">Items Ordered ({orderDetails.items?.length || 0})</h6>
-                        {orderDetails.items?.slice(0, 3).map((item, index) => (
-                          <div key={index} className="d-flex align-items-center mb-3 pb-3 border-bottom">
-                            <img
-                              src={item.image || 'assets/images/products/placeholder.png'}
-                              alt={item.name}
-                              width="80"
-                              className="rounded me-3"
-                            />
-                            <div className="flex-grow-1 text-start">
-                              <h6 className="mb-1">{item.name}</h6>
-                              <p className="mb-0 text-muted small">
-                                ${item.price.toFixed(2)} x {item.quantity}
-                              </p>
-                            </div>
-                            <div className="text-end">
-                              <strong>${(item.price * item.quantity).toFixed(2)}</strong>
-                            </div>
-                          </div>
-                        ))}
-                        {orderDetails.items?.length > 3 && (
-                          <p className="text-muted mb-0">
-                            +{orderDetails.items.length - 3} more items
-                          </p>
-                        )}
-                      </div>
-
-                      <div className="border-top pt-3">
-                        <div className="d-flex justify-content-between mb-2">
-                          <span>Subtotal:</span>
-                          <span>${orderDetails.subtotal?.toFixed(2)}</span>
-                        </div>
-                        <div className="d-flex justify-content-between mb-2">
-                          <span>Shipping:</span>
-                          <span>
-                            {orderDetails.shipping === 0 
-                              ? 'FREE' 
-                              : `$${orderDetails.shipping?.toFixed(2)}`}
-                          </span>
-                        </div>
-                        <div className="d-flex justify-content-between mb-2">
-                          <span>Tax:</span>
-                          <span>${orderDetails.taxes?.toFixed(2)}</span>
-                        </div>
-                        {orderDetails.discount > 0 && (
-                          <div className="d-flex justify-content-between mb-2 text-success">
-                            <span>Discount:</span>
-                            <span>-${orderDetails.discount?.toFixed(2)}</span>
-                          </div>
-                        )}
-                        <div className="border-top pt-2 mt-2">
-                          <div className="d-flex justify-content-between">
-                            <strong className="h5 mb-0">Total:</strong>
-                            <strong className="h5 mb-0 text-primary">
-                              ${orderDetails.total?.toFixed(2)}
-                            </strong>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Shipping Information */}
-                  <div className="row mb-4">
-                    <div className="col-md-6">
-                      <div className="card h-100">
-                        <div className="card-header bg-light">
-                          <h6 className="mb-0">
-                            <i className="bx bx-map me-2"></i>Shipping Address
-                          </h6>
-                        </div>
-                        <div className="card-body text-start">
-                          {orderDetails.shippingAddress ? (
-                            <address className="mb-0">
-                              <strong>
-                                {orderDetails.shippingAddress.firstName} {orderDetails.shippingAddress.lastName}
-                              </strong><br />
-                              {orderDetails.shippingAddress.line1}<br />
-                              {orderDetails.shippingAddress.line2 && (
-                                <>{orderDetails.shippingAddress.line2}<br /></>
-                              )}
-                              {orderDetails.shippingAddress.city}, {orderDetails.shippingAddress.state} {orderDetails.shippingAddress.zipCode}<br />
-                              {orderDetails.shippingAddress.country}
-                              {orderDetails.shippingAddress.phone && (
-                                <><br /><i className="bx bx-phone me-1"></i>{orderDetails.shippingAddress.phone}</>
-                              )}
-                            </address>
-                          ) : (
-                            <p className="text-muted mb-0">No shipping address available</p>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-md-6">
-                      <div className="card h-100">
-                        <div className="card-header bg-light">
-                          <h6 className="mb-0">
-                            <i className="bx bx-credit-card me-2"></i>Payment Method
-                          </h6>
-                        </div>
-                        <div className="card-body text-start">
-                          <p className="mb-2">
-                            <strong>Credit Card</strong>
-                          </p>
-                          <p className="mb-0 text-muted small">
-                            Payment processed securely
-                          </p>
-                          {orderDetails.paymentIntentId && (
-                            <p className="mb-0 text-muted small mt-2">
-                              Transaction ID: {orderDetails.paymentIntentId}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* What's Next */}
-                  <div className="alert alert-info text-start mb-4">
-                    <h6 className="alert-heading">
-                      <i className="bx bx-info-circle me-2"></i>What happens next?
-                    </h6>
-                    <ul className="mb-0 ps-3">
-                      <li>Your order is being prepared for shipment</li>
-                      <li>You'll receive a shipping notification with tracking information</li>
-                      <li>Estimated delivery: {orderDetails.estimatedDelivery || '3-5 business days'}</li>
-                      <li>Track your order anytime from your account</li>
-                    </ul>
-                  </div>
-
-                  {/* Action Buttons */}
-                  <div className="d-flex flex-wrap gap-3 justify-content-center">
-                    <button
-                      className="btn btn-primary btn-lg"
-                      onClick={handleContinueShopping}
-                    >
-                      <i className="bx bx-shopping-bag me-2"></i>
-                      Continue Shopping
-                    </button>
-                    <button
-                      className="btn btn-outline-primary btn-lg"
-                      onClick={handleViewOrderDetails}
-                    >
-                      <i className="bx bx-receipt me-2"></i>
-                      View All Orders
-                    </button>
-                  </div>
-
-                  {/* Customer Support */}
-                  <div className="mt-5 pt-4 border-top">
-                    <h6 className="mb-3">Need Help?</h6>
-                    <p className="text-muted mb-3">
-                      Our customer support team is here to assist you
-                    </p>
-                    <div className="d-flex gap-3 justify-content-center flex-wrap">
-                      <a 
-                        href="mailto:support@example.com" 
-                        className="btn btn-outline-secondary"
-                      >
-                        <i className="bx bx-envelope me-2"></i>
-                        Email Support
-                      </a>
-                      <a 
-                        href="tel:+1234567890" 
-                        className="btn btn-outline-secondary"
-                      >
-                        <i className="bx bx-phone me-2"></i>
-                        Call Us
-                      </a>
-                      <button
-                        className="btn btn-outline-secondary"
-                        onClick={() => window.print()}
-                      >
-                        <i className="bx bx-printer me-2"></i>
-                        Print Receipt
-                      </button>
-                    </div>
-                  </div>
-                </div>
+              <div className="co-complete-meta-item" style={{ textAlign: 'right' }}>
+                <div className="co-complete-meta-label">Order Date</div>
+                <div className="co-complete-meta-val">{formatDate(orderDetails.createdAt || orderDetails.orderDate)}</div>
               </div>
             </div>
+
+            {/* Items */}
+            <div style={{ borderTop: '1px solid #222222' }}>
+              <div className="co-complete-card-head">
+                <h3 className="co-section-title">Items Ordered ({orderDetails.items?.length || 0})</h3>
+              </div>
+              <div className="co-review-items">
+                {orderDetails.items?.slice(0, 3).map((item, i) => (
+                  <div key={i} className="co-review-item">
+                    <img src={item.image || 'assets/images/products/placeholder.png'} alt={item.name} className="co-review-img" />
+                    <div>
+                      <p className="co-review-name">{item.name}</p>
+                      <p className="co-review-meta">${item.price?.toFixed(2)} × {item.quantity}</p>
+                    </div>
+                    <div>
+                      <p className="co-review-price">${(item.price * item.quantity).toFixed(2)}</p>
+                    </div>
+                  </div>
+                ))}
+                {orderDetails.items?.length > 3 && (
+                  <div style={{ padding: '.75rem 1.5rem', borderTop: '1px solid #222222' }}>
+                    <p className="co-mini-more">+{orderDetails.items.length - 3} more items</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Totals */}
+            <div style={{ padding: '1.25rem 1.5rem', borderTop: '1px solid #222222' }}>
+              <div className="co-totals" style={{ marginBottom: '.85rem' }}>
+                {[
+                  { label: 'Subtotal', val: `$${orderDetails.subtotal?.toFixed(2)}` },
+                  { label: 'Shipping', val: orderDetails.shipping === 0 ? 'FREE' : `$${orderDetails.shipping?.toFixed(2)}` },
+                  { label: 'Tax',      val: `$${orderDetails.taxes?.toFixed(2)}` },
+                  ...(orderDetails.discount > 0 ? [{ label: 'Discount', val: `-$${orderDetails.discount?.toFixed(2)}`, teal: true }] : []),
+                ].map(({ label, val, teal }) => (
+                  <div key={label} className="co-total-row">
+                    <span className="co-total-label">{label}</span>
+                    <span className={`co-total-val${teal ? ' teal' : ''}`}>{val}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="co-divider" />
+              <div className="co-grand-row">
+                <span className="co-grand-label">Order Total</span>
+                <span className="co-grand-val">${orderDetails.total?.toFixed(2)}</span>
+              </div>
+            </div>
+
+            {/* Shipping + Payment info */}
+            <div className="co-info-grid" style={{ borderTop: '1px solid #222222', padding: '1.25rem 1.5rem' }}>
+              <div className="co-info-block">
+                <p className="co-info-eyebrow">📍 Shipping Address</p>
+                {addr.firstName ? (
+                  <p className="co-info-line">
+                    <strong>{addr.firstName} {addr.lastName}</strong>
+                    {addr.line1}
+                    {addr.line2 && <><br />{addr.line2}</>}
+                    <br />{addr.city}, {addr.state} {addr.zipCode}
+                    <br />{addr.country}
+                    {addr.phone && <><br />{addr.phone}</>}
+                  </p>
+                ) : (
+                  <p className="co-info-line">No address available</p>
+                )}
+              </div>
+              <div className="co-info-block">
+                <p className="co-info-eyebrow">💳 Payment Method</p>
+                <p className="co-info-line"><strong>Credit Card</strong>Payment processed securely</p>
+                {orderDetails.paymentIntentId && (
+                  <p className="co-info-line" style={{ marginTop: '.5rem', fontSize: '.62rem', color: 'rgba(255,255,255,0.22)' }}>
+                    TXN: {orderDetails.paymentIntentId}
+                  </p>
+                )}
+                <div className="co-payment-badge" style={{ marginTop: '.75rem' }}>✓ Authorised</div>
+              </div>
+            </div>
+
+            {/* What's next */}
+            <div className="co-whats-next">
+              <h3 className="co-whats-next-title">What Happens Next?</h3>
+              <ul className="co-whats-next-list">
+                <li>Your order is being prepared for shipment</li>
+                <li>You'll receive a shipping notification with tracking info</li>
+                <li>Estimated delivery: {orderDetails.estimatedDelivery || '3-5 business days'}</li>
+                <li>Track your order anytime from your account dashboard</li>
+              </ul>
+            </div>
+
+            {/* Action buttons */}
+            <div className="co-complete-actions">
+              <button onClick={() => navigate('/shop')} className="cart-dd-btn-primary" style={{ padding: '.75rem 1.75rem' }}>
+                Continue Shopping
+              </button>
+              <button onClick={() => navigate('/account/orders')} className="cart-dd-btn-ghost" style={{ padding: '.75rem 1.75rem' }}>
+                View All Orders
+              </button>
+              <button onClick={() => window.print()} className="cart-dd-btn-ghost" style={{ padding: '.75rem 1.75rem' }}>
+                Print Receipt
+              </button>
+            </div>
+
+            {/* Support */}
+            <div className="co-support-row">
+              <a href="mailto:support@efear.com" className="cart-dd-btn-ghost" style={{ padding: '.5rem 1rem', fontSize: '.62rem', textDecoration: 'none' }}>✉ Email Support</a>
+              <a href="tel:+1234567890"           className="cart-dd-btn-ghost" style={{ padding: '.5rem 1rem', fontSize: '.62rem', textDecoration: 'none' }}>☎ Call Us</a>
+              <button onClick={() => navigate(`/account/orders/${orderNumber}`)} className="cart-dd-btn-ghost" style={{ padding: '.5rem 1rem', fontSize: '.62rem' }}>Track Order</button>
+            </div>
+
           </div>
         </div>
-      </section>
+      </div>
     </>
   );
 }

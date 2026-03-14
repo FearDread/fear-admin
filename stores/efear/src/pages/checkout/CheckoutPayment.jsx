@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
-import Breadcrumbs from "../../components/common/Breadcrumbs";
 import {
   selectCartItems,
   selectCartSubtotal,
-  selectCartTotal,
   selectCartShipping,
   selectCartDiscount,
   applyDiscount,
@@ -18,437 +16,262 @@ import {
   selectCurrentOrder,
   updateCurrentOrder,
 } from '../../features/orders/slice';
-import StripePayment from "./components/StripePayment";
-import PayPalCardPayment from "./components/PayPalPayment";
-import CheckoutSteps from "./components/CheckoutSteps";
-import { createPaymentIntent } from "../../features/payments/slice";
+import StripePayment from './components/StripePayment';
+import PayPalCardPayment from './components/PayPalPayment';
+import CheckoutSteps from './components/CheckoutSteps';
+import { createPaymentIntent } from '../../features/payments/slice';
 
 export const CheckoutPayment = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const cartItems = useSelector(selectCartItems);
-  const subtotal = useSelector(selectCartSubtotal);
-  const total = useSelector(selectCartTotal);
-  const shipping = useSelector(selectCartShipping);
-  const discount = useSelector(selectCartDiscount);
-  const currentUser = useSelector(selectCurrentUser);
-  const currentOrder = useSelector(selectCurrentOrder);
+  const cartItems       = useSelector(selectCartItems);
+  const subtotal        = useSelector(selectCartSubtotal);
+  const shipping        = useSelector(selectCartShipping);
+  const discount        = useSelector(selectCartDiscount);
+  const currentUser     = useSelector(selectCurrentUser);
+  const currentOrder    = useSelector(selectCurrentOrder);
   const isAuthenticated = useSelector(selectIsAuthenticated);
 
-  // Local state
-  const [paymentMethod, setPaymentMethod] = useState('card');
-  const [discountCode, setDiscountCode] = useState('');
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [clientSecret, setClientSecret] = useState('');
+  const [paymentMethod, setPaymentMethod]   = useState('card');
+  const [discountCode, setDiscountCode]     = useState('');
+  const [isProcessing, setIsProcessing]     = useState(false);
+  const [clientSecret, setClientSecret]     = useState('');
   const [paymentIntentId, setPaymentIntentId] = useState('');
 
-  // Calculate taxes and final total
-  const taxRate = 0.07;
-  const taxes = subtotal * taxRate;
+  const taxRate    = 0.07;
+  const taxes      = subtotal * taxRate;
   const orderTotal = subtotal + shipping + taxes - discount;
 
-  // Redirect if not authenticated
   useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/login', { state: { from: '/checkout/payment' } });
-    }
+    if (!isAuthenticated) navigate('/login', { state: { from: '/checkout/payment' } });
   }, [isAuthenticated, navigate]);
 
-  // Redirect if cart is empty
   useEffect(() => {
-    if (cartItems.length === 0) {
-      navigate('/cart');
-    }
+    if (cartItems.length === 0) navigate('/cart');
   }, [cartItems.length, navigate]);
 
-  // Create payment intent when component mounts
   useEffect(() => {
-    const initializePayment = () => {
-      if (paymentMethod === 'card' && orderTotal > 0 && !clientSecret) {
-          const paymentData = {
-            amount: Math.round(orderTotal * 100), // Convert to cents
-            currency: 'usd',
-            metadata: {
-              userId: currentUser?._id,
-              orderId: currentOrder?._id || 'pending',
-            },
-            currentUser
-          };
-
-          dispatch(createPaymentIntent(paymentData))
-            .unwrap()
-            .then((result) => {
-                  console.log('pay intent init result = ', result);
-              if (result.client_secret) {
-                setClientSecret(result.client_secret);
-                setPaymentIntentId(result.id);
-              }
-            })
-            .catch((error) => {
-              console.error('Failed to create payment intent:', error);
-          });
-      }
-    };
-
-    initializePayment();
+    if (paymentMethod === 'card' && orderTotal > 0 && !clientSecret) {
+      dispatch(createPaymentIntent({
+        amount: Math.round(orderTotal * 100),
+        currency: 'usd',
+        metadata: { userId: currentUser?._id, orderId: currentOrder?._id || 'pending' },
+        currentUser,
+      }))
+        .unwrap()
+        .then(result => {
+          if (result.client_secret) {
+            setClientSecret(result.client_secret);
+            setPaymentIntentId(result.id);
+          }
+        })
+        .catch(err => console.error('Payment intent error:', err));
+    }
   }, [paymentMethod, orderTotal, dispatch, currentUser, currentOrder, clientSecret]);
 
   const handleApplyDiscount = () => {
-    if (!discountCode.trim()) {
-      alert('Please enter a discount code');
-      return;
-    }
-
-    const validCodes = {
-      'SAVE10': 10,
-      'SAVE20': 20,
-      'WELCOME15': 15,
-      'FIRST25': 25,
-    };
-
-    const discountPercentage = validCodes[discountCode.toUpperCase()];
-
-    if (discountPercentage) {
-      const discountAmount = (subtotal * discountPercentage) / 100;
-      dispatch(applyDiscount(discountAmount));
-      alert(`Discount applied! You saved $${discountAmount.toFixed(2)}`);
+    if (!discountCode.trim()) return;
+    const validCodes = { 'SAVE10': 10, 'SAVE20': 20, 'WELCOME15': 15, 'FIRST25': 25 };
+    const pct = validCodes[discountCode.toUpperCase()];
+    if (pct) {
+      dispatch(applyDiscount((subtotal * pct) / 100));
       setDiscountCode('');
-      // Reset client secret to create new payment intent with updated amount
       setClientSecret('');
-    } else {
-      alert('Invalid discount code');
     }
   };
 
   const handlePaymentSuccess = async (paymentResult) => {
     setIsProcessing(true);
-    
     try {
-      // Generate order number
-      const timestamp = Date.now().toString(36).toUpperCase();
-      const random = Math.random().toString(36).substring(2, 7).toUpperCase();
-      const orderNumber = `ORD-${timestamp}-${random}`;
-
-      // Update order with payment details
-      const updatedOrder = {
-        ...currentOrder,
-        orderNumber,
-        userId: currentUser._id,
-        items: cartItems,
-        subtotal,
-        shipping,
-        taxes,
-        discount,
-        total: orderTotal,
+      const ts = Date.now().toString(36).toUpperCase();
+      const rnd = Math.random().toString(36).substring(2, 7).toUpperCase();
+      const orderNumber = `ORD-${ts}-${rnd}`;
+      dispatch(updateCurrentOrder({
+        ...currentOrder, orderNumber,
+        userId: currentUser._id, items: cartItems,
+        subtotal, shipping, taxes, discount, total: orderTotal,
         paymentMethod: 'card',
         paymentIntentId: paymentResult.paymentIntent?.id || paymentIntentId,
-        paymentStatus: 'completed',
-        orderStatus: 'confirmed',
+        paymentStatus: 'completed', orderStatus: 'confirmed',
         orderDate: new Date().toISOString(),
-      };
-
-      // Save updated order to Redux
-      dispatch(updateCurrentOrder(updatedOrder));
-
-      // Navigate to review page
+      }));
       navigate('/checkout/review');
-    } catch (error) {
-      console.error('Payment processing error:', error);
-      alert('Failed to process payment. Please try again.');
+    } catch (err) {
+      console.error(err);
     } finally {
       setIsProcessing(false);
     }
   };
 
-  const handlePaymentError = (error) => {
-    console.error('Payment error:', error);
+  const handlePaymentError = (err) => {
+    console.error('Payment error:', err);
     setIsProcessing(false);
-    alert(`Payment failed: ${error.message || 'Please try again'}`);
-  };
-
-  const handleBackToShipping = () => {
-    navigate('/checkout/shipping');
-  };
-
-  const handlePayPalPayment = () => {
-    alert('PayPal integration coming soon!');
-  };
-
-  const handleBankPayment = () => {
-    alert('Net Banking integration coming soon!');
   };
 
   if (!isAuthenticated || cartItems.length === 0) {
     return (
-      <section className="py-5">
-        <div className="container">
-          <div className="text-center">
-            <div className="spinner-border" role="status">
-              <span className="visually-hidden">Loading...</span>
-            </div>
+      <div className="co-page">
+        <div className="efear-container">
+          <div className="co-loading-screen">
+            <div className="co-pay-spinner" />
+            <span className="co-loading-txt">Loading...</span>
           </div>
         </div>
-      </section>
+      </div>
     );
   }
 
+  const tabs = [
+    { id: 'card',          label: 'Credit Card', icon: '💳' },
+    { id: 'paypal-payment', label: 'PayPal',      icon: '🅿' },
+    { id: 'net-banking',   label: 'Net Banking',  icon: '🏦' },
+  ];
+
   return (
     <>
-      <section className="py-3 border-bottom d-none d-md-flex">
-        <div className="container">
-          <div className="page-breadcrumb d-flex align-items-center">
-            <h3 className="breadcrumb-title pe-3">Checkout</h3>
-            <div className="ms-auto">
-              <Breadcrumbs
-                items={[
-                  { label: 'Checkout', path: '/checkout/details', icon: 'bx bx-check' },
-                  { label: 'Payment', path: '/checkout/payment', icon: 'bx bx-shopping-cart', isActive: true }
-                ]}
-              />
-            </div>
-          </div>
+      {/* Breadcrumb */}
+      <div className="co-crumb-bar">
+        <div className="efear-container co-crumb-nav">
+          <nav className="co-crumb-trail">
+            <Link to="/" className="co-crumb-link">Home</Link>
+            <span className="co-crumb-sep">›</span>
+            <Link to="/checkout/details" className="co-crumb-link">Details</Link>
+            <span className="co-crumb-sep">›</span>
+            <Link to="/checkout/shipping" className="co-crumb-link">Shipping</Link>
+            <span className="co-crumb-sep">›</span>
+            <span className="co-crumb-current">Payment</span>
+          </nav>
+          <span className="co-crumb-title">Payment</span>
         </div>
-      </section>
+      </div>
 
-      <section className="py-4">
-        <div className="container">
-          <div className="shop-cart">
-            <div className="row">
-              <div className="col-12 col-xl-8">
-                <div className="checkout-payment">
-                  <CheckoutSteps currentStep="payment" />
+      <div className="co-page">
+        <div className="efear-container">
+          <div className="co-layout">
 
-                  <div className="card rounded-0 shadow-none">
-                    <div className="card-header border-bottom">
-                      <h2 className="h5 my-2">Choose Payment Method</h2>
-                    </div>
-                    <div className="card-body">
-                      <ul className="nav nav-pills mb-3 border p-3" role="tablist">
-                        <li className="nav-item" role="presentation">
-                          <button
-                            className={`nav-link ${paymentMethod === 'card' ? 'active' : ''} rounded-0`}
-                            onClick={() => setPaymentMethod('card')}
-                            type="button"
-                          >
-                            <div className="d-flex align-items-center">
-                              <div className="tab-icon"><i className='bx bx-credit-card font-18 me-1'></i></div>
-                              <div className="tab-title">Credit Card</div>
-                            </div>
-                          </button>
-                        </li>
-                        <li className="nav-item" role="presentation">
-                          <button
-                            className={`nav-link ${paymentMethod === 'paypal-payment' ? 'active' : ''} rounded-0`}
-                            onClick={() => setPaymentMethod('paypal-payment')}
-                            type="button"
-                          >
-                            <div className="d-flex align-items-center">
-                              <div className="tab-icon"><i className='bx bxl-paypal font-18 me-1'></i></div>
-                              <div className="tab-title">PayPal</div>
-                            </div>
-                          </button>
-                        </li>
-                        <li className="nav-item" role="presentation">
-                          <button
-                            className={`nav-link ${paymentMethod === 'net-banking' ? 'active' : ''} rounded-0`}
-                            onClick={() => setPaymentMethod('net-banking')}
-                            type="button"
-                          >
-                            <div className="d-flex align-items-center">
-                              <div className="tab-icon"><i className='bx bx-mobile font-18 me-1'></i></div>
-                              <div className="tab-title">Net Banking</div>
-                            </div>
-                          </button>
-                        </li>
-                      </ul>
+            {/* ── Left column ── */}
+            <div>
+              <CheckoutSteps currentStep="payment" />
 
-                      {/* Credit Card Form with Stripe */}
-                      {paymentMethod === 'card' && (
-                        <div className="p-3 border">
-                          {clientSecret ? (
-                            <StripePayment 
-                              clientSecret={clientSecret}
-                              amount={orderTotal}
-                              onSuccess={handlePaymentSuccess}
-                              onError={handlePaymentError}
-                            />
-                          ) : (
-                            <div className="text-center py-3">
-                              <div className="spinner-border text-primary" role="status">
-                                <span className="visually-hidden">Loading payment...</span>
-                              </div>
-                              <p className="mt-2 text-muted">Initializing secure payment...</p>
-                            </div>
-                          )}
-                        </div>
-                      )}
-
-                      {/* PayPal Form */}
-                      {paymentMethod === 'paypal-payment' && (
-                        <div className="p-3 border">
-                          <PayPalCardPayment 
-                            order={currentOrder}
-                            amount={orderTotal}
-                            onSuccess={handlePayPalPayment}
-                            onError={() => console.log('paypal error')}
-                          />
-                          <div className="d-grid">
-                            <button
-                              onClick={handlePayPalPayment}
-                              className="btn btn-light rounded-0"
-                              disabled
-                            >
-                              <i className='bx bxl-paypal me-2'></i>Continue with PayPal
-                            </button>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Net Banking Form */}
-                      {paymentMethod === 'net-banking' && (
-                        <div className="p-3 border">
-                          <div className="mb-3">
-                            <p className="text-muted">
-                              <i className="bx bx-info-circle me-2"></i>
-                              Net Banking integration coming soon
-                            </p>
-                          </div>
-                          <div className="d-grid">
-                            <button
-                              onClick={handleBankPayment}
-                              className="btn btn-light rounded-0"
-                              disabled
-                            >
-                              <i className='bx bx-building me-2'></i>Continue with Net Banking
-                            </button>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Navigation Buttons */}
-                  <div className="card rounded-0 shadow-none">
-                    <div className="card-body">
-                      <div className="row">
-                        <div className="col-md-6">
-                          <div className="d-grid">
-                            <button
-                              onClick={handleBackToShipping}
-                              className="btn btn-light btn-ecomm"
-                              disabled={isProcessing}
-                            >
-                              <i className="bx bx-chevron-left"></i>Back to Shipping
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+              <div className="co-panel">
+                <div className="co-panel-head">
+                  <h2 className="co-section-title">Choose Payment Method</h2>
                 </div>
-              </div>
 
-              {/* Order Summary Sidebar */}
-              <div className="col-12 col-xl-4">
-                <div className="order-summary">
-                  <div className="card rounded-0">
-                    <div className="card-body">
-                      {/* Discount Code */}
-                      <div className="card rounded-0 border bg-transparent shadow-none">
-                        <div className="card-body">
-                          <p className="fs-5">Apply Discount Code</p>
-                          <div className="input-group">
-                            <input
-                              type="text"
-                              className="form-control rounded-0"
-                              placeholder="Enter discount code"
-                              value={discountCode}
-                              onChange={(e) => setDiscountCode(e.target.value)}
-                            />
-                            <button
-                              className="btn btn-light btn-ecomm"
-                              type="button"
-                              onClick={handleApplyDiscount}
-                            >
-                              Apply
-                            </button>
-                          </div>
-                        </div>
+                {/* Tabs */}
+                <div className="co-pay-tabs">
+                  {tabs.map(tab => (
+                    <button
+                      key={tab.id}
+                      className={`co-pay-tab${paymentMethod === tab.id ? ' active' : ''}`}
+                      onClick={() => setPaymentMethod(tab.id)}
+                      type="button"
+                    >
+                      <span className="co-pay-tab-icon">{tab.icon}</span>
+                      {tab.label}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Card */}
+                {paymentMethod === 'card' && (
+                  <div className="co-pay-body">
+                    {clientSecret ? (
+                      <StripePayment
+                        clientSecret={clientSecret}
+                        amount={orderTotal}
+                        onSuccess={handlePaymentSuccess}
+                        onError={handlePaymentError}
+                      />
+                    ) : (
+                      <div className="co-pay-loading">
+                        <div className="co-pay-spinner" />
+                        <span className="co-pay-loading-txt">Initialising secure payment...</span>
                       </div>
-
-                      {/* Order Items */}
-                      <div className="card rounded-0 border bg-transparent shadow-none">
-                        <div className="card-body">
-                          <p className="fs-5">Order Summary ({cartItems.length} items)</p>
-                          <div className="my-3 border-top"></div>
-
-                          {cartItems.slice(0, 3).map((item, index) => (
-                            <React.Fragment key={item.productId}>
-                              {index > 0 && <div className="my-3 border-top"></div>}
-                              <div className="d-flex align-items-center">
-                                <Link to={`/product/${item.productId}`} className="d-block flex-shrink-0">
-                                  <img
-                                    src={item.image || 'assets/images/products/placeholder.png'}
-                                    width="75"
-                                    alt={item.name}
-                                  />
-                                </Link>
-                                <div className="ps-2">
-                                  <h6 className="mb-1">
-                                    <Link to={`/product/${item.productId}`}>{item.name}</Link>
-                                  </h6>
-                                  <div className="widget-product-meta">
-                                    <span className="me-2">${item.price.toFixed(2)}</span>
-                                    <span>x {item.quantity}</span>
-                                  </div>
-                                </div>
-                              </div>
-                            </React.Fragment>
-                          ))}
-                          {cartItems.length > 3 && (
-                            <p className="text-muted small mt-2">
-                              +{cartItems.length - 3} more items
-                            </p>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Order Totals */}
-                      <div className="card rounded-0 border bg-transparent mb-0 shadow-none">
-                        <div className="card-body">
-                          <p className="mb-2">
-                            Subtotal: <span className="float-end">${subtotal.toFixed(2)}</span>
-                          </p>
-                          <p className="mb-2">
-                            Shipping: <span className="float-end">
-                              {shipping > 0 ? `$${shipping.toFixed(2)}` : 'FREE'}
-                            </span>
-                          </p>
-                          <p className="mb-2">
-                            Taxes: <span className="float-end">${taxes.toFixed(2)}</span>
-                          </p>
-                          <p className="mb-0">
-                            Discount: <span className="float-end">
-                              {discount > 0 ? `-$${discount.toFixed(2)}` : '--'}
-                            </span>
-                          </p>
-                          <div className="my-3 border-top"></div>
-                          <h5 className="mb-0">
-                            Order Total: <span className="float-end">${orderTotal.toFixed(2)}</span>
-                          </h5>
-                        </div>
-                      </div>
-                    </div>
+                    )}
                   </div>
+                )}
+
+                {/* PayPal */}
+                {paymentMethod === 'paypal-payment' && (
+                  <div className="co-pay-body">
+                    <PayPalCardPayment order={currentOrder} amount={orderTotal} onSuccess={() => {}} onError={() => {}} />
+                    <p className="co-pay-coming-soon">PayPal integration coming soon</p>
+                  </div>
+                )}
+
+                {/* Net Banking */}
+                {paymentMethod === 'net-banking' && (
+                  <div className="co-pay-body">
+                    <p className="co-pay-coming-soon">Net Banking integration coming soon</p>
+                  </div>
+                )}
+
+                <div className="co-nav-btns single">
+                  <button onClick={() => navigate('/checkout/shipping')} disabled={isProcessing} className="cart-dd-btn-ghost" style={{ padding: '.65rem' }}>← Back to Shipping</button>
                 </div>
               </div>
             </div>
+
+            {/* ── Sidebar ── */}
+            <div className="co-sidebar">
+              {/* Discount */}
+              <div className="co-sidebar-panel">
+                <p className="co-sidebar-title">Discount Code</p>
+                <div className="co-discount-row">
+                  <input type="text" className="auth-input" style={{ flex: 1 }} placeholder="Enter code" value={discountCode} onChange={e => setDiscountCode(e.target.value)} />
+                  <button onClick={handleApplyDiscount} className="cart-dd-btn-primary" style={{ padding: '.72rem 1rem', whiteSpace: 'nowrap' }}>Apply</button>
+                </div>
+              </div>
+
+              {/* Items */}
+              <div className="co-sidebar-panel">
+                <p className="co-sidebar-title">Order Items ({cartItems.length})</p>
+                <div className="co-divider" style={{ margin: '0 0 .75rem' }} />
+                <div className="co-mini-items">
+                  {cartItems.slice(0, 3).map(item => (
+                    <div key={item.productId} className="co-mini-item">
+                      <img src={item.image || 'assets/images/products/placeholder.png'} alt={item.name} className="co-mini-img" />
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <p className="co-mini-name">{item.name}</p>
+                        <p className="co-mini-meta">${item.price.toFixed(2)} × {item.quantity}</p>
+                      </div>
+                    </div>
+                  ))}
+                  {cartItems.length > 3 && <p className="co-mini-more">+{cartItems.length - 3} more items</p>}
+                </div>
+              </div>
+
+              {/* Totals */}
+              <div className="co-sidebar-panel accent-top">
+                <p className="co-sidebar-title">Order Total</p>
+                <div className="co-totals" style={{ marginBottom: '.85rem' }}>
+                  {[
+                    { label: 'Subtotal', val: `$${subtotal.toFixed(2)}` },
+                    { label: 'Shipping', val: shipping > 0 ? `$${shipping.toFixed(2)}` : 'FREE' },
+                    { label: 'Tax',      val: `$${taxes.toFixed(2)}` },
+                    { label: 'Discount', val: discount > 0 ? `-$${discount.toFixed(2)}` : '—', teal: discount > 0 },
+                  ].map(({ label, val, teal }) => (
+                    <div key={label} className="co-total-row">
+                      <span className="co-total-label">{label}</span>
+                      <span className={`co-total-val${teal ? ' teal' : ''}`}>{val}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="co-divider" />
+                <div className="co-grand-row">
+                  <span className="co-grand-label">Order Total</span>
+                  <span className="co-grand-val">${orderTotal.toFixed(2)}</span>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
-      </section>
+      </div>
     </>
   );
-}
+};
 
 export default CheckoutPayment;
