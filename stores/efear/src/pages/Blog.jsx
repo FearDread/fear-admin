@@ -18,10 +18,6 @@ import {
 } from "../features/categories/slice";
 import { T, blogStyles } from "../components/styles";
 
-
-/* ─────────────────────────────────────────────
-   ACCENT COLORS per tag index
-───────────────────────────────────────────────*/
 const TAG_COLORS = [T.red, T.orange, T.teal, T.red, T.orange];
 
 const POPULAR_TAGS = [
@@ -30,9 +26,6 @@ const POPULAR_TAGS = [
     'Dark Horse', 'Image Comics', 'Reviews', 'New Arrivals',
 ];
 
-/* ─────────────────────────────────────────────
-   HELPERS
-───────────────────────────────────────────────*/
 const formatDate = (dateStr) => {
     if (!dateStr) return 'November 5, 2021';
     return new Date(dateStr).toLocaleDateString('en-US', {
@@ -43,9 +36,6 @@ const formatDate = (dateStr) => {
 const getPostImage = (post, index) =>
     post.images?.[0]?.url || `assets/images/posts/0${(index % 4) + 1}.png`;
 
-/* ─────────────────────────────────────────────
-   SKELETON LOADER
-───────────────────────────────────────────────*/
 const BlogSkeleton = () => (
     <div className="blog-skeleton">
         {/* Featured skeleton */}
@@ -75,32 +65,28 @@ const BlogSkeleton = () => (
     </div>
 );
 
-/* ─────────────────────────────────────────────
-   BLOG COMPONENT
-───────────────────────────────────────────────*/
 export const Blog = () => {
-    const dispatch  = useDispatch();
-    const navigate  = useNavigate();
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
-    const posts              = useSelector(selectSortedPosts);
-    const loading            = useSelector(selectLoading);
-    const error              = useSelector(selectError);
-    const searchTerm         = useSelector(selectSearchTerm);
-    const filters            = useSelector(selectFilters);
-    const categories         = useSelector(selectVisibleCategories);
-    const categoriesLoading  = useSelector(selectCategoriesLoading);
+    const posts = useSelector(selectSortedPosts);
+    const loading = useSelector(selectLoading);
+    const error = useSelector(selectError);
+    const searchTerm = useSelector(selectSearchTerm);
+    const filters = useSelector(selectFilters);
+    const categories = useSelector(selectVisibleCategories);
+    const categoriesLoading = useSelector(selectCategoriesLoading);
 
     const [localSearchTerm, setLocalSearchTerm] = useState('');
-    const [activeTag, setActiveTag]             = useState('');
+    const [activeTag, setActiveTag] = useState('');
     const [newsletterEmail, setNewsletterEmail] = useState('');
-    const [visibleCount, setVisibleCount]       = useState(6);
+    const [visibleCount, setVisibleCount] = useState(6);
 
     useEffect(() => {
         dispatch(fetchPosts());
         dispatch(fetchCategories());
     }, [dispatch]);
 
-    /* ── Handlers (all original logic preserved) ── */
     const handleSearch = (e) => {
         e?.preventDefault();
         dispatch(setSearchTerm(localSearchTerm));
@@ -118,10 +104,10 @@ export const Blog = () => {
     };
 
     /* ── Derived data ── */
-    const displayPosts  = posts.slice(0, visibleCount);
-    const featuredPost  = displayPosts[0];
-    const regularPosts  = displayPosts.slice(1);
-    const hasMore       = posts.length > visibleCount;
+    const displayPosts = posts.slice(0, visibleCount);
+    const featuredPost = displayPosts[0];
+    const regularPosts = displayPosts.slice(1);
+    const hasMore = posts.length > visibleCount;
 
     return (
         <>

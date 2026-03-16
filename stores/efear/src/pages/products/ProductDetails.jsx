@@ -323,7 +323,7 @@ export const ProductDetails = () => {
                                 <span className="pd-spec-key">SKU</span>
                                 <span className="pd-spec-val">#{product.sku || product._id}</span>
                                 <span className="pd-spec-key">Category</span>
-                                <span className="pd-spec-val">{category?.name || 'General'}</span>
+                                <span className="pd-spec-val">{product?.category || 'General'}</span>
                                 {product.deliveryInfo && (
                                     <>
                                         <span className="pd-spec-key">Delivery</span>
@@ -431,11 +431,10 @@ export const ProductDetails = () => {
                             {activeTab === 'description' && (
                                 <>
                                     <p className="pd-full-desc">
-                                        {product.fullDescription || product.description ||
-                                            'Raw denim you probably haven\'t heard of them jean shorts Austin. Nesciunt tofu stumptown aliqua, retro synth master cleanse. Mustache cliche tempor, williamsburg carles vegan helvetica.'}
+                                        {product.fullDescription || product.description}
                                     </p>
                                     <ul className="pd-feature-list">
-                                        {(product.features || ['Not just for commute', 'Branded tongue and cuff', 'Super fast and reliable', 'Lorem sed do eiusmod tempor']).map((f, i) => (
+                                        {(product.features || ['Shipped with board and sleve.', '30 day money back gurantee.', 'Packaged by hand.', 'Near Mint (NM) condition.']).map((f, i) => (
                                             <li key={i}>{f}</li>
                                         ))}
                                     </ul>
@@ -445,8 +444,8 @@ export const ProductDetails = () => {
                             {/* More info */}
                             {activeTab === 'more-info' && (
                                 <p className="pd-full-desc">
-                                    {product.additionalInfo ||
-                                        'Food truck fixie locavore, accusamus mcsweeney\'s marfa nulla single-origin coffee squid. Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan four loko farm-to-table craft beer twee.'}
+                                    Shipping & Packaging
+                                    Every order is shipped with a rigid backing board and protective polypropylene sleeve to ensure your copy arrives in perfect, collector-grade condition.
                                 </p>
                             )}
 
