@@ -398,8 +398,9 @@ Received: ${new Date().toLocaleString()}
 
         },
         sendContactEmail(req, res) {
-            const { $email, $message, $subject } = req.body;
-            if (!$subject) $subject = req.body.$subject = `Contact Form Message from ${$email}`;
+            const { $email, $message, $name } = req.body;
+            const $subject = `Contact Form Message from ${$email}`;
+
             if (!$email || !_this.isValidEmail($email)) {
                 return _this.handleError(res, 400, { message: 'Valid email is required' });
             }
@@ -412,7 +413,7 @@ Received: ${new Date().toLocaleString()}
                 cc: _this.getDefaultFromAddress(),
                 to: $email,
                 subject: $subject,
-                html: templates.contactForm(req.body)
+                html: templates.contactForm({$subject, $email, $message, $name})
             };
 
             return _this.sendEmail(options)
