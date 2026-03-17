@@ -548,8 +548,8 @@ a {
 
 
 .why-section {
+  background: #111111;
   padding: 6rem 0;
-  background: #111;
 }
 
 .why-grid {
@@ -7512,4 +7512,312 @@ body {
   .faq-hero-ghost {
     display: none;
   }
+}
+/* ═══════════════════════════════════════════════════════════════════════════
+   FeaturedProducts.css  —  .fp-*  "Stage Carousel"
+   eFear Design System tokens: Anton, Space Mono, #b30e1c, dark surfaces
+═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Section shell ── */
+.fp-section {
+  border-top: 1px solid #222222;
+  border-bottom: 1px solid #222222;
+  padding: 5rem 0 4rem;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Halftone dot overlay */
+.fp-halftone {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(255, 255, 255, .042) 1px, transparent 1px);
+  background-size: 22px 22px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* CRT scanlines */
+.fp-scanlines {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 3px,
+    rgba(0, 0, 0, .18) 3px,
+    rgba(0, 0, 0, .18) 4px
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Everything above textures */
+.fp-inner {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Header ── */
+.fp-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  margin-bottom: 3rem;
+}
+
+.fp-eyebrow {
+  font-family: 'Space Mono', monospace;
+  font-size: .65rem;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: #b30e1c;
+  display: block;
+  margin-bottom: .45rem;
+}
+
+.fp-title {
+  font-family: 'Anton', 'Impact', sans-serif;
+  font-size: clamp(1.85rem, 4.5vw, 3rem);
+  text-transform: uppercase;
+  color: #fff;
+  margin: 0;
+  line-height: 1;
+  letter-spacing: .02em;
+  -webkit-text-stroke: 1px rgba(255, 255, 255, .12);
+}
+
+.fp-title span {
+  color: #b30e1c;
+  -webkit-text-stroke: 1px #b30e1c;
+}
+
+/* Right cluster: counter + CTA */
+.fp-header-right {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+/* Monospace slide counter  01 / 06 */
+.fp-counter {
+  font-family: 'Space Mono', monospace;
+  font-size: .7rem;
+  letter-spacing: .12em;
+  white-space: nowrap;
+  display: flex;
+  align-items: baseline;
+  gap: .35rem;
+}
+.fp-counter-cur  { color: #fff; font-size: .92rem; }
+.fp-counter-sep  { color: rgba(255,255,255,.25); }
+.fp-counter-tot  { color: rgba(255,255,255,.32); }
+
+/* Ghost CTA button */
+.fp-view-all {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  padding: .6rem 1.35rem;
+  background: transparent;
+  border: 1px solid #222222;
+  color: rgba(255, 255, 255, .58);
+  font-family: 'Space Mono', monospace;
+  font-size: .65rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: border-color .2s, color .2s;
+}
+.fp-view-all:hover {
+  border-color: #b30e1c;
+  color: #b30e1c;
+}
+
+/* ── Stage wrapper ── */
+.fp-stage-wrap {
+  position: relative;
+  /* perspective makes child translateZ work */
+  perspective: 1200px;
+  perspective-origin: 50% 40%;
+  height: 520px;          /* fixed height so glow + cards have room */
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.fp-stage-wrap:active { cursor: grabbing; }
+
+/* Red glow pool beneath the center card */
+.fp-glow-pool {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 360px;
+  height: 120px;
+  background: radial-gradient(ellipse at center, rgba(179, 14, 28, .45) 0%, transparent 70%);
+  filter: blur(28px);
+  pointer-events: none;
+  z-index: 0;
+  border-radius: 50%;
+  animation: fpGlowPulse 3s ease-in-out infinite;
+}
+
+@keyframes fpGlowPulse {
+  0%, 100% { opacity: .85; transform: translateX(-50%) scaleY(1);   }
+  50%       { opacity: 1;   transform: translateX(-50%) scaleY(1.2); }
+}
+
+/* ── 3-D stage ── */
+.fp-stage {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-style: preserve-3d;
+}
+
+/* ── Individual card ── */
+.fp-card-wrap {
+  position: absolute;
+  width: 270px;
+  transition:
+    transform  .55s cubic-bezier(.25, .46, .45, .94),
+    opacity    .55s ease,
+    z-index      0s;
+  will-change: transform, opacity;
+}
+
+/* Lifted ring on the active card */
+.fp-card-wrap--active {
+  filter: drop-shadow(0 0 32px rgba(179, 14, 28, .35));
+}
+
+/* ── Featured badge ── */
+.fp-active-badge {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  padding: .22rem .75rem;
+  background: #b30e1c;
+  color: #fff;
+  font-family: 'Space Mono', monospace;
+  font-size: .58rem;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  z-index: 20;
+  /* chamfered corner */
+  clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px));
+  animation: fpBadgeFade .35s ease both;
+}
+
+@keyframes fpBadgeFade {
+  from { opacity: 0; transform: translateX(-50%) translateY(-6px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0);    }
+}
+
+/* ── Prev / Next nav ── */
+.fp-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  background: #141414;
+  border: 1px solid #2e2e2e;
+  color: rgba(255, 255, 255, .6);
+  font-size: 1.3rem;
+  cursor: pointer;
+  transition: border-color .2s, color .2s, background .2s;
+  clip-path: polygon(0 0, calc(100% - 9px) 0, 100% 9px, 100% 100%, 9px 100%, 0 calc(100% - 9px));
+}
+.fp-nav--prev { left: 0; }
+.fp-nav--next { right: 0; }
+.fp-nav:hover {
+  background: #1c1c1c;
+  border-color: #b30e1c;
+  color: #b30e1c;
+}
+.fp-nav:active { transform: translateY(-50%) scale(.93); }
+
+/* ── Footer ── */
+.fp-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+/* Dot strip */
+.fp-dots {
+  display: flex;
+  gap: .5rem;
+  align-items: center;
+}
+.fp-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .18);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: background .3s, width .3s, border-radius .3s, transform .3s;
+}
+.fp-dot--active {
+  width: 22px;
+  border-radius: 3px;
+  background: #b30e1c;
+  transform: scaleY(1.1);
+}
+
+/* Countdown progress bar */
+.fp-progress-track {
+  width: 200px;
+  height: 2px;
+  background: rgba(255, 255, 255, .08);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.fp-progress-bar {
+  height: 100%;
+  width: 0;
+  background: #b30e1c;
+  border-radius: 2px;
+  animation: fpProgress var(--dur, 4000ms) linear forwards;
+}
+.fp-progress-bar--paused {
+  animation-play-state: paused;
+}
+@keyframes fpProgress {
+  from { width: 0%;    }
+  to   { width: 100%;  }
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .fp-stage-wrap { height: 460px; }
+  .fp-card-wrap  { width: 240px;  }
+}
+
+@media (max-width: 640px) {
+  .fp-stage-wrap { height: 420px; }
+  .fp-card-wrap  { width: 220px;  }
+  .fp-nav        { display: none; }
+  .fp-header-right .fp-counter { display: none; }
 }

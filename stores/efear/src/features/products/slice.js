@@ -86,7 +86,6 @@ export const selectProductsSearchTerm = (state) => state.products.filtering?.sea
 export const selectProductsSorting = (state) => state.products.sorting;
 export const selectProductsSelection = (state) => state.products.selection;
 export const selectProductsViewMode = (state) => state.products.viewMode || 'grid';
-
 // Advanced selectors
 export const selectProductById = (state, productId) => 
   state.products.data.find(product => product._id === productId);
@@ -98,10 +97,9 @@ export const selectProductsByBrand = (state, brand) =>
   state.products.data.filter(product => product.brand === brand);
 
 export const selectFeaturedProducts = (state) => {
-  let products = selectAllProducts(state);
-  products = products.filter(product => product.isFeatured === true);
-  
+  let products = selectProducts(state);
   return products;
+  //return products.filter(product => product.isFeatured === true);;
 }
 
 export const selectInStockProducts = (state) =>
