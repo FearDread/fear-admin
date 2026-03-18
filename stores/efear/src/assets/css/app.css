@@ -2199,7 +2199,7 @@ h6.product-name {
 }
 
 .card.product-card:hover {
-	background: rgba(0, 0, 0, .4) !important;
+  filter: drop-shadow(0 0 32px rgba(179, 14, 28, .35));
 }
 
 .card.product-card.media-object:hover {
