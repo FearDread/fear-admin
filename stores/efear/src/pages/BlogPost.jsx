@@ -318,6 +318,7 @@ const BlogPost = () => {
                     style={{
                       fontFamily: T.mono, fontSize: '13px', lineHeight: '1.9',
                       color: T.mid,
+                      whiteSpace:'pre-wrap'
                       // Scope rich-text styles
                     }}
                   />
