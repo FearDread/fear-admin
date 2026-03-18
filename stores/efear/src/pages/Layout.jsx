@@ -21,6 +21,7 @@ import {
 import { fetchCategories, selectAllCategories } from '../features/categories/slice';
 import ProductQuickView from "../components/products/ProductQuickView";
 import CookieBanner from "../components/common/CookieBanner";
+import ProductCarousel from "../components/products/ProductCarousel";
 
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_API_KEY);
@@ -98,42 +99,44 @@ const Layout = () => {
 
   return (
     <>
-    <div className="separator-animated-border animated-true"></div>
-    <Elements stripe={stripePromise} options={stripeOptions}>
-      <b className="screen-overlay"></b>
-      <div className="wrapper">
-        <Header2 />
-      </div>
-      <div className="page-wrapper">
-        <div className="page-content">
-          {(!loading && products.length > 0) && (
-            <>
-              <Outlet {...products} />
-            </>
-          )}
-          <BestSelling />
+      <div className="separator-animated-border animated-true"></div>
+      <Elements stripe={stripePromise} options={stripeOptions}>
+        <b className="screen-overlay"></b>
+        <div className="wrapper">
+          <Header2 />
         </div>
-      </div>
-      <Footer2 categories={(!loading) ? categories : []} products={products}/>
+        <div className="page-wrapper">
+          <div className="page-content">
+            {(!loading && products.length > 0) && (
+              <>
+                <Outlet {...products} />
+              </>
+            )}
 
-      {status === "visible" && (
-        <CookieBanner onAccept={handleAccept} onReject={handleReject} />
-      )}
-      
-      {selectedProduct && (
-        <ProductQuickView 
-          product={selectedProduct}
-          isOpen={showQuickView}
-          onClose={() => {
-            setShowQuickView(false);
-            setSelectedProduct(null);
-          }}
-        />
-      )}
-    </Elements>
-    <ScrollToTop />
+            <BestSelling />
+
+          </div>
+        </div>
+        <Footer2 categories={(!loading) ? categories : []} products={products} />
+
+        {status === "visible" && (
+          <CookieBanner onAccept={handleAccept} onReject={handleReject} />
+        )}
+
+        {selectedProduct && (
+          <ProductQuickView
+            product={selectedProduct}
+            isOpen={showQuickView}
+            onClose={() => {
+              setShowQuickView(false);
+              setSelectedProduct(null);
+            }}
+          />
+        )}
+      </Elements>
+      <ScrollToTop />
     </>
   );
 };
-  
+
 export default Layout;

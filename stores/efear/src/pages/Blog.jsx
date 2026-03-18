@@ -17,6 +17,7 @@ import {
     selectCategoriesLoading,
 } from "../features/categories/slice";
 import { T, blogStyles } from "../components/styles";
+import ProductCarousel from "../components/products/ProductCarousel";
 
 const TAG_COLORS = [T.red, T.orange, T.teal, T.red, T.orange];
 
@@ -127,7 +128,7 @@ export const Blog = () => {
                             <span className="blog-bc-current">Blog</span>
                         </div>
                         <span className="blog-eyebrow">From the Long Box</span>
-                        <h1 className="blog-hero-title">The <span>Blog</span></h1>
+                        <h1 className="blog-hero-title">The <br /><span>Blog</span></h1>
                         <div className="blog-hero-meta">
                             <span className="blog-hero-meta-item">
                                 <span>✦</span> {posts.length || '—'} articles
@@ -473,10 +474,8 @@ export const Blog = () => {
 
                     </aside>
                 </div>
-
-                {/* ── Animated bottom border ── */}
-                <div className="blog-animated-border" />
             </div>
+            <ProductCarousel />
         </>
     );
 };

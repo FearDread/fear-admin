@@ -29,6 +29,7 @@ import { T, shopStyles } from "../../components/styles";
 import ProductCard from "../../components/products/ProductCard";
 import FilterPanel from "./components/FilterPanel";
 import { ShopPagination } from "./components/Pagination";
+import ProductCarousel from "../../components/products/ProductCarousel";
 
 
 export const Shop2 = ({ data }) => {
@@ -135,7 +136,6 @@ export const Shop2 = ({ data }) => {
     handlePriceFilter, handleClearFilters,
   };
 
-  // ── Loading state ──
   if (isLoading && products.length === 0) {
     return (
       <>
@@ -388,8 +388,10 @@ export const Shop2 = ({ data }) => {
               </button>
             </div>
           </div>
+
         </>
       )}
+      <ProductCarousel />
     </>
   );
 };

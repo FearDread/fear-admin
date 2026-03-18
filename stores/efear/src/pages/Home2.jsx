@@ -208,9 +208,8 @@ const Home2 = () => (
     <MarqueeBand />
     <WhyUs />
     <FeaturedProducts />
-
     <CtaBanner />
-        <OfferHighlights />
+    <OfferHighlights />
   </>
 );
 

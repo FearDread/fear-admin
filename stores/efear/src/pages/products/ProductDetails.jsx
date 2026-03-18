@@ -38,6 +38,7 @@ import {
 } from '../../features/review/slice';
 import ReviewService from '../../features/review/service';
 import ImageGallery from '../../components/common/ImageGallery';
+import ProductCarousel from "../../components/products/ProductCarousel";
 
 export const ProductDetails = () => {
     const { id } = useParams();
@@ -524,7 +525,7 @@ export const ProductDetails = () => {
                                                         onMouseEnter={() => setHoverStar(n)}
                                                         onMouseLeave={() => setHoverStar(0)}
                                                     >★</span>
-                                                ))}
+                                                ))}69b4acb843b9e86e168a03d1
                                             </div>
                                         </div>
 
@@ -558,6 +559,7 @@ export const ProductDetails = () => {
             {toasts.map(toast => (
                 <Toast key={toast.id} message={toast.message} type={toast.type} onClose={() => removeToast(toast.id)} />
             ))}
+        <ProductCarousel />
         </>
     );
 };

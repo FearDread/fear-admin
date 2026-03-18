@@ -15,7 +15,7 @@ export const FeaturedProducts = ({ data }) => {
 
   const timerRef = useRef(null);
 
-  const prodState        = useSelector((state) => state.products.data);
+  const prodState        = useSelector(selectFeaturedProducts);
   const productData      = useMemo(() => data || prodState, [data, prodState]);
   const featuredProducts = useMemo(() => productData?.slice(13, 19) || [], [productData]);
   const total            = featuredProducts.length;
