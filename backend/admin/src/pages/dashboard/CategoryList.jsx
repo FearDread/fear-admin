@@ -353,6 +353,60 @@ const CategoryList = () => {
       .catch((err) => console.error("Failed to delete category:", err));
   };
 
+    const handleCategory = (method) => {
+      const data = {
+        title: formValue.title.trim(),
+        name: formValue.title.trim(),
+        description: formValue.description?.trim() || '',
+        slug: formValue.slug?.trim() || formValue.title.toLowerCase().replace(/\s+/g, '-'),
+        parent: formValue.parent || null,
+        isActive: formValue.isActive,
+        featured: formValue.featured,
+        icon: formValue.icon,
+        color: formValue.color
+      };
+
+      if (method === 'CREATE' && showAddModal) {
+            if (!formValue.title || formValue.title.trim().length < 2) {
+      toaster.push(
+        <Message showIcon type="warning">
+          Category title must be at least 2 characters
+        </Message>,
+        { placement: 'topEnd' }
+      );
+      return;
+    }
+          setShowAddModal(false)
+          dispatch(createCategory(data))
+            .unwrap()
+            .then(() => setShowAddModal(false))
+            .finally(() => dispatch(fetchCategories()))
+            .catch((err) => console.error("Failed to create brand:", err));
+  
+      } else if (method === 'UPDATE' && showEditModal && selectedCategory) {
+            dispatch(updateCategory({ id: selectedCategory._id, data: data }))
+              .unwrap()
+              .then(() => setShowEditModal(false))
+              .finally(() => dispatch(fetchCategories()))
+              .catch((err) => console.log('Error updating brand : ', err));
+  
+      } else if (method === 'DELETE' && showDeleteModal && selectedCategory) {
+            dispatch(deleteCategory({ id: selectedCategory._id }))
+              .unwrap()
+              .then(() => {
+                toaster.push(
+                  <Message showIcon type="success" closable>
+                    <strong>Brand Removed Successfully!</strong>
+                  </Message>,
+                  { placement: 'topCenter', duration: 3000 }
+                );
+              })
+              .finally(() => dispatch(fetchCategories()))
+              .catch((err) => console.log('Error removing brand : ', err));
+            setShowDeleteModal(false);
+      }
+    }
+
   const parentCategoryOptions = useMemo(() => {
     if (!categories) return [];
 
@@ -962,7 +1016,7 @@ const CategoryList = () => {
           </Form>
         </Modal.Body >
         <Modal.Footer>
-          <RSButton onClick={handleCreateCategory} appearance="primary">
+          <RSButton onClick={handleCategory('CREATE')} appearance="primary">
             <i className="fa fa-check mr-2"></i>
             Create Category
           </RSButton>
