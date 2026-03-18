@@ -240,7 +240,7 @@ const ProductList = () => {
         ),
         category: (
           <Badge color="primary" pill className="px-3">
-            {item.category?.title || 'Uncategorized'}
+            {item.category || 'Uncategorized'}
           </Badge>
         ),
         price: (

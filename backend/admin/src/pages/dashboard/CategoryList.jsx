@@ -76,7 +76,7 @@ const CategoryList = () => {
     slug: '',
     parent: '',
     isActive: true,
-    featured: false,
+    isFeatured: false,
     icon: 'fa-tag',
     color: '#7934f3'
   });
@@ -127,7 +127,7 @@ const CategoryList = () => {
     { Header: "Description", accessor: "description", sortable: false },
     { Header: "Status", accessor: "status", sortable: true },
     { Header: "Items", accessor: "items", sortable: true },
-    { Header: "Featured", accessor: "featured", sortable: false },
+    { Header: "Featured", accessor: "isFeatured", sortable: false },
     {
       Header: "Actions",
       accessor: "actions",
@@ -142,26 +142,14 @@ const CategoryList = () => {
 
   useEffect(() => {
     if (error) {
-      toaster.push(
-        <Message showIcon type="error" closable>
-          <strong>Error!</strong> {error}
-        </Message>,
-        { placement: 'topEnd', duration: 5000 }
-      );
       dispatch(clearError());
     }
   }, [error, toaster, dispatch]);
 
   useEffect(() => {
     if (success && (showAddModal || showEditModal)) {
-      toaster.push(
-        <Message showIcon type="success" closable>
-          <strong>Success!</strong> Category {showAddModal ? 'created' : 'updated'} successfully
-        </Message>,
-        { placement: 'topEnd', duration: 3000 }
-      );
       handleCloseModals();
-      dispatch(fetchCategories());
+      dispatch(fetchCategories()).unwrap();
     }
   }, [success, showAddModal, showEditModal]);
 
@@ -211,7 +199,7 @@ const CategoryList = () => {
         totalCategories: 0,
         active: 0,
         inactive: 0,
-        featured: 0,
+        isFeatured: 0,
       };
     }
 
@@ -219,7 +207,7 @@ const CategoryList = () => {
       totalCategories: categories.length,
       active: categories.filter(c => c.isActive !== false).length,
       inactive: categories.filter(c => c.isActive === false).length,
-      featured: categories.filter(c => c.featured === true).length,
+      isFeatured: categories.filter(c => c.isFeatured === true).length,
     };
   }, [categories]);
 
@@ -233,10 +221,10 @@ const CategoryList = () => {
     setFormValue({
       title: category.title || category.name,
       description: category.description || '',
-      slug: category.slug || '',
+      slug: category.slug || category.url,
       parent: category.parent || '',
       isActive: category.isActive !== false,
-      featured: category.featured || false,
+      isFeatured: category.isFeatured || false,
       icon: category.icon || 'fa-tag',
       color: category.color || '#7934f3'
     });
@@ -265,147 +253,74 @@ const CategoryList = () => {
       slug: '',
       parent: '',
       isActive: true,
-      featured: false,
+      isFeatured: false,
       icon: 'fa-tag',
       color: '#7934f3'
     });
   };
 
-  const handleCreateCategory = async () => {
-    if (!formValue.title || formValue.title.trim().length < 2) {
-      toaster.push(
-        <Message showIcon type="warning">
-          Category title must be at least 2 characters
-        </Message>,
-        { placement: 'topEnd' }
-      );
-      return;
-    }
+  const handleCategory = (method) => {
+    const data = {
+      title: formValue.title.trim(),
+      name: formValue.title.trim(),
+      description: formValue.description?.trim() || '',
+      slug: formValue.slug?.trim() || formValue.title.toLowerCase().replace(/\s+/g, '-'),
+      url: '/category/' + formValue.title.toLowerCase(),
+      parent: formValue.parent || null,
+      isActive: formValue.isActive,
+      isFeatured: formValue.isFeatured,
+      icon: formValue.icon,
+      color: formValue.color
+    };
 
-    try {
-      const categoryData = {
-        title: formValue.title.trim(),
-        name: formValue.title.trim(),
-        description: formValue.description?.trim() || '',
-        slug: formValue.slug?.trim() || formValue.title.toLowerCase().replace(/\s+/g, '-'),
-        parent: formValue.parent || null,
-        isActive: formValue.isActive,
-        featured: formValue.featured,
-        icon: formValue.icon,
-        color: formValue.color
-      };
-
-      await dispatch(createCustomCat(categoryData)).unwrap();
-    } catch (err) {
-      console.error("Failed to create category:", err);
-    }
-  };
-
-  const handleUpdateCategory = async () => {
-    if (!formValue.title || formValue.title.trim().length < 2) {
-      toaster.push(
-        <Message showIcon type="warning">
-          Category title must be at least 2 characters
-        </Message>,
-        { placement: 'topEnd' }
-      );
-      return;
-    }
-
-    try {
-      const categoryData = {
-        title: formValue.title.trim(),
-        name: formValue.title.trim(),
-        description: formValue.description?.trim() || '',
-        slug: formValue.slug?.trim(),
-        parent: formValue.parent || null,
-        isActive: formValue.isActive,
-        featured: formValue.featured,
-        icon: formValue.icon,
-        color: formValue.color
-      };
-
-      await dispatch(updateCategory({
-        id: selectedCategory._id || selectedCategory.id,
-        data: categoryData
-      })).unwrap();
-    } catch (err) {
-      console.error("Failed to update category:", err);
-    }
-  };
-
-  const handleDeleteCategory = () => {
-    if ( !selectedCategory ) return;
-
-    dispatch(deleteCategory(selectedCategory._id || selectedCategory.id))
-      .unwrap()
-      .then((resp) => {
+    if (method === 'CREATE' && showAddModal) {
+      if (!formValue.title || formValue.title.trim().length < 2) {
         toaster.push(
-          <Message showIcon type="success">
-            Category deleted successfully
+          <Message showIcon type="warning">
+            Category title must be at least 2 characters
           </Message>,
           { placement: 'topEnd' }
         );
-
-        handleCloseModals();
-        dispatch(fetchCategories());
-      })
-      .catch((err) => console.error("Failed to delete category:", err));
-  };
-
-    const handleCategory = (method) => {
-      const data = {
-        title: formValue.title.trim(),
-        name: formValue.title.trim(),
-        description: formValue.description?.trim() || '',
-        slug: formValue.slug?.trim() || formValue.title.toLowerCase().replace(/\s+/g, '-'),
-        parent: formValue.parent || null,
-        isActive: formValue.isActive,
-        featured: formValue.featured,
-        icon: formValue.icon,
-        color: formValue.color
-      };
-
-      if (method === 'CREATE' && showAddModal) {
-            if (!formValue.title || formValue.title.trim().length < 2) {
-      toaster.push(
-        <Message showIcon type="warning">
-          Category title must be at least 2 characters
-        </Message>,
-        { placement: 'topEnd' }
-      );
-      return;
-    }
-          setShowAddModal(false)
-          dispatch(createCategory(data))
-            .unwrap()
-            .then(() => setShowAddModal(false))
-            .finally(() => dispatch(fetchCategories()))
-            .catch((err) => console.error("Failed to create brand:", err));
-  
-      } else if (method === 'UPDATE' && showEditModal && selectedCategory) {
-            dispatch(updateCategory({ id: selectedCategory._id, data: data }))
-              .unwrap()
-              .then(() => setShowEditModal(false))
-              .finally(() => dispatch(fetchCategories()))
-              .catch((err) => console.log('Error updating brand : ', err));
-  
-      } else if (method === 'DELETE' && showDeleteModal && selectedCategory) {
-            dispatch(deleteCategory({ id: selectedCategory._id }))
-              .unwrap()
-              .then(() => {
-                toaster.push(
-                  <Message showIcon type="success" closable>
-                    <strong>Brand Removed Successfully!</strong>
-                  </Message>,
-                  { placement: 'topCenter', duration: 3000 }
-                );
-              })
-              .finally(() => dispatch(fetchCategories()))
-              .catch((err) => console.log('Error removing brand : ', err));
-            setShowDeleteModal(false);
+        return;
       }
+      setShowAddModal(false)
+      dispatch(createCategory(data))
+        .unwrap()
+        .then(() => setShowAddModal(false))
+        .finally(() => dispatch(fetchCategories()))
+        .catch((err) => console.error("Failed to create category:", err));
+
+    } else if (method === 'UPDATE' && showEditModal && selectedCategory) {
+      dispatch(updateCategory({ id: selectedCategory._id, data: data }))
+        .unwrap()
+        .then(() => {
+          toaster.push(
+            <Message showIcon type="success" closable>
+              <strong>Category Updated Successfully!</strong>
+            </Message>,
+            { placement: 'topCenter', duration: 3000 }
+          );
+          setShowEditModal(false)
+        })
+        .finally(() => dispatch(fetchCategories()))
+        .catch((err) => console.log('Error updating category : ', err));
+
+    } else if (method === 'DELETE' && showDeleteModal && selectedCategory) {
+      dispatch(deleteCategory({ id: selectedCategory._id }))
+        .unwrap()
+        .then(() => {
+          toaster.push(
+            <Message showIcon type="success" closable>
+              <strong>Category Removed Successfully!</strong>
+            </Message>,
+            { placement: 'topCenter', duration: 3000 }
+          );
+        })
+        .finally(() => dispatch(fetchCategories()))
+        .catch((err) => console.log('Error removing category : ', err));
+      setShowDeleteModal(false);
     }
+  }
 
   const parentCategoryOptions = useMemo(() => {
     if (!categories) return [];
@@ -475,7 +390,7 @@ const CategoryList = () => {
         ),
         featured: (
           <div>
-            {item.featured ? (
+            {item.isFeatured ? (
               <Badge color="warning" pill>
                 <i className="fa fa-star mr-1"></i>
                 Featured
@@ -818,7 +733,7 @@ const CategoryList = () => {
                                 <Badge color={categoryStatus.color} pill>
                                   {categoryStatus.label}
                                 </Badge>
-                                {category.featured && (
+                                {category.isFeatured && (
                                   <Badge color="warning" pill>
                                     <i className="fa fa-star mr-1"></i>
                                     Featured
@@ -1004,8 +919,8 @@ const CategoryList = () => {
                 <ControlLabel>Featured</ControlLabel>
                 <div className="mt-2">
                   <Toggle
-                    checked={formValue.featured}
-                    onChange={(checked) => setFormValue({ ...formValue, featured: checked })}
+                    checked={formValue.isFeatured}
+                    onChange={(checked) => setFormValue({ ...formValue, isFeatured: checked })}
                     checkedChildren="Featured"
                     unCheckedChildren="Normal"
                   />
@@ -1016,7 +931,7 @@ const CategoryList = () => {
           </Form>
         </Modal.Body >
         <Modal.Footer>
-          <RSButton onClick={handleCategory('CREATE')} appearance="primary">
+          <RSButton onClick={() => handleCategory('CREATE')} appearance="primary">
             <i className="fa fa-check mr-2"></i>
             Create Category
           </RSButton>
@@ -1061,7 +976,7 @@ const CategoryList = () => {
             <Row>
               <Col md={12}>
                 <FormGroup>
-                  <ControlLabel>Slug</ControlLabel>
+                  <ControlLabel>Slug / URl</ControlLabel>
                   <FormControl
                     name="slug"
                     value={(selectedCategory) ? selectedCategory.slug : "category-slug"}
@@ -1173,8 +1088,8 @@ const CategoryList = () => {
                   <ControlLabel>Featured</ControlLabel>
                   <div className="mt-2">
                     <Toggle
-                      checked={formValue.featured}
-                      onChange={(checked) => setFormValue({ ...formValue, featured: checked })}
+                      checked={formValue.isFeatured}
+                      onChange={(checked) => setFormValue({ ...formValue, isFeatured: checked })}
                       checkedChildren="Featured"
                       unCheckedChildren="Normal"
                     />
@@ -1185,7 +1100,7 @@ const CategoryList = () => {
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <RSButton onClick={handleUpdateCategory} appearance="primary">
+          <RSButton onClick={() => handleCategory('UPDATE')} appearance="primary">
             <i className="fa fa-check mr-2"></i>
             Update Category
           </RSButton>
@@ -1217,7 +1132,7 @@ const CategoryList = () => {
           </p>
         </Modal.Body>
         <Modal.Footer>
-          <RSButton onClick={handleDeleteCategory} appearance="primary" color="red">
+          <RSButton onClick={() => handleCategory('DELETE')} appearance="primary" color="red">
             <i className="fa fa-trash mr-2"></i>
             Yes, Delete It
           </RSButton>

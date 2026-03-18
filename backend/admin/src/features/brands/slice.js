@@ -77,7 +77,6 @@ export const selectBrandsLoading = (state) => state.brands.loading;
 export const selectBrandsError = (state) => state.brands.error;
 export const selectBrandsSuccess = (state) => state.brands.success;
 export const selectBrandsLoadingState = (state) => state.brands.loadingState;
-export const selectFeaturedBrands = (state) => state.brands.featuredBrands || [];
 export const selectFavoriteBrands = (state) => state.brands.favoriteBrands || [];
 export const selectBrandStats = (state) => state.brands.brandStats || {};
 export const selectBrandsPagination = (state) => state.brands.pagination;
@@ -90,6 +89,11 @@ export const selectBrandsMetadata = (state) => state.brands.metadata;
 export const selectBrandViewType = (state) => state.brands.viewType || 'grid';
 
 // Advanced selectors
+export const selectFeaturedBrands = (state) => {
+  let featured = state.brands.data.filter(b => b.isFeatured)
+  return featured;
+};
+
 export const selectBrandById = (state, brandId) =>
   state.brands.data.find(brand => brand.id === brandId);
 
@@ -99,7 +103,7 @@ export const selectBrandsByCategory = (state, categoryId) =>
   );
 
 export const selectActiveBrands = (state) =>
-  state.brands.data.filter(brand => brand.active !== false);
+  state.brands.data.filter(brand => brand.isActive !== false);
 
 export const selectIsBrandFavorite = (state, brandId) =>
   (state.brands.favoriteBrands || []).includes(brandId);

@@ -98,7 +98,7 @@ const BrandList = () => {
     { Header: "Brand Name", accessor: "name", sortable: true },
     { Header: "Status", accessor: "status", sortable: true },
     { Header: "Products", accessor: "products", sortable: true },
-    { Header: "Featured", accessor: "featured", sortable: false },
+    { Header: "Featured", accessor: "isFeatured", sortable: false },
     {
       Header: "Actions",
       accessor: "actions",
@@ -109,6 +109,7 @@ const BrandList = () => {
 
   useEffect(() => {
     dispatch(fetchBrands()).unwrap();
+    console.log('featured brands = ', featuredBrands)
   }, [dispatch]);
 
   useEffect(() => {
@@ -125,14 +126,7 @@ const BrandList = () => {
 
   useEffect(() => {
     if (success && (showAddModal)) {
-      toaster.push(
-        <Message showIcon type="success" closable>
-          <strong>Success!</strong> Brand {showAddModal ? 'created' : 'updated'} successfully
-        </Message>,
-        { placement: 'topCenter', duration: 3000 }
-      );
       handleCloseModals();
-
     }
     if (!brands || brands.length === 0) {
       dispatch(fetchBrands());
@@ -207,7 +201,7 @@ const BrandList = () => {
       slug: brand.slug || '',
       website: brand.website || brand.contactInfo?.website || '',
       isActive: brand.isActive !== false,
-      featured: brand.isFeatured || false,
+      isFeatured: brand.isFeatured || false,
       verified: brand.verified || false
     });
     setShowEditModal(true);
@@ -232,7 +226,7 @@ const BrandList = () => {
       slug: '',
       website: '',
       isActive: true,
-      featured: false,
+      isFeatured: false,
     })
     setSelectedBrand(null);
   };
@@ -244,7 +238,7 @@ const BrandList = () => {
       slug: formValue.slug?.trim(),
       website: formValue.website?.trim() || '',
       isActive: formValue.isActive,
-      isFeatured: formValue.featured,
+      isFeatured: formValue.isFeatured,
       verified: formValue.verified
     };
 
@@ -339,10 +333,8 @@ const BrandList = () => {
         featured: (
           <div>
             {item.isFeatured || featuredBrands.includes(item.id || item._id) ? (
-              <Badge color="warning" pill>
-                <i className="fa fa-star mr-1"></i>
-                Featured
-              </Badge>
+
+              <span className="text-light-2">Featured</span>
             ) : (
               <span className="text-light-2">-</span>
             )}
@@ -465,7 +457,7 @@ const BrandList = () => {
                     <div className="numbers">
                       <p className="card-category text-light-2">Featured</p>
                       <CardTitle tag="h3" className="text-white">
-                        {statistics.featured}
+                        {statistics.isFeatured}
                       </CardTitle>
                     </div>
                   </Col>
@@ -650,7 +642,7 @@ const BrandList = () => {
                   <Row>
                     {filteredBrands.map(brand => {
                       const brandStatus = getBrandStatus(brand.active);
-                      const isFeatured = brand.featured || featuredBrands.includes(brand.id || brand._id);
+                      const isFeatured = brand.isFeatured || featuredBrands.includes(brand.id || brand._id);
 
                       return (
                         <Col md="4" lg="3" key={brand._id || brand.id} className="mb-4">
@@ -809,8 +801,8 @@ const BrandList = () => {
                   <ControlLabel>Featured</ControlLabel>
                   <div className="mt-2">
                     <Toggle
-                      checked={formValue.featured}
-                      onChange={(checked) => setFormValue({ ...formValue, featured: checked })}
+                      checked={formValue.isFeatured}
+                      onChange={(checked) => setFormValue({ ...formValue, isFeatured: checked })}
                       checkedChildren="Featured"
                       unCheckedChildren="Normal"
                     />
@@ -903,8 +895,8 @@ const BrandList = () => {
                   <ControlLabel>Featured</ControlLabel>
                   <div className="mt-2">
                     <Toggle
-                      checked={formValue.featured}
-                      onChange={(checked) => setFormValue({ ...formValue, featured: checked })}
+                      checked={formValue.isFeatured}
+                      onChange={(checked) => setFormValue({ ...formValue, isFeatured: checked })}
                       checkedChildren="Featured"
                       unCheckedChildren="Normal"
                     />
