@@ -3,6 +3,7 @@ import HeroSection from "../components/home/v2/ComicHero";
 import TrustBar from "../components/home/v2/TrustBar";
 import FeaturedProducts from '../components/home/v2/FeaturedProducts';
 import CategoryCards from '../components/home/v2/CategoryCards';
+import AdSense from "../components/common/AdSense";
 
 
 const MarqueeBand = () => {
@@ -208,6 +209,7 @@ const Home2 = () => (
     <MarqueeBand />
     <WhyUs />
     <FeaturedProducts />
+    <AdSense adSlot={'horizontal'} />
     <CtaBanner />
     <OfferHighlights />
   </>
