@@ -90,8 +90,8 @@ export const selectBrandViewType = (state) => state.brands.viewType || 'grid';
 
 // Advanced selectors
 export const selectFeaturedBrands = (state) => {
-  let featured = state.brands.data.filter(b => b.isFeatured)
-  return featured;
+  let brands = [...state.brands.data];
+  return brands.filter(b => b.isFeatured);
 };
 
 export const selectBrandById = (state, brandId) =>

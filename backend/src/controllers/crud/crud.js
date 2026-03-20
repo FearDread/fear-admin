@@ -170,29 +170,25 @@ exports.create = tryCatch((Model, req, res) => {
  * @returns {Promise<void>}
  */
 exports.update = tryCatch((Model, req, res) => {
-  const { id } = req.params;
+  console.log('params = ', req.params);
+  const id = req.params.id;
 
   if (!id) {
     return Promise.resolve(
-      res.status(400).json({
-        result: null,
-        success: false,
-        message: "Document ID is required"
-      })
+      res.status(400).json({ result: null, success: false, message: "Document ID is required" })
     );
   }
 
   if (!isValidObjectId(id)) {
     return Promise.resolve(
-      res.status(400).json({
-        result: null,
-        success: false,
-        message: "Invalid document ID format"
-      })
+      res.status(400).json({ result: null, success: false, message: "Invalid document ID format" })
     );
   }
 
   const updateData = sanitizeUpdateData(req.body);
+  
+  console.log('update id = ', id);
+  console.log('update data = ', updateData);
 
   const imagePromise = (updateData.images && Array.isArray(updateData.images) && updateData.images.length > 0)
     ? processImages(updateData.images)

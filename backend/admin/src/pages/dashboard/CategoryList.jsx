@@ -43,6 +43,7 @@ import {
   setFilters,
   clearError,
   createCustomCat,
+  selectCurrentCategory,
 } from "../../features/categories/slice.js";
 
 const { Group: FormGroup, Control: FormControl, ControlLabel } = Form;
@@ -215,10 +216,10 @@ const CategoryList = () => {
     setShowAddModal(true);
   };
 
-  const handleOpenEditModal = (category) => {
-
-    setSelectedCategory(category);
+  const handleOpenEditModal = (e, category) => {
+    e.preventDefault();
     setFormValue({
+      _id: category._id,
       title: category.title || category.name,
       description: category.description || '',
       slug: category.slug || category.url,
@@ -228,7 +229,8 @@ const CategoryList = () => {
       icon: category.icon || 'fa-tag',
       color: category.color || '#7934f3'
     });
-    console.log('edit', selectedCategory);
+    console.log('edit', category);
+    setSelectedCategory(category);
     setShowEditModal(true);
   };
 
@@ -259,66 +261,63 @@ const CategoryList = () => {
     });
   };
 
-  const handleCategory = (method) => {
-    const data = {
-      title: formValue.title.trim(),
-      name: formValue.title.trim(),
-      description: formValue.description?.trim() || '',
-      slug: formValue.slug?.trim() || formValue.title.toLowerCase().replace(/\s+/g, '-'),
-      url: '/category/' + formValue.title.toLowerCase(),
-      parent: formValue.parent || null,
-      isActive: formValue.isActive,
-      isFeatured: formValue.isFeatured,
-      icon: formValue.icon,
-      color: formValue.color
-    };
+  const showToast = (type, message) => {
+    toaster.push(
+      <Message showIcon type={type || "success"} closable>
+        <strong>{message}</strong>
+      </Message>,
+      { placement: 'topCenter', duration: 3000 }
+    );
+  }
+
+  const handleCategory = (method, data = {
+    title: formValue.title.trim() || selectedCategory.title,
+    description: formValue.description?.trim() || selectedCategory.description,
+    slug: formValue.slug?.trim() || formValue.title.toLowerCase().replace(/\s+/g, '-'),
+    url: '/category/' + formValue.title.toLowerCase(),
+    parent: formValue.parent || null,
+    isActive: formValue.isActive,
+    isFeatured: formValue.isFeatured,
+    icon: formValue.icon,
+    color: formValue.color
+  }) => {
 
     if (method === 'CREATE' && showAddModal) {
       if (!formValue.title || formValue.title.trim().length < 2) {
-        toaster.push(
-          <Message showIcon type="warning">
-            Category title must be at least 2 characters
-          </Message>,
-          { placement: 'topEnd' }
-        );
+        showToast('warning','Category title must be at least 2 characters')
         return;
       }
       setShowAddModal(false)
-      dispatch(createCategory(data))
-        .unwrap()
-        .then(() => setShowAddModal(false))
-        .finally(() => dispatch(fetchCategories()))
-        .catch((err) => console.error("Failed to create category:", err));
-
-    } else if (method === 'UPDATE' && showEditModal && selectedCategory) {
-      dispatch(updateCategory({ id: selectedCategory._id, data: data }))
+      dispatch(createCustomCat(data))
         .unwrap()
         .then(() => {
-          toaster.push(
-            <Message showIcon type="success" closable>
-              <strong>Category Updated Successfully!</strong>
-            </Message>,
-            { placement: 'topCenter', duration: 3000 }
-          );
+          showToast('success', 'Category Created Successfully!')
+          setShowAddModal(false)
+        })
+        .catch((err) => console.error("Failed to create category:", err))
+        .finally(() => dispatch(fetchCategories()));
+
+    } else if (method === 'UPDATE' && showEditModal && selectedCategory) {
+      console.log('update category data = ', data)
+
+      dispatch(updateCategory({ id: selectedCategory._id, ...data }))
+        .unwrap()
+        .then(() => {
+          showToast('success', 'Category Updated Successfully!')
           setShowEditModal(false)
         })
-        .finally(() => dispatch(fetchCategories()))
-        .catch((err) => console.log('Error updating category : ', err));
+        .catch((err) => console.log('Error updating category : ', err))
+        .finally(() => dispatch(fetchCategories()));
 
     } else if (method === 'DELETE' && showDeleteModal && selectedCategory) {
       dispatch(deleteCategory({ id: selectedCategory._id }))
         .unwrap()
         .then(() => {
-          toaster.push(
-            <Message showIcon type="success" closable>
-              <strong>Category Removed Successfully!</strong>
-            </Message>,
-            { placement: 'topCenter', duration: 3000 }
-          );
+          showToast('success', 'Category Removed Successfully!')
+          setShowDeleteModal(false);
         })
-        .finally(() => dispatch(fetchCategories()))
-        .catch((err) => console.log('Error removing category : ', err));
-      setShowDeleteModal(false);
+        .catch((err) => console.log('Error removing category : ', err))
+        .finally(() => dispatch(fetchCategories()));
     }
   }
 
@@ -406,7 +405,7 @@ const CategoryList = () => {
               color="primary"
               size="sm"
               className="btn-round"
-              onClick={() => handleOpenEditModal(item)}
+              onClick={(e) => handleOpenEditModal(e, item)}
               title="Edit Category"
             >
               <i className="fa fa-edit"></i>
@@ -511,7 +510,7 @@ const CategoryList = () => {
                     <div className="numbers">
                       <p className="card-category text-light-2">Featured</p>
                       <CardTitle tag="h3" className="text-white">
-                        {statistics.featured}
+                        {statistics.isFeatured}
                       </CardTitle>
                     </div>
                   </Col>
@@ -874,7 +873,7 @@ const CategoryList = () => {
                   data={COLOR_OPTIONS}
                   block
                   placeholder="Select color"
-                  renderMenuItem={(label, item) => (
+                  renderOption={(label, item) => (
                     <div className="d-flex align-items-center">
                       <div
                         style={{
@@ -942,174 +941,175 @@ const CategoryList = () => {
       </Modal >
 
       {/* Edit Category Modal */}
+      {selectedCategory && (
+        < Modal
+          open={showEditModal}
+          onClose={handleCloseEditModal}
+          size="md"
+          className="rs-theme-dark"
+        >
+          <Modal.Header>
+            <Modal.Title>
+              <i className="fa fa-edit mr-2"></i>
+              Edit Category
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form fluid formValue={formValue} onChange={setFormValue}>
+              <FormGroup>
+                <ControlLabel>Category Title *</ControlLabel>
+                <FormControl name="title" value={selectedCategory.title} placeholder="Enter category name..."/>
+              </FormGroup>
 
-      < Modal
-        open={showEditModal}
-        onClose={handleCloseEditModal}
-        size="md"
-        className="rs-theme-dark"
-      >
-        <Modal.Header>
-          <Modal.Title>
-            <i className="fa fa-edit mr-2"></i>
-            Edit Category
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form fluid formValue={formValue} onChange={setFormValue}>
-            <FormGroup>
-              <ControlLabel>Category Name *</ControlLabel>
-              <FormControl name="title" value={(selectedCategory) ? selectedCategory.title : formValue.title} placeholder="Enter category name..." />
-            </FormGroup>
+              <FormGroup>
+                <ControlLabel>Description</ControlLabel>
+                <FormControl
+                  name="description"
+                  rows={3}
+                  value={selectedCategory.description}
+                  accepter={Textarea}
+                  placeholder="Enter category description..."
+                />
+              </FormGroup>
 
-            <FormGroup>
-              <ControlLabel>Description</ControlLabel>
-              <FormControl
-                name="description"
-                rows={3}
-                value={(selectedCategory) ? selectedCategory.description : formValue.description}
-                accepter={Textarea}
-                placeholder="Enter category description..."
-              />
-            </FormGroup>
-
-            <Row>
-              <Col md={12}>
-                <FormGroup>
-                  <ControlLabel>Slug / URl</ControlLabel>
-                  <FormControl
-                    name="slug"
-                    value={(selectedCategory) ? selectedCategory.slug : "category-slug"}
-                    placeholder="category-slug"
-                  />
-                </FormGroup>
-              </Col>
-
-              <Col md={12}>
-                <FormGroup>
-                  <ControlLabel>Parent Category</ControlLabel>
-                  <FormControl
-                    name="parent"
-                    accepter={SelectPicker}
-                    data={parentCategoryOptions}
-                    block
-                    placeholder="Select parent category (optional)"
-                    searchable
-                  />
-                </FormGroup>
-              </Col>
-            </Row>
-
-            <Row>
-              <Col md={6}>
-                <FormGroup>
-                  <ControlLabel>Icon</ControlLabel>
-                  <FormControl
-                    name="icon"
-                    accepter={SelectPicker}
-                    data={ICON_OPTIONS}
-                    block
-                    placeholder="Select icon"
-                    renderMenuItem={(label, item) => (
-                      <div className="d-flex align-items-center">
-                        <i className={`fa ${item.value} mr-2`}></i>
-                        {label}
-                      </div>
-                    )}
-                    renderValue={(value, item) => (
-                      <div className="d-flex align-items-center">
-                        <i className={`fa ${value} mr-2`}></i>
-                        {item?.label}
-                      </div>
-                    )}
-                  />
-                </FormGroup>
-              </Col>
-
-              <Col md={6}>
-                <FormGroup>
-                  <ControlLabel>Color</ControlLabel>
-                  <FormControl
-                    name="color"
-                    accepter={SelectPicker}
-                    data={COLOR_OPTIONS}
-                    block
-                    placeholder="Select color"
-                    renderMenuItem={(label, item) => (
-                      <div className="d-flex align-items-center">
-                        <div
-                          style={{
-                            width: '16px',
-                            height: '16px',
-                            backgroundColor: item.color,
-                            borderRadius: '3px',
-                            marginRight: '8px'
-                          }}
-                        />
-                        {label}
-                      </div>
-                    )}
-                    renderValue={(value, item) => (
-                      <div className="d-flex align-items-center">
-                        <div
-                          style={{
-                            width: '16px',
-                            height: '16px',
-                            backgroundColor: value,
-                            borderRadius: '3px',
-                            marginRight: '8px'
-                          }}
-                        />
-                        {item?.label}
-                      </div>
-                    )}
-                  />
-                </FormGroup>
-              </Col>
-            </Row>
-
-            <Row>
-              <Col md={6}>
-                <FormGroup>
-                  <ControlLabel>Active Status</ControlLabel>
-                  <div className="mt-2">
-                    <Toggle
-                      checked={formValue.isActive}
-                      onChange={(checked) => setFormValue({ ...formValue, isActive: checked })}
-                      checkedChildren="Active"
-                      unCheckedChildren="Inactive"
+              <Row>
+                <Col md={12}>
+                  <FormGroup>
+                    <ControlLabel>Slug / URl</ControlLabel>
+                    <FormControl
+                      name="slug"
+                      value={selectedCategory.slug}
+                      placeholder="category-slug"
                     />
-                  </div>
-                </FormGroup>
-              </Col>
+                  </FormGroup>
+                </Col>
 
-              <Col md={6}>
-                <FormGroup>
-                  <ControlLabel>Featured</ControlLabel>
-                  <div className="mt-2">
-                    <Toggle
-                      checked={formValue.isFeatured}
-                      onChange={(checked) => setFormValue({ ...formValue, isFeatured: checked })}
-                      checkedChildren="Featured"
-                      unCheckedChildren="Normal"
+                <Col md={12}>
+                  <FormGroup>
+                    <ControlLabel>Parent Category</ControlLabel>
+                    <FormControl
+                      name="parent"
+                      accepter={SelectPicker}
+                      data={parentCategoryOptions}
+                      block
+                      placeholder="Select parent category (optional)"
+                      searchable
                     />
-                  </div>
-                </FormGroup>
-              </Col>
-            </Row>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <RSButton onClick={() => handleCategory('UPDATE')} appearance="primary">
-            <i className="fa fa-check mr-2"></i>
-            Update Category
-          </RSButton>
-          <RSButton onClick={handleCloseEditModal} appearance="subtle">
-            Cancel
-          </RSButton>
-        </Modal.Footer>
-      </Modal >
+                  </FormGroup>
+                </Col>
+              </Row>
 
+              <Row>
+                <Col md={6}>
+                  <FormGroup>
+                    <ControlLabel>Icon</ControlLabel>
+                    <FormControl
+                      name="icon"
+                      accepter={SelectPicker}
+                      data={ICON_OPTIONS}
+                      block
+                      placeholder="Select icon"
+                      renderOption={(label, item) => (
+                        <div className="d-flex align-items-center">
+                          <i className={`fa ${item.value} mr-2`}></i>
+                          {label}
+                        </div>
+                      )}
+                      renderValue={(value, item) => (
+                        <div className="d-flex align-items-center">
+                          <i className={`fa ${value} mr-2`}></i>
+                          {item?.label}
+                        </div>
+                      )}
+                    />
+                  </FormGroup>
+                </Col>
+
+                <Col md={6}>
+                  <FormGroup>
+                    <ControlLabel>Color</ControlLabel>
+                    <FormControl
+                      name="color"
+                      accepter={SelectPicker}
+                      data={COLOR_OPTIONS}
+                      block
+                      placeholder="Select color"
+                      renderOption={(label, item) => (
+                        <div className="d-flex align-items-center">
+                          <div
+                            style={{
+                              width: '16px',
+                              height: '16px',
+                              backgroundColor: item.color,
+                              borderRadius: '3px',
+                              marginRight: '8px'
+                            }}
+                          />
+                          {label}
+                        </div>
+                      )}
+                      renderValue={(value, item) => (
+                        <div className="d-flex align-items-center">
+                          <div
+                            style={{
+                              width: '16px',
+                              height: '16px',
+                              backgroundColor: value,
+                              borderRadius: '3px',
+                              marginRight: '8px'
+                            }}
+                          />
+                          {item?.label}
+                        </div>
+                      )}
+                    />
+                  </FormGroup>
+                </Col>
+              </Row>
+
+              <Row>
+                <Col md={6}>
+                  <FormGroup>
+                    <ControlLabel>Active Status</ControlLabel>
+                    <div className="mt-2">
+                      <Toggle
+                        checked={formValue.isActive}
+                        onChange={(checked) => setFormValue({ ...formValue, isActive: checked })}
+                        checkedChildren="Active"
+                        unCheckedChildren="Inactive"
+                      />
+                    </div>
+                  </FormGroup>
+                </Col>
+
+                <Col md={6}>
+                  <FormGroup>
+                    <ControlLabel>Featured</ControlLabel>
+                    <div className="mt-2">
+                      <Toggle
+                        name="isFeatured"
+                        checked={formValue.isFeatured}
+                        onChange={(checked) => setFormValue({ ...formValue, isFeatured: checked })}
+                        checkedChildren="Featured"
+                        unCheckedChildren="Normal"
+                      />
+                    </div>
+                  </FormGroup>
+                </Col>
+              </Row>
+            </Form>
+          </Modal.Body>
+          <Modal.Footer>
+            <RSButton onClick={() => handleCategory('UPDATE', formValue)} appearance="primary">
+              <i className="fa fa-check mr-2"></i>
+              Update Category
+            </RSButton>
+            <RSButton onClick={handleCloseEditModal} appearance="subtle">
+              Cancel
+            </RSButton>
+          </Modal.Footer>
+        </Modal >
+      )}
 
       {/* Delete Confirmation Modal */}
       < Modal
