@@ -105,22 +105,6 @@ export const Sidebar = (props) => {
   const activeRoute = (routeName) => {
     return location.pathname === routeName ? "active" : "";
   };
-  const menuItems = [
-    { icon: 'zmdi zmdi-view-dashboard', label: 'Dashboard', href: '#' },
-    { icon: 'zmdi zmdi-invert-colors', label: 'UI Icons', href: '#' },
-    { icon: 'zmdi zmdi-format-list-bulleted', label: 'Forms', href: '#' },
-    { icon: 'zmdi zmdi-grid', label: 'Tables', href: '#' },
-    { icon: 'zmdi zmdi-calendar-check', label: 'Calendar', href: '#', badge: 'New' },
-    { icon: 'zmdi zmdi-face', label: 'Profile', href: '#' },
-    { icon: 'zmdi zmdi-lock', label: 'Login', href: '#' },
-    { icon: 'zmdi zmdi-account-circle', label: 'Registration', href: '#' }
-  ];
-
-  const labels = [
-    { icon: 'zmdi zmdi-coffee text-danger', label: 'Important' },
-    { icon: 'zmdi zmdi-chart-donut text-success', label: 'Warning' },
-    { icon: 'zmdi zmdi-share text-info', label: 'Information' }
-  ];
 
   return (
     <>

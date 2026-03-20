@@ -55,6 +55,9 @@ export const App = () => {
             {routes.admin.map((route, idx) => (
               <Route key={idx} path={route.path} element={route.element} />
             ))}
+            {routes.views.map((route, idx) => (
+              <Route key={idx} path={route.path} element={route.element} />
+            ))}
           </Route>
 
           <Route path="/admin" exact element={<AdminLayout />} >

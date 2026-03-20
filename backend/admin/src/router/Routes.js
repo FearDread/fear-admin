@@ -12,6 +12,8 @@ import CategoryList from "../pages/dashboard/CategoryList.jsx";
 import UserList from "../pages/dashboard/UserList.jsx";
 import ProfilePage from "../pages/dashboard/Profile/Profile.jsx";
 import ReviewList from "../pages/dashboard/ReviewList.jsx";
+import ProductView from "../pages/dashboard/ProductView.jsx";
+import ProductEdit from "../pages/dashboard/ProductEdit.jsx";
 import Ebay from "../pages/integrations/Ebay.jsx";
 import GoogleAnalytics from "../pages/integrations/Analytics.jsx";
 
@@ -32,11 +34,15 @@ export const routes = {
     { path: "/admin/calendar", label: "Calendar", icon: "fa fa-calendar", element: <Calendar /> },
     { path: "/admin/profile", element: <ProfilePage /> },
     { path: "/admin/product/new", element: <Wizard type="product" /> },
-    { path: "/admin/blog/new", element: <Wizard type="blog" /> }
+    { path: "/admin/blog/new", element: <Wizard type="blog" /> },
+  ],
+  views: [
+    { path: "/admin/product/edit/:id", element: <ProductEdit /> },
+    { path: "/admin/product/view/:id", element: <ProductView /> }
   ],
   apps: [
-    { path: "/admin/ebay", label: 'EBay', icon: 'zmdi zmdi-ebay', element: <Ebay />},
-    { path: "/admin/analytics", label: 'Analytics', icon: 'zmdi zmdi-google', element: <GoogleAnalytics />}
+    { path: "/admin/ebay", label: 'EBay', icon: 'fa fa-dollar', element: <Ebay /> },
+    { path: "/admin/analytics", label: 'Analytics', icon: 'zmdi zmdi-google', element: <GoogleAnalytics /> }
   ]
 };
 
