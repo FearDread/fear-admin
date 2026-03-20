@@ -1,7 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { T, AboutStyles } from "../components/styles";
-
+import { GoogleAdSense } from "../components/common/AdSense";
 
 const PageHero = () => (
   <section style={{ position: 'relative', background: T.dark0, overflow: 'hidden', padding: '6rem 0 5rem' }}>
@@ -52,15 +51,12 @@ const PageHero = () => (
   </section>
 );
 
-/* ─────────────────────────────────────────────
-   MARQUEE BAND  (same as Home)
-───────────────────────────────────────────────*/
 const MarqueeBand = () => {
-  const items = ['Marvel','DC Comics','Dark Horse','Image Comics','IDW','Boom! Studios','Pokémon','Vertigo','Valiant','Dynamite','Fantagraphics'];
+  const items = ['Marvel', 'DC Comics', 'Dark Horse', 'Image Comics', 'IDW', 'Boom! Studios', 'Pokémon', 'Vertigo', 'Valiant', 'Dynamite', 'Fantagraphics'];
   return (
     <div style={{ background: T.red, overflow: 'hidden', padding: '.7rem 0' }}>
       <div style={{ display: 'flex', width: 'max-content', animation: 'marqueeScroll 28s linear infinite' }}>
-        {[...items,...items].map((b,i) => (
+        {[...items, ...items].map((b, i) => (
           <span key={i} style={{
             fontFamily: "'Anton','Impact',sans-serif",
             fontSize: '1rem', textTransform: 'uppercase', letterSpacing: '.08em',
@@ -73,86 +69,82 @@ const MarqueeBand = () => {
   );
 };
 
-/* ─────────────────────────────────────────────
-   ORIGIN STORY  –  two-column narrative
-───────────────────────────────────────────────*/
 const OriginStory = () => (
-    <>
-  <section id="our-story" style={{ padding: '6rem 0', background: T.dark1 }}>
-    <div className="container">
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '5rem', alignItems: 'center' }}>
-        <div style={{ position: 'relative' }}>
-          <div style={{
-            background: T.dark2, border: `1px solid ${T.border}`,
-            aspectRatio: '4/5', overflow: 'hidden', position: 'relative',
-          }} className="clip-corner">
-            <img
-              src="assets/images/about/01.png"
-              alt="About us"
-              style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block',
-                filter: 'grayscale(30%) contrast(1.1)' }}
-            />
+  <>
+    <section id="our-story" style={{ padding: '6rem 0', background: T.dark1 }}>
+      <div className="container">
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '5rem', alignItems: 'center' }}>
+          <div style={{ position: 'relative' }}>
             <div style={{
-              position: 'absolute', bottom: 0, left: 0, right: 0,
-              background: 'linear-gradient(to top, rgba(230,57,70,.85) 0%, transparent 55%)',
-              padding: '2rem 1.5rem 1.5rem',
+              background: T.dark2, border: `1px solid ${T.border}`,
+              aspectRatio: '4/5', overflow: 'hidden', position: 'relative',
+            }} className="clip-corner">
+              <img
+                src="assets/images/about/01.png"
+                alt="About us"
+                style={{
+                  width: '100%', height: '100%', objectFit: 'cover', display: 'block',
+                  filter: 'grayscale(30%) contrast(1.1)'
+                }}
+              />
+              <div style={{
+                position: 'absolute', bottom: 0, left: 0, right: 0,
+                background: 'linear-gradient(to top, rgba(230,57,70,.85) 0%, transparent 55%)',
+                padding: '2rem 1.5rem 1.5rem',
+              }}>
+                <span style={{
+                  fontFamily: "'Anton','Impact',sans-serif",
+                  fontSize: '1.1rem', textTransform: 'uppercase', color: '#fff',
+                }}>Tragically Less Interesting Than Batman's</span>
+              </div>
+            </div>
+            <div style={{
+              position: 'absolute', top: '-1.5rem', right: '-1.5rem',
+              background: T.red, padding: '1.25rem 1.5rem',
+              clipPath: 'polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px))',
+              clipPath: 'polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px))',
             }}>
-              <span style={{
-                fontFamily: "'Anton','Impact',sans-serif",
-                fontSize: '1.1rem', textTransform: 'uppercase', color: '#fff',
-              }}>Tragically Less Interesting Than Batman's</span>
+              <div style={{ fontFamily: "'Anton','Impact',sans-serif", fontSize: '2.5rem', color: '#fff', lineHeight: 1 }}>1000+</div>
+              <div style={{ fontFamily: "'Space Mono',monospace", fontSize: '.65rem', letterSpacing: '.15em', textTransform: 'uppercase', color: 'rgba(255,255,255,.8)', marginTop: '.25rem' }}>Titles In Stock</div>
             </div>
           </div>
-          <div style={{
-            position: 'absolute', top: '-1.5rem', right: '-1.5rem',
-            background: T.red, padding: '1.25rem 1.5rem',
-            clipPath: 'polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px))',
-            clipPath: 'polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px))',
-          }}>
-            <div style={{ fontFamily: "'Anton','Impact',sans-serif", fontSize: '2.5rem', color: '#fff', lineHeight: 1 }}>1000+</div>
-            <div style={{ fontFamily: "'Space Mono',monospace", fontSize: '.65rem', letterSpacing: '.15em', textTransform: 'uppercase', color: 'rgba(255,255,255,.8)', marginTop: '.25rem' }}>Titles In Stock</div>
-          </div>
-        </div>
 
-        {/* text side */}
-        <div>
-          <span className="about-eyebrow">Chapter One</span>
-          <h2 className="about-section-title">Welcome to<br />the Void<br /><span style={{ color: T.red }}>(With Better<br />Graphics)</span></h2>
+          {/* text side */}
+          <div>
+            <span className="about-eyebrow">Chapter One</span>
+            <h2 className="about-section-title">Welcome to<br />the Void<br /><span style={{ color: T.red }}>(With Better<br />Graphics)</span></h2>
 
-          <p className="about-body-text">
-            We started this business because someone once told us <em>"following your dreams doesn't pay the bills."</em> Well, joke's on them — we're still broke, but now we get to read comics while doing it.
-          </p>
-          <p className="about-body-text">
-            Founded in a dimly lit basement that may or may not have violated several building codes, our shop emerged from a simple question: <em>"What if we could lose money doing something we actually enjoy?"</em> Turns out, we could. We really, really could.
-          </p>
-          <p className="about-body-text">
-            After years of hoarding graphic novels and e-books like a literary dragon with questionable taste, we realized our collection had become large enough to either start a business or seek professional help. We chose the path with fewer feelings.
-          </p>
-
-          <div style={{ borderLeft: `3px solid ${T.red}`, paddingLeft: '1.25rem', margin: '2rem 0' }}>
-            <p style={{ fontFamily: "'Space Mono',monospace", fontSize: '.9rem', fontStyle: 'italic', color: T.textHi, lineHeight: 1.7, margin: 0 }}>
-              "We sell comics and e-books. Revolutionary, we know.<br />Someone should write a comic about it.<br />(Please don't.)"
+            <p className="about-body-text">
+              We started this business because someone once told us <em>"following your dreams doesn't pay the bills."</em> Well, joke's on them — we're still broke, but now we get to read comics while doing it.
             </p>
-          </div>
+            <p className="about-body-text">
+              Founded in a dimly lit basement that may or may not have violated several building codes, our shop emerged from a simple question: <em>"What if we could lose money doing something we actually enjoy?"</em> Turns out, we could. We really, really could.
+            </p>
+            <p className="about-body-text">
+              After years of hoarding graphic novels and e-books like a literary dragon with questionable taste, we realized our collection had become large enough to either start a business or seek professional help. We chose the path with fewer feelings.
+            </p>
 
-          <Link to="/shop" className="btn-about-primary">Start Shopping</Link>
+            <div style={{ borderLeft: `3px solid ${T.red}`, paddingLeft: '1.25rem', margin: '2rem 0' }}>
+              <p style={{ fontFamily: "'Space Mono',monospace", fontSize: '.9rem', fontStyle: 'italic', color: T.textHi, lineHeight: 1.7, margin: 0 }}>
+                "We sell comics and e-books. Revolutionary, we know.<br />Someone should write a comic about it.<br />(Please don't.)"
+              </p>
+            </div>
+
+            <Link to="/shop" className="btn-about-primary">Start Shopping</Link>
+          </div>
         </div>
       </div>
-    </div>
-    <style>{`@media(max-width:900px){ #our-story .container > div { grid-template-columns: 1fr !important; gap: 3rem !important; } }`}</style>
-  </section>
+      <style>{`@media(max-width:900px){ #our-story .container > div { grid-template-columns: 1fr !important; gap: 3rem !important; } }`}</style>
+    </section>
   </>
 );
 
-/* ─────────────────────────────────────────────
-   STATS ROW  –  4 punchy numbers
-───────────────────────────────────────────────*/
 const StatsRow = () => {
   const stats = [
-    { value: '1000+', label: 'Comics In Stock',     note: 'And counting' },
-    { value: 'NM',    label: 'Quality Standard',    note: 'Near Mint only' },
-    { value: '24/7',  label: 'Support Available',   note: 'We also can\'t sleep' },
-    { value: '30',    label: 'Day Return Window',    note: 'No questions asked' },
+    { value: '1000+', label: 'Comics In Stock', note: 'And counting' },
+    { value: 'NM', label: 'Quality Standard', note: 'Near Mint only' },
+    { value: '24/7', label: 'Support Available', note: 'We also can\'t sleep' },
+    { value: '30', label: 'Day Return Window', note: 'No questions asked' },
   ];
   return (
     <section style={{ background: T.dark0, borderTop: `1px solid ${T.border}`, borderBottom: `1px solid ${T.border}` }}>
@@ -179,9 +171,6 @@ const StatsRow = () => {
   );
 };
 
-/* ─────────────────────────────────────────────
-   WHAT WE OFFER  –  3 angled feature tiles
-───────────────────────────────────────────────*/
 const WhatWeOffer = () => {
   const offers = [
     {
@@ -295,9 +284,6 @@ const WhatWeOffer = () => {
   );
 };
 
-/* ─────────────────────────────────────────────
-   PROMISE SECTION  –  4-up commitment cards
-───────────────────────────────────────────────*/
 const OurPromise = () => {
   const items = [
     {
@@ -343,8 +329,8 @@ const OurPromise = () => {
                 background: T.dark2, border: `1px solid ${T.border}`,
                 padding: '1.75rem', transition: 'border-color .3s',
               }}
-              onMouseEnter={e => e.currentTarget.style.borderColor = T.red}
-              onMouseLeave={e => e.currentTarget.style.borderColor = T.border}
+                onMouseEnter={e => e.currentTarget.style.borderColor = T.red}
+                onMouseLeave={e => e.currentTarget.style.borderColor = T.border}
               >
                 <span style={{ fontSize: '2rem', display: 'block', marginBottom: '1rem' }}>{it.icon}</span>
                 <h4 style={{
@@ -362,9 +348,6 @@ const OurPromise = () => {
   );
 };
 
-/* ─────────────────────────────────────────────
-   WHAT MAKES US DIFFERENT  –  3-col feature row
-───────────────────────────────────────────────*/
 const WhatMakesUsDifferent = () => {
   const diffs = [
     {
@@ -444,9 +427,6 @@ const WhatMakesUsDifferent = () => {
   );
 };
 
-/* ─────────────────────────────────────────────
-   TEAM SECTION  –  self-deprecating intro
-───────────────────────────────────────────────*/
 const OurTeam = () => (
   <section style={{ padding: '6rem 0', background: T.dark0 }}>
     <div className="container">
@@ -505,9 +485,6 @@ const OurTeam = () => (
   </section>
 );
 
-/* ─────────────────────────────────────────────
-   DISCLAIMER BANNER  –  legal-ish humor
-───────────────────────────────────────────────*/
 const DisclaimerBanner = () => (
   <div style={{
     background: T.dark2, borderTop: `1px solid ${T.border}`,
@@ -522,9 +499,6 @@ const DisclaimerBanner = () => (
   </div>
 );
 
-/* ─────────────────────────────────────────────
-   CTA BANNER  –  bottom conversion push
-───────────────────────────────────────────────*/
 const CtaBanner = () => (
   <section style={{
     position: 'relative', background: T.red, overflow: 'hidden', padding: '5.5rem 0',
@@ -580,11 +554,8 @@ const CtaBanner = () => (
   </section>
 );
 
-/* ─────────────────────────────────────────────
-   POPULAR BRANDS ROW  –  logo placeholders
-───────────────────────────────────────────────*/
 const BrandsRow = () => {
-  const brands = ['Marvel','DC','Dark Horse','Image','IDW','Boom!','Valiant','Dynamite'];
+  const brands = ['Marvel', 'DC', 'Dark Horse', 'Image', 'IDW', 'Boom!', 'Valiant', 'Dynamite'];
   return (
     <section style={{ padding: '4rem 0', background: T.dark1, borderBottom: `1px solid ${T.border}` }}>
       <div className="container">
@@ -600,8 +571,8 @@ const BrandsRow = () => {
               transition: 'border-color .25s, color .25s',
               cursor: 'default',
             }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = T.red; e.currentTarget.style.color = '#fff'; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = T.border; e.currentTarget.style.color = T.textDim; }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = T.red; e.currentTarget.style.color = '#fff'; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = T.border; e.currentTarget.style.color = T.textDim; }}
             >{b}</div>
           ))}
         </div>
@@ -610,9 +581,6 @@ const BrandsRow = () => {
   );
 };
 
-/* ─────────────────────────────────────────────
-   ABOUT PAGE  –  assembled
-───────────────────────────────────────────────*/
 const AboutUs = () => (
   <>
     <AboutStyles />
@@ -620,6 +588,11 @@ const AboutUs = () => (
     <MarqueeBand />
     <OriginStory />
     <StatsRow />
+    <GoogleAdSense
+      slot="horizontal"
+      format="auto"
+      responsive={true}
+    />
     <WhatWeOffer />
     <OurPromise />
     <WhatMakesUsDifferent />

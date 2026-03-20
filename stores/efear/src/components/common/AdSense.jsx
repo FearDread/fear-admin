@@ -1,28 +1,54 @@
-import React, { useEffect } from 'react';
+import { useEffect, useRef } from "react";
+const slots = {square:'4438263094',vertical:'2404528095',horizontal:'5663714855'}
 
-const AdsComponent = ({ adSlot }) => {
+export const GoogleAdSense = ({
+  client = 'ca-pub-7721831965021640',
+  slot = slots[slot] || slots.horizontal,
+  format = "auto",
+  layout,
+  layoutKey,
+  responsive = true,
+  style = { display: "block" },
+}) => {
 
-  const slots = {square:'4438263094',vertical:'2404528095',horizontal:'5663714855'}
-  const ad = slots[adSlot] || slots.square;
+  const adRef = useRef(null);
+  const pushed = useRef(false);
 
+  // 1. Inject the AdSense <script> once per page load
   useEffect(() => {
+    if (document.querySelector(`script[src*="adsbygoogle"]`)) return;
+
+    const script = document.createElement("script");
+    script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${client}`;
+    script.async = true;
+    script.crossOrigin = "anonymous";
+    document.head.appendChild(script);
+  }, [client]);
+
+  // 2. Push the ad slot once the component mounts
+  useEffect(() => {
+    if (pushed.current) return;
     try {
       (window.adsbygoogle = window.adsbygoogle || []).push({});
+      pushed.current = true;
     } catch (e) {
-      console.error("Adsense error", e);
+      console.error("AdSense push error:", e);
     }
-  }, []); // Run once on component mount
+  }, []);
 
   return (
     <ins
+      ref={adRef}
       className="adsbygoogle"
-      style={{ display: 'block' }} // Use camelCase for style in React
-      data-ad-client="ca-pub-7721831965021640" // Replace with your publisher ID
-      data-ad-slot={ad}
-      data-ad-format="auto"
-      data-full-width-responsive="true"
-    ></ins>
+      style={style}
+      data-ad-client={client}
+      data-ad-slot={slot}
+      data-ad-format={format}
+      {...(layout ? { "data-ad-layout": layout } : {})}
+      {...(layoutKey ? { "data-ad-layout-key": layoutKey } : {})}
+      {...(responsive ? { "data-full-width-responsive": "true" } : {})}
+    />
   );
-};
+}
 
-export default AdsComponent;
+export default GoogleAdSense;
