@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
+    setSorting,
     fetchPosts,
     selectSortedPosts,
     selectLoading,
@@ -83,6 +84,7 @@ export const Blog = () => {
     const [newsletterEmail, setNewsletterEmail] = useState('');
     const [visibleCount, setVisibleCount] = useState(6);
 
+    dispatch(setSorting({sortBy:'desc'}));
     useEffect(() => {
         dispatch(fetchPosts());
         dispatch(fetchCategories());
@@ -105,7 +107,7 @@ export const Blog = () => {
     };
 
     /* ── Derived data ── */
-    const displayPosts = posts.slice(0, visibleCount);
+    const displayPosts = [...posts].reverse().slice(0, visibleCount);
     const featuredPost = displayPosts[0];
     const regularPosts = displayPosts.slice(1);
     const hasMore = posts.length > visibleCount;
