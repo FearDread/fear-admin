@@ -1,74 +1,94 @@
 /**
- * index.js — React Native entry point (fixed)
+ * index.js
  *
- * Bug fixes vs previous version:
+ * IMPORT ORDER IS CRITICAL — do not reorder the first two imports.
  *
- *  1. RACE CONDITION (_store null on first render):
- *     Root is now a stateful component. It shows a spinner until
- *     bootstrap() finishes and calls setStore(), THEN renders Provider.
- *
- *  2. FONT LOADING (per-screen nulls):
- *     Fonts are loaded once in App.jsx. Screens never need useFonts.
- *
- *  3. CRASH GUARD:
- *     If Storage.preload() or initializeStore() throws, a bare fallback
- *     store is used so the app renders rather than hanging blank.
+ * polyfills.js MUST come first because @feardread/feature-factory (and Axios
+ * bundled inside it) call window.addEventListener and globalThis.addEventListener
+ * at module evaluation time — before any component renders. Metro evaluates
+ * imports sequentially, so the polyfill runs first and stubs those APIs before
+ * the package tries to call them.
  */
 
-import { useEffect, useState }     from 'react';
-import { ActivityIndicator, AppRegistry, StyleSheet, View } from 'react-native';
-import { Provider }                from 'react-redux';
-import { name as efear }         from './app.json';
+// ── 1. Polyfills — MUST BE FIRST ─────────────────────────────────────────────
+import './polyfills';
 
-import Storage                     from './features/storage';
-import { initializeStore }         from './features/store';
-import App                         from './App';
+// ── 2. Everything else ────────────────────────────────────────────────────────
+import { configureStore }     from '@reduxjs/toolkit';
+import { useEffect, useState } from 'react';
+import {
+  ActivityIndicator,
+  AppRegistry,
+  StyleSheet,
+  View,
+} from 'react-native';
+import { Provider }           from 'react-redux';
 
+import { name as appName }    from './app.json';
+import Storage                from './features/storage';
+import { initializeStore }    from './features/store';
+import App                    from './App';
+
+// ── Synchronous fallback store ────────────────────────────────────────────────
+// Provider must never receive null. This minimal store is replaced by the real
+// one after Storage.preload() completes (usually < 50 ms), but prevents any
+// "no store" error on the very first render frame.
+const FALLBACK_STORE = configureStore({
+  reducer: { _boot: (state = {}) => state },
+});
+
+// ── Root ──────────────────────────────────────────────────────────────────────
 function Root() {
-  const [store, setStore] = useState(null);
+  const [store, setStore] = useState(FALLBACK_STORE);
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    let cancelled = false;
-    async function bootstrap() {
-      try { await Storage.preload(); }
-      catch (e) { console.warn('[bootstrap] Storage.preload:', e); }
+    let alive = true;
 
+    async function bootstrap() {
+      // Step 1: fill AsyncStorage cache so Storage.load() is synchronous
       try {
-        const s = initializeStore();
-        if (!cancelled) setStore(s);
-      } catch (e) {
-        console.error('[bootstrap] initializeStore:', e);
-        // Bare fallback so the app isn't permanently blank
-        const { configureStore } = require('@reduxjs/toolkit');
-        if (!cancelled) setStore(configureStore({ reducer: { _: (s = {}) => s } }));
+        await Storage.preload();
+      } catch (err) {
+        console.warn('[bootstrap] Storage.preload:', err);
+      }
+
+      // Step 2: create the real Redux store
+      try {
+        const realStore = initializeStore();
+        if (alive) { setStore(realStore); setReady(true); }
+      } catch (err) {
+        console.error('[bootstrap] initializeStore:', err);
+        // Keep fallback store; still mark ready so spinner resolves
+        if (alive) setReady(true);
       }
     }
-    bootstrap();
-    return () => { cancelled = true; };
-  }, []);
 
-  if (!store) {
-    return (
-      <View style={s.boot}>
-        <ActivityIndicator size="large" color="#b30e1c" />
-      </View>
-    );
-  }
+    bootstrap();
+    return () => { alive = false; };
+  }, []);
 
   return (
     <Provider store={store}>
-      <App />
+      {ready ? (
+        <App />
+      ) : (
+        <View style={s.boot}>
+          <ActivityIndicator size="large" color="#b30e1c" />
+        </View>
+      )}
     </Provider>
   );
 }
 
-AppRegistry.registerComponent(efear, () => Root);
+// ── Register synchronously at module level — never inside async ───────────────
+AppRegistry.registerComponent(appName, () => Root);
 
 const s = StyleSheet.create({
   boot: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    flex:            1,
+    alignItems:      'center',
+    justifyContent:  'center',
     backgroundColor: '#0d0d0d',
   },
 });

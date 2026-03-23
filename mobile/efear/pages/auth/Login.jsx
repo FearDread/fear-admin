@@ -15,7 +15,7 @@ import {
   setIsAuthenticated,
 } from '../../features/user/slice';
 import GoogleAuth from './components/GoogleAuth';
-import { T } from '../../components/styles';
+import { T } from '../../styles';
 
 export const Login = () => {
   const navigate = useNavigate();

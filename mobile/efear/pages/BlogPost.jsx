@@ -12,7 +12,7 @@ import {
   setSearchTerm,
   setFilters,
 } from "../features/blog/slice";
-import { T } from "../components/styles";
+import { T } from "../styles";
 
 
 const SectionLabel = ({ children }) => (

@@ -17,7 +17,7 @@ import {
     selectVisibleCategories,
     selectCategoriesLoading,
 } from "../features/categories/slice";
-import { T, blogStyles } from "../components/styles";
+import { T, blogStyles } from "../styles";
 import ProductCarousel from "../components/products/ProductCarousel";
 
 const TAG_COLORS = [T.red, T.orange, T.teal, T.red, T.orange];

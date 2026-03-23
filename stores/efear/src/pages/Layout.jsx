@@ -9,6 +9,7 @@ import Header2 from "../components/header/Header2";
 import Footer from "../components/common/Footer";
 import Footer2 from "../components/common/Footer2";
 import BestSelling from "../components/products/BestSelling";
+import Loader from "../components/common/Loader";
 
 import { dispatch } from "../features/store";
 import { selectProductsSuccess } from "../features/products/slice";
@@ -101,6 +102,7 @@ const Layout = () => {
     <>
       <div className="separator-animated-border animated-true"></div>
       <Elements stripe={stripePromise} options={stripeOptions}>
+
         <b className="screen-overlay"></b>
         <div className="wrapper">
           <Header2 />

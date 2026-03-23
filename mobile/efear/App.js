@@ -1,26 +1,12 @@
 /**
- * App.jsx — React Native
+ * App.jsx — updated to use Layout wrapper for all app screens
  *
- * Replaces the web App.js (react-router-dom) with React Navigation.
- * Fonts are loaded HERE once — every screen inherits them, nothing
- * returns null waiting for its own font load.
+ * The web Layout used <Outlet> to inject screen content.
+ * In RN we wrap each screen component with Layout so every screen
+ * automatically gets: Header2 + scroll-to-top + BestSelling + Footer2
+ * + cookie banner + product/category data fetch.
  *
- * Navigator structure (mirrors APP_ROUTES from web App.js):
- *   AuthStack   → Login, Register, ForgotPassword, ResetPassword
- *   AppStack    → all public + protected screens inside a root Layout
- *
- * Auth routing:
- *   PrivateRoute / PublicRoute wrappers are NOT used here.
- *   Instead we swap the entire navigator based on isAuthenticated — the
- *   correct React Navigation pattern. PrivateRoute / PublicRoute can still
- *   be used for per-screen logic inside a stack if needed.
- *
- * Install:
- *   npx expo install @react-navigation/native @react-navigation/native-stack
- *   npx expo install react-native-screens react-native-safe-area-context
- *   npx expo install expo-font
- *   npx expo install @expo-google-fonts/anton
- *   npx expo install @expo-google-fonts/space-mono
+ * Screens that should NOT have the layout (auth flow) stay bare.
  */
 
 import { useEffect } from 'react';
@@ -35,19 +21,19 @@ import {
 } from '@expo-google-fonts/space-mono';
 
 import { selectIsAuthenticated } from './features/user/slice';
+import Layout from './pages/Layout';
 
-import Home           from './screens/Home';          // your converted Home2
-import AboutUs        from './screens/AboutUs';
-// ── Screen imports ────────────────────────────────────────────────────────────
-// Auth screens
-
+// ── Auth screens (no header/footer) ─────────────────────────────────────────
+/*
 import Login          from './pages/auth/Login';
 import Register       from './pages/auth/Register';
 import ForgotPassword from './pages/auth/ForgotPassword';
 import ResetPassword  from './pages/auth/ResetPassword';
-
-// Public screens
-
+*/
+// ── App screens (all wrapped in Layout) ─────────────────────────────────────
+import Home           from './screens/Home';
+import AboutUs        from './screens/AboutUs';
+/*
 import ContactUs      from './pages/ContactUs';
 import Blog           from './pages/Blog';
 import BlogPost       from './pages/BlogPost';
@@ -58,40 +44,45 @@ import ProductDetails from './pages/products/ProductDetails';
 import ProductComparison from './pages/products/ProductComparison';
 import Wishlist       from './pages/Wishlist';
 import FAQ            from './pages/Faq';
-
-// Policy screens
 import Terms          from './pages/policies/Terms';
 import Privacy        from './pages/policies/Privacy';
 import Returns        from './pages/policies/Returns';
-
-// Protected screens
 import Dashboard      from './pages/account/Dashboard';
 import Orders         from './pages/account/Orders';
 import UserDetails    from './pages/account/UserDetails';
 import Addresses      from './pages/account/Addresses';
 import PaymentMethods from './pages/account/PaymentMethods';
-
-// Checkout screens
 import CheckoutDetails  from './pages/checkout/CheckoutDetails';
 import CheckoutShipping from './pages/checkout/CheckoutShipping';
 import CheckoutPayment  from './pages/checkout/CheckoutPayment';
 import CheckoutReview   from './pages/checkout/CheckoutReview';
 import CheckoutComplete from './pages/checkout/CheckoutComplete';
+*/
+// ── Helper: wrap any screen component in Layout ───────────────────────────────
+function withLayout(ScreenComponent) {
+  return function LayoutWrapped(props) {
+    return (
+      <Layout>
+        <ScreenComponent {...props} />
+      </Layout>
+    );
+  };
+}
 
 // ── Navigators ────────────────────────────────────────────────────────────────
 const AuthStack = createNativeStackNavigator();
 const AppStack  = createNativeStackNavigator();
-
-// Shared screen options — no header (screens handle their own headers)
 const NO_HEADER = { headerShown: false };
 
 function AuthNavigator() {
   return (
     <AuthStack.Navigator screenOptions={NO_HEADER}>
+      {/*
       <AuthStack.Screen name="Login"          component={Login} />
       <AuthStack.Screen name="Register"       component={Register} />
       <AuthStack.Screen name="ForgotPassword" component={ForgotPassword} />
       <AuthStack.Screen name="ResetPassword"  component={ResetPassword} />
+      */}
     </AuthStack.Navigator>
   );
 }
@@ -99,39 +90,34 @@ function AuthNavigator() {
 function AppNavigator() {
   return (
     <AppStack.Navigator screenOptions={NO_HEADER} initialRouteName="Home">
-      {/* Public */}
-      <AppStack.Screen name="Home"              component={Home} />
-      <AppStack.Screen name="About"             component={AboutUs} />
-      <AppStack.Screen name="Contact"           component={ContactUs} />
-      <AppStack.Screen name="Blog"              component={Blog} />
-      <AppStack.Screen name="BlogPost"          component={BlogPost} />
-      <AppStack.Screen name="Shop"              component={Shop} />
-      <AppStack.Screen name="Cart"              component={ShopCart} />
-      <AppStack.Screen name="ShopCategories"   component={ShopCategories} />
-      <AppStack.Screen name="ProductDetails"   component={ProductDetails} />
-      <AppStack.Screen name="ProductComparison" component={ProductComparison} />
-      <AppStack.Screen name="Wishlist"          component={Wishlist} />
-      <AppStack.Screen name="FAQ"               component={FAQ} />
-
-      {/* Policies */}
-      <AppStack.Screen name="Terms"    component={Terms} />
-      <AppStack.Screen name="Privacy"  component={Privacy} />
-      <AppStack.Screen name="Returns"  component={Returns} />
-
-      {/* Protected — navigator-level auth check via PrivateRoute inside each screen */}
-      <AppStack.Screen name="Dashboard"       component={Dashboard} />
-      <AppStack.Screen name="Orders"          component={Orders} />
-      <AppStack.Screen name="UserDetails"     component={UserDetails} />
-      <AppStack.Screen name="Addresses"       component={Addresses} />
-      <AppStack.Screen name="PaymentMethods"  component={PaymentMethods} />
-
-      {/* Checkout */}
-      <AppStack.Screen name="Checkout"         component={CheckoutDetails} />
-      <AppStack.Screen name="CheckoutDetails"  component={CheckoutDetails} />
-      <AppStack.Screen name="CheckoutShipping" component={CheckoutShipping} />
-      <AppStack.Screen name="CheckoutPayment"  component={CheckoutPayment} />
-      <AppStack.Screen name="CheckoutReview"   component={CheckoutReview} />
-      <AppStack.Screen name="CheckoutComplete" component={CheckoutComplete} />
+      <AppStack.Screen name="Home"              component={withLayout(Home)} />
+      <AppStack.Screen name="About"             component={withLayout(AboutUs)} />
+      {/* 
+      <AppStack.Screen name="Contact"           component={withLayout(ContactUs)} />
+      <AppStack.Screen name="Blog"              component={withLayout(Blog)} />
+      <AppStack.Screen name="BlogPost"          component={withLayout(BlogPost)} />
+      <AppStack.Screen name="Shop"              component={withLayout(Shop)} />
+      <AppStack.Screen name="Cart"              component={withLayout(ShopCart)} />
+      <AppStack.Screen name="ShopCategories"   component={withLayout(ShopCategories)} />
+      <AppStack.Screen name="ProductDetails"   component={withLayout(ProductDetails)} />
+      <AppStack.Screen name="ProductComparison" component={withLayout(ProductComparison)} />
+      <AppStack.Screen name="Wishlist"          component={withLayout(Wishlist)} />
+      <AppStack.Screen name="FAQ"               component={withLayout(FAQ)} />
+      <AppStack.Screen name="Terms"             component={withLayout(Terms)} />
+      <AppStack.Screen name="Privacy"           component={withLayout(Privacy)} />
+      <AppStack.Screen name="Returns"           component={withLayout(Returns)} />
+      <AppStack.Screen name="Dashboard"         component={withLayout(Dashboard)} />
+      <AppStack.Screen name="Orders"            component={withLayout(Orders)} />
+      <AppStack.Screen name="UserDetails"       component={withLayout(UserDetails)} />
+      <AppStack.Screen name="Addresses"         component={withLayout(Addresses)} />
+      <AppStack.Screen name="PaymentMethods"    component={withLayout(PaymentMethods)} />
+      <AppStack.Screen name="Checkout"          component={withLayout(CheckoutDetails)} />
+      <AppStack.Screen name="CheckoutDetails"   component={withLayout(CheckoutDetails)} />
+      <AppStack.Screen name="CheckoutShipping"  component={withLayout(CheckoutShipping)} />
+      <AppStack.Screen name="CheckoutPayment"   component={withLayout(CheckoutPayment)} />
+      <AppStack.Screen name="CheckoutReview"    component={withLayout(CheckoutReview)} />
+      <AppStack.Screen name="CheckoutComplete"  component={withLayout(CheckoutComplete)} />
+      */}
     </AppStack.Navigator>
   );
 }
@@ -147,7 +133,6 @@ function LoadingScreen() {
 
 // ── Root App ───────────────────────────────────────────────────────────────────
 export default function App() {
-  // ── Load both fonts once for the entire app ──────────────────────────────
   const [fontsLoaded, fontError] = useFonts({
     Anton_400Regular,
     SpaceMono_400Regular,
@@ -156,15 +141,11 @@ export default function App() {
 
   const isAuthenticated = useSelector(selectIsAuthenticated);
 
-  // If fonts fail, log but don't block the app
   useEffect(() => {
     if (fontError) console.warn('[App] Font load error:', fontError);
   }, [fontError]);
 
-  // Show spinner until fonts are ready (prevents every screen returning null)
-  if (!fontsLoaded && !fontError) {
-    return <LoadingScreen />;
-  }
+  if (!fontsLoaded && !fontError) return <LoadingScreen />;
 
   return (
     <NavigationContainer>
@@ -175,9 +156,6 @@ export default function App() {
 
 const s = StyleSheet.create({
   loading: {
-    flex:            1,
-    alignItems:      'center',
-    justifyContent:  'center',
-    backgroundColor: '#0d0d0d',
+    flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#0d0d0d',
   },
 });

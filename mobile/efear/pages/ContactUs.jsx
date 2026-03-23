@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import Toast from '../components/common/Toast';
 import { useDispatch, useSelector } from 'react-redux';
 import { sendContact } from '../features/mail/slice';
-import { T, contactStyles } from "../components/styles";
+import { T, contactStyles } from "../styles";
 
 const SUBJECTS = [
   'Order Inquiry',

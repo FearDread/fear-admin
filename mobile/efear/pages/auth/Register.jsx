@@ -13,7 +13,7 @@ import {
   registerUser
 } from '../../features/user/slice';
 
-import { T } from '../../components/styles';
+import { T } from '../../styles';
 
 const countries = [
   'United States', 'United Kingdom', 'Canada', 'Australia', 'India',

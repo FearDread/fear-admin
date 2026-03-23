@@ -1,142 +1,297 @@
-import { useEffect, useMemo, useState } from "react";
-import { useSelector } from "react-redux";
-import { Outlet, useLocation } from "react-router-dom";
-import { loadStripe } from "@stripe/stripe-js";
-import { Elements } from "@stripe/react-stripe-js";
+/**
+ * Layout.jsx — React Native
+ *
+ * Replaces the web Layout which wrapped every page via <Outlet>.
+ * In RN, each screen renders <Layout> as a wrapper component.
+ *
+ * Web → RN mapping:
+ *   <Outlet>              → {children}
+ *   loadStripe / Elements → @stripe/stripe-react-native StripeProvider
+ *                           (install: npx expo install @stripe/stripe-react-native)
+ *                           Stubbed here — swap the comment block in when ready.
+ *   window.scrollTo(0,0)  → scrollViewRef.current.scrollTo({ y:0 })
+ *                           triggered via navigation focus event
+ *   useLocation           → useFocusEffect (react-navigation)
+ *   localStorage cookie   → AsyncStorage (matches our Storage util)
+ *   BestSelling           → rendered below children as on web
+ *   CookieBanner          → Modal with accept/reject (stub — convert separately)
+ *   separator-animated-border → AnimatedBorder component (same as ProductCarousel)
+ *   Footer2               → rendered below scroll content
+ *
+ * Usage — wrap any screen component:
+ *   export default function HomeScreen() {
+ *     return (
+ *       <Layout>
+ *         <Home2 />
+ *       </Layout>
+ *     );
+ *   }
+ *
+ * Or use as a navigator screen wrapper in App.jsx:
+ *   function LayoutScreen({ children }) { return <Layout>{children}</Layout>; }
+ */
 
-import Header from "../components/header/Header";
-import Header2 from "../components/header/Header2";
-import Footer from "../components/common/Footer";
-import Footer2 from "../components/common/Footer2";
-import BestSelling from "../components/products/BestSelling";
-
-import { dispatch } from "../features/store";
-import { selectProductsSuccess } from "../features/products/slice";
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
-  fetchProducts,
-  selectAllProducts,
-  selectProductsLoading,
-  selectProductsError,
-} from '../features/products/slice';
-import { fetchCategories, selectAllCategories } from '../features/categories/slice';
-import ProductQuickView from "../components/products/ProductQuickView";
-import CookieBanner from "../components/common/CookieBanner";
-import ProductCarousel from "../components/products/ProductCarousel";
+  Animated,
+  Pressable,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
+import { useDispatch, useSelector } from 'react-redux';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import { fetchProducts }    from '../features/products/slice';
+import { fetchCategories }  from '../features/categories/slice';
+import { selectAllProducts, selectProductsLoading, selectProductsError } from '../features/products/slice';
+import { selectAllCategories } from '../features/categories/slice';
 
-const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_API_KEY);
-const currentEnv = process.env.NODE_ENV;
+import Header                from '../components/header/Header';
+import { HeaderScrollContext } from '../components/header/HeaderScrollContext';
+//import BestSelling            from '../components/products/BestSelling';
+//import Footer2                from '../components/common/Footer2';
 
-const Layout = () => {
-  const products = useSelector(selectAllProducts);
+// ─── Design tokens ─────────────────────────────────────────────────────────
+const T = {
+  red:    '#b30e1c',
+  dark0:  '#0d0d0d',
+  dark1:  '#111111',
+  border: '#222222',
+  mid:    'rgba(255,255,255,0.58)',
+  white:  '#ffffff',
+};
+
+const COOKIE_KEY = '@efear:cookie-consent';
+
+// ─── Animated top border (replaces .separator-animated-border) ────────────────
+const AnimatedBorder = () => {
+  const anim = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(anim, { toValue: 1, duration: 1400, useNativeDriver: false }),
+        Animated.timing(anim, { toValue: 0, duration: 1400, useNativeDriver: false }),
+      ])
+    ).start();
+  }, []);
+  const borderColor = anim.interpolate({ inputRange: [0, 1], outputRange: [T.border, T.red] });
+  return <Animated.View style={[styles.animatedBorder, { borderTopColor: borderColor }]} />;
+};
+
+// ─── Cookie banner ─────────────────────────────────────────────────────────
+const CookieBanner = ({ onAccept, onReject }) => (
+  <View style={styles.cookieBanner}>
+    <Text style={styles.cookieText}>
+      We use cookies to improve your experience. Accept to continue or reject non-essential cookies.
+    </Text>
+    <View style={styles.cookieActions}>
+      <Pressable style={styles.cookieReject} onPress={onReject}>
+        <Text style={styles.cookieRejectText}>Reject</Text>
+      </Pressable>
+      <Pressable style={styles.cookieAccept} onPress={() => onAccept({ essential: true, analytics: true })}>
+        <Text style={styles.cookieAcceptText}>Accept All</Text>
+      </Pressable>
+    </View>
+  </View>
+);
+
+// ─── Layout ───────────────────────────────────────────────────────────────────
+const Layout = ({ children }) => {
+  const dispatch   = useDispatch();
+  const scrollRef  = useRef(null);
+
+  const products   = useSelector(selectAllProducts);
   const categories = useSelector(selectAllCategories);
-  const loading = useSelector(selectProductsLoading);
-  const success = useSelector(selectProductsSuccess);
-  const error = useSelector(selectProductsError);
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [showQuickView, setShowQuickView] = useState(false);
-  const [status, setStatus] = useState(null); // null | 'visible' | 'accepted' | 'rejected'
-  const [acceptedPrefs, setAcceptedPrefs] = useState(null);
+  const loading    = useSelector(selectProductsLoading);
+  const error      = useSelector(selectProductsError);
 
-  const handleAccept = (prefs) => {
-    localStorage.setItem("cookie-consent", JSON.stringify(prefs));
-    setAcceptedPrefs(prefs);
-    setStatus("accepted");
-  };
+  const [cookieStatus, setCookieStatus] = useState(null); // null | 'visible' | 'accepted' | 'rejected'
 
-  const handleReject = () => {
-    localStorage.setItem("cookie-consent", JSON.stringify({ essential: true }));
-    setAcceptedPrefs({ essential: true });
-    setStatus("rejected");
-  };
+  // Shared scroll value — Header2 reads this for hide/compact/progress
+  const scrollY = useRef(new Animated.Value(0)).current;
 
-  const reset = () => {
-    localStorage.removeItem("cookie-consent");
-    setStatus("visible");
-    setAcceptedPrefs(null);
-  };
-
-  const ScrollToTop = () => {
-    const { pathname } = useLocation();
-
-    useEffect(() => {
-      window.scrollTo(0, 0);
-    }, [pathname]);
-
-    return null;
-  }
-
+  // ── Fetch data on mount ─────────────────────────────────────────────────
   useEffect(() => {
     dispatch(fetchProducts());
     dispatch(fetchCategories());
   }, []);
 
+  // ── Cookie consent ──────────────────────────────────────────────────────
   useEffect(() => {
-    const saved = localStorage.getItem("cookie-consent");
-    if (!saved) {
-      setTimeout(() => setStatus("visible"), 600);
-    } else {
-      setStatus("accepted");
-      setAcceptedPrefs(JSON.parse(saved));
-    }
+    AsyncStorage.getItem(COOKIE_KEY).then((raw) => {
+      if (!raw) {
+        setTimeout(() => setCookieStatus('visible'), 600);
+      } else {
+        setCookieStatus('accepted');
+      }
+    }).catch(() => setCookieStatus('visible'));
   }, []);
 
-  const stripeOptions = useMemo(() => ({
-    // Stripe Elements appearance customization
-    appearance: {
-      theme: 'stripe',
-      variables: {
-        colorPrimary: '#0570de',
-        colorBackground: '#ffffff',
-        colorText: '#30313d',
-        colorDanger: '#df1b41',
-        fontFamily: 'Ideal Sans, system-ui, sans-serif',
-        spacingUnit: '4px',
-        borderRadius: '4px',
-      },
-    },
-  }), []);
+  const handleAccept = useCallback(async (prefs) => {
+    await AsyncStorage.setItem(COOKIE_KEY, JSON.stringify(prefs));
+    setCookieStatus('accepted');
+  }, []);
+
+  const handleReject = useCallback(async () => {
+    await AsyncStorage.setItem(COOKIE_KEY, JSON.stringify({ essential: true }));
+    setCookieStatus('rejected');
+  }, []);
+
+  // ── Scroll-to-top on screen focus (replaces ScrollToTop component) ──────
+  useFocusEffect(
+    useCallback(() => {
+      scrollRef.current?.scrollTo({ y: 0, animated: false });
+    }, [])
+  );
+
+  // ── Stripe (stub — uncomment when @stripe/stripe-react-native is installed)
+  // import { StripeProvider } from '@stripe/stripe-react-native';
+  // const publishableKey = process.env.EXPO_PUBLIC_STRIPE_API_KEY;
+  // Wrap the return in <StripeProvider publishableKey={publishableKey}>...</StripeProvider>
 
   return (
-    <>
-      <div className="separator-animated-border animated-true"></div>
-      <Elements stripe={stripePromise} options={stripeOptions}>
-        <b className="screen-overlay"></b>
-        <div className="wrapper">
-          <Header2 />
-        </div>
-        <div className="page-wrapper">
-          <div className="page-content">
-            {(!loading && products.length > 0) && (
-              <>
-                <Outlet {...products} />
-              </>
-            )}
+    <HeaderScrollContext.Provider value={{ scrollY }}>
+      <SafeAreaView style={styles.root}>
 
-            <BestSelling />
+        {/* Animated accent border at very top */}
+        <AnimatedBorder />
 
-          </div>
-        </div>
-        <Footer2 categories={(!loading) ? categories : []} products={products} />
+        {/* Header — sits OUTSIDE the ScrollView so it stays fixed */}
+        <Header />
 
-        {status === "visible" && (
+        {/* Page content */}
+        <Animated.ScrollView
+          ref={scrollRef}
+          style={styles.scroll}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+          scrollEventThrottle={16}
+          onScroll={Animated.event(
+            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+            { useNativeDriver: false }
+          )}
+        >
+          {/* Main screen content */}
+          {!loading && products.length > 0 && children}
+
+          {/* Loading state */}
+          {loading && (
+            <View style={styles.loadingWrap}>
+              <View style={styles.loadingSpinner} />
+            </View>
+          )}
+
+          {/* BestSelling shown on every page below screen content */}
+          { /* <BestSelling /> */ }
+
+          {/* Footer 
+          <Footer2
+            categories={loading ? [] : categories}
+            products={products}
+          />
+          */}
+        </Animated.ScrollView>
+
+        {/* Cookie banner */}
+        {cookieStatus === 'visible' && (
           <CookieBanner onAccept={handleAccept} onReject={handleReject} />
         )}
 
-        {selectedProduct && (
-          <ProductQuickView
-            product={selectedProduct}
-            isOpen={showQuickView}
-            onClose={() => {
-              setShowQuickView(false);
-              setSelectedProduct(null);
-            }}
-          />
-        )}
-      </Elements>
-      <ScrollToTop />
-    </>
+      </SafeAreaView>
+    </HeaderScrollContext.Provider>
   );
 };
 
 export default Layout;
+
+// ─── Styles ───────────────────────────────────────────────────────────────────
+const styles = StyleSheet.create({
+  root: {
+    flex:            1,
+    backgroundColor: T.dark0,
+  },
+  animatedBorder: {
+    height:       2,
+    borderTopWidth: 2,
+  },
+  scroll: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+  },
+  loadingWrap: {
+    minHeight:      300,
+    alignItems:     'center',
+    justifyContent: 'center',
+  },
+  loadingSpinner: {
+    width:           48,
+    height:          48,
+    borderWidth:      3,
+    borderColor:     T.border,
+    borderTopColor:  T.red,
+    borderRadius:    24,
+    // CSS animation: spin — use Animated.loop in a real implementation
+    // or install react-native-animated-spinkit
+  },
+
+  // Cookie banner
+  cookieBanner: {
+    position:        'absolute',
+    bottom:           0,
+    left:             0,
+    right:            0,
+    backgroundColor: T.dark1,
+    borderTopWidth:   1,
+    borderTopColor:  T.border,
+    padding:          20,
+    gap:               12,
+    zIndex:           500,
+    elevation:         10,
+  },
+  cookieText: {
+    fontFamily:        'SpaceMono_400Regular',
+    fontSize:           11,
+    lineHeight:         18,
+    color:             T.mid,
+    includeFontPadding: false,
+  },
+  cookieActions: {
+    flexDirection: 'row',
+    gap:            10,
+  },
+  cookieReject: {
+    flex:             1,
+    paddingVertical:  10,
+    alignItems:       'center',
+    borderWidth:       1,
+    borderColor:      T.border,
+  },
+  cookieRejectText: {
+    fontFamily:        'SpaceMono_400Regular',
+    fontSize:           10,
+    letterSpacing:      1.6,
+    textTransform:     'uppercase',
+    color:             T.mid,
+    includeFontPadding: false,
+  },
+  cookieAccept: {
+    flex:             1,
+    paddingVertical:  10,
+    alignItems:       'center',
+    backgroundColor: T.red,
+  },
+  cookieAcceptText: {
+    fontFamily:        'SpaceMono_400Regular',
+    fontSize:           10,
+    letterSpacing:      1.6,
+    textTransform:     'uppercase',
+    color:             T.white,
+    includeFontPadding: false,
+  },
+});

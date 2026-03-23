@@ -13,7 +13,7 @@ import {
 } from '../../features/wishlist/slice';
 import Breadcrumbs from '../../components/common/Breadcrumbs';
 import ProductComparisonCard from '../../components/products/ProductComparisonCard';
-import BrandSection from '../../components/home/v1/BrandSection';
+import BrandSection from '../../components/home/BrandSection';
 
 const COMPARE_STORAGE_KEY = 'comparisonProductIds';
 
