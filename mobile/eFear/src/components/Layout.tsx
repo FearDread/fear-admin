@@ -1,9 +1,9 @@
 import { ReactNode } from 'react';
 import { View, StyleSheet, SafeAreaView, ScrollView, StatusBar, Platform } from 'react-native';
 import { usePathname } from 'expo-router';
-import AppHeader from './AppHeader';
-import AppFooter from './AppFooter';
-import { Colors } from '../constants/theme.tzx';
+import Header from './Header';
+import AppFooter from './Footer';
+import { Colors } from '../constants/theme';
 
 interface LayoutProps {
   children:    ReactNode;
@@ -20,7 +20,7 @@ export default function Layout({ children, hideHeader = false, hideFooter = fals
 
   const inner = (
     <>
-      {!hideHeader && <AppHeader />}
+      {!hideHeader && <Header />}
       <View style={s.body}>{children}</View>
       {!shouldHideFtr && <AppFooter />}
     </>

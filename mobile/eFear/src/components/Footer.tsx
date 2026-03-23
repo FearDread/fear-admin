@@ -1,6 +1,6 @@
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Colors, Fonts } from '../constants/theme.tzx';
+import { Colors, Fonts } from '../constants/theme.tz';
 
 const LINKS = [
   { label: 'Terms',   href: '/(public)/terms'   as const },
