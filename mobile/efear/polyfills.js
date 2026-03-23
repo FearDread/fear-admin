@@ -1,88 +1,80 @@
 /**
  * polyfills.js
  *
- * MUST be the first import in index.js.
+ * MUST be the very first import in index.js.
  *
- * Root cause of TypeError: window.addEventListener is not a function
- * ─────────────────────────────────────────────────────────────────────
- * @feardread/feature-factory bundles Axios 1.x which contains this code:
+ * Crash chain this file prevents
+ * ────────────────────────────────
+ * @feardread/feature-factory bundles Axios 1.x which probes the JS environment
+ * at module-evaluation time and calls DOM APIs absent in Hermes.
  *
- *   const It = globalThis ?? self ?? window ?? global
- *   const zt = typeof It.postMessage === 'function'   // true in Hermes!
- *   zt
- *     ? (It.addEventListener("message", handler), ...)  // CRASH — no addEventListener
- *     : setTimeout
+ * CRASH 1 — window.addEventListener (fixed last session)
+ *   Axios: const zt = typeof globalThis.postMessage === 'function'  // TRUE in Hermes
+ *          zt ? globalThis.addEventListener("message", ...) : setTimeout
+ *   Hermes has postMessage (React DevTools) but no addEventListener → crash.
+ *   Fix: stub addEventListener before Axios loads.
  *
- * In React Native's Hermes engine, `globalThis` exists AND has `postMessage`
- * (used by React DevTools), but has no `addEventListener`. Axios detects
- * `postMessage` and assumes it's in a Web Worker, then calls `addEventListener`.
+ * CRASH 2 — window.location.href (this session)
+ *   Axios: const dr = typeof window !== 'undefined' && typeof document !== 'undefined'
+ *          const hr = dr && window.location.href || "http://localhost"
+ *   In React Native without any document polyfill, dr is false → safe fallback.
+ *   If document ever gets polyfilled by any package, dr becomes true and
+ *   window.location.href crashes because window.location is undefined.
+ *   Fix: stub window.location so hr resolves safely regardless of dr.
  *
- * The package footer also calls:
- *   window.addEventListener("auth:failure", handler)
- *
- * Both crash with "TypeError: window.addEventListener is not a function".
- *
- * Fix: add no-op stubs for every DOM event API before any package loads.
- * This file has zero side-effects on actual DOM environments because it
- * only patches when the method is missing.
+ * RTK Query note: its focused-state init is guarded:
+ *   focused: typeof document === 'undefined' || document.visibilityState !== 'hidden'
+ *   → defaults to true when document is absent. No document polyfill needed.
  */
 
-const noop = () => {};
+const noop      = () => {};
 const noopFalse = () => false;
 
-// ── Patch globalThis ──────────────────────────────────────────────────────────
-// Hermes sets globalThis = global, which has postMessage but no addEventListener.
-if (typeof globalThis !== 'undefined') {
-  if (typeof globalThis.addEventListener !== 'function') {
-    globalThis.addEventListener    = noop;
-    globalThis.removeEventListener = noop;
-    globalThis.dispatchEvent       = noopFalse;
+// 1. Stub addEventListener / removeEventListener / dispatchEvent
+[
+  typeof globalThis !== 'undefined' ? globalThis : null,
+  typeof global     !== 'undefined' ? global     : null,
+  typeof window     !== 'undefined' ? window     : null,
+].forEach(obj => {
+  if (obj && typeof obj.addEventListener !== 'function') {
+    obj.addEventListener    = noop;
+    obj.removeEventListener = noop;
+    obj.dispatchEvent       = noopFalse;
   }
-}
+});
 
-// ── Patch global ──────────────────────────────────────────────────────────────
-if (typeof global !== 'undefined') {
-  if (typeof global.addEventListener !== 'function') {
-    global.addEventListener    = noop;
-    global.removeEventListener = noop;
-    global.dispatchEvent       = noopFalse;
+// 2. Null postMessage so Axios falls back to setTimeout instead of MessageChannel
+//    Only when addEventListener was also missing (i.e. not a real browser).
+[
+  typeof globalThis !== 'undefined' ? globalThis : null,
+  typeof window     !== 'undefined' ? window     : null,
+].forEach(obj => {
+  if (obj
+      && typeof obj.postMessage === 'function'
+      && obj.addEventListener === noop) {
+    obj.postMessage = noop;
   }
-}
+});
 
-// ── Patch window (if it exists but lacks addEventListener) ────────────────────
-// In some Expo configs window === globalThis, so this may be a no-op,
-// but it's a safety net for any env where window is defined separately.
-if (typeof window !== 'undefined') {
-  if (typeof window.addEventListener !== 'function') {
-    window.addEventListener    = noop;
-    window.removeEventListener = noop;
-    window.dispatchEvent       = noopFalse;
-  }
-  // Also null out postMessage so Axios falls back to setTimeout instead
-  // of its broken MessageChannel path (which also calls addEventListener).
-  if (typeof window.postMessage === 'function') {
-    // Only stub if we already had to stub addEventListener — meaning this is
-    // not a real browser window. Stubbing postMessage makes Axios choose
-    // the safe setTimeout code path instead.
-    window.postMessage = noop;
-  }
-}
+// 3. window.location stub
+//    Axios reads window.location.href when both window and document are defined.
+//    Providing a stub makes this safe even if document gets polyfilled elsewhere.
+const LOCATION_STUB = {
+  href:     'http://localhost',
+  origin:   'http://localhost',
+  protocol: 'http:',
+  host:     'localhost',
+  hostname: 'localhost',
+  port:     '',
+  pathname: '/',
+  search:   '',
+  hash:     '',
+};
 
-// Do the same for globalThis.postMessage — same Axios check applies there
-if (typeof globalThis !== 'undefined' && typeof globalThis.postMessage === 'function') {
-  globalThis.postMessage = noop;
-}
+if (typeof window     !== 'undefined' && !window.location)     window.location     = LOCATION_STUB;
+if (typeof globalThis !== 'undefined' && !globalThis.location) globalThis.location = LOCATION_STUB;
 
-// ── Minimal document stub ─────────────────────────────────────────────────────
-// RTK Query reads document.visibilityState on slice init.
-// React Native has no document object.
-if (typeof document === 'undefined') {
-  global.document = {
-    visibilityState:     'visible',
-    addEventListener:    noop,
-    removeEventListener: noop,
-    dispatchEvent:       noopFalse,
-    createElement:       () => ({}),
-    getElementById:      () => null,
-  };
-}
+// 4. DO NOT polyfill `document`
+//    Adding document makes Axios think it's in a browser (dr = true) which
+//    triggers the window.location crash in environments where location is absent.
+//    RTK Query already handles the absent-document case gracefully.
