@@ -54,5 +54,7 @@ export const initializeStore = () => {
 export const store = initializeStore();
 export const getState = () => store.getState();
 export const dispatch = (action) => store.dispatch(action);
+export const AppDispatch = dispatch;
+export const RootState = getState();
 
 export default store;

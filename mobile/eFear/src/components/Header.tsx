@@ -3,7 +3,7 @@ import { View, Text, Pressable, StyleSheet, Modal, FlatList, Platform } from 're
 import { useRouter, usePathname, Link } from 'expo-router';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../features/store';
-import { Colors, Fonts } from '../constants/theme.tsx';
+import { Colors, Fonts } from '../constants/theme';
 
 const NAV_LINKS = [
   { label: 'Home',       href: '/(public)'            as const },

@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 const slots = {square:'4438263094',vertical:'2404528095',horizontal:'5663714855'}
 
 export const GoogleAdSense = ({
-  client = 'ca-pub-7721831965021640',
+  client = 'pub-7721831965021640',
   slot = slots[slot] || slots.horizontal,
   format = "auto",
   layout,
@@ -19,7 +19,7 @@ export const GoogleAdSense = ({
     if (document.querySelector(`script[src*="adsbygoogle"]`)) return;
 
     const script = document.createElement("script");
-    script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${client}`;
+    script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-${client}`;
     script.async = true;
     script.crossOrigin = "anonymous";
     document.head.appendChild(script);

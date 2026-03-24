@@ -15,7 +15,7 @@ import {
   SpaceMono_400Regular_Italic,
 } from '@expo-google-fonts/space-mono';
 import { useNavigation } from '@react-navigation/native';
-import { T, aboutStyles as s } from "../styles";
+import { Colors as T, aboutStyles as s } from "../constants/theme";
 
 const { width: SW } = Dimensions.get('window');
 const GUTTER    = 24;
@@ -165,7 +165,7 @@ const OriginStory = () => {
         {/* Image card */}
         <View style={s.originImgWrap}>
           <Image
-            source={require('../assets/images/about/01.png')}
+            source={require('../../assets/images/about/01.png')}
             style={s.originImg}
             resizeMode="cover"
           />
@@ -402,19 +402,19 @@ const OurPromise = () => (
 // ─── WhatMakesUsDifferent ────────────────────────────────────────────────────
 const DIFFS = [
   {
-    img: require('../assets/images/icons/delivery.png'),
+    img: require('../../assets/images/icons/delivery.png'),
     accent: T.red,
     title: 'Free Shipping',
     body: "We'll bring it to your door for free. Because if we charged you shipping, you'd probably just steal it from a neighbor's porch anyway.",
   },
   {
-    img: require('../assets/images/icons/money-bag.png'),
+    img: require('../../assets/images/icons/money-bag.png'),
     accent: T.orange,
     title: '100% Money Back',
     body: "Regret your life choices? Us too. Send it back within 30 days, no judgment. We've seen worse decisions, trust us.",
   },
   {
-    img: require('../assets/images/icons/support.png'),
+    img: require('../../assets/images/icons/support.png'),
     accent: T.teal,
     title: '24/7 Online Support',
     body: "Can't sleep at 3 AM? Neither can our support team — misery loves company. We're here for your questions and your 3 AM spirals.",
