@@ -1,5 +1,3 @@
-import { Message } from "rsuite";
-
 /**
  * CrudFactory - Generic CRUD Handler using Promise then/catch pattern
  *
