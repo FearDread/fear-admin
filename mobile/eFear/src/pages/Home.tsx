@@ -221,9 +221,9 @@ const CtaBanner = () => {
 
 // ─── OfferHighlights ─────────────────────────────────────────────────────────
 const OFFERS = [
-  { image: require('../assets/images/comics/super2.png'), category: 'E-Books',     note: 'Starting at $9',  screen: 'Shop', params: { cat: 'books' } },
-  { image: require('../assets/images/comics/super1.png'), category: 'Comics',      note: 'Bagged & Boarded', screen: 'Shop', params: { cat: 'comics' } },
-  { image: require('../assets/images/comics/super3.png'), category: 'Collectibles', note: 'Limited Stock',  screen: 'Shop', params: { cat: 'cards' } },
+  { image: require('../../assets/images/comics/super2.png'), category: 'E-Books',     note: 'Starting at $9',  screen: 'Shop', params: { cat: 'books' } },
+  { image: require('../../assets/images/comics/super1.png'), category: 'Comics',      note: 'Bagged & Boarded', screen: 'Shop', params: { cat: 'comics' } },
+  { image: require('../../assets/images/comics/super3.png'), category: 'Collectibles', note: 'Limited Stock',  screen: 'Shop', params: { cat: 'cards' } },
 ];
 
 const OfferCard = ({ image, category, note, screen, params }) => {
@@ -268,7 +268,7 @@ const OfferHighlights = () => (
 );
 
 // ─── Home2 (root screen) ─────────────────────────────────────────────────────
-const Home2 = () => {
+const Home = () => {
 
   // Splash / loading guard — swap for your app's splash logic
 
@@ -291,7 +291,7 @@ const Home2 = () => {
   );
 };
 
-export default Home2;
+export default Home;
 
 // ─── Styles ──────────────────────────────────────────────────────────────────
 const CARD_W = (SCREEN_W - 48 - 12) / 2; // two-column grid with gap

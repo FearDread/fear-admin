@@ -9,7 +9,7 @@ import { useDispatch } from 'react-redux';
 import type { AppDispatch } from '../../features/store';
 // import { loginThunk } from '../../features/auth/authSlice';
 import { useNavigation } from '../../hooks/useNavigation';
-import { Colors, Fonts } from '../../constants/theme.tz';
+import { Colors, Fonts } from '../../constants/theme.tsx';
 
 // Feature bullets shown in the left panel  →  .auth-feature
 const FEATURES = [

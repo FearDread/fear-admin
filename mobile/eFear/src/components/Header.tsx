@@ -65,7 +65,7 @@ export default function Header() {
           </Pressable>
 
           {/* Hamburger */}
-          <Pressable style={[s.iconBtn, s.iconBtnRed]} onPress={() => setOpen(true)} accessibilityLabel="Open menu">
+          <Pressable style={s.iconBtnHamburger} onPress={() => setOpen(true)} accessibilityLabel="Open menu">
             <Text style={s.iconGlyph}>☰</Text>
           </Pressable>
         </View>
@@ -78,8 +78,8 @@ export default function Header() {
             const active = pathname === link.href || pathname.startsWith(link.href + '/');
             return (
               <Link key={link.href} href={link.href} asChild>
-                <Pressable style={[s.navItem, active && s.navItemActive]}>
-                  <Text style={[s.navLabel, active && s.navLabelActive]}>{link.label}</Text>
+                <Pressable style={StyleSheet.flatten([s.navItem, active && s.navItemActive])}>
+                  <Text style={StyleSheet.flatten([s.navLabel, active && s.navLabelActive])}>{link.label}</Text>
                 </Pressable>
               </Link>
             );
@@ -108,8 +108,8 @@ export default function Header() {
               const active = pathname === item.href;
               return (
                 <Link href={item.href} asChild>
-                  <Pressable style={[s.drawerItem, active && s.drawerItemActive]} onPress={() => setOpen(false)}>
-                    <Text style={[s.drawerLabel, active && s.drawerLabelActive]}>{item.label}</Text>
+                  <Pressable style={StyleSheet.flatten([s.drawerItem, active && s.drawerItemActive])} onPress={() => setOpen(false)}>
+                    <Text style={StyleSheet.flatten([s.drawerLabel, active && s.drawerLabelActive])}>{item.label}</Text>
                     <Text style={s.drawerArrow}>›</Text>
                   </Pressable>
                 </Link>
@@ -126,7 +126,7 @@ export default function Header() {
                 </Pressable>
               ) : (
                 <View style={s.authRow}>
-                  <Pressable style={[s.btnPrimary, s.btnGhost]} onPress={() => { setOpen(false); router.push('/(auth)/login'); }}>
+                  <Pressable style={s.btnGhostOutline} onPress={() => { setOpen(false); router.push('/(auth)/login'); }}>
                     <Text style={s.btnGhostText}>LOGIN</Text>
                   </Pressable>
                   <Pressable style={s.btnPrimary} onPress={() => { setOpen(false); router.push('/(auth)/register'); }}>
@@ -204,6 +204,16 @@ const s = StyleSheet.create({
   iconBtnRed: {
     borderColor: Colors.red,
     backgroundColor: Colors.redFaded,
+  },
+  iconBtnHamburger: {
+    width: 42,
+    height: 42,
+    backgroundColor: Colors.redFaded,
+    borderWidth: 1,
+    borderColor: Colors.red,
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
   },
   iconGlyph: { fontSize: 18 },
   badge: {
@@ -346,6 +356,15 @@ const s = StyleSheet.create({
     backgroundColor: 'transparent',
     borderWidth: 1,
     borderColor: Colors.border,
+  },
+  btnGhostOutline: {
+    flex: 1,
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: Colors.border,
+    paddingVertical: 12,
+    alignItems: 'center',
+    borderRadius: 0,
   },
   btnGhostText: {
     fontFamily: Fonts.mono,

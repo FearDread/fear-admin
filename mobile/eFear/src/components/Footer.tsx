@@ -1,6 +1,6 @@
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Colors, Fonts } from '../constants/theme.tz';
+import { Colors, Fonts } from '../constants/theme.tsx';
 
 const LINKS = [
   { label: 'Terms',   href: '/(public)/terms'   as const },
@@ -14,7 +14,7 @@ const TRUST = [
   { icon: '🚚', label: 'Free Shipping',   sub: 'On orders over $75' },
   { icon: '🔒', label: 'Secure Checkout', sub: '256-bit SSL encryption' },
   { icon: '↩️',  label: 'Easy Returns',   sub: '30-day return policy' },
-  { icon: '🎧', label: '24/7 Support',    sub: 'We're always here' },
+  { icon: '🎧', label: '24/7 Support',    sub: 'Were always here' },
 ];
 
 export default function Footer() {

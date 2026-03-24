@@ -4,7 +4,7 @@ import { Provider } from 'react-redux';
 import { StatusBar } from 'expo-status-bar';
 import { store } from '../features/store';
 import { useFearFonts } from '../hooks/useFearFonts';
-import { Colors } from '../constants/theme.tz';
+import { Colors } from '../constants/theme.tsx';
 
 // Hold splash screen until eFear fonts (Anton + Space Mono) are loaded
 SplashScreen.preventAutoHideAsync();
