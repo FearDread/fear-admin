@@ -1,17 +1,20 @@
-import { useState } from "react";
-import {
-  Input as RSInput,
-  Button as RSButton,
-  useToaster,
-  Message,
-} from "rsuite";
+import { Message } from "rsuite";
+
 /**
  * CrudFactory - Generic CRUD Handler using Promise then/catch pattern
- * 
- * A reusable factory for creating CRUD handlers across different entities
- * Uses promise chaining instead of async/await for better error propagation control
+ *
+ * A reusable factory for creating CRUD handlers across different entities.
+ * Designed to work with FeatureFactory slices (index.js) and the API layer (api.js).
+ * Uses promise chaining instead of async/await for better error propagation control.
+ *
+ * @param {string}   entity        - Display name of the entity (e.g. "User", "Product")
+ * @param {Object}   actions       - Async thunk actions from FeatureFactory (create, update, delete, fetchAll)
+ *                                   Optionally includes a `setLoading` synchronous slice action
+ * @param {Object}   selectors     - Redux selectors for the entity slice (reserved for future use)
+ * @param {Object}   toaster       - RSuite toaster instance for push notifications
+ * @param {Function} dispatch      - Redux dispatch function
+ * @returns {Function}             - CRUD handler: (method, { formValue, selectedItem, callbacks }) => Promise
  */
-
 export const CrudFactory = ({
   entity,
   actions,
@@ -19,8 +22,56 @@ export const CrudFactory = ({
   toaster,
   dispatch,
 }) => {
-    const [loading, setLoading] = useState(false);
-    
+  // Validation — fail fast if required dependencies are missing
+  if (!entity || typeof entity !== "string") {
+    throw new Error("CrudFactory: `entity` must be a non-empty string");
+  }
+  if (!actions || typeof actions !== "object") {
+    throw new Error("CrudFactory: `actions` must be an object of thunk action creators");
+  }
+  if (typeof dispatch !== "function") {
+    throw new Error("CrudFactory: `dispatch` must be a Redux dispatch function");
+  }
+  if (!toaster || typeof toaster.push !== "function") {
+    throw new Error("CrudFactory: `toaster` must be a valid RSuite toaster instance");
+  }
+
+  /**
+   * Internal helper — dispatches setLoading if the slice exposes it.
+   * Falls back silently when the slice manages loading via extraReducers only.
+   */
+  const setLoading = (isLoading) => {
+    if (typeof actions.setLoading === "function") {
+      dispatch(actions.setLoading(isLoading));
+    }
+  };
+
+  /**
+   * Internal helper — pushes a standardised RSuite toast message.
+   */
+  const pushToast = (type, message) => {
+    toaster.push(
+      `<Message showIcon type={type} closable>
+        <strong>${type === "success" ? "Success!" : type === "warning" ? "Warning!" : "Error!"}</strong>${" "}
+        ${message}
+      </Message>`,
+      {
+        placement: type === "success" ? "topCenter" : "topEnd",
+        duration: 3000,
+      }
+    );
+  };
+
+  /**
+   * Returned CRUD handler
+   *
+   * @param {"CREATE"|"UPDATE"|"DELETE"} method
+   * @param {Object}   options
+   * @param {Object}   options.formValue      - Form data for CREATE / UPDATE
+   * @param {Object}   options.selectedItem   - Currently selected entity (requires ._id)
+   * @param {Object}   [options.callbacks]    - Optional lifecycle hooks: onSuccess, onError, onFinally
+   * @returns {Promise}
+   */
   return (method, { formValue, selectedItem, callbacks = {} }) => {
     const operationMap = {
       CREATE: {
@@ -42,62 +93,57 @@ export const CrudFactory = ({
 
     const operation = operationMap[method];
 
-    // Validation checks
+    // Guard — unknown method
     if (!operation) {
-      const error = new Error(`Invalid operation: ${method}`);
-      toaster.push(
-        <Message showIcon type="error" closable>
-          <strong>Error!</strong> {error.message}
-        </Message>,
-        { placement: 'topEnd', duration: 3000 }
+      const error = new Error(`CrudFactory: Invalid operation "${method}". Expected CREATE, UPDATE, or DELETE.`);
+      return Promise.reject(error);
+    }
+
+    // Guard — action creator missing from the slice
+    if (typeof operation.action !== "function") {
+      const error = new Error(
+        `CrudFactory: No action creator found for "${method}" on entity "${entity}". ` +
+        `Ensure FeatureFactory was initialised with the corresponding operation enabled.`
       );
       return Promise.reject(error);
     }
 
-    if (operation.requiresSelection && !selectedItem) {
+    // Guard — selection required but absent
+    if (operation.requiresSelection && !selectedItem?._id) {
       const error = new Error(`No ${entity.toLowerCase()} selected`);
-      toaster.push(
-        <Message showIcon type="warning" closable>
-          <strong>Warning!</strong> {error.message}
-        </Message>,
-        { placement: 'topEnd', duration: 3000 }
-      );
+      pushToast("warning", error.message);
       return Promise.reject(error);
     }
 
-    // Set loading state
-    dispatch(setLoading(true));
+    // Signal loading start (slice may also handle this via extraReducers pending)
+    setLoading(true);
 
-    // Prepare payload
-    const payload = method === 'DELETE' 
-      ? selectedItem._id 
-      : { ...formValue, ...(selectedItem?._id && { id: selectedItem._id }) };
+    // Build payload:
+    //   DELETE  → bare _id string
+    //   CREATE  → formValue only
+    //   UPDATE  → formValue merged with the existing _id
+    const payload =
+      method === "DELETE"
+        ? selectedItem._id
+        : { ...formValue, ...(selectedItem?._id && { id: selectedItem._id }) };
 
     // Execute operation with promise chain
     return dispatch(operation.action(payload))
       .unwrap()
       .then((result) => {
-        // Success handling
-        toaster.push(
-          <Message showIcon type="success" closable>
-            <strong>Success!</strong> {operation.message}
-          </Message>,
-          { placement: 'topCenter', duration: 3000 }
-        );
+        pushToast("success", operation.message);
 
-        // Execute success callback
-        if (callbacks.onSuccess) {
+        if (typeof callbacks.onSuccess === "function") {
           callbacks.onSuccess(result);
         }
 
-        // Refresh data if fetchAll action exists
-        if (actions.fetchAll) {
+        // Refresh list after mutation — swallows refresh failures to keep UX stable
+        if (typeof actions.fetchAll === "function") {
           return dispatch(actions.fetchAll())
             .unwrap()
             .then(() => result)
             .catch((fetchError) => {
-              console.warn('Failed to refresh data:', fetchError);
-              // Don't fail the whole operation if refresh fails
+              console.warn(`CrudFactory: Failed to refresh ${entity} list after ${method}:`, fetchError);
               return result;
             });
         }
@@ -105,31 +151,23 @@ export const CrudFactory = ({
         return result;
       })
       .catch((error) => {
-        // Error handling
-        const errorMessage = error.message || 
-          `Failed to ${method.toLowerCase()} ${entity.toLowerCase()}`;
+        const errorMessage =
+          error.message || `Failed to ${method.toLowerCase()} ${entity.toLowerCase()}`;
 
-        toaster.push(
-          <Message showIcon type="error" closable>
-            <strong>Error!</strong> {errorMessage}
-          </Message>,
-          { placement: 'topEnd', duration: 5000 }
-        );
+        pushToast("error", errorMessage);
 
-        // Execute error callback if provided
-        if (callbacks.onError) {
+        if (typeof callbacks.onError === "function") {
           callbacks.onError(error);
         }
 
-        // Re-throw error for upstream handling
+        // Re-throw so callers can chain their own .catch()
         throw error;
       })
       .finally(() => {
-        // Always clear loading state
-        dispatch(setLoading(false));
+        // Signal loading end regardless of outcome
+        setLoading(false);
 
-        // Execute finally callback if provided
-        if (callbacks.onFinally) {
+        if (typeof callbacks.onFinally === "function") {
           callbacks.onFinally();
         }
       });
