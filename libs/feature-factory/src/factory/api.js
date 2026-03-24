@@ -1,5 +1,6 @@
 import axios from 'axios';
 import qs from 'qs';
+import { Platform } from 'react-native';
 import CacheFactory from './cache';
 
 /**
@@ -14,18 +15,12 @@ const CONFIG = {
     development: process.env.API_BASE_URL_DEV || 'http://localhost:4000/fear/api/',
     test: process.env.API_BASE_URL_TEST || 'https://fear.dedyn.io/fear/api/',
   },
-  tokenNames: {
-    bearer: 'Authorization',
-    custom: process.env.REACT_APP_JWT_TOKEN_HEADER || 'x-token',
-  },
   cacheKeys: {
-    auth: 'auth',
-    refreshToken: 'refresh_token',
-    userPrefs: 'user_preferences',                                                
+    userPrefs: 'user_preferences',
   },
-  timeout: parseInt(process.env.REACT_APP_API_TIMEOUT) || 30000,
-  retryAttempts: parseInt(process.env.REACT_APP_API_RETRY_ATTEMPTS) || 3,
-  retryDelay: parseInt(process.env.REACT_APP_API_RETRY_DELAY) || 1000,
+  timeout: parseInt(process.env.API_TIMEOUT) || 30000,
+  retryAttempts: parseInt(process.env.API_RETRY_ATTEMPTS) || 3,
+  retryDelay: parseInt(process.env.API_RETRY_DELAY) || 1000,
 };
 
 const setBaseUrl = (uri) => {
@@ -39,84 +34,8 @@ const setBaseUrl = (uri) => {
  */
 const getBaseUrl = () => {
   const env = process.env.NODE_ENV || 'development';
-  if (!CONFIG.BASE_URL) CONFIG.BASE_URL = CONFIG.baseUrls[env] || CONFIG.baseUrls.development
+  if (!CONFIG.BASE_URL) CONFIG.BASE_URL = CONFIG.baseUrls[env] || CONFIG.baseUrls.development;
   return CONFIG.BASE_URL;
-};
-
-/**
- * Gets authentication data from cache
- * @returns {Object|null} Auth data or null
- */
-const getAuthData = () => {
-  try {
-    const authData = CacheFactory.local.get(CONFIG.cacheKeys.auth);
-    return authData && typeof authData === 'object' ? authData : null;
-  } catch (error) {
-    console.warn('Failed to retrieve auth data:', error);
-    return null;
-  }
-};
-
-/**
- * Checks if token is expired
- * @param {string} token - JWT token
- * @returns {boolean} Whether token is expired
- */
-const isTokenExpired = (token) => {
-  if (!token) return true;
-  
-  try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    const currentTime = Date.now() / 1000;
-    return payload.exp < currentTime;
-  } catch (error) {
-    return true;
-  }
-};
-
-/**
- * Refreshes the authentication token
- * @returns {Promise<string|null>} New token or null if refresh failed
- */
-const refreshAuthToken = async () => {
-  try {
-    const authData = getAuthData();
-    const refreshToken = authData?.refreshToken || CacheFactory.local.get(CONFIG.cacheKeys.refreshToken);
-    
-    if (!refreshToken) {
-      throw new Error('No refresh token available');
-    }
-
-    const response = await axios.post(`${getBaseUrl()}auth/refresh`, {
-      refreshToken,
-    });
-
-    const newAuthData = {
-      token: response.data.token,
-      refreshToken: response.data.refreshToken || refreshToken,
-      user: response.data.user,
-      expiresAt: response.data.expiresAt,
-    };
-
-    CacheFactory.local.set(CONFIG.cacheKeys.auth, newAuthData);
-    return newAuthData.token;
-  } catch (error) {
-    console.error('Token refresh failed:', error);
-    clearAuthData();
-    return null;
-  }
-};
-
-/**
- * Clears authentication data from cache
- */
-const clearAuthData = () => {
-  try {
-    CacheFactory.local.remove(CONFIG.cacheKeys.auth);
-    CacheFactory.local.remove(CONFIG.cacheKeys.refreshToken);
-  } catch (error) {
-    console.warn('Failed to clear auth data:', error);
-  }
 };
 
 /**
@@ -143,7 +62,6 @@ const formatError = (error) => {
   };
 
   if (error.response) {
-    // Server responded with error status
     return {
       ...baseError,
       message: error.response.data?.message || `HTTP Error ${error.response.status}`,
@@ -152,17 +70,15 @@ const formatError = (error) => {
       data: error.response.data,
     };
   }
-  
+
   if (error.request) {
-    // Request made but no response received
     return {
       ...baseError,
       message: 'Network error - no response received',
       code: 'NETWORK_ERROR',
     };
   }
-  
-  // Something else happened
+
   return {
     ...baseError,
     message: error.message || 'Request configuration error',
@@ -171,37 +87,18 @@ const formatError = (error) => {
 };
 
 /**
- * Request interceptor with retry logic
+ * Request interceptor — adds tracking headers
  * @param {Object} config - Axios config
  * @returns {Promise<Object>} Modified config
  */
 const requestInterceptor = async (config) => {
   try {
-    // Set retry metadata
     config.metadata = { startTime: Date.now() };
     config._retry = config._retry || 0;
 
-    // Get authentication data
-    const authData = getAuthData();
-    let token = authData?.token;
-
-    // Check if token needs refresh
-    if (token && isTokenExpired(token) && config._retry === 0) {
-      token = await refreshAuthToken();
-    }
-
-    // Set authorization headers
-    if (token) {
-      config.headers[CONFIG.tokenNames.bearer] = `Bearer ${token}`;
-      config.headers[CONFIG.tokenNames.custom] = token;
-    }
-
-    // Add request ID for tracking
     config.headers['X-Request-ID'] = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    
-    // Add client info
-    config.headers['X-Client-Version'] = process.env.REACT_APP_VERSION || '1.0.0';
-    config.headers['X-Client-Platform'] = 'web';
+    config.headers['X-Client-Version'] = process.env.API_VERSION || '1.0.0';
+    config.headers['X-Client-Platform'] = Platform.OS;   // 'ios' | 'android' | 'web'
 
     return config;
   } catch (error) {
@@ -226,13 +123,11 @@ const requestErrorInterceptor = (error) => {
  * @returns {Object} Processed response
  */
 const responseInterceptor = (response) => {
-  // Add response metadata
   response.metadata = {
     responseTime: Date.now() - (response.config.metadata?.startTime || Date.now()),
     requestId: response.config.headers['X-Request-ID'],
   };
 
-  // Log successful responses in development
   if (CONFIG.environment === 'development') {
     console.log(`✅ API Success [${response.status}]:`, {
       url: response.config.url,
@@ -243,20 +138,16 @@ const responseInterceptor = (response) => {
     });
   }
 
-  // Validate response structure
   if (response.data && typeof response.data === 'object') {
-    // Handle different success status codes
     if ([200, 201, 202, 204].includes(response.status)) {
       return response;
     }
   }
 
-  // Handle edge cases
   if (response.status >= 200 && response.status < 300) {
     return response;
   }
 
-  // Unexpected status code
   return Promise.reject(formatError({
     response,
     message: `Unexpected response status: ${response.status}`,
@@ -264,17 +155,14 @@ const responseInterceptor = (response) => {
 };
 
 /**
- * Response error interceptor with retry and auth handling
+ * Response error interceptor with retry logic
  * @param {Object} error - Response error
  * @returns {Promise<Object>} Retry attempt or rejected promise
  */
 const responseErrorInterceptor = async (error) => {
   const originalRequest = error.config;
-  
-  // Format error for consistent handling
   const formattedError = formatError(error);
-  
-  // Log errors in development
+
   if (CONFIG.environment === 'development') {
     console.error(`❌ API Error [${formattedError.status}]:`, {
       url: originalRequest?.url,
@@ -285,48 +173,19 @@ const responseErrorInterceptor = async (error) => {
     });
   }
 
-  // Handle authentication errors
-  if (formattedError.status === 401 && !originalRequest._isRetryingAuth) {
-    originalRequest._isRetryingAuth = true;
-    
-    try {
-      const newToken = await refreshAuthToken();
-      if (newToken) {
-        // Retry original request with new token
-        originalRequest.headers[CONFIG.tokenNames.bearer] = `Bearer ${newToken}`;
-        originalRequest.headers[CONFIG.tokenNames.custom] = newToken;
-        return apiInstance(originalRequest);
-      }
-    } catch (refreshError) {
-      console.error('Auth refresh failed:', refreshError);
-    }
-    
-    // Clear auth data and redirect to login
-    clearAuthData();
-    
-    // Dispatch auth failure event
-    if (typeof window !== 'undefined') {
-      window.dispatchEvent(new CustomEvent('auth:failure', {
-        detail: { error: formattedError }
-      }));
-    }
-  }
-
-  // Handle retryable errors
+  // Handle retryable errors with exponential backoff
   const isRetryable = [408, 429, 500, 502, 503, 504].includes(formattedError.status) ||
-                     formattedError.code === 'NETWORK_ERROR';
-  
+                      formattedError.code === 'NETWORK_ERROR';
+
   if (isRetryable && originalRequest._retry < CONFIG.retryAttempts) {
     originalRequest._retry += 1;
-    
     const delay = getRetryDelay(originalRequest._retry);
     console.log(`⏳ Retrying request (${originalRequest._retry}/${CONFIG.retryAttempts}) in ${delay}ms`);
-    
     await new Promise(resolve => setTimeout(resolve, delay));
     return apiInstance(originalRequest);
   }
 
-  // Handle rate limiting
+  // Attach retry-after duration when rate-limited
   if (formattedError.status === 429) {
     const retryAfter = error.response?.headers['retry-after'];
     if (retryAfter) {
@@ -349,26 +208,24 @@ const createApiInstance = () => {
       'Content-Type': 'application/json',
     },
     paramsSerializer: {
-      serialize: (params) => qs.stringify(params, { 
+      serialize: (params) => qs.stringify(params, {
         indices: false,
         skipNulls: true,
         arrayFormat: 'brackets',
       }),
     },
-    withCredentials: true,
-    // Disable automatic JSON parsing for better error handling
+    // withCredentials intentionally omitted — cookies are not supported in React Native
     transformResponse: [
       (data) => {
         try {
           return JSON.parse(data);
-        } catch (error) {
+        } catch {
           return data;
         }
-      }
+      },
     ],
   });
 
-  // Add interceptors
   instance.interceptors.request.use(requestInterceptor, requestErrorInterceptor);
   instance.interceptors.response.use(responseInterceptor, responseErrorInterceptor);
 
@@ -384,17 +241,16 @@ const apiInstance = createApiInstance();
 const API = {
   // Main axios instance
   instance: apiInstance,
-  
+
   // Direct access to axios methods
-  get: apiInstance.get.bind(apiInstance),
-  post: apiInstance.post.bind(apiInstance),
-  put: apiInstance.put.bind(apiInstance),
-  patch: apiInstance.patch.bind(apiInstance),
-  delete: apiInstance.delete.bind(apiInstance),
-  head: apiInstance.head.bind(apiInstance),
+  get:     apiInstance.get.bind(apiInstance),
+  post:    apiInstance.post.bind(apiInstance),
+  put:     apiInstance.put.bind(apiInstance),
+  patch:   apiInstance.patch.bind(apiInstance),
+  delete:  apiInstance.delete.bind(apiInstance),
+  head:    apiInstance.head.bind(apiInstance),
   options: apiInstance.options.bind(apiInstance),
 
-  // Utility methods
   /**
    * Makes a request with custom configuration
    * @param {Object} config - Request configuration
@@ -412,63 +268,9 @@ const API = {
       ...apiInstance.defaults,
       ...customConfig,
     });
-    
     customInstance.interceptors.request.use(requestInterceptor, requestErrorInterceptor);
     customInstance.interceptors.response.use(responseInterceptor, responseErrorInterceptor);
-    
     return customInstance;
-  },
-
-  /**
-   * Sets authentication token
-   * @param {string} token - Auth token
-   * @param {Object} userData - User data
-   * @returns {boolean} Success status
-   */
-  setAuth: (token, userData = {}) => {
-    try {
-      const authData = {
-        token,
-        user: userData,
-        timestamp: Date.now(),
-        expiresAt: userData.expiresAt,
-      };
-      
-      return CacheFactory.local.set(CONFIG.cacheKeys.auth, authData);
-    } catch (error) {
-      console.error('Failed to set auth:', error);
-      return false;
-    }
-  },
-
-  /**
-   * Clears authentication
-   * @returns {boolean} Success status
-   */
-  clearAuth: () => {
-    try {
-      clearAuthData();
-      return true;
-    } catch (error) {
-      console.error('Failed to clear auth:', error);
-      return false;
-    }
-  },
-
-  /**
-   * Gets current auth status
-   * @returns {Object} Auth status
-   */
-  getAuthStatus: () => {
-    const authData = getAuthData();
-    const isAuthenticated = !!(authData?.token && !isTokenExpired(authData.token));
-    
-    return {
-      isAuthenticated,
-      user: authData?.user || null,
-      token: authData?.token || null,
-      expiresAt: authData?.expiresAt || null,
-    };
   },
 
   /**
@@ -486,17 +288,9 @@ const API = {
   healthCheck: async () => {
     try {
       const response = await apiInstance.get('health', { timeout: 5000 });
-      return {
-        status: 'healthy',
-        response: response.data,
-        timestamp: Date.now(),
-      };
+      return { status: 'healthy', response: response.data, timestamp: Date.now() };
     } catch (error) {
-      return {
-        status: 'unhealthy',
-        error: formatError(error),
-        timestamp: Date.now(),
-      };
+      return { status: 'unhealthy', error: formatError(error), timestamp: Date.now() };
     }
   },
 
@@ -509,9 +303,7 @@ const API = {
    */
   uploadFile: (url, formData, onProgress) => {
     return apiInstance.post(url, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
+      headers: { 'Content-Type': 'multipart/form-data' },
       onUploadProgress: (progressEvent) => {
         if (onProgress && progressEvent.total) {
           const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
@@ -522,96 +314,24 @@ const API = {
   },
 
   // Cache utility methods
-  /**
-   * Gets cached data
-   * @param {string} key - Cache key
-   * @param {any} defaultValue - Default value if not found
-   * @returns {any} Cached data or default value
-   */
-  getCached: (key, defaultValue = null) => {
-    return CacheFactory.local.get(key, defaultValue);
-  },
+  getCached:     (key, defaultValue = null) => CacheFactory.local.get(key, defaultValue),
+  setCached:     (key, value)               => CacheFactory.local.set(key, value),
+  removeCached:  (key)                      => CacheFactory.local.remove(key),
+  clearCache:    ()                         => CacheFactory.local.clear(),
+  getCacheStats: ()                         => CacheFactory.local.getStats(),
 
-  /**
-   * Sets cached data
-   * @param {string} key - Cache key
-   * @param {any} value - Value to cache
-   * @returns {boolean} Success status
-   */
-  setCached: (key, value) => {
-    return CacheFactory.local.set(key, value);
-  },
-
-  /**
-   * Removes cached data
-   * @param {string} key - Cache key
-   * @returns {boolean} Success status
-   */
-  removeCached: (key) => {
-    return CacheFactory.local.remove(key);
-  },
-
-  /**
-   * Clears all cached data
-   * @returns {boolean} Success status
-   */
-  clearCache: () => {
-    return CacheFactory.local.clear();
-  },
-
-  /**
-   * Gets cache statistics
-   * @returns {Object} Cache stats
-   */
-  getCacheStats: () => {
-    return CacheFactory.local.getStats();
-  },
-
-  /**
-   * Bulk cache operations
-   */
+  /** Bulk cache operations */
   cache: {
-    /**
-     * Gets multiple cached items
-     * @param {string[]} keys - Cache keys
-     * @returns {Object} Key-value pairs
-     */
-    getMultiple: (keys) => {
-      return CacheFactory.local.bulk.get(keys);
-    },
-
-    /**
-     * Sets multiple cached items
-     * @param {Object} items - Key-value pairs
-     * @returns {Object} Success status for each key
-     */
-    setMultiple: (items) => {
-      return CacheFactory.local.bulk.set(items);
-    },
-
-    /**
-     * Removes multiple cached items
-     * @param {string[]} keys - Cache keys
-     * @returns {Object} Success status for each key
-     */
-    removeMultiple: (keys) => {
-      return CacheFactory.local.bulk.remove(keys);
-    },
+    getMultiple:    (keys)  => CacheFactory.local.bulk.get(keys),
+    setMultiple:    (items) => CacheFactory.local.bulk.set(items),
+    removeMultiple: (keys)  => CacheFactory.local.bulk.remove(keys),
   },
 
   // Configuration access
   config: CONFIG,
   getBaseUrl,
-  setBaseUrl
+  setBaseUrl,
 };
-
-// Add event listener for auth failures (optional)
-if (typeof window !== 'undefined') {
-  window.addEventListener('auth:failure', (event) => {
-    console.warn('Authentication failed:', event.detail.error);
-    // Could trigger a redirect to login page here
-  });
-}
 
 export { API };
 export default API;

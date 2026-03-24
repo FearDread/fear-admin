@@ -211,7 +211,7 @@ export function FeatureFactory(entity, customReducers = {}, endpoints = null) {
     create: createFactorySlice,
     createCrud: createCrudFeature,
     createBasic: createBasicFeature,
-    createThunks: (operations) => UtilsFactor.createThunks(entity, operations),
+    createThunks: (operations) => UtilsFactory.createThunks(entity, operations),
     createCustomThunk: (prefix, options) => ThunkFactory.custom(entity, prefix, options),
 
     // Getters
