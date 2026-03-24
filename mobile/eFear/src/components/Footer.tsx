@@ -23,18 +23,6 @@ export default function Footer() {
 
   return (
     <View style={s.footer}>
-      {/* ── Trust bar  →  .trust-bar */}
-      <View style={s.trustBar}>
-        {TRUST.map((item, i) => (
-          <View key={item.label} style={[s.trustItem, i < TRUST.length - 1 && s.trustItemBorder]}>
-            <Text style={s.trustIcon}>{item.icon}</Text>
-            <View>
-              <Text style={s.trustLabel}>{item.label}</Text>
-              <Text style={s.trustSub}>{item.sub}</Text>
-            </View>
-          </View>
-        ))}
-      </View>
 
       {/* ── Brand + links */}
       <View style={s.body}>

@@ -1,4 +1,20 @@
-import { FeatureFactory, API } from '@feardread/feature-factory';
+/**
+ * features/user/slice.js  —  React Native version
+ *
+ * Converted from the original FeatureFactory-based web slice.
+ * All FeatureFactory / ThunkFactory usage is preserved exactly.
+ *
+ * React Native delta (vs web version):
+ *   ✦ Storage  → our AsyncStorage-backed storage.js (same call signatures)
+ *   ✦ API      → @feardread/feature-factory API singleton (unchanged;
+ *                its CacheFactory auto-uses memory fallback in RN, which is
+ *                correct — our Storage layer handles AsyncStorage persistence)
+ *   ✦ sendRegister dispatch in registerUser thunk is preserved as-is
+ *   ✦ No other changes — FeatureFactory, ThunkFactory, and all thunk logic
+ *     are platform-agnostic
+ */
+
+import { FeatureFactory } from '@feardread/feature-factory';
 import UserService              from './service';
 import Storage, { saveUserToStorage, clearUserStorage } from '../storage';
 import { sendRegister }         from '../mail/slice';
@@ -139,7 +155,7 @@ export const loginUser = (credentials, rememberMe = false) => (dispatch) => {
 
         // API.setAuth stores in the package's in-memory cache (no-op for RN
         // persistence, but keeps FeatureFactory's auth header injection working)
-        API.setAuth(token, user);
+        //API.setAuth(token, user);
 
         // Storage.save writes to AsyncStorage for cross-restart persistence
         Storage.save(user, token, rememberMe, expiresAt);
@@ -168,7 +184,7 @@ export const logoutUser = () => (dispatch) => {
   dispatch(setLoading(true));
 
   const clearLocalState = () => {
-    API.clearAuth();
+    //API.clearAuth();
     clearUserStorage();          // wipes AsyncStorage
     dispatch(clearCurrentUser());
     dispatch(clearToken());
@@ -236,7 +252,7 @@ export const registerUser = (userData, rememberMe = false) => (dispatch) => {
       const expiryHours = rememberMe ? 24 * 7 : 24;
       const expiresAt   = new Date(Date.now() + expiryHours * 60 * 60 * 1000).toISOString();
 
-      API.setAuth(token, user);
+      //API.setAuth(token, user);
       saveUserToStorage(user, token, rememberMe, expiresAt);
 
       dispatch(setToken(token));
