@@ -2,7 +2,7 @@ import React from "react";
 
 export default function FearHero() {
   return (
-    <section className="fear-hero">
+    <section className="hero-section fear-hero">
       <div className="overlay" />
 
       <div className="content">

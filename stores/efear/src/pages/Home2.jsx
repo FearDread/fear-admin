@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from 'react-router-dom';
 import HeroSection from "../components/home/v2/ComicHero";
 import TrustBar from "../components/home/v2/TrustBar";
@@ -191,7 +192,10 @@ const OfferHighlights = () => {
   );
 };
 
-const Home2 = () => (
+const Home2 = () => {
+
+  return (
+  
   <>
     {/* Google Font for display */}
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -218,5 +222,6 @@ const Home2 = () => (
     <OfferHighlights />
   </>
 );
+}
 
 export default Home2;

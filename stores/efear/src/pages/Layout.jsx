@@ -4,12 +4,9 @@ import { Outlet, useLocation } from "react-router-dom";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 
-import Header from "../components/header/Header";
 import Header2 from "../components/header/Header2";
-import Footer from "../components/common/Footer";
 import Footer2 from "../components/common/Footer2";
 import BestSelling from "../components/products/BestSelling";
-import Loader from "../components/common/Loader";
 
 import { dispatch } from "../features/store";
 import { selectProductsSuccess } from "../features/products/slice";

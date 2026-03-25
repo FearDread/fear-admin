@@ -10,6 +10,7 @@ import Home from './pages/Home';
 import Home2 from "./pages/Home2";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
+import LandingPage from "./pages/Landing";
 
 import CheckoutShipping from "./pages/checkout/CheckoutShipping";
 import CheckoutPayment from "./pages/checkout/CheckoutPayment";
@@ -42,6 +43,7 @@ const PrivacyPolicy = lazy(() => import("./pages/policies/Privacy"));
 const ReturnPolicy = lazy(() => import("./pages/policies/Returns"));
 
 const APP_ROUTES = {
+  landing: { path: "/landing", element: <LandingPage />},
   public: [
     { path: "/", element: <Home2 />, exact: true },
     { path: "/about", element: <AboutUs /> },
@@ -136,6 +138,7 @@ export const App = () => {
             {/* 404 Not Found */}
             <Route path="*" element={<NotFound />} />
           </Route>
+          <Route path={APP_ROUTES.landing.path} element={APP_ROUTES.landing.element} />
         </Routes>
       </Suspense>
   );

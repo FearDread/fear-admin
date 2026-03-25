@@ -21,7 +21,7 @@ export default function CyberpunkIntro({ onFinish }) {
       setTimeout(() => {
         setDone(true);
         onFinish && onFinish();
-      }, 1200);
+      }, 800);
       return;
     }
 
@@ -64,7 +64,6 @@ export default function CyberpunkIntro({ onFinish }) {
 
       <style>{`
         .terminal-container {
-          position: fixed;
           inset: 0;
           background: #000;
           color: #ff1a1a;
