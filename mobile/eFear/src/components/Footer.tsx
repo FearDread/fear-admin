@@ -1,6 +1,6 @@
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Colors, Fonts } from '../constants/theme.tsx';
+import { Colors, Fonts } from '../constants/theme';
 
 const LINKS = [
   { label: 'Terms',   href: '/(public)/terms'   as const },
@@ -27,7 +27,7 @@ export default function Footer() {
       {/* ── Brand + links */}
       <View style={s.body}>
         <Text style={s.brand}>e<Text style={s.brandAccent}>Fear</Text></Text>
-        <Text style={s.tagline}>Premium tactical & streetwear gear.</Text>
+        <Text style={s.tagline}>Premium Comics & Collectibles.</Text>
 
         {/* Policy links */}
         <View style={s.links}>

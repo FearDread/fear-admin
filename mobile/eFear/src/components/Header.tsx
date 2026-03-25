@@ -71,7 +71,8 @@ export default function Header() {
         </View>
       </View>
 
-      {/* ── Nav bar  →  .hdr-nav ────────────────────────────── */}
+      {/* 
+      {/* ── Nav bar  →  .hdr-nav ────────────────────────────── 
       <View style={s.nav}>
         <View style={s.navInner}>
           {NAV_LINKS.map(link => {
@@ -85,10 +86,10 @@ export default function Header() {
             );
           })}
         </View>
-        {/* Red underline accent  →  .hdr-nav::after */}
+
         <View style={s.navAccent} />
       </View>
-
+        */}
       {/* ── Drawer modal  →  .hdr-account-dd style ──────────── */}
       <Modal visible={open} animationType="slide" transparent onRequestClose={() => setOpen(false)}>
         <Pressable style={s.overlay} onPress={() => setOpen(false)} />
