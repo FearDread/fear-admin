@@ -50,11 +50,12 @@ export const initializeStore = () => {
 
   return store;
 };
-
 export const store = initializeStore();
-export const getState = () => store.getState();
-export const dispatch = (action) => store.dispatch(action);
-export const AppDispatch = dispatch;
-export const RootState = getState();
 
-export default store;
+// ✅ Correct TypeScript types
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
+
+// Optional helpers
+export const getState = store.getState;
+export const dispatch = store.dispatch;

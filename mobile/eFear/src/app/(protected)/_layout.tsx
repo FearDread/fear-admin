@@ -1,4 +1,4 @@
-import { Stack, Redirect, useRouter } from 'expo-router';
+import { Stack, Redirect } from 'expo-router';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../features/store';
 
@@ -10,17 +10,16 @@ import type { RootState } from '../../features/store';
  * All screens inside this group can assume the user is signed in.
  */
 export default function ProtectedLayout() {
-  const router = useRouter();
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
 
-  if (isAuthenticated) {
-    return router.push("/(protected)/login");
+  if (!isAuthenticated) {
+    return <Redirect href="/(auth)/login" />;
   }
 
   return (
     <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="login" />
-      <Stack.Screen name="register" />
+      <Stack.Screen name="account" />
+      <Stack.Screen name="checkout" />
     </Stack>
   );
 }
