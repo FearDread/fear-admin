@@ -10,7 +10,7 @@ import Home from './pages/Home';
 import Home2 from "./pages/Home2";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
-import LandingPage from "./pages/Landing";
+import LandingPage from "./pages/LandingPage";
 
 import CheckoutShipping from "./pages/checkout/CheckoutShipping";
 import CheckoutPayment from "./pages/checkout/CheckoutPayment";

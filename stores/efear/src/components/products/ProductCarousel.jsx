@@ -1,13 +1,15 @@
 import React, { useMemo, useState, useRef, useEffect, useCallback } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import ProductCard from "./ProductCard";
 import {
+    fetchProducts,
     selectFeaturedProducts
 } from "../../features/products/slice";
 
 const AUTO_DELAY = 4000;
 
 export const ProductCarousel = ({ data }) => {
+    const dispatch = useDispatch();
     const [activeIndex, setActiveIndex] = useState(0);
     const [isHovered, setIsHovered] = useState(false);
     const [dragStart, setDragStart] = useState(null);
@@ -17,7 +19,7 @@ export const ProductCarousel = ({ data }) => {
 
     const prodState = useSelector(selectFeaturedProducts);
     const productData = useMemo(() => data || prodState, [data, prodState]);
-    const featuredProducts = useMemo(() => productData?.slice(13, 19) || [], [productData]);
+    const featuredProducts = useMemo(() => productData.slice(26, 32) || [], [productData]);
     const total = featuredProducts.length;
 
     /* ── Navigate ── */
@@ -61,6 +63,10 @@ export const ProductCarousel = ({ data }) => {
     };
 
     const pad = (n) => String(n + 1).padStart(2, '0');
+
+    useEffect(() => {
+        if (productData && productData.length === 0) dispatch(fetchProducts());
+    }, [])
 
     return (
         <section
