@@ -1,6 +1,6 @@
 import { Stack, Redirect, useRouter } from 'expo-router';
 import { useSelector } from 'react-redux';
-import type { RootState } from '../../features/store';
+import { selectIsAuthenticated } from "../../features/user/slice";
 
 /**
  * Route group: (protected)
@@ -9,9 +9,9 @@ import type { RootState } from '../../features/store';
  * Mirrors PrivateRoute – unauthenticated users are redirected to /login.
  * All screens inside this group can assume the user is signed in.
  */
-export default function ProtectedLayout() {
+export default function AuthLayout() {
   const router = useRouter();
-  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+  const isAuthenticated = useSelector(selectIsAuthenticated);
 
   if (isAuthenticated) {
     return router.push("/(protected)/login");

@@ -14,9 +14,12 @@ import mail from "./mail/slice";
 import blog from "./blog/slice";
 import review from "./review/slice";
 import Storage from './storage';
+import { API } from "@feardread/feature-factory";
 
 export const initializeStore = () => {
-
+    console.log('base url ', API.getBaseUrl());
+  API.setBaseUrl('https://fear.dedyn.io/fear/api');
+  console.log('base url ', API.getBaseUrl());
   const store = configureStore({
     reducer: {
       addresses: address.reducer,
