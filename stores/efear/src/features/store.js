@@ -16,10 +16,7 @@ import blog from "./blog/slice";
 import review from "./review/slice";
 import Storage from './storage';
 
-export const initializeStore = () => {
-
-  const store = configureStore({
-    reducer: {
+const rootReducer = {
       addresses: address.reducer,
       orders: order.reducer,
       blog: blog.reducer,
@@ -32,7 +29,12 @@ export const initializeStore = () => {
       cart: cart.reducer,
       wishlist: wishlist.reducer,
       mail: mail.reducer,
-    },
+}
+
+export const initializeStore = () => {
+
+  const store = configureStore({
+    reducer: rootReducer,
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({
         serializableCheck: {
@@ -55,5 +57,7 @@ export const initializeStore = () => {
 export const store = initializeStore();
 export const getState = () => store.getState();
 export const dispatch = (action) => store.dispatch(action);
+export const createStore = (preloadedState = {}) =>
+  configureStore({ reducer: rootReducer, preloadedState });
 
 export default store;
