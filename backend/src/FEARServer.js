@@ -6,6 +6,7 @@ const fs = require('fs');
 const dotenv = require('dotenv');
 const http = require('http');
 const https = require('https');
+const FearSSR = require('./FEARSSR');
 
 const FearServer = (function () {
   // Private constants
