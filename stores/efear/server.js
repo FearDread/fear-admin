@@ -1,5 +1,5 @@
 const path = require('path');
-const FearSSR = require('../../backend/src/FEARSSR');
+//const Fear = require('../../backend/src/FEAR');
 const FearServer = require('../../backend/src/FEARServer');
 const Router = require('./router');
 
@@ -13,13 +13,12 @@ async function main() {
   
   server
   .initialize(
-    { root: path.resolve() }, true,
+    true,
+    { root: path.resolve() },
     { multipleApps: true, apps: [] })
   .then((fear) => {
 
-    FearSSR.attach(fear, PUB_DIR, {
-      streaming: true,  // false = buffer full HTML before sending (safer for some CDNs)
-    });
+    fear.ssr.attach(PUB_DIR, { streaming: true });
     Router.attach(fear, BUILD_DIR, {
       verbose: process.env.NODE_ENV !== 'production',
     });
