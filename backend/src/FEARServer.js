@@ -571,7 +571,7 @@ const FearServer = (function () {
 
         // Setup API prefix if provided
         if (reactConfig.apiPrefix) {
-          this.setupAPIPrefix(reactConfig.apiPrefix);
+          this.setupAPIPrefix(reactConfig.apiPrefix || '/fear/api');
         }
 
         // Setup React app(s)

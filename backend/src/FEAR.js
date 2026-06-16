@@ -45,10 +45,11 @@ _________________________
     this.paypal = null;
     this.passport = null;
     this.mailer = null;
+    this.ssr = null;
 
     this.setupEnvironment();
     this.setupDependencies();
-
+    this.setupSSR();
     if (this.env.ADD_PAYMENTS) this.setupProcessors();
 
     this.setupMailer();
@@ -134,6 +135,11 @@ _________________________
 
       this.stripe = new StripeHandler(this);
       this.paypal = new PayPal(this);
+    },
+
+    setupSSR() {
+      const FearSSR = require('./libs/ssr');
+      this.ssr = new FearSSR(this);
     },
 
     setupMiddleware() {

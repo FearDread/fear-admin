@@ -9,10 +9,13 @@ async function main() {
 
   server
     .initialize({ root: path.resolve(), app: dir, build: dir }, false)
-    .then(() => server.startServer())
-    .then(() => console.log('\n✅ Server started successfully!'))
+    .then((fear) => {
+      fear.ssr.attach(dir, {streaming: false})
+      return server.startServer()
+    })
+    .then(() => console.log('\nServer started successfully!'))
     .catch((error) => {
-      console.error('❌ Failed to start server:', error.message);
+      console.error('Failed to start server:', error.message);
       process.exit(1);
     })
 }
