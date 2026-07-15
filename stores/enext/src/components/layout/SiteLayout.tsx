@@ -5,8 +5,8 @@ import { usePathname } from 'next/navigation';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 
-import Header2 from '@/components/header/Header2';
-import Footer2 from '@/components/common/Footer2';
+import Header2 from '@/components/common/Header';
+import Footer2 from '@/components/common/Footer';
 import BestSelling from '@/components/products/BestSelling';
 import ProductQuickView from '@/components/products/ProductQuickView';
 import CookieBanner from '@/components/common/CookieBanner';

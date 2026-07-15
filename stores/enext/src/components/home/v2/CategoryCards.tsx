@@ -1,31 +1,42 @@
-"use client"
+import Link from 'next/link';
+import type { CSSProperties } from 'react';
 
-import { Link } from "react-router-dom";
+interface Category {
+  label: string;
+  tagline: string;
+  blurb: string;
+  accent: string;
+  image: string;
+  link: string;
+}
 
 export const CategoryCards = () => {
-  const cats = [
+  const cats: Category[] = [
     {
       label: 'Comics',
       tagline: 'Marvel, DC & beyond',
-      blurb: 'From first prints to modern variants. Every issue bagged, boarded, near-mint.',
-      accent: "#c40717",
-      image: 'assets/images/comics/super1.png',
+      blurb:
+        'From first prints to modern variants. Every issue bagged, boarded, near-mint.',
+      accent: '#c40717',
+      image: '/assets/images/comics/super1.png',
       link: '/shop?cat=comics',
     },
     {
       label: 'E-Books',
       tagline: 'Starting at $9',
-      blurb: 'Cookbooks, manifestos, graphic novels, and more. Also available on Amazon.',
-      accent: "#6f11e1",
-      image: 'assets/images/ebooks/01.jpg',
+      blurb:
+        'Cookbooks, manifestos, graphic novels, and more. Also available on Amazon.',
+      accent: '#6f11e1',
+      image: '/assets/images/ebooks/01.jpg',
       link: '/shop?cat=books',
     },
     {
       label: 'Collectibles',
       tagline: 'Cards, slabs & rarities',
-      blurb: 'Pokémon, NFL, NBA, Baseball. Some packs will make you cry. All of them will.',
-      accent: "#1081a7",
-      image: 'assets/images/comics/super3.png',
+      blurb:
+        'Pokémon, NFL, NBA, Baseball. Some packs will make you cry. All of them will.',
+      accent: '#1081a7',
+      image: '/assets/images/comics/super3.png',
       link: '/shop?cat=cards',
     },
   ];
@@ -38,9 +49,15 @@ export const CategoryCards = () => {
           <h2 className="cat-title">What are you into?</h2>
         </div>
         <div className="cat-grid">
-          {cats.map(c => (
-            <Link to={c.link} className="cat-card" key={c.label} style={{ '--cat-accent': c.accent }}>
+          {cats.map((c) => (
+            <Link
+              href={c.link}
+              className="cat-card"
+              key={c.label}
+              style={{ '--cat-accent': c.accent } as CSSProperties}
+            >
               <div className="cat-img-wrap">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={c.image} alt={c.label} className="cat-img" />
               </div>
               <div className="cat-info">
@@ -63,7 +80,7 @@ export const CategoryCards = () => {
           color: rgba(255,255,255,.4); margin-bottom: .5rem;
         }
         .cat-title {
-          font-family: 'Anton', 'Impact', sans-serif;
+          font-family: var(--font-anton), Impact, sans-serif;
           font-size: clamp(2rem, 5vw, 3.5rem);
           color: #fff; text-transform: uppercase; margin: 0;
         }
@@ -95,7 +112,7 @@ export const CategoryCards = () => {
           color: var(--cat-accent); margin-bottom: .5rem;
         }
         .cat-name {
-          font-family: 'Anton', 'Impact', sans-serif;
+          font-family: var(--font-anton), Impact, sans-serif;
           font-size: 1.75rem; color: #fff; text-transform: uppercase; margin: 0 0 .6rem;
         }
         .cat-blurb { font-size: .88rem; color: rgba(255,255,255,.5); line-height: 1.6; flex: 1; }
