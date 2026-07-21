@@ -5,7 +5,7 @@ import { productsApi } from './api/productsApi';
 export const makeStore = () => {
   return configureStore({
     reducer: {
-      counter: counterReducer,
+      //counter: counterReducer,
       [productsApi.reducerPath]: productsApi.reducer,
       // [ordersApi.reducerPath]: ordersApi.reducer,
     },
