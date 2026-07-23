@@ -10,7 +10,7 @@ import {
   addToWishlist,
   removeFromWishlist,
   selectIsInWishlist,
-} from '@/lib/redux/slices/wishlistSlice';
+} from '@/lib/redux/slices/wishSlice';
 import { selectIsAuthenticated } from '@/lib/redux/slices/authSlice';
 import ProductQuickView from './ProductQuickView';
 
