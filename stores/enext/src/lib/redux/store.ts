@@ -2,11 +2,11 @@ import { configureStore } from '@reduxjs/toolkit';
 
 import authReducer from './slices/authSlice';
 import cartReducer from './slices/cartSlice';
-import wishlistReducer from './slices/wishlistSlice';
+import wishlistReducer from './slices/wishSlice';
 
 import { productsApi } from './api/productsApi';
 import { categoriesApi } from './api/categoriesApi';
-import { mailApi } from './api/mailApi';
+//import { mailApi } from './api/mailApi';
 
 export const makeStore = () => {
   return configureStore({
@@ -16,13 +16,13 @@ export const makeStore = () => {
       wishlist: wishlistReducer,
       [productsApi.reducerPath]: productsApi.reducer,
       [categoriesApi.reducerPath]: categoriesApi.reducer,
-      [mailApi.reducerPath]: mailApi.reducer,
+     //s [mailApi.reducerPath]: mailApi.reducer,
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware()
         .concat(productsApi.middleware)
         .concat(categoriesApi.middleware)
-        .concat(mailApi.middleware),
+        //.concat(mailApi.middleware),
   });
 };
 

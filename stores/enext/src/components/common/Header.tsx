@@ -20,9 +20,9 @@ import {
   selectCartItemCount,
   removeItem,
 } from '@/lib/redux/slices/cartSlice';
-import CartDropdown from './CartDropdown';
-import CatDropdown from './CatDropdown';
-import SearchBar from './SearchBar';
+import CartDropdown from '../header/CartDropdown';
+import CatDropdown from '../header/CatDropdown';
+import SearchBar from '../header/SearchBar';
 import { T, headerStyles } from '@/components/styles';
 
 interface NavLink {
