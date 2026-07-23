@@ -4,9 +4,13 @@ import authReducer from './slices/authSlice';
 import cartReducer from './slices/cartSlice';
 import wishlistReducer from './slices/wishSlice';
 
-import { productsApi } from './api/productsApi';
-import { categoriesApi } from './api/categoriesApi';
-//import { mailApi } from './api/mailApi';
+import { apiSlice } from './api/apiSlice';
+// Importing these registers their endpoints on apiSlice via injectEndpoints —
+// required even though productsApi/categoriesApi/mailApi aren't referenced
+// directly below.
+import './api/productsApi';
+import './api/categoriesApi';
+import './api/mailApi';
 
 export const makeStore = () => {
   return configureStore({
@@ -14,15 +18,10 @@ export const makeStore = () => {
       auth: authReducer,
       cart: cartReducer,
       wishlist: wishlistReducer,
-      [productsApi.reducerPath]: productsApi.reducer,
-      [categoriesApi.reducerPath]: categoriesApi.reducer,
-     //s [mailApi.reducerPath]: mailApi.reducer,
+      [apiSlice.reducerPath]: apiSlice.reducer,
     },
     middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware()
-        .concat(productsApi.middleware)
-        .concat(categoriesApi.middleware)
-        //.concat(mailApi.middleware),
+      getDefaultMiddleware().concat(apiSlice.middleware),
   });
 };
 
