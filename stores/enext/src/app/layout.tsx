@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { Anton, Space_Mono } from 'next/font/google';
-import StoreProvider from '@/lib/redux/store';
+import StoreProvider from '@/lib/redux/StoreProvider';
 import SiteLayout from '@/components/layout/SiteLayout';
 
 const anton = Anton({
