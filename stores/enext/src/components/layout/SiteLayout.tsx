@@ -16,9 +16,7 @@ import { useGetAllQuery as useGetAllCategoriesQuery } from '@/lib/redux/api/cate
 
 // loadStripe is SSR-safe (resolves to null server-side), so calling it at
 // module scope is fine even though this file is a Client Component.
-const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? ''
-);
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? '');
 
 interface CookieConsent {
   essential: boolean;
@@ -33,8 +31,7 @@ interface SiteLayoutProps {
 
 export default function SiteLayout({ children }: SiteLayoutProps) {
   const { data: products = [] } = useGetAllProductsQuery();
-  const { data: categories = [], isLoading: categoriesLoading } =
-    useGetAllCategoriesQuery();
+  const { data: categories = [], isLoading: categoriesLoading } = useGetAllCategoriesQuery();
 
   const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
   const [showQuickView, setShowQuickView] = useState(false);
@@ -85,7 +82,7 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
         },
       },
     }),
-    []
+    [],
   );
 
   return (
@@ -102,14 +99,9 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
             <BestSelling />
           </div>
         </div>
-        <Footer2
-          categories={!categoriesLoading ? categories : []}
-          products={products}
-        />
+        <Footer2 categories={!categoriesLoading ? categories : []} products={products} />
 
-        {status === 'visible' && (
-          <CookieBanner onAccept={handleAccept} onReject={handleReject} />
-        )}
+        {status === 'visible' && <CookieBanner onAccept={handleAccept} onReject={handleReject} />}
 
         {selectedProduct && (
           <ProductQuickView

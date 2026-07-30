@@ -1,13 +1,6 @@
 'use client';
 
-import {
-  useMemo,
-  useState,
-  useRef,
-  useEffect,
-  useCallback,
-  type CSSProperties,
-} from 'react';
+import { useMemo, useState, useRef, useEffect, useCallback, type CSSProperties } from 'react';
 import Link from 'next/link';
 import ProductCard from '@/components/products/ProductCard';
 import { useGetAllQuery } from '@/lib/redux/api/productsApi';
@@ -34,10 +27,7 @@ export const FeaturedProducts = ({ data }: FeaturedProductsProps) => {
 
   const { data: allProducts = [] } = useGetAllQuery();
   const productData = useMemo(() => data || allProducts, [data, allProducts]);
-  const featuredProducts = useMemo(
-    () => productData?.slice(13, 19) || [],
-    [productData]
-  );
+  const featuredProducts = useMemo(() => productData?.slice(13, 19) || [], [productData]);
   const total = featuredProducts.length;
 
   /* ── Navigate ── */
@@ -46,7 +36,7 @@ export const FeaturedProducts = ({ data }: FeaturedProductsProps) => {
       setActiveIndex((idx + total) % total);
       setProgressKey((k) => k + 1);
     },
-    [total]
+    [total],
   );
 
   const prev = () => goTo(activeIndex - 1);
@@ -69,7 +59,7 @@ export const FeaturedProducts = ({ data }: FeaturedProductsProps) => {
   const onDragEnd = (x: number) => {
     if (dragStart === null) return;
     const d = dragStart - x;
-    if (Math.abs(d) > 50) (d > 0 ? next() : prev());
+    if (Math.abs(d) > 50) d > 0 ? next() : prev();
     setDragStart(null);
   };
 
@@ -148,18 +138,10 @@ export const FeaturedProducts = ({ data }: FeaturedProductsProps) => {
             ))}
           </div>
 
-          <button
-            className="fp-nav fp-nav--prev"
-            onClick={prev}
-            aria-label="Previous"
-          >
+          <button className="fp-nav fp-nav--prev" onClick={prev} aria-label="Previous">
             <i className="bx bx-chevron-left" />
           </button>
-          <button
-            className="fp-nav fp-nav--next"
-            onClick={next}
-            aria-label="Next"
-          >
+          <button className="fp-nav fp-nav--next" onClick={next} aria-label="Next">
             <i className="bx bx-chevron-right" />
           </button>
         </div>

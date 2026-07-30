@@ -32,7 +32,11 @@ declare module '@/lib/api-factory' {
   export interface ApiFactoryFn {
     (sliceName: string, options?: FactoryOptions): ApiFactoryInstance;
     createComplete: (sliceName: string, options?: FactoryOptions) => any;
-    createCustom: (sliceName: string, endpoints: Record<string, unknown>, options?: FactoryOptions) => any;
+    createCustom: (
+      sliceName: string,
+      endpoints: Record<string, unknown>,
+      options?: FactoryOptions,
+    ) => any;
     getStandardEndpoints: () => Record<string, unknown>;
     getHttpMethods: () => Record<string, string>;
   }

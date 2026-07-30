@@ -58,7 +58,7 @@ export const GoogleAdSense = ({
     if (document.querySelector('script[src*="adsbygoogle"]')) {
       pushAd();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, []);
 
   return (

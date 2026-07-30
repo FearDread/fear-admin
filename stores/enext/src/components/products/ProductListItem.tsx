@@ -7,14 +7,11 @@ interface ProductListItemProps {
 
 export const ProductListItem = ({ product }: ProductListItemProps) => {
   const renderStars = (rating = 5) =>
-    [...Array(rating)].map((_, i) => (
-      <i key={i} className="bx bxs-star text-white" />
-    ));
+    [...Array(rating)].map((_, i) => <i key={i} className="bx bxs-star text-white" />);
 
   const productId = product._id ?? product.id;
   const thumbnail =
-    (product.images?.[0] && product.images[0].url) ||
-    '/assets/images/products/placeholder.png';
+    (product.images?.[0] && product.images[0].url) || '/assets/images/products/placeholder.png';
 
   return (
     <>
@@ -31,9 +28,7 @@ export const ProductListItem = ({ product }: ProductListItemProps) => {
           </Link>
         </div>
         <div className="ms-10" style={{ marginLeft: 10 }}>
-          <h6 className="mb-0 fw-light mb-1">
-            {product.title || product.name || 'Product Name'}
-          </h6>
+          <h6 className="mb-0 fw-light mb-1">{product.title || product.name || 'Product Name'}</h6>
           <div className="rating font-12">{renderStars(product.rating)}</div>
           <p className="mb-0 text-white">
             <strong>${product.price?.toFixed(2) || '0.00'}</strong>

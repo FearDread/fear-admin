@@ -11,15 +11,8 @@ import {
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAppSelector, useAppDispatch } from '@/lib/redux/hooks';
-import {
-  selectIsAuthenticated,
-  selectCurrentUser,
-} from '@/lib/redux/slices/authSlice';
-import {
-  selectCartItems,
-  selectCartItemCount,
-  removeItem,
-} from '@/lib/redux/slices/cartSlice';
+import { selectIsAuthenticated, selectCurrentUser } from '@/lib/redux/slices/authSlice';
+import { selectCartItems, selectCartItemCount, removeItem } from '@/lib/redux/slices/cartSlice';
 import CartDropdown from '../header/CartDropdown';
 import CatDropdown from '../header/CatDropdown';
 import SearchBar from '../header/SearchBar';
@@ -102,10 +95,7 @@ const accountLinks: NavLink[] = [
 ];
 
 // ── Reusable hook: close when clicking outside ref ──────────────────────────
-function useOutsideClick<T extends HTMLElement>(
-  ref: RefObject<T | null>,
-  onClose: () => void
-) {
+function useOutsideClick<T extends HTMLElement>(ref: RefObject<T | null>, onClose: () => void) {
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) onClose();
@@ -146,14 +136,26 @@ export const Header = () => {
   const categoriesRef = useRef<HTMLDivElement>(null);
   const accountRef = useRef<HTMLDivElement>(null);
 
-  useOutsideClick(currencyRef, useCallback(() => setCurrencyOpen(false), []));
-  useOutsideClick(languageRef, useCallback(() => setLanguageOpen(false), []));
-  useOutsideClick(cartRef, useCallback(() => setCartOpen(false), []));
+  useOutsideClick(
+    currencyRef,
+    useCallback(() => setCurrencyOpen(false), []),
+  );
+  useOutsideClick(
+    languageRef,
+    useCallback(() => setLanguageOpen(false), []),
+  );
+  useOutsideClick(
+    cartRef,
+    useCallback(() => setCartOpen(false), []),
+  );
   useOutsideClick(
     categoriesRef,
-    useCallback(() => setCategoriesOpen(false), [])
+    useCallback(() => setCategoriesOpen(false), []),
   );
-  useOutsideClick(accountRef, useCallback(() => setAccountOpen(false), []));
+  useOutsideClick(
+    accountRef,
+    useCallback(() => setAccountOpen(false), []),
+  );
 
   // Scroll
   useEffect(() => {
@@ -375,11 +377,7 @@ export const Header = () => {
             <div className="hdr-icons">
               {isAuthenticated ? (
                 <>
-                  <Link
-                    href="/account/dashboard"
-                    className="hdr-icon-btn"
-                    title="Account"
-                  >
+                  <Link href="/account/dashboard" className="hdr-icon-btn" title="Account">
                     👤
                   </Link>
                   <Link href="/wishlist" className="hdr-icon-btn" title="Wishlist">
@@ -391,10 +389,7 @@ export const Header = () => {
                   <Link href="/login" className="hdr-btn-login d-none d-sm-flex">
                     Login
                   </Link>
-                  <Link
-                    href="/register"
-                    className="hdr-btn-register d-none d-sm-flex"
-                  >
+                  <Link href="/register" className="hdr-btn-register d-none d-sm-flex">
                     Register
                   </Link>
                 </>
@@ -404,9 +399,7 @@ export const Header = () => {
               <div ref={cartRef} style={{ position: 'relative' }}>
                 <button className="hdr-icon-btn" title="Cart" onClick={toggleCart}>
                   🛒
-                  {cartItemCount > 0 && (
-                    <span className="hdr-icon-badge">{cartItemCount}</span>
-                  )}
+                  {cartItemCount > 0 && <span className="hdr-icon-badge">{cartItemCount}</span>}
                 </button>
                 {cartOpen && (
                   <CartDropdown
@@ -436,11 +429,7 @@ export const Header = () => {
             ))}
 
             {/* Categories */}
-            <div
-              ref={categoriesRef}
-              className="hdr-nav-item"
-              style={{ position: 'relative' }}
-            >
+            <div ref={categoriesRef} className="hdr-nav-item" style={{ position: 'relative' }}>
               <button
                 className="hdr-nav-link"
                 style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
@@ -450,10 +439,7 @@ export const Header = () => {
                 Categories <span className="hdr-nav-arrow">▾</span>
               </button>
               {categoriesOpen && (
-                <CatDropdown
-                  categories={categories}
-                  onClose={() => setCategoriesOpen(false)}
-                />
+                <CatDropdown categories={categories} onClose={() => setCategoriesOpen(false)} />
               )}
             </div>
 
@@ -477,11 +463,7 @@ export const Header = () => {
               {accountOpen && (
                 <div className="hdr-account-dd" style={{ display: 'block' }}>
                   {accountLinks.map((link) => (
-                    <Link
-                      key={link.path}
-                      href={link.path}
-                      onClick={() => setAccountOpen(false)}
-                    >
+                    <Link key={link.path} href={link.path} onClick={() => setAccountOpen(false)}>
                       {link.label}
                     </Link>
                   ))}
@@ -513,19 +495,13 @@ export const Header = () => {
       {/* ── MOBILE DRAWER ── */}
       {mobileMenuOpen && (
         <>
-          <div
-            className="hdr-mobile-overlay"
-            onClick={() => setMobileMenuOpen(false)}
-          />
+          <div className="hdr-mobile-overlay" onClick={() => setMobileMenuOpen(false)} />
           <div className="hdr-mobile-drawer">
             <div className="hdr-drawer-head">
               <h2 className="hdr-drawer-title">
                 e<span style={{ color: T.red }}>Fear</span>
               </h2>
-              <button
-                className="hdr-drawer-close"
-                onClick={() => setMobileMenuOpen(false)}
-              >
+              <button className="hdr-drawer-close" onClick={() => setMobileMenuOpen(false)}>
                 ✕
               </button>
             </div>
@@ -547,11 +523,7 @@ export const Header = () => {
                 <div key={group}>
                   <div className="hdr-drawer-section-title">{group}</div>
                   {items.map((item) => (
-                    <Link
-                      key={item.label}
-                      href={item.path}
-                      className="hdr-drawer-cat-link"
-                    >
+                    <Link key={item.label} href={item.path} className="hdr-drawer-cat-link">
                       {item.label}
                       <span style={{ color: T.textDim, fontSize: '.6rem' }}>→</span>
                     </Link>
@@ -560,11 +532,7 @@ export const Header = () => {
               ))}
               <div className="hdr-drawer-section-title">My Account</div>
               {accountLinks.map((link) => (
-                <Link
-                  key={link.path}
-                  href={link.path}
-                  className="hdr-drawer-cat-link"
-                >
+                <Link key={link.path} href={link.path} className="hdr-drawer-cat-link">
                   {link.label}
                 </Link>
               ))}

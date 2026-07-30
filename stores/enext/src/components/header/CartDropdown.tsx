@@ -214,7 +214,9 @@ export const CartDropdown = ({ items, onRemoveItem }: CartDropdownProps) => {
             >
               Total
             </span>
-            <span style={{ fontSize: '.8rem', letterSpacing: '.06em', color: T.red, fontWeight: 700 }}>
+            <span
+              style={{ fontSize: '.8rem', letterSpacing: '.06em', color: T.red, fontWeight: 700 }}
+            >
               ${total.toFixed(2)}
             </span>
           </div>

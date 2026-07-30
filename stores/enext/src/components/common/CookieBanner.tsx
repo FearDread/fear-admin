@@ -66,9 +66,9 @@ export const CookieBanner = ({ onAccept, onReject }: CookieBannerProps) => {
         <div className="cookie-content">
           <h2>We value your privacy</h2>
           <p>
-            We use cookies to enhance your browsing experience and analyse
-            our traffic. By clicking <strong>&quot;Accept all&quot;</strong>{' '}
-            you consent to our use of cookies. <a href="#">Learn more</a>
+            We use cookies to enhance your browsing experience and analyse our traffic. By clicking{' '}
+            <strong>&quot;Accept all&quot;</strong> you consent to our use of cookies.{' '}
+            <a href="#">Learn more</a>
           </p>
 
           {showCustom && (
@@ -83,9 +83,7 @@ export const CookieBanner = ({ onAccept, onReject }: CookieBannerProps) => {
                     aria-label={cat.label}
                   />
                   <span>{cat.label}</span>
-                  <span style={{ color: '#555', fontWeight: 300 }}>
-                    — {cat.desc}
-                  </span>
+                  <span style={{ color: '#555', fontWeight: 300 }}>— {cat.desc}</span>
                 </div>
               ))}
             </div>

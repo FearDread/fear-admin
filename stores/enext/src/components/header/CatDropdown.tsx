@@ -33,11 +33,7 @@ export const CatDropdown = ({ categories, onClose }: CatDropdownProps) => {
         <div className="col-md-2">
           <div className="pramotion-banner1">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/assets/images/comics/banner/01.png"
-              className="img-fluid"
-              alt="Promotion"
-            />
+            <img src="/assets/images/comics/banner/01.png" className="img-fluid" alt="Promotion" />
           </div>
         </div>
       </div>

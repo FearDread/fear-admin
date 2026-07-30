@@ -72,9 +72,7 @@ export const ProductCard = (product: Product) => {
     ? Math.round((1 - (product.salePrice as number) / (product.price as number)) * 100)
     : 0;
 
-  const isInWishlist = useAppSelector((state) =>
-    selectIsInWishlist(state, productId)
-  );
+  const isInWishlist = useAppSelector((state) => selectIsInWishlist(state, productId));
 
   const renderStars = (rating = 4) =>
     Array.from({ length: 5 }, (_, i) => (
@@ -89,8 +87,7 @@ export const ProductCard = (product: Product) => {
     setToasts((prev) => [...prev, { id, message, type }]);
   };
 
-  const removeToast = (id: number) =>
-    setToasts((prev) => prev.filter((t) => t.id !== id));
+  const removeToast = (id: number) => setToasts((prev) => prev.filter((t) => t.id !== id));
 
   const getStoredCompareIds = (): string[] => {
     try {
@@ -112,9 +109,7 @@ export const ProductCard = (product: Product) => {
 
     if (!isAuthenticated) {
       const from = encodeURIComponent(window.location.pathname);
-      const message = encodeURIComponent(
-        'Please login to add items to your wishlist'
-      );
+      const message = encodeURIComponent('Please login to add items to your wishlist');
       router.push(`/login?from=${from}&message=${message}`);
       return;
     }
@@ -141,15 +136,10 @@ export const ProductCard = (product: Product) => {
           dispatch(addToWishlist(wishlistItem));
         }
       })
-      .catch((error: Error) =>
-        addToast('Failed to update wishlist: ' + error.message, 'error')
-      )
+      .catch((error: Error) => addToast('Failed to update wishlist: ' + error.message, 'error'))
       .finally(() => {
         setIsAddingToWishlist(false);
-        addToast(
-          isInWishlist ? 'Removed from Wishlist!' : 'Product added to Wishlist!',
-          'success'
-        );
+        addToast(isInWishlist ? 'Removed from Wishlist!' : 'Product added to Wishlist!', 'success');
       });
   };
 
@@ -184,7 +174,7 @@ export const ProductCard = (product: Product) => {
     if (existingIds.length >= MAX_COMPARE_PRODUCTS) {
       addToast(
         `You can compare up to ${MAX_COMPARE_PRODUCTS} products at a time. Remove one first.`,
-        'warning'
+        'warning',
       );
       return;
     }
@@ -246,19 +236,13 @@ export const ProductCard = (product: Product) => {
 
           <Link href={detailsLink}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={productImage}
-              className="card-img-top"
-              alt={product.title}
-            />
+            <img src={productImage} className="card-img-top" alt={product.title} />
           </Link>
 
           <div className="card-body">
             <div className="product-info">
               <Link href={`/shop?category=${product.categoryId || ''}`}>
-                <p className="product-catergory font-13 mb-1">
-                  {product.category || 'General'}
-                </p>
+                <p className="product-catergory font-13 mb-1">{product.category || 'General'}</p>
               </Link>
 
               <Link href={detailsLink}>
@@ -275,9 +259,7 @@ export const ProductCard = (product: Product) => {
                   )}
                   <span className="text-white fs-5">${currentPrice?.toFixed(2)}</span>
                 </div>
-                <div className="cursor-pointer ms-auto">
-                  {renderStars(product.rating || 4)}
-                </div>
+                <div className="cursor-pointer ms-auto">{renderStars(product.rating || 4)}</div>
               </div>
 
               {/* Stock Status */}

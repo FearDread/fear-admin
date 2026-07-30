@@ -1,13 +1,6 @@
 'use client';
 
-import {
-  useMemo,
-  useState,
-  useRef,
-  useEffect,
-  useCallback,
-  type CSSProperties,
-} from 'react';
+import { useMemo, useState, useRef, useEffect, useCallback, type CSSProperties } from 'react';
 import Link from 'next/link';
 import { useGetAllQuery } from '@/lib/redux/api/productsApi';
 import ProductCard from './ProductCard';
@@ -31,10 +24,7 @@ export const ProductCarousel = ({ data }: ProductCarouselProps) => {
   // "dispatch(fetchProducts()) if empty" effect the thunk version had.
   const { data: allProducts = [] } = useGetAllQuery();
   const productData = useMemo(() => data || allProducts, [data, allProducts]);
-  const featuredProducts = useMemo(
-    () => productData.slice(26, 32) || [],
-    [productData]
-  );
+  const featuredProducts = useMemo(() => productData.slice(26, 32) || [], [productData]);
   const total = featuredProducts.length;
 
   /* ── Navigate ── */
@@ -43,7 +33,7 @@ export const ProductCarousel = ({ data }: ProductCarouselProps) => {
       setActiveIndex((idx + total) % total);
       setProgressKey((k) => k + 1);
     },
-    [total]
+    [total],
   );
 
   const prev = () => goTo(activeIndex - 1);
@@ -66,7 +56,7 @@ export const ProductCarousel = ({ data }: ProductCarouselProps) => {
   const onDragEnd = (x: number) => {
     if (dragStart === null) return;
     const d = dragStart - x;
-    if (Math.abs(d) > 50) (d > 0 ? next() : prev());
+    if (Math.abs(d) > 50) d > 0 ? next() : prev();
     setDragStart(null);
   };
 

@@ -3,6 +3,14 @@ import { Anton, Space_Mono } from 'next/font/google';
 import StoreProvider from '@/lib/redux/StoreProvider';
 import SiteLayout from '@/components/layout/SiteLayout';
 
+import '../assets/css/bootstrap.min.css';
+import '../assets/css/owl.carousel.min.css';
+import '../assets/css/icons.css';
+import '../assets/css/pace.min.css';
+import '../assets/css/app.css';
+import '../assets/css/index.css';
+import '../assets/css/efear.css';
+
 const anton = Anton({
   weight: '400',
   subsets: ['latin'],
@@ -22,11 +30,7 @@ export const metadata: Metadata = {
   description: 'Your Store description',
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${anton.variable} ${spaceMono.variable}`}>
       <body>

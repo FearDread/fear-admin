@@ -30,19 +30,15 @@ export const Footer = ({ categories }: Footer2Props) => {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
 
   const { data: allCategories = [] } = useGetAllCategoriesQuery();
-  const resolvedCategories =
-    categories && categories.length > 0 ? categories : allCategories;
+  const resolvedCategories = categories && categories.length > 0 ? categories : allCategories;
 
-  const [subscribe, { isLoading: subLoading, isSuccess, isError, reset }] =
-    useSubscribeMutation();
+  const [subscribe, { isLoading: subLoading, isSuccess, isError, reset }] = useSubscribeMutation();
 
   /* toast helpers */
   const addToast = (message: string, type: ToastType) =>
     setToasts((prev) => [...prev, { id: Date.now(), message, type }]);
-  const removeToast = (id: number) =>
-    setToasts((prev) => prev.filter((t) => t.id !== id));
-  const isValidEmail = (email: string) =>
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const removeToast = (id: number) => setToasts((prev) => prev.filter((t) => t.id !== id));
+  const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
   const handleSubscribe = (e?: React.FormEvent) => {
     e?.preventDefault();
@@ -135,13 +131,11 @@ export const Footer = ({ categories }: Footer2Props) => {
                 <Link href="/" className="ftr-logo-text">
                   e<span>Fear</span>
                 </Link>
-                <span className="ftr-tagline">
-                  Comics · E-Books · Collectibles
-                </span>
+                <span className="ftr-tagline">Comics · E-Books · Collectibles</span>
                 <p className="ftr-about-text">
-                  Founded in a code-violating basement out of spite, love,
-                  and an embarrassing number of long boxes. We sell comics,
-                  e-books, and trading cards because someone told us not to.
+                  Founded in a code-violating basement out of spite, love, and an embarrassing
+                  number of long boxes. We sell comics, e-books, and trading cards because someone
+                  told us not to.
                 </p>
                 {/* Social */}
                 <div className="ftr-heading">
@@ -169,9 +163,7 @@ export const Footer = ({ categories }: Footer2Props) => {
                   </div>
                   <div className="ftr-contact-item">
                     <span className="ftr-contact-label">Address</span>
-                    <span className="ftr-contact-val">
-                      2003 E. Veterans Memorial Blvd.
-                    </span>
+                    <span className="ftr-contact-val">2003 E. Veterans Memorial Blvd.</span>
                   </div>
                   <div className="ftr-contact-item">
                     <span className="ftr-contact-label">Phone</span>
@@ -182,16 +174,12 @@ export const Footer = ({ categories }: Footer2Props) => {
                   <div className="ftr-contact-item">
                     <span className="ftr-contact-label">Email</span>
                     <span className="ftr-contact-val">
-                      <a href="mailto:fear.dread@underworld.dog">
-                        fear.dread@underworld.dog
-                      </a>
+                      <a href="mailto:fear.dread@underworld.dog">fear.dread@underworld.dog</a>
                     </span>
                   </div>
                   <div className="ftr-contact-item">
                     <span className="ftr-contact-label">Hours</span>
-                    <span className="ftr-contact-val">
-                      Mon – Fri / 9:30 AM – 6:30 PM
-                    </span>
+                    <span className="ftr-contact-val">Mon – Fri / 9:30 AM – 6:30 PM</span>
                   </div>
                 </div>
               </div>
@@ -224,11 +212,7 @@ export const Footer = ({ categories }: Footer2Props) => {
                       'Football Cards',
                       'Collectibles',
                     ].map((c) => (
-                      <Link
-                        key={c}
-                        href={`/shop?search=${c}`}
-                        className="ftr-cat-link"
-                      >
+                      <Link key={c} href={`/shop?search=${c}`} className="ftr-cat-link">
                         {c} <span className="ftr-cat-arrow">→</span>
                       </Link>
                     ))}
@@ -299,8 +283,8 @@ export const Footer = ({ categories }: Footer2Props) => {
                   </span>
                 </div>
                 <p className="ftr-sub-note" style={{ marginBottom: '1rem' }}>
-                  Early access to discounts, new arrivals, and the occasional
-                  deeply personal opinion about Spider-Man.
+                  Early access to discounts, new arrivals, and the occasional deeply personal
+                  opinion about Spider-Man.
                 </p>
 
                 {/* Email form */}
@@ -321,8 +305,7 @@ export const Footer = ({ categories }: Footer2Props) => {
                   </div>
                 </form>
                 <p className="ftr-sub-note">
-                  No spam. No selling your data. We read enough dystopian
-                  comics to know better.
+                  No spam. No selling your data. We read enough dystopian comics to know better.
                 </p>
 
                 {/* App download */}
@@ -356,10 +339,8 @@ export const Footer = ({ categories }: Footer2Props) => {
             {/* ── BOTTOM BAR ── */}
             <div className="ftr-bottom">
               <p className="ftr-copy">
-                Copyright ©{' '}
-                <a href="https://feard.vercel.app">FEAR Inc.</a>{' '}
-                <span>{new Date().getFullYear()}</span>. All rights reserved.
-                &nbsp;·&nbsp;
+                Copyright © <a href="https://feard.vercel.app">FEAR Inc.</a>{' '}
+                <span>{new Date().getFullYear()}</span>. All rights reserved. &nbsp;·&nbsp;
                 <Link href="/privacy">Privacy</Link>
                 &nbsp;·&nbsp;
                 <Link href="/terms">Terms</Link>
@@ -389,13 +370,7 @@ export const Footer = ({ categories }: Footer2Props) => {
                   },
                 ].map((p) => (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    key={p.alt}
-                    src={p.src}
-                    alt={p.alt}
-                    className="ftr-pay-icon"
-                    title={p.alt}
-                  />
+                  <img key={p.alt} src={p.src} alt={p.alt} className="ftr-pay-icon" title={p.alt} />
                 ))}
               </div>
             </div>

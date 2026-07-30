@@ -18,12 +18,7 @@ const typeClasses: Record<ToastType, string> = {
   info: 'alert-info',
 };
 
-export const Toast = ({
-  message,
-  type = 'info',
-  duration = 3000,
-  onClose,
-}: ToastProps) => {
+export const Toast = ({ message, type = 'info', duration = 3000, onClose }: ToastProps) => {
   const [isVisible, setIsVisible] = useState(true);
   const [isExiting, setIsExiting] = useState(false);
 
@@ -66,12 +61,7 @@ export const Toast = ({
       }}
     >
       {message}
-      <button
-        type="button"
-        className="btn-close"
-        onClick={handleClose}
-        aria-label="Close"
-      />
+      <button type="button" className="btn-close" onClick={handleClose} aria-label="Close" />
     </div>
   );
 };

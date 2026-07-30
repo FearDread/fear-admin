@@ -285,7 +285,7 @@ const FearServer = (function () {
         this.fear.getLogger().debug(`Route request: ${req.path}`);
         
         // Skip if it's an API route
-        if (req.path.startsWith('/fear/api')) {
+        if (req.path.startsWith('/fear')) {
           this.fear.getLogger().debug('Skipping - API route');
           return next();
         }

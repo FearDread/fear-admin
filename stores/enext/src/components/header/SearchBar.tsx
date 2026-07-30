@@ -50,8 +50,7 @@ export const SearchBar = ({
   const router = useRouter();
   const searchRef = useRef<HTMLDivElement>(null);
 
-  const { data: categories = [], isLoading: categoriesLoading } =
-    useGetAllCategoriesQuery();
+  const { data: categories = [], isLoading: categoriesLoading } = useGetAllCategoriesQuery();
   const { data: products = [] } = useGetAllProductsQuery();
 
   // Local state
@@ -69,15 +68,13 @@ export const SearchBar = ({
     const filtered = (products as Product[]).filter((product) => {
       const name = (product.title || product.name || '').toLowerCase();
       const description = (product.description || '').toLowerCase();
-      const matchesSearch =
-        name.includes(lowerTerm) || description.includes(lowerTerm);
+      const matchesSearch = name.includes(lowerTerm) || description.includes(lowerTerm);
 
       // Filter by category if selected
       if (selectedCategory && selectedCategory !== 'All Categories') {
         const categoryMatch =
           product.categoryId === selectedCategory ||
-          (product.category || '').toLowerCase() ===
-            selectedCategory.toLowerCase();
+          (product.category || '').toLowerCase() === selectedCategory.toLowerCase();
         return matchesSearch && categoryMatch;
       }
 
@@ -115,10 +112,7 @@ export const SearchBar = ({
   // Close suggestions when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        searchRef.current &&
-        !searchRef.current.contains(event.target as Node)
-      ) {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
         setShowSuggestions(false);
       }
     };
@@ -140,13 +134,11 @@ export const SearchBar = ({
     // Redux the way the old thunk-based search state did.
     if (selectedCategory && selectedCategory !== 'All Categories') {
       const category = (categories as Category[]).find(
-        (cat) => cat.name === selectedCategory || cat.id === selectedCategory
+        (cat) => cat.name === selectedCategory || cat.id === selectedCategory,
       );
 
       if (category) {
-        router.push(
-          `/shop?search=${encodeURIComponent(searchTerm)}&category=${category.id}`
-        );
+        router.push(`/shop?search=${encodeURIComponent(searchTerm)}&category=${category.id}`);
       } else {
         router.push(`/shop?search=${encodeURIComponent(searchTerm)}`);
       }
@@ -188,9 +180,7 @@ export const SearchBar = ({
     switch (e.key) {
       case 'ArrowDown':
         e.preventDefault();
-        setSelectedIndex((prev) =>
-          prev < suggestions.length - 1 ? prev + 1 : prev
-        );
+        setSelectedIndex((prev) => (prev < suggestions.length - 1 ? prev + 1 : prev));
         break;
       case 'ArrowUp':
         e.preventDefault();
@@ -235,10 +225,7 @@ export const SearchBar = ({
   };
 
   return (
-    <div
-      className={`search-bar-container position-relative ${className}`}
-      ref={searchRef}
-    >
+    <div className={`search-bar-container position-relative ${className}`} ref={searchRef}>
       <form onSubmit={handleSearch} className="input-group flex-nowrap px-xl-4">
         <input
           type="text"
@@ -356,9 +343,7 @@ export const SearchBar = ({
                       )}
                     </div>
                     {suggestion.category && (
-                      <small className="text-muted d-block">
-                        {suggestion.category}
-                      </small>
+                      <small className="text-muted d-block">{suggestion.category}</small>
                     )}
                   </div>
                 </div>
@@ -397,9 +382,7 @@ export const SearchBar = ({
             {selectedCategory && selectedCategory !== 'All Categories' && (
               <small className="d-block mt-1">in {selectedCategory}</small>
             )}
-            <small className="d-block mt-2">
-              Try different keywords or browse all categories
-            </small>
+            <small className="d-block mt-2">Try different keywords or browse all categories</small>
           </div>
         </div>
       )}

@@ -81,7 +81,7 @@ export const HeroSection = () => {
       setTextKey((prev) => prev + 1);
       setTimeout(() => setIsTransitioning(false), 600);
     },
-    [isTransitioning, currentSlide]
+    [isTransitioning, currentSlide],
   );
 
   // Single auto-play effect
@@ -129,18 +129,10 @@ export const HeroSection = () => {
       </div>
 
       {/* nav */}
-      <button
-        className="hero-nav prev"
-        onClick={handlePrev}
-        disabled={isTransitioning}
-      >
+      <button className="hero-nav prev" onClick={handlePrev} disabled={isTransitioning}>
         &#8592;
       </button>
-      <button
-        className="hero-nav next"
-        onClick={handleNext}
-        disabled={isTransitioning}
-      >
+      <button className="hero-nav next" onClick={handleNext} disabled={isTransitioning}>
         &#8594;
       </button>
 
@@ -156,9 +148,7 @@ export const HeroSection = () => {
       </div>
 
       {/* progress bar */}
-      {isAutoPlaying && (
-        <div className="hero-progress" key={`progress-${currentSlide}`} />
-      )}
+      {isAutoPlaying && <div className="hero-progress" key={`progress-${currentSlide}`} />}
     </section>
   );
 };

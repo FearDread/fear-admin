@@ -1,16 +1,15 @@
-
 export const T = {
-  red:     '#b30e1c',
-  orange:  '#6120d9',
-  teal:    '#2a9d8f',
-  dark0:   'rgba(0,0,0,.9)',
-  dark1:   '#111111',
-  dark2:   '#141414',
-  dark3:   '#1a1a1a',
-  border:  '#222222',
+  red: '#b30e1c',
+  orange: '#6120d9',
+  teal: '#2a9d8f',
+  dark0: 'rgba(0,0,0,.9)',
+  dark1: '#111111',
+  dark2: '#141414',
+  dark3: '#1a1a1a',
+  border: '#222222',
   textDim: 'rgba(255,255,255,0.30)',
   textMid: 'rgba(255,255,255,0.55)',
-  textHi:  'rgba(255,255,255,0.90)',
+  textHi: 'rgba(255,255,255,0.90)',
 };
 
 export const blogStyles = `
@@ -1069,8 +1068,8 @@ export const footerStyles = `
   @keyframes gradShift { to { background-position:300% center } }
 `;
 
-export const AboutStyles = () => (
-    `
+export const AboutStyles = () =>
+  `
   <>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Mono:ital@0;1&display=swap" rel="stylesheet" />
@@ -1125,8 +1124,7 @@ export const AboutStyles = () => (
       .btn-about-ghost:hover { border-color: #fff; color: #fff; }
     "}</style>
   </>
-  `
-);
+  `;
 
 export const authStyles = `
   @import url('https://fonts.googleapis.com/css2?family=Anton&family=Space+Mono:ital@0;1&display=swap');

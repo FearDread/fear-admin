@@ -15,8 +15,7 @@ export const CategoryCards = () => {
     {
       label: 'Comics',
       tagline: 'Marvel, DC & beyond',
-      blurb:
-        'From first prints to modern variants. Every issue bagged, boarded, near-mint.',
+      blurb: 'From first prints to modern variants. Every issue bagged, boarded, near-mint.',
       accent: '#c40717',
       image: '/assets/images/comics/super1.png',
       link: '/shop?cat=comics',
@@ -24,8 +23,7 @@ export const CategoryCards = () => {
     {
       label: 'E-Books',
       tagline: 'Starting at $9',
-      blurb:
-        'Cookbooks, manifestos, graphic novels, and more. Also available on Amazon.',
+      blurb: 'Cookbooks, manifestos, graphic novels, and more. Also available on Amazon.',
       accent: '#6f11e1',
       image: '/assets/images/ebooks/01.jpg',
       link: '/shop?cat=books',
@@ -33,8 +31,7 @@ export const CategoryCards = () => {
     {
       label: 'Collectibles',
       tagline: 'Cards, slabs & rarities',
-      blurb:
-        'Pokémon, NFL, NBA, Baseball. Some packs will make you cry. All of them will.',
+      blurb: 'Pokémon, NFL, NBA, Baseball. Some packs will make you cry. All of them will.',
       accent: '#1081a7',
       image: '/assets/images/comics/super3.png',
       link: '/shop?cat=cards',

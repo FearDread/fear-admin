@@ -18,11 +18,7 @@ interface ProductQuickViewProps {
   onClose: () => void;
 }
 
-export const ProductQuickView = ({
-  product,
-  isOpen,
-  onClose,
-}: ProductQuickViewProps) => {
+export const ProductQuickView = ({ product, isOpen, onClose }: ProductQuickViewProps) => {
   const dispatch = useAppDispatch();
   const router = useRouter();
 
@@ -30,7 +26,7 @@ export const ProductQuickView = ({
 
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const isInWishlist = useAppSelector((state) =>
-    productId ? selectIsInWishlist(state, productId) : false
+    productId ? selectIsInWishlist(state, productId) : false,
   );
 
   // Local state
@@ -94,22 +90,14 @@ export const ProductQuickView = ({
 
   // Available sizes and colors
   const sizes = (product.sizes as string[]) || ['S', 'M', 'L', 'XS', 'XL'];
-  const colors = (product.colors as string[]) || [
-    'primary',
-    'danger',
-    'success',
-    'warning',
-  ];
+  const colors = (product.colors as string[]) || ['primary', 'danger', 'success', 'warning'];
 
   // Render stars
   const renderStars = (rating = 4) => {
     const stars = [];
     for (let i = 1; i <= 5; i++) {
       stars.push(
-        <i
-          key={i}
-          className={`bx bxs-star ${i <= rating ? 'text-warning' : 'text-light-4'}`}
-        />
+        <i key={i} className={`bx bxs-star ${i <= rating ? 'text-warning' : 'text-light-4'}`} />,
       );
     }
     return stars;
@@ -159,9 +147,7 @@ export const ProductQuickView = ({
     if (!isAuthenticated) {
       onClose();
       const from = encodeURIComponent(window.location.pathname);
-      const message = encodeURIComponent(
-        'Please login to add items to your wishlist'
-      );
+      const message = encodeURIComponent('Please login to add items to your wishlist');
       router.push(`/login?from=${from}&message=${message}`);
       return;
     }
@@ -228,12 +214,8 @@ export const ProductQuickView = ({
                       className="position-absolute top-0 start-0 m-3 d-flex flex-column gap-2"
                       style={{ zIndex: 10 }}
                     >
-                      {hasDiscount && (
-                        <span className="badge bg-danger">-{discountPercent}%</span>
-                      )}
-                      {!product.inStock && (
-                        <span className="badge bg-dark">Out of Stock</span>
-                      )}
+                      {hasDiscount && <span className="badge bg-danger">-{discountPercent}%</span>}
+                      {!product.inStock && <span className="badge bg-dark">Out of Stock</span>}
                     </div>
 
                     {/* Main Image */}
@@ -254,8 +236,7 @@ export const ProductQuickView = ({
                       <div className="owl-thumbs d-flex justify-content-center gap-2">
                         {productImages.map((img, index) => {
                           const thumbUrl =
-                            (img as { url?: string })?.url ??
-                            (img as unknown as string);
+                            (img as { url?: string })?.url ?? (img as unknown as string);
                           return (
                             <button
                               key={index}
@@ -288,16 +269,12 @@ export const ProductQuickView = ({
                     {/* Brand */}
                     {product.brand ? (
                       <div className="mb-2">
-                        <span className="badge bg-secondary">
-                          {product.brand as string}
-                        </span>
+                        <span className="badge bg-secondary">{product.brand as string}</span>
                       </div>
                     ) : null}
 
                     {/* Product Title */}
-                    <h3 className="mt-3 mt-lg-0 mb-0">
-                      {product.title || product.name}
-                    </h3>
+                    <h3 className="mt-3 mt-lg-0 mb-0">{product.title || product.name}</h3>
 
                     {/* Rating */}
                     <div className="product-rating d-flex align-items-center mt-2">
@@ -305,9 +282,7 @@ export const ProductQuickView = ({
                         {renderStars((product.rating as number) || 4)}
                       </div>
                       <div className="ms-1">
-                        <p className="mb-0">
-                          ({(product.reviewCount as number) || 24} Ratings)
-                        </p>
+                        <p className="mb-0">({(product.reviewCount as number) || 24} Ratings)</p>
                       </div>
                     </div>
 
@@ -355,9 +330,7 @@ export const ProductQuickView = ({
                       {product.deliveryInfo ? (
                         <>
                           <dt className="col-sm-3">Delivery</dt>
-                          <dd className="col-sm-9">
-                            {product.deliveryInfo as string}
-                          </dd>
+                          <dd className="col-sm-9">{product.deliveryInfo as string}</dd>
                         </>
                       ) : null}
                     </dl>
@@ -373,15 +346,13 @@ export const ProductQuickView = ({
                           onChange={(e) => setQuantity(parseInt(e.target.value, 10))}
                           disabled={!product.inStock}
                         >
-                          {[
-                            ...Array(
-                              Math.min((product.quantity as number) || 5, 10)
+                          {[...Array(Math.min((product.quantity as number) || 5, 10))].map(
+                            (_, i) => (
+                              <option key={i + 1} value={i + 1}>
+                                {i + 1}
+                              </option>
                             ),
-                          ].map((_, i) => (
-                            <option key={i + 1} value={i + 1}>
-                              {i + 1}
-                            </option>
-                          ))}
+                          )}
                         </select>
                       </div>
 
