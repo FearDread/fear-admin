@@ -10,7 +10,7 @@ export interface Category {
 
 export const categoriesApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getAll: builder.query<Category[], void>({
+    getAllCategories: builder.query<Category[], void>({
       query: () => 'categories/all',
       providesTags: (result) =>
         result
@@ -24,12 +24,12 @@ export const categoriesApi = apiSlice.injectEndpoints({
           : [{ type: 'Category' as const, id: 'LIST' }],
     }),
 
-    getById: builder.query<Category, string>({
+    getCategoryById: builder.query<Category, string>({
       query: (id) => `categories/${id}`,
       providesTags: (_result, _error, id) => [{ type: 'Category', id }],
     }),
 
-    create: builder.mutation<Category, Partial<Category>>({
+    createCategory: builder.mutation<Category, Partial<Category>>({
       query: (body) => ({
         url: 'categories',
         method: 'POST',
@@ -38,7 +38,7 @@ export const categoriesApi = apiSlice.injectEndpoints({
       invalidatesTags: [{ type: 'Category', id: 'LIST' }],
     }),
 
-    update: builder.mutation<Category, Partial<Category> & { id: string }>({
+    updateCategory: builder.mutation<Category, Partial<Category> & { id: string }>({
       query: ({ id, ...patch }) => ({
         url: `categories/${id}`,
         method: 'PUT',
@@ -50,7 +50,7 @@ export const categoriesApi = apiSlice.injectEndpoints({
       ],
     }),
 
-    patch: builder.mutation<Category, Partial<Category> & { id: string }>({
+    patchCategory: builder.mutation<Category, Partial<Category> & { id: string }>({
       query: ({ id, ...patch }) => ({
         url: `categories/${id}`,
         method: 'PATCH',
@@ -62,7 +62,7 @@ export const categoriesApi = apiSlice.injectEndpoints({
       ],
     }),
 
-    delete: builder.mutation<{ success: boolean }, string>({
+    deleteCategory: builder.mutation<{ success: boolean }, string>({
       query: (id) => ({
         url: `categories/${id}`,
         method: 'DELETE',
@@ -73,7 +73,7 @@ export const categoriesApi = apiSlice.injectEndpoints({
       ],
     }),
 
-    search: builder.query<Category[], string>({
+    searchCategories: builder.query<Category[], string>({
       query: (term) => ({
         url: 'categories/search',
         params: { q: term },
@@ -84,12 +84,13 @@ export const categoriesApi = apiSlice.injectEndpoints({
   overrideExisting: false,
 });
 
+// Re-exported under the original generic names — see productsApi.ts for why.
 export const {
-  useGetAllQuery,
-  useGetByIdQuery,
-  useCreateMutation,
-  useUpdateMutation,
-  usePatchMutation,
-  useDeleteMutation,
-  useSearchQuery,
+  useGetAllCategoriesQuery: useGetAllQuery,
+  useGetCategoryByIdQuery: useGetByIdQuery,
+  useCreateCategoryMutation: useCreateMutation,
+  useUpdateCategoryMutation: useUpdateMutation,
+  usePatchCategoryMutation: usePatchMutation,
+  useDeleteCategoryMutation: useDeleteMutation,
+  useSearchCategoriesQuery: useSearchQuery,
 } = categoriesApi;

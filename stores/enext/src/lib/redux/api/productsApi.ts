@@ -3,7 +3,7 @@ import type { Product } from '@/components/products/ProductCard';
 
 export const productsApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getAll: builder.query<Product[], void>({
+    getAllProducts: builder.query<Product[], void>({
       query: () => 'products/all',
       providesTags: (result) =>
         result
@@ -17,12 +17,12 @@ export const productsApi = apiSlice.injectEndpoints({
           : [{ type: 'Product' as const, id: 'LIST' }],
     }),
 
-    getById: builder.query<Product, string>({
+    getProductById: builder.query<Product, string>({
       query: (id) => `products/${id}`,
       providesTags: (_result, _error, id) => [{ type: 'Product', id }],
     }),
 
-    create: builder.mutation<Product, Partial<Product>>({
+    createProduct: builder.mutation<Product, Partial<Product>>({
       query: (body) => ({
         url: 'products',
         method: 'POST',
@@ -31,7 +31,7 @@ export const productsApi = apiSlice.injectEndpoints({
       invalidatesTags: [{ type: 'Product', id: 'LIST' }],
     }),
 
-    update: builder.mutation<Product, Partial<Product> & { id: string }>({
+    updateProduct: builder.mutation<Product, Partial<Product> & { id: string }>({
       query: ({ id, ...patch }) => ({
         url: `products/${id}`,
         method: 'PUT',
@@ -43,7 +43,7 @@ export const productsApi = apiSlice.injectEndpoints({
       ],
     }),
 
-    patch: builder.mutation<Product, Partial<Product> & { id: string }>({
+    patchProduct: builder.mutation<Product, Partial<Product> & { id: string }>({
       query: ({ id, ...patch }) => ({
         url: `products/${id}`,
         method: 'PATCH',
@@ -55,7 +55,7 @@ export const productsApi = apiSlice.injectEndpoints({
       ],
     }),
 
-    delete: builder.mutation<{ success: boolean }, string>({
+    deleteProduct: builder.mutation<{ success: boolean }, string>({
       query: (id) => ({
         url: `products/${id}`,
         method: 'DELETE',
@@ -66,7 +66,7 @@ export const productsApi = apiSlice.injectEndpoints({
       ],
     }),
 
-    search: builder.query<Product[], string>({
+    searchProducts: builder.query<Product[], string>({
       query: (term) => ({
         url: 'products/search',
         params: { q: term },
@@ -77,12 +77,15 @@ export const productsApi = apiSlice.injectEndpoints({
   overrideExisting: false,
 });
 
+// Re-exported under the original generic names so nothing importing these
+// has to change — only the underlying endpoint keys (which must be unique
+// across the whole shared apiSlice) were renamed.
 export const {
-  useGetAllQuery,
-  useGetByIdQuery,
-  useCreateMutation,
-  useUpdateMutation,
-  usePatchMutation,
-  useDeleteMutation,
-  useSearchQuery,
+  useGetAllProductsQuery: useGetAllQuery,
+  useGetProductByIdQuery: useGetByIdQuery,
+  useCreateProductMutation: useCreateMutation,
+  useUpdateProductMutation: useUpdateMutation,
+  usePatchProductMutation: usePatchMutation,
+  useDeleteProductMutation: useDeleteMutation,
+  useSearchProductsQuery: useSearchQuery,
 } = productsApi;
