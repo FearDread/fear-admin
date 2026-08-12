@@ -1,5 +1,14 @@
 import type { NextConfig } from 'next';
 
-const nextConfig: NextConfig = {/* config options here */};
+const nextConfig: NextConfig = {
+  async rewrites() {
+    return [
+      {
+        source: '/fear/api/:path*',
+        destination: `${process.env.FEAR_API_ORIGIN || 'http://localhost:4000'}/fear/api/:path*`,
+      },
+    ];
+  },
+};
 
 export default nextConfig;
