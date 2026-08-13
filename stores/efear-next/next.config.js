@@ -1,8 +1,12 @@
 
 const nextConfig = {
+    // Transpile react-native and any UI packages throwing errors
+  //transpilePackages: ['react-native', 'react-native-web'], 
+  
   // Proxy all Express API calls so the frontend never needs to know the backend port.
   // In production, replace localhost:4000 with your actual API base URL via env var.
   async rewrites() {
+    
     return [
       {
         source: '/fear/api/:path*',

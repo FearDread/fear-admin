@@ -1,5 +1,4 @@
 const path = require('path');
-//const Fear = require('../../backend/src/FEAR');
 const FearServer = require('../../backend/src/FEARServer');
 const Router = require('./router');
 
