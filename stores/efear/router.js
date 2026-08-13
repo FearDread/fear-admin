@@ -1,28 +1,9 @@
-/**
- *
- * Usage in server.js
- * ──────────────────
- *   const { attach } = require('./router');
- *
- *   // SPA mode (original call signature still works):
- *   attach(fear, BUILD_DIR, { verbose: true });
- *
- *   // Next.js mode:
- *   attach(fear, { mode: 'next' });
- */
-
 'use strict';
 
 const path    = require('path');
 const fs      = require('fs');
 const express = require('express');
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Client-side route manifest — used by SPA mode for logging/classification.
-// In 'next' mode this is informational only (Next.js owns its own routing
-// via the app/ or pages/ directory), kept here so verbose logs can still
-// tell you which legacy route a request would have mapped to.
-// ─────────────────────────────────────────────────────────────────────────────
 const CLIENT_ROUTES = {
   public: [
     '/',

@@ -4,21 +4,28 @@ import type { Product } from '@/components/products/ProductCard';
 export const productsApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getAllProducts: builder.query<Product[], void>({
-      query: () => 'products/all',
-      providesTags: (result) =>
-        result
-          ? [
-              ...result.map((item) => ({
-                type: 'Product' as const,
-                id: item._id ?? item.id,
-              })),
-              { type: 'Product' as const, id: 'LIST' },
-            ]
-          : [{ type: 'Product' as const, id: 'LIST' }],
+      query: () => 'product/all',
+      transformResponse: (response: unknown): Product[] => {
+        if (Array.isArray(response)) return response;
+        // Backend may wrap the array, e.g. { success, data } or { products }.
+        // Unwrap defensively instead of letting a non-array reach consumers.
+        if (response && typeof response === 'object') {
+          const obj = response as Record<string, unknown>;
+          console.log('result = ', obj)
+          if (Array.isArray(obj.result)) return obj.result as Product[];
+          if (Array.isArray(obj.data)) return obj.data as Product[];
+          if (Array.isArray(obj.products)) return obj.products as Product[];
+        }
+        console.warn(
+          '[productsApi] getAllProducts: expected an array, got:',
+          response,
+        );
+        return [];
+      },
     }),
 
     getProductById: builder.query<Product, string>({
-      query: (id) => `products/${id}`,
+      query: (id) => `product/${id}`,
       providesTags: (_result, _error, id) => [{ type: 'Product', id }],
     }),
 
@@ -33,7 +40,7 @@ export const productsApi = apiSlice.injectEndpoints({
 
     updateProduct: builder.mutation<Product, Partial<Product> & { id: string }>({
       query: ({ id, ...patch }) => ({
-        url: `products/${id}`,
+        url: `product/${id}`,
         method: 'PUT',
         body: patch,
       }),
@@ -45,7 +52,7 @@ export const productsApi = apiSlice.injectEndpoints({
 
     patchProduct: builder.mutation<Product, Partial<Product> & { id: string }>({
       query: ({ id, ...patch }) => ({
-        url: `products/${id}`,
+        url: `product/${id}`,
         method: 'PATCH',
         body: patch,
       }),
@@ -57,7 +64,7 @@ export const productsApi = apiSlice.injectEndpoints({
 
     deleteProduct: builder.mutation<{ success: boolean }, string>({
       query: (id) => ({
-        url: `products/${id}`,
+        url: `product/${id}`,
         method: 'DELETE',
       }),
       invalidatesTags: (_result, _error, id) => [
@@ -68,7 +75,7 @@ export const productsApi = apiSlice.injectEndpoints({
 
     searchProducts: builder.query<Product[], string>({
       query: (term) => ({
-        url: 'products/search',
+        url: 'product/search',
         params: { q: term },
       }),
       providesTags: [{ type: 'Product', id: 'SEARCH' }],

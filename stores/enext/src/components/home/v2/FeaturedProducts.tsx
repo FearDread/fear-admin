@@ -25,14 +25,21 @@ export const FeaturedProducts = ({ data }: FeaturedProductsProps) => {
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const { data: allProducts = [] } = useGetAllQuery();
-  const productData = useMemo(() => data || allProducts, [data, allProducts]);
-  const featuredProducts = useMemo(() => productData?.slice(13, 19) || [], [productData]);
+  // Skip the fetch entirely when data is already provided via props
+  // (e.g. from an SSR parent) — avoids a redundant client-side request.
+  const { data: allProducts, isLoading, isFetching } = useGetAllQuery(undefined, {
+    skip: !!data,
+  });
+console.log('[FeaturedProducts]', { data, allProducts, isLoading, isFetching, total: (data ?? allProducts ?? []).length });
+  const productData = useMemo(() => data ?? allProducts ?? [], [data, allProducts]);
+  const featuredProducts = productData;
   const total = featuredProducts.length;
+  const loading = !data && (isLoading || isFetching);
 
   /* ── Navigate ── */
   const goTo = useCallback(
     (idx: number) => {
+      if (total === 0) return;
       setActiveIndex((idx + total) % total);
       setProgressKey((k) => k + 1);
     },
@@ -44,7 +51,8 @@ export const FeaturedProducts = ({ data }: FeaturedProductsProps) => {
 
   /* ── Auto-advance ── */
   useEffect(() => {
-    if (isHovered) {
+    // Nothing to rotate through yet, or hovering — don't start a timer.
+    if (isHovered || total <= 1) {
       if (timerRef.current) clearInterval(timerRef.current);
       return;
     }
@@ -52,7 +60,17 @@ export const FeaturedProducts = ({ data }: FeaturedProductsProps) => {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [next, isHovered]);
+  }, [next, isHovered, total]);
+
+  // Data can arrive after the initial mount (client-side fetch resolving).
+  // If activeIndex is ever out of range once total changes, clamp it back
+  // instead of letting cardStyle/goTo do (x % 0) math downstream.
+  useEffect(() => {
+    if (total > 0 && activeIndex >= total) {
+      setActiveIndex(0);
+      setProgressKey((k) => k + 1);
+    }
+  }, [total, activeIndex]);
 
   /* ── Swipe / drag ── */
   const onDragStart = (x: number) => setDragStart(x);
@@ -78,7 +96,37 @@ export const FeaturedProducts = ({ data }: FeaturedProductsProps) => {
     };
   };
 
-  const pad = (n: number) => String(n + 1).padStart(2, '0');
+  const pad = (n: number) => String(Math.max(n, 0) + 1).padStart(2, '0');
+
+  // Data hasn't resolved yet (client-side fetch in flight) — render a
+  // lightweight placeholder instead of letting total=0 flow into the
+  // carousel math (goTo, cardStyle, and the auto-advance interval all
+  // assume at least one item).
+  if (loading) {
+    return (
+      <section className="fp-section" aria-busy="true">
+        <div className="container fp-inner">
+          <div className="fp-header">
+            <div className="fp-header-left">
+              <span className="fp-eyebrow">// Drop Zone</span>
+              <h2 className="fp-title">
+                Featured <span>Products</span>
+              </h2>
+            </div>
+          </div>
+          <div className="fp-stage-wrap fp-stage-wrap--loading">
+            <div className="fp-skeleton-card" />
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Query resolved but there's genuinely nothing to show — bail out
+  // cleanly rather than rendering an empty stage with broken counters.
+  if (total === 0) {
+    return null;
+  }
 
   return (
     <section
