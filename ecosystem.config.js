@@ -18,4 +18,3 @@ module.exports = {
     log_file: './logs/combined.log'
   }]
 };
-
