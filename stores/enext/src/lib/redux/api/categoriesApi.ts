@@ -86,6 +86,7 @@ export const categoriesApi = apiSlice.injectEndpoints({
 
 // Re-exported under the original generic names — see productsApi.ts for why.
 export const {
+  useGetAllCategoriesQuery,
   useGetAllCategoriesQuery: useGetAllQuery,
   useGetCategoryByIdQuery: useGetByIdQuery,
   useCreateCategoryMutation: useCreateMutation,
