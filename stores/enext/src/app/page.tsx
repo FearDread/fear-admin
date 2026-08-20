@@ -69,15 +69,17 @@ const WhyUs = () => (
             Than Batman&apos;s
           </h2>
           <p className="why-body">
-            We started this business because someone told us &quot;following your dreams
-            doesn&apos;t pay the bills.&quot; Joke&apos;s on them — we&apos;re still broke, but now
-            we get to read comics while doing it.
+            We started this business because someone told us &quot;following
+            your dreams doesn&apos;t pay the bills.&quot; Joke&apos;s on them
+            — we&apos;re still broke, but now we get to read comics while
+            doing it.
           </p>
           <p className="why-body">
-            Founded in a dimly lit basement that may or may not have violated several building
-            codes, our shop emerged from a simple question:{' '}
-            <em>&quot;What if we could lose money doing something we actually enjoy?&quot;</em>{' '}
-            Turns out, we could. We really, really could.
+            Founded in a dimly lit basement that may or may not have violated
+            several building codes, our shop emerged from a simple question:{' '}
+            <em>&quot;What if we could lose money doing something we
+            actually enjoy?&quot;</em> Turns out, we could. We really, really
+            could.
           </p>
           <Link href="/about" className="btn-text-link">
             Read the full story →
@@ -131,7 +133,8 @@ const CtaBanner = () => (
           Is Embarrassingly Empty.
         </h2>
         <p className="cta-sub">
-          Let&apos;s fix that. Thousands of comics, e-books, and collectibles ready to ship today.
+          Let&apos;s fix that. Thousands of comics, e-books, and collectibles
+          ready to ship today.
         </p>
       </div>
       <div className="cta-actions">
