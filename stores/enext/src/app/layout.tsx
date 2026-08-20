@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Anton, Space_Mono } from 'next/font/google';
 import StoreProvider from '@/lib/redux/StoreProvider';
 import SiteLayout from '@/components/layout/SiteLayout';
+import '../assets/css/efear.css';
 
 const anton = Anton({
   weight: '400',
