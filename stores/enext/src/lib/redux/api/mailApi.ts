@@ -5,6 +5,12 @@ interface SubscribePayload {
   $subject: string;
 }
 
+interface ContactPayload {
+  $email: string;
+  $subject: string;
+  $message: string;
+}
+
 export const mailApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     subscribe: builder.mutation<unknown, SubscribePayload>({
@@ -14,8 +20,15 @@ export const mailApi = apiSlice.injectEndpoints({
         body,
       }),
     }),
+    contact: builder.mutation<unknown, ContactPayload>({
+      query: (body) => ({
+        url: 'mail/contact',
+        method: 'POST',
+        body,
+      })
+    }),
   }),
   overrideExisting: false,
 });
 
-export const { useSubscribeMutation } = mailApi;
+export const { useSubscribeMutation, useContactMutation } = mailApi;

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Toast from '@/components/common/Toast';
-import { useSendContactMutation } from '@/features/mail/api';
+import { useContactMutation } from '@/lib/redux/api/mailApi';
 import { T, contactStyles } from '@/components/styles';
 
 const SUBJECTS = [
@@ -38,7 +38,7 @@ export default function ContactPage() {
   const [inlineMsg, setInlineMsg] = useState<InlineMessage>({ text: '', type: '' });
   const [toasts, setToasts] = useState<ToastItem[]>([]);
 
-  const [sendContact, { isLoading: contactLoading, isSuccess, isError }] = useSendContactMutation();
+  const [sendContact, { isLoading: contactLoading, isSuccess, isError }] = useContactMutation();
 
   const addToast = (message: string, type: string) =>
     setToasts(prev => [...prev, { id: Date.now(), message, type }]);
