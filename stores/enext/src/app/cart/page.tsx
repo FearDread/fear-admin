@@ -17,7 +17,7 @@ import {
   applyDiscount,
   setShipping,
 } from '@/lib/redux/api/cartApi';
-import { selectIsAuthenticated, selectCurrentUser } from '@/lib/redux/api/authApi';
+import { selectIsAuthenticated, selectCurrentUser } from '@/lib/redux/slices/authSlice';
 
 // TODO: replace with the shared CartItem type once it's exported from
 // features/cart/slice — kept local/loose here to unblock the conversion.
