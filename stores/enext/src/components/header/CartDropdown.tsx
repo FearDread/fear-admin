@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { T } from '@/components/styles';
-import type { CartItem } from '@/lib/redux/slices/cartSlice';
+import type { CartItem } from '@/lib/redux/api/cartApi';
 
 interface CartDropdownProps {
   items: CartItem[];

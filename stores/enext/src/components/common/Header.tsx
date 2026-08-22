@@ -10,9 +10,9 @@ import {
 } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useAppSelector, useAppDispatch } from '@/lib/redux/hooks';
+import { useAppSelector } from '@/lib/redux/hooks';
 import { selectIsAuthenticated, selectCurrentUser } from '@/lib/redux/slices/authSlice';
-import { selectCartItems, selectCartItemCount, removeItem } from '@/lib/redux/slices/cartSlice';
+import { useGetCartQuery, useRemoveItemMutation } from '@/lib/redux/api/cartApi';
 import CartDropdown from '../header/CartDropdown';
 import CatDropdown from '../header/CatDropdown';
 import SearchBar from '../header/SearchBar';
@@ -106,13 +106,20 @@ function useOutsideClick<T extends HTMLElement>(ref: RefObject<T | null>, onClos
 }
 
 export const Header = () => {
-  const dispatch = useAppDispatch();
   const pathname = usePathname();
 
   const currentUser = useAppSelector(selectCurrentUser);
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
-  const cartItems = useAppSelector(selectCartItems);
-  const cartItemCount = useAppSelector(selectCartItemCount);
+
+  // Cart now comes from the backend-synced cartApi instead of a local slice.
+  // Guest visitors will 401/404 here until there's a guest-cart story on the
+  // backend — treat "no data" the same as "empty cart" rather than erroring
+  // the whole header out.
+  const { data: cart } = useGetCartQuery();
+  const [removeCartItem] = useRemoveItemMutation();
+
+  const cartItems = cart?.items ?? [];
+  const cartItemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [currency, setCurrency] = useState('USD');
@@ -187,7 +194,7 @@ export const Header = () => {
     setAccountOpen(false);
   }, [pathname]);
 
-  const handleRemoveFromCart = (id: string) => dispatch(removeItem(id));
+  const handleRemoveFromCart = (id: string) => removeCartItem(id);
   const isActive = (path: string) => pathname === path;
   const currentLang = languages.find((l) => l.code === language) || languages[0];
 
@@ -225,6 +232,12 @@ export const Header = () => {
     setLanguageOpen(false);
     setAccountOpen(false);
   };
+
+  // TODO: authApi's AuthUser only guarantees _id/name/email — the old
+  // cartSlice-era header read currentUser.firstName. Falling back to the
+  // first token of `name` here; swap for a real `firstName` field if/when
+  // the backend user record actually has one.
+  const displayName = currentUser?.name?.split(' ')[0] || 'User';
 
   return (
     <>
@@ -455,9 +468,7 @@ export const Header = () => {
                 onClick={toggleAccount}
                 aria-expanded={accountOpen}
               >
-                {isAuthenticated && currentUser
-                  ? `Hi, ${currentUser.firstName || 'User'}`
-                  : 'My Account'}{' '}
+                {isAuthenticated && currentUser ? `Hi, ${displayName}` : 'My Account'}{' '}
                 <span className="hdr-nav-arrow">▾</span>
               </button>
               {accountOpen && (
