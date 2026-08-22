@@ -11,7 +11,7 @@ export interface Category {
 export const categoriesApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getAllCategories: builder.query<Category[], void>({
-      query: () => 'categories/all',
+      query: () => 'category/all',
       providesTags: (result) =>
         result
           ? [

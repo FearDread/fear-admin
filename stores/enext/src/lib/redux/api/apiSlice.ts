@@ -1,19 +1,42 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import type { BaseQueryFn, FetchArgs, FetchBaseQueryError } from '@reduxjs/toolkit/query/react';
+import { logout } from '@/lib/redux/slices/authSlice';
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:4000/fear/api';
 
+const rawBaseQuery = fetchBaseQuery({
+  baseUrl: '/fear/api',
+  credentials: 'include', // send/receive the FEAR session cookie on every request
+});
+
+// Wraps the base query so any 401 clears client-side auth state instead of
+// leaving the UI showing a "logged in" user against a dead session.
+//
+// This does NOT attempt token refresh — FEAR API auth is a session cookie,
+// not a refresh-token pair, as far as I know. If that assumption is wrong
+// (e.g. there's a real /auth/refresh endpoint), this is the place to add a
+// refresh-then-retry step before falling back to logout.
+const baseQueryWithAuthHandling: BaseQueryFn<
+  string | FetchArgs,
+  unknown,
+  FetchBaseQueryError
+> = async (args, api, extraOptions) => {
+  const result = await rawBaseQuery(args, api, extraOptions);
+
+  if (result.error?.status === 401) {
+    api.dispatch(logout());
+  }
+
+  return result;
+};
+
 export const apiSlice = createApi({
   reducerPath: 'api',
-  baseQuery: fetchBaseQuery({
-    baseUrl: '/fear/api',
-    prepareHeaders: (headers) => {
-      // e.g. attach an auth token once authSlice carries one:
-      //const token = (getState() as RootState).auth.token;
-      //if (token) headers.set('Authorization', `Bearer ${token}`);
-      return headers;
-    },
-  }),
-  tagTypes: ['Product', 'Category'],
+  baseQuery: baseQueryWithAuthHandling,
+  // TODO: merge with whatever tagTypes your real apiSlice already declares
+  // for productsApi / categoriesApi / mailApi — 'Product', 'Category',
+  // 'Brand', 'Cart', 'Auth' cover everything built in this conversion so far.
+  tagTypes: ['Product', 'Category', 'Brand', 'Cart', 'Auth'],
   endpoints: () => ({}),
 });

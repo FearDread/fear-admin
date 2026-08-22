@@ -9,7 +9,7 @@ export interface Post {
 export const postsApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getPosts: builder.query<Post[], void>({
-      query: () => '/posts',
+      query: () => '/blog/all',
       providesTags: (result) =>
         result
           ? [

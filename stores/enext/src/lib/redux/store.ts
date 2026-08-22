@@ -1,26 +1,18 @@
 import { configureStore } from '@reduxjs/toolkit';
-
-import authReducer from './slices/authSlice';
-import cartReducer from './slices/cartSlice';
-import wishlistReducer from './slices/wishSlice';
-
-import { apiSlice } from './api/apiSlice';
-// Importing these registers their endpoints on apiSlice via injectEndpoints —
-// required even though productsApi/categoriesApi/mailApi aren't referenced
-// directly below.
-import './api/productsApi';
-import './api/categoriesApi';
-import './api/mailApi';
+import { apiSlice } from '@/lib/redux/api/apiSlice';
+import authReducer from '@/lib/redux/slices/authSlice';
+import wishlistReducer from '@/lib/redux/slices/wishSlice';
 
 export const makeStore = () => {
   return configureStore({
     reducer: {
-      auth: authReducer,
-      cart: cartReducer,
-      wishlist: wishlistReducer,
       [apiSlice.reducerPath]: apiSlice.reducer,
+      auth: authReducer,
+      wishlist: wishlistReducer,
     },
-    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(apiSlice.middleware),
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware().concat(apiSlice.middleware),
+    devTools: process.env.NODE_ENV !== 'production',
   });
 };
 
