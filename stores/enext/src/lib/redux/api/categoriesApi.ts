@@ -8,24 +8,29 @@ export interface Category {
   [key: string]: unknown;
 }
 
+interface FearEnvelope<T> {
+  result: T[];
+  success: boolean;
+  message: string;
+  count: number;
+}
+
 export const categoriesApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getAllCategories: builder.query<Category[], void>({
-      query: () => 'category/all',
+      query: () => '/category/all',
+      transformResponse: (obj: FearEnvelope<Category>) => obj.result,
       providesTags: (result) =>
         result
           ? [
-              ...result.map((item) => ({
-                type: 'Category' as const,
-                id: item._id ?? item.id,
-              })),
+              ...result.map(({ _id }) => ({ type: 'Category' as const, id: _id })),
               { type: 'Category' as const, id: 'LIST' },
             ]
           : [{ type: 'Category' as const, id: 'LIST' }],
     }),
 
     getCategoryById: builder.query<Category, string>({
-      query: (id) => `categories/${id}`,
+      query: (id) => `category/${id}`,
       providesTags: (_result, _error, id) => [{ type: 'Category', id }],
     }),
 

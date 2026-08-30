@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import Link from 'next/link';
-import { useLoginMutation } from '@/features/auth/authApi';
+import { useLoginMutation } from '@/lib/redux/api/authApi';
 import {
   selectIsAuthenticated,
   selectAuthError,

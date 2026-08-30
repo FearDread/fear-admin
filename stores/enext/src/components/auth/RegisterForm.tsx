@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useRegisterMutation } from '@/features/auth/authApi';
+import { useRegisterMutation } from '@/lib/redux/api/authApi';
 import { T } from '@/components/styles';
 import GoogleAuthButton from '@/components/auth/GoogleAuthButton';
 import FacebookAuthButton from '@/components/auth/FacebookAuthButton';

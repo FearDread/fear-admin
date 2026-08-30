@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useForgotPasswordMutation } from '@/features/auth/authApi';
+import { useForgotPasswordMutation } from '@/lib/redux/api/authApi';
 
 /**
  * Converted from ForgotPassword.jsx.
