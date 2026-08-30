@@ -89,6 +89,7 @@ export const productsApi = apiSlice.injectEndpoints({
 // across the whole shared apiSlice) were renamed.
 export const {
   useGetAllProductsQuery,
+  useGetProductByIdQuery,
   useGetAllProductsQuery: useGetAllQuery,
   useGetProductByIdQuery: useGetByIdQuery,
   useCreateProductMutation: useCreateMutation,

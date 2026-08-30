@@ -1068,8 +1068,7 @@ export const footerStyles = `
   @keyframes gradShift { to { background-position:300% center } }
 `;
 
-export const AboutStyles = () =>
-  `
+export const AboutStyles = `
   <>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Mono:ital@0;1&display=swap" rel="stylesheet" />

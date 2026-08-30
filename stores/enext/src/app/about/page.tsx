@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { T, AboutStyles } from '@/components/styles';
-import { GoogleAdSense } from '@/components/common/AdSense';
+import { T } from '@/components/styles';
+//import { GoogleAdSense } from '@/components/common/AdSense';
 
 export const metadata: Metadata = {
   title: 'About Us | eFear',
@@ -591,12 +591,10 @@ const BrandsRow = () => {
 export default function AboutUsPage() {
   return (
     <>
-      <AboutStyles />
       <PageHero />
       <MarqueeBand />
       <OriginStory />
       <StatsRow />
-      <GoogleAdSense slot="horizontal" format="auto" responsive={true} />
       <WhatWeOffer />
       <OurPromise />
       <WhatMakesUsDifferent />
@@ -607,3 +605,5 @@ export default function AboutUsPage() {
     </>
   );
 }
+
+//<GoogleAdSense slot="horizontal" format="auto" responsive={true} />
