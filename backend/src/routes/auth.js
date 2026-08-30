@@ -11,6 +11,7 @@ module.exports = (fear) => {
     router.post("/login", handler.async(Auth.login));
     router.post("/logout", handler.async(Auth.logout));
     router.post("/register", handler.async(Auth.register));
+    router.post("/me", handler.async(Auth.getCurrentUser));
 
     router.post('/google', handler.async(Auth.googleAuth)); 
     router.post('/google/link',handler.async(Auth.linkGoogleAccount));

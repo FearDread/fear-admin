@@ -34,9 +34,6 @@ const baseQueryWithAuthHandling: BaseQueryFn<
 export const apiSlice = createApi({
   reducerPath: 'api',
   baseQuery: baseQueryWithAuthHandling,
-  // TODO: merge with whatever tagTypes your real apiSlice already declares
-  // for productsApi / categoriesApi / mailApi — 'Product', 'Category',
-  // 'Brand', 'Cart', 'Auth' cover everything built in this conversion so far.
   tagTypes: ['Product', 'Category', 'Brand', 'Cart', 'Auth'],
   endpoints: () => ({}),
 });

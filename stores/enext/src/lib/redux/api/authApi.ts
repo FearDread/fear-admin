@@ -1,11 +1,6 @@
 import { apiSlice } from '@/lib/redux/api/apiSlice';
 import { setCredentials, logout as clearCredentials } from '@/lib/redux/slices/authSlice';
 
-// TODO: verify `setCredentials` / `logout` are the actual exported action
-// names from features/auth/slice — assumed here to match the established
-// selectIsAuthenticated / selectCurrentUser naming already used in
-// app/cart/page.tsx. Adjust if the real slice names its actions differently.
-
 export interface AuthUser {
   _id: string;
   name: string;
