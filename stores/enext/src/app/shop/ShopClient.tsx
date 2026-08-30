@@ -4,9 +4,7 @@ import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useGetAllProductsQuery } from '@/lib/redux/api/productsApi';
 import { useGetAllCategoriesQuery } from '@/lib/redux/api/categoriesApi';
-// TODO: brandsApi doesn't exist in the project yet — create it following the
-// exact same injectEndpoints + transformResponse(obj => obj.result) pattern
-// used for categoriesApi (see FEAR API list-endpoint envelope in memory).
+
 
 import { T, shopStyles } from '@/components/styles';
 import ProductCard from '@/components/products/ProductCard';
