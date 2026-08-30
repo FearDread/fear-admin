@@ -1,77 +1,184 @@
+/**
+ * features/auth/authApi.ts
+ *
+ * ⚠️ REBUILD, NOT A DIFF. Per project notes, `authApi` already exists as one
+ * of the injected endpoint sets on the shared `apiSlice` — merge this against
+ * the real file (dedupe endpoint names, keep any tagTypes it already adds)
+ * rather than overwriting it.
+ *
+ * Replaces the old `features/user/slice` async thunks (loginUser,
+ * loginWithGoogle, loginWithFacebook, registerUser, forgotPassword) with
+ * RTK Query endpoints injected into the shared `apiSlice`.
+ *
+ * Auth is cookie-session based (see project conventions) — the server sets
+ * an httpOnly session cookie on success, so responses only need to carry the
+ * `user` object. `credentials: 'include'` + the 401 → logout handling is
+ * already configured globally on `apiSlice`'s baseQuery.
+ *
+ * FEAR API envelope: single-object auth endpoints still come back wrapped as
+ * `{ result, success, message }` just like list endpoints, so every query
+ * unwraps `result` via `transformResponse`.
+ *
+ * Verify the exact backend routes below (`/auth/login`, `/auth/register`,
+ * etc.) against the real Express routes once the backend brand/cart
+ * endpoints work lands — these are carried over 1:1 from the paths already
+ * referenced in the uploaded CRA source (`/api/users/verify-reset-token/:token`,
+ * `/api/users/reset-password/:token`) but rebased onto `/fear/api` per the
+ * apiSlice convention.
+ */
 import { apiSlice } from '@/lib/redux/api/apiSlice';
-import { setCredentials, logout as clearCredentials } from '@/lib/redux/slices/authSlice';
+import { setCurrentUser, setIsAuthenticated, setAuthError, resetAuthState } from '../slices/authSlice';
+import type { User } from '@/types/user';
 
-export interface AuthUser {
-  _id: string;
-  name: string;
-  email: string;
-  [key: string]: unknown;
-}
-
-interface LoginArgs {
+export interface LoginRequest {
   email: string;
   password: string;
+  rememberMe?: boolean;
 }
 
-interface RegisterArgs {
-  name: string;
+export interface RegisterRequest {
+  displayName: string;
+  firstName: string;
+  lastName: string;
   email: string;
   password: string;
+  country: string;
 }
 
-interface ForgotPasswordArgs {
+export interface GoogleLoginRequest {
+  /** ID token / credential JWT returned by @react-oauth/google's GoogleLogin */
+  credential: string;
+}
+
+export interface FacebookLoginRequest {
+  accessToken: string;
+  userID: string;
+}
+
+export interface ForgotPasswordRequest {
   email: string;
 }
 
-interface ResetPasswordArgs {
+export interface ResetPasswordRequest {
   token: string;
   password: string;
 }
 
-// FEAR API envelope — same shape used across productsApi/categoriesApi/cartApi.
-interface FearEnvelope<T> {
-  result: T;
-  success: boolean;
+interface AuthResponse {
+  user: User;
+}
+
+interface MessageResponse {
   message: string;
+}
+
+interface VerifyResetTokenResponse {
+  valid: boolean;
 }
 
 export const authApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    login: builder.mutation<AuthUser, LoginArgs>({
-      query: (credentials) => ({
+    login: builder.mutation<AuthResponse, LoginRequest>({
+      query: (body) => ({
         url: '/auth/login',
         method: 'POST',
-        body: credentials,
+        body,
       }),
-      transformResponse: (obj: FearEnvelope<AuthUser>) => obj.result,
-      invalidatesTags: ['Auth', 'Cart'], // cart is per-session, refetch it post-login
-      async onQueryStarted(_args, { dispatch, queryFulfilled }) {
+      transformResponse: (response: { result: AuthResponse }) => response.result,
+      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+        dispatch(setAuthError(null));
         try {
-          const { data: user } = await queryFulfilled;
-          dispatch(setCredentials(user));
-        } catch {
-          // error surfaces through the mutation hook's own `error` state —
-          // nothing to do here besides not touching authSlice.
+          const { data } = await queryFulfilled;
+          dispatch(setCurrentUser(data.user));
+          dispatch(setIsAuthenticated(true));
+        } catch (err: any) {
+          dispatch(setAuthError(err?.error?.data?.message || 'Invalid email or password'));
         }
       },
+      invalidatesTags: ['Cart'],
     }),
 
-    register: builder.mutation<AuthUser, RegisterArgs>({
+    register: builder.mutation<AuthResponse, RegisterRequest>({
       query: (body) => ({
         url: '/auth/register',
         method: 'POST',
         body,
       }),
-      transformResponse: (obj: FearEnvelope<AuthUser>) => obj.result,
-      invalidatesTags: ['Auth'],
-      async onQueryStarted(_args, { dispatch, queryFulfilled }) {
+      transformResponse: (response: { result: AuthResponse }) => response.result,
+      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+        dispatch(setAuthError(null));
         try {
-          const { data: user } = await queryFulfilled;
-          dispatch(setCredentials(user));
-        } catch {
-          // handled by the caller via the mutation's error state
+          await queryFulfilled;
+          // Intentionally does NOT set isAuthenticated here — matches original
+          // behavior of redirecting to /login after a successful registration
+          // rather than auto-signing the user in.
+        } catch (err: any) {
+          dispatch(setAuthError(err?.error?.data?.message || 'Registration failed'));
         }
       },
+    }),
+
+    googleLogin: builder.mutation<AuthResponse, GoogleLoginRequest>({
+      query: (body) => ({
+        url: '/auth/google',
+        method: 'POST',
+        body,
+      }),
+      transformResponse: (response: { result: AuthResponse }) => response.result,
+      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+        dispatch(setAuthError(null));
+        try {
+          const { data } = await queryFulfilled;
+          dispatch(setCurrentUser(data.user));
+          dispatch(setIsAuthenticated(true));
+        } catch (err: any) {
+          dispatch(setAuthError(err?.error?.data?.message || 'Google sign-in failed'));
+        }
+      },
+      invalidatesTags: ['Cart'],
+    }),
+
+    facebookLogin: builder.mutation<AuthResponse, FacebookLoginRequest>({
+      query: (body) => ({
+        url: '/auth/facebook',
+        method: 'POST',
+        body,
+      }),
+      transformResponse: (response: { result: AuthResponse }) => response.result,
+      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+        dispatch(setAuthError(null));
+        try {
+          const { data } = await queryFulfilled;
+          dispatch(setCurrentUser(data.user));
+          dispatch(setIsAuthenticated(true));
+        } catch (err: any) {
+          dispatch(setAuthError(err?.error?.data?.message || 'Facebook sign-in failed'));
+        }
+      },
+      invalidatesTags: ['Cart'],
+    }),
+
+    forgotPassword: builder.mutation<MessageResponse, ForgotPasswordRequest>({
+      query: (body) => ({
+        url: '/auth/forgot-password',
+        method: 'POST',
+        body,
+      }),
+      transformResponse: (response: { result: MessageResponse }) => response.result,
+    }),
+
+    verifyResetToken: builder.query<VerifyResetTokenResponse, string>({
+      query: (token) => `/auth/verify-reset-token/${token}`,
+      transformResponse: (response: { result: VerifyResetTokenResponse }) => response.result,
+    }),
+
+    resetPassword: builder.mutation<MessageResponse, ResetPasswordRequest>({
+      query: ({ token, password }) => ({
+        url: `/auth/reset-password/${token}`,
+        method: 'POST',
+        body: { password },
+      }),
+      transformResponse: (response: { result: MessageResponse }) => response.result,
     }),
 
     logout: builder.mutation<void, void>({
@@ -79,61 +186,44 @@ export const authApi = apiSlice.injectEndpoints({
         url: '/auth/logout',
         method: 'POST',
       }),
-      invalidatesTags: ['Auth', 'Cart'],
-      async onQueryStarted(_args, { dispatch, queryFulfilled }) {
+      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
         try {
           await queryFulfilled;
         } finally {
-          // Clear local auth state even if the network call fails — a
-          // logout button that leaves you "logged in" client-side because
-          // the request timed out is worse than a stale session cookie.
-          dispatch(clearCredentials());
+          dispatch(resetAuthState());
+          dispatch(apiSlice.util.resetApiState());
         }
       },
     }),
 
-    // Session check — call on app load to hydrate authSlice from the
-    // existing session cookie, if any.
-    getCurrentUser: builder.query<AuthUser, void>({
-      query: () => '/auth/me',
-      transformResponse: (obj: FearEnvelope<AuthUser>) => obj.result,
-      providesTags: ['Auth'],
-      async onQueryStarted(_args, { dispatch, queryFulfilled }) {
+    /** Hydrates session state on app load — see StoreProvider's AuthHydrator. */
+    getSession: builder.query<AuthResponse, void>({
+      query: () => '/auth/session',
+      transformResponse: (response: { result: AuthResponse }) => response.result,
+      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
         try {
-          const { data: user } = await queryFulfilled;
-          dispatch(setCredentials(user));
+          const { data } = await queryFulfilled;
+          dispatch(setCurrentUser(data.user));
+          dispatch(setIsAuthenticated(true));
         } catch {
-          dispatch(clearCredentials());
+          dispatch(setCurrentUser(null));
+          dispatch(setIsAuthenticated(false));
         }
       },
-    }),
-
-    forgotPassword: builder.mutation<{ message: string }, ForgotPasswordArgs>({
-      query: (body) => ({
-        url: '/auth/forgot-password',
-        method: 'POST',
-        body,
-      }),
-      transformResponse: (obj: FearEnvelope<{ message: string }>) => obj.result,
-    }),
-
-    resetPassword: builder.mutation<{ message: string }, ResetPasswordArgs>({
-      query: (body) => ({
-        url: '/auth/reset-password',
-        method: 'POST',
-        body,
-      }),
-      transformResponse: (obj: FearEnvelope<{ message: string }>) => obj.result,
     }),
   }),
+  overrideExisting: false,
 });
 
 export const {
   useLoginMutation,
   useRegisterMutation,
-  useLogoutMutation,
-  useGetCurrentUserQuery,
-  useLazyGetCurrentUserQuery,
+  useGoogleLoginMutation,
+  useFacebookLoginMutation,
   useForgotPasswordMutation,
+  useVerifyResetTokenQuery,
   useResetPasswordMutation,
+  useLogoutMutation,
+  useGetSessionQuery,
+  useLazyGetSessionQuery,
 } = authApi;

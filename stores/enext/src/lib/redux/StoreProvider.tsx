@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react';
 import { Provider } from 'react-redux';
 import { setupListeners } from '@reduxjs/toolkit/query';
 import { makeStore, type AppStore } from '@/lib/redux/store';
-import { useGetCurrentUserQuery } from '@/lib/redux/api/authApi';
+import { useGetSessionQuery } from '@/lib/redux/api/authApi';
 
 // Silently hydrates authSlice from the session cookie on first load, via
 // getCurrentUser's onQueryStarted (see features/auth/api.ts). A 401 here is
@@ -12,7 +12,7 @@ import { useGetCurrentUserQuery } from '@/lib/redux/api/authApi';
 // already dispatches logout() in that case, so there's nothing to render
 // here either way.
 function AuthHydrator() {
-  useGetCurrentUserQuery();
+  useGetSessionQuery();
   return null;
 }
 
