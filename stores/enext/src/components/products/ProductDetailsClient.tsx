@@ -1,23 +1,5 @@
 'use client';
 
-// components/products/ProductDetailsClient.tsx
-//
-// Converted from src/components/products/ProductDetails.jsx
-//
-// Key changes vs the CRA/classic-Redux version:
-//   • useParams()      -> `id` is now a prop, passed down from the server
-//                         component at app/product/[id]/page.tsx
-//   • useNavigate()     -> useRouter() from 'next/navigation'
-//   • <Link> (rrd)      -> <Link> from 'next/link'
-//   • dispatch(thunk)   -> RTK Query hooks (useXQuery / useXMutation)
-//   • useSelector(...)  -> data comes straight off the query hooks below;
-//                         derived booleans (isInCart, isBrandFav, etc.) are
-//                         computed locally with useMemo instead of reading
-//                         from hand-written selectors.
-//   • `initialProduct`  -> seeds the first render so SSR/ISR output already
-//                         has real content for SEO; the query hook takes
-//                         over (and refetches) once mounted in the browser.
-
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -48,7 +30,7 @@ import {
 } from '@/lib/redux/api/reviewApi';
 
 import Toast from '@/components/common/Toast';
-import ImageGallery from '@/components/common/ImageGallery';
+import ImageGallery from '@/components/products/ImageGallery';
 import ProductCarousel from '@/components/products/ProductCarousel';
 
 interface ToastItem {
