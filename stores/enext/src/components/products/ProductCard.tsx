@@ -48,7 +48,7 @@ export const ProductCard = (product: Product) => {
     ? Math.round((1 - (product.salePrice as number) / (product.price as number)) * 100)
     : 0;
 
-  const isInWishlist = useAppSelector((state) => selectIsInWishlist(state, productId));
+  const isInWishlist = useAppSelector((state) => selectIsInWishlist(productId));
 
   const renderStars = (rating = 4) =>
     Array.from({ length: 5 }, (_, i) => (
