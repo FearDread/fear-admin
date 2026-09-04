@@ -13,34 +13,10 @@ import {
 } from '@/lib/redux/slices/wishSlice';
 import { selectIsAuthenticated } from '@/lib/redux/slices/authSlice';
 import ProductQuickView from './ProductQuickView';
+import { Product } from '@/types/product';
 
 const MAX_COMPARE_PRODUCTS = 4;
 const COMPARE_STORAGE_KEY = 'comparisonProductIds';
-
-export interface Product {
-  _id?: string;
-  id?: string;
-  title?: string;
-  name?: string;
-  category?: string;
-  categoryId?: string;
-  price?: number;
-  salePrice?: number;
-  quantity?: number;
-  rating?: number;
-  reviewCount?: number;
-  sku?: string;
-  brand?: string;
-  description?: string;
-  shortDescription?: string;
-  deliveryInfo?: string;
-  inStock?: boolean;
-  sizes?: string[];
-  colors?: string[];
-  images?: { url: string }[];
-  image?: string;
-  [key: string]: unknown;
-}
 
 interface ToastItem {
   id: number;
