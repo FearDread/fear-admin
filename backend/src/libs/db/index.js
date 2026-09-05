@@ -60,11 +60,15 @@ class DatabaseManager {
   async connect(env, callback = null, options = {}) {
     try {
       // Validate required environment variables
-      if (!env.DB_LINK) {
-        throw new Error('DB_LINK is required in environment configuration');
+        if (!env.DB_LINK) {
+            console.log('DB_LINK is required in environment configuration')
+            if (callback) callback();
+            //throw new Error('DB_LINK is required in environment configuration');
       }
-      if (!env.DB_NAME) {
-        throw new Error('DB_NAME is required in environment configuration');
+        if (!env.DB_NAME) {
+            console.error('DB_NAME is required in environment configuration')
+            if (callback) callback();
+        //throw new Error('DB_NAME is required in environment configuration');
       }
 
       // Check if already connected to the same database
@@ -94,7 +98,8 @@ class DatabaseManager {
 
       this.currentDbName = env.DB_NAME;
 
-      // Connect to MongoDB
+        // Connect to MongoDB
+        if (!env.DB_LINK) return;
       await mongoose.connect(env.DB_LINK, defaultOptions);
       
       // Execute callback if provided

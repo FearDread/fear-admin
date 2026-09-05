@@ -12,6 +12,7 @@ greenlock.d/
 build/
 dork-results/
 certificates/
+.vs
 
 # Dependencies
 node_modules/

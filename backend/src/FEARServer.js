@@ -406,7 +406,10 @@ const FearServer = (function () {
      */
     initializeDatabase() {
       return new Promise((resolve, reject) => {
-        try {
+          try {
+              const env = this.fear.getEnvironment();
+              if (!env || env.DB_LINK) resolve();
+              
           this.fear.getDatabase().connect(this.fear.getEnvironment(), (err) => {
             if (err) {
               this.fear.getLogger().error('Database initialization failed:', err);
