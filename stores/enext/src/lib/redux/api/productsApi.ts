@@ -1,5 +1,5 @@
 import { apiSlice } from './apiSlice';
-import type { Product } from '@/components/products/ProductCard';
+import type { Product } from '@/types/product';
 
 export const productsApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -11,7 +11,7 @@ export const productsApi = apiSlice.injectEndpoints({
         // Unwrap defensively instead of letting a non-array reach consumers.
         if (response && typeof response === 'object') {
           const obj = response as Record<string, unknown>;
-          console.log('result = ', obj)
+
           if (Array.isArray(obj.result)) return obj.result as Product[];
           if (Array.isArray(obj.data)) return obj.data as Product[];
           if (Array.isArray(obj.products)) return obj.products as Product[];

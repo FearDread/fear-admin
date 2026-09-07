@@ -1,4 +1,5 @@
 import { apiSlice } from '@/lib/redux/api/apiSlice';
+import { FearEnvelope as FearListEnvelope } from '@/types/fear';
 
 export interface Brand {
   _id: string;
@@ -8,13 +9,14 @@ export interface Brand {
   [key: string]: unknown;
 }
 
+/*
 interface FearListEnvelope<T> {
   result: T[];
   success: boolean;
   message: string;
   count: number;
 }
-
+*/
 export const brandsApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getAllBrands: builder.query<Brand[], void>({
