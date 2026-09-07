@@ -1,6 +1,7 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
+  allowedDevOrigins: ['10.10.1.140'],
   async rewrites() {
     return [
       {
@@ -9,6 +10,7 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+
 };
 
 export default nextConfig;
