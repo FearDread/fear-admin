@@ -1,25 +1,5 @@
-/**
- * features/checkout/checkoutSlice.ts
- *
- * NEW SLICE — replaces `features/orders/slice.js`'s `currentOrder` object and the
- * shipping/discount fields that lived in `cart/slice` (`setShipping`, `applyDiscount`).
- * Everything the 5-page checkout wizard needs to carry forward between steps
- * (address, chosen shipping method, discount, payment intent id) lives here as a
- * single plain-Redux draft — mirroring the original "currentOrder" concept, just
- * given its own domain instead of overloading `orders/slice` and `cart/slice`.
- *
- * This draft is *not* persisted server-side until `CheckoutReview` calls
- * `ordersApi.createOrder` — same as the CRA app, where `currentOrder` was pure
- * client state until the final "Complete Order" click. `resetCheckout()` clears it
- * once `CheckoutComplete` mounts.
- *
- * MERGE NOTE: register this reducer in `store.ts`'s `makeStore()` under the
- * `checkout` key. Drop `setShipping` / `applyDiscount` from `cartSlice` and delete
- * `features/orders/slice.js`'s `currentOrder` handling once every call site has
- * migrated to these actions.
- */
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import type { RootState } from '@/features/store';
+import type { RootState } from '@/lib/redux/store';
 import type { Address } from '@/types/checkout';
 
 interface CheckoutState {

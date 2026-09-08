@@ -1,34 +1,5 @@
-/**
- * features/api/paymentsApi.ts
- *
- * NEW API SLICE — replaces `features/payments/slice.js` (`createPaymentIntent` thunk)
- * and the raw `fetch('/api/paypal/...')` calls inline in `PayPalPayment.jsx`.
- *
- * IMPORTANT: the original PayPal component fetched `/api/paypal/create-order` and
- * `/api/paypal/capture-order` directly — those are Next.js-style API routes, not
- * FEAR API routes, and they never appeared anywhere else in the codebase. Since
- * PayPal secret keys must never reach the browser, capture/create MUST happen
- * server-side. Routing them through `/fear/api/payments/paypal/*` (proxied to
- * Express, consistent with every other endpoint in this app) is the correct home —
- * NOT a Next.js Route Handler, which would split payment secrets across two
- * backends. Flagging as a backend gap below.
- *
- * BACKEND GAP — new FEAR API routes needed:
- *   POST /fear/api/payments/create-intent          (Stripe PaymentIntent)
- *   POST /fear/api/payments/paypal/create-order     (PayPal order create)
- *   POST /fear/api/payments/paypal/capture-order    (PayPal order capture)
- *
- * MERGE NOTE: add `'Payment'` to `apiSlice.ts`'s `tagTypes` array if you want to
- * cache/invalidate payment intents; as written below these are pure mutations
- * with no cache entries, which is the right default for one-shot payment calls.
- */
-import { apiSlice } from '@/features/api/apiSlice';
-
-interface ApiEnvelope<T> {
-  result: T;
-  success: boolean;
-  message: string;
-}
+import { apiSlice } from '@/lib/redux/api/apiSlice';
+import { FearEnvelope as ApiEnvelope } from '@/types/fear';
 
 export interface CreatePaymentIntentRequest {
   amount: number; // cents

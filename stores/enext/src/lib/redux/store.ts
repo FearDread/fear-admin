@@ -1,6 +1,7 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { apiSlice } from '@/lib/redux/api/apiSlice';
 import wishlistReducer from '@/lib/redux/slices/wishSlice';
+import checkoutReducer from '@/lib/redux/slices/checkoutSlice';
 import authReducer from './slices/authSlice';
 
 // Side-effect imports: each of these calls `apiSlice.injectEndpoints(...)`
@@ -12,13 +13,16 @@ import './api/categoriesApi';
 import './api/cartApi';
 import './api/brandsApi';
 import './api/mailApi';
+import './api/postsApi';
+import './api/ordersApi';
+import './api/paymentsApi';
+
 
 const rootReducer = combineReducers({
   [apiSlice.reducerPath]: apiSlice.reducer,
-  auth: authReducer,
-  // Add any other plain (non-RTK-Query) feature reducers here, e.g.:
-  // wishlist: wishlistReducer,
-  // ui: uiReducer,
+    auth: authReducer,
+    wishlist: wishlistReducer,
+    checkout: checkoutReducer
 });
 
 export const makeStore = () => {
@@ -31,6 +35,5 @@ export const makeStore = () => {
 };
 
 export type AppStore = ReturnType<typeof makeStore>;
-//export type RootState = ReturnType<AppStore['getState']>;
 export type RootState = ReturnType<typeof rootReducer>;
 export type AppDispatch = AppStore['dispatch'];
