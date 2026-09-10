@@ -1,18 +1,20 @@
 /**
- * app/account/[section]/page.tsx
+ * app/(account)/[section]/page.tsx
  *
- * Dynamic-segment route for the account area, mirroring the pattern already
- * used for legal pages (`(legal)/[policy]` + a `POLICIES` config record) and
- * auth pages (`(auth)/[...auth]` + a per-mode metadata map). One route file
- * replaces what was five separate CRA pages
+ * Dynamic-segment route for the account area, structured exactly like the
+ * auth routes (`(auth)/[...auth]` + a per-mode metadata map) and legal
+ * routes (`(legal)/[policy]` + a `POLICIES` config record): a route group
+ * (`(account)`) so the segment name doesn't appear in the URL, paired with
+ * a single dynamic-segment file (`[section]`) driven by a config record.
+ * One route file replaces what was five separate CRA pages
  * (Dashboard / Orders / Addresses / PaymentMethods / UserDetails), all of
  * which shared the same hero + sidebar shell and only swapped the main panel.
  *
- * Unlike `(legal)` and `(auth)`, this one is a plain folder (`account`), not
- * a route group — the original CRA routes were `/account/dashboard`,
- * `/account/orders`, etc., and other converted pages/components already link
- * to those paths, so the `/account` URL segment is preserved rather than
- * hidden.
+ * URLs are now `/dashboard`, `/orders`, `/addresses`, `/payment-methods`,
+ * `/details` — no `/account` prefix, same as `/login` and `/privacy` have no
+ * `/auth` or `/legal` prefix. All internal links across the account views
+ * were updated accordingly (see MERGE_NOTES.md for anything outside this
+ * folder that may still point at the old `/account/*` paths).
  *
  * These routes are auth-gated, per-user, and never meant to be indexed, so
  * unlike the product/shop/blog pages there's no ISR here — `dynamic =

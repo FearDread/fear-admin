@@ -1,27 +1,12 @@
 'use client';
 
-/**
- * DetailsView.tsx
- *
- * Converted from UserDetails.jsx. Notable changes:
- *
- *   - `updateUserProfileWithStorage` / `changePassword` thunks →
- *     `userProfileApi` mutations (see MERGE NOTE in that file about
- *     reconciling with `authApi`'s existing `getCurrentUser`).
- *   - Success/error/loading now come from the mutations themselves
- *     (`isLoading`, `isSuccess`, `error`) instead of a Redux slice with its
- *     own `success`/`error` flags that had to be manually cleared
- *     (`dispatch(setSuccess(false))`, `dispatch(clearError())`) — RTK Query
- *     resets mutation state on its own between calls.
- *   - Dead `Link`-only breadcrumb import unchanged; `useNavigate` removed
- *     (it was imported but unused in the original).
- */
+
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useUpdateProfileMutation, useChangePasswordMutation } from '@/features/api/userProfileApi';
-import { useAppSelector } from '@/features/hooks';
-import { selectCurrentUser } from '@/features/user/slice';
+import { useUpdateProfileMutation, useChangePasswordMutation } from '@/lib/redux/api/';
+import { useAppSelector } from '@/lib/redux/hooks';
+import { selectCurrentUser } from '@/lib/redux/slices/userSlice'; 
 import AccountSidebar from './AccountSidebar';
 import { T, userStyles } from '../styles';
 

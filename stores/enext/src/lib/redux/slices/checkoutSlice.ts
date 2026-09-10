@@ -6,14 +6,11 @@ interface CheckoutState {
   shippingAddress: Address | null;
   billingAddress: Address | null;
   sameAsShipping: boolean;
-
   shippingMethodId: string | null;
   shippingCost: number;
   estimatedDelivery: string | null;
-
   discountCode: string | null;
   discount: number;
-
   paymentMethod: 'card' | 'paypal-payment' | 'net-banking' | null;
   paymentIntentId: string | null;
 }

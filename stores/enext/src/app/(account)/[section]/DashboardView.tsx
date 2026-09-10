@@ -12,8 +12,8 @@
  */
 
 import Link from 'next/link';
-import { useAppSelector } from '@/features/hooks';
-import { selectCurrentUser, selectUserLoading, selectLastLoginAt } from '@/features/user/slice';
+import { useAppSelector } from '@/lib/redux/hooks';
+import { selectCurrentUser, selectUserLoading, selectLastLoginAt } from '@/lib/redux/slices/authSlice';
 import AccountSidebar from './AccountSidebar';
 import { T, dashStyles } from '../styles';
 

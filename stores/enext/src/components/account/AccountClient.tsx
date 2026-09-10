@@ -12,6 +12,10 @@
  * the same `?from=` / `?message=` search-param pattern already used by the
  * auth routes, so `/login` doesn't need two different redirect mechanisms.
  *
+ * Auth state comes from `authApi`'s `useCurrentUser()` (backed by
+ * `useGetCurrentUserQuery`'s cache) rather than a `userSlice` selector — see
+ * `authApi.ts` for why that consolidation happened.
+ *
  * Each view component still owns its own hero/breadcrumb markup and renders
  * <AccountSidebar/> itself — the original CRA pages weren't visually
  * consistent (Dashboard/Orders/Details use the styled "dash-/oh-/ud-" hero
@@ -22,15 +26,14 @@
 
 import { useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { useAppSelector } from '@/features/hooks';
-import { selectIsAuthenticated, selectUserLoading } from '@/features/user/slice';
+import { useCurrentUser } from '@/features/api/authApi';
 import type { AccountSection } from './page';
 
-import DashboardView from './components/DashboardView';
-import OrdersView from './components/OrdersView';
-import AddressesView from './components/AddressesView';
-import PaymentMethodsView from './components/PaymentMethodsView';
-import DetailsView from './components/DetailsView';
+import DashboardView from '@/components/account/DashboardView';
+import OrdersView from '@/components/account/OrdersView';
+import AddressesView from '@/components/account/AddressesView';
+import PaymentMethodsView from '@/components/account/PaymentMethodsView';
+import DetailsView from '@/components/account/DetailsView';
 
 interface AccountClientProps {
     section: AccountSection;
@@ -47,8 +50,7 @@ const SECTION_VIEWS: Record<AccountSection, React.ComponentType> = {
 export default function AccountClient({ section }: AccountClientProps) {
     const router = useRouter();
     const pathname = usePathname();
-    const isAuthenticated = useAppSelector(selectIsAuthenticated);
-    const loading = useAppSelector(selectUserLoading);
+    const { isAuthenticated, loading } = useCurrentUser();
 
     useEffect(() => {
         if (!loading && !isAuthenticated) {
