@@ -399,10 +399,10 @@ export const Header = () => {
                 </>
               ) : (
                 <>
-                  <Link href="/login" className="hdr-btn-login d-none d-sm-flex">
+                                      <Link href="/login" prefetch={false} className="hdr-btn-login d-none d-sm-flex">
                     Login
                   </Link>
-                  <Link href="/register" className="hdr-btn-register d-none d-sm-flex">
+                                      <Link href="/register" prefetch={false} className="hdr-btn-register d-none d-sm-flex">
                     Register
                   </Link>
                 </>
@@ -481,14 +481,16 @@ export const Header = () => {
                   {!isAuthenticated && (
                     <>
                       <Link
-                        href="/login"
+                                              href="/login"
+                                              prefetch={false}
                         style={{ color: T.red }}
                         onClick={() => setAccountOpen(false)}
                       >
                         Login
                       </Link>
                       <Link
-                        href="/register"
+                                              href="/register"
+                                              prefetch={false}
                         style={{ color: T.red }}
                         onClick={() => setAccountOpen(false)}
                       >
@@ -552,7 +554,8 @@ export const Header = () => {
               {!isAuthenticated ? (
                 <>
                   <Link
-                    href="/login"
+                                      href="/login"
+                                      prefetch={false}
                     style={{
                       display: 'block',
                       padding: '.75rem',
@@ -569,7 +572,8 @@ export const Header = () => {
                     Login
                   </Link>
                   <Link
-                    href="/register"
+                                      href="/register"
+                                      prefetch={false}
                     style={{
                       display: 'block',
                       padding: '.75rem',
