@@ -3,12 +3,12 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useAppDispatch, useAppSelector } from '@/features/hooks';
-import { useGetCartQuery } from '@/features/api/cartApi';
-import { selectCurrentUser } from '@/features/auth/authSlice';
-import { useCreateOrderMutation } from '@/features/api/ordersApi';
-import { selectCheckout, resetCheckout } from '@/features/checkout/checkoutSlice';
-import { useCheckoutTotals } from '@/lib/useCheckoutTotals';
+import { useAppDispatch, useAppSelector } from '@/lib/redux/hooks';
+import { useGetCartQuery } from '@/lib/redux/api/cartApi';
+import { selectCurrentUser } from '@/lib/redux/api/authApi';
+import { useCreateOrderMutation } from '@/lib/redux/api/ordersApi';
+import { selectCheckout, resetCheckout } from '@/lib/redux/slices/checkoutSlice';
+import { useCheckoutTotals } from '@/lib/checkout/totals';
 import CheckoutSteps from '@/components/checkout/CheckoutSteps';
 
 export default function CheckoutReviewClient() {

@@ -3,12 +3,12 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useAppDispatch, useAppSelector } from '@/features/hooks';
-import { useGetCartQuery } from '@/features/api/cartApi';
-import { selectCurrentUser, selectIsAuthenticated } from '@/features/auth/authSlice';
-import { useCreatePaymentIntentMutation } from '@/features/api/paymentsApi';
-import { selectCheckout, applyDiscount, setPaymentIntent } from '@/features/checkout/checkoutSlice';
-import { useCheckoutTotals } from '@/lib/useCheckoutTotals';
+import { useAppDispatch, useAppSelector } from '@/lib/redux/hooks';
+import { useGetCartQuery } from '@/lib/redux/api/cartApi';
+import { selectCurrentUser, selectIsAuthenticated } from '@/lib/redux/slices/authSlice';
+import { useCreatePaymentIntentMutation } from '@/lib/redux/api/paymentsApi';
+import { selectCheckout, applyDiscount, setPaymentIntent } from '@/lib/redux/slices/checkoutSlice';
+import { useCheckoutTotals } from '@/lib/checkout/totals';
 import { DISCOUNT_CODES } from '@/types/checkout';
 import StripePaymentForm from '@/components/checkout/StripePaymentForm';
 import PayPalPaymentForm from '@/components/checkout/PayPalPaymentForm';

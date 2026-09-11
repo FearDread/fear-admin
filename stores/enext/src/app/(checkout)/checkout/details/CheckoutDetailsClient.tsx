@@ -3,15 +3,15 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useAppDispatch, useAppSelector } from '@/features/hooks';
-import { useGetCartQuery } from '@/features/api/cartApi';
-import { selectCurrentUser, selectIsAuthenticated } from '@/features/auth/authSlice';
+import { useAppDispatch, useAppSelector } from '@/lib/redux/hooks';
+import { useGetCartQuery } from '@/lib/redux/api/cartApi';
+import { selectCurrentUser, selectIsAuthenticated } from '@/lib/redux/slices/authSlice';
 import {
   selectCheckout,
   setAddresses,
   applyDiscount,
-} from '@/features/checkout/checkoutSlice';
-import { useCheckoutTotals } from '@/lib/useCheckoutTotals';
+} from '@/lib/redux/slices/checkoutSlice';
+import { useCheckoutTotals } from '@/lib/checkout/totals';
 import { DISCOUNT_CODES, type Address } from '@/types/checkout';
 import CheckoutSteps from '@/components/checkout/CheckoutSteps';
 

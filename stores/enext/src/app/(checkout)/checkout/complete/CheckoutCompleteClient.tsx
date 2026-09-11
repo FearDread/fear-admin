@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { useGetOrderByIdQuery } from '@/features/api/ordersApi';
+import { useGetOrderByIdQuery } from '@/lib/redux/api/ordersApi';
 
 /**
  * BEHAVIOUR CHANGE from the CRA version: the original read the completed order

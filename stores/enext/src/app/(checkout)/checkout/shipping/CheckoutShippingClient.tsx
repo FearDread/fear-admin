@@ -3,10 +3,10 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useAppDispatch, useAppSelector } from '@/features/hooks';
-import { useGetCartQuery } from '@/features/api/cartApi';
-import { selectCheckout, setShippingMethod, applyDiscount } from '@/features/checkout/checkoutSlice';
-import { useCheckoutTotals } from '@/lib/useCheckoutTotals';
+import { useAppDispatch, useAppSelector } from '@/lib/redux/hooks';
+import { useGetCartQuery } from '@/lib/redux/api/cartApi';
+import { selectCheckout, setShippingMethod, applyDiscount } from '@/lib/redux/slices/checkoutSlice';
+import { useCheckoutTotals } from '@/lib/checkout/totals';
 import { SHIPPING_METHODS } from '@/types/checkout';
 import CheckoutSteps from '@/components/checkout/CheckoutSteps';
 
