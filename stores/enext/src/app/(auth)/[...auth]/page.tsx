@@ -66,7 +66,7 @@ export function generateStaticParams() {
 export default async function AuthPage({ params }: AuthPageProps) {
   const { auth } = await params;
   const [mode, token] = auth ?? [];
-
+    console.log('auth mode = ', auth);
   switch (mode) {
     case 'login':
       // LoginForm reads `useSearchParams()` (`?from=` / `?message=`), which

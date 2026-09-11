@@ -95,7 +95,7 @@ export function LoginForm() {
   };
 
   useEffect(() => {
-    if (isAuthenticated) router.replace(from);
+    //if (isAuthenticated) router.replace(from);
   }, [isAuthenticated, from, router]);
 
   useEffect(() => {

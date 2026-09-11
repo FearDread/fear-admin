@@ -78,6 +78,7 @@ export async function generateMetadata({ params }: AccountSectionPageProps) {
 
 export default async function AccountSectionPage({ params }: AccountSectionPageProps) {
     const { section } = await params;
+    console.log('section = ', section)
     if (!(section in ACCOUNT_SECTIONS)) {
         notFound();
     }

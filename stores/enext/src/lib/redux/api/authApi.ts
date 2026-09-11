@@ -212,17 +212,17 @@ export const authApi = apiSlice.injectEndpoints({
       },
     }),
         updateProfile: builder.mutation<CurrentUser, UpdateProfileInput>({
-            query: (body) => ({ url: '/user/profile', method: 'PUT', body }),
+            query: (body) => ({ url: '/users/profile', method: 'PUT', body }),
             transformResponse: (obj: { result: CurrentUser }) => obj.result,
             invalidatesTags: [{ type: 'User', id: 'CURRENT' }],
         }),
 
         changePassword: builder.mutation<{ success: boolean; message?: string }, ChangePasswordInput>({
-            query: (body) => ({ url: '/user/password', method: 'PUT', body }),
+            query: (body) => ({ url: '/users/password', method: 'PUT', body }),
             // No tag invalidation — password changes don't affect anything cached.
         }),
         getCurrentUser: builder.query<CurrentUser | null, void>({
-            query: () => '/auth/me',
+            query: () => '/users/me',
             transformResponse: (obj: { result: CurrentUser | null }) => obj.result ?? null,
             transformErrorResponse: (response) => (response.status === 401 ? null : response),
             providesTags: [{ type: 'User', id: 'CURRENT' }],
