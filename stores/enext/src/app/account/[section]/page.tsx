@@ -27,7 +27,7 @@
 
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import AccountClient from './AccountClient';
+import AccountClient from '@/components/account/AccountClient';
 
 export const dynamic = 'force-dynamic';
 
@@ -56,16 +56,16 @@ export const ACCOUNT_SECTIONS = {
 
 export type AccountSection = keyof typeof ACCOUNT_SECTIONS;
 
-interface AccountSectionPageProps {
-    params: { section: string };
-}
+interface AccountSectionPageProps { params: Promise<{ section: string }> }
 
 export function generateStaticParams() {
     return Object.keys(ACCOUNT_SECTIONS).map((section) => ({ section }));
 }
 
-export function generateMetadata({ params }: AccountSectionPageProps): Metadata {
-    const config = ACCOUNT_SECTIONS[params.section as AccountSection];
+export async function generateMetadata({ params }: AccountSectionPageProps) {
+    const { section } = await params;
+
+    const config = ACCOUNT_SECTIONS[section as AccountSection];
     if (!config) return {};
 
     return {
@@ -76,10 +76,11 @@ export function generateMetadata({ params }: AccountSectionPageProps): Metadata 
     };
 }
 
-export default function AccountSectionPage({ params }: AccountSectionPageProps) {
-    if (!(params.section in ACCOUNT_SECTIONS)) {
+export default async function AccountSectionPage({ params }: AccountSectionPageProps) {
+    const { section } = await params;
+    if (!(section in ACCOUNT_SECTIONS)) {
         notFound();
     }
 
-    return <AccountClient section={params.section as AccountSection} />;
+    return <AccountClient section={section as AccountSection} />;
 }
