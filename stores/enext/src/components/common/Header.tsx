@@ -12,7 +12,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAppSelector } from '@/lib/redux/hooks';
 import { selectIsAuthenticated, selectCurrentUser } from '@/lib/redux/slices/authSlice';
-import { useGetCartQuery, useRemoveItemMutation } from '@/lib/redux/api/cartApi';
+import { useGetCartQuery, useRemoveCartItemMutation } from '@/lib/redux/api/cartApi';
 import CartDropdown from '../header/CartDropdown';
 import CatDropdown from '../header/CatDropdown';
 import SearchBar from '../header/SearchBar';
@@ -116,7 +116,7 @@ export const Header = () => {
   // backend — treat "no data" the same as "empty cart" rather than erroring
   // the whole header out.
   const { data: cart } = useGetCartQuery();
-  const [removeCartItem] = useRemoveItemMutation();
+  const [removeCartItem] = useRemoveCartItemMutation();
 
   const cartItems = cart?.items ?? [];
   const cartItemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);

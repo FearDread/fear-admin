@@ -18,8 +18,9 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { makeStore } from '@/lib/redux/store';
-import { productsApi, type Product } from '@/lib/redux/api/productsApi';
-import ProductDetailsClient from '../../../components/products/ProductDetailsClient';
+import { type Product } from '@/types/product';
+import { productsApi } from '@/lib/redux/api/productsApi';
+import ProductDetailsClient from '@/components/products/ProductDetailsClient';
 
 // ISR: page is regenerated in the background at most once every 60s,
 // matching the SSR + 60s ISR strategy used across product/shop pages.

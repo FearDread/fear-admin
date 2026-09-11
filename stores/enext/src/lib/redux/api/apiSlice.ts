@@ -2,9 +2,6 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { BaseQueryFn, FetchArgs, FetchBaseQueryError } from '@reduxjs/toolkit/query/react';
 import { logout } from '@/lib/redux/slices/authSlice';
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:4000/fear/api';
-
 const rawBaseQuery = fetchBaseQuery({
   baseUrl: '/fear/api',
   credentials: 'include', // send/receive the FEAR session cookie on every request
@@ -34,6 +31,6 @@ const baseQueryWithAuthHandling: BaseQueryFn<
 export const apiSlice = createApi({
   reducerPath: 'api',
   baseQuery: baseQueryWithAuthHandling,
-  tagTypes: ['Product', 'Category', 'Brand', 'Cart', 'Auth', 'User'],
+  tagTypes: ['Product', 'Category', 'Brand', 'Post', 'Cart', 'Auth', 'User', 'Review', 'Wishlist'],
   endpoints: () => ({}),
 });

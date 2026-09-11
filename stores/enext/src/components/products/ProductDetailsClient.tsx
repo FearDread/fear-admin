@@ -4,19 +4,20 @@ import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
+import { type Product } from '@/types/product';
 import {
   useGetProductByIdQuery,
-  type Product,
 } from '@/lib/redux/api/productsApi';
+
 import { useGetCategoryByIdQuery } from '@/lib/redux/api/categoriesApi';
 import {
   useGetBrandByIdQuery,
   useGetFavoriteBrandIdsQuery,
-  useToggleBrandFavoriteMutation,
+  useToggleFavoriteBrandMutation,
 } from '@/lib/redux/api/brandsApi';
 import {
   useGetCartQuery,
-  useAddItemMutation,
+    useAddToCartMutation,
 } from '@/lib/redux/api/cartApi';
 import {
   useGetWishlistQuery,
@@ -126,11 +127,11 @@ export default function ProductDetailsClient({
     useGetProductReviewsQuery(product?._id ?? '', { skip: !product?._id });
 
   // ── Mutations ─────────────────────────────────────────────────────────
-  const [addItem] = useAddItemMutation();
+    const [addItem] = useAddToCartMutation();
   const [addToWishlist] = useAddToWishlistMutation();
   const [removeFromWishlist] = useRemoveFromWishlistMutation();
   const [moveToCart] = useMoveToCartMutation();
-  const [toggleBrandFavorite] = useToggleBrandFavoriteMutation();
+  const [toggleBrandFavorite] = useToggleFavoriteBrandMutation();
   const [submitReview] = useSubmitReviewMutation();
 
   // ── Handlers ──────────────────────────────────────────────────────────

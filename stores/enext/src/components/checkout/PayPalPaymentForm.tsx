@@ -14,26 +14,8 @@ import {
 import {
   useCreatePaypalOrderMutation,
   useCapturePaypalOrderMutation,
-} from '@/features/api/paymentsApi';
+} from '@/lib/redux/api/paymentsApi';
 import type { Order } from '@/types/checkout';
-
-/**
- * BUG FIXES from the CRA version:
- *  1. `console.log('paypal client id = ', process.env)` dumped the *entire*
- *     env object to the browser console — removed. Never log `process.env`
- *     client-side, even in dev; it's easy to accidentally ship a build where
- *     that line survives into production.
- *  2. `createOrder` dispatched `updateOrder(order)` and returned `response.id`
- *     from inside a `.then()` callback without an outer `return`, so the
- *     Promise PayPal's SDK awaits resolved to `undefined` instead of the order
- *     ID — PayPal would never have actually gotten an order ID. Rewritten as a
- *     single `async/await` chain that actually returns the ID.
- *  3. Capture request now goes through `paymentsApi` (`/fear/api/payments/paypal/
- *     capture-order`) instead of a bare `fetch('/api/paypal/capture-order')`,
- *     which was never a real backend route in this app — see MERGE_NOTES.md.
- *
- * Env var renamed: `REACT_APP_PAYPAL_CLIENT_ID` (CRA) → `NEXT_PUBLIC_PAYPAL_CLIENT_ID`.
- */
 
 interface PayPalPaymentFormProps {
   order: Order;

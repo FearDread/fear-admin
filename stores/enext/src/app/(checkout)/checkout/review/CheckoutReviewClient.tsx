@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAppDispatch, useAppSelector } from '@/lib/redux/hooks';
 import { useGetCartQuery } from '@/lib/redux/api/cartApi';
-import { selectCurrentUser } from '@/lib/redux/api/authApi';
+import { useCurrentUser } from '@/lib/redux/api/authApi';
 import { useCreateOrderMutation } from '@/lib/redux/api/ordersApi';
 import { selectCheckout, resetCheckout } from '@/lib/redux/slices/checkoutSlice';
 import { useCheckoutTotals } from '@/lib/checkout/totals';
@@ -18,7 +18,7 @@ export default function CheckoutReviewClient() {
   const { data: cart } = useGetCartQuery();
   const cartItems = cart?.items ?? [];
 
-  const currentUser = useAppSelector(selectCurrentUser);
+    const currentUser = useAppSelector(useCurrentUser);
   const draft = useAppSelector(selectCheckout);
 
   const [isProcessingOrder, setIsProcessingOrder] = useState(false);
