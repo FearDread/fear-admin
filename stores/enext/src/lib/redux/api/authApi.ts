@@ -25,10 +25,26 @@
  * referenced in the uploaded CRA source (`/api/users/verify-reset-token/:token`,
  * `/api/users/reset-password/:token`) but rebased onto `/fear/api` per the
  * apiSlice convention.
+ * */
 
 import { apiSlice } from '@/lib/redux/api/apiSlice';
 import { setCurrentUser, setIsAuthenticated, setAuthError, resetAuthState } from '../slices/authSlice';
 import type { User } from '@/types/user';
+export interface CurrentUser {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    displayName?: string;
+    email: string;
+    phone?: string;
+    country?: string;
+    avatar?: { secure_url?: string };
+    createdAt?: string;
+    lastLoginAt?: string;
+    orderCount?: number;
+    wishlistCount?: number;
+    addressCount?: number;
+}
 
 export interface LoginRequest {
   email: string;
@@ -46,7 +62,7 @@ export interface RegisterRequest {
 }
 
 export interface GoogleLoginRequest {
-  /** ID token / credential JWT returned by @react-oauth/google's GoogleLogin 
+  /** ID token / credential JWT returned by @react-oauth/google's GoogleLogin */
   credential: string;
 }
 
@@ -195,8 +211,23 @@ export const authApi = apiSlice.injectEndpoints({
         }
       },
     }),
+        updateProfile: builder.mutation<CurrentUser, UpdateProfileInput>({
+            query: (body) => ({ url: '/user/profile', method: 'PUT', body }),
+            transformResponse: (obj: { result: CurrentUser }) => obj.result,
+            invalidatesTags: [{ type: 'User', id: 'CURRENT' }],
+        }),
 
-    /** Hydrates session state on app load — see StoreProvider's AuthHydrator. 
+        changePassword: builder.mutation<{ success: boolean; message?: string }, ChangePasswordInput>({
+            query: (body) => ({ url: '/user/password', method: 'PUT', body }),
+            // No tag invalidation — password changes don't affect anything cached.
+        }),
+        getCurrentUser: builder.query<CurrentUser | null, void>({
+            query: () => '/auth/me',
+            transformResponse: (obj: { result: CurrentUser | null }) => obj.result ?? null,
+            transformErrorResponse: (response) => (response.status === 401 ? null : response),
+            providesTags: [{ type: 'User', id: 'CURRENT' }],
+        }),
+    /** Hydrates session state on app load — see StoreProvider's AuthHydrator. */
     getSession: builder.query<AuthResponse, void>({
       query: () => '/auth/session',
       transformResponse: (response: { result: AuthResponse }) => response.result,
@@ -225,9 +256,12 @@ export const {
   useResetPasswordMutation,
   useLogoutMutation,
   useGetSessionQuery,
-  useLazyGetSessionQuery,
+    useLazyGetSessionQuery,
+    useGetCurrentUserQuery,
+    useUpdateProfileMutation,
+    useChangePasswordMutation,
 } = authApi;
-*/
+
 /** 
 
 * authApi.ts
@@ -254,7 +288,7 @@ export const {
 * by `useGetCurrentUserQuery`'s cache entry, so components call it once
 * instead of four separate `useAppSelector` calls.
 */
-
+/*
 import { apiSlice } from './apiSlice';
 
 export interface CurrentUser {
