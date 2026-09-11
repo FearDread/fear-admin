@@ -13,9 +13,9 @@
  */
 
 import Link from 'next/link';
-import { useCurrentUser } from '@/features/api/authApi';
+import { useCurrentUser } from '@/lib/redux/api/authApi';
 import AccountSidebar from './AccountSidebar';
-import { T, dashStyles } from '../styles';
+import { T, dashStyles } from './styles';
 
 export const DashboardView = () => {
   const { currentUser, loading, lastLoginAt } = useCurrentUser();

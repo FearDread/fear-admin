@@ -36,10 +36,10 @@ import {
     useRemoveAddressMutation,
     type Address,
     type AddressInput,
-} from '@/features/api/addressesApi';
-import { useCurrentUser } from '@/features/api/authApi';
+} from '@/lib/redux/api/addressesApi';
+import { useCurrentUser } from '@/lib/redux/api/authApi';
 import AccountSidebar from './AccountSidebar';
-import { addressStyles } from '../styles';
+import { addressStyles } from './styles';
 
 type AddressType = 'billing' | 'shipping';
 type AddressForm = Omit<Address, 'id'>;

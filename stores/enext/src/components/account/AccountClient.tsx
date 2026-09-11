@@ -26,8 +26,8 @@
 
 import { useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { useCurrentUser } from '@/features/api/authApi';
-import type { AccountSection } from './page';
+import { useCurrentUser } from '@/lib/redux/api/authApi';
+import type { AccountSection } from '@/app/account/[section]/page';
 
 import DashboardView from '@/components/account/DashboardView';
 import OrdersView from '@/components/account/OrdersView';
@@ -58,7 +58,7 @@ export default function AccountClient({ section }: AccountClientProps) {
                 from: pathname,
                 message: 'Please login to access your account',
             });
-            router.replace(`/login?${params.toString()}`);
+            router.replace(`/login`);
         }
     }, [isAuthenticated, loading, pathname, router]);
 

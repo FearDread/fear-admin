@@ -24,9 +24,9 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
-import { useAppDispatch } from '@/features/hooks';
-import { useLogoutMutation } from '@/features/api/authApi';
-import { sidebarStyles } from '../styles';
+import { useAppDispatch } from '@/lib/redux/hooks';
+import { useLogoutMutation } from '@/lib/redux/api/authApi';
+import { sidebarStyles } from './styles';
 
 const MENU_ITEMS = [
     { label: 'Dashboard', path: '/account/dashboard', icon: '⊞' },

@@ -26,8 +26,8 @@ import {
     useGetPaymentsQuery,
     useRemovePaymentMutation,
     useSetDefaultPaymentMutation,
-} from '@/features/api/paymentsApi';
-import { useCurrentUser } from '@/features/api/authApi';
+} from '@/lib/redux/api/paymentsApi';
+import { useCurrentUser } from '@/lib/redux/api/authApi';
 import StripeCardForm from './StripeCardForm';
 import AccountSidebar from './AccountSidebar';
 

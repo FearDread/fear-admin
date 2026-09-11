@@ -24,9 +24,9 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useCurrentUser, useUpdateProfileMutation, useChangePasswordMutation } from '@/features/api/authApi';
+import { useCurrentUser, useUpdateProfileMutation, useChangePasswordMutation } from '@/lib/redux/api/authApi';
 import AccountSidebar from './AccountSidebar';
-import { T, userStyles } from '../styles';
+import { T, userStyles } from './styles';
 
 export const DetailsView = () => {
     const { currentUser } = useCurrentUser();

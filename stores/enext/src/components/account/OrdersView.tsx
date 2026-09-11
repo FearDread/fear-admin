@@ -1,4 +1,4 @@
-O'use client';
+'use client';
 
 /**
  * OrdersView.tsx
@@ -31,10 +31,10 @@ import {
     useGetOrdersWithFiltersQuery,
     useCancelOrderMutation,
     type Order,
-} from '@/features/api/ordersApi';
-import { useCurrentUser } from '@/features/api/authApi';
+} from '@/lib/redux/api/ordersApi';
+import { useCurrentUser } from '@/lib/redux/api/authApi';
 import AccountSidebar from './AccountSidebar';
-import { T, orderStyles } from '../styles';
+import { T, orderStyles } from './styles';
 
 const STATUS_ACCENT: Record<string, string> = {
     completed: '#2a9d8f',
