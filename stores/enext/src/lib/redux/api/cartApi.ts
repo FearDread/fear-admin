@@ -83,7 +83,7 @@ interface FearEnvelope<T> {
 export const cartApi = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         getCart: builder.query<Cart, void>({
-            query: () => '/cart',
+            query: () => '/cart/user',
             transformResponse: (response: FearEnvelope<Cart>) => response.result,
             providesTags: (result) =>
                 result

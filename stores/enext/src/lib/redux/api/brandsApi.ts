@@ -30,7 +30,7 @@ export const brandsApi = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         // Single brand — name/logo/description on ProductDetailsClient
         getBrandById: builder.query<Brand, string>({
-            query: (brandId) => `/brands/${brandId}`,
+            query: (brandId) => `/brand/${brandId}`,
             transformResponse: (response: FearApiEnvelope<Brand>) => response.result,
             providesTags: (result, error, brandId) => [{ type: 'Brand', id: brandId }],
         }),
@@ -41,7 +41,7 @@ export const brandsApi = apiSlice.injectEndpoints({
             GetBrandProductsArgs
         >({
             query: ({ brandId, page = 1, limit = 8, sort }) => ({
-                url: `/brands/${brandId}/products`,
+                url: `/brand/${brandId}/products`,
                 params: { page, limit, ...(sort ? { sort } : {}) },
             }),
             transformResponse: (response: FearApiEnvelope<Product[]>) => ({
@@ -55,7 +55,7 @@ export const brandsApi = apiSlice.injectEndpoints({
 
         // Full brand list — shop/filter sidebars
         getAllBrands: builder.query<Brand[], void>({
-            query: () => '/brands',
+            query: () => '/brand/all',
             transformResponse: (response: FearApiEnvelope<Brand[]>) => response.result,
             providesTags: (result) =>
                 result
@@ -68,7 +68,7 @@ export const brandsApi = apiSlice.injectEndpoints({
 
         // Favorited brand IDs for the current session user
         getFavoriteBrandIds: builder.query<string[], void>({
-            query: () => '/brands/favorites',
+            query: () => '/brand/favorites',
             transformResponse: (response: FearApiEnvelope<string[]>) => response.result,
             providesTags: (result) =>
                 result
@@ -82,7 +82,7 @@ export const brandsApi = apiSlice.injectEndpoints({
         // Toggle favorite status — optimistic update for instant star/heart flip
         toggleFavoriteBrand: builder.mutation<ToggleFavoriteBrandResponse, ToggleFavoriteBrandArgs>({
             query: ({ brandId }) => ({
-                url: `/brands/${brandId}/favorite`,
+                url: `/brand/${brandId}/favorite`,
                 method: 'POST',
             }),
             transformResponse: (response: FearApiEnvelope<ToggleFavoriteBrandResponse>) =>

@@ -45,7 +45,7 @@ export const categoriesApi = apiSlice.injectEndpoints({
 
     updateCategory: builder.mutation<Category, Partial<Category> & { id: string }>({
       query: ({ id, ...patch }) => ({
-        url: `categories/${id}`,
+        url: `category/${id}`,
         method: 'PUT',
         body: patch,
       }),
