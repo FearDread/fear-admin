@@ -19,7 +19,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { makeStore } from '@/lib/redux/store';
 import { type Product } from '@/types/product';
-import { productsApi } from '@/lib/redux/api/productsApi';
+import { productsApi, useGetProductByIdQuery } from '@/lib/redux/api/productsApi';
 import ProductDetailsClient from '@/components/products/ProductDetailsClient';
 
 // ISR: page is regenerated in the background at most once every 60s,
@@ -77,7 +77,7 @@ export async function generateMetadata({
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { id } = await params;
-  const product = await getProduct(id);
+    const product = useGetProductByIdQuery(id);
 
   if (!product) {
     notFound();
