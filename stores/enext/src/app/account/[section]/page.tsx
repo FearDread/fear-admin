@@ -29,7 +29,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import AccountClient from '@/components/account/AccountClient';
 
-//export const dynamic = 'force-dynamic';
+export const dynamic = 'force-dynamic';
 
 export const ACCOUNT_SECTIONS = {
     dashboard: {

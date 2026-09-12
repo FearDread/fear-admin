@@ -27,6 +27,8 @@
 import { useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useCurrentUser } from '@/lib/redux/api/authApi';
+import { useAppDispatch, useAppSelector } from '@/lib/redux/hooks';
+import { selectCurrentUser } from "@/lib/redux/slices/authSlice";
 import type { AccountSection } from '@/app/account/[section]/page';
 
 import DashboardView from '@/components/account/DashboardView';
@@ -50,7 +52,7 @@ const SECTION_VIEWS: Record<AccountSection, React.ComponentType> = {
 export default function AccountClient({ section }: AccountClientProps) {
     const router = useRouter();
     const pathname = usePathname();
-    const { isAuthenticated, loading } = useCurrentUser();
+    const { user } = useAppSelector(selectCurrentUser);
 
     useEffect(() => {
         if (!loading && !isAuthenticated) {
