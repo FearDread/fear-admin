@@ -64,7 +64,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: AccountSectionPageProps) {
     const { section } = await params;
-
+    console.log('section = ', section);
     const config = ACCOUNT_SECTIONS[section as AccountSection];
     if (!config) return {};
 
