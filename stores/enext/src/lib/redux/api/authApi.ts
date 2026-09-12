@@ -1,427 +1,359 @@
 /**
- * features/auth/authApi.ts
+ * lib/redux/api/authApi.ts
  *
- * ⚠️ REBUILD, NOT A DIFF. Per project notes, `authApi` already exists as one
- * of the injected endpoint sets on the shared `apiSlice` — merge this against
- * the real file (dedupe endpoint names, keep any tagTypes it already adds)
- * rather than overwriting it.
+ * RTK Query endpoints for auth + session, rebuilt directly against the real
+ * backend controller (`backend/.../auth/index.js`). Two things about that
+ * controller matter for every endpoint below and are NOT the FEAR list/detail
+ * envelope used elsewhere in the app:
  *
- * Replaces the old `features/user/slice` async thunks (loginUser,
- * loginWithGoogle, loginWithFacebook, registerUser, forgotPassword) with
- * RTK Query endpoints injected into the shared `apiSlice`.
+ *   1. Response shape is `{ success, message, data: { ... } }` — a `data`
+ *      envelope, not `{ result }`. `transformResponse` unwraps `response.data`.
+ *   2. Auth is a JWT in an httpOnly `jwt` cookie (`res.cookie('jwt', token, ...)`
+ *      on login/register/refresh, `res.clearCookie('jwt', ...)` on logout).
+ *      The client never touches the token directly — `credentials: 'include'`
+ *      on apiSlice's baseQuery is what makes the cookie ride along.
  *
- * Auth is cookie-session based (see project conventions) — the server sets
- * an httpOnly session cookie on success, so responses only need to carry the
- * `user` object. `credentials: 'include'` + the 401 → logout handling is
- * already configured globally on `apiSlice`'s baseQuery.
+ * Routes that exist on the backend today: login, register, logout,
+ * GET /auth/me, PUT /auth/refresh-token, PUT /auth/update-profile,
+ * PUT /auth/update-preferences, POST /auth/google, POST /auth/google/link,
+ * DELETE /auth/google/unlink.
  *
- * FEAR API envelope: single-object auth endpoints still come back wrapped as
- * `{ result, success, message }` just like list endpoints, so every query
- * unwraps `result` via `transformResponse`.
+ * Routes that do NOT exist on the backend (no export in the controller):
+ * forgot-password, verify-reset-token, reset-password, change-password,
+ * facebook login. Their endpoints are kept below (ForgotPasswordForm /
+ * ResetPasswordForm / DetailsView / FacebookAuthButton already call them)
+ * but are marked as backend gaps — they will 404 until those routes are
+ * implemented server-side. See MERGE_NOTES.md.
  *
- * Verify the exact backend routes below (`/auth/login`, `/auth/register`,
- * etc.) against the real Express routes once the backend brand/cart
- * endpoints work lands — these are carried over 1:1 from the paths already
- * referenced in the uploaded CRA source (`/api/users/verify-reset-token/:token`,
- * `/api/users/reset-password/:token`) but rebased onto `/fear/api` per the
- * apiSlice convention.
- * */
+ * `useCurrentUser()` at the bottom reads straight from `authSlice` rather
+ * than issuing its own query — `getSession` (backed by GET /auth/me) is the
+ * single source of truth for "who am I", and every mutation that changes
+ * the session (login, register, googleLogin, logout, updateProfile) either
+ * writes the slice directly via `onQueryStarted` or invalidates the
+ * `{ type: 'User', id: 'CURRENT' }` tag so `getSession` refetches and
+ * re-syncs the slice itself. Components should never need to call
+ * `useGetSessionQuery()` directly outside of `AuthHydrator`.
+ */
 
 import { apiSlice } from '@/lib/redux/api/apiSlice';
-import { setCurrentUser, setIsAuthenticated, setAuthError, resetAuthState } from '../slices/authSlice';
+import { useAppSelector } from '@/lib/redux/hooks';
+import {
+    setCurrentUser,
+    setIsAuthenticated,
+    setAuthError,
+    setHydrating,
+    logout as logoutAction,
+    selectCurrentUser,
+    selectIsAuthenticated,
+    selectIsAuthHydrating,
+} from '@/lib/redux/slices/authSlice';
 import type { User } from '@/types/user';
-export interface CurrentUser {
-    _id: string;
-    firstName: string;
-    lastName: string;
-    displayName?: string;
-    email: string;
-    phone?: string;
-    country?: string;
-    avatar?: { secure_url?: string };
-    createdAt?: string;
-    lastLoginAt?: string;
-    orderCount?: number;
-    wishlistCount?: number;
-    addressCount?: number;
+
+// ─────────────────────────────────────────────────────────────────────────
+// Envelope — NOT the FEAR `{ result }` list/detail envelope used elsewhere.
+// ─────────────────────────────────────────────────────────────────────────
+interface AuthDataEnvelope<T> {
+    success: boolean;
+    message?: string;
+    data: T;
 }
 
+// ─────────────────────────────────────────────────────────────────────────
+// Request/response payloads
+// ─────────────────────────────────────────────────────────────────────────
+
 export interface LoginRequest {
-  email: string;
-  password: string;
-  rememberMe?: boolean;
+    email: string;
+    password: string;
 }
 
 export interface RegisterRequest {
-  displayName: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-  country: string;
-}
-
-export interface GoogleLoginRequest {
-  /** ID token / credential JWT returned by @react-oauth/google's GoogleLogin */
-  credential: string;
-}
-
-export interface FacebookLoginRequest {
-  accessToken: string;
-  userID: string;
-}
-
-export interface ForgotPasswordRequest {
-  email: string;
-}
-
-export interface ResetPasswordRequest {
-  token: string;
-  password: string;
-}
-
-interface AuthResponse {
-  user: User;
-}
-
-interface MessageResponse {
-  message: string;
-}
-
-interface VerifyResetTokenResponse {
-  valid: boolean;
-}
-
-export const authApi = apiSlice.injectEndpoints({
-  endpoints: (builder) => ({
-    login: builder.mutation<AuthResponse, LoginRequest>({
-      query: (body) => ({
-        url: '/auth/login',
-        method: 'POST',
-        body,
-      }),
-      transformResponse: (response: { result: AuthResponse }) => response.result,
-      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
-        dispatch(setAuthError(null));
-        try {
-          const { data } = await queryFulfilled;
-          dispatch(setCurrentUser(data.user));
-          dispatch(setIsAuthenticated(true));
-        } catch (err: any) {
-          dispatch(setAuthError(err?.error?.data?.message || 'Invalid email or password'));
-        }
-      },
-      invalidatesTags: ['Cart'],
-    }),
-
-    register: builder.mutation<AuthResponse, RegisterRequest>({
-      query: (body) => ({
-        url: '/auth/register',
-        method: 'POST',
-        body,
-      }),
-      transformResponse: (response: { result: AuthResponse }) => response.result,
-      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
-        dispatch(setAuthError(null));
-        try {
-          await queryFulfilled;
-          // Intentionally does NOT set isAuthenticated here — matches original
-          // behavior of redirecting to /login after a successful registration
-          // rather than auto-signing the user in.
-        } catch (err: any) {
-          dispatch(setAuthError(err?.error?.data?.message || 'Registration failed'));
-        }
-      },
-    }),
-
-    googleLogin: builder.mutation<AuthResponse, GoogleLoginRequest>({
-      query: (body) => ({
-        url: '/auth/google',
-        method: 'POST',
-        body,
-      }),
-      transformResponse: (response: { result: AuthResponse }) => response.result,
-      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
-        dispatch(setAuthError(null));
-        try {
-          const { data } = await queryFulfilled;
-          dispatch(setCurrentUser(data.user));
-          dispatch(setIsAuthenticated(true));
-        } catch (err: any) {
-          dispatch(setAuthError(err?.error?.data?.message || 'Google sign-in failed'));
-        }
-      },
-      invalidatesTags: ['Cart'],
-    }),
-
-    facebookLogin: builder.mutation<AuthResponse, FacebookLoginRequest>({
-      query: (body) => ({
-        url: '/auth/facebook',
-        method: 'POST',
-        body,
-      }),
-      transformResponse: (response: { result: AuthResponse }) => response.result,
-      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
-        dispatch(setAuthError(null));
-        try {
-          const { data } = await queryFulfilled;
-          dispatch(setCurrentUser(data.user));
-          dispatch(setIsAuthenticated(true));
-        } catch (err: any) {
-          dispatch(setAuthError(err?.error?.data?.message || 'Facebook sign-in failed'));
-        }
-      },
-      invalidatesTags: ['Cart'],
-    }),
-
-    forgotPassword: builder.mutation<MessageResponse, ForgotPasswordRequest>({
-      query: (body) => ({
-        url: '/auth/forgot-password',
-        method: 'POST',
-        body,
-      }),
-      transformResponse: (response: { result: MessageResponse }) => response.result,
-    }),
-
-    verifyResetToken: builder.query<VerifyResetTokenResponse, string>({
-      query: (token) => `/auth/verify-reset-token/${token}`,
-      transformResponse: (response: { result: VerifyResetTokenResponse }) => response.result,
-    }),
-
-    resetPassword: builder.mutation<MessageResponse, ResetPasswordRequest>({
-      query: ({ token, password }) => ({
-        url: `/auth/reset-password/${token}`,
-        method: 'POST',
-        body: { password },
-      }),
-      transformResponse: (response: { result: MessageResponse }) => response.result,
-    }),
-
-    logout: builder.mutation<void, void>({
-      query: () => ({
-        url: '/auth/logout',
-        method: 'POST',
-      }),
-      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
-        try {
-          await queryFulfilled;
-        } finally {
-          dispatch(resetAuthState());
-          dispatch(apiSlice.util.resetApiState());
-        }
-      },
-    }),
-        updateProfile: builder.mutation<CurrentUser, UpdateProfileInput>({
-            query: (body) => ({ url: '/users/profile', method: 'PUT', body }),
-            transformResponse: (obj: { result: CurrentUser }) => obj.result,
-            invalidatesTags: [{ type: 'User', id: 'CURRENT' }],
-        }),
-
-        changePassword: builder.mutation<{ success: boolean; message?: string }, ChangePasswordInput>({
-            query: (body) => ({ url: '/users/password', method: 'PUT', body }),
-            // No tag invalidation — password changes don't affect anything cached.
-        }),
-        getCurrentUser: builder.query<CurrentUser | null, void>({
-            query: () => '/users/me',
-            transformResponse: (obj: { result: CurrentUser | null }) => obj.result ?? null,
-            transformErrorResponse: (response) => (response.status === 401 ? null : response),
-            providesTags: [{ type: 'User', id: 'CURRENT' }],
-        }),
-    /** Hydrates session state on app load — see StoreProvider's AuthHydrator. */
-    getSession: builder.query<AuthResponse, void>({
-      query: () => '/auth/session',
-      transformResponse: (response: { result: AuthResponse }) => response.result,
-      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
-        try {
-          const { data } = await queryFulfilled;
-          dispatch(setCurrentUser(data.user));
-          dispatch(setIsAuthenticated(true));
-        } catch {
-          dispatch(setCurrentUser(null));
-          dispatch(setIsAuthenticated(false));
-        }
-      },
-    }),
-  }),
-  overrideExisting: false,
-});
-
-export const {
-  useLoginMutation,
-  useRegisterMutation,
-  useGoogleLoginMutation,
-  useFacebookLoginMutation,
-  useForgotPasswordMutation,
-  useVerifyResetTokenQuery,
-  useResetPasswordMutation,
-  useLogoutMutation,
-  useGetSessionQuery,
-    useLazyGetSessionQuery,
-    useGetCurrentUserQuery,
-    useUpdateProfileMutation,
-    useChangePasswordMutation,
-} = authApi;
-
-/** 
-
-* authApi.ts
-*
-* RTK Query endpoints for auth + the current-user session, consolidated so
-* the account views don't need a hand-maintained `features/user/slice.js`
-* at all. This is written to be **merged into the project's existing
-* `authApi.ts`** (the one the `(auth)/[...auth]` route and `AuthHydrator`
-* already use) rather than dropped in alongside it — see MERGE_NOTES.md for
-* exactly what to reconcile.
-*
-* Why fold `getCurrentUser` / `updateProfile` / `changePassword` in here
-* instead of a separate `userProfileApi.ts` (as an earlier pass of this
-* conversion did): they all read and write the same "current user" cache
-* entry, tagged `{ type: 'User', id: 'CURRENT' }`. Splitting them across two
-* files meant `updateProfile` had no way to invalidate the tag
-* `getCurrentUser` provides, so a profile edit wouldn't refresh the
-* sidebar's name/avatar without a manual refetch. One file, one tag, no
-* seam.
-*
-* `useCurrentUser()` at the bottom is the direct replacement for the old
-* `userSlice` selectors — `selectCurrentUser`, `selectIsAuthenticated`,
-* `selectUserLoading`, `selectLastLoginAt` all collapse into one hook backed
-* by `useGetCurrentUserQuery`'s cache entry, so components call it once
-* instead of four separate `useAppSelector` calls.
-*/
-/*
-import { apiSlice } from './apiSlice';
-
-export interface CurrentUser {
-    _id: string;
+    email: string;
+    password: string;
     firstName: string;
     lastName: string;
     displayName?: string;
-    email: string;
-    phone?: string;
-    country?: string;
-    avatar?: { secure_url?: string };
-    createdAt?: string;
-    lastLoginAt?: string;
-    orderCount?: number;
-    wishlistCount?: number;
-    addressCount?: number;
+    phoneNumber?: string;
+    dateOfBirth?: string;
 }
 
-export interface LoginInput {
-    email: string;
-    password: string;
+export interface GoogleLoginRequest {
+    /** ID token / credential JWT returned by @react-oauth/google's GoogleLogin */
+    credential: string;
+    clientId?: string;
 }
 
-export interface RegisterInput {
-    firstName: string;
-    lastName: string;
+export interface LinkGoogleAccountRequest {
+    googleId: string;
     email: string;
-    password: string;
 }
 
 export interface UpdateProfileInput {
-    firstName: string;
-    lastName: string;
-    displayName: string;
-    email: string;
+    firstName?: string;
+    lastName?: string;
+    displayName?: string;
+    phoneNumber?: string;
+    bio?: string;
+    dateOfBirth?: string;
+    avatar?: string;
 }
 
-export interface ChangePasswordInput {
-    currentPassword: string;
-    newPassword: string;
+export interface UpdatePreferencesInput {
+    language?: string;
+    timezone?: string;
+    theme?: string;
+    notifications?: Record<string, boolean>;
+}
+
+interface UserPayload {
+    user: User;
+}
+
+interface UserAndTokenPayload {
+    user: User;
+    /** JWT also arrives via the httpOnly cookie — this is exposed for parity
+     *  with the backend response only; the client should not persist it. */
+    token: string;
+}
+
+interface PreferencesPayload {
+    preferences: UpdatePreferencesInput;
 }
 
 export const authApi = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         // ── Session ──────────────────────────────────────────────────────────
-        // Cookie-session auth (see project notes: no localStorage/JWT handling),
-        // so this just asks the API "who am I, if anyone" — a 401 resolves to
-        // `null` via transformErrorResponse rather than surfacing as a hard
-        // query error, since "logged out" is an expected, non-error state here.
-        getCurrentUser: builder.query<CurrentUser | null, void>({
+        /**
+         * Hydrates session state on app load (see StoreProvider's AuthHydrator)
+         * and is the endpoint every other mutation's tag invalidation refetches
+         * to re-sync `authSlice`. A 401 is expected/normal for a logged-out
+         * visitor, not a real error.
+         */
+        getSession: builder.query<User | null, void>({
             query: () => '/auth/me',
-            transformResponse: (obj: { result: CurrentUser | null }) => obj.result ?? null,
+            transformResponse: (response: AuthDataEnvelope<UserPayload>) => response.data.user,
             transformErrorResponse: (response) => (response.status === 401 ? null : response),
             providesTags: [{ type: 'User', id: 'CURRENT' }],
+            async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+                try {
+                    const { data: user } = await queryFulfilled;
+                    dispatch(setCurrentUser(user));
+                    dispatch(setIsAuthenticated(Boolean(user)));
+                } catch {
+                    dispatch(setCurrentUser(null));
+                    dispatch(setIsAuthenticated(false));
+                } finally {
+                    // Runs whether the session check succeeded or failed — this is
+                    // what lets isHydrating-gated UI (e.g. AccountClient) stop
+                    // rendering null once the very first check resolves either way.
+                    dispatch(setHydrating(false));
+                }
+            },
         }),
 
-        login: builder.mutation<CurrentUser, LoginInput>({
+        login: builder.mutation<User, LoginRequest>({
             query: (body) => ({ url: '/auth/login', method: 'POST', body }),
-            transformResponse: (obj: { result: CurrentUser }) => obj.result,
-            invalidatesTags: [{ type: 'User', id: 'CURRENT' }],
+            transformResponse: (response: AuthDataEnvelope<UserAndTokenPayload>) => response.data.user,
+            async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+                dispatch(setAuthError(null));
+                try {
+                    const { data: user } = await queryFulfilled;
+                    dispatch(setCurrentUser(user));
+                    dispatch(setIsAuthenticated(true));
+                } catch (err: any) {
+                    dispatch(setAuthError(err?.error?.data?.message || 'Invalid email or password'));
+                }
+            },
+            invalidatesTags: [{ type: 'User', id: 'CURRENT' }, 'Cart'],
         }),
 
-        register: builder.mutation<CurrentUser, RegisterInput>({
+        register: builder.mutation<User, RegisterRequest>({
             query: (body) => ({ url: '/auth/register', method: 'POST', body }),
-            transformResponse: (obj: { result: CurrentUser }) => obj.result,
-            invalidatesTags: [{ type: 'User', id: 'CURRENT' }],
+            transformResponse: (response: AuthDataEnvelope<UserAndTokenPayload>) => response.data.user,
+            async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+                dispatch(setAuthError(null));
+                try {
+                    // Registration also sets the `jwt` cookie server-side, but the
+                    // app's UX (LoginForm's `?message=`) intentionally redirects to
+                    // /login instead of auto-signing in — matches original behavior.
+                    await queryFulfilled;
+                } catch (err: any) {
+                    dispatch(setAuthError(err?.error?.data?.message || 'Registration failed'));
+                }
+            },
         }),
 
-        logout: builder.mutation<{ success: boolean }, void>({
+        logout: builder.mutation<void, void>({
             query: () => ({ url: '/auth/logout', method: 'POST' }),
+            async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+                try {
+                    await queryFulfilled;
+                } finally {
+                    dispatch(logoutAction());
+                    dispatch(apiSlice.util.resetApiState());
+                }
+            },
+        }),
+
+        refreshToken: builder.mutation<User, void>({
+            query: () => ({ url: '/auth/refresh-token', method: 'PUT' }),
+            transformResponse: (response: AuthDataEnvelope<UserAndTokenPayload>) => response.data.user,
+            async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+                try {
+                    const { data: user } = await queryFulfilled;
+                    dispatch(setCurrentUser(user));
+                    dispatch(setIsAuthenticated(true));
+                } catch {
+                    dispatch(setCurrentUser(null));
+                    dispatch(setIsAuthenticated(false));
+                }
+            },
+        }),
+
+        // ── Profile ──────────────────────────────────────────────────────────
+        /**
+         * NOTE: the backend's `updateProfile` does NOT accept/update `email` —
+         * only firstName/lastName/displayName/phoneNumber/bio/dateOfBirth/avatar.
+         * DetailsView currently sends `email` in its payload; the backend will
+         * silently ignore it. Either add email-change support server-side or
+         * strip it from the form payload to avoid a misleading "saved" state.
+         */
+        updateProfile: builder.mutation<User, UpdateProfileInput>({
+            query: (body) => ({ url: '/auth/update-profile', method: 'PUT', body }),
+            transformResponse: (response: AuthDataEnvelope<UserPayload>) => response.data.user,
+            async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+                try {
+                    const { data: user } = await queryFulfilled;
+                    dispatch(setCurrentUser(user));
+                } catch {
+                    // surfaced via the mutation's own `error` in the component
+                }
+            },
             invalidatesTags: [{ type: 'User', id: 'CURRENT' }],
         }),
 
-        forgotPassword: builder.mutation<{ success: boolean; message?: string }, { email: string }>({
+        updatePreferences: builder.mutation<UpdatePreferencesInput, UpdatePreferencesInput>({
+            query: (body) => ({ url: '/auth/update-preferences', method: 'PUT', body }),
+            transformResponse: (response: AuthDataEnvelope<PreferencesPayload>) => response.data.preferences,
+        }),
+
+        // ── Google OAuth ─────────────────────────────────────────────────────
+        googleLogin: builder.mutation<User, GoogleLoginRequest>({
+            query: (body) => ({ url: '/auth/google', method: 'POST', body }),
+            transformResponse: (response: AuthDataEnvelope<UserAndTokenPayload>) => response.data.user,
+            async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+                dispatch(setAuthError(null));
+                try {
+                    const { data: user } = await queryFulfilled;
+                    dispatch(setCurrentUser(user));
+                    dispatch(setIsAuthenticated(true));
+                } catch (err: any) {
+                    dispatch(setAuthError(err?.error?.data?.message || 'Google sign-in failed'));
+                }
+            },
+            invalidatesTags: [{ type: 'User', id: 'CURRENT' }, 'Cart'],
+        }),
+
+        linkGoogleAccount: builder.mutation<User, LinkGoogleAccountRequest>({
+            query: (body) => ({ url: '/auth/google/link', method: 'POST', body }),
+            transformResponse: (response: AuthDataEnvelope<UserPayload>) => response.data.user,
+            invalidatesTags: [{ type: 'User', id: 'CURRENT' }],
+        }),
+
+        unlinkGoogleAccount: builder.mutation<User, void>({
+            query: () => ({ url: '/auth/google/unlink', method: 'DELETE' }),
+            transformResponse: (response: AuthDataEnvelope<UserPayload>) => response.data.user,
+            invalidatesTags: [{ type: 'User', id: 'CURRENT' }],
+        }),
+
+        // ── ⚠️ Backend gaps — no matching export in the controller today ──────
+        // Kept so LoginForm/RegisterForm/ForgotPasswordForm/ResetPasswordForm/
+        // FacebookAuthButton/DetailsView keep compiling; each 404s until the
+        // corresponding route + controller export is added server-side.
+
+        facebookLogin: builder.mutation<User, { accessToken: string; userID: string }>({
+            query: (body) => ({ url: '/auth/facebook', method: 'POST', body }),
+            transformResponse: (response: AuthDataEnvelope<UserAndTokenPayload>) => response.data.user,
+            async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+                dispatch(setAuthError(null));
+                try {
+                    const { data: user } = await queryFulfilled;
+                    dispatch(setCurrentUser(user));
+                    dispatch(setIsAuthenticated(true));
+                } catch (err: any) {
+                    dispatch(setAuthError(err?.error?.data?.message || 'Facebook sign-in failed'));
+                }
+            },
+            invalidatesTags: [{ type: 'User', id: 'CURRENT' }, 'Cart'],
+        }),
+
+        forgotPassword: builder.mutation<{ message: string }, { email: string }>({
             query: (body) => ({ url: '/auth/forgot-password', method: 'POST', body }),
+            transformResponse: (response: AuthDataEnvelope<{ message: string }>) => response.data,
         }),
 
-        resetPassword: builder.mutation<{ success: boolean; message?: string }, { token: string; newPassword: string }>({
-            query: ({ token, newPassword }) => ({
-                url: '/auth/reset-password',
+        verifyResetToken: builder.query<{ valid: boolean }, string>({
+            query: (token) => `/auth/verify-reset-token/${token}`,
+            transformResponse: (response: AuthDataEnvelope<{ valid: boolean }>) => response.data,
+        }),
+
+        resetPassword: builder.mutation<{ message: string }, { token: string; password: string }>({
+            query: ({ token, password }) => ({
+                url: `/auth/reset-password/${token}`,
                 method: 'POST',
-                body: { token, newPassword },
+                body: { password },
             }),
+            transformResponse: (response: AuthDataEnvelope<{ message: string }>) => response.data,
         }),
 
-        // ── Profile (account/details view) ──────────────────────────────────
-        updateProfile: builder.mutation<CurrentUser, UpdateProfileInput>({
-            query: (body) => ({ url: '/user/profile', method: 'PUT', body }),
-            transformResponse: (obj: { result: CurrentUser }) => obj.result,
-            invalidatesTags: [{ type: 'User', id: 'CURRENT' }],
-        }),
-
-        changePassword: builder.mutation<{ success: boolean; message?: string }, ChangePasswordInput>({
-            query: (body) => ({ url: '/user/password', method: 'PUT', body }),
-            // No tag invalidation — password changes don't affect anything cached.
+        changePassword: builder.mutation<
+            { success: boolean; message?: string },
+            { currentPassword: string; newPassword: string }
+        >({
+            query: (body) => ({ url: '/auth/change-password', method: 'PUT', body }),
         }),
     }),
     overrideExisting: false,
 });
 
 export const {
-    useGetCurrentUserQuery,
+    useGetSessionQuery,
+    useLazyGetSessionQuery,
     useLoginMutation,
     useRegisterMutation,
     useLogoutMutation,
-    useForgotPasswordMutation,
-    useResetPasswordMutation,
+    useRefreshTokenMutation,
     useUpdateProfileMutation,
+    useUpdatePreferencesMutation,
+    useGoogleLoginMutation,
+    useLinkGoogleAccountMutation,
+    useUnlinkGoogleAccountMutation,
+    useFacebookLoginMutation,
+    useForgotPasswordMutation,
+    useVerifyResetTokenQuery,
+    useResetPasswordMutation,
     useChangePasswordMutation,
 } = authApi;
 
 /**
  * useCurrentUser()
  *
- * Drop-in replacement for the old userSlice selector quartet:
- *   selectCurrentUser    → currentUser
- *   selectIsAuthenticated→ isAuthenticated
- *   selectUserLoading    → loading
- *   selectLastLoginAt    → lastLoginAt
- *
- * `loading` is `isLoading`, not `isFetching` — it's true only on the very
- * first fetch (e.g. cold navigation before AuthHydrator's initial request
- * resolves), not on every background refetch, so views don't flash a full
- * loading state every time a mutation invalidates the `User` tag.
+ * Reads straight from `authSlice` — NOT a fresh network call. `getSession`
+ * (GET /auth/me, fired once by AuthHydrator on app load) is what populates
+ * this state, and every session-changing mutation above either writes the
+ * slice directly or invalidates `{ type: 'User', id: 'CURRENT' }` so
+ * `getSession` refetches and re-syncs it. Components just need "who's
+ * logged in right now", not another round trip.
  */
 export function useCurrentUser() {
-    const { data: currentUser, isLoading, error } = useGetCurrentUserQuery();
+    const currentUser = useAppSelector(selectCurrentUser);
+    const isAuthenticated = useAppSelector(selectIsAuthenticated);
+    const isHydrating = useAppSelector(selectIsAuthHydrating);
 
     return {
-        currentUser: currentUser ?? null,
-        isAuthenticated: Boolean(currentUser),
-        loading: isLoading,
+        currentUser,
+        isAuthenticated,
+        loading: isHydrating,
         lastLoginAt: currentUser?.lastLoginAt ?? null,
-        error,
     };
 }

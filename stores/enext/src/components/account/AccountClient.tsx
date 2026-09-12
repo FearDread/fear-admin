@@ -12,9 +12,13 @@
  * the same `?from=` / `?message=` search-param pattern already used by the
  * auth routes, so `/login` doesn't need two different redirect mechanisms.
  *
- * Auth state comes from `authApi`'s `useCurrentUser()` (backed by
- * `useGetCurrentUserQuery`'s cache) rather than a `userSlice` selector — see
- * `authApi.ts` for why that consolidation happened.
+ * Auth state comes from `authSlice` (`selectCurrentUser` / `selectIsAuthenticated`
+ * / `selectIsAuthHydrating`), which `authApi`'s `onQueryStarted` handlers keep
+ * in sync on login/logout/session-hydration. `authApi` itself is only reached
+ * for the actual network calls (login, register, logout, session check,
+ * password reset, etc.) — components that just need to *read* "who is logged
+ * in right now" should pull from the slice, not re-trigger `useGetSessionQuery`
+ * or similar here.
  *
  * Each view component still owns its own hero/breadcrumb markup and renders
  * <AccountSidebar/> itself — the original CRA pages weren't visually
@@ -26,9 +30,12 @@
 
 import { useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { useCurrentUser } from '@/lib/redux/api/authApi';
-import { useAppDispatch, useAppSelector } from '@/lib/redux/hooks';
-import { selectCurrentUser } from "@/lib/redux/slices/authSlice";
+import { useAppSelector } from '@/lib/redux/hooks';
+import {
+    selectCurrentUser,
+    selectIsAuthenticated,
+    selectIsAuthHydrating,
+} from '@/lib/redux/slices/authSlice';
 import type { AccountSection } from '@/app/account/[section]/page';
 
 import DashboardView from '@/components/account/DashboardView';
@@ -52,20 +59,26 @@ const SECTION_VIEWS: Record<AccountSection, React.ComponentType> = {
 export default function AccountClient({ section }: AccountClientProps) {
     const router = useRouter();
     const pathname = usePathname();
-    const { user } = useAppSelector(selectCurrentUser);
+
+    // Local reads come straight from authSlice — populated by authApi's
+    // onQueryStarted (login/getSession/logout), not re-fetched here.
+    const currentUser = useAppSelector(selectCurrentUser);
+    const isAuthenticated = useAppSelector(selectIsAuthenticated);
+    const isHydrating = useAppSelector(selectIsAuthHydrating);
 
     useEffect(() => {
-        if (!loading && !isAuthenticated) {
+        if (!isHydrating && !isAuthenticated) {
             const params = new URLSearchParams({
                 from: pathname,
                 message: 'Please login to access your account',
             });
-            router.replace(`/login`);
+            router.replace(`/login?${params.toString()}`);
         }
-    }, [isAuthenticated, loading, pathname, router]);
+    }, [isAuthenticated, isHydrating, pathname, router]);
 
-    // Avoid flashing gated content while the redirect above is in flight.
-    if (!loading && !isAuthenticated) return null;
+    // Avoid flashing gated content while the session is still hydrating or
+    // the redirect above is in flight.
+    if (isHydrating || !isAuthenticated || !currentUser) return null;
 
     const View = SECTION_VIEWS[section];
     return <View />;
