@@ -29,7 +29,7 @@ const response = {
       .json({
         success: true,
         message,
-        data: {
+        result: {
           user: userResponse,
           token
         }
@@ -241,7 +241,7 @@ exports.getCurrentUser = (req, res) => {
 
   // Use toJSON to automatically remove sensitive fields
   const userResponse = user.toJSON();
-
+    console.log('user response = ', userResponse);
   return res.status(200).json({
     success: true,
     data: { user: userResponse }
@@ -749,13 +749,22 @@ exports.unlinkGoogleAccount = (req, res) => {
       return response.error(res, 500, "Failed to unlink Google account", error.message);
     });
 };
-// Export TokenService and other utilities for use in other modules
 exports.AuthResponse = response;
 
 module.exports = {
-  login: exports.login,
-  register: exports.register,
-  logout: exports.logout,
-  isAuthorized: exports.isAuthorized,
-  googleAuth: exports.googleAuth,
-}
+    login: exports.login,
+    register: exports.register,
+    logout: exports.logout,
+    me: exports.getCurrentUser,
+    getCurrentUser: exports.getCurrentUser,
+    refreshToken: exports.refreshToken,
+    updateProfile: exports.updateProfile,
+    updatePreferences: exports.updatePreferences,
+    googleAuth: exports.googleAuth,
+    linkGoogleAccount: exports.linkGoogleAccount,
+    unlinkGoogleAccount: exports.unlinkGoogleAccount,
+    isAuthorized: exports.isAuthorized,
+    isAdmin: exports.isAdmin,
+    authorizeRoles: exports.authorizeRoles,
+    optionalAuth: exports.optionalAuth,
+};

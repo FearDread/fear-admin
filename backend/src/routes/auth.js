@@ -8,23 +8,22 @@ module.exports = (fear) => {
     const validator = fear.getValidator();
     //const passport = fear.getPassport();
 
+    // Public
     router.post("/login", handler.async(Auth.login));
     router.post("/logout", handler.async(Auth.logout));
     router.post("/register", handler.async(Auth.register));
-    router.post("/me", handler.async(Auth.getCurrentUser));
+    router.post('/google', handler.async(Auth.googleAuth));
 
-    router.post('/google', handler.async(Auth.googleAuth)); 
-    router.post('/google/link',handler.async(Auth.linkGoogleAccount));
-    router.delete('/google/unlink',handler.async(Auth.unlinkGoogleAccount));
+    // Protected — all of these read req.user, so isAuthorized must run first.
+    router.get("/me", Auth.isAuthorized, handler.async(Auth.getCurrentUser));
+    router.put("/refresh-token", Auth.isAuthorized, handler.async(Auth.refreshToken));
+    router.put("/update-profile", Auth.isAuthorized, handler.async(Auth.updateProfile));
+    router.put("/update-preferences", Auth.isAuthorized, handler.async(Auth.updatePreferences));
+    router.post('/google/link', Auth.isAuthorized, handler.async(Auth.linkGoogleAccount));
+    router.delete('/google/unlink', Auth.isAuthorized, handler.async(Auth.unlinkGoogleAccount));
 
     router.get('/google/url', handler.async(GA.auth));
     router.get('/google/callback', handler.async(GA.callback));
- 
-    /*
-googleAuthRouter.get("/google/url",      getGoogleAuthUrl);
-googleAuthRouter.get("/google/callback", handleGoogleCallback);
-googleAuthRouter.post("/google/refresh", refreshGoogleToken);
-googleAuthRouter.post("/google/logout",  logoutGoogle);
-*/    
-return router;
+
+    return router;
 }
