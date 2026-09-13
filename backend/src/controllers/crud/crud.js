@@ -85,7 +85,8 @@ exports.all = tryCatch((Model, req, res) => {
  * @returns {Promise<void>}
  */
 exports.read = tryCatch((Model, req, res) => {
-  const { id } = req.params;
+    const { id } = req.params;
+    console.log('Read param: ', id || req.params);
 
   if (!id || !isValidObjectId(id)) {
     return Promise.resolve(

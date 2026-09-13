@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 import { type Product } from '@/types/product';
+import { useAppSelector } from '@/lib/redux/hooks';
+import { selectIsAuthenticated } from '@/lib/redux/slices/authSlice';
 import {
     useGetProductByIdQuery,
 } from '@/lib/redux/api/productsApi';
@@ -75,6 +77,7 @@ export default function ProductDetailsClient({
     initialProduct,
 }: ProductDetailsClientProps) {
     const router = useRouter();
+    const isAuthenticated = useAppSelector(selectIsAuthenticated);
 
     // ── Toast helpers ─────────────────────────────────────────────────────
     const [toasts, setToasts] = useState<ToastItem[]>([]);
@@ -87,9 +90,9 @@ export default function ProductDetailsClient({
 
     // ── Local UI state ────────────────────────────────────────────────────
     const [quantity, setQuantity] = useState(1);
-    const [activeTab, setActiveTab] = useState<
-        'description' | 'more-info' | 'tags' | 'reviews'
-    >('description');
+    const [activeTab, setActiveTab] = useState(
+    'description' | 'more-info' | 'tags' | 'reviews'
+        > ('description'));
     const [hoverStar, setHoverStar] = useState(0);
     const [reviewForm, setReviewForm] = useState<ReviewFormState>({
         userName: '',
@@ -103,6 +106,7 @@ export default function ProductDetailsClient({
     // `initialProduct` (from the server component) is the fallback used for
     // the very first render, so ISR/SSR HTML is fully populated. Once this
     // mounts in the browser the query fires for real and takes over.
+    console.log('Product details id = ', id);
     const {
         data: product = initialProduct,
         isLoading: loading,
@@ -122,18 +126,20 @@ export default function ProductDetailsClient({
 
     const { data: favoriteBrandIds = [] } = useGetFavoriteBrandIdsQuery(
         undefined,
-        { skip: !product?.brandId },
+        { skip: !product?.brandId || !isAuthenticated },
     );
     const isBrandFav = !!product?.brandId && favoriteBrandIds.includes(product.brandId);
 
-    const { data: cart } = useGetCartQuery();
+    // Cart/wishlist are auth-required endpoints — skip for guests instead of
+    // letting every anonymous product-page view throw a background 401.
+    const { data: cart } = useGetCartQuery(undefined, { skip: !isAuthenticated });
     const cartItem = useMemo(
         () => cart?.items.find((item) => item.productId === product?._id),
         [cart, product?._id],
     );
     const isInCart = !!cartItem;
 
-    const { data: wishlist = [] } = useGetWishlistQuery();
+    const { data: wishlist = [] } = useGetWishlistQuery(undefined, { skip: !isAuthenticated });
     const wishlistEntry = useMemo(
         () => wishlist.find((w) => w.productId === product?._id),
         [wishlist, product?._id],
@@ -161,8 +167,17 @@ export default function ProductDetailsClient({
         );
     };
 
+    const requireAuth = (message: string) => {
+        const from = encodeURIComponent(window.location.pathname);
+        router.push(`/login?from=${from}&message=${encodeURIComponent(message)}`);
+    };
+
     const handleAddToCart = async () => {
         if (!product) return;
+        if (!isAuthenticated) {
+            requireAuth('Please login to add items to your cart');
+            return;
+        }
         try {
             await addItem({
                 productId: product._id,
@@ -180,6 +195,10 @@ export default function ProductDetailsClient({
 
     const handleToggleWishlist = async () => {
         if (!product) return;
+        if (!isAuthenticated) {
+            requireAuth('Please login to add items to your wishlist');
+            return;
+        }
         try {
             if (isInWishlist && wishlistEntry) {
                 await removeFromWishlist(wishlistEntry.id).unwrap();
@@ -215,6 +234,10 @@ export default function ProductDetailsClient({
 
     const handleBrandFavToggle = async () => {
         if (!product?.brandId) return;
+        if (!isAuthenticated) {
+            requireAuth('Please login to favourite a brand');
+            return;
+        }
         try {
             await toggleBrandFavorite(product.brandId).unwrap();
         } catch {
@@ -479,243 +502,245 @@ export default function ProductDetailsClient({
                                         { platform: 'linkedin', label: 'in' },
                                     ] as const
                                 ).map(({ platform, label }) => (
-                                    <a
-                                        key={platform}
-                                        href="#"
-                                        className="pd-share-btn"
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            handleShare(platform);
-                                        }}
-                                        title={`Share on ${platform}`}
-                                        style={{
-                                            fontFamily: "'Space Mono',monospace",
-                                            fontSize: '.65rem',
-                                            fontWeight: 'bold',
-                                        }}
+                                <div 
+                                  key = { platform }
+                                  href = "#"
+                                  className = "pd-share-btn"
+                                  onClick = {(e) => {
+                                     e.preventDefault();
+                                    handleShare(platform);
+                                   }}
+                                    title={`Share on ${platform}`}
+                                    style={{
+                                        fontFamily: "'Space Mono',monospace",
+                                        fontSize: '.65rem',
+                                        fontWeight: 'bold',
+                                    }}
                                     >
-                                        {label}
-                                    </a>
-                                ))}
+                                {label}
                             </div>
-                        </div>
-                    </div>
-
-                    {/* ── Tabs ─────────────────────────────────────────────────── */}
-                    <div className="pd-tabs-section">
-                        <div className="pd-tab-bar">
-                            {(
-                                [
-                                    { id: 'description', label: 'Description' },
-                                    { id: 'more-info', label: 'More Info' },
-                                    { id: 'tags', label: 'Tags' },
-                                    { id: 'reviews', label: 'Reviews', count: reviews.length },
-                                ] as const
-                            ).map((tab) => (
-                                <button
-                                    key={tab.id}
-                                    className={`pd-tab${activeTab === tab.id ? ' active' : ''}`}
-                                    onClick={() => setActiveTab(tab.id)}
-                                    type="button"
-                                >
-                                    {tab.label}
-                                    {'count' in tab && tab.count !== undefined && (
-                                        <span className="pd-tab-count">{tab.count}</span>
-                                    )}
-                                </button>
-                            ))}
-                        </div>
-
-                        <div className="pd-tab-body">
-                            {activeTab === 'description' && (
-                                <>
-                                    <p className="pd-full-desc">
-                                        {product.fullDescription || product.description}
-                                    </p>
-                                    <ul className="pd-feature-list">
-                                        {(
-                                            product.features || [
-                                                'Shipped with board and sleeve.',
-                                                '30 day money back guarantee.',
-                                                'Packaged by hand.',
-                                                'Near Mint (NM) condition.',
-                                            ]
-                                        ).map((f, i) => (
-                                            <li key={i}>{f}</li>
-                                        ))}
-                                    </ul>
-                                </>
-                            )}
-
-                            {activeTab === 'more-info' && (
-                                <p className="pd-full-desc">
-                                    Shipping &amp; Packaging — Every order is shipped with a rigid backing
-                                    board and protective polypropylene sleeve to ensure your copy arrives
-                                    in perfect, collector-grade condition.
-                                </p>
-                            )}
-
-                            {activeTab === 'tags' && (
-                                <div className="pd-tags">
-                                    {(product.tags || ['Airsoft', 'Tactical', 'Outdoor', 'Gear']).map(
-                                        (tag, i) => (
-                                            <a
-                                                key={i}
-                                                href="#"
-                                                className="pd-tag"
-                                                onClick={(e) => e.preventDefault()}
-                                            >
-                                                {tag}
-                                            </a>
-                                        ),
-                                    )}
-                                </div>
-                            )}
-
-                            {activeTab === 'reviews' && (
-                                <div className="pd-reviews-layout">
-                                    <div>
-                                        <p
-                                            style={{
-                                                fontFamily: "'Anton','Impact',sans-serif",
-                                                fontSize: '.9rem',
-                                                letterSpacing: '.14em',
-                                                textTransform: 'uppercase',
-                                                color: 'rgba(255,255,255,0.92)',
-                                                margin: '0 0 1.25rem',
-                                            }}
-                                        >
-                                            {reviews.length} Reviews
-                                        </p>
-
-                                        {reviewsLoading && (
-                                            <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem 0' }}>
-                                                <div className="pd-spinner" />
-                                            </div>
-                                        )}
-
-                                        {!reviewsLoading && reviews.length === 0 && (
-                                            <div className="pd-review-empty">
-                                                No reviews yet — be the first to review this product.
-                                            </div>
-                                        )}
-
-                                        <div className="pd-review-list">
-                                            {!reviewsLoading &&
-                                                reviews.map((review) => (
-                                                    <div key={review.id} className="pd-review-item">
-                                                        <div className="pd-review-header">
-                                                            <div>
-                                                                <p className="pd-reviewer-name">{review.username}</p>
-                                                                <Stars rating={review.rating || 4} />
-                                                                {review.verified && (
-                                                                    <span className="pd-verified-badge">✓ Verified Purchase</span>
-                                                                )}
-                                                            </div>
-                                                            <span className="pd-review-date">
-                                                                {new Date(review.createdAt).toLocaleDateString('en-US', {
-                                                                    month: 'short',
-                                                                    day: 'numeric',
-                                                                    year: 'numeric',
-                                                                })}
-                                                            </span>
-                                                        </div>
-                                                        {review.title && <p className="pd-review-title">{review.title}</p>}
-                                                        <p className="pd-review-body">{review.comment}</p>
-                                                    </div>
-                                                ))}
-                                        </div>
-                                    </div>
-
-                                    <div className="pd-review-form">
-                                        <h3 className="pd-review-form-title">Write a Review</h3>
-
-                                        <div className="auth-field">
-                                            <label className="auth-label">
-                                                Your Name <span className="auth-label-req">*</span>
-                                            </label>
-                                            <input
-                                                type="text"
-                                                className="auth-input"
-                                                value={reviewForm.userName}
-                                                onChange={(e) => handleReviewChange('userName', e.target.value)}
-                                                placeholder="Enter your name"
-                                            />
-                                        </div>
-
-                                        <div className="auth-field">
-                                            <label className="auth-label">
-                                                Email <span className="auth-label-req">*</span>
-                                            </label>
-                                            <input
-                                                type="email"
-                                                className="auth-input"
-                                                value={reviewForm.email}
-                                                onChange={(e) => handleReviewChange('email', e.target.value)}
-                                                placeholder="Enter your email"
-                                            />
-                                        </div>
-
-                                        <div className="auth-field">
-                                            <label className="auth-label">
-                                                Rating <span className="auth-label-req">*</span>
-                                            </label>
-                                            <div className="pd-star-picker" style={{ marginBottom: '.25rem' }}>
-                                                {[1, 2, 3, 4, 5].map((n) => (
-                                                    <span
-                                                        key={n}
-                                                        className={`pd-star interactive${n <= (hoverStar || reviewForm.rating) ? ' filled' : ''
-                                                            }`}
-                                                        style={{ fontSize: '1.2rem' }}
-                                                        onClick={() => handleReviewChange('rating', n)}
-                                                        onMouseEnter={() => setHoverStar(n)}
-                                                        onMouseLeave={() => setHoverStar(0)}
-                                                    >
-                                                        ★
-                                                    </span>
-                                                ))}
-                                            </div>
-                                        </div>
-
-                                        <div className="auth-field">
-                                            <label className="auth-label">
-                                                Review <span className="auth-label-req">*</span>
-                                            </label>
-                                            <textarea
-                                                className="auth-input"
-                                                rows={4}
-                                                style={{ resize: 'vertical', height: 'auto' }}
-                                                value={reviewForm.content}
-                                                onChange={(e) => handleReviewChange('content', e.target.value)}
-                                                placeholder="Share your thoughts about this product..."
-                                            />
-                                        </div>
-
-                                        <button
-                                            type="button"
-                                            className="auth-submit"
-                                            style={{ marginTop: '.75rem' }}
-                                            onClick={handleSubmitReview}
-                                        >
-                                            Submit Review
-                                        </button>
-                                    </div>
-                                </div>
-                            )}
+                                ))}
                         </div>
                     </div>
                 </div>
-            </div>
 
-            {toasts.map((toast) => (
-                <Toast
-                    key={toast.id}
-                    message={toast.message}
-                    type={toast.type}
-                    onClose={() => removeToast(toast.id)}
-                />
-            ))}
-            <ProductCarousel />
+                {/* ── Tabs ─────────────────────────────────────────────────── */}
+                <div className="pd-tabs-section">
+                    <div className="pd-tab-bar">
+                        {(
+                            [
+                                { id: 'description', label: 'Description' },
+                                { id: 'more-info', label: 'More Info' },
+                                { id: 'tags', label: 'Tags' },
+                                { id: 'reviews', label: 'Reviews', count: reviews.length },
+                            ] as const
+                        ).map((tab) => (
+                            <button
+                                key={tab.id}
+                                className={`pd-tab${activeTab === tab.id ? ' active' : ''}`}
+                                onClick={() => setActiveTab(tab.id)}
+                                type="button"
+                            >
+                                {tab.label}
+                                {'count' in tab && tab.count !== undefined && (
+                                    <span className="pd-tab-count">{tab.count}</span>
+                                )}
+                            </button>
+                        ))}
+                    </div>
+
+                    <div className="pd-tab-body">
+                        {activeTab === 'description' && (
+                            <>
+                                <p className="pd-full-desc">
+                                    {product.fullDescription || product.description}
+                                </p>
+                                <ul className="pd-feature-list">
+                                    {(
+                                        product.features || [
+                                            'Shipped with board and sleeve.',
+                                            '30 day money back guarantee.',
+                                            'Packaged by hand.',
+                                            'Near Mint (NM) condition.',
+                                        ]
+                                    ).map((f, i) => (
+                                        <li key={i}>{f}</li>
+                                    ))}
+                                </ul>
+                            </>
+                        )}
+
+                        {activeTab === 'more-info' && (
+                            <p className="pd-full-desc">
+                                Shipping &amp; Packaging — Every order is shipped with a rigid backing
+                                board and protective polypropylene sleeve to ensure your copy arrives
+                                in perfect, collector-grade condition.
+                            </p>
+                        )}
+
+                        {activeTab === 'tags' && (
+                            <div className="pd-tags">
+                                {(product.tags || ['Airsoft', 'Tactical', 'Outdoor', 'Gear']).map(
+                                    (tag, i) => (
+                                    <a
+                                        key = { i }
+                                        href = "#"
+                                        className = "pd-tag"
+                                        onClick = {(e) => e.preventDefault()}
+                                      >
+                                {tag}
+                            </a>
+                        ),
+                                    )}
+                    </div>
+                            )}
+
+                    {activeTab === 'reviews' && (
+                        <div className="pd-reviews-layout">
+                            <div>
+                                <p
+                                    style={{
+                                        fontFamily: "'Anton','Impact',sans-serif",
+                                        fontSize: '.9rem',
+                                        letterSpacing: '.14em',
+                                        textTransform: 'uppercase',
+                                        color: 'rgba(255,255,255,0.92)',
+                                        margin: '0 0 1.25rem',
+                                    }}
+                                >
+                                    {reviews.length} Reviews
+                                </p>
+
+                                {reviewsLoading && (
+                                    <div style={{ display: 'flex', justifyContent: 'center', padding: '2rem 0' }}>
+                                        <div className="pd-spinner" />
+                                    </div>
+                                )}
+
+                                {!reviewsLoading && reviews.length === 0 && (
+                                    <div className="pd-review-empty">
+                                        No reviews yet — be the first to review this product.
+                                    </div>
+                                )}
+
+                                <div className="pd-review-list">
+                                    {!reviewsLoading &&
+                                        reviews.map((review) => (
+                                            <div key={review.id} className="pd-review-item">
+                                                <div className="pd-review-header">
+                                                    <div>
+                                                        <p className="pd-reviewer-name">{review.username}</p>
+                                                        <Stars rating={review.rating || 4} />
+                                                        {review.verified && (
+                                                            <span className="pd-verified-badge">✓ Verified Purchase</span>
+                                                        )}
+                                                    </div>
+                                                    <span className="pd-review-date">
+                                                        {new Date(review.createdAt).toLocaleDateString('en-US', {
+                                                            month: 'short',
+                                                            day: 'numeric',
+                                                            year: 'numeric',
+                                                        })}
+                                                    </span>
+                                                </div>
+                                                {review.title && <p className="pd-review-title">{review.title}</p>}
+                                                <p className="pd-review-body">{review.comment}</p>
+                                            </div>
+                                        ))}
+                                </div>
+                            </div>
+
+                            <div className="pd-review-form">
+                                <h3 className="pd-review-form-title">Write a Review</h3>
+
+                                <div className="auth-field">
+                                    <label className="auth-label">
+                                        Your Name <span className="auth-label-req">*</span>
+                                    </label>
+                                    <input
+                                        type="text"
+                                        className="auth-input"
+                                        value={reviewForm.userName}
+                                        onChange={(e) => handleReviewChange('userName', e.target.value)}
+                                        placeholder="Enter your name"
+                                    />
+                                </div>
+
+                                <div className="auth-field">
+                                    <label className="auth-label">
+                                        Email <span className="auth-label-req">*</span>
+                                    </label>
+                                    <input
+                                        type="email"
+                                        className="auth-input"
+                                        value={reviewForm.email}
+                                        onChange={(e) => handleReviewChange('email', e.target.value)}
+                                        placeholder="Enter your email"
+                                    />
+                                </div>
+
+                                <div className="auth-field">
+                                    <label className="auth-label">
+                                        Rating <span className="auth-label-req">*</span>
+                                    </label>
+                                    <div className="pd-star-picker" style={{ marginBottom: '.25rem' }}>
+                                        {[1, 2, 3, 4, 5].map((n) => (
+                                            <span
+                                                key={n}
+                                                className={`pd-star interactive${n <= (hoverStar || reviewForm.rating) ? ' filled' : ''
+                                                    }`}
+                                                style={{ fontSize: '1.2rem' }}
+                                                onClick={() => handleReviewChange('rating', n)}
+                                                onMouseEnter={() => setHoverStar(n)}
+                                                onMouseLeave={() => setHoverStar(0)}
+                                            >
+                                                ★
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div className="auth-field">
+                                    <label className="auth-label">
+                                        Review <span className="auth-label-req">*</span>
+                                    </label>
+                                    <textarea
+                                        className="auth-input"
+                                        rows={4}
+                                        style={{ resize: 'vertical', height: 'auto' }}
+                                        value={reviewForm.content}
+                                        onChange={(e) => handleReviewChange('content', e.target.value)}
+                                        placeholder="Share your thoughts about this product..."
+                                    />
+                                </div>
+
+                                <button
+                                    type="button"
+                                    className="auth-submit"
+                                    style={{ marginTop: '.75rem' }}
+                                    onClick={handleSubmitReview}
+                                >
+                                    Submit Review
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div >
+            </div >
+
+    {
+        toasts.map((toast) => (
+            <Toast
+                key={toast.id}
+                message={toast.message}
+                type={toast.type}
+                onClose={() => removeToast(toast.id)}
+            />
+        ))
+    }
+        < ProductCarousel />
         </>
     );
 }
