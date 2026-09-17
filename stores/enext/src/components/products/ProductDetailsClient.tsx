@@ -90,9 +90,7 @@ export default function ProductDetailsClient({
 
     // ── Local UI state ────────────────────────────────────────────────────
     const [quantity, setQuantity] = useState(1);
-    const [activeTab, setActiveTab] = useState(
-    'description' | 'more-info' | 'tags' | 'reviews'
-        > ('description'));
+    const [activeTab, setActiveTab] = useState('description');
     const [hoverStar, setHoverStar] = useState(0);
     const [reviewForm, setReviewForm] = useState<ReviewFormState>({
         userName: '',

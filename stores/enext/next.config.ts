@@ -1,6 +1,9 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
+  images: {
+     remotePatterns: [new URL('https://res.cloudinary.com/dgzxxbqa0/**')],
+  },
   allowedDevOrigins: ['10.10.1.140'],
   async rewrites() {
     return [
