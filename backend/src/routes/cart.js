@@ -5,6 +5,12 @@ module.exports = (fear) => {
   const validator = fear.getValidator();
   const handler = fear.getHandler();
 
+  router.get("/shipping-estimate", cart.getShippingEstimate);
+  router.get("/count", cart.getCartCount);
+  router.route("/coupon").post(cart.applyCoupon).delete(cart.removeCoupon);
+  router.post("/items", cart.addItem);
+  router.route("/items/:itemId").patch(cart.updateItem).delete(cart.removeItem);
+  router.route("/").get(cart.getCart).delete(cart.clearCart);
 
   router.post("/new", validator.request, handler.async(Cart.createCartItem));
   router.post("/user", validator.request, handler.async(Cart.getUserCart));
@@ -13,93 +19,3 @@ module.exports = (fear) => {
 
   return router;
 };
-
-/**
- * GET /api/cart
- * Get current user's cart
- * Query params: userId (optional, for admin/different user)
- 
-router.get('/',
-  validator.request,
-  handler.async(Cart.getUserCart)
-);
-
-/**
- * POST /api/cart/items
- * Add item to cart
- 
-router.post('/items',
-  validate.item,
-  validator.request,
-  handler.async(Cart.addCartItem)
-);
-
-/**
- * PUT /api/cart/items/:itemId
- * Update cart item quantity (or replace item)
- 
-router.put('/items/:itemId',
-  validate.quantity,
-  validator.request,
-  handler.async(Cart.updateCartItem)
-);
-
-/**
- * PATCH /api/cart/items/:itemId/quantity
- * Update only the quantity of a cart item
- 
-router.patch('/items/:itemId/quantity',
-  [
-    param('itemId')
-      .isMongoId()
-      .withMessage('Valid cart item ID is required'),
-    body('quantity')
-      .isInt({ min: 0, max: 100 })
-      .withMessage('Quantity must be between 0 and 100')
-  ],
-  validateRequest,
-  asyncHandler(cartController.updateItemQuantity)
-);
-
-/**
- * DELETE /api/cart/items/:itemId
- * Remove specific item from cart
- 
-router.delete('/items/:itemId',
-  [
-    param('itemId')
-      .isMongoId()
-      .withMessage('Valid cart item ID is required')
-  ],
-  validateRequest,
-  asyncHandler(cartController.removeCartItem)
-);
-
-/**
- * DELETE /api/cart
- * Empty entire cart
- 
-router.delete('/',
-  userIdValidation,
-  validateRequest,
-  asyncHandler(cartController.emptyCart)
-);
-
-/**
- * GET /api/cart/summary
- * Get cart summary (total items, total price, etc.)
- 
-router.get('/summary',
-  [
-    query('userId')
-      .optional()
-      .isMongoId()
-      .withMessage('Valid user ID is required')
-  ],
-  validateRequest,
-  asyncHandler(cartController.getCartSummary)
-);
-
-
-module.exports = router;
-*/
