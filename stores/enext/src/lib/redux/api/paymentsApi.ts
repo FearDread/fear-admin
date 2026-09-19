@@ -64,7 +64,7 @@ export interface AddPaymentInput {
 export const paymentsApi = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         getPayments: builder.query<PaymentMethod[], void>({
-            query: () => '/payments',
+            query: () => '/payment/all',
             transformResponse: (obj: { result: PaymentMethod[] }) => obj.result,
             providesTags: (result) =>
                 result
@@ -77,7 +77,7 @@ export const paymentsApi = apiSlice.injectEndpoints({
 
         addPayment: builder.mutation<PaymentMethod, AddPaymentInput>({
             query: (body) => ({
-                url: '/payments',
+                url: '/payment/new',
                 method: 'POST',
                 body,
             }),
@@ -87,7 +87,7 @@ export const paymentsApi = apiSlice.injectEndpoints({
 
         removePayment: builder.mutation<{ success: boolean }, string>({
             query: (methodId) => ({
-                url: `/payments/${methodId}`,
+                url: `/payment/${methodId}`,
                 method: 'DELETE',
             }),
             invalidatesTags: (_result, _error, methodId) => [
@@ -98,13 +98,13 @@ export const paymentsApi = apiSlice.injectEndpoints({
 
         setDefaultPayment: builder.mutation<{ success: boolean }, string>({
             query: (methodId) => ({
-                url: `/payments/${methodId}/default`,
+                url: `/payment/${methodId}/default`,
                 method: 'PATCH',
             }),
             invalidatesTags: [{ type: 'Payment', id: 'LIST' }],
         }),
         createPaymentIntent: builder.mutation<PaymentIntentResult, CreatePaymentIntentRequest>({
-            query: (body) => ({ url: '/payments/create-intent', method: 'POST', body }),
+            query: (body) => ({ url: '/stripe/intent', method: 'POST', body }),
             transformResponse: (obj: ApiEnvelope<PaymentIntentResult>) => obj.result,
         }),
 
@@ -112,12 +112,12 @@ export const paymentsApi = apiSlice.injectEndpoints({
             PaypalCreateOrderResult,
             { orderId?: string; amount: number }
         >({
-            query: (body) => ({ url: '/payments/paypal/create-order', method: 'POST', body }),
+            query: (body) => ({ url: '/paypal/create-order', method: 'POST', body }),
             transformResponse: (obj: ApiEnvelope<PaypalCreateOrderResult>) => obj.result,
         }),
 
         capturePaypalOrder: builder.mutation<PaypalCaptureOrderResult, { orderID: string }>({
-            query: (body) => ({ url: '/payments/paypal/capture-order', method: 'POST', body }),
+            query: (body) => ({ url: '/paypal/capture-order', method: 'POST', body }),
             transformResponse: (obj: ApiEnvelope<PaypalCaptureOrderResult>) => obj.result,
         }),
     }),
