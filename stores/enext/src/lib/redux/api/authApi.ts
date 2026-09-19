@@ -55,7 +55,7 @@ import type { User } from '@/types/user';
 interface AuthDataEnvelope<T> {
     success: boolean;
     message?: string;
-    data: T;
+    result: T;
 }
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -153,7 +153,7 @@ export const authApi = apiSlice.injectEndpoints({
 
         login: builder.mutation<User, LoginRequest>({
             query: (body) => ({ url: '/auth/login', method: 'POST', body }),
-            transformResponse: (response: AuthDataEnvelope<UserAndTokenPayload>) => response.data.user,
+            transformResponse: (response: AuthDataEnvelope<UserAndTokenPayload>) => response.result.user,
             async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
                 dispatch(setAuthError(null));
                 try {

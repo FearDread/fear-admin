@@ -68,6 +68,7 @@ export default function CheckoutDetailsClient() {
 
   const currentUser = useAppSelector(selectCurrentUser);
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
+
   const draft = useAppSelector(selectCheckout);
 
   const [shippingAddress, setShippingAddress] = useState<Address>(draft.shippingAddress ?? EMPTY_ADDRESS);
@@ -79,7 +80,8 @@ export default function CheckoutDetailsClient() {
 
   // Route guards — auth state is client-side (cookie session hydrated via
   // AuthHydrator), so this check runs after mount, same timing as the CRA app.
-  useEffect(() => {
+    useEffect(() => {
+        console.log('authenticated ?', isAuthenticated);
     if (!isAuthenticated) router.replace('/login?redirect=/checkout/details');
   }, [isAuthenticated, router]);
 

@@ -1,33 +1,5 @@
 'use client';
 
-/**
- * AccountClient.tsx
- *
- * Single auth guard + section switch for every account page. Replaces the
- * near-identical `useEffect(() => { if (!isAuthenticated) navigate('/login') }, ...)`
- * block that was copy-pasted at the top of Dashboard.jsx, Orders.jsx,
- * Addresses.jsx, and PaymentMethods.jsx in the CRA app.
- *
- * `location.state` (`{ from: location, message: '...' }`) is replaced with
- * the same `?from=` / `?message=` search-param pattern already used by the
- * auth routes, so `/login` doesn't need two different redirect mechanisms.
- *
- * Auth state comes from `authSlice` (`selectCurrentUser` / `selectIsAuthenticated`
- * / `selectIsAuthHydrating`), which `authApi`'s `onQueryStarted` handlers keep
- * in sync on login/logout/session-hydration. `authApi` itself is only reached
- * for the actual network calls (login, register, logout, session check,
- * password reset, etc.) — components that just need to *read* "who is logged
- * in right now" should pull from the slice, not re-trigger `useGetSessionQuery`
- * or similar here.
- *
- * Each view component still owns its own hero/breadcrumb markup and renders
- * <AccountSidebar/> itself — the original CRA pages weren't visually
- * consistent (Dashboard/Orders/Details use the styled "dash-/oh-/ud-" hero
- * shell, Addresses/PaymentMethods use plain Bootstrap containers), so
- * forcing a single shared shell here would change more than the routing.
- * That visual unification is a good follow-up, just not part of this pass.
- */
-
 import { useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAppSelector } from '@/lib/redux/hooks';
