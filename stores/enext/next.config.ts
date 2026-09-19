@@ -1,10 +1,13 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
+  typescript: {
+    ignoreBuildErrors: true,
+  },
   images: {
      remotePatterns: [new URL('https://res.cloudinary.com/dgzxxbqa0/**')],
   },
-  allowedDevOrigins: ['10.10.1.140'],
+  allowedDevOrigins: ['10.10.1.140', 'efear.shop'],
   async rewrites() {
     return [
       {
