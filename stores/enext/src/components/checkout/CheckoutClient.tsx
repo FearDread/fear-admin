@@ -2,7 +2,7 @@
 
 import { Suspense, type ComponentType } from 'react';
 import dynamic from 'next/dynamic';
-import type { CheckoutStepSlug } from './CheckoutSteps';
+import type { CheckoutStepSlug } from '@/lib/checkout/steps';
 
 /**
  * Picks the view for the current checkout step.

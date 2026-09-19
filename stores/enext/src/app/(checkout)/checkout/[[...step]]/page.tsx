@@ -34,13 +34,14 @@ import {
     CHECKOUT_STEP_META,
     CHECKOUT_STEP_SLUGS,
     resolveCheckoutStep,
-} from '@/components/checkout/CheckoutSteps';
+} from '@/lib/checkout/steps';
 
 export const dynamicParams = false;
 
 interface CheckoutPageProps {
     // Next.js 15: dynamic route params are async on the server.
     params: Promise<{ step?: string[] }>;
+
 }
 
 export function generateStaticParams() {
@@ -60,6 +61,7 @@ export async function generateMetadata({ params }: CheckoutPageProps): Promise<M
 
 export default async function CheckoutPage({ params }: CheckoutPageProps) {
     const { step } = await params;
+    console.log('checkout params = ', step);
     const slug = resolveCheckoutStep(step);
     if (!slug) notFound();
 
