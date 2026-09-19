@@ -5,12 +5,12 @@ module.exports = (fear) => {
   const validator = fear.getValidator();
   const handler = fear.getHandler();
 
-  router.get("/shipping-estimate", cart.getShippingEstimate);
-  router.get("/count", cart.getCartCount);
-  router.route("/coupon").post(cart.applyCoupon).delete(cart.removeCoupon);
-  router.post("/items", cart.addItem);
-  router.route("/items/:itemId").patch(cart.updateItem).delete(cart.removeItem);
-  router.route("/").get(cart.getCart).delete(cart.clearCart);
+    router.get("/shipping-estimate", Cart.getShippingEstimate);
+    router.get("/count", Cart.getCartCount);
+    router.route("/coupon").post(Cart.applyCoupon).delete(Cart.removeCoupon);
+    router.post("/items", Cart.addItem);
+    router.route("/items/:itemId").patch(Cart.updateItem).delete(Cart.removeItem);
+    router.route("/").get(Cart.getCart).delete(Cart.clearCart);
 
   router.post("/new", validator.request, handler.async(Cart.createCartItem));
   router.post("/user", validator.request, handler.async(Cart.getUserCart));

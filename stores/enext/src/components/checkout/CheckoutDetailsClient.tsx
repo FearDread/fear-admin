@@ -13,7 +13,7 @@ import {
 } from '@/lib/redux/slices/checkoutSlice';
 import { useCheckoutTotals } from '@/lib/checkout/totals';
 import { DISCOUNT_CODES, type Address } from '@/types/checkout';
-import CheckoutSteps from '@/components/checkout/CheckoutSteps';
+import CheckoutSteps from './CheckoutSteps';
 
 const EMPTY_ADDRESS: Address = {
   firstName: '',
