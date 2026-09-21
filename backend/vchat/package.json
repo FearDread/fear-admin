@@ -1,9 +1,0 @@
-{
-  "name": "vchat",
-  "version": "1.0.0",
-  "description": "Secure video conference / chat server using wss:// protocol'",
-  "main": "index.js",
-  "author": "Garrett Haptonstall (FearDread)\\",
-  "license": "MIT",
-  "private": false
-}
