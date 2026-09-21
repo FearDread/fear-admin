@@ -75,8 +75,10 @@
     "swipe": "^1.7.7",
     "uniqid": "^5.4.0",
     "validator": "^13.9.0",
+    "websocket": "^1.0.35",
     "winston": "^3.11.0",
-    "winston-daily-rotate-file": "^4.7.1"
+    "winston-daily-rotate-file": "^4.7.1",
+    "ws": "^8.21.3"
   },
   "devDependencies": {
     "nodemon": "^3.0.2"
