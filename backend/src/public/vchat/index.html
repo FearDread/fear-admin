@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>FEAR :: vchat</title>
+    <style>
+        :root {
+            color-scheme: dark;
+            --bg: #0d0d10;
+            --panel: #16161c;
+            --line: #2a2a34;
+            --text: #d8d8e0;
+            --muted: #7c7c8c;
+            --accent: #b03030;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 1rem;
+            background: var(--bg);
+            color: var(--text);
+            font: 14px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+        }
+
+        .container {
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: 200px 1fr 360px;
+            grid-template-areas:
+                "info  info    info"
+                "users chat    camera"
+                "users controls camera";
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .infobox {
+            grid-area: info;
+        }
+
+        .userlistbox {
+            grid-area: users;
+        }
+
+        .chatbox {
+            grid-area: chat;
+        }
+
+        .chat-controls {
+            grid-area: controls;
+        }
+
+        .camerabox {
+            grid-area: camera;
+        }
+
+        .infobox, .userlistbox, .chatbox, .camerabox {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            padding: 0.75rem;
+        }
+
+        h1 {
+            font-size: 1rem;
+            margin: 0 0 0.5rem;
+            letter-spacing: 0.1em;
+        }
+
+        input, button {
+            background: #101016;
+            color: var(--text);
+            border: 1px solid var(--line);
+            border-radius: 4px;
+            padding: 0.4rem 0.6rem;
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+            button:hover:not(:disabled) {
+                border-color: var(--accent);
+            }
+
+            button:disabled, input:disabled {
+                opacity: 0.4;
+                cursor: not-allowed;
+            }
+
+        .userlistbox {
+            list-style: none;
+            margin: 0;
+            min-height: 200px;
+        }
+
+            .userlistbox li {
+                padding: 0.3rem 0.4rem;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+
+                .userlistbox li:hover {
+                    background: var(--accent);
+                }
+
+        .chatbox {
+            height: 320px;
+            overflow-y: auto;
+        }
+
+        .chat-line {
+            word-break: break-word;
+        }
+
+            .chat-line.system {
+                color: var(--muted);
+                font-style: italic;
+            }
+
+        .chat-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+            .chat-controls input {
+                flex: 1;
+            }
+
+        video {
+            width: 100%;
+            background: #000;
+            border-radius: 4px;
+            display: block;
+        }
+
+        #local_video {
+            margin-top: 0.5rem;
+            max-height: 120px;
+        }
+
+        .status-line {
+            font-size: 0.8rem;
+            color: var(--muted);
+            margin-top: 0.4rem;
+            min-height: 1.1em;
+        }
+
+        @media (max-width: 900px) {
+            .container {
+                grid-template-columns: 1fr;
+                grid-template-areas: "info" "camera" "users" "chat" "controls";
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="infobox">
+            <h1>FEAR :: VCHAT</h1>
+            <p>Join a room, then click a name in the user list to start a video call.</p>
+            <label>
+                Room
+                <input id="room" type="text" value="lobby" maxlength="64" inputmode="verbatim" placeholder="lobby">
+            </label>
+            <label>
+                Display name
+                <input id="name" type="text" maxlength="24" autocomplete="username" inputmode="verbatim" placeholder="optional">
+            </label>
+            <button id="login" type="button">Connect</button>
+            <div id="conn-status" class="status-line"></div>
+        </div>
+
+        <ul class="userlistbox"></ul>
+
+        <div class="chatbox" aria-live="polite"></div>
+
+        <div class="camerabox">
+            <video id="received_video" autoplay playsinline></video>
+            <video id="local_video" autoplay playsinline muted></video>
+            <div id="e2ee-status" class="status-line"></div>
+            <button id="hangup-button" type="button" disabled>Hang Up</button>
+        </div>
+
+        <div class="chat-controls">
+            <input id="text" type="text" maxlength="256" placeholder="Say something…" autocomplete="off" disabled>
+            <button id="send" type="button" disabled>Send</button>
+        </div>
+    </div>
+
+    <script type="module" src="vchat-client.js"></script>
+</body>
+</html>
