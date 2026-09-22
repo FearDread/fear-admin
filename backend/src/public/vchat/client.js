@@ -2,6 +2,19 @@
  * FEAR vchat client :: replaces MDN's chatclient.js
  *
  * Serve as an ES module: <script type="module" src="vchat-client.js"></script>
+ *
+ * Differences from the sample it grew out of:
+ *   - No globals, no adapter.js. Every browser that supports the unified-plan
+ *     API used here also implements these calls natively.
+ *   - Perfect negotiation instead of the manual rollback dance, so glare
+ *     resolves deterministically instead of racing.
+ *   - ICE servers come from /fear/api/vchat/config, not hardcoded TURN creds.
+ *   - Chat renders with textContent. The sample builds HTML out of the
+ *     username, which is a stored XSS hole.
+ *   - Peers addressed by server-issued peerId, not by a name the client picked.
+ *   - Per-frame end-to-end encryption on top of DTLS-SRTP (see e2ee.js).
+ *   - Two independent ingress endpoints, raced on connect and failed over to
+ *     automatically if one drops mid-session (see ENDPOINTS below).
  */
 
 import * as E2EE from "./e2ee.js";
@@ -9,18 +22,26 @@ import * as E2EE from "./e2ee.js";
 const API_PATH = "/fear/api/vchat";
 
 /**
- * Two doors into the same FEAR backend. FALLBACK should be a genuinely
- * separate ingress — a Cloudflare Tunnel hostname, a backup VPS reverse
- * proxy, anything that doesn't depend on the same router/port-forward/
- * dynamic-DNS record as PRIMARY. If that path goes down, this one won't.
+ * Two doors into the same FEAR backend, tried in order and raced with a
+ * timeout each. Both live under efear.shop now (moved off fear.dedyn.io) —
+ * both are hardcoded rather than derived from location.host, since the
+ * whole point of failover is that it still works when the page happened to
+ * load from the one that's currently down.
  *
- * Fill in your fallback hostname below. Leaving it as-is means failover
- * degrades to "retry the same endpoint," which is still fine — it's just
- * not a second path.
+ *   primary  — vchat.efear.shop, a Cloudflare Tunnel. No open inbound port
+ *              required; survives a router reboot or an ISP that starts
+ *              blocking unsolicited inbound traffic.
+ *   fallback — vchat-direct.efear.shop, the direct port-forward + its own
+ *              Let's Encrypt cert. Survives a cloudflared crash or a
+ *              Cloudflare-side outage, which the tunnel path can't.
+ *
+ * Nothing else in this file cares which is which — it only ever reasons
+ * about ENDPOINTS[0] ("the session-cookie origin") vs. everything after it,
+ * so reordering this array is the only change needed to swap which is primary.
  */
 const ENDPOINTS = [
-    { label: "primary", origin: `${location.protocol}//${location.host}` },
-    { label: "fallback", origin: "https://REPLACE-WITH-YOUR-TUNNEL-HOSTNAME" },
+    { label: "cloudflare-tunnel", origin: "https://vchat.efear.shop" },
+    { label: "port-forward", origin: "https://vchat-direct.efear.shop" },
 ];
 
 const CONNECT_TIMEOUT_MS = 5000;

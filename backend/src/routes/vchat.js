@@ -4,7 +4,7 @@
  * Drop at: routes/vchat.js  ->  auto-mounted at /fear/api/vchat
  *
  * The WebSocket handles signaling; this handles everything the client needs
- * before it opens the socket (ICE servers, room creation, room state).
+ * befor                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    e it opens the socket (ICE servers, room creation, room state).
  */
 
 const crypto = require("crypto");

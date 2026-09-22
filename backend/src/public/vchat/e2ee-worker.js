@@ -1,19 +1,5 @@
 /**
  * FEAR vchat :: e2ee-worker.js
- *
- * Runs off the main thread (required by RTCRtpScriptTransform) and does the
- * actual per-frame encrypt/decrypt. Holds AES-GCM keys as non-extractable
- * CryptoKey objects — even a main-thread XSS that could message this worker
- * can ask it to encrypt/decrypt but can never pull the raw key bytes back out.
- *
- * Frame format (SFrame-lite, not the IETF SFrame spec — no key-id byte,
- * because a call here only ever has one active key per direction):
- *
- *   [ 4-byte big-endian counter ][ AES-GCM ciphertext, tag included ]
- *
- * IV = 8-byte per-key salt (from HKDF) || 4-byte counter. The counter is
- * sent in clear so the receiver can rebuild the IV; it only needs to be
- * unique per key, which a strictly-incrementing per-sender counter gives us.
  */
 
 const keys = new Map(); // peerId -> { aesKey, ivSalt: Uint8Array(8), sendCounter }
@@ -39,16 +25,12 @@ function buildIV(ivSalt, counter) {
     return iv;
 }
 
-// Best-effort AAD: binds ciphertext to the frame kind so a swapped key/delta
-// frame fails auth instead of decoding as garbage. Not load-bearing security
-// on its own — the AES-GCM tag is what actually authenticates the frame.
 function frameAAD(frame) {
     return new Uint8Array([frame.type === "key" ? 1 : 0]);
 }
 
 async function encryptFrame(frame, peerId, controller) {
-    const entry = keys.get(peerId);
-    if (!entry) return; // no key yet — drop rather than ever send plaintext
+    const entry = keys.
 
     const counter = entry.sendCounter++;
     const iv = buildIV(entry.ivSalt, counter);
@@ -69,7 +51,7 @@ async function encryptFrame(frame, peerId, controller) {
 
 async function decryptFrame(frame, peerId, controller) {
     const entry = keys.get(peerId);
-    if (!entry || frame.data.byteLength < 4) return; // no key yet, or malformed
+    if (!entry || frame.data.byteLength < 4) return; 
 
     const view = new DataView(frame.data);
     const counter = view.getUint32(0, false);
