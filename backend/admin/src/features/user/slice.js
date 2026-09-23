@@ -47,7 +47,11 @@ const userReducers = {
   // Set user preferences
   setUserPreferences: (state, action) => {
     state.preferences = { ...state.preferences, ...action.payload };
-  },
+    },
+
+    setViewMode: (state) => {
+        state.viewMode = 'list';
+    },
   
   // Restore user from storage
   restoreUser: (state, action) => {
@@ -98,7 +102,8 @@ export const {
   setFilters,
   clearFilters,
   setSearchTerm,
-  setSorting,
+    setSorting,
+    setViewMode,
   // Custom user reducers
   setCurrentUser,
   setIsAuthenticated,
@@ -296,5 +301,7 @@ export const selectUserFullName = (state) => {
   if (!user) return '';
   return `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.email || 'User';
 };
+export const selectViewMode = (state) => state.viewMode || 'list';
+
 
 export default slice;

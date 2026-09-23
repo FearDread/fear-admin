@@ -66,8 +66,7 @@ async function decryptFrame(frame, peerId, controller) {
         );
         controller.enqueue(frame);
     } catch (err) {
-        // Wrong key, key not yet installed on this side, or a tampered frame.
-        // Drop it — never enqueue ciphertext as if it were a valid frame.
+
     }
 }
 

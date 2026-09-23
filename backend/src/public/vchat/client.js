@@ -3,18 +3,6 @@
  *
  * Serve as an ES module: <script type="module" src="vchat-client.js"></script>
  *
- * Differences from the sample it grew out of:
- *   - No globals, no adapter.js. Every browser that supports the unified-plan
- *     API used here also implements these calls natively.
- *   - Perfect negotiation instead of the manual rollback dance, so glare
- *     resolves deterministically instead of racing.
- *   - ICE servers come from /fear/api/vchat/config, not hardcoded TURN creds.
- *   - Chat renders with textContent. The sample builds HTML out of the
- *     username, which is a stored XSS hole.
- *   - Peers addressed by server-issued peerId, not by a name the client picked.
- *   - Per-frame end-to-end encryption on top of DTLS-SRTP (see e2ee.js).
- *   - Two independent ingress endpoints, raced on connect and failed over to
- *     automatically if one drops mid-session (see ENDPOINTS below).
  */
 
 import * as E2EE from "./e2ee.js";
@@ -34,10 +22,6 @@ const API_PATH = "/fear/api/vchat";
  *   fallback — vchat-direct.efear.shop, the direct port-forward + its own
  *              Let's Encrypt cert. Survives a cloudflared crash or a
  *              Cloudflare-side outage, which the tunnel path can't.
- *
- * Nothing else in this file cares which is which — it only ever reasons
- * about ENDPOINTS[0] ("the session-cookie origin") vs. everything after it,
- * so reordering this array is the only change needed to swap which is primary.
  */
 const ENDPOINTS = [
     { label: "cloudflare-tunnel", origin: "https://vchat.efear.shop" },
