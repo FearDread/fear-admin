@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
-import { useGetBlogPostsQuery, type BlogPost } from '@/lib/redux/api/blogApi';
+import { useGetAllBlogPostsQuery, type BlogPost } from '@/lib/redux/api/blogApi';
 import { useGetAllCategoriesQuery, type Category } from '@/lib/redux/api/categoriesApi';
 import { useContactMutation } from '@/lib/redux/api/mailApi';
 import { T, blogStyles } from '@/components/styles';
@@ -71,7 +71,7 @@ export default function BlogClient({ initialPosts, initialCategories }: BlogClie
         data: postsData,
         isFetching: loading,
         error,
-    } = useGetAllCategoriesQuery();
+    } = useGetAllBlogPostsQuery();
     const posts = postsData ?? initialPosts;
 
     const { data: categoriesData, isFetching: categoriesLoading } = useGetAllCategoriesQuery();
