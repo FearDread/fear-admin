@@ -59,9 +59,9 @@ interface FearItemEnvelope<T> {
 
 export const blogApi = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
-        getBlogPosts: builder.query<BlogPost[], BlogListParams | void>({
+        getAllBlogPosts: builder.query<BlogPost[], BlogListParams | void>({
             query: (params) => ({
-                url: '/blog',
+                url: '/blog/all',
                 params: params
                     ? {
                         search: params.search || undefined,

@@ -49,7 +49,7 @@ export const ordersApi = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         getOrders: builder.query<Order[], { sort?: string } | void>({
             query: (params) => ({
-                url: '/orders',
+                url: '/order/all',
                 params: params ?? undefined,
             }),
             transformResponse: (obj: { result: Order[] }) => obj.result,
@@ -67,7 +67,7 @@ export const ordersApi = apiSlice.injectEndpoints({
         // is large. Falls back to getOrders when statusFilter === 'all'.
         getOrdersWithFilters: builder.query<Order[], OrderFilters>({
             query: (filters) => ({
-                url: '/orders',
+                url: '/order',
                 params: filters,
             }),
             transformResponse: (obj: { result: Order[] }) => obj.result,
@@ -82,7 +82,7 @@ export const ordersApi = apiSlice.injectEndpoints({
 
         cancelOrder: builder.mutation<{ success: boolean; message?: string }, { orderId: string; reason?: string }>({
             query: ({ orderId, reason }) => ({
-                url: `/orders/${orderId}/cancel`,
+                url: `/order/${orderId}/cancel`,
                 method: 'POST',
                 body: { reason },
             }),
@@ -93,19 +93,19 @@ export const ordersApi = apiSlice.injectEndpoints({
             ],
         }),
         getOrderById: builder.query<Order, string>({
-            query: (id) => `/orders/${id}`,
+            query: (id) => `/order/${id}`,
             transformResponse: (obj: ApiEnvelope<Order>) => obj.result,
             providesTags: (_result, _error, id) => [{ type: 'Order', id }],
         }),
 
         createOrder: builder.mutation<Order, Partial<Order>>({
-            query: (body) => ({ url: '/orders', method: 'POST', body }),
+            query: (body) => ({ url: '/order', method: 'POST', body }),
             transformResponse: (obj: ApiEnvelope<Order>) => obj.result,
             invalidatesTags: [{ type: 'Order', id: 'LIST' }],
         }),
 
         updateOrder: builder.mutation<Order, { id: string; changes: Partial<Order> }>({
-            query: ({ id, changes }) => ({ url: `/orders/${id}`, method: 'PATCH', body: changes }),
+            query: ({ id, changes }) => ({ url: `/order/${id}`, method: 'PATCH', body: changes }),
             transformResponse: (obj: ApiEnvelope<Order>) => obj.result,
             invalidatesTags: (_result, _error, { id }) => [{ type: 'Order', id }],
         }),

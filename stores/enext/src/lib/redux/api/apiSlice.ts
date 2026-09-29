@@ -48,6 +48,6 @@ string | FetchArgs,
 export const apiSlice = createApi({
     reducerPath: 'api',
     baseQuery: baseQueryWithAuthHandling,
-    tagTypes: ['Product', 'Category', 'Brand', 'Post', 'Cart', 'Auth', 'User', 'Review', 'Wishlist'],
+    tagTypes: ['Product', 'Category', 'Brand', 'Post', 'Cart', 'Auth', 'User', 'Review', 'Wishlist', 'Order', 'Address', 'Blog'],
     endpoints: () => ({}),
 });
