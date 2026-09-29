@@ -28,7 +28,7 @@ export default async function BlogPage() {
     const store = makeStore();
 
     const [postsResult, categoriesResult] = await Promise.all([
-        store.dispatch(blogApi.endpoints.getBlogPosts.initiate(undefined)),
+        store.dispatch(blogApi.endpoints.getAllBlogPosts.initiate(undefined)),
         store.dispatch(categoriesApi.endpoints.getAllCategories.initiate(undefined)),
     ]);
 
