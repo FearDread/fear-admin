@@ -1,165 +1,130 @@
 'use client';
 
-/**
- * DashboardView.tsx
- *
- * Converted from Dashboard.jsx (AccountDashboard). The auth-redirect
- * `useEffect` that used to live here now lives once in `AccountClient.tsx`,
- * so this component can assume `currentUser` is present. `useNavigate` was
- * otherwise unused for anything but that redirect, so it's gone entirely —
- * one of the "dead useNavigate() declaration" bug patterns called out in
- * past sessions. `currentUser`/`loading`/`lastLoginAt` now come from
- * `authApi`'s `useCurrentUser()` instead of three `userSlice` selectors.
- */
-
+import { useMemo, type CSSProperties } from 'react';
 import Link from 'next/link';
-import { useCurrentUser } from '@/lib/redux/api/authApi';
-import AccountSidebar from './AccountSidebar';
-import { T, dashStyles } from './styles';
+import { useAppSelector } from '@/lib/redux/hooks';
+import { selectCurrentUser } from '@/lib/redux/slices/authSlice';
+import { useGetOrdersQuery } from '@/lib/redux/api/ordersApi';
+import { useGetWishlistQuery } from '@/lib/redux/api/wishlistApi';
+import { useGetAddressesQuery } from '@/lib/redux/api/addressesApi';
+import { fullName, formatDate, formatMoney } from '@/lib/account/helpers';
+import { byNewest, capitalize, STATUS_COLOR, toOrderView } from '@/lib/account/orders';
+import { T } from './styles';
 
-export const DashboardView = () => {
-  const { currentUser, loading, lastLoginAt } = useCurrentUser();
-
-  if (loading || !currentUser) {
-    return (
-      <>
-        <style>{dashStyles}</style>
-        <div className="dash-loading">
-          <div className="dash-loading-spinner" />
-          <span className="dash-loading-label">Loading account…</span>
-        </div>
-      </>
-    );
-  }
-
-  const userFullName = `${currentUser.firstName} ${currentUser.lastName}`;
-  const sidebarProps = { currentUser, userFullName, lastLoginAt };
-
-  const STATS = [
-    { icon: '📦', label: 'Total Orders', val: currentUser.orderCount || 0, accent: T.red },
-    { icon: '❤️', label: 'Wishlist Items', val: currentUser.wishlistCount || 0, accent: T.orange },
-    { icon: '📍', label: 'Saved Addresses', val: currentUser.addressCount || 0, accent: T.teal },
-  ];
-
-  const INFO = [
-    { label: 'Email', val: currentUser.email },
-    { label: 'Phone', val: currentUser.phone || null, empty: 'Not provided' },
-    { label: 'Country', val: currentUser.country || null, empty: 'Not specified' },
-    {
-      label: 'Member Since',
-      val: currentUser.createdAt
-        ? new Date(currentUser.createdAt).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })
-        : null,
-      empty: 'N/A',
-    },
-  ];
-
-  const ACTIONS = [
+const ACTIONS = [
     { icon: '🛍️', label: 'Continue Shopping', to: '/shop', primary: true },
-    { icon: '📋', label: 'View Orders', to: '/orders' },
-    { icon: '✏️', label: 'Edit Profile', to: '/details' },
-    { icon: '📍', label: 'Addresses', to: '/addresses' },
-  ];
+    { icon: '📋', label: 'View Orders', to: '/account/orders' },
+    { icon: '❤️', label: 'Wishlist', to: '/wishlist' },
+    { icon: '✏️', label: 'Edit Profile', to: '/account/details' },
+    { icon: '📍', label: 'Addresses', to: '/account/addresses' },
+];
 
-  return (
-    <>
-      <style>{dashStyles}</style>
-      <link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Mono:ital@0;1&display=swap" rel="stylesheet" />
+export default function DashboardView() {
+    const currentUser = useAppSelector(selectCurrentUser);
 
-      <div className="dash-page">
-        {/* ── HERO ── */}
-        <section className="dash-hero">
-          <div className="dash-hero-stripe" />
-          <div className="dash-hero-ghost" aria-hidden>
-            ACCOUNT
-          </div>
-          <div className="dash-hero-inner">
-            <div className="dash-breadcrumb">
-              <Link href="/" className="dash-bc-link">
-                Home
-              </Link>
-              <span className="dash-bc-sep">✦</span>
-              <span className="dash-bc-current">Dashboard</span>
-            </div>
-            <span className="dash-eyebrow">My Account</span>
-            <h1 className="dash-hero-title">
-              Hey, <span>{currentUser.firstName || userFullName}</span>
-            </h1>
-          </div>
-        </section>
+    // Counts come from the same RTK Query caches the other pages use, so they're
+    // always in sync with what those pages show (the old version read
+    // orderCount/wishlistCount/addressCount off the user record, which the
+    // session endpoint doesn't return).
+    const { data: orders, isLoading: ordersLoading, isError: ordersError } = useGetOrdersQuery({ sort: '-orderDate' });
+    const { data: wishlist, isLoading: wishLoading, isError: wishError } = useGetWishlistQuery();
+    const { data: addresses, isLoading: addrLoading, isError: addrError } = useGetAddressesQuery();
 
-        {/* ── MAIN LAYOUT ── */}
-        <div className="dash-layout">
-          <AccountSidebar {...sidebarProps} />
+    const recent = useMemo(() => (orders ?? []).map(toOrderView).sort(byNewest).slice(0, 3), [orders]);
 
-          <main>
-            {/* Welcome banner */}
-            <div className="dash-welcome">
-              <span className="dash-welcome-icon">👋</span>
-              <div>
-                <h2 className="dash-welcome-title">
-                  Welcome back, <span>{currentUser.firstName || userFullName}</span>!
-                </h2>
-                <p className="dash-welcome-sub">
-                  Good to see you again. From here you can view your{' '}
-                  <Link href="/orders">recent orders</Link>, manage your{' '}
-                  <Link href="/addresses">shipping and billing addresses</Link>, and{' '}
-                  <Link href="/details">edit your password and account details</Link>.
-                </p>
-              </div>
-            </div>
+    if (!currentUser) return null;
+    const name = currentUser.firstName || fullName(currentUser);
 
-            {/* Stats row */}
-            <div className="dash-stats">
-              {STATS.map((s) => (
-                <div key={s.label} className="dash-stat-card" style={{ ['--stat-accent' as string]: s.accent }}>
-                  <span className="dash-stat-icon">{s.icon}</span>
-                  <span className="dash-stat-val">{s.val}</span>
-                  <span className="dash-stat-label">{s.label}</span>
+    const stat = (loading: boolean, failed: boolean, count?: number) => (loading ? '…' : failed ? '—' : (count ?? 0));
+    const STATS = [
+        { icon: '📦', label: 'Total Orders', val: stat(ordersLoading, ordersError, orders?.length), accent: T.red },
+        { icon: '❤️', label: 'Wishlist Items', val: stat(wishLoading, wishError, wishlist?.length), accent: T.orange },
+        { icon: '📍', label: 'Saved Addresses', val: stat(addrLoading, addrError, addresses?.length), accent: T.teal },
+    ];
+
+    const INFO = [
+        { label: 'Email', val: currentUser.email },
+        { label: 'Phone', val: currentUser.phone, empty: 'Not provided' },
+        { label: 'Country', val: currentUser.country, empty: 'Not specified' },
+        {
+            label: 'Member Since',
+            val: currentUser.createdAt ? formatDate(currentUser.createdAt, { year: 'numeric', month: 'long', day: 'numeric' }) : null,
+            empty: 'N/A',
+        },
+    ];
+
+    return (
+        <>
+            <div className="acct-welcome">
+                <span aria-hidden="true" style={{ fontSize: '1.5rem' }}>👋</span>
+                <div>
+                    <h2>Welcome back, <span>{name}</span></h2>
+                    <p>
+                        Check your <Link href="/account/orders">recent orders</Link>, manage your{' '}
+                        <Link href="/account/addresses">shipping and billing addresses</Link>, or{' '}
+                        <Link href="/account/details">update your password and details</Link>.
+                    </p>
                 </div>
-              ))}
             </div>
 
-            {/* Quick actions */}
-            <div className="dash-section-head">
-              <h3 className="dash-section-title">Quick Actions</h3>
-              <div className="dash-section-line" />
-            </div>
-            <div className="dash-actions">
-              {ACTIONS.map((a) => (
-                <Link key={a.to} href={a.to} className={`dash-action-btn${a.primary ? ' primary' : ''}`}>
-                  <span className="dash-action-btn-icon">{a.icon}</span>
-                  {a.label}
-                </Link>
-              ))}
+            <div className="acct-stats">
+                {STATS.map((s) => (
+                    <div key={s.label} className="acct-stat" style={{ '--sa': s.accent } as CSSProperties}>
+                        <span aria-hidden="true" style={{ fontSize: '1.3rem', display: 'block', marginBottom: '.5rem' }}>{s.icon}</span>
+                        <span className="acct-stat-val">{s.val}</span>
+                        <span className="acct-stat-lbl">{s.label}</span>
+                    </div>
+                ))}
             </div>
 
-            {/* Account information */}
-            <div className="dash-section-head">
-              <h3 className="dash-section-title">Account Information</h3>
-              <div className="dash-section-line" />
+            <div className="acct-section-head"><h3>Quick Actions</h3><i /></div>
+            <div className="acct-actions">
+                {ACTIONS.map((a) => (
+                    <Link key={a.to} href={a.to} className={`acct-btn acct-btn--sm${a.primary ? '' : ' acct-btn--ghost'}`}>
+                        <span aria-hidden="true">{a.icon}</span> {a.label}
+                    </Link>
+                ))}
             </div>
-            <div className="dash-info-grid">
-              {INFO.map((item) => (
-                <div key={item.label} className="dash-info-cell">
-                  <span className="dash-info-label">{item.label}</span>
-                  <span className={`dash-info-val${!item.val ? ' dash-info-empty' : ''}`}>
-                    {item.val || item.empty}
-                  </span>
+
+            <div className="acct-section-head"><h3>Recent Orders</h3><i /></div>
+            {ordersLoading ? (
+                <><div className="acct-skel" /><div className="acct-skel" /></>
+            ) : recent.length === 0 ? (
+                <div className="acct-empty" style={{ marginBottom: '2rem' }}>
+                    <span className="acct-empty-icon" aria-hidden="true">📭</span>
+                    <h3>{ordersError ? 'Orders unavailable' : 'No orders yet'}</h3>
+                    <p>{ordersError ? "We couldn't load your orders. Try again shortly." : 'Your first order will show up here.'}</p>
+                    {!ordersError && <Link href="/shop" className="acct-btn">Browse the shop</Link>}
                 </div>
-              ))}
+            ) : (
+                <div style={{ marginBottom: '2rem' }}>
+                    {recent.map((o) => (
+                        <Link
+                            key={o.id}
+                            href="/account/orders"
+                            className="acct-order"
+                            style={{ '--c': STATUS_COLOR[o.status] ?? T.border, display: 'block', textDecoration: 'none' } as CSSProperties}
+                        >
+                            <div className="acct-order-body" style={{ gridTemplateColumns: 'repeat(4, 1fr)' }}>
+                                <div><span className="acct-fl">Order</span><span className="acct-fv">#{o.number}</span></div>
+                                <div><span className="acct-fl">Date</span><span className="acct-fv">{formatDate(o.date)}</span></div>
+                                <div><span className="acct-fl">Total</span><span className="acct-fv">{formatMoney(o.total)}</span></div>
+                                <div><span className="acct-pill">{capitalize(o.status)}</span></div>
+                            </div>
+                        </Link>
+                    ))}
+                </div>
+            )}
+
+            <div className="acct-section-head"><h3>Account Information</h3><i /></div>
+            <div className="acct-info-grid">
+                {INFO.map((item) => (
+                    <div key={item.label} className="acct-info-cell">
+                        <span className="acct-info-lbl">{item.label}</span>
+                        <span className={`acct-info-val${item.val ? '' : ' empty'}`}>{item.val || item.empty}</span>
+                    </div>
+                ))}
             </div>
-          </main>
-        </div>
-
-        <div className="dash-animated-border" />
-      </div>
-    </>
-  );
-};
-
-export default DashboardView;
+        </>
+    );
+}

@@ -26,7 +26,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useCurrentUser, useUpdateProfileMutation, useChangePasswordMutation } from '@/lib/redux/api/authApi';
 import AccountSidebar from './AccountSidebar';
-import { T, userStyles } from './styles';
+import { T } from './styles';
 
 export const DetailsView = () => {
     const { currentUser } = useCurrentUser();
@@ -128,7 +128,7 @@ export const DetailsView = () => {
     if (!currentUser) {
         return (
             <>
-                <style>{userStyles}</style>
+                <style>{ /* userStyles */}</style>
                 <div className="ud-loading">
                     <div className="ud-loading-spinner" />
                     <span className="ud-loading-label">Loading account…</span>
@@ -139,7 +139,7 @@ export const DetailsView = () => {
 
     return (
         <>
-            <style>{userStyles}</style>
+            <style>{ /* userStyles */}</style>
             <link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Mono:ital@0;1&display=swap" rel="stylesheet" />
             <div className="ud-page">
                 {/* HERO */}

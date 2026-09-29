@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, type ComponentType } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAppSelector } from '@/lib/redux/hooks';
 import {
@@ -8,19 +8,17 @@ import {
     selectIsAuthenticated,
     selectIsAuthHydrating,
 } from '@/lib/redux/slices/authSlice';
-import type { AccountSection } from '@/app/account/[section]/page';
+import type { AccountSection } from '@/lib/account/sections';
 
-import DashboardView from '@/components/account/DashboardView';
-import OrdersView from '@/components/account/OrdersView';
-import AddressesView from '@/components/account/AddressesView';
-import PaymentMethodsView from '@/components/account/PaymentMethodsView';
-import DetailsView from '@/components/account/DetailsView';
+import AccountShell from './AccountShell';
+import DashboardView from './DashboardView';
+import OrdersView from './OrdersView';
+import AddressesView from './AddressesView';
+import PaymentMethodsView from './PaymentMethodsView';
+import DetailsView from './DetailsView';
+import { accountStyles } from './styles';
 
-interface AccountClientProps {
-    section: AccountSection;
-}
-
-const SECTION_VIEWS: Record<AccountSection, React.ComponentType> = {
+const SECTION_VIEWS: Record<AccountSection, ComponentType> = {
     dashboard: DashboardView,
     orders: OrdersView,
     addresses: AddressesView,
@@ -28,12 +26,15 @@ const SECTION_VIEWS: Record<AccountSection, React.ComponentType> = {
     details: DetailsView,
 };
 
-export default function AccountClient({ section }: AccountClientProps) {
+/**
+ * Single auth guard for every account page. Auth reads come from authSlice
+ * (populated by authApi's onQueryStarted handlers) — never by re-firing an
+ * authApi hook here. The stylesheet is injected once, here, instead of per view.
+ */
+export default function AccountClient({ section }: { section: AccountSection }) {
     const router = useRouter();
     const pathname = usePathname();
 
-    // Local reads come straight from authSlice — populated by authApi's
-    // onQueryStarted (login/getSession/logout), not re-fetched here.
     const currentUser = useAppSelector(selectCurrentUser);
     const isAuthenticated = useAppSelector(selectIsAuthenticated);
     const isHydrating = useAppSelector(selectIsAuthHydrating);
@@ -48,10 +49,22 @@ export default function AccountClient({ section }: AccountClientProps) {
         }
     }, [isAuthenticated, isHydrating, pathname, router]);
 
-    // Avoid flashing gated content while the session is still hydrating or
-    // the redirect above is in flight.
-    if (isHydrating || !isAuthenticated || !currentUser) return null;
-
+    const ready = !isHydrating && isAuthenticated && !!currentUser;
     const View = SECTION_VIEWS[section];
-    return <View />;
+
+    return (
+        <>
+            <style>{accountStyles}</style>
+            {ready ? (
+                <AccountShell section={section}>
+                    <View />
+                </AccountShell>
+            ) : isHydrating ? (
+                <div className="acct-loading" role="status">
+                    <div className="acct-loading-spin" />
+                    <span className="acct-loading-lbl">Loading account…</span>
+                </div>
+            ) : null /* redirect to /login in flight — don't flash gated content */}
+        </>
+    );
 }
