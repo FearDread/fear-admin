@@ -32,7 +32,11 @@ const response = {
         result: {
           user: userResponse,
           token
-        }
+          },
+          data: {
+              user: userResponse,
+              token
+          }
       });
   },
 

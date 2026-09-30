@@ -109,9 +109,6 @@ export const Login = () => {
       dispatch(setRememberMe(localRememberMe));
       dispatch(setCurrentUser(result.user));
       dispatch(setIsAuthenticated(true));
-
-      console.log('Login successful');
-      //navigate('/admin/dashboard', { replace: true });
     }
   };
 
