@@ -4,7 +4,7 @@
  * Drop at: routes/vchat.js  ->  auto-mounted at /fear/api/vchat
  *
  * The WebSocket handles signaling; this handles everything the client needs
- * befor                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    e it opens the socket (ICE servers, room creation, room state).
+ * before it opens the socket (ICE servers, room creation, room state).
  */
 
 const crypto = require("crypto");
@@ -43,10 +43,21 @@ module.exports = (fear) => {
             iceServers,
             socketPath: fear.signal ? fear.signal.path : "/fear/ws/vchat",
             maxRoomSize: fear.signal ? fear.signal.maxRoomSize : null,
+            // Informational only — the client keeps its own hardcoded endpoint list
+            // so it can still find the fallback if THIS origin is the one that's
+            // down. This just lets it sanity-check that value against what the
+            // server thinks its fallback is.
             fallbackOrigin: env.VCHAT_WS_FALLBACK_ORIGIN || null,
         });
     });
 
+    /**
+     * Mints a short-lived signed token the client can present to the WebSocket
+     * on a *different* origin than this one — see libs/signal/index.js's
+     * verifyHandoffToken() for exactly what it proves and for how long. This
+     * is what lets a client that's already logged in on the primary origin
+     * fail over to a fallback tunnel without a second login.
+     */
     router.get("/token", requireUser, (req, res) => {
         if (!env.SESSION_SECRET) {
             return res.status(503).json({ error: "handoff signing not configured" });

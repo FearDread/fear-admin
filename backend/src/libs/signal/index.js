@@ -1,5 +1,8 @@
 /**
  * FEAR Signal :: rooms, chat, and WebRTC call signaling over WebSocket
+ * Protocol is MDN's webrtc-from-chat message set (message / video-offer /
+ * video-answer / new-ice-candidate / hang-up) with three changes:
+ *
  */
 
 const crypto = require("crypto");
