@@ -1,0 +1,19 @@
+{
+  "name": "fear-vchat",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Standalone WebRTC video chat (signaling + E2EE SPA) on the FEAR backend",
+  "main": "server.js",
+  "scripts": {
+    "build": "node build.js",
+    "start": "node server.js",
+    "dev": "node build.js --watch && node server.js"
+  },
+  "dependencies": {
+    "@feardread/fear": "^1.0.0",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.23.0"
+  }
+}
