@@ -34,19 +34,19 @@ async function build() {
     const builds = [
         esbuild.build({
             ...common,
-            entryPoints: [path.join(SRC, 'vchat-client.js')],
+            entryPoints: [path.join(SRC, 'client', 'vchat-client.js')],
             outfile: path.join(OUT, 'vchat-client.js'),
         }),
         esbuild.build({
             ...common,
-            entryPoints: [path.join(SRC, 'e2ee-worker.js')],
+            entryPoints: [path.join(SRC, 'e2ee', 'e2ee-worker.js')],
             outfile: path.join(OUT, 'e2ee-worker.js'),
         }),
     ];
 
     await Promise.all(builds);
 
-    fs.copyFileSync(path.join(SRC, 'index.html'), path.join(OUT, 'index.html'));
+    fs.copyFileSync(path.join(SRC, 'index.html'), path.join(OUT, 'public', 'index.html'));
 
     console.log(`Built → ${path.relative(process.cwd(), OUT)}/`);
 }
