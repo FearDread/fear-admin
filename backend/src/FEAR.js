@@ -159,7 +159,7 @@ _________________________
             });
 
             // Static client: public/vchat/{index.html,vchat-client.js}
-            this.app.use('/vchat', express.static(path.join(__dirname, 'public', 'vchat')));
+            //this.app.use('/vchat', express.static(path.join(__dirname, 'public', 'vchat')));
         },
 
         attachSignal(server) {
