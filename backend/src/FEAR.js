@@ -193,7 +193,7 @@ _________________________
             this.app.use(passport.initialize());
             this.app.use(passport.session());
 
-            require('./libs/passport');
+            //require('./libs/passport');
             this.app.use((req, res, next) => {
                 this.logger.info(`FEAR API Query :: ${req.url}`);
                 res.locals.user = req.user || null;

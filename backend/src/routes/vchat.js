@@ -1,11 +1,19 @@
 /**
  * FEAR route :: vchat
-*/
+ *
+ * Drop at: routes/vchat.js  ->  auto-mounted at /fear/api/vchat
+ *
+ * The WebSocket handles signaling; this handles everything the client needs
+ * before it opens the socket (ICE servers, room creation, room state).
+ */
 
 const crypto = require("crypto");
 
 const HANDOFF_TTL_MS = 120000; // must match libs/signal/index.js's HANDOFF_TTL_MS
 
+// Per-IP login attempt limit. In-memory, so it's per-process — fine for one
+// instance, not shared across a horizontally-scaled deployment. Swap for a
+// Redis-backed limiter before running more than one process of this app.
 const LOGIN_RATE_LIMIT = 5;
 const LOGIN_RATE_WINDOW_MS = 5 * 60 * 1000;
 const loginAttempts = new Map(); // ip -> { count, windowStart }
@@ -38,7 +46,21 @@ module.exports = (fear) => {
     };
 
     /**
-     * Programmatic login — reads { username, password } from a JSON body,
+     * Programmatic login — reads { email, password } from a JSON body, same
+     * fields libs/passport's "vchat-login" strategy expects. passport-local
+     * reads req.body regardless of what produced it; express.json() (mounted
+     * in FEAR.js's setupMiddleware) parses a fetch()'d JSON POST exactly the
+     * same way it'd parse an HTML form's urlencoded body. No form, no
+     * redirect — this calls passport.authenticate() with the callback
+     * signature instead of using it as middleware, specifically to get a JSON
+     * response back on failure instead of passport's default
+     * redirect-on-failure behavior.
+     *
+     * Deliberately NOT the "login" strategy also registered in
+     * libs/passport — that one calls req.flash() on failure, which this
+     * JSON route has no use for and no guarantee is even mounted. See the
+     * doc comment on "vchat-login" in libs/passport/index.js for why these
+     * are two separate strategies rather than one shared one.
      */
     router.post("/login", (req, res, next) => {
         if (!checkLoginRateLimit(req.ip)) {
@@ -50,9 +72,9 @@ module.exports = (fear) => {
             return res.status(503).json({ error: "authentication not configured" });
         }
 
-        passport.authenticate("local", (err, user, info) => {
+        passport.authenticate("vchat-login", (err, user, info) => {
             if (err) return next(err);
-            if (!user) return res.status(401).json({ error: info?.message || "invalid username or password" });
+            if (!user) return res.status(401).json({ error: info?.message || "invalid email or password" });
 
             req.login(user, (loginErr) => {
                 if (loginErr) return next(loginErr);

@@ -4,11 +4,11 @@
 
 import * as E2EE from "../e2ee/e2ee.js";
 
-const API_PATH = "/fear/api/vchat";
+const API_PATH = "http://localhost:4000/fear/api/vchat";
 
 const ENDPOINTS = [
     { label: "cloudflare-tunnel", origin: "http://localhost:4000" },
-    { label: "port-forward", origin: "https://vchat-direct.efear.shop" },
+    { label: "port-forward", origin: "http://localhost:4000" },
     { label: "local-dev", origin: "http://localhost:4000"}
 ];
 
