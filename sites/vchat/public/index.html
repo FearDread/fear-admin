@@ -5,22 +5,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>FEAR :: vchat</title>
     <link type="text/css" rel="stylesheet" href="css/styles.css" />
+
 </head>
 <body>
     <div class="container">
         <div class="infobox">
             <h1>FEAR :: VCHAT</h1>
-            <p>Join a room, then click a name in the user list to start a video call.</p>
-            <label>
-                Room
-                <input id="room" type="text" value="lobby" maxlength="64" inputmode="verbatim" placeholder="lobby">
-            </label>
-            <label>
-                Display name
-                <input id="name" type="text" maxlength="24" autocomplete="username" inputmode="verbatim" placeholder="optional">
-            </label>
-            <button id="login" type="button">Connect</button>
-            <div id="conn-status" class="status-line"></div>
+
+            <!-- No <form> on purpose — auth-username/auth-password go to the
+                 server via fetch() in vchat-client.js's login(), not a native
+                 form submission. Plain inputs + a button, same pattern as every
+                 other control on this page. -->
+            <div id="auth-section">
+                <p>Sign in to connect.</p>
+                <label>
+                    Username
+                    <input id="auth-username" type="text" autocomplete="username" inputmode="verbatim">
+                </label>
+                <label>
+                    Password
+                    <input id="auth-password" type="password" autocomplete="current-password">
+                </label>
+                <button id="auth-submit" type="button">Log in</button>
+                <div id="auth-status" class="status-line"></div>
+            </div>
+
+            <div id="session-section" hidden>
+                <p>Join a room, then click a name in the user list to start a video call.</p>
+                <label>
+                    Room
+                    <input id="room" type="text" value="lobby" maxlength="64" inputmode="verbatim" placeholder="lobby">
+                </label>
+                <label>
+                    Display name
+                    <input id="name" type="text" maxlength="24" autocomplete="username" inputmode="verbatim" placeholder="optional">
+                </label>
+                <button id="login" type="button">Connect</button>
+                <button id="auth-logout" type="button">Log out</button>
+                <div id="conn-status" class="status-line"></div>
+            </div>
         </div>
 
         <ul class="userlistbox"></ul>

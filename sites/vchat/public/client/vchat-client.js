@@ -1,53 +1,28 @@
 /**
  * FEAR vchat client :: replaces MDN's chatclient.js
- *
- * Serve as an ES module: <script type="module" src="vchat-client.js"></script>
- *
- * Differences from the sample it grew out of:
- *   - No globals, no adapter.js. Every browser that supports the unified-plan
- *     API used here also implements these calls natively.
- *   - Perfect negotiation instead of the manual rollback dance, so glare
- *     resolves deterministically instead of racing.
- *   - ICE servers come from /fear/api/vchat/config, not hardcoded TURN creds.
- *   - Chat renders with textContent. The sample builds HTML out of the
- *     username, which is a stored XSS hole.
- *   - Peers addressed by server-issued peerId, not by a name the client picked.
- *   - Per-frame end-to-end encryption on top of DTLS-SRTP (see e2ee.js).
- *   - Two independent ingress endpoints, raced on connect and failed over to
- *     automatically if one drops mid-session (see ENDPOINTS below).
  */
 
 import * as E2EE from "../e2ee/e2ee.js";
 
 const API_PATH = "/fear/api/vchat";
 
-/**
- * Two doors into the same FEAR backend, tried in order and raced with a
- * timeout each. Both live under efear.shop now (moved off fear.dedyn.io) —
- * both are hardcoded rather than derived from location.host, since the
- * whole point of failover is that it still works when the page happened to
- * load from the one that's currently down.
- *
- *   primary  — vchat.efear.shop, a Cloudflare Tunnel. No open inbound port
- *              required; survives a router reboot or an ISP that starts
- *              blocking unsolicited inbound traffic.
- *   fallback — vchat-direct.efear.shop, the direct port-forward + its own
- *              Let's Encrypt cert. Survives a cloudflared crash or a
- *              Cloudflare-side outage, which the tunnel path can't.
- *
- * Nothing else in this file cares which is which — it only ever reasons
- * about ENDPOINTS[0] ("the session-cookie origin") vs. everything after it,
- * so reordering this array is the only change needed to swap which is primary.
- */
 const ENDPOINTS = [
-    { label: "cloudflare-tunnel", origin: "https://vchat.efear.shop" },
+    { label: "cloudflare-tunnel", origin: "http://localhost:4000" },
     { label: "port-forward", origin: "https://vchat-direct.efear.shop" },
+    { label: "local-dev", origin: "http://localhost:4000"}
 ];
 
 const CONNECT_TIMEOUT_MS = 5000;
 const HANDOFF_REFRESH_MS = 90000; // token TTL is 120s server-side; refresh with margin
 
 const ui = {
+    authSection: document.getElementById("auth-section"),
+    authUsername: document.getElementById("auth-username"),
+    authPassword: document.getElementById("auth-password"),
+    authSubmit: document.getElementById("auth-submit"),
+    authStatus: document.getElementById("auth-status"),
+    authLogout: document.getElementById("auth-logout"),
+    sessionSection: document.getElementById("session-section"),
     room: document.getElementById("room"),
     name: document.getElementById("name"),
     login: document.getElementById("login"),
@@ -69,19 +44,21 @@ const state = {
     peerId: null,
     username: null,
     room: null,
-    peers: new Map(), 
-    call: null,
+    peers: new Map(), // peerId -> username
+    call: null, // { peerId, pc, polite, makingOffer, ignoreOffer }
     localStream: null,
     reconnectDelay: 1000,
     handoffToken: null,
     handoffTimer: null,
-    joinParams: null,
+    joinParams: null, // { room, username } — remembered so reconnects can rejoin
 };
 
 const MEDIA = {
     audio: { echoCancellation: true, noiseSuppression: true },
     video: { width: { ideal: 1280 }, aspectRatio: { ideal: 1.3333 } },
 };
+
+// ---------------------------------------------------------------- utilities
 
 const log = (...args) => console.log("[vchat]", ...args);
 
@@ -143,7 +120,7 @@ function openSocket(url) {
 async function tryEndpoint(endpoint) {
     const isCrossOrigin = endpoint.origin !== ENDPOINTS[0].origin;
     const wantsToken = isCrossOrigin && state.handoffToken && state.handoffToken.expiresAt > Date.now();
-
+    console.log('Trying endpoint : ', endpoint);
     const config = await withTimeout(
         fetch(`${endpoint.origin}${API_PATH}/config`, { credentials: "include" }).then((res) => {
             if (!res.ok) throw new Error(`config ${res.status}`);
@@ -171,7 +148,7 @@ async function connect() {
     const room = (ui.room?.value || "lobby").trim();
     const username = (ui.name?.value || "").trim();
     state.joinParams = { room, username };
-    6525524
+
     const failures = [];
 
     for (const endpoint of orderedEndpoints()) {
@@ -204,7 +181,7 @@ function wireSocket(ws) {
     ws.onmessage = (evt) => handleMessage(JSON.parse(evt.data));
 
     ws.onclose = (evt) => {
-        setComposerEnabled(false);+
+        setComposerEnabled(false);
         setConnStatus(`Disconnected (${evt.code}) — reconnecting…`);
         write(`Disconnected. Reconnecting…`, "system");
         scheduleReconnect();
@@ -217,7 +194,7 @@ function scheduleReconnect() {
     const delay = Math.min(state.reconnectDelay, 30000);
     state.reconnectDelay *= 2;
     // connect() re-races every endpoint, so a primary outage fails over here
-    // exac0tly the same way the initial connect does.
+    // exactly the same way the initial connect does.
     setTimeout(() => connect().catch((err) => write(`Reconnect failed: ${err.message}`, "system")), delay);
 }
 
@@ -345,7 +322,7 @@ function createPeerConnection(peerId) {
         ignoreOffer: false,
     };
 
-    state.call = call;                                                                                      
+    state.call = call;
     setE2eeStatus("negotiating");
 
     // Kick off the ECDH exchange immediately so the key is usually ready
@@ -530,7 +507,95 @@ function reportMediaError(err) {
     closeCall();
 }
 
+// -------------------------------------------------------------------- auth
+
+/**
+ * Programmatic login against this app's own /fear/api/vchat routes — a
+ * fetch() with a JSON body, same mechanism passport-local always uses, just
+ * without an HTML <form> producing the request. Always hits the current
+ * origin (relative URL): this runs before any endpoint-racing logic, since
+ * all we want here is "log in against wherever this page was loaded from."
+ */
+async function login() {
+    const username = ui.authUsername.value.trim();
+    const password = ui.authPassword.value;
+
+    if (!username || !password) {
+        ui.authStatus.textContent = "Enter a username and password.";
+        return;
+    }
+
+    ui.authSubmit.disabled = true;
+    ui.authStatus.textContent = "Signing in…";
+
+    try {
+        const res = await fetch(`${API_PATH}/login`, {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password }),
+        });
+
+        const body = await res.json().catch(() => ({}));
+
+        if (!res.ok) {
+            ui.authStatus.textContent = body.error || `Login failed (${res.status})`;
+            return;
+        }
+
+        ui.authPassword.value = ""; // never leave it sitting in the DOM
+        showSession();
+    } catch (err) {
+        ui.authStatus.textContent = `Login failed: ${err.message}`;
+    } finally {
+        ui.authSubmit.disabled = false;
+    }
+}
+
+async function logout() {
+    try {
+        await fetch(`${API_PATH}/logout`, { method: "POST", credentials: "include" });
+    } catch (err) {
+        log("logout request failed", err.message);
+    }
+
+    if (state.call) hangUp();
+    state.ws?.close(1000, "logged out");
+
+    showAuth();
+}
+
+/** Runs once on load — skips the login screen entirely if the session cookie from a previous visit is still valid. */
+async function checkSession() {
+    try {
+        const res = await fetch(`${API_PATH}/session`, { credentials: "include" });
+        const body = await res.json();
+        if (body.authenticated) return showSession();
+    } catch (err) {
+        log("session check failed", err.message);
+    }
+
+    showAuth();
+}
+
+function showAuth() {
+    ui.authSection.hidden = false;
+    ui.sessionSection.hidden = true;
+    ui.authUsername.focus();
+}
+
+function showSession() {
+    ui.authSection.hidden = true;
+    ui.sessionSection.hidden = false;
+}
+
 // ------------------------------------------------------------------- wiring
+
+ui.authSubmit.addEventListener("click", login);
+ui.authPassword.addEventListener("keyup", (evt) => {
+    if (evt.key === "Enter") login();
+});
+ui.authLogout.addEventListener("click", logout);
 
 ui.login.addEventListener("click", () =>
     connect().catch((err) => write(`Connect failed: ${err.message}`, "system"))
@@ -545,3 +610,5 @@ window.addEventListener("beforeunload", () => {
     clearTimeout(state.handoffTimer);
     state.ws?.close(1000, "page unload");
 });
+
+checkSession();

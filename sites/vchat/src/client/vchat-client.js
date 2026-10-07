@@ -143,7 +143,7 @@ function openSocket(url) {
 async function tryEndpoint(endpoint) {
     const isCrossOrigin = endpoint.origin !== ENDPOINTS[0].origin;
     const wantsToken = isCrossOrigin && state.handoffToken && state.handoffToken.expiresAt > Date.now();
-
+    console.log('Trying endpoint : ', endpoint);
     const config = await withTimeout(
         fetch(`${endpoint.origin}${API_PATH}/config`, { credentials: "include" }).then((res) => {
             if (!res.ok) throw new Error(`config ${res.status}`);

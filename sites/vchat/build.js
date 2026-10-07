@@ -14,7 +14,7 @@ const esbuild = require('esbuild');
 const fs = require('fs');
 const path = require('path');
 
-const SRC = path.join(__dirname, 'src');
+const SRC = path.join(__dirname, 'public');
 const OUT = path.join(__dirname, 'build');
 const watch = process.argv.includes('--watch');
 
@@ -46,7 +46,7 @@ async function build() {
 
     await Promise.all(builds);
 
-    fs.copyFileSync(path.join(SRC, 'index.html'), path.join(OUT, 'public', 'index.html'));
+    fs.copyFileSync(path.join(SRC, 'index.html'), path.join(OUT, 'index.html'));
 
     console.log(`Built → ${path.relative(process.cwd(), OUT)}/`);
 }
