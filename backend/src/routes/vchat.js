@@ -1,15 +1,29 @@
 /**
  * FEAR route :: vchat
- *
- * Drop at: routes/vchat.js  ->  auto-mounted at /fear/api/vchat
- *
- * The WebSocket handles signaling; this handles everything the client needs
- * before it opens the socket (ICE servers, room creation, room state).
- */
+*/
 
 const crypto = require("crypto");
 
 const HANDOFF_TTL_MS = 120000; // must match libs/signal/index.js's HANDOFF_TTL_MS
+
+const LOGIN_RATE_LIMIT = 5;
+const LOGIN_RATE_WINDOW_MS = 5 * 60 * 1000;
+const loginAttempts = new Map(); // ip -> { count, windowStart }
+
+function checkLoginRateLimit(ip) {
+    const now = Date.now();
+    const entry = loginAttempts.get(ip);
+
+    if (!entry || now - entry.windowStart > LOGIN_RATE_WINDOW_MS) {
+        loginAttempts.set(ip, { count: 1, windowStart: now });
+        return true;
+    }
+
+    if (entry.count >= LOGIN_RATE_LIMIT) return false;
+
+    entry.count += 1;
+    return true;
+}
 
 module.exports = (fear) => {
     const router = fear.createRouter();
@@ -22,6 +36,54 @@ module.exports = (fear) => {
         }
         next();
     };
+
+    /**
+     * Programmatic login — reads { username, password } from a JSON body,
+     */
+    router.post("/login", (req, res, next) => {
+        if (!checkLoginRateLimit(req.ip)) {
+            return res.status(429).json({ error: "too many login attempts — try again in a few minutes" });
+        }
+
+        const passport = fear.getPassport();
+        if (!passport || typeof passport.authenticate !== "function") {
+            return res.status(503).json({ error: "authentication not configured" });
+        }
+
+        passport.authenticate("local", (err, user, info) => {
+            if (err) return next(err);
+            if (!user) return res.status(401).json({ error: info?.message || "invalid username or password" });
+
+            req.login(user, (loginErr) => {
+                if (loginErr) return next(loginErr);
+                res.json({ ok: true, userId: user.id ?? user._id ?? null });
+            });
+        })(req, res, next);
+    });
+
+    router.post("/logout", (req, res, next) => {
+        req.logout((err) => {
+            if (err) return next(err);
+
+            if (!req.session) return res.json({ ok: true });
+
+            req.session.destroy(() => {
+                // Default express-session cookie name — change this if FEAR.js's
+                // session({...}) call sets a custom `name`.
+                res.clearCookie("connect.sid");
+                res.json({ ok: true });
+            });
+        });
+    });
+
+    /**
+     * Lets the client check "am I already logged in?" on page load without
+     * tripping a 401 against a protected route just to find out.
+     */
+    router.get("/session", (req, res) => {
+        const userId = req.user?.id || req.session?.passport?.user || null;
+        res.json({ authenticated: !!userId, userId });
+    });
 
     /**
      * ICE servers. STUN alone only works when both peers can hole-punch; add a
