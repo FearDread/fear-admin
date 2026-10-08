@@ -122,7 +122,9 @@ async function tryEndpoint(endpoint) {
     const wantsToken = isCrossOrigin && state.handoffToken && state.handoffToken.expiresAt > Date.now();
     console.log('Trying endpoint : ', endpoint);
     const config = await withTimeout(
-        fetch(`${endpoint.origin}${API_PATH}/config`, { credentials: "include" }).then((res) => {
+        fetch(`${API_PATH}/config`, { credentials: "include" }).then((res) => {
+            console.log('config res = ', res);
+
             if (!res.ok) throw new Error(`config ${res.status}`);
             return res.json();
         }),
@@ -517,10 +519,10 @@ function reportMediaError(err) {
  * all we want here is "log in against wherever this page was loaded from."
  */
 async function login() {
-    const username = ui.authUsername.value.trim();
+    const email = ui.authUsername.value.trim();
     const password = ui.authPassword.value;
 
-    if (!username || !password) {
+    if (!email || !password) {
         ui.authStatus.textContent = "Enter a username and password.";
         return;
     }
@@ -533,7 +535,7 @@ async function login() {
             method: "POST",
             credentials: "include",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username, password }),
+            body: JSON.stringify({ email, password }),
         });
 
         const body = await res.json().catch(() => ({}));
