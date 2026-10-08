@@ -65,7 +65,6 @@ const response = {
  */
 exports.login = (req, res) => {
   const { email, password } = req.body;
-
   // Validate input
   const validation = validator.input.login({ email, password });
   if (!validation.isValid) {

@@ -2,6 +2,7 @@ const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
 const FacebookStrategy = require("passport-facebook").Strategy;
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
+const Auth = require("../../controllers/auth");
 
 const secret = {
     facebook: {
@@ -112,7 +113,16 @@ passport.use(
             passwordField: "password",
         },
         (email, password, done) => {
-            User.findOne({ email: email.toLowerCase() })
+            console.log('passport vchat login hit', email);
+            Auth.login({ email, password })
+                .then((resp) => {
+                    if (!resp) done(null, false, { message: "login failed" })
+                    return done(null, resp);
+
+                })
+                .catch((err) => done(err));
+
+            /*User.findOne({ email: email.toLowerCase() })
                 .then((user) => {
                     if (!user) {
                         return done(null, false, { message: "No user found with this email" });
@@ -127,6 +137,7 @@ passport.use(
                     return done(null, user);
                 })
                 .catch((err) => done(err));
+                */
         }
     )
 );
@@ -134,13 +145,14 @@ passport.use(
 /**
  * Google OAuth Strategy
  */
+/*
 passport.use(
     "google",
     new GoogleStrategy(
         {
-            clientID: process.env.GOOGLE_CLIENT_ID,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-            callbackURL: process.env.GOOGLE_CALLBACK_URL || "http://localhost:4000/fear/api/auth/google",
+            clientID: process.env.GA_CLIENT_ID,
+            clientSecret: process.env.GA_CLIENT_SECRET,
+            callbackURL: process.env.GA_REDIRECT_URI || "http://localhost:4000/fear/api/auth/google",
             scope: ["profile", "email"],
         },
         (accessToken, refreshToken, profile, done) => {
@@ -153,7 +165,7 @@ passport.use(
 
 /**
  * Facebook OAuth Strategy
- */
+ 
 passport.use(
     "facebook",
     new FacebookStrategy(
@@ -170,5 +182,5 @@ passport.use(
         }
     )
 );
-
+*/
 module.exports = passport;
