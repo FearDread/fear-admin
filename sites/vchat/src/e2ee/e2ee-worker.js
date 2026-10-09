@@ -1,103 +1,82 @@
 /**
- * FEAR vchat :: e2ee-worker.js
+ * Encoded-frame transform (runs via RTCRtpScriptTransform). AES-GCM per frame, fresh
+ * random 96-bit IV appended to the ciphertext, leading codec bytes left in the clear
+ * (and authenticated as AAD) so the packetizer still works. Written for VP8 video and
+ * Opus audio — the client pins video to VP8 when E2EE is on.
  *
- * Runs off the main thread (required by RTCRtpScriptTransform) and does the
- * actual per-frame encrypt/decrypt. Holds AES-GCM keys as non-extractable
- * CryptoKey objects — even a main-thread XSS that could message this worker
- * can ask it to encrypt/decrypt but can never pull the raw key bytes back out.
- *
- * Frame format (SFrame-lite, not the IETF SFrame spec — no key-id byte,
- * because a call here only ever has one active key per direction):
- *
- *   [ 4-byte big-endian counter ][ AES-GCM ciphertext, tag included ]
- *
- * IV = 8-byte per-key salt (from HKDF) || 4-byte counter. The counter is
- * sent in clear so the receiver can rebuild the IV; it only needs to be
- * unique per key, which a strictly-incrementing per-sender counter gives us.
+ * Fails closed: no key yet -> frames are dropped, never sent or played unencrypted.
  */
-
-const keys = new Map(); // peerId -> { aesKey, ivSalt: Uint8Array(8), sendCounter }
+const keys = new Map(); // peerId -> CryptoKey
+const IV_LENGTH = 12;
 
 self.onmessage = (event) => {
-    const { type, peerId } = event.data;
-
-    if (type === "setKey") {
-        keys.set(peerId, {
-            aesKey: event.data.aesKey,
-            ivSalt: new Uint8Array(event.data.ivSalt),
-            sendCounter: 0,
-        });
-    } else if (type === "clearKey") {
-        keys.delete(peerId);
-    }
+    const msg = event.data;
+    if (msg.type === 'key') keys.set(msg.peerId, msg.key);
+    else if (msg.type === 'drop') keys.delete(msg.peerId);
 };
 
-function buildIV(ivSalt, counter) {
-    const iv = new Uint8Array(12);
-    iv.set(ivSalt, 0);
-    new DataView(iv.buffer).setUint32(8, counter, false);
-    return iv;
+function clearBytes(frame) {
+    if (frame.type === 'key') return 10;
+    if (frame.type === 'delta') return 3;
+    return 1; // audio frames have no `type`
 }
 
-// Best-effort AAD: binds ciphertext to the frame kind so a swapped key/delta
-// frame fails auth instead of decoding as garbage. Not load-bearing security
-// on its own — the AES-GCM tag is what actually authenticates the frame.
-function frameAAD(frame) {
-    return new Uint8Array([frame.type === "key" ? 1 : 0]);
-}
+async function encrypt(frame, key) {
+    const data = new Uint8Array(frame.data);
+    const head = clearBytes(frame);
+    const iv = crypto.getRandomValues(new Uint8Array(IV_LENGTH));
 
-async function encryptFrame(frame, peerId, controller) {
-    const entry = keys.get(peerId);
-    if (!entry) return; // no key yet — drop rather than ever send plaintext
-
-    const counter = entry.sendCounter++;
-    const iv = buildIV(entry.ivSalt, counter);
-
-    const ciphertext = await crypto.subtle.encrypt(
-        { name: "AES-GCM", iv, additionalData: frameAAD(frame) },
-        entry.aesKey,
-        frame.data
+    const sealed = new Uint8Array(
+        await crypto.subtle.encrypt({ name: 'AES-GCM', iv, additionalData: data.subarray(0, head) }, key, data.subarray(head))
     );
 
-    const out = new Uint8Array(4 + ciphertext.byteLength);
-    new DataView(out.buffer).setUint32(0, counter, false);
-    out.set(new Uint8Array(ciphertext), 4);
+    const out = new Uint8Array(head + sealed.length + IV_LENGTH);
+    out.set(data.subarray(0, head), 0);
+    out.set(sealed, head);
+    out.set(iv, head + sealed.length);
 
     frame.data = out.buffer;
-    controller.enqueue(frame);
+    return frame;
 }
 
-async function decryptFrame(frame, peerId, controller) {
-    const entry = keys.get(peerId);
-    if (!entry || frame.data.byteLength < 4) return; // no key yet, or malformed
+async function decrypt(frame, key) {
+    const data = new Uint8Array(frame.data);
+    const head = clearBytes(frame);
+    if (data.length < head + IV_LENGTH + 16) throw new Error('frame too short');
 
-    const view = new DataView(frame.data);
-    const counter = view.getUint32(0, false);
-    const iv = buildIV(entry.ivSalt, counter);
-    const ciphertext = frame.data.slice(4);
+    const iv = data.subarray(data.length - IV_LENGTH);
+    const sealed = data.subarray(head, data.length - IV_LENGTH);
 
-    try {
-        frame.data = await crypto.subtle.decrypt(
-            { name: "AES-GCM", iv, additionalData: frameAAD(frame) },
-            entry.aesKey,
-            ciphertext
-        );
-        controller.enqueue(frame);
-    } catch (err) {
-        // Wrong key, key not yet installed on this side, or a tampered frame.
-        // Drop it — never enqueue ciphertext as if it were a valid frame.
-    }
+    const plain = new Uint8Array(
+        await crypto.subtle.decrypt({ name: 'AES-GCM', iv, additionalData: data.subarray(0, head) }, key, sealed)
+    );
+
+    const out = new Uint8Array(head + plain.length);
+    out.set(data.subarray(0, head), 0);
+    out.set(plain, head);
+
+    frame.data = out.buffer;
+    return frame;
 }
 
-if (self.RTCTransformEvent) {
-    self.onrtctransform = (event) => {
-        const { operation, peerId } = event.transformer.options;
-        const step = operation === "encode" ? encryptFrame : decryptFrame;
+self.onrtctransform = (event) => {
+    const { readable, writable } = event.transformer;
+    const { operation, peerId } = event.transformer.options;
 
-        const transform = new TransformStream({
-            transform: (frame, controller) => step(frame, peerId, controller),
-        });
+    readable
+        .pipeThrough(
+            new TransformStream({
+                async transform(frame, controller) {
+                    const key = keys.get(peerId);
+                    if (!key) return;
 
-        event.transformer.readable.pipeThrough(transform).pipeTo(event.transformer.writable);
-    };
-}
+                    try {
+                        controller.enqueue(operation === 'encrypt' ? await encrypt(frame, key) : await decrypt(frame, key));
+                    } catch (err) {
+                        /* bad or tampered frame: drop it */
+                    }
+                },
+            })
+        )
+        .pipeTo(writable);
+};

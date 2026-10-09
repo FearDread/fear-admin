@@ -1,5 +1,6 @@
 const FearServer = require('../../backend/src/FEARServer');
 const FearSignal = require('../../backend/src/libs/signal');
+const { authenticateSocket } = require('../../backend/src/libs/vchat-auth');
 const path = require('path');
 
 function main() {
@@ -8,11 +9,11 @@ function main() {
 
     return server.initialize({
         root: path.resolve(),
-        app: 'public',
-        build: 'public',
+        app: 'build',
+        build: 'build',
     })
         .then(() => {
-            signal = new FearSignal(server.fear);
+            signal = new FearSignal(server.fear, { authenticate: authenticateSocket });
             server.fear.signal = signal;
 
             return server.startServer();

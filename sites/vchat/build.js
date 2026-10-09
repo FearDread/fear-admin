@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Bundles src/ (the SPA) into build/ — the directory FearServer.initialize()
- * was pointed at with { app: 'build', build: 'build' } in server.js.
+ * serves via { app: 'build', build: 'build' } in server.js.
  *
  * Two separate bundles, not one: vchat-client.js runs on the main thread and
  * imports e2ee.js directly; e2ee-worker.js runs in its own Worker context
@@ -14,7 +14,7 @@ const esbuild = require('esbuild');
 const fs = require('fs');
 const path = require('path');
 
-const SRC = path.join(__dirname, 'public');
+const SRC = path.join(__dirname, 'src');
 const OUT = path.join(__dirname, 'build');
 const watch = process.argv.includes('--watch');
 

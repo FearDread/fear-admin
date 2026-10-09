@@ -6,12 +6,14 @@
   "main": "server.js",
   "scripts": {
     "build": "node build.js",
+    "prestart": "node build.js",
     "start": "node server.js",
     "dev": "node build.js --watch && node server.js"
   },
   "dependencies": {
     "@feardread/fear": "^1.0.0",
-    "ws": "^8.18.0"
+    "ws": "^8.18.0",
+    "jquery": "^3.7.1"
   },
   "devDependencies": {
     "esbuild": "^0.23.0"
