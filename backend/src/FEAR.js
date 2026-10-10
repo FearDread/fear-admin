@@ -47,8 +47,10 @@ _________________________
         this.mailer = null;
         this.ssr = null;
         this.signal = null;
+        this.vchatAuth = null;
         this.sessionParser = null;
 
+        // app bootstrap
         this.setupEnvironment();
         this.setupDependencies();
         this.setupSSR();
@@ -57,7 +59,11 @@ _________________________
 
         this.setupMailer();
         this.setupMiddleware();
+
+        this.setupVchatAuth(); // must precede setupSignal: the socket authenticates through it
         this.setupSignal();
+        //if (config && config.vchat) this.setupSignal();
+       
         this.setupRoutes();
 
     };
@@ -104,6 +110,9 @@ _________________________
         getSignal() {
             return this.signal;
         },
+        getVchatAuth() {
+            return this.vchatAuth;
+        },
         getMailer() {
             return this.mailer;
         },
@@ -129,6 +138,7 @@ _________________________
             this.db = require("./libs/db");
             this.handler = require("./libs/handler");
             this.validator = require("./libs/validator");
+            this.vauth = require('./controllers/auth/vchat');
             this.origins = this.getAllowedOrigins();
             this.corsConfig = this.getCorsConfig();
         },
@@ -150,11 +160,17 @@ _________________________
             this.ssr = new FearSSR(this);
         },
 
+        setupVchatAuth() {
+            // JWT-cookie identity shared by REST routes and the signaling socket
+            if (!this.vchatAuth) this.vchatAuth = this.vauth;
+        },
+
         setupSignal() {
             const FearSignal = require('./libs/signal');
 
             this.signal = new FearSignal(this, {
                 path: this.env.VCHAT_WS_PATH,
+                authenticate: this.vchatAuth.authenticateSocket,
                 requireAuth: this.env.VCHAT_REQUIRE_AUTH !== 'false'
             });
 
@@ -170,6 +186,7 @@ _________________________
 
         setupMiddleware() {
             this.app.set("PORT", this.env.NODE_PORT || DEFAULT_PORT);
+            this.app.set('fear', this); // controllers reach signal/env/vchatAuth via req.app.get('fear')
             this.app.use(express.json({ limit: DEFAULT_JSON_LIMIT }));
             this.app.use(express.urlencoded({ extended: true }));
 
@@ -309,6 +326,7 @@ _________________________
             const router = express.Router();
 
             router.getSignal = () => this.signal;
+            router.getVchatAuth = () => this.vchatAuth;
             router.getLogger = () => this.logger;
             router.getDatabase = () => this.db;
             router.getCloud = () => this.cloud;
@@ -362,6 +380,8 @@ _________________________
                 getEnvironment: () => this.env,
                 getCloud: () => this.cloud,
                 getStripe: () => this.stripe,
+                getSignal: () => this.signal,
+                getVchatAuth: () => this.vchatAuth,
                 initProcessors: this.setupProcessors
             };
             return this;
@@ -370,7 +390,3 @@ _________________________
 
     return FEAR;
 })();
-
-exports.FearFactory = () => {
-    return new FEAR();
-};
