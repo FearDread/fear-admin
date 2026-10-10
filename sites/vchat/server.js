@@ -1,27 +1,16 @@
-const FearServer = require('../../backend/src/FEARServer');
-const FearSignal = require('../../backend/src/libs/signal');
-const { authenticateSocket } = require('../../backend/src/controllers/auth/vchat');
 const path = require('path');
+const FearServer = require('../../backend/src/FEARServer');
 
 function main() {
-    const server = new FearServer();
-    let signal;
+    const server = new FearServer({vchat: true});
 
     return server.initialize({
-        root: path.resolve(),
-        app: 'build',
-        build: 'build',
-    })
-        .then(() => {
-            signal = new FearSignal(server.fear, { authenticate: authenticateSocket });
-            server.fear.signal = signal;
-
-            return server.startServer();
+                root: path.resolve(),
+                app: 'build',
+                build: 'build'
         })
-        .then(() => {
-            signal.attach(server.getServer());
-            server.fear.getLogger().warn('FEAR vchat signaling server running.');
-        });
+        .then(() => { server.startServer(); })
+        .then(() => { server.fear.getLogger().warn('FEAR vchat signaling server running.'); });
 }
 
 main().catch((error) => {

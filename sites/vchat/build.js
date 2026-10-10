@@ -1,14 +1,4 @@
 #!/usr/bin/env node
-/**
- * Bundles src/ (the SPA) into build/ — the directory FearServer.initialize()
- * serves via { app: 'build', build: 'build' } in server.js.
- *
- * Two separate bundles, not one: vchat-client.js runs on the main thread and
- * imports e2ee.js directly; e2ee-worker.js runs in its own Worker context
- * and must not be merged into the main-thread bundle. e2ee.js's
- * `new URL("./e2ee-worker.js", import.meta.url)` still resolves correctly
- * after bundling because both output files land in the same build/ root.
- */
 
 const esbuild = require('esbuild');
 const fs = require('fs');
@@ -46,7 +36,9 @@ async function build() {
 
     await Promise.all(builds);
 
-    fs.copyFileSync(path.join(SRC, 'index.html'), path.join(OUT, 'index.html'));
+    ['index.html', 'styles.css'].forEach((file) => {
+        fs.copyFileSync(path.join(SRC, file), path.join(OUT, file));
+    });
 
     console.log(`Built → ${path.relative(process.cwd(), OUT)}/`);
 }
