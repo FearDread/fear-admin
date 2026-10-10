@@ -50,7 +50,6 @@ _________________________
         this.vchatAuth = null;
         this.sessionParser = null;
 
-        // app bootstrap
         this.setupEnvironment();
         this.setupDependencies();
         this.setupSSR();
@@ -59,11 +58,8 @@ _________________________
 
         this.setupMailer();
         this.setupMiddleware();
-
         this.setupVchatAuth(); // must precede setupSignal: the socket authenticates through it
         this.setupSignal();
-        //if (config && config.vchat) this.setupSignal();
-       
         this.setupRoutes();
 
     };
@@ -126,7 +122,11 @@ _________________________
                 throw new Error(`Environment configuration error: ${envResult?.error?.message || 'Unknown error'}`);
             }
 
-            this.env = envResult.parsed;
+            // Real environment variables win over the .env file (PM2 sets NODE_PORT per instance)
+            this.env = { ...envResult.parsed };
+            Object.keys(this.env).forEach((key) => {
+                if (process.env[key] !== undefined) this.env[key] = process.env[key];
+            });
         },
 
         setupDependencies() {
@@ -138,7 +138,6 @@ _________________________
             this.db = require("./libs/db");
             this.handler = require("./libs/handler");
             this.validator = require("./libs/validator");
-            this.vauth = require('./controllers/auth/vchat');
             this.origins = this.getAllowedOrigins();
             this.corsConfig = this.getCorsConfig();
         },
@@ -162,7 +161,7 @@ _________________________
 
         setupVchatAuth() {
             // JWT-cookie identity shared by REST routes and the signaling socket
-            if (!this.vchatAuth) this.vchatAuth = this.vauth;
+            this.vchatAuth = require('./controllers/auth/vchat')(this);
         },
 
         setupSignal() {
@@ -186,6 +185,10 @@ _________________________
 
         setupMiddleware() {
             this.app.set("PORT", this.env.NODE_PORT || DEFAULT_PORT);
+            // Behind nginx: TRUST_PROXY=1 makes req.ip the real client (login limiter, lastLoginIP)
+            if (this.env.TRUST_PROXY) {
+                this.app.set('trust proxy', /^\d+$/.test(this.env.TRUST_PROXY) ? Number(this.env.TRUST_PROXY) : this.env.TRUST_PROXY);
+            }
             this.app.set('fear', this); // controllers reach signal/env/vchatAuth via req.app.get('fear')
             this.app.use(express.json({ limit: DEFAULT_JSON_LIMIT }));
             this.app.use(express.urlencoded({ extended: true }));
@@ -390,3 +393,7 @@ _________________________
 
     return FEAR;
 })();
+
+exports.FearFactory = () => {
+    return new FEAR();
+};
