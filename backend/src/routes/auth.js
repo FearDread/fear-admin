@@ -6,10 +6,12 @@ module.exports = (fear) => {
     const router = fear.createRouter();
     const handler = fear.getHandler();
     const validator = fear.getValidator();
+    const { requireUser, optionalUser, withoutToken, loginLimiter } = fear.getVchatAuth();
     //const passport = fear.getPassport();
 
     // Public
-    router.post("/login", handler.async(Auth.login));
+    //router.post("/login", handler.async(Auth.login));
+    router.post('/login', loginLimiter, withoutToken, handler.async(Auth.login));
     router.post("/logout", handler.async(Auth.logout));
     router.post("/register", handler.async(Auth.register));
     router.post('/google', handler.async(Auth.googleAuth));
