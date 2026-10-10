@@ -11,7 +11,7 @@ function main() {
     })
         .then(() => server.startServer())
         .then(() => {
-            server.fear.attachSignal(server.getServer());
+           // server.fear.attachSignal(server.getServer());
             server.fear.getLogger().warn('FEAR vchat signaling server running.');
 
             // PM2 stops/reloads with SIGINT (SIGTERM from systemd/docker): close sockets and the
