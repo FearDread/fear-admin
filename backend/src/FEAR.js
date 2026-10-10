@@ -160,8 +160,20 @@ _________________________
         },
 
         setupVchatAuth() {
-            // JWT-cookie identity shared by REST routes and the signaling socket
-            this.vchatAuth = require('./controllers/auth/vchat')(this);
+            // JWT-cookie identity shared by REST routes and the signaling socket.
+            // The module is a factory (mod(fear)); an older copy exported the helpers directly.
+            const mod = require('./controllers/auth/vchat');
+            const auth = typeof mod === 'function' ? mod(this) : mod;
+
+            if (!auth || typeof auth.authenticateSocket !== 'function') {
+                // An empty object here usually means a circular require while the module loaded.
+                throw new Error(
+                    `controllers/auth/vchat must export the vchat auth layer ` +
+                    `(got ${typeof mod} with keys: ${Object.keys(mod || {}).join(', ') || 'none'})`
+                );
+            }
+
+            this.vchatAuth = auth;
         },
 
         setupSignal() {

@@ -3,13 +3,16 @@
  *
  * Identity is the JWT your auth controller already issues (httpOnly `jwt` cookie, or a
  * Bearer header for native clients). Nothing here relies on express-session/passport.
- * Drop at: backend/src/libs/vchat-auth.js
+ * Drop at: backend/src/controllers/auth/vchat.js
+ * Built once by FEAR (see setupVchatAuth) and reached everywhere as fear.getVchatAuth() / fear.vchatAuth.
  */
 const crypto = require('crypto');
 const User = require('../../models/user');
 const TokenService = require('./token');
 
 const BLOCKED_STATUS = new Set(['deleted', 'suspended', 'inactive']); // same set isAuthorized rejects
+
+let env = process.env; // replaced with FEAR's parsed .env by the factory at the bottom
 
 // ----------------------------------------------------------------- identity
 
@@ -177,7 +180,7 @@ const HANDOFF_AUD = 'vchat-ws';
 const spent = new Map(); // jti -> exp, for single use
 
 function handoffKey() {
-    const secret = process.env.SESSION_SECRET || process.env.JWT_SECRET;
+    const secret = env.SESSION_SECRET || env.JWT_SECRET;
     if (!secret) throw new Error('SESSION_SECRET or JWT_SECRET is required for handoff tokens');
     return secret;
 }
@@ -250,7 +253,7 @@ async function authenticateSocket(req, token) {
     return viaToken ? { userId: viaToken.id, displayName: viaToken.displayName, via: 'handoff' } : null;
 }
 
-module.exports = {
+const api = {
     parseCookies,
     userFromRequest,
     requireUser,
@@ -261,3 +264,15 @@ module.exports = {
     verifyHandoff,
     authenticateSocket,
 };
+
+/**
+ * Factory used by FEAR:  this.vchatAuth = require('./controllers/auth/vchat')(this);
+ * The same helpers are also attached to the factory itself for direct imports and tests.
+ */
+module.exports = function createVchatAuth(fear) {
+    const parsed = (fear && typeof fear.getEnvironment === 'function' && fear.getEnvironment()) || {};
+    env = { ...process.env, ...parsed };
+    return api;
+};
+
+Object.assign(module.exports, api);
