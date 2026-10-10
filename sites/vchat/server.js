@@ -1,6 +1,6 @@
 const FearServer = require('../../backend/src/FEARServer');
 const FearSignal = require('../../backend/src/libs/signal');
-const { authenticateSocket } = require('../../backend/src/libs/vchat-auth');
+const { authenticateSocket } = require('../../backend/src/controllers/auth/vchat');
 const path = require('path');
 
 function main() {

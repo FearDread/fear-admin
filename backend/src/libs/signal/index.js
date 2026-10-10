@@ -20,8 +20,8 @@ module.exports = FearSignal = (() => {
     const MAX_USERNAME_LENGTH = 24;
 
     // Token bucket: burst of 10, refilled at 5/sec.
-    const RATE_BURST = 10;
-    const RATE_REFILL_PER_SEC = 5;
+    const RATE_BURST = 60;
+    const RATE_REFILL_PER_SEC = 30;
 
     const DIRECTED_TYPES = new Set([
         "video-offer",
@@ -37,12 +37,14 @@ module.exports = FearSignal = (() => {
 
     const FearSignal = function (fear, options = {}) {
         this.fear = fear;
-        this.logger = fear.getLogger();
+        this.logger = fear.getLogger(); 
         this.env = fear.getEnvironment() || {};
 
         this.path = options.path || this.env.VCHAT_WS_PATH || DEFAULT_PATH;
         this.maxRoomSize = Number(options.maxRoomSize || this.env.VCHAT_MAX_ROOM || DEFAULT_MAX_ROOM_SIZE);
         this.requireAuth = options.requireAuth !== false;
+        // async (req, token) => { userId, displayName } | null — supplied by libs/vchat-auth
+        this.authFn = typeof options.authenticate === "function" ? options.authenticate : null;
 
         this.rooms = new Map(); // roomId -> Map(peerId -> ws)
         this.servers = [];
@@ -142,6 +144,14 @@ module.exports = FearSignal = (() => {
          * when there's no valid session on this request.
          */
         authenticate(req, token) {
+            if (this.authFn) {
+                return Promise.resolve(this.authFn(req, token)).then((context) => {
+                    if (context) return context;
+                    if (this.requireAuth) throw new Error("no valid session or token");
+                    return { userId: null };
+                });
+            }
+
             return new Promise((resolve, reject) => {
                 const parser = this.fear.sessionParser;
 
@@ -215,6 +225,7 @@ module.exports = FearSignal = (() => {
         onConnection(ws, req, context) {
             ws.peerId = crypto.randomUUID();
             ws.userId = context.userId;
+            ws.displayName = context.displayName || null;
             ws.username = null;
             ws.roomId = null;
             ws.isAlive = true;
@@ -362,6 +373,7 @@ module.exports = FearSignal = (() => {
         resolveUsername(room, requested, ws) {
             const raw =
                 (typeof requested === "string" && requested.trim()) ||
+                ws.displayName ||
                 (ws.userId ? String(ws.userId) : "") ||
                 `guest-${ws.peerId.slice(0, 6)}`;
 
