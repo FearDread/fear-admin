@@ -11,6 +11,11 @@ import '../assets/css/owl.carousel.min.css';
 import '../assets/css/index.css';
 
 
+const gtag = `<script>window.dataLayer = window.dataLayer || [];
+	  function gtag(){dataLayer.push(arguments);}
+	  gtag('js', new Date());
+	  gtag('config', 'G-41NR3BS7VD')</script>`
+
 const anton = Anton({
   weight: '400',
   subsets: ['latin'],
@@ -37,8 +42,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${anton.variable} ${spaceMono.variable}`}>
-      <body>
-        <StoreProvider>
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-41NR3BS7VD"></script>
+	<gtag />
+	<body>
+		<StoreProvider>
           <SiteLayout>{children}</SiteLayout>
         </StoreProvider>
       </body>
