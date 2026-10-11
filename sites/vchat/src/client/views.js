@@ -5,7 +5,8 @@ export const views = {
         title: 'Sign in · vchat',
         html: `
 <section class="gate">
-  <h1>vchat</h1>
+  <h1 class="center">FEAR</h1>
+  <h2 class="center">Virtual Chat</h2>
   <p class="lede">Video rooms where only the people in the call can see the call.</p>
   <form id="login-form" class="stack" novalidate>
     <label>Email<input id="login-email" type="email" autocomplete="username" required></label>
