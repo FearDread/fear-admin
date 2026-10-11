@@ -14,10 +14,24 @@ const hex = (bytes) => [...new Uint8Array(bytes)].map((b) => b.toString(16).padS
 
 export class E2EE {
     constructor() {
+        // The frame transform leaves VP8's clear header bytes alone. Any other codec would be
+        // garbled, so a browser without VP8 counts as unsupported rather than "mostly working".
         this.supported =
-            typeof RTCRtpScriptTransform !== 'undefined' && !!(window.crypto && window.crypto.subtle) && typeof Worker !== 'undefined';
+            typeof RTCRtpScriptTransform !== 'undefined' &&
+            !!(window.crypto && window.crypto.subtle) &&
+            typeof Worker !== 'undefined' &&
+            E2EE.hasVp8();
         this.worker = null;
         this.sessions = new Map(); // peerId -> { pair, publicRaw }
+    }
+
+    static hasVp8() {
+        try {
+            const caps = RTCRtpSender.getCapabilities('video');
+            return !!caps && caps.codecs.some((c) => /^video\/vp8$/i.test(c.mimeType));
+        } catch (err) {
+            return false;
+        }
     }
 
     init() {

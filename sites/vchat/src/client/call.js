@@ -23,6 +23,14 @@ export class Call {
     }
 
     async start() {
+        // A peer that can't run the frame transform would receive ciphertext (garbled video)
+        // and send plaintext the others can't decrypt. Don't let one join half-encrypted.
+        if (!this.e2ee.supported) {
+            throw new Error(
+                'This browser cannot join encrypted calls. Use a current Chrome, Edge, Firefox or Safari (VP8 and encoded transforms are required).'
+            );
+        }
+
         try {
             this.local = await navigator.mediaDevices.getUserMedia({
                 audio: true,
@@ -141,12 +149,12 @@ export class Call {
         const peer = this.peers.get(m.from);
         if (!peer) return;
         if (!peer.remoteSet) return peer.queued.push(m.candidate);
-        await peer.pc.addIceCandidate(m.candidate).catch(() => {});
+        await peer.pc.addIceCandidate(m.candidate).catch(() => { });
     }
 
     async flush(peer) {
         const pending = peer.queued.splice(0);
-        await Promise.all(pending.map((c) => peer.pc.addIceCandidate(c).catch(() => {})));
+        await Promise.all(pending.map((c) => peer.pc.addIceCandidate(c).catch(() => { })));
     }
 
     async onKey(m) {
