@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import { Anton, Space_Mono } from 'next/font/google';
+import { GoogleAnalytics } from '@next/third-parties/google';
 import StoreProvider from '@/lib/redux/StoreProvider';
 import SiteLayout from '@/components/layout/SiteLayout';
-
 
 import '../assets/css/bootstrap.min.css';
 import '../assets/css/app.css';
@@ -10,45 +10,46 @@ import '../assets/css/efear.css';
 import '../assets/css/owl.carousel.min.css';
 import '../assets/css/index.css';
 
-
-const gtag = `<script>window.dataLayer = window.dataLayer || [];
-	  function gtag(){dataLayer.push(arguments);}
-	  gtag('js', new Date());
-	  gtag('config', 'G-41NR3BS7VD')</script>`
+const GA_ID = process.env.NEXT_PUBLIC_GA_ID; // G-41NR3BS7VD
 
 const anton = Anton({
-  weight: '400',
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-anton',
+    weight: '400',
+    subsets: ['latin'],
+    display: 'swap',
+    variable: '--font-anton',
 });
 
 const spaceMono = Space_Mono({
-  weight: ['400', '700'],
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-space-mono',
+    weight: ['400', '700'],
+    subsets: ['latin'],
+    display: 'swap',
+    variable: '--font-space-mono',
 });
 
 export const metadata: Metadata = {
-  title: 'Your Store',
-  description: 'Your Store description',
+    metadataBase: new URL('https://efear.store'),
+    title: {
+        default: 'eFear | Comics, E-Books & Collectibles',
+        template: '%s | eFear',
+    },
+    description:
+        'Shop bagged-and-boarded comics, e-books, manga, and trading cards at eFear.',
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return (
-    <html lang="en" className={`${anton.variable} ${spaceMono.variable}`}>
-	<script async src="https://www.googletagmanager.com/gtag/js?id=G-41NR3BS7VD"></script>
-	<gtag />
-	<body>
-		<StoreProvider>
-          <SiteLayout>{children}</SiteLayout>
-        </StoreProvider>
-      </body>
+export default function RootLayout({ children, } : { children: React.ReactNode; }) {
+    return (
+        <html lang= "en" className = {`${anton.variable} ${spaceMono.variable}`
+}>
+    <body>
+    <StoreProvider>
+    <SiteLayout>{ children } </SiteLayout>
+    </StoreProvider>
+{
+    GA_ID && process.env.NODE_ENV === 'production' && (
+        <GoogleAnalytics gaId={ GA_ID } />
+        )
+}
+</body>
     </html>
   );
 }

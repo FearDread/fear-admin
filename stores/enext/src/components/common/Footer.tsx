@@ -53,7 +53,7 @@ export const Footer = ({ categories }: Footer2Props) => {
     // Passed as a plain object — fetchBaseQuery handles JSON-encoding the
     // body itself, so pre-stringifying it here (as the old thunk did) would
     // have double-encoded it.
-    subscribe({ $email: subEmail, $subject: 'E-Fear Subscription Notice' });
+    subscribe({ '$email': subEmail, '$subject': 'E-Fear Subscription Notice' });
   };
 
   useEffect(() => {
