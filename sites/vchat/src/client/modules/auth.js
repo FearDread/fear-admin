@@ -45,7 +45,7 @@ export default function authModule(sb) {
 
                 const userData = { password, email, firstName, lastName, displayName }
 
-                if (pass !== match) {
+                if (password !== match) {
                     $error.text('Passwords do not match').prop('hidden', false);
                     return;
                 } 
