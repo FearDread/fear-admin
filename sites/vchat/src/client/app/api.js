@@ -30,7 +30,7 @@ async function request(method, path, body) {
 
 export const api = {
     session: () => request('GET', '/session'),
-    register: (data) => request('POST', '/register', { data }),
+    register: (data) => request('POST', '/register', data),
     login: (email, password) => request('POST', '/login', { email, password }),
     logout: () => request('POST', '/logout'),
     config: () => request('GET', '/config'),

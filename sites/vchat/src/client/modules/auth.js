@@ -43,7 +43,7 @@ export default function authModule(sb) {
                 const displayName = firstName + ' ' + lastName;
                 const match = $('#repeat-password').val();
 
-                const userData = { password, email, firstName, lastName, displayName }
+                const userData = { email, password, firstName, lastName, displayName }
 
                 if (password !== match) {
                     $error.text('Passwords do not match').prop('hidden', false);
