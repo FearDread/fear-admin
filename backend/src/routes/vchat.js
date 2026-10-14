@@ -11,6 +11,7 @@ module.exports = (fear) => {
     // Public
     router.post('/login', loginLimiter, withoutToken, handler.async(Auth.login));
     router.post('/logout', handler.async(Auth.logout));
+    router.post("/register", loginLimiter, withoutToken, handler.async(Auth.register));
     router.get('/session', optionalUser, handler.async(Vchat.session));
 
     // Protected — all of these read req.vchatUser, so requireUser must run first.

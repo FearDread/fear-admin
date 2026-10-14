@@ -174,9 +174,9 @@ exports.register = (req, res) => {
       const userData = {
         email: email.toLowerCase(),
         password,
-        firstName: firstName.trim(),
-        lastName: lastName.trim(),
-        displayName: displayName || `${firstName} ${lastName}`,
+        firstName: (firstName) ? firstName.trim() : '',
+        lastName: (lastName) ? lastName.trim() : '',
+        displayName: displayName || `${firstName} ${lastName}` || email,
         mobile: phoneNumber || undefined,
         dateOfBirth: dateOfBirth || undefined,
         role: otherFields.role || 'user',
