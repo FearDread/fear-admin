@@ -36,14 +36,20 @@ export default function authModule(sb) {
             $error.prop('hidden', true);
 
             try {
-                const pass = $('#register-password').val();
+                const email = $('$register-email').val().trim();
+                const password = $('#register-password').val();
+                const firstName = $('#firstName').val();
+                const lastName = $('#lastName').val();
+                const displayName = firstName + ' ' + lastName;
                 const match = $('#repeat-password').val();
+
+                const userData = { password, email, firstName, lastName, displayName }
 
                 if (pass !== match) {
                     $error.text('Passwords do not match').prop('hidden', false);
                     return;
                 } 
-                await api.register($('#register-email').val().trim(), pass);
+                await api.register(userData);
 
                 // WebSocket auth rides on the session cookie, so confirm one exists.
                 const session = await api.session();

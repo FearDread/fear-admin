@@ -15,7 +15,7 @@ export const views = {
     <button class="primary" type="submit">Sign in</button>
   </form>
     <p class="lede">Need credentials? Sign up.</p>
-    <link href="#register" class="secondary">Sign Up Here!</link>
+    <a href="#register" id="register" class="secondary">Sign Up Here!</a>
 </section>`,
     },
     register: {
