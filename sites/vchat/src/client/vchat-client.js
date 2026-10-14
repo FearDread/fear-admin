@@ -1,8 +1,9 @@
-import './jquery-global.js'; // must stay first: jquery.gui.js reads the global $
-import { FEAR, Router } from './jquery.gui.js';
-import { api } from './api.js';
-import { state, go } from './state.js';
-import { views } from './views.js';
+import './gui/jquery.js';
+import { FEAR, Router } from './gui/jquery.gui.js';
+import { api } from './app/api.js';
+import { state, go } from './app/state.js';
+import { views } from './app/views.js';
+
 import authModule from './modules/auth.js';
 import lobbyModule from './modules/lobby.js';
 import roomModule from './modules/room.js';
@@ -15,6 +16,7 @@ FEAR.create('room', roomModule);
 
 // Auth/room guard. Returning false cancels the load; go() then sends the router elsewhere.
 function guard(name) {
+    if (!state.user && name === 'register') return go('register', false);
     if (!state.user && name !== 'login') return go('login'), false;
     if (state.user && name === 'login') return go('lobby'), false;
     if (name === 'room' && !state.room) return go('lobby'), false;

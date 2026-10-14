@@ -14,6 +14,26 @@ export const views = {
     <p id="login-error" class="error" role="alert" hidden></p>
     <button class="primary" type="submit">Sign in</button>
   </form>
+    <p class="lede">Need credentials? Sign up.</p>
+    <link href="#register" class="secondary">Sign Up Here!</link>
+</section>`,
+    },
+    register: {
+        title: 'Get Credentials · vchat',
+        html: `
+<section class="gate">
+  <h1 class="center">FEAR</h1>
+  <h2 class="center">Virtual Chat</h2>
+  <p class="lede">Video rooms where only the people in the call can see the call.</p>
+  <form id="register-form" class="stack" novalidate>
+    <label>Email<input id="register-email" type="email" required></label>
+    <label>First Name<input id="firstName" type="text" required></label>
+    <label>Last Name<input id="lastName" type="text" required></label>
+    <label>Password<input id="register-password" type="password" required></label>
+    <label>Repeat Password<input id="repeat-password" type="password" required></label>
+    <p id="register-error" class="error" role="alert" hidden></p>
+    <button class="primary" type="submit">Sign Up</button>
+  </form>
 </section>`,
     },
 

@@ -1,5 +1,5 @@
-import { api } from '../api.js';
-import { state, go, setName, ROOM_PATTERN } from '../state.js';
+import { api } from '../app/api.js';
+import { state, go, setName, ROOM_PATTERN } from '../app/state.js';
 
 // Accept either a bare code or a pasted invite link.
 function parseRoom(value) {

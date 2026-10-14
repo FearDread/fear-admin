@@ -1,6 +1,6 @@
-import { Call } from '../call.js';
-import { SignalClient } from '../signal.js';
-import { state, go, ensureConfig } from '../state.js';
+import { Call } from '../app/call.js';
+import { SignalClient } from '../app/signal.js';
+import { state, go, ensureConfig } from '../app/state.js';
 
 const REASONS = {
     'room-full': 'This room is full.',

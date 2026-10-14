@@ -1,4 +1,4 @@
-import { E2EE } from './../e2ee/e2ee.js';
+import { E2EE } from '../../e2ee/e2ee.js';
 
 /**
  * Full-mesh WebRTC. The joiner offers to everyone already present; existing peers answer.
