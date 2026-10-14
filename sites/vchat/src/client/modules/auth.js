@@ -36,7 +36,7 @@ export default function authModule(sb) {
             $error.prop('hidden', true);
 
             try {
-                const email = $('$register-email').val().trim();
+                const email = $('#register-email').val().trim();
                 const password = $('#register-password').val();
                 const firstName = $('#firstName').val();
                 const lastName = $('#lastName').val();
