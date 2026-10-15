@@ -7,12 +7,24 @@ import { views } from './app/views.js';
 import authModule from './modules/auth.js';
 import lobbyModule from './modules/lobby.js';
 import roomModule from './modules/room.js';
+import themeModule from './modules/theme.js';
 
 FEAR.configure({ logLevel: 2, name: 'vchat' });
 
 FEAR.create('auth', authModule);
 FEAR.create('lobby', lobbyModule);
 FEAR.create('room', roomModule);
+FEAR.create('theme', themeModule, {
+    themes: [
+        { id: 'cyan', name: 'Cyan Ring', href: '/assets/css/styles.css', swatch: '#19c8ff' },
+        { id: 'blackout', name: 'Blackout', href: '/assets/css/theme-blackout.css', swatch: '#d4161f' },
+    ],
+    default: 'blackout',
+    storageKey: 'vchat:theme',
+    linkId: 'theme-css',
+    mount: '.bar', 
+    button: true
+});
 
 // Auth/room guard. Returning false cancels the load; go() then sends the router elsewhere.
 function guard(name) {
@@ -39,7 +51,7 @@ async function main() {
     }
 
     await FEAR.boot(); // once, before the parallel module starts (boot() isn't re-entrant)
-    await FEAR.start(['auth', 'lobby', 'room']);
+    await FEAR.start(['auth', 'lobby', 'room', 'theme']);
 
     const router = new Router({
         container: '#app',
