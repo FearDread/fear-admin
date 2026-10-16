@@ -125,7 +125,7 @@ export const {
   loginWithFacebook,
   register,
   logout,
-  deleteUser,
+  delete: deleteUser,
   forgotPassword,
   resetPassword,
   verifyEmail,
