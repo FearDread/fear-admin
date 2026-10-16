@@ -187,7 +187,7 @@ const UsersList = () => {
   const handleDeleteUser = async () => {
     if (!selectedUser) return;
     try {
-      await dispatch(deleteUser(selectedUser._id)).unwrap();
+        await dispatch(deleteUser({ id: selectedUser._id })).unwrap();
       toaster.push(
         <Message showIcon type="success" closable>
           <strong>Deleted!</strong> User removed successfully.
