@@ -211,7 +211,7 @@ button {
    like the HUD rules in the artwork. */
 .bar {
     position: fixed;
-    bottom: 10;
+    bottom: 10px;
     width: 100px;
     height: 100px;
     display: flex;

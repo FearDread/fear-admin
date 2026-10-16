@@ -223,7 +223,7 @@ button {
 /* The bar's bottom edge is the artwork's horizon beam: blue, violet, magenta. */
 .bar {
     position: fixed;
-    bottom: 10;
+    bottom: 10px;
     width: 100px;
     height: 100px;
     display: flex;
