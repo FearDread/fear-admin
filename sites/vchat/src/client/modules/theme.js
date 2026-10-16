@@ -15,7 +15,7 @@
  *   - the broker: FEAR.emit('theme:set', { id: 'blackout' }) / FEAR.emit('theme:cycle')
  *   - code: FEAR.registry.get('themeSwitcher').set('blackout')
  *
- * Listen for changes with: sandbox.add('theme:changed', (theme) => { ... })  // { id, name }
+ * Listen for changes with: sb.add('theme:changed', (theme) => { ... })  // { id, name }
  *
  * Handlers passed to the broker must be written with parenthesized parameters, as above.
  * The framework counts the parameters of a handler by regex to decide whether it is
@@ -47,7 +47,7 @@ export function registerThemeSwitcher(gui = window.FEAR, overrides = {}) {
 }
 
 export default function themeModule(sandbox) {
-    const $ = sandbox.$;
+    const $ = sb.$;
     const NS = '.themeswitcher';
     const BUTTON_ID = 'theme-toggle';
 
@@ -62,7 +62,7 @@ export default function themeModule(sandbox) {
 
     const find = (id) => themes.find((t) => t.id === id) || null;
     const url = (t) => (opts.version ? `${t.href}?v=${encodeURIComponent(opts.version)}` : t.href);
-    const fail = (err) => sandbox.warn('themeSwitcher:', err && err.message ? err.message : err);
+    const fail = (err) => sb.warn('themeSwitcher:', err && err.message ? err.message : err);
 
     const read = () => {
         try {
@@ -236,7 +236,7 @@ export default function themeModule(sandbox) {
                 ['theme:cycle', onCycle],
                 ['components:init', onMount],
             ].forEach(([channel, handler]) => {
-                sandbox.add(channel, handler);
+                sb.add(channel, handler);
                 subscriptions.push([channel, handler]);
             });
 
@@ -254,7 +254,7 @@ export default function themeModule(sandbox) {
 
             // Leave the stylesheet in place; unloading the switcher should not unstyle the page.
             // Broker removal goes last so a failure there cannot leave DOM behind.
-            subscriptions.splice(0).forEach(([channel, handler]) => sandbox.remove(channel, handler));
+            subscriptions.splice(0).forEach(([channel, handler]) => sb.remove(channel, handler));
 
             return Promise.resolve();
         },
