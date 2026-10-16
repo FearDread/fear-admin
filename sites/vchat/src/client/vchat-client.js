@@ -16,8 +16,9 @@ FEAR.create('lobby', lobbyModule);
 FEAR.create('room', roomModule);
 FEAR.create('theme', themeModule, {
     themes: [
-        { id: 'cyan', name: 'Cyan Ring', href: '/assets/css/styles.css', swatch: '#19c8ff' },
-        { id: 'blackout', name: 'Blackout', href: '/assets/css/theme-blackout.css', swatch: '#d4161f' },
+        { id: 'cyan', name: 'Cyan Ring', href: '/assets/css/vchat.css', swatch: '#19c8ff' },
+        { id: 'blackout', name: 'Blackout', href: '/assets/css/blackout.css', swatch: '#d4161f' },
+        { id: 'react', name: 'React', href: '/assets/css/react.css', swatch: '' }
     ],
     default: 'blackout',
     storageKey: 'vchat:theme',

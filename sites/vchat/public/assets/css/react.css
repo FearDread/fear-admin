@@ -26,6 +26,35 @@ body {
   background: var(--bg) url("/assets/img/fear_vchat_bg.jpg") center / cover fixed no-repeat;
   -webkit-font-smoothing: antialiased;
 }
+.bar {
+    position: fixed;
+    top: 0;
+    width: 200px;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.7rem 1.25rem;
+    background: rgba(3, 4, 7, 0.78);
+    border-bottom: 1px solid var(--line);
+}
+
+    .bar::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: -1px;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, var(--blood) 18%, var(--red) 50%, var(--blood) 82%, transparent);
+        box-shadow: 0 0 10px rgba(212, 22, 31, 0.45);
+    }
+
+@supports (backdrop-filter: blur(1px)) {
+    .bar {
+        backdrop-filter: blur(12px) saturate(120%);
+    }
+}
 body::before {            /* keeps text readable over the artwork */
   content: ""; position: fixed; inset: 0; z-index: -1;
   background: radial-gradient(ellipse at center, rgba(7,8,11,.25) 0%, rgba(7,8,11,.8) 100%);

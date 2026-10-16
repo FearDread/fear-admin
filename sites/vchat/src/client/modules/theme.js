@@ -46,7 +46,7 @@ export function registerThemeSwitcher(gui = window.FEAR, overrides = {}) {
     return gui;
 }
 
-export default function themeModule(sandbox) {
+export default function themeModule(sb) {
     const $ = sb.$;
     const NS = '.themeswitcher';
     const BUTTON_ID = 'theme-toggle';

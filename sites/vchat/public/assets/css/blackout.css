@@ -210,7 +210,10 @@ button {
 /* The bar's bottom edge is a thin red line that fades out at both ends,
    like the HUD rules in the artwork. */
 .bar {
-    position: relative;
+    position: fixed;
+    top: 0;
+    width: 200px;
+    height: 200px;
     display: flex;
     align-items: center;
     gap: 1rem;
