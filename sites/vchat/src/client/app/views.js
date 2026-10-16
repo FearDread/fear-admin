@@ -41,7 +41,7 @@ export const views = {
         title: 'Rooms · vchat',
         html: `
 <section>
-  <header class="bar">
+  <header>
     <span class="brand">vchat</span>
     <button id="logout" class="quiet" type="button">Sign out</button>
   </header>
@@ -72,7 +72,7 @@ export const views = {
         title: 'Room · vchat',
         html: `
 <section class="room">
-  <header class="bar">
+  <header>
     <span class="brand">vchat</span>
     <span id="room-name" class="room-name"></span>
     <span id="e2ee-badge" class="badge"></span>

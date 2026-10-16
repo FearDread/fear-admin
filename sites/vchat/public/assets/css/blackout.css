@@ -211,9 +211,9 @@ button {
    like the HUD rules in the artwork. */
 .bar {
     position: fixed;
-    top: 0;
-    width: 200px;
-    height: 200px;
+    bottom: 10;
+    width: 100px;
+    height: 100px;
     display: flex;
     align-items: center;
     gap: 1rem;
