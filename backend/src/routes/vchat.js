@@ -37,7 +37,7 @@ module.exports = (fear) => {
     const env = fear.getEnvironment() || {};
 
     const baseUrl = (req) => (env.VCHAT_PUBLIC_URL || `${req.protocol}://${req.get('host')}`).replace(/\/+$/, '');
-    const roomLink = (req, room) => `${baseUrl(req)}/#/meeting/${room}`;
+    const roomLink = (req, room) => `${baseUrl(req)}/?room=${room}`;
     const sendFailed = (res, result) => {
         logger.error(`FEAR vchat :: email failed :: ${result && result.message}`);
         return res.status(502).json({ error: 'email could not be sent' });
