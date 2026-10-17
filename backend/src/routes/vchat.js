@@ -30,12 +30,21 @@ function allowInvite(userId) {
 }
 
 module.exports = (fear) => {
+    let mail = null;
     const router = fear.createRouter();
     const logger = fear.getLogger();
     const handler = fear.getHandler();
     const env = fear.getEnvironment() || {};
 
-    // session/config/token carry identity or TURN credentials: never cache them.
+    const baseUrl = (req) => (env.VCHAT_PUBLIC_URL || `${req.protocol}://${req.get('host')}`).replace(/\/+$/, '');
+    const roomLink = (req, room) => `${baseUrl(req)}/#/meeting/${room}`;
+    const sendFailed = (res, result) => {
+        logger.error(`FEAR vchat :: email failed :: ${result && result.message}`);
+        return res.status(502).json({ error: 'email could not be sent' });
+    };
+
+    mail = fear.getMailer() || require('../libs/emailer/smtp');
+
     router.use((req, res, next) => {
         res.set('Cache-Control', 'no-store');
         next();
@@ -44,87 +53,16 @@ module.exports = (fear) => {
     router.post('/login', loginLimiter, withoutToken, handler.async(Auth.login));
     router.post('/logout', Auth.logout);
 
-    // Always 200: the SPA calls this on load to decide between login and lobby.
-    router.get('/session', optionalUser, (req, res) => {
-        const user = req.vchatUser;
-        res.json({
-            authenticated: !!user,
-            userId: user ? user.id : null,
-            displayName: user ? user.displayName : null,
-        });
-    });
-
-    router.get('/config', requireUser, (req, res) => {
-        const iceServers = [{ urls: env.STUN_URL || 'stun:stun.l.google.com:19302' }];
-
-        if (env.TURN_USER && env.TURN_CRED && env.TURN_URLS) {
-            env.TURN_URLS.split(',')
-                .map((url) => url.trim())
-                .filter(Boolean)
-                .forEach((url) => {
-                    iceServers.push({ urls: url, username: env.TURN_USER, credential: env.TURN_CRED });
-                });
-        }
-
-        res.json({
-            iceServers,
-            socketPath: fear.signal ? fear.signal.path : '/fear/ws/vchat',
-            maxRoomSize: fear.signal ? fear.signal.maxRoomSize : null,
-            fallbackOrigin: env.VCHAT_WS_FALLBACK_ORIGIN || null,
-        });
-    });
-
-    router.get('/token', requireUser, (req, res) => {
-        try {
-            res.json(mintHandoff(req.vchatUser.id));
-        } catch (err) {
-            logger.error(`FEAR vchat :: handoff mint failed :: ${err.message}`);
-            res.status(503).json({ error: 'handoff signing not configured' });
-        }
-    });
-
-    router.post('/rooms', requireUser, (req, res) => {
-        const room = crypto.randomBytes(9).toString('base64url');
-        logger.info(`FEAR vchat :: room created :: ${room} :: user ${req.vchatUser.id}`);
-        res.status(201).json({ room });
-    });
-
-    router.get('/rooms/:room', requireUser, (req, res) => {
-        if (!ROOM_PATTERN.test(req.params.room)) return res.status(400).json({ error: 'invalid room' });
-
-        const stats = fear.signal ? fear.signal.getStats() : { rooms: [] };
-        const found = stats.rooms.find((entry) => entry.room === req.params.room);
-        res.json({ room: req.params.room, peers: found ? found.peers : 0 });
-    });
+    router.get('/session', optionalUser, handler.async(Vchat.session));
+    router.get('/config', requireUser, handler.async(Vchat.config));
+    router.get('/token', requireUser, handler.async(Vchat.token));
+    router.post('/rooms', requireUser, handler.async(Vchat.createRoom));
+    router.get('/rooms/:room', requireUser, handler.async(Vchat.getRoom));
 
     // Lists every room and participant name: admins only.
-    router.get('/stats', requireUser, Auth.authorizeRoles('admin'), (req, res) => {
-        if (!fear.signal) return res.status(503).json({ error: 'signaling not attached' });
-        res.json(fear.signal.getStats());
-    });
+    router.get('/stats', requireUser, Auth.authorizeRoles('admin'), handler.async(Vchat.stats)); 
 
-    // ---------------------------------------------------------------- email
-
-    // Mailer from libs/smtp.js. Use the instance FEAR already built if there is one
-    // (fear.mailer); otherwise build it once. Adjust the require path to where smtp.js lives.
-    let mailer = null;
-    const getMailer = () => {
-        if (!mailer) mailer = fear.mailer || require('../libs/smtp')(fear);
-        return mailer;
-    };
-
-    // Public base URL used in email links. Set VCHAT_PUBLIC_URL in .env (e.g. https://vchat.example.com).
-    const baseUrl = (req) => (env.VCHAT_PUBLIC_URL || `${req.protocol}://${req.get('host')}`).replace(/\/+$/, '');
-
-    // Must match what parseRoute() in the client expects for a meeting link.
-    const roomLink = (req, room) => `${baseUrl(req)}/#/meeting/${room}`;
-
-    const sendFailed = (res, result) => {
-        logger.error(`FEAR vchat :: email failed :: ${result && result.message}`);
-        return res.status(502).json({ error: 'email could not be sent' });
-    };
-
-    // Welcome email. Sent to the signed-in user's own address; admins may pass { email } for someone else.
+    // email routes
     router.post('/email/welcome', requireUser, async (req, res) => {
         const user = req.vchatUser;
         const isAdmin = Array.isArray(user.roles) ? user.roles.includes('admin') : user.role === 'admin';
@@ -133,7 +71,6 @@ module.exports = (fear) => {
         if (!EMAIL_PATTERN.test(to)) return res.status(400).json({ error: 'no valid email address for this account' });
 
         try {
-            const mail = getMailer();
             const firstName = String((isAdmin && req.body.firstName) || user.displayName || '').split(' ')[0];
             const result = await mail.sendEmail({
                 to,
@@ -151,8 +88,6 @@ module.exports = (fear) => {
         }
     });
 
-    // Invitation email. The link and inviter name are built server-side so they can't be spoofed.
-    // Body: { email, room, message?, scheduledFor?, roomName? }
     router.post('/email/invite', requireUser, async (req, res) => {
         const user = req.vchatUser;
         const { email, room, message, scheduledFor, roomName } = req.body || {};
@@ -163,7 +98,6 @@ module.exports = (fear) => {
         if (!allowInvite(user.id)) return res.status(429).json({ error: 'invite limit reached, try again later' });
 
         try {
-            const mail = getMailer();
             const inviterName = user.displayName || 'A V-CHAT user';
             const roomUrl = roomLink(req, room);
             const msg = message ? String(message).slice(0, 500) : undefined;
@@ -183,8 +117,10 @@ module.exports = (fear) => {
             });
 
             if (!result.success) return sendFailed(res, result);
+
             logger.info(`FEAR vchat :: invite sent :: room ${room} :: user ${user.id}`);
             res.json({ ok: true });
+
         } catch (err) {
             logger.error(`FEAR vchat :: invite email error :: ${err.message}`);
             res.status(500).json({ error: 'email could not be sent' });
