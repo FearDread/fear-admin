@@ -194,199 +194,6 @@ module.exports = function (fear) {
         return _this.mailConfig.smtp[_this.mailService].auth.user || 'ghaptonstall@gmail.com';
     };
     _this.efear = templates;
-    _this.templates = {
-        baseTemplate(content, title = "Email") {
-            return `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${title}</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            line-height: 1.6;
-            color: #242424;
-            background-color: #f4f4f4;
-        }
-        .container {
-            max-width: 600px;
-            margin: 40px auto;
-            background: #ffffff;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        .header {
-            background: linear-gradient(135deg, #ea6666 0%, #410182 100%);
-            color: white;
-            padding: 30px;
-            text-align: center;
-        }
-        .content {
-            padding: 40px 30px;
-        }
-        .field {
-            margin-bottom: 20px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #eee;
-        }
-        .field:last-child {
-            border-bottom: none;
-        }
-        .label {
-            font-weight: 600;
-            color: #667eea;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 5px;
-        }
-        .value {
-            color: #333;
-            font-size: 16px;
-        }
-        .footer {
-            background: #f8f9fa;
-            padding: 20px 30px;
-            text-align: center;
-            color: #666;
-            font-size: 14px;
-        }
-        .message-box {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 6px;
-            margin-top: 10px;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        ${content}
-    </div>
-</body>
-</html>
-            `;
-        },
-
-        projectTemplate(data) {
-            const { fullname, company, email, phone, budget, about } = data;
-
-            const content = `
-        <div class="header">
-            <h1 style="margin: 0; font-size: 28px;">New Project Inquiry</h1>
-            <p style="margin: 10px 0 0 0; opacity: 0.9;">You have received a new project submission</p>
-        </div>
-        <div class="content">
-            <div class="field">
-                <div class="label">Full Name</div>
-                <div class="value">${fullname || 'Not provided'}</div>
-            </div>
-            <div class="field">
-                <div class="label">Email Address</div>
-                <div class="value"><a href="mailto:${email}" style="color: #667eea;">${email}</a></div>
-            </div>
-            ${company ? `
-            <div class="field">
-                <div class="label">Company</div>
-                <div class="value">${company}</div>
-            </div>
-            ` : ''}
-            ${phone ? `
-            <div class="field">
-                <div class="label">Phone Number</div>
-                <div class="value"><a href="tel:${phone}" style="color: #667eea;">${phone}</a></div>
-            </div>
-            ` : ''}
-            ${budget ? `
-            <div class="field">
-                <div class="label">Budget</div>
-                <div class="value">${budget}</div>
-            </div>
-            ` : ''}
-            ${about ? `
-            <div class="field">
-                <div class="label">Project Details</div>
-                <div class="message-box">${about.replace(/\n/g, '<br>')}</div>
-            </div>
-            ` : ''}
-        </div>
-        <div class="footer">
-            <p style="margin: 0;">Received on ${new Date().toLocaleString()}</p>
-        </div>
-            `;
-
-            return _this.templates.baseTemplate(content, "New Project Inquiry");
-        },
-
-        contactTemplate(data) {
-            const { $email, $message, $name } = data;
-
-            const content = `
-        <div class="header">
-            <h1 style="margin: 0; font-size: 28px;">New Contact Message</h1>
-            <p style="margin: 10px 0 0 0; opacity: 0.9;">You have received a new message</p>
-        </div>
-        <div class="content">
-            ${$name ? `
-            <div class="field">
-                <div class="label">Name</div>
-                <div class="value">${$name}</div>
-            </div>
-            ` : ''}
-            <div class="field">
-                <div class="label">Email Address</div>
-                <div class="value"><a href="mailto:${$email}" style="color: #667eea;">${$email}</a></div>
-            </div>
-            <div class="field">
-                <div class="label">Message</div>
-                <div class="message-box">${$message.replace(/\n/g, '<br>')}</div>
-            </div>
-        </div>
-        <div class="footer">
-            <p style="margin: 0;">Received on ${new Date().toLocaleString()}</p>
-        </div>
-            `;
-
-            return _this.templates.baseTemplate(content, "New Contact Message");
-        },
-
-        generatePlainText(data, type = 'contact') {
-            if (type === 'project') {
-                const { fullname, company, email, phone, budget, about } = data;
-                return `
-New Project Inquiry
-===================
-
-Full Name: ${fullname || 'Not provided'}
-Email: ${email}
-${company ? `Company: ${company}\n` : ''}${phone ? `Phone: ${phone}\n` : ''}${budget ? `Budget: ${budget}\n` : ''}
-Project Details:
-${about || 'No details provided'}
-
-Received: ${new Date().toLocaleString()}
-                `.trim();
-            }
-
-            // Contact form
-            const { $email, $message, $name } = data;
-            return `
-New Contact Message
-===================
-
-${$name ? `Name: ${$name}\n` : ''}Email: ${$email}
-
-Message:
-${$message}
-
-Received: ${new Date().toLocaleString()}
-            `.trim();
-        },
-    };
 
     return {
         templates: templates,
@@ -413,13 +220,13 @@ Received: ${new Date().toLocaleString()}
                 cc: _this.getDefaultFromAddress(),
                 to: $email,
                 subject: $subject,
-                html: templates.contactForm({$subject, $email, $message, $name})
+                html: templates.contactForm({ $subject, $email, $message, $name })
             };
 
             return _this.sendEmail(options)
                 .then((resp) => {
                     if (!resp.success) return res.status(500).json(resp);
-                    
+
                     return res.status(200).json({ success: true, message: 'Contact email sent successfully', result: resp });
                 })
                 .catch((error) => _this.handleError(res, 500, error));
@@ -444,7 +251,7 @@ Received: ${new Date().toLocaleString()}
                 .then((resp) => {
                     if (!resp.success) return _this.handleError(res, 500, resp);
 
-                    return res.status(200).json({success: true,message: 'Subscription email sent successfully',result: resp });
+                    return res.status(200).json({ success: true, message: 'Subscription email sent successfully', result: resp });
                 })
                 .catch((error) => _this.handleError(res, 500, error));
         },
@@ -459,33 +266,83 @@ Received: ${new Date().toLocaleString()}
 
             const opts = {
                 to: $email,
-                cc:  _this.getDefaultFromAddress(),
-                from:  'fear.dread@underworld.dog',
+                cc: _this.getDefaultFromAddress(),
+                from: 'fear.dread@underworld.dog',
                 subject: $subject,
                 html: templates.welcome(data)
             }
             return _this.sendEmail(opts)
                 .then((result) => {
-                    if (!result.success) return _this.handleError(res, 500, resp);
+                    if (!result.success) return _this.handleError(res, 500, result);
 
-                    return res.status(200).json({result, success: true, message: 'Welcome email sent'})
+                    return res.status(200).json({ result, success: true, message: 'Welcome email sent' })
                 })
-                .catch((err) => _this.handleError(res, 500, error));
+                .catch((err) => _this.handleError(res, 500, err));
+        },
+
+        sendVchatWelcomeEmail(req, res) {
+            const { $email, data = {} } = req.body;
+
+            if (!$email || !_this.isValidEmail($email)) {
+                return _this.handleError(res, 400, { message: 'Valid email is required' });
+            }
+
+            return _this.sendEmail({
+                to: $email,
+                from: 'fear.dread@underworld.dog',
+                subject: 'Welcome to V-CHAT',
+                html: templates.vchatWelcome(data),
+                text: `Welcome to V-CHAT, ${data.firstName || 'there'}! Your account is live. Start a call: ${data.appUrl || ''}`
+            })
+                .then((result) => {
+                    if (!result.success) return _this.handleError(res, 500, result);
+
+                    return res.status(200).json({ success: true, message: 'V-CHAT welcome email sent', result });
+                })
+                .catch((error) => _this.handleError(res, 500, error));
+        },
+
+        // Route behind requireUser: this sends mail to arbitrary addresses.
+        sendVchatInviteEmail(req, res) {
+            const { $email, data = {} } = req.body;
+
+            if (!$email || !_this.isValidEmail($email)) {
+                return _this.handleError(res, 400, { message: 'Valid email is required' });
+            }
+            if (!/^https?:\/\//i.test(data.roomUrl || '')) {
+                return _this.handleError(res, 400, { message: 'A valid roomUrl is required' });
+            }
+
+            const inviter = data.inviterName || 'Someone';
+
+            return _this.sendEmail({
+                to: $email,
+                from: 'fear.dread@underworld.dog',
+                subject: `${inviter} invited you to a V-CHAT call`,
+                html: templates.vchatInvite(data),
+                text: `${inviter} invited you to a V-CHAT call.${data.message ? `\n\n${data.message}` : ''}\n\nJoin: ${data.roomUrl}`
+            })
+                .then((result) => {
+                    if (!result.success) return _this.handleError(res, 500, result);
+
+                    return res.status(200).json({ success: true, message: 'Invitation sent', result });
+                })
+                .catch((error) => _this.handleError(res, 500, error));
         },
 
         sendTestMessage(req, res) {
-          const mg = _this.mailgunClient  
-          
-          mg.messages.create("sandbox933b4315c0164f209bbf0bc7fb908598.mailgun.org", {
-              from: "Mailgun Sandbox <postmaster@sandbox933b4315c0164f209bbf0bc7fb908598.mailgun.org>",
-              to: ["Garrett Haptonstall <fear.dread@underworld.dog>"],
-              subject: "Hello Garrett Haptonstall",
-              text: "Congratulations Garrett Haptonstall, you just sent an email with Mailgun! You are truly awesome!",
+            const mg = _this.mailgunClient
+
+            mg.messages.create("sandbox933b4315c0164f209bbf0bc7fb908598.mailgun.org", {
+                from: "Mailgun Sandbox <postmaster@sandbox933b4315c0164f209bbf0bc7fb908598.mailgun.org>",
+                to: ["Garrett Haptonstall <fear.dread@underworld.dog>"],
+                subject: "Hello Garrett Haptonstall",
+                text: "Congratulations Garrett Haptonstall, you just sent an email with Mailgun! You are truly awesome!",
             })
-            .then((data) => {
-                logger.info(data)
-            })
-            .catch(error => logger.error(error));
+                .then((data) => {
+                    logger.info(data)
+                })
+                .catch(error => logger.error(error));
         }
     };
 };

@@ -1,17 +1,11 @@
 /**
  * vchat auth :: one identity source for REST routes and the signaling WebSocket.
- *
- * Identity is the JWT your auth controller already issues (httpOnly `jwt` cookie, or a
- * Bearer header for native clients). Nothing here relies on express-session/passport.
- * Drop at: backend/src/libs/vchat-auth.js
  */
 const crypto = require('crypto');
 const User = require('../../models/user');
 const TokenService = require('./token');
 
-const BLOCKED_STATUS = new Set(['deleted', 'suspended', 'inactive']); // same set isAuthorized rejects
-
-// ----------------------------------------------------------------- identity
+const BLOCKED_STATUS = new Set(['deleted', 'suspended', 'inactive']); 
 
 // WebSocket upgrade requests never pass through cookie-parser, so parse the header here.
 function parseCookies(header = '') {
@@ -74,8 +68,6 @@ async function userFromRequest(req) {
     const identity = await userById(claims.id);
     if (!identity) return null;
 
-    // Stateless JWTs outlive a password change. If the model records passwordChangedAt,
-    // refuse tokens issued before it. (No-op until the model sets that field.)
     const changed = identity.doc.passwordChangedAt;
     if (changed && claims.iat * 1000 < new Date(changed).getTime()) return null;
 
@@ -143,11 +135,7 @@ setInterval(() => {
     });
 }, LOGIN_WINDOW_MS).unref();
 
-/**
- * Counts failed logins per IP; a success clears the count. Per-account lockout already
- * lives in the User model — this stops one IP spraying many accounts.
- * Behind nginx, call app.set('trust proxy', 1) or every user shares nginx's IP.
- */
+
 const loginLimiter = (req, res, next) => {
     const now = Date.now();
     let entry = attempts.get(req.ip);
