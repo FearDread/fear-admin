@@ -1,27 +1,3 @@
-/**
- * Theme switcher module for jquery.gui.js
- *
- * Swaps the page's theme stylesheet when a button is clicked, remembers the choice
- * in localStorage, and announces changes on the GUI broker.
- *
- *   import { registerThemeSwitcher } from './modules/theme-switcher.js';
- *
- *   registerThemeSwitcher(window.FEAR, { version: 'abc123' });
- *   window.FEAR.start('themeSwitcher');
- *
- * Ways to switch:
- *   - the built-in button, appended to `mount` (default ".bar"); each click goes to the next theme
- *   - any element with data-theme-cycle, or data-theme-set="blackout"
- *   - the broker: FEAR.emit('theme:set', { id: 'blackout' }) / FEAR.emit('theme:cycle')
- *   - code: FEAR.registry.get('themeSwitcher').set('blackout')
- *
- * Listen for changes with: sb.add('theme:changed', (theme) => { ... })  // { id, name }
- *
- * Handlers passed to the broker must be written with parenthesized parameters, as above.
- * The framework counts the parameters of a handler by regex to decide whether it is
- * callback-style, and `data => fn(a, b, c)` is miscounted.
- */
-
 const DEFAULTS = {
     themes: [
         { id: 'cyan', name: 'Cyan Ring', href: '/assets/css/styles.css', swatch: '#19c8ff' },
@@ -34,17 +10,6 @@ const DEFAULTS = {
     button: true, // false = no built-in button, use data-theme-* attributes or the broker
     version: '', // cache-buster appended as ?v=... (the server caches .css for a year)
 };
-
-export function registerThemeSwitcher(gui = window.FEAR, overrides = {}) {
-    if (!gui || typeof gui.create !== 'function') {
-        throw new Error('registerThemeSwitcher needs the GUI instance (window.FEAR from jquery.gui.js)');
-    }
-
-    // Defaults are passed at registration because gui.start() only reads per-start
-    // options from a nested `{ options: {...} }` key.
-    gui.create('themeSwitcher', createThemeSwitcher, { ...DEFAULTS, ...overrides });
-    return gui;
-}
 
 export default function themeModule(sb) {
     const $ = sb.$;
