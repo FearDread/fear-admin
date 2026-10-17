@@ -96,6 +96,15 @@ export const views = {
         <ul id="safety-list"></ul>
         <p>Compare each code with that person out loud. If one differs, someone is between you.</p>
       </details>
+      <details class="safety invite">
+        <summary>Invite by email</summary>
+        <form id="invite-form" class="stack" novalidate>
+          <input id="invite-email" type="email" placeholder="friend@example.com" autocomplete="off" aria-label="Email address to invite">
+          <input id="invite-note" maxlength="500" placeholder="Add a note (optional)" autocomplete="off" aria-label="Note">
+          <button id="send-invite" class="primary" type="submit">Send invite</button>
+          <p id="invite-status" class="status" role="status"></p>
+        </form>
+      </details>
       <form id="chat-form">
         <input id="chat-input" maxlength="1000" placeholder="Message the room" autocomplete="off" aria-label="Message">
         <button class="primary" type="submit">Send</button>
