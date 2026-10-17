@@ -37,7 +37,7 @@ module.exports = FearSignal = (() => {
 
     const FearSignal = function (fear, options = {}) {
         this.fear = fear;
-        this.logger = fear.getLogger(); 
+        this.logger = fear.getLogger();
         this.env = fear.getEnvironment() || {};
 
         this.path = options.path || this.env.VCHAT_WS_PATH || DEFAULT_PATH;

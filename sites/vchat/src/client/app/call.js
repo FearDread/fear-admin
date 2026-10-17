@@ -78,16 +78,34 @@ export class Call {
         const peer = { id, username: username || 'guest', pc, stream: new MediaStream(), queued: [], remoteSet: false };
         this.peers.set(id, peer);
 
-        this.local.getTracks().forEach((track) => {
-            const sender = pc.addTrack(track, this.local);
-            if (this.e2ee.supported) {
-                sender.transform = this.e2ee.senderTransform(id);
-                if (track.kind === 'video') this.preferVp8(pc, sender);
+        // Every transceiver is created here, before any offer or answer, and gets BOTH of its
+        // transforms immediately. A receiver transform assigned later (e.g. in `ontrack`) is
+        // never given frames by Chrome: media then reaches the decoder still encrypted and
+        // shows up as blocky static. Kinds we have no local track for get a receive-only
+        // transceiver so they are wired the same way.
+        ['audio', 'video'].forEach((kind) => {
+            const track = this.local.getTracks().find((t) => t.kind === kind);
+            let transceiver;
+
+            if (track) {
+                const sender = pc.addTrack(track, this.local);
+                transceiver = pc.getTransceivers().find((t) => t.sender === sender);
+            } else {
+                transceiver = pc.addTransceiver(kind, { direction: 'recvonly' });
             }
+
+            if (!this.e2ee.supported) return;
+
+            if (track) transceiver.sender.transform = this.e2ee.senderTransform(id);
+            transceiver.receiver.transform = this.e2ee.receiverTransform(id);
+            if (kind === 'video') this.preferVp8(transceiver);
         });
 
         pc.ontrack = (event) => {
-            if (this.e2ee.supported) event.receiver.transform = this.e2ee.receiverTransform(id);
+            // Only reachable for a transceiver we did not create; wire it as a last resort.
+            if (this.e2ee.supported && !event.receiver.transform) {
+                event.receiver.transform = this.e2ee.receiverTransform(id);
+            }
             peer.stream.addTrack(event.track);
         };
         pc.onicecandidate = (event) => {
@@ -106,9 +124,8 @@ export class Call {
     }
 
     // The frame transform only knows VP8's clear-header layout, so pin video to it.
-    preferVp8(pc, sender) {
+    preferVp8(transceiver) {
         try {
-            const transceiver = pc.getTransceivers().find((t) => t.sender === sender);
             const caps = RTCRtpSender.getCapabilities('video');
             if (!transceiver || !caps || !transceiver.setCodecPreferences) return;
 

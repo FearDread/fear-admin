@@ -13,7 +13,7 @@ build/
 dork-results/
 certificates/
 .vs
-
+sites/vchat/tests/
 # Dependencies
 node_modules/
 package-lock.json
