@@ -38,10 +38,8 @@ module.exports = (fear) => {
 
     const baseUrl = (req) => (env.VCHAT_PUBLIC_URL || `${req.protocol}://${req.get('host')}`).replace(/\/+$/, '');
     const roomLink = (req, room) => `${baseUrl(req)}/?room=${room}`;
-    const sendFailed = (res, result) => {
-        logger.error(`FEAR vchat :: email failed :: ${result && result.message}`);
-        return res.status(502).json({ error: 'email could not be sent' });
-    };
+    const sendFailed = (res, result) => res.status(502).json({ error: 'email could not be sent' });
+    
 
     mail = fear.getMailer() || require('../libs/emailer/smtp');
 
@@ -52,7 +50,6 @@ module.exports = (fear) => {
 
     router.post('/login', loginLimiter, withoutToken, handler.async(Auth.login));
     router.post('/logout', Auth.logout);
-
     router.get('/session', optionalUser, handler.async(Vchat.session));
     router.get('/config', requireUser, handler.async(Vchat.config));
     router.get('/token', requireUser, handler.async(Vchat.token));

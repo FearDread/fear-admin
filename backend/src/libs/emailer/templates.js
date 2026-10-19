@@ -1,63 +1,75 @@
 // ---------------------------------------------------------------------------
-// V-CHAT email shared pieces. Palette follows the vchat app (dark UI, FEAR red
-// accent). Tweak the VCHAT object to match vchat.css / theme-blackout.css.
+// V-CHAT email shared pieces. Palette and type come from vchat.css (the cyan-ring
+// theme): black void, blue/violet chrome, cyan for "live / secure", magenta-red
+// as the beam accent. Email clients ignore gradients and web fonts inconsistently,
+// so every gradient has a solid fallback and the font stack is system fonts.
 // ---------------------------------------------------------------------------
 const VCHAT = {
-    page: '#0b0d12',
-    card: '#111827',
-    header: '#0f141c',
-    panel: '#1f2937',
-    border: '#374151',
-    text: '#f3f4f6',
-    body: '#9ca3af',
-    muted: '#6b7280',
-    accent: '#c41a1a',
+    void: '#03050a',
+    ink: '#070b14',
+    card: '#0a0f1b',
+    line: '#16304a',
+    lineHi: '#1f5f86',
+    text: '#e3f1ff',
+    muted: '#8fa5bd',
+    violet: '#7b4dff',
+    violetSoft: '#a9bcff',
+    violetDeep: '#5b34e0',
+    blueDeep: '#2f55e6',
+    sky: '#19c8ff',
+    skySoft: '#7fe0ff',
+    pink: '#ff4d8d',
+    red: '#ff3b4a',
 };
 
-const VCHAT_FONTS = `
+const VC_FONT = "'Avenir Next','Segoe UI',Helvetica,Arial,sans-serif";
+const VC_MONO = "ui-monospace,'SF Mono',Menlo,Consolas,monospace";
+
+const VCHAT_HEAD = `
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<link href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Space+Mono:ital@0;1&amp;display=swap" rel="stylesheet">
-<!--[if mso]><style>td,p,a{font-family:Arial,sans-serif!important;}</style><![endif]-->`;
+<meta name="color-scheme" content="dark">
+<meta name="supported-color-schemes" content="dark">`;
 
-// User-supplied strings (names, messages) go into HTML, so always escape them.
 const vcEsc = (v) => String(v == null ? '' : v)
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 
-// Only http(s) links are allowed in buttons.
 const vcUrl = (u) => (/^https?:\/\//i.test(u || '') ? vcEsc(u) : '#');
-
-const vcLogo = (size) => `<span style="font-family:'Anton',Impact,sans-serif;font-size:${size}px;color:${VCHAT.text};letter-spacing:.05em;">V<span style="color:${VCHAT.accent};">-CHAT</span></span>`;
-
+const vcBeam = (height) => `background:${VCHAT.violet};background-image:linear-gradient(90deg,${VCHAT.blueDeep},${VCHAT.violet} 50%,${VCHAT.pink});height:${height}px;line-height:${height}px;font-size:0;`;
+const vcLogo = (size, color = VCHAT.skySoft) => `<span style="font-family:${VC_FONT};font-size:${size}px;font-weight:800;letter-spacing:-0.02em;color:${color};">vchat</span>`;
+const vcEyebrow = (text) => `<div style="font-family:${VC_FONT};font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:${VCHAT.sky};margin-bottom:10px;">${text}</div>`;
 const vcButton = (href, label, primary = true) => primary
-    ? `<a href="${vcUrl(href)}" style="display:inline-block;padding:13px 28px;background:${VCHAT.accent};color:#fff;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));">${label} →</a>`
-    : `<a href="${vcUrl(href)}" style="display:inline-block;padding:12px 28px;border:1px solid ${VCHAT.border};color:${VCHAT.body};font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;">${label}</a>`;
+    ? `<a href="${vcUrl(href)}" style="display:inline-block;padding:13px 28px;background:${VCHAT.blueDeep};background-image:linear-gradient(135deg,${VCHAT.sky},${VCHAT.blueDeep} 55%,${VCHAT.violetDeep});border-radius:10px;color:#ffffff;font-family:${VC_FONT};font-size:15px;font-weight:700;text-decoration:none;">${label}</a>`
+    : `<a href="${vcUrl(href)}" style="display:inline-block;padding:12px 28px;border:1px solid ${VCHAT.lineHi};border-radius:10px;color:${VCHAT.text};font-family:${VC_FONT};font-size:15px;text-decoration:none;">${label}</a>`;
 
-const vcShell = (tag, rows) => `${VCHAT_FONTS}
-<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:${VCHAT.page};">
-  <tbody><tr><td align="center" style="padding:24px 16px;">
-    <table width="640" cellpadding="0" cellspacing="0" border="0" style="max-width:640px;width:100%;background:${VCHAT.card};border:1px solid ${VCHAT.border};">
+// Pill like .badge.on in the app.
+const vcBadge = (text) => `<span style="display:inline-block;padding:4px 12px;border:1px solid ${VCHAT.sky};border-radius:999px;background:#0a1a26;color:${VCHAT.sky};font-family:${VC_FONT};font-size:12px;">● ${text}</span>`;
+const vcShell = (tag, rows) => `${VCHAT_HEAD}
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:${VCHAT.void};">
+  <tbody><tr><td align="center" style="padding:28px 16px;background:${VCHAT.void};">
+    <table width="640" cellpadding="0" cellspacing="0" border="0" style="max-width:640px;width:100%;background:${VCHAT.card};border:1px solid ${VCHAT.line};border-radius:18px;overflow:hidden;">
       <tbody>
+      <tr><td style="${vcBeam(3)}">&nbsp;</td></tr>
       <tr>
-        <td style="background:${VCHAT.header};border-bottom:3px solid ${VCHAT.accent};padding:22px 32px;">
+        <td style="background:${VCHAT.ink};border-bottom:1px solid ${VCHAT.line};padding:20px 32px;">
           <table width="100%" cellpadding="0" cellspacing="0" border="0"><tbody><tr>
-            <td>${vcLogo(28)}<span style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:${VCHAT.muted};display:inline-block;padding-left:14px;margin-left:10px;border-left:1px solid ${VCHAT.border};">Encrypted Video Calls</span></td>
-            <td align="right" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:${VCHAT.muted};">${tag}</td>
+            <td>${vcLogo(24)}</td>
+            <td align="right" style="font-family:${VC_FONT};font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:${VCHAT.muted};">${tag}</td>
           </tr></tbody></table>
         </td>
       </tr>
 ${rows}
       <tr>
-        <td style="background:${VCHAT.header};border-top:1px solid ${VCHAT.border};padding:28px 32px;">
-          <table width="100%" cellpadding="0" cellspacing="0" border="0"><tbody>
-            <tr><td align="center" style="padding-bottom:14px;">${vcLogo(20).replace(VCHAT.text, VCHAT.muted)}</td></tr>
-            <tr><td align="center" style="font-family:'Space Mono',monospace;font-size:9px;color:${VCHAT.muted};letter-spacing:.06em;line-height:1.8;">
-              © 2026 V-CHAT · Powered by FEAR
-            </td></tr>
-          </tbody></table>
+        <td style="background:${VCHAT.ink};border-top:1px solid ${VCHAT.line};padding:24px 32px;" align="center">
+          <div style="margin-bottom:8px;">${vcLogo(18, VCHAT.muted)}</div>
+          <div style="font-family:${VC_FONT};font-size:12px;color:${VCHAT.muted};line-height:1.7;">
+            Video rooms where only the people in the call can see the call.<br>
+            © 2026 V-CHAT · Powered by FEAR
+          </div>
         </td>
       </tr>
+      <tr><td style="${vcBeam(2)}">&nbsp;</td></tr>
       </tbody>
     </table>
   </td></tr>
@@ -1064,53 +1076,43 @@ You're good.</div>
     
     `},
 
-    // ------------------------------------------------------------------ V-CHAT
-
-    /**
-     * data: { firstName, appUrl }
-     */
     vchatWelcome(data = {}) {
+        const step = (n, title, copy, edge) => `
+            <td width="33%" style="vertical-align:top;${edge ? `border-left:1px solid ${VCHAT.line};padding-left:16px;` : ''}padding-right:16px;">
+              <div style="font-family:${VC_FONT};font-size:24px;font-weight:800;color:${VCHAT.sky};margin-bottom:6px;">${n}</div>
+              <div style="font-family:${VC_FONT};font-size:14px;font-weight:700;color:${VCHAT.violetSoft};margin-bottom:4px;">${title}</div>
+              <div style="font-family:${VC_FONT};font-size:13px;color:${VCHAT.muted};line-height:1.6;">${copy}</div>
+            </td>`;
+
         const rows = `
       <tr>
-        <td style="padding:36px 32px 20px;">
-          <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:${VCHAT.accent};margin-bottom:8px;">// you're in</div>
-          <div style="font-family:'Anton',Impact,sans-serif;font-size:30px;color:${VCHAT.text};letter-spacing:.03em;line-height:1.1;">Welcome to V-CHAT.</div>
+        <td style="padding:36px 32px 12px;">
+          ${vcEyebrow("You're in")}
+          <div style="font-family:${VC_FONT};font-size:34px;font-weight:800;letter-spacing:-0.03em;line-height:1.1;color:${VCHAT.text};">Welcome to <span style="color:${VCHAT.skySoft};">V-CHAT</span>.</div>
         </td>
       </tr>
       <tr>
-        <td style="padding:0 32px 28px;">
-          <p style="font-family:'Space Mono',monospace;font-size:12px;color:${VCHAT.body};line-height:1.9;margin:0 0 20px;">
-            Hey <strong style="color:${VCHAT.text};">${vcEsc(data.firstName || 'there')}</strong>,<br><br>
-            Your V-CHAT account is live. Spin up a room, share the link, and talk face to face. Calls are encrypted end to end between the people in the room.
+        <td style="padding:8px 32px 28px;">
+          <p style="font-family:${VC_FONT};font-size:16px;color:${VCHAT.muted};line-height:1.6;margin:0 0 22px;">
+            Hey <strong style="color:${VCHAT.text};">${vcEsc(data.firstName || 'there')}</strong>, your account is live. Spin up a room, share the link, and talk face to face.
           </p>
-          <table cellpadding="0" cellspacing="0" border="0"><tbody><tr>
-            <td>${vcButton(data.appUrl, 'Start a Call')}</td>
+          <table cellpadding="0" cellspacing="0" border="0" style="margin-bottom:18px;"><tbody><tr>
+            <td>${vcButton(data.appUrl, 'Start a call')}</td>
           </tr></tbody></table>
+          <div>${vcBadge('End-to-end encrypted between everyone in the room')}</div>
         </td>
       </tr>
-      <tr><td style="padding:0 32px;"><div style="height:1px;background:${VCHAT.border};"></div></td></tr>
+      <tr><td style="padding:0 32px;"><div style="height:1px;line-height:1px;font-size:0;background:${VCHAT.line};">&nbsp;</div></td></tr>
       <tr>
         <td style="padding:28px 32px;">
           <table width="100%" cellpadding="0" cellspacing="0" border="0"><tbody><tr>
-            <td width="33%" style="padding-right:16px;vertical-align:top;">
-              <div style="font-family:'Anton',sans-serif;font-size:22px;color:${VCHAT.accent};margin-bottom:6px;">01</div>
-              <div style="font-family:'Space Mono',monospace;font-size:10px;font-weight:700;color:${VCHAT.text};letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;">Create a Room</div>
-              <div style="font-family:'Space Mono',monospace;font-size:10px;color:${VCHAT.muted};line-height:1.7;">One click, one private link.</div>
-            </td>
-            <td width="33%" style="vertical-align:top;border-left:1px solid ${VCHAT.border};padding-left:16px;padding-right:16px;">
-              <div style="font-family:'Anton',sans-serif;font-size:22px;color:${VCHAT.accent};margin-bottom:6px;">02</div>
-              <div style="font-family:'Space Mono',monospace;font-size:10px;font-weight:700;color:${VCHAT.text};letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;">Invite People</div>
-              <div style="font-family:'Space Mono',monospace;font-size:10px;color:${VCHAT.muted};line-height:1.7;">Send the link by email or message.</div>
-            </td>
-            <td width="33%" style="vertical-align:top;border-left:1px solid ${VCHAT.border};padding-left:16px;">
-              <div style="font-family:'Anton',sans-serif;font-size:22px;color:${VCHAT.accent};margin-bottom:6px;">03</div>
-              <div style="font-family:'Space Mono',monospace;font-size:10px;font-weight:700;color:${VCHAT.text};letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;">Talk Privately</div>
-              <div style="font-family:'Space Mono',monospace;font-size:10px;color:${VCHAT.muted};line-height:1.7;">Video, audio, screen share, chat.</div>
-            </td>
+            ${step('01', 'New room', 'One click, one private link.', false)}
+            ${step('02', 'Invite people', 'Share the link by email or message.', true)}
+            ${step('03', 'Talk privately', 'Video, audio, screen share and chat.', true)}
           </tr></tbody></table>
         </td>
       </tr>`;
-        return vcShell('Account Confirmation', rows);
+        return vcShell('Welcome', rows);
     },
 
     /**
@@ -1119,47 +1121,50 @@ You're good.</div>
     vchatInvite(data = {}) {
         const inviter = vcEsc(data.inviterName || 'Someone');
         const room = data.roomName ? vcEsc(data.roomName) : null;
+        const label = (text) => `<div style="font-family:${VC_FONT};font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:${VCHAT.muted};margin-bottom:8px;">${text}</div>`;
+
         const rows = `
       <tr>
-        <td style="background:${VCHAT.panel};border-bottom:1px solid ${VCHAT.border};padding:32px;">
-          <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:${VCHAT.accent};margin-bottom:10px;">// incoming invite</div>
-          <div style="font-family:'Anton',Impact,sans-serif;font-size:34px;color:${VCHAT.text};letter-spacing:.02em;line-height:1.1;margin-bottom:14px;">${inviter}<br>wants you on a call.</div>
-          <p style="font-family:'Space Mono',monospace;font-size:12px;color:${VCHAT.body};line-height:1.9;margin:0;">
-            ${inviter} invited you to join ${room ? `<strong style="color:${VCHAT.text};">${room}</strong>` : 'a V-CHAT room'}. No download needed. Open the link in your browser, pick your camera and mic, and join.
+        <td style="padding:36px 32px 24px;border-bottom:1px solid ${VCHAT.line};">
+          ${vcEyebrow('Incoming invite')}
+          <div style="font-family:${VC_FONT};font-size:34px;font-weight:800;letter-spacing:-0.03em;line-height:1.12;color:${VCHAT.text};margin-bottom:14px;">${inviter}<br><span style="color:${VCHAT.skySoft};">wants you on a call.</span></div>
+          <p style="font-family:${VC_FONT};font-size:16px;color:${VCHAT.muted};line-height:1.6;margin:0;">
+            ${inviter} invited you to join ${room ? `<strong style="color:${VCHAT.text};">${room}</strong>` : 'a V-CHAT room'}. No download needed. Open the link, pick your camera and mic, and you're in.
           </p>
         </td>
       </tr>
       ${data.message ? `
       <tr>
         <td style="padding:24px 32px 0;">
-          <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:${VCHAT.muted};margin-bottom:8px;">Message from ${inviter}</div>
-          <div style="background:${VCHAT.panel};border-left:3px solid ${VCHAT.accent};padding:14px 16px;font-family:'Space Mono',monospace;font-size:12px;color:${VCHAT.text};line-height:1.8;">${vcEsc(data.message).replace(/\r?\n/g, '<br>')}</div>
+          ${label(`Message from ${inviter}`)}
+          <div style="background:#0d1024;border-left:2px solid ${VCHAT.violet};border-radius:4px 10px 10px 4px;padding:12px 16px;font-family:${VC_FONT};font-size:15px;color:${VCHAT.text};line-height:1.6;">${vcEsc(data.message).replace(/\r?\n/g, '<br>')}</div>
         </td>
       </tr>` : ''}
       ${data.scheduledFor ? `
       <tr>
         <td style="padding:24px 32px 0;">
-          <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:${VCHAT.muted};margin-bottom:6px;">When</div>
-          <div style="font-family:'Space Mono',monospace;font-size:14px;color:${VCHAT.text};font-weight:700;">${vcEsc(data.scheduledFor)}</div>
+          ${label('When')}
+          <div style="font-family:${VC_FONT};font-size:18px;font-weight:700;color:${VCHAT.violetSoft};">${vcEsc(data.scheduledFor)}</div>
         </td>
       </tr>` : ''}
       <tr>
-        <td style="padding:28px 32px 12px;">${vcButton(data.roomUrl, 'Join the Call')}</td>
+        <td style="padding:28px 32px 14px;">${vcButton(data.roomUrl, 'Join the call')}</td>
       </tr>
       <tr>
         <td style="padding:0 32px 28px;">
-          <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:${VCHAT.muted};margin-bottom:6px;">Or paste this link</div>
-          <div style="font-family:'Space Mono',monospace;font-size:11px;color:${VCHAT.body};word-break:break-all;">${vcEsc(data.roomUrl)}</div>
+          ${label('Or paste this link')}
+          <div style="display:inline-block;padding:6px 12px;border:1px solid ${VCHAT.line};border-radius:6px;background:${VCHAT.void};font-family:${VC_MONO};font-size:13px;color:${VCHAT.muted};word-break:break-all;">${vcEsc(data.roomUrl)}</div>
         </td>
       </tr>
-      <tr><td style="padding:0 32px;"><div style="height:1px;background:${VCHAT.border};"></div></td></tr>
+      <tr><td style="padding:0 32px;"><div style="height:1px;line-height:1px;font-size:0;background:${VCHAT.line};">&nbsp;</div></td></tr>
       <tr>
-        <td style="padding:20px 32px 28px;font-family:'Space Mono',monospace;font-size:10px;color:${VCHAT.muted};line-height:1.8;">
-          Calls are end-to-end encrypted. Only join if you know ${inviter}. If you weren't expecting this, ignore this email.
+        <td style="padding:20px 32px 28px;">
+          <div style="margin-bottom:12px;">${vcBadge('End-to-end encrypted')}</div>
+          <div style="font-family:${VC_FONT};font-size:13px;color:${VCHAT.muted};line-height:1.6;">
+            Only join if you know ${inviter}. If you weren't expecting this, ignore this email.
+          </div>
         </td>
       </tr>`;
-        return vcShell('Call Invitation', rows);
+        return vcShell('Call invitation', rows);
     },
-
-
 }
