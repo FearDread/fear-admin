@@ -55,8 +55,6 @@ module.exports = (fear) => {
     router.get('/token', requireUser, handler.async(Vchat.token));
     router.post('/rooms', requireUser, handler.async(Vchat.createRoom));
     router.get('/rooms/:room', requireUser, handler.async(Vchat.getRoom));
-
-    // Lists every room and participant name: admins only.
     router.get('/stats', requireUser, Auth.authorizeRoles('admin'), handler.async(Vchat.stats)); 
 
     // email routes
