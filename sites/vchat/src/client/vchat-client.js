@@ -21,7 +21,7 @@ FEAR.create('theme', themeModule, {
         { id: 'cyan', name: 'Cyan Ring', href: '/assets/css/vchat.css', swatch: '#19c8ff' },
         { id: 'blackout', name: 'Blackout', href: '/assets/css/blackout.css', swatch: '#d4161f' },
     ],
-    default: 'blackout',
+    default: 'cyan',
     storageKey: 'vchat:theme',
     linkId: 'theme-css',
     mount: '.bar',

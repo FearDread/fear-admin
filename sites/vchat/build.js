@@ -31,12 +31,8 @@ async function build() {
 
     fs.rmSync(OUT, { recursive: true, force: true });
     fs.mkdirSync(OUT, { recursive: true });
-
-    // 1. Static files first, so the bundles below always win on a name clash.
     fs.cpSync(PUB, OUT, { recursive: true });
 
-    // 2. Bundles. Both land in the build root, which keeps
-    //    new URL("./e2ee-worker.js", import.meta.url) resolving after bundling.
     const common = {
         bundle: true,
         minify: !watch,
@@ -56,9 +52,6 @@ async function build() {
         )
     );
 
-    // 3. server.js caches .css/.js for a year (immutable). Replace __BUILD__ in
-    //    index.html with a timestamp, e.g. /assets/css/styles.css?v=__BUILD__,
-    //    so each build gets a fresh URL. No token present = no change.
     const indexPath = path.join(OUT, 'index.html');
     const html = fs.readFileSync(indexPath, 'utf8');
 
