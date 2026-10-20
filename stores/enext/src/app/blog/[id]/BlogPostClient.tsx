@@ -1,639 +1,434 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import {
-    useGetBlogPostByIdQuery,
-    useGetAllBlogPostsQuery,
-    useIncrementBlogViewsMutation,
-    useSubmitBlogCommentMutation,
-    type BlogPost,
+  useGetBlogPostByIdQuery,
+  useGetAllBlogPostsQuery,
+  useIncrementBlogViewsMutation,
+  useSubmitBlogCommentMutation,
+  type BlogPost,
 } from '@/lib/redux/api/blogApi';
-import { T } from '@/components/styles';
+import { T, postStyles, C, FONT_MONO, FONT_ANTON } from '@/components/styles';
+import { SITE_URL } from '@/lib/utils/site';
 
-const SectionLabel = ({ children }: { children: React.ReactNode }) => (
-    <div style={{
-        fontFamily: T.mono, fontSize: '9px', letterSpacing: '.22em',
-        textTransform: 'uppercase', color: T.red, marginBottom: '10px',
-    }}>
-        {children}
-    </div>
-);
-
-const RedBtn = ({ children, onClick, type = 'button', disabled }: {
-    children: React.ReactNode; onClick?: () => void; type?: 'button' | 'submit'; disabled?: boolean;
-}) => (
-    <button
-        type={type}
-        onClick={onClick}
-        disabled={disabled}
-        style={{
-            padding: '12px 24px',
-            background: T.red,
-            border: 'none',
-            color: '#fff',
-            fontFamily: T.mono,
-            fontSize: '11px',
-            letterSpacing: '.12em',
-            textTransform: 'uppercase',
-            cursor: disabled ? 'default' : 'pointer',
-            opacity: disabled ? 0.6 : 1,
-            clipPath: 'polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px))',
-            transition: 'background .15s',
-        }}
-        onMouseEnter={(e) => !disabled && (e.currentTarget.style.background = '#a01212')}
-        onMouseLeave={(e) => !disabled && (e.currentTarget.style.background = T.red)}
-    >
-        {children}
-    </button>
-);
-
-const Divider = () => (
-    <div style={{ height: '1px', background: T.border, margin: '28px 0' }} />
-);
-
-const inputStyle: React.CSSProperties = {
-    width: '100%',
-    padding: '11px 14px',
-    background: T.dark3,
-    border: `1px solid ${T.border}`,
-    color: T.white,
-    fontFamily: T.mono,
-    fontSize: '12px',
-    outline: 'none',
-    transition: 'border-color .15s',
+const formatDate = (iso?: string) =>
+  iso
+    ? new Date(iso).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' })
+    : '';
+const getDateParts = (iso?: string) => {
+  if (!iso) return null;
+  const d = new Date(iso);
+  return {
+    day: String(d.getUTCDate()).padStart(2, '0'),
+    month: d.toLocaleDateString('en-US', { month: 'short', timeZone: 'UTC' }).toUpperCase(),
+  };
 };
-
-const labelStyle: React.CSSProperties = {
-    display: 'block',
-    fontFamily: T.mono,
-    fontSize: '9px',
-    letterSpacing: '.16em',
-    textTransform: 'uppercase',
-    color: T.dim,
-    marginBottom: '8px',
-};
+const postId = (p: BlogPost) => p._id ?? p.id ?? '';
+const commentCount = (p: BlogPost) => p.commentsCount ?? p.comments ?? 0;
 
 const sidebarCategories = [
-    { label: 'Comics & Manga', value: 'comics' },
-    { label: 'Trading Cards', value: 'trading-cards' },
-    { label: 'Graphic Novels', value: 'graphic-novels' },
-    { label: 'Anime & Collectibles', value: 'anime' },
-    { label: 'New Arrivals', value: 'new-arrivals' },
-    { label: 'News & Reviews', value: 'news' },
+  { label: 'Comics & Manga', value: 'comics' },
+  { label: 'Trading Cards', value: 'trading-cards' },
+  { label: 'Graphic Novels', value: 'graphic-novels' },
+  { label: 'Anime & Collectibles', value: 'anime' },
+  { label: 'New Arrivals', value: 'new-arrivals' },
+  { label: 'News & Reviews', value: 'news' },
 ];
 
 const popularTags = [
-    'Marvel', 'DC Comics', 'Pokemon', 'Magic: The Gathering',
-    'Manga', 'Anime', 'First Edition', 'Graded Cards',
-    'Graphic Novels', 'Limited Print', 'Variant Cover', 'Signed',
+  'Marvel', 'DC Comics', 'Pokemon', 'Magic: The Gathering', 'Manga', 'Anime',
+  'First Edition', 'Graded Cards', 'Graphic Novels', 'Limited Print', 'Variant Cover', 'Signed',
 ];
 
-const socialShare = [
-    { label: 'Facebook', icon: '𝒇', url: 'https://facebook.com' },
-    { label: 'Twitter', icon: '𝕏', url: 'https://twitter.com' },
-    { label: 'LinkedIn', icon: 'in', url: 'https://linkedin.com' },
-    { label: 'Instagram', icon: '◈', url: 'https://instagram.com' },
-];
+/* ── Small presentational pieces (module scope — never declare inside a render body) ── */
+const SectionLabel = ({ children }: { children: React.ReactNode }) => (
+  <div style={{ fontFamily: FONT_MONO, fontSize: 9, letterSpacing: '.22em', textTransform: 'uppercase', color: C.red, marginBottom: 10 }}>
+    {children}
+  </div>
+);
 
-const formatDate = (dateString?: string) => {
-    if (!dateString) return 'November 5, 2021';
-    return new Date(dateString).toLocaleDateString('en-US', {
-        year: 'numeric', month: 'long', day: 'numeric',
-    });
-};
+const Divider = () => <div style={{ height: 1, background: C.border, margin: '28px 0' }} />;
 
-const getDateParts = (dateString?: string) => {
-    if (!dateString) return { day: '24', month: 'FEB' };
-    const d = new Date(dateString);
-    return {
-        day: d.getDate().toString().padStart(2, '0'),
-        month: d.toLocaleDateString('en-US', { month: 'short' }).toUpperCase(),
-    };
-};
+const panel: React.CSSProperties = { background: C.card, border: `1px solid ${C.border}` };
+const redTopPanel: React.CSSProperties = { ...panel, borderTop: `3px solid ${C.red}` };
 
 interface BlogPostClientProps {
-    id: string;
-    initialPost: BlogPost;
-    initialPosts: BlogPost[];
+  id: string;
+  initialPost: BlogPost;
+  initialPosts: BlogPost[];
 }
 
 export default function BlogPostClient({ id, initialPost, initialPosts }: BlogPostClientProps) {
-    const router = useRouter();
+  /* Server-rendered data is the fallback so the SEO HTML is complete on first paint;
+   * RTK Query then revalidates in the background (and re-runs after a comment is posted,
+   * because submitBlogComment invalidates the { Blog, id } tag). */
+  const { data: fetchedPost, isError } = useGetBlogPostByIdQuery(id);
+  const post = fetchedPost ?? initialPost;
 
-    const { data: fetchedPost, isFetching: loading, error } = useGetBlogPostByIdQuery(id, { skip: !id });
-    const currentPost = fetchedPost ?? initialPost;
+  const { data: fetchedPosts } = useGetAllBlogPostsQuery({ sortBy: 'desc', limit: 7 });
+  const allPosts = fetchedPosts ?? initialPosts;
 
-    const { data: fetchedPosts } = useGetAllBlogPostsQuery();
-    const allPosts = fetchedPosts ?? initialPosts;
+  const [incrementViews] = useIncrementBlogViewsMutation();
+  const [submitComment, { isLoading: submitting }] = useSubmitBlogCommentMutation();
 
-    const [incrementViews] = useIncrementBlogViewsMutation();
-    const [submitComment, { isLoading: submittingComment }] = useSubmitBlogCommentMutation();
+  const [comment, setComment] = useState({ text: '', name: '', email: '', website: '' });
+  const [commentStatus, setCommentStatus] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
-    const [localSearchTerm, setLocalSearchTerm] = useState('');
-    const [comment, setComment] = useState({ text: '', name: '', email: '', website: '' });
-    const [focusedInput, setFocusedInput] = useState<string | null>(null);
+  // Count one view per visit. The ref also stops React StrictMode's dev-only
+  // double-invoked effect from counting twice.
+  const viewedId = useRef<string | null>(null);
+
+
+  const handleCommentChange = (field: keyof typeof comment, value: string) => {
+    setComment((prev) => ({ ...prev, [field]: value }));
+    if (commentStatus) setCommentStatus(null);
+  };
+
+  const handleCommentSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!comment.text.trim() || !comment.name.trim() || !comment.email.trim()) {
+      setCommentStatus({ type: 'error', text: 'Please fill in all required fields.' });
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(comment.email)) {
+      setCommentStatus({ type: 'error', text: 'Please enter a valid email address.' });
+      return;
+    }
+    try {
+      await submitComment({ postId: id, ...comment }).unwrap();
+      setComment({ text: '', name: '', email: '', website: '' });
+      setCommentStatus({ type: 'success', text: 'Thanks! Your comment was submitted.' });
+    } catch {
+      setCommentStatus({ type: 'error', text: 'Could not post your comment. Please try again.' });
+    }
+  };
+
+  const otherPosts = allPosts.filter((p) => postId(p) !== id);
+  const latestPosts = otherPosts.slice(0, 6);
+  const recentPosts = otherPosts.slice(0, 4);
+
+  const published = post.publishedDate || post.createdAt;
+  const author = post.author || post.authorName || 'Admin';
+  const postUrl = `${SITE_URL}/blog/${id}`;
+  const shareLinks = [
+    { label: 'Facebook', icon: '𝒇', href: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(postUrl)}` },
+    { label: 'X', icon: '𝕏', href: `https://twitter.com/intent/tweet?url=${encodeURIComponent(postUrl)}&text=${encodeURIComponent(post.title)}` },
+    { label: 'LinkedIn', icon: 'in', href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(postUrl)}` },
+  ];
 
     useEffect(() => {
-        if (id) {
-            incrementViews(id);
-        }
-        // Fires once per mount/id change — matches the original's intent of
-        // counting a view per visit, not per re-render.
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [id]);
+        if (viewedId.current === id) return;
+        viewedId.current = id;
+        incrementViews(id);
+    }, [id, incrementViews]);
 
-    const handleSearch = (e: React.FormEvent) => {
-        e.preventDefault();
-        router.push(`/blog?search=${encodeURIComponent(localSearchTerm)}`);
-    };
+  return (
+    <div style={{ background: C.bg, minHeight: '100vh' }}>
+      <style>{postStyles}</style>
 
-    const handleCategoryFilter = (category: string) => {
-        router.push(`/blog?category=${encodeURIComponent(category)}`);
-    };
-
-    const handleCommentChange = (field: keyof typeof comment, value: string) => {
-        setComment((prev) => ({ ...prev, [field]: value }));
-    };
-
-    const handleCommentSubmit = async () => {
-        if (!comment.text || !comment.name || !comment.email) return;
-        try {
-            await submitComment({ postId: id, ...comment }).unwrap();
-            setComment({ text: '', name: '', email: '', website: '' });
-        } catch {
-            // Toast component elsewhere in the app surfaces mutation errors globally
-        }
-    };
-
-    const latestPosts = allPosts.slice(0, 6);
-    const recentPosts = allPosts.slice(0, 4);
-
-    if (loading && !currentPost) {
-        return (
-            <div style={{
-                minHeight: '60vh', display: 'flex', flexDirection: 'column',
-                alignItems: 'center', justifyContent: 'center', background: T.bg,
-                gap: '20px',
-            }}>
-                <div style={{
-                    width: '40px', height: '40px',
-                    border: `2px solid ${T.border}`,
-                    borderTopColor: T.red,
-                    borderRadius: '50%',
-                    animation: 'efear-spin 0.7s linear infinite',
-                }} />
-                <style>{`@keyframes efear-spin { to { transform: rotate(360deg); } }`}</style>
-                <span style={{ fontFamily: T.mono, fontSize: '10px', letterSpacing: '.18em', textTransform: 'uppercase', color: T.dim }}>
-                    Loading post...
-                </span>
-            </div>
-        );
-    }
-
-    if (error) {
-        return (
-            <div style={{
-                minHeight: '60vh', display: 'flex', alignItems: 'center',
-                justifyContent: 'center', background: T.bg,
-            }}>
-                <div style={{
-                    background: T.dark2, border: `1px solid ${T.red}`,
-                    padding: '28px 36px', maxWidth: '480px',
-                }}>
-                    <SectionLabel>// error</SectionLabel>
-                    <div style={{ fontFamily: T.mono, fontSize: '12px', color: T.mid }}>
-                        Something went wrong loading this post.
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
-    const post = currentPost || ({} as BlogPost);
-
-    return (
-        <div style={{ background: T.bg, minHeight: '100vh' }}>
-            {/* ── Breadcrumb bar ── */}
-            <div
-                style={{ background: T.dark2, borderBottom: `1px solid ${T.border}`, padding: '14px 0' }}
-                className="d-none d-md-block"
-            >
-                <div className="container">
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <SectionLabel>// Blog</SectionLabel>
-                        <span style={{ color: T.border, fontFamily: T.mono, fontSize: '10px' }}>›</span>
-                        <span style={{ fontFamily: T.mono, fontSize: '10px', letterSpacing: '.1em', color: T.dim }}>
-                            Single Post
-                        </span>
-                    </div>
-                </div>
-            </div>
-
-            {/* ── Main layout ── */}
-            <section style={{ padding: '40px 0' }}>
-                <div className="container">
-                    <div className="row g-4">
-                        {/* ════════════════════════════════════ MAIN COLUMN ══ */}
-                        <div className="col-12 col-lg-9">
-                            {/* ── Hero image ── */}
-                            <div style={{ background: T.dark2, border: `1px solid ${T.border}`, overflow: 'hidden' }}>
-                                <img
-                                    src={post.images?.[0]?.url || '/assets/images/posts/01.png'}
-                                    alt={post.title || 'Post image'}
-                                    style={{ width: '100%', display: 'block', objectFit: 'cover', maxHeight: '460px' }}
-                                />
-                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0', borderTop: `1px solid ${T.border}` }}>
-                                    {[
-                                        { icon: '👤', label: `By ${post.author || post.authorName || 'Admin'}` },
-                                        { icon: '💬', label: `${post.commentsCount || post.comments || 0} Comments` },
-                                        { icon: '📅', label: formatDate(post.publishedDate || post.createdAt) },
-                                    ].map((meta, i) => (
-                                        <div key={i} style={{
-                                            display: 'flex', alignItems: 'center', gap: '8px',
-                                            padding: '12px 20px',
-                                            borderRight: `1px solid ${T.border}`,
-                                            fontFamily: T.mono, fontSize: '10px',
-                                            letterSpacing: '.08em', color: T.dim,
-                                            cursor: 'default',
-                                        }}>
-                                            <span style={{ fontSize: '12px' }}>{meta.icon}</span>
-                                            <span>{meta.label}</span>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {/* ── Post body ── */}
-                            <div style={{
-                                background: T.dark2, border: `1px solid ${T.border}`, borderTop: 'none',
-                                padding: '36px', marginBottom: '4px',
-                            }}>
-                                <h1 style={{
-                                    fontFamily: T.anton, fontSize: 'clamp(26px, 4vw, 42px)',
-                                    color: T.white, letterSpacing: '.02em', lineHeight: 1.1,
-                                    marginBottom: '28px',
-                                }}>
-                                    {post.title || 'Post Title Here'}
-                                </h1>
-
-                                {post.content && (
-                                    <div
-                                        className="efear-post-content"
-                                        dangerouslySetInnerHTML={{ __html: post.content }}
-                                        style={{ fontFamily: T.mono, fontSize: '13px', lineHeight: '1.9', color: T.mid, whiteSpace: 'pre-wrap' }}
-                                    />
-                                )}
-
-                                <style>{`
-                  .efear-post-content h2,
-                  .efear-post-content h3 {
-                    font-family: ${T.anton};
-                    color: ${T.white};
-                    letter-spacing: .03em;
-                    margin: 28px 0 12px;
-                  }
-                  .efear-post-content a { color: ${T.red}; text-decoration: none; }
-                  .efear-post-content a:hover { text-decoration: underline; }
-                  .efear-post-content blockquote {
-                    border-left: 3px solid ${T.red};
-                    padding: 12px 20px;
-                    margin: 24px 0;
-                    background: ${T.dark3};
-                    color: ${T.mid};
-                    font-style: italic;
-                  }
-                  .efear-post-content img { max-width: 100%; display: block; margin: 20px 0; }
-                  .efear-post-content p { margin-bottom: 16px; }
-                `}</style>
-
-                                <Divider />
-
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '20px', flexWrap: 'wrap' }}>
-                                    <span style={{
-                                        fontFamily: T.mono, fontSize: '9px', letterSpacing: '.18em',
-                                        textTransform: 'uppercase', color: T.dim,
-                                    }}>
-                                        Share This Post
-                                    </span>
-                                    <div style={{ display: 'flex', gap: '8px' }}>
-                                        {socialShare.map((s) => (
-                                            <a
-                                                key={s.label}
-                                                href={s.url}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                title={s.label}
-                                                style={{
-                                                    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                                                    width: '34px', height: '34px',
-                                                    background: T.dark3, border: `1px solid ${T.border}`,
-                                                    color: T.dim, fontFamily: T.mono, fontSize: '11px',
-                                                    textDecoration: 'none', transition: 'all .15s',
-                                                }}
-                                                onMouseEnter={(e) => {
-                                                    e.currentTarget.style.background = T.red;
-                                                    e.currentTarget.style.borderColor = T.red;
-                                                    e.currentTarget.style.color = '#fff';
-                                                }}
-                                                onMouseLeave={(e) => {
-                                                    e.currentTarget.style.background = T.dark3;
-                                                    e.currentTarget.style.borderColor = T.border;
-                                                    e.currentTarget.style.color = T.dim;
-                                                }}
-                                            >
-                                                {s.icon}
-                                            </a>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* ── Author bio ── */}
-                            {post.authorBio && (
-                                <div style={{
-                                    background: T.dark2, border: `1px solid ${T.border}`, borderTop: `3px solid ${T.red}`,
-                                    padding: '28px 36px', display: 'flex', gap: '24px', alignItems: 'flex-start', marginBottom: '4px',
-                                }}>
-                                    <img
-                                        src={post.authorAvatar || '/assets/images/avatars/avatar-1.png'}
-                                        alt={post.author || 'Author'}
-                                        style={{ width: '72px', height: '72px', objectFit: 'cover', border: `1px solid ${T.border}`, flexShrink: 0 }}
-                                    />
-                                    <div>
-                                        <SectionLabel>// Author</SectionLabel>
-                                        <div style={{ fontFamily: T.anton, fontSize: '18px', color: T.white, marginBottom: '8px' }}>
-                                            {post.author || post.authorName || 'John Doe'}
-                                        </div>
-                                        <p style={{ fontFamily: T.mono, fontSize: '12px', color: T.mid, lineHeight: 1.8, margin: 0 }}>
-                                            {post.authorBio}
-                                        </p>
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* ── Comment form ── */}
-                            <div style={{
-                                background: T.dark2, border: `1px solid ${T.border}`, borderTop: `3px solid ${T.red}`,
-                                padding: '36px', marginBottom: '4px',
-                            }}>
-                                <SectionLabel>// Leave a Reply</SectionLabel>
-                                <h2 style={{ fontFamily: T.anton, fontSize: '28px', color: T.white, marginBottom: '6px' }}>
-                                    Post a Comment
-                                </h2>
-                                <p style={{ fontFamily: T.mono, fontSize: '10px', color: T.dim, marginBottom: '28px', letterSpacing: '.06em' }}>
-                                    Your email address will not be published. Required fields are marked *
-                                </p>
-
-                                <div style={{ marginBottom: '18px' }}>
-                                    <label style={labelStyle}>Comment *</label>
-                                    <textarea
-                                        rows={5}
-                                        value={comment.text}
-                                        onChange={(e) => handleCommentChange('text', e.target.value)}
-                                        onFocus={() => setFocusedInput('text')}
-                                        onBlur={() => setFocusedInput(null)}
-                                        style={{ ...inputStyle, resize: 'vertical', borderColor: focusedInput === 'text' ? T.red : T.border }}
-                                    />
-                                </div>
-
-                                <div className="row g-3" style={{ marginBottom: '18px' }}>
-                                    {([
-                                        { field: 'name', label: 'Name *', type: 'text' },
-                                        { field: 'email', label: 'Email *', type: 'email' },
-                                        { field: 'website', label: 'Website', type: 'text' },
-                                    ] as const).map(({ field, label, type }) => (
-                                        <div className="col-12 col-md-4" key={field}>
-                                            <label style={labelStyle}>{label}</label>
-                                            <input
-                                                type={type}
-                                                value={comment[field]}
-                                                onChange={(e) => handleCommentChange(field, e.target.value)}
-                                                onFocus={() => setFocusedInput(field)}
-                                                onBlur={() => setFocusedInput(null)}
-                                                style={{ ...inputStyle, borderColor: focusedInput === field ? T.red : T.border }}
-                                            />
-                                        </div>
-                                    ))}
-                                </div>
-
-                                <RedBtn onClick={handleCommentSubmit} disabled={submittingComment}>
-                                    {submittingComment ? 'Posting…' : 'Post Comment →'}
-                                </RedBtn>
-                            </div>
-
-                            {/* ── Latest Posts grid ── */}
-                            <div style={{ background: T.dark2, border: `1px solid ${T.border}`, padding: '36px', marginTop: '4px' }}>
-                                <SectionLabel>// More Reading</SectionLabel>
-                                <h2 style={{ fontFamily: T.anton, fontSize: '28px', color: T.white, marginBottom: '28px' }}>
-                                    Latest Posts
-                                </h2>
-
-                                <div className="row g-3">
-                                    {latestPosts.map((p, index) => {
-                                        const dateParts = getDateParts(p.publishedDate || p.createdAt);
-                                        return (
-                                            <div className="col-12 col-sm-6 col-lg-4" key={p._id || index}>
-                                                <div
-                                                    style={{
-                                                        background: T.dark3, border: `1px solid ${T.border}`,
-                                                        overflow: 'hidden', height: '100%', transition: 'border-color .15s',
-                                                    }}
-                                                    onMouseEnter={(e) => (e.currentTarget.style.borderColor = T.red)}
-                                                    onMouseLeave={(e) => (e.currentTarget.style.borderColor = T.border)}
-                                                >
-                                                    <div style={{ position: 'relative' }}>
-                                                        <Link href={`/blog/${p._id}`}>
-                                                            <img
-                                                                src={p.images?.[0]?.url || `/assets/images/blogs/0${(index % 6) + 1}.png`}
-                                                                alt={p.title || 'Blog post'}
-                                                                style={{ width: '100%', height: '160px', objectFit: 'cover', display: 'block' }}
-                                                            />
-                                                        </Link>
-                                                        <div style={{
-                                                            position: 'absolute', top: '12px', left: '12px', background: T.red,
-                                                            padding: '6px 10px', textAlign: 'center',
-                                                            clipPath: 'polygon(0 0,calc(100% - 6px) 0,100% 6px,100% 100%,6px 100%,0 calc(100% - 6px))',
-                                                        }}>
-                                                            <div style={{ fontFamily: T.anton, fontSize: '18px', color: '#fff', lineHeight: 1 }}>
-                                                                {dateParts.day}
-                                                            </div>
-                                                            <div style={{ fontFamily: T.mono, fontSize: '8px', letterSpacing: '.1em', color: 'rgba(255,255,255,.8)', textTransform: 'uppercase' }}>
-                                                                {dateParts.month}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-
-                                                    <div style={{ padding: '18px' }}>
-                                                        <Link href={`/blog/${p._id}`} style={{ textDecoration: 'none' }}>
-                                                            <h5 style={{
-                                                                fontFamily: T.anton, fontSize: '16px', color: T.white, marginBottom: '10px',
-                                                                lineHeight: 1.3, letterSpacing: '.02em', transition: 'color .15s',
-                                                            }}
-                                                                onMouseEnter={(e) => (e.currentTarget.style.color = T.red)}
-                                                                onMouseLeave={(e) => (e.currentTarget.style.color = T.white)}
-                                                            >
-                                                                {p.title || 'Blog Short Title'}
-                                                            </h5>
-                                                        </Link>
-                                                        <p style={{ fontFamily: T.mono, fontSize: '10px', color: T.dim, lineHeight: 1.7, margin: 0 }}>
-                                                            {(p.excerpt || 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.').substring(0, 90)}...
-                                                        </p>
-                                                    </div>
-
-                                                    <div style={{
-                                                        padding: '10px 18px', borderTop: `1px solid ${T.border}`,
-                                                        fontFamily: T.mono, fontSize: '9px', letterSpacing: '.1em', color: T.dim, textTransform: 'uppercase',
-                                                    }}>
-                                                        💬 {p.commentsCount || p.comments || 0} Comments
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* ════════════════════════════════════ SIDEBAR ══════ */}
-                        <div className="col-12 col-lg-3">
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                                {/* ── Search ── */}
-                                <div style={{ background: T.dark2, border: `1px solid ${T.border}`, borderTop: `3px solid ${T.red}`, padding: '24px' }}>
-                                    <SectionLabel>// Search</SectionLabel>
-                                    <form onSubmit={handleSearch} style={{ display: 'flex', gap: '0' }}>
-                                        <input
-                                            type="text"
-                                            placeholder="Search posts..."
-                                            value={localSearchTerm}
-                                            onChange={(e) => setLocalSearchTerm(e.target.value)}
-                                            style={{ ...inputStyle, flex: 1, borderRight: 'none' }}
-                                        />
-                                        <button
-                                            type="submit"
-                                            style={{
-                                                padding: '0 16px', background: T.red, border: 'none', color: '#fff',
-                                                cursor: 'pointer', fontSize: '16px', flexShrink: 0, transition: 'background .15s',
-                                            }}
-                                            onMouseEnter={(e) => (e.currentTarget.style.background = '#a01212')}
-                                            onMouseLeave={(e) => (e.currentTarget.style.background = T.red)}
-                                        >
-                                            🔍
-                                        </button>
-                                    </form>
-                                </div>
-
-                                {/* ── Categories ── */}
-                                <div style={{ background: T.dark2, border: `1px solid ${T.border}`, borderTop: `3px solid ${T.red}`, padding: '24px' }}>
-                                    <SectionLabel>// Browse</SectionLabel>
-                                    <h3 style={{ fontFamily: T.anton, fontSize: '20px', color: T.white, marginBottom: '18px' }}>
-                                        Categories
-                                    </h3>
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                                        {sidebarCategories.map((cat) => (
-                                            <button
-                                                key={cat.value}
-                                                onClick={() => handleCategoryFilter(cat.value)}
-                                                style={{
-                                                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                                                    padding: '10px 14px', background: T.dark3, border: `1px solid ${T.border}`,
-                                                    borderLeft: '3px solid transparent', color: T.dim,
-                                                    fontFamily: T.mono, fontSize: '11px', letterSpacing: '.06em',
-                                                    textAlign: 'left', cursor: 'pointer', transition: 'all .15s',
-                                                }}
-                                                onMouseEnter={(e) => {
-                                                    e.currentTarget.style.borderLeftColor = T.red;
-                                                    e.currentTarget.style.color = T.white;
-                                                    e.currentTarget.style.background = '#1e1e1e';
-                                                }}
-                                                onMouseLeave={(e) => {
-                                                    e.currentTarget.style.borderLeftColor = 'transparent';
-                                                    e.currentTarget.style.color = T.dim;
-                                                    e.currentTarget.style.background = T.dark3;
-                                                }}
-                                            >
-                                                {cat.label}
-                                                <span style={{ color: T.red, fontSize: '10px' }}>›</span>
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                {/* ── Recent Posts ── */}
-                                <div style={{ background: T.dark2, border: `1px solid ${T.border}`, borderTop: `3px solid ${T.red}`, padding: '24px' }}>
-                                    <SectionLabel>// Latest</SectionLabel>
-                                    <h3 style={{ fontFamily: T.anton, fontSize: '20px', color: T.white, marginBottom: '18px' }}>
-                                        Recent Posts
-                                    </h3>
-                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0' }}>
-                                        {recentPosts.map((rp, index) => (
-                                            <div key={rp._id || index}>
-                                                <Link
-                                                    href={`/blog/${rp._id}`}
-                                                    style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', textDecoration: 'none', padding: '12px 0' }}
-                                                >
-                                                    <img
-                                                        src={rp.images?.[0]?.url || `/assets/images/gallery/0${(index % 4) + 1}.png`}
-                                                        alt={rp.title || 'Post'}
-                                                        style={{ width: '64px', height: '64px', objectFit: 'cover', flexShrink: 0, border: `1px solid ${T.border}` }}
-                                                    />
-                                                    <div>
-                                                        <div
-                                                            style={{ fontFamily: T.mono, fontSize: '11px', color: T.mid, lineHeight: 1.5, marginBottom: '5px', transition: 'color .15s' }}
-                                                            onMouseEnter={(e) => (e.currentTarget.style.color = T.red)}
-                                                            onMouseLeave={(e) => (e.currentTarget.style.color = T.mid)}
-                                                        >
-                                                            {rp.title || 'Post title here'}
-                                                        </div>
-                                                        <div style={{ fontFamily: T.mono, fontSize: '9px', letterSpacing: '.1em', color: T.dim, textTransform: 'uppercase' }}>
-                                                            {formatDate(rp.publishedDate || rp.createdAt)}
-                                                        </div>
-                                                    </div>
-                                                </Link>
-                                                {index < recentPosts.length - 1 && <div style={{ height: '1px', background: T.border }} />}
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                {/* ── Popular Tags ── */}
-                                <div style={{ background: T.dark2, border: `1px solid ${T.border}`, borderTop: `3px solid ${T.red}`, padding: '24px' }}>
-                                    <SectionLabel>// Tags</SectionLabel>
-                                    <h3 style={{ fontFamily: T.anton, fontSize: '20px', color: T.white, marginBottom: '18px' }}>
-                                        Popular Tags
-                                    </h3>
-                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                                        {popularTags.map((tag) => (
-                                            <button
-                                                key={tag}
-                                                onClick={() => router.push(`/blog?search=${encodeURIComponent(tag)}`)}
-                                                style={{
-                                                    padding: '6px 12px', background: T.dark3, border: `1px solid ${T.border}`,
-                                                    color: T.dim, fontFamily: T.mono, fontSize: '10px', letterSpacing: '.08em',
-                                                    cursor: 'pointer', transition: 'all .15s',
-                                                }}
-                                                onMouseEnter={(e) => {
-                                                    e.currentTarget.style.background = T.red;
-                                                    e.currentTarget.style.borderColor = T.red;
-                                                    e.currentTarget.style.color = '#fff';
-                                                }}
-                                                onMouseLeave={(e) => {
-                                                    e.currentTarget.style.background = T.dark3;
-                                                    e.currentTarget.style.borderColor = T.border;
-                                                    e.currentTarget.style.color = T.dim;
-                                                }}
-                                            >
-                                                {tag}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
+      {/* ── Breadcrumb ── */}
+      <nav
+        aria-label="breadcrumb"
+        className="d-none d-md-block"
+        style={{ background: C.card, borderBottom: `1px solid ${C.border}`, padding: '14px 0' }}
+      >
+        <div className="container" style={{ display: 'flex', alignItems: 'center', gap: 10, fontFamily: FONT_MONO, fontSize: 10, letterSpacing: '.1em' }}>
+          <Link href="/" style={{ color: C.dim, textDecoration: 'none' }}>Home</Link>
+          <span style={{ color: C.border }}>›</span>
+          <Link href="/blog" style={{ color: C.red, textDecoration: 'none' }}>Blog</Link>
+          <span style={{ color: C.border }}>›</span>
+          <span style={{ color: C.dim }} aria-current="page">{post.title}</span>
         </div>
-    );
+      </nav>
+
+      <section style={{ padding: '40px 0' }}>
+        <div className="container">
+          <div className="row g-4">
+            {/* ═════════ MAIN COLUMN ═════════ */}
+            <div className="col-12 col-lg-9">
+              <article>
+                {isError && !fetchedPost && (
+                  <div role="status" style={{ ...panel, borderColor: C.red, padding: '10px 16px', marginBottom: 4, fontFamily: FONT_MONO, fontSize: 11, color: C.mid }}>
+                    Couldn&apos;t refresh this post — showing the saved version.
+                  </div>
+                )}
+
+                <div style={{ ...panel, overflow: 'hidden' }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={post.images?.[0]?.url || '/assets/images/posts/01.png'}
+                    alt={post.title}
+                    width={1200}
+                    height={460}
+                    fetchPriority="high"
+                    style={{ width: '100%', height: 'auto', display: 'block', objectFit: 'cover', maxHeight: 460 }}
+                  />
+                  <div style={{ display: 'flex', flexWrap: 'wrap', borderTop: `1px solid ${C.border}` }}>
+                    {[
+                      { icon: '👤', label: `By ${author}` },
+                      { icon: '💬', label: `${commentCount(post)} Comments` },
+                      ...(published ? [{ icon: '📅', label: formatDate(published), iso: published }] : []),
+                    ].map((meta) => (
+                      <div
+                        key={meta.label}
+                        style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 20px', borderRight: `1px solid ${C.border}`, fontFamily: FONT_MONO, fontSize: 10, letterSpacing: '.08em', color: C.dim }}
+                      >
+                        <span aria-hidden style={{ fontSize: 12 }}>{meta.icon}</span>
+                        {'iso' in meta ? <time dateTime={meta.iso}>{meta.label}</time> : <span>{meta.label}</span>}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Post body */}
+                <div style={{ ...panel, borderTop: 'none', padding: 36, marginBottom: 4 }}>
+                  <h1 style={{ fontFamily: FONT_ANTON, fontSize: 'clamp(26px, 4vw, 42px)', color: C.white, letterSpacing: '.02em', lineHeight: 1.1, marginBottom: 28 }}>
+                    {post.title}
+                  </h1>
+
+                  {/* NOTE: content is injected as raw HTML. If fear-admin lets anyone but you
+                      author posts, sanitize server-side first (e.g. `sanitize-html`). */}
+                  {post.content && (
+                    <div className="efear-post-content" dangerouslySetInnerHTML={{ __html: post.content }} />
+                  )}
+
+                  <Divider />
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap' }}>
+                    <span style={{ fontFamily: FONT_MONO, fontSize: 9, letterSpacing: '.18em', textTransform: 'uppercase', color: C.dim }}>
+                      Share This Post
+                    </span>
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      {shareLinks.map((s) => (
+                        <a key={s.label} href={s.href} className="bp-share" target="_blank" rel="noopener noreferrer" title={`Share on ${s.label}`} aria-label={`Share on ${s.label}`}>
+                          {s.icon}
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Author bio */}
+                {post.authorBio && (
+                  <div style={{ ...redTopPanel, padding: '28px 36px', display: 'flex', gap: 24, alignItems: 'flex-start', marginBottom: 4 }}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={post.authorAvatar || '/assets/images/avatars/avatar-1.png'}
+                      alt={author}
+                      width={72}
+                      height={72}
+                      loading="lazy"
+                      style={{ objectFit: 'cover', border: `1px solid ${C.border}`, flexShrink: 0 }}
+                    />
+                    <div>
+                      <SectionLabel>{'// Author'}</SectionLabel>
+                      <div style={{ fontFamily: FONT_ANTON, fontSize: 18, color: C.white, marginBottom: 8 }}>{author}</div>
+                      <p style={{ fontFamily: FONT_MONO, fontSize: 12, color: C.mid, lineHeight: 1.8, margin: 0 }}>{post.authorBio}</p>
+                    </div>
+                  </div>
+                )}
+              </article>
+
+              {/* ── Comment form ── */}
+              <div style={{ ...redTopPanel, padding: 36, marginBottom: 4 }}>
+                <SectionLabel>{'// Leave a Reply'}</SectionLabel>
+                <h2 style={{ fontFamily: FONT_ANTON, fontSize: 28, color: C.white, marginBottom: 6 }}>Post a Comment</h2>
+                <p style={{ fontFamily: FONT_MONO, fontSize: 10, color: C.dim, marginBottom: 28, letterSpacing: '.06em' }}>
+                  Your email address will not be published. Required fields are marked *
+                </p>
+
+                <form onSubmit={handleCommentSubmit} noValidate>
+                  <div style={{ marginBottom: 18 }}>
+                    <label htmlFor="bp-comment" className="bp-label">Comment *</label>
+                    <textarea
+                      id="bp-comment"
+                      rows={5}
+                      className="bp-input"
+                      style={{ resize: 'vertical' }}
+                      value={comment.text}
+                      onChange={(e) => handleCommentChange('text', e.target.value)}
+                      disabled={submitting}
+                    />
+                  </div>
+
+                  <div className="row g-3" style={{ marginBottom: 18 }}>
+                    {([
+                      { field: 'name', label: 'Name *', type: 'text', auto: 'name' },
+                      { field: 'email', label: 'Email *', type: 'email', auto: 'email' },
+                      { field: 'website', label: 'Website', type: 'url', auto: 'url' },
+                    ] as const).map(({ field, label, type, auto }) => (
+                      <div className="col-12 col-md-4" key={field}>
+                        <label htmlFor={`bp-${field}`} className="bp-label">{label}</label>
+                        <input
+                          id={`bp-${field}`}
+                          type={type}
+                          autoComplete={auto}
+                          className="bp-input"
+                          value={comment[field]}
+                          onChange={(e) => handleCommentChange(field, e.target.value)}
+                          disabled={submitting}
+                        />
+                      </div>
+                    ))}
+                  </div>
+
+                  {commentStatus && (
+                    <div
+                      role="status"
+                      style={{
+                        marginBottom: 18, padding: '10px 14px', fontFamily: FONT_MONO, fontSize: 11,
+                        border: `1px solid ${commentStatus.type === 'error' ? C.red : T.teal}`,
+                        color: commentStatus.type === 'error' ? C.red : T.teal,
+                      }}
+                    >
+                      {commentStatus.text}
+                    </div>
+                  )}
+
+                  <button type="submit" className="bp-red-btn" disabled={submitting}>
+                    {submitting ? 'Posting…' : 'Post Comment →'}
+                  </button>
+                </form>
+              </div>
+
+              {/* ── More reading ── */}
+              {latestPosts.length > 0 && (
+                <div style={{ ...panel, padding: 36, marginTop: 4 }}>
+                  <SectionLabel>{'// More Reading'}</SectionLabel>
+                  <h2 style={{ fontFamily: FONT_ANTON, fontSize: 28, color: C.white, marginBottom: 28 }}>Latest Posts</h2>
+
+                  <div className="row g-3">
+                    {latestPosts.map((p, index) => {
+                      const pid = postId(p);
+                      const parts = getDateParts(p.publishedDate || p.createdAt);
+                      return (
+                        <div className="col-12 col-sm-6 col-lg-4" key={pid || index}>
+                          <div className="bp-card">
+                            <Link href={`/blog/${pid}`} style={{ textDecoration: 'none', display: 'block' }}>
+                              <div style={{ position: 'relative' }}>
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img
+                                  src={p.images?.[0]?.url || `/assets/images/blogs/0${(index % 6) + 1}.png`}
+                                  alt={p.title}
+                                  width={400}
+                                  height={160}
+                                  loading="lazy"
+                                  style={{ width: '100%', height: 160, objectFit: 'cover', display: 'block' }}
+                                />
+                                {parts && (
+                                  <div
+                                    style={{
+                                      position: 'absolute', top: 12, left: 12, background: C.red, padding: '6px 10px', textAlign: 'center',
+                                      clipPath: 'polygon(0 0,calc(100% - 6px) 0,100% 6px,100% 100%,6px 100%,0 calc(100% - 6px))',
+                                    }}
+                                  >
+                                    <div style={{ fontFamily: FONT_ANTON, fontSize: 18, color: '#fff', lineHeight: 1 }}>{parts.day}</div>
+                                    <div style={{ fontFamily: FONT_MONO, fontSize: 8, letterSpacing: '.1em', color: 'rgba(255,255,255,.8)' }}>{parts.month}</div>
+                                  </div>
+                                )}
+                              </div>
+                              <div style={{ padding: 18 }}>
+                                <h3 className="bp-card-title">{p.title}</h3>
+                                {p.excerpt && (
+                                  <p style={{ fontFamily: FONT_MONO, fontSize: 10, color: C.dim, lineHeight: 1.7, margin: 0 }}>
+                                    {p.excerpt.length > 90 ? `${p.excerpt.slice(0, 90)}…` : p.excerpt}
+                                  </p>
+                                )}
+                              </div>
+                            </Link>
+                            <div style={{ padding: '10px 18px', borderTop: `1px solid ${C.border}`, fontFamily: FONT_MONO, fontSize: 9, letterSpacing: '.1em', color: C.dim, textTransform: 'uppercase' }}>
+                              💬 {commentCount(p)} Comments
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* ═════════ SIDEBAR ═════════ */}
+            <aside className="col-12 col-lg-3" aria-label="Blog sidebar">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                {/* Search — GET to /blog?search= (BlogClient must read the param; see notes) */}
+                <div style={{ ...redTopPanel, padding: 24 }}>
+                  <SectionLabel>{'// Search'}</SectionLabel>
+                  <form action="/blog" method="get" role="search" style={{ display: 'flex' }}>
+                    <input
+                      type="search"
+                      name="search"
+                      aria-label="Search posts"
+                      placeholder="Search posts..."
+                      className="bp-input"
+                      style={{ flex: 1, borderRight: 'none' }}
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                    <button type="submit" className="bp-red-btn" aria-label="Search" style={{ padding: '0 16px', clipPath: 'none' }}>🔍</button>
+                  </form>
+                </div>
+
+                <div style={{ ...redTopPanel, padding: 24 }}>
+                  <SectionLabel>{'// Browse'}</SectionLabel>
+                  <h2 style={{ fontFamily: FONT_ANTON, fontSize: 20, color: C.white, marginBottom: 18 }}>Categories</h2>
+                  <nav style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    {sidebarCategories.map((cat) => (
+                      <Link key={cat.value} href={`/blog?category=${encodeURIComponent(cat.value)}`} className="bp-cat">
+                        {cat.label}
+                        <span style={{ color: C.red, fontSize: 10 }}>›</span>
+                      </Link>
+                    ))}
+                  </nav>
+                </div>
+
+                {recentPosts.length > 0 && (
+                  <div style={{ ...redTopPanel, padding: 24 }}>
+                    <SectionLabel>{'// Latest'}</SectionLabel>
+                    <h2 style={{ fontFamily: FONT_ANTON, fontSize: 20, color: C.white, marginBottom: 18 }}>Recent Posts</h2>
+                    {recentPosts.map((rp, index) => (
+                      <div key={postId(rp) || index} className="bp-recent">
+                        <Link href={`/blog/${postId(rp)}`} style={{ display: 'flex', gap: 12, alignItems: 'flex-start', textDecoration: 'none', padding: '12px 0' }}>
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={rp.images?.[0]?.url || `/assets/images/gallery/0${(index % 4) + 1}.png`}
+                            alt={rp.title}
+                            width={64}
+                            height={64}
+                            loading="lazy"
+                            style={{ objectFit: 'cover', flexShrink: 0, border: `1px solid ${C.border}` }}
+                          />
+                          <div>
+                            <div className="bp-recent-title">{rp.title}</div>
+                            <div style={{ fontFamily: FONT_MONO, fontSize: 9, letterSpacing: '.1em', color: C.dim, textTransform: 'uppercase' }}>
+                              {formatDate(rp.publishedDate || rp.createdAt)}
+                            </div>
+                          </div>
+                        </Link>
+                        {index < recentPosts.length - 1 && <div style={{ height: 1, background: C.border }} />}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <div style={{ ...redTopPanel, padding: 24 }}>
+                  <SectionLabel>{'// Tags'}</SectionLabel>
+                  <h2 style={{ fontFamily: FONT_ANTON, fontSize: 20, color: C.white, marginBottom: 18 }}>Popular Tags</h2>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                    {popularTags.map((tag) => (
+                      <Link key={tag} href={`/blog?search=${encodeURIComponent(tag)}`} className="bp-tag">
+                        {tag}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
 }

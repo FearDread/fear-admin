@@ -1,3 +1,6 @@
+export const FONT_MONO = 'var(--font-space-mono), "Space Mono", monospace';
+export const FONT_ANTON = 'var(--font-anton), Anton, Impact, sans-serif';
+
 export const T = {
   red: '#b30e1c',
   orange: '#6120d9',
@@ -10,6 +13,17 @@ export const T = {
   textDim: 'rgba(255,255,255,0.30)',
   textMid: 'rgba(255,255,255,0.55)',
   textHi: 'rgba(255,255,255,0.90)',
+};
+
+export const C = {
+    bg: T.dark0,
+    card: T.dark2,
+    card2: T.dark3,
+    border: T.border,
+    red: T.red,
+    white: '#fff',
+    dim: T.textDim,
+    mid: T.textMid,
 };
 
 export const blogStyles = `
@@ -833,6 +847,32 @@ export const headerStyles = `
   @media(max-width: 767px) {
     .hdr-main-inner { gap: .75rem; padding: .6rem 1rem; }
   }
+`;
+
+export const postStyles = `
+.bp-red-btn{padding:12px 24px;background:${C.red};border:none;color:#fff;font-family:${FONT_MONO};font-size:11px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));transition:background .15s}
+.bp-red-btn:hover:not(:disabled){background:#8f0b16}
+.bp-red-btn:disabled{opacity:.6;cursor:default}
+.bp-input{width:100%;padding:11px 14px;background:${C.card2};border:1px solid ${C.border};color:${C.white};font-family:${FONT_MONO};font-size:12px;outline:none;transition:border-color .15s}
+.bp-input:focus{border-color:${C.red}}
+.bp-label{display:block;font-family:${FONT_MONO};font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:${C.dim};margin-bottom:8px}
+.bp-share{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;background:${C.card2};border:1px solid ${C.border};color:${C.dim};font-family:${FONT_MONO};font-size:11px;text-decoration:none;transition:all .15s}
+.bp-share:hover,.bp-tag:hover{background:${C.red};border-color:${C.red};color:#fff}
+.bp-cat{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:${C.card2};border:1px solid ${C.border};border-left:3px solid transparent;color:${C.dim};font-family:${FONT_MONO};font-size:11px;letter-spacing:.06em;text-decoration:none;transition:all .15s}
+.bp-cat:hover{border-left-color:${C.red};color:${C.white};background:#1e1e1e}
+.bp-tag{padding:6px 12px;background:${C.card2};border:1px solid ${C.border};color:${C.dim};font-family:${FONT_MONO};font-size:10px;letter-spacing:.08em;text-decoration:none;transition:all .15s}
+.bp-card{background:${C.card2};border:1px solid ${C.border};overflow:hidden;height:100%;transition:border-color .15s}
+.bp-card:hover{border-color:${C.red}}
+.bp-card-title{font-family:${FONT_ANTON};font-size:16px;color:${C.white};margin:0 0 10px;line-height:1.3;letter-spacing:.02em;transition:color .15s}
+.bp-card a:hover .bp-card-title,.bp-recent a:hover .bp-recent-title{color:${C.red}}
+.bp-recent-title{font-family:${FONT_MONO};font-size:11px;color:${C.mid};line-height:1.5;margin-bottom:5px;transition:color .15s}
+.efear-post-content{font-family:${FONT_MONO};font-size:13px;line-height:1.9;color:${C.mid}}
+.efear-post-content h2,.efear-post-content h3{font-family:${FONT_ANTON};color:${C.white};letter-spacing:.03em;margin:28px 0 12px}
+.efear-post-content a{color:${C.red};text-decoration:none}
+.efear-post-content a:hover{text-decoration:underline}
+.efear-post-content blockquote{border-left:3px solid ${C.red};padding:12px 20px;margin:24px 0;background:${C.card2};color:${C.mid};font-style:italic}
+.efear-post-content img{max-width:100%;height:auto;display:block;margin:20px 0}
+.efear-post-content p{margin-bottom:16px}
 `;
 
 export const footerStyles = `
