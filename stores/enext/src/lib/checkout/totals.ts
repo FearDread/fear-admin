@@ -1,17 +1,5 @@
 /**
  * lib/useCheckoutTotals.ts
- *
- * The CRA version repeated the same `taxRate = 0.07; taxes = subtotal * taxRate;
- * total = subtotal + shipping + taxes - discount` block in every single checkout
- * page (Details, Shipping, Payment, Review). Centralizing it here is a genuine
- * bug-prevention fix, not just tidiness — Details.jsx used a *different* formula
- * ("Est. Total" without shipping, since shipping isn't chosen yet) which is still
- * correct, but it's now explicit via the `includeShipping` flag rather than an
- * easy-to-miss copy/paste divergence.
- *
- * Per project convention, derived values like this stay in local computation
- * (useMemo) rather than Redux selectors — cart items now come from `cartApi`
- * (server data), so subtotal is computed here, not read out of a slice.
  */
 import { useMemo } from 'react';
 import { TAX_RATE } from '@/types/checkout';

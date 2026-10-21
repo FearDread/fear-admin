@@ -5,18 +5,6 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useGetOrderByIdQuery } from '@/lib/redux/api/ordersApi';
 
-/**
- * BEHAVIOUR CHANGE from the CRA version: the original read the completed order
- * out of `location.state?.order`, which only exists if you arrived via a client
- * `navigate('/checkout/complete', { state: { order } })` call — refreshing the
- * page or opening the confirmation link in a new tab lost the order entirely and
- * bounced you to `/cart`.
- *
- * This version reads the order id from `?order=<id>` (set by CheckoutReview after
- * `createOrder` succeeds) and fetches it via `ordersApi`, so the confirmation page
- * is a real, shareable, refreshable URL — which also matters for order-confirmation
- * emails linking back to it.
- */
 export default function CheckoutCompleteClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
