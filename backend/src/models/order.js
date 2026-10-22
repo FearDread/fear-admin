@@ -116,10 +116,10 @@ const orderSchema = new mongoose.Schema(
 );
 
 // Indexes for better query performance
-orderSchema.index({ orderNumber: 1 });
+//orderSchema.index({ orderNumber: 1 });
 orderSchema.index({ userId: 1, createdAt: -1 });
 orderSchema.index({ orderStatus: 1, createdAt: -1 });
-orderSchema.index({ paymentStatus: 1 });
+//orderSchema.index({ paymentStatus: 1 });
 orderSchema.index({ "paymentDetails.razorpayOrderId": 1 });
 orderSchema.index({ "paymentDetails.paypalOrderId": 1 });
 orderSchema.index({ trackingNumber: 1 });

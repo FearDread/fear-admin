@@ -4,11 +4,11 @@ module.exports = (fear) => {
     const router = fear.createRouter();
     const handler = fear.getHandler();
     const validator = fear.getValidator();
+    const { requireUser } = fear.getVchatAuth();
 
-    
-    router.get("/all", handler.async(Payment.list));
-    router.post("/new", handler.async(Payment.create));
-    router.post("/create", handler.async(Payment.create));
+    router.post('/new', requireUser, handler.async(Payment.create));
+    router.put('/update', requireUser, handler.async(Payment.update));
+
     
     return router;
 }

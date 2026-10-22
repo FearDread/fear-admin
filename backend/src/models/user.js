@@ -57,7 +57,7 @@ const userSchema = new mongoose.Schema({
 });
 
 // Indexes
-userSchema.index({ email: 1 });
+//userSchema.index({ email: 1 });
 userSchema.index({ 'profile.firstName': 1, 'profile.lastName': 1 });
 userSchema.index({ createdAt: 1 });
 userSchema.index({ status: 1, role: 1 });
