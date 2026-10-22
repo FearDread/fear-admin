@@ -37,7 +37,6 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children, } : { children: React.ReactNode; }) {
-    console.log('GA ID = ', GA_ID);
     return (
         <html lang= "en" className = {`${anton.variable} ${spaceMono.variable}`
 }>

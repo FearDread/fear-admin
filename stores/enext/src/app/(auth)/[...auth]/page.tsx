@@ -7,24 +7,6 @@ import RegisterForm from '@/components/auth/RegisterForm';
 import ForgotPasswordForm from '@/components/auth/ForgotPasswordForm';
 import ResetPasswordForm from '@/components/auth/ResetPasswordForm';
 
-/**
- * app/(auth)/[...auth]/page.tsx
- *
- * Single dynamic route standing in for what used to be four separate
- * `page.tsx` files (`login/`, `register/`, `forgot-password/`,
- * `reset-password/[token]/`). The first URL segment picks the view; a second
- * segment (only used by `reset-password/:token`) is passed through as a prop.
- *
- *   /login                      → LoginForm
- *   /register                   → RegisterForm
- *   /forgot-password            → ForgotPasswordForm
- *   /reset-password/:token      → ResetPasswordForm
- *   anything else               → notFound()
- *
- * To add a new auth view later: add a branch to `AUTH_VIEWS` below and to
- * `generateMetadata` — no new route folder needed.
- */
-
 type AuthSegments = string[];
 
 interface AuthPageProps {
@@ -66,7 +48,7 @@ export function generateStaticParams() {
 export default async function AuthPage({ params }: AuthPageProps) {
   const { auth } = await params;
   const [mode, token] = auth ?? [];
-    console.log('auth mode = ', auth);
+
   switch (mode) {
     case 'login':
       // LoginForm reads `useSearchParams()` (`?from=` / `?message=`), which
