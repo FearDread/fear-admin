@@ -54,7 +54,7 @@ _________________________
         this.setupDependencies();
         this.setupSSR();
 
-        if (this.env.ADD_PAYMENTS) this.setupProcessors();
+        if ((config && config.ADD_PAYMENTS) || this.env.ADD_PAYMENTS === 'true') this.setupProcessors();
 
         this.setupMailer();
         this.setupMiddleware();
@@ -145,13 +145,8 @@ _________________________
         setupProcessors() {
             const StripeHandler = require("./libs/stripe");
             const PayPal = require('./libs/paypal');
-
-            if (!this.env.PAYPAL_CLIENT_ID || !this.env.STRIPE_API_KEY) {
-                this.logger.warn('Missing environment values in .env file')
-            }
-
-            this.stripe = new StripeHandler(this);
-            this.paypal = new PayPal(this);
+            try { this.stripe = new StripeHandler(this); } catch (e) { this.logger.error(e.message); }
+            try { this.paypal = new PayPal(this); } catch (e) { this.logger.error(e.message); }
         },
 
         setupSSR() {
