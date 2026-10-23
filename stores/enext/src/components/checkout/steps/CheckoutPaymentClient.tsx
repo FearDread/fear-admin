@@ -5,20 +5,18 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAppDispatch, useAppSelector } from '@/lib/redux/hooks';
 import { useGetCartQuery } from '@/lib/redux/api/cartApi';
-import { selectCurrentUser, selectIsAuthenticated } from '@/lib/redux/slices/authSlice';
-import { useCreatePaymentIntentMutation } from '@/lib/redux/api/paymentsApi';
+import { selectIsAuthenticated } from '@/lib/redux/slices/authSlice';
 import { selectCheckout, applyDiscount, setPaymentIntent } from '@/lib/redux/slices/checkoutSlice';
 import { useCheckoutTotals } from '@/lib/checkout/totals';
 import { DISCOUNT_CODES } from '@/types/checkout';
 import StripePaymentForm from '@/components/checkout/StripePaymentForm';
-import PayPalPaymentForm from '@/components/checkout/PayPalPaymentForm';
+import PayPalPaymentForm, { type PayPalSuccessResult } from '@/components/checkout/PayPalPaymentForm';
 import CheckoutSteps from '@/components/checkout/CheckoutSteps';
-import type { PaymentIntent, StripeError } from '@stripe/stripe-js';
+import type { PaymentIntent } from '@stripe/stripe-js';
 
 const TABS = [
-  { id: 'card', label: 'Credit Card', icon: '💳' },
+  { id: 'card', label: 'Card / Wallet', icon: '💳' },
   { id: 'paypal-payment', label: 'PayPal', icon: '🅿' },
-  { id: 'net-banking', label: 'Net Banking', icon: '🏦' },
 ] as const;
 
 export default function CheckoutPaymentClient() {
@@ -28,16 +26,12 @@ export default function CheckoutPaymentClient() {
   const { data: cart } = useGetCartQuery();
   const cartItems = cart?.items ?? [];
 
-  const currentUser = useAppSelector(selectCurrentUser);
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const draft = useAppSelector(selectCheckout);
 
   const [paymentMethod, setPaymentMethod] = useState<(typeof TABS)[number]['id']>('card');
   const [discountCode, setDiscountCode] = useState('');
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [clientSecret, setClientSecret] = useState('');
-
-  const [createPaymentIntent] = useCreatePaymentIntentMutation();
+  const [paymentError, setPaymentError] = useState('');
 
   const { subtotal, taxes, discount, shipping, total } = useCheckoutTotals({
     items: cartItems,
@@ -45,6 +39,7 @@ export default function CheckoutPaymentClient() {
     discount: draft.discount,
   });
 
+  // ── Route guards ──────────────────────────────────────────────────────
   useEffect(() => {
     if (!isAuthenticated) router.replace('/login?redirect=/checkout/payment');
   }, [isAuthenticated, router]);
@@ -57,36 +52,33 @@ export default function CheckoutPaymentClient() {
     if (!draft.shippingMethodId) router.replace('/checkout/shipping');
   }, [draft.shippingMethodId, router]);
 
-  useEffect(() => {
-    if (paymentMethod !== 'card' || total <= 0 || clientSecret) return;
-    createPaymentIntent({
-      amount: Math.round(total * 100),
-      currency: 'usd',
-      metadata: { userId: currentUser?._id },
-    })
-      .unwrap()
-      .then((result) => setClientSecret(result.client_secret))
-      .catch((err) => console.error('Payment intent error:', err));
-  }, [paymentMethod, total, clientSecret, createPaymentIntent, currentUser]);
-
+  // ── Handlers ──────────────────────────────────────────────────────────
   const handleApplyDiscount = () => {
     if (!discountCode.trim()) return;
     const pct = DISCOUNT_CODES[discountCode.toUpperCase()];
     if (pct) {
+      // Total changes → StripePaymentForm / PayPalPaymentForm pick up the new
+      // amount and re-create their intent / re-render buttons automatically.
       dispatch(applyDiscount({ code: discountCode.toUpperCase(), amount: (subtotal * pct) / 100 }));
       setDiscountCode('');
-      setClientSecret(''); // total changed → old intent's amount is stale, force a fresh one
     }
   };
 
-  const handlePaymentSuccess = ({ paymentIntent }: { paymentIntent: PaymentIntent }) => {
+  const handleStripeSuccess = ({ paymentIntent }: { paymentIntent: PaymentIntent }) => {
     dispatch(setPaymentIntent({ paymentMethod: 'card', paymentIntentId: paymentIntent.id }));
     router.push('/checkout/review');
   };
 
-  const handlePaymentError = (err: StripeError | Error | unknown) => {
+  const handlePayPalSuccess = ({ orderID }: PayPalSuccessResult) => {
+    // Store the PayPal order id as the payment reference so Review can
+    // attach it to the final order.
+    dispatch(setPaymentIntent({ paymentMethod: 'paypal-payment', paymentIntentId: orderID }));
+    router.push('/checkout/review');
+  };
+
+  const handlePaymentError = (err: unknown) => {
     console.error('Payment error:', err);
-    setIsProcessing(false);
+    setPaymentError('Payment could not be completed. Please try again.');
   };
 
   if (!isAuthenticated || cartItems.length === 0) {
@@ -135,7 +127,10 @@ export default function CheckoutPaymentClient() {
                     <button
                       key={tab.id}
                       className={`co-pay-tab${paymentMethod === tab.id ? ' active' : ''}`}
-                      onClick={() => setPaymentMethod(tab.id)}
+                      onClick={() => {
+                        setPaymentMethod(tab.id);
+                        setPaymentError('');
+                      }}
                       type="button"
                     >
                       <span className="co-pay-tab-icon">{tab.icon}</span>
@@ -144,49 +139,34 @@ export default function CheckoutPaymentClient() {
                   ))}
                 </div>
 
-                {paymentMethod === 'card' && (
-                  <div className="co-pay-body">
-                    {clientSecret ? (
-                      <StripePaymentForm
-                        clientSecret={clientSecret}
-                        amount={total}
-                        onSuccess={handlePaymentSuccess}
-                        onError={handlePaymentError}
-                      />
-                    ) : (
-                      <div className="co-pay-loading">
-                        <div className="co-pay-spinner" />
-                        <span className="co-pay-loading-txt">Initialising secure payment...</span>
-                      </div>
-                    )}
+                {paymentError && (
+                  <div className="alert alert-danger rounded-0 m-3" role="alert">
+                    {paymentError}
                   </div>
                 )}
 
-                {paymentMethod === 'paypal-payment' && (
-                  <div className="co-pay-body">
-                    <PayPalPaymentForm
-                      order={{ ...draft, subtotal, taxes, discount, shipping, total } as never}
+                <div className="co-pay-body">
+                  {paymentMethod === 'card' && (
+                    // orderId: pass once the order is created before this step (see notes)
+                    <StripePaymentForm
                       amount={total}
-                      onSuccess={() => {
-                        dispatch(setPaymentIntent({ paymentMethod: 'paypal-payment', paymentIntentId: '' }));
-                        router.push('/checkout/review');
-                      }}
+                      onSuccess={handleStripeSuccess}
                       onError={handlePaymentError}
                     />
-                    <p className="co-pay-coming-soon">PayPal integration coming soon</p>
-                  </div>
-                )}
+                  )}
 
-                {paymentMethod === 'net-banking' && (
-                  <div className="co-pay-body">
-                    <p className="co-pay-coming-soon">Net Banking integration coming soon</p>
-                  </div>
-                )}
+                  {paymentMethod === 'paypal-payment' && (
+                    <PayPalPaymentForm
+                      amount={total}
+                      onSuccess={handlePayPalSuccess}
+                      onError={handlePaymentError}
+                    />
+                  )}
+                </div>
 
                 <div className="co-nav-btns single">
                   <button
                     onClick={() => router.push('/checkout/shipping')}
-                    disabled={isProcessing}
                     className="cart-dd-btn-ghost"
                     style={{ padding: '.65rem' }}
                   >
@@ -207,6 +187,7 @@ export default function CheckoutPaymentClient() {
                     placeholder="Enter code"
                     value={discountCode}
                     onChange={(e) => setDiscountCode(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleApplyDiscount()}
                   />
                   <button onClick={handleApplyDiscount} className="cart-dd-btn-primary" style={{ padding: '.72rem 1rem', whiteSpace: 'nowrap' }}>
                     Apply
@@ -220,7 +201,8 @@ export default function CheckoutPaymentClient() {
                 <div className="co-mini-items">
                   {cartItems.slice(0, 3).map((item) => (
                     <div key={item.productId} className="co-mini-item">
-                      <img src={item.image || 'assets/images/products/placeholder.png'} alt={item.name} className="co-mini-img" />
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={item.image || '/assets/images/products/placeholder.png'} alt={item.name} className="co-mini-img" />
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <p className="co-mini-name">{item.name}</p>
                         <p className="co-mini-meta">${item.price.toFixed(2)} × {item.quantity}</p>

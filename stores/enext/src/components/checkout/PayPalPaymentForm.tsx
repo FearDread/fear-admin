@@ -1,117 +1,105 @@
 'use client';
 
 import { useState } from 'react';
+import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 import {
-  PayPalScriptProvider,
-  PayPalButtons,
-  PayPalCardFieldsProvider,
-  PayPalCardFieldsForm,
-  PayPalNameField,
-  PayPalNumberField,
-  PayPalExpiryField,
-  PayPalCVVField,
-} from '@paypal/react-paypal-js';
-import {
-  useCreatePaypalOrderMutation,
-  useCapturePaypalOrderMutation,
+  useCreatePayPalOrderMutation,
+  useCapturePayPalOrderMutation,
+  type PayPalCaptureResult,
 } from '@/lib/redux/api/paymentsApi';
-import type { Order } from '@/types/checkout';
+
+/**
+ * Flow:
+ *   createOrder → POST /paypal/order   { amount, orderId } → { id }
+ *   onApprove   → POST /paypal/capture { orderId: data.orderID } → { success }
+ *
+ * `success === true` means the capture COMPLETED. Anything else is surfaced as
+ * an error rather than silently advancing the checkout.
+ */
+
+const clientId = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID;
+
+export interface PayPalSuccessResult {
+  /** PayPal order id — store this as the payment reference. */
+  orderID: string;
+  capture: PayPalCaptureResult;
+}
 
 interface PayPalPaymentFormProps {
-  order: Order;
+  /** Order total in dollars. */
   amount: number;
-  onSuccess: (result: unknown) => void;
-  onError: (error: unknown) => void;
+  /** Pass once the order exists server-side. */
+  orderId?: string;
+  disabled?: boolean;
+  onSuccess: (result: PayPalSuccessResult) => void;
+  onError?: (error: unknown) => void;
 }
 
-export function PayPalPaymentForm({ order, amount, onSuccess, onError }: PayPalPaymentFormProps) {
-  const [loading, setLoading] = useState(false);
-  const [createPaypalOrder] = useCreatePaypalOrderMutation();
-  const [capturePaypalOrder] = useCapturePaypalOrderMutation();
-
-  const initialOptions = {
-    clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID ?? '',
-    currency: 'USD',
-    intent: 'capture',
-    components: 'card-fields,buttons',
-  };
-
-  return (
-    <PayPalScriptProvider options={initialOptions}>
-      <PayPalCardFieldsProvider
-        createOrder={async () => {
-          const result = await createPaypalOrder({ orderId: order?._id, amount }).unwrap();
-          return result.id;
-        }}
-        onApprove={async (data: { orderID: string }) => {
-          setLoading(true);
-          try {
-            const result = await capturePaypalOrder({ orderID: data.orderID }).unwrap();
-            onSuccess(result);
-          } catch (err) {
-            onError(err);
-          } finally {
-            setLoading(false);
-          }
-        }}
-        onError={(err: unknown) => onError(err)}
-      >
-        <PayPalCardFieldsForm />
-        <div className="card-fields-container">
-          <PayPalNameField />
-          <PayPalNumberField />
-          <div className="card-fields-row">
-            <PayPalExpiryField />
-            <PayPalCVVField />
-          </div>
-        </div>
-        <button type="submit" disabled={loading} className="paypal-submit-button">
-          {loading ? 'Processing...' : `Pay $${amount.toFixed(2)}`}
-        </button>
-      </PayPalCardFieldsProvider>
-    </PayPalScriptProvider>
-  );
-}
-
-/** Standard PayPal Buttons checkout (kept for parity with the CRA version; unused by CheckoutPayment today). */
-export function PayPalButtonsPayment({
+export default function PayPalPaymentForm({
   amount,
+  orderId,
+  disabled = false,
   onSuccess,
   onError,
-}: {
-  amount: number;
-  onSuccess: (result: unknown) => void;
-  onError: (error: unknown) => void;
-}) {
-  const [createPaypalOrder] = useCreatePaypalOrderMutation();
-  const [capturePaypalOrder] = useCapturePaypalOrderMutation();
+}: PayPalPaymentFormProps) {
+  const [createPayPalOrder] = useCreatePayPalOrderMutation();
+  const [capturePayPalOrder] = useCapturePayPalOrderMutation();
+  const [message, setMessage] = useState<{ type: 'error' | 'info'; text: string } | null>(null);
 
-  const initialOptions = {
-    clientId: process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID ?? '',
-    currency: 'USD',
-    intent: 'capture',
-  };
+  // PayPal expects a decimal amount; keep it to 2dp to avoid float noise.
+  const total = Number(amount.toFixed(2));
+
+  if (!clientId) {
+    return (
+      <div className="alert alert-danger rounded-0">
+        PayPal is not configured (missing NEXT_PUBLIC_PAYPAL_CLIENT_ID).
+      </div>
+    );
+  }
 
   return (
-    <PayPalScriptProvider options={initialOptions}>
+    <PayPalScriptProvider
+      options={{ clientId, currency: 'USD', intent: 'capture', components: 'buttons' }}
+    >
+      {message && (
+        <div className={`alert alert-${message.type === 'error' ? 'danger' : 'info'} rounded-0`} role="alert">
+          {message.text}
+        </div>
+      )}
+
       <PayPalButtons
         style={{ layout: 'vertical', color: 'gold', shape: 'rect', label: 'paypal' }}
+        disabled={disabled || total <= 0}
+        // Re-render the buttons when the total changes (e.g. discount applied)
+        // so createOrder never closes over a stale amount.
+        forceReRender={[total, orderId]}
         createOrder={async () => {
-          const result = await createPaypalOrder({ amount }).unwrap();
-          return result.id;
+          setMessage(null);
+          const order = await createPayPalOrder({ amount: total, orderId }).unwrap();
+          if (!order?.id) throw new Error('PayPal order was not created');
+          return order.id;
         }}
         onApprove={async (data) => {
           try {
-            const result = await capturePaypalOrder({ orderID: data.orderID }).unwrap();
-            onSuccess(result);
+            const capture = await capturePayPalOrder({ orderId: data.orderID }).unwrap();
+            if (capture.success !== true) {
+              throw new Error('PayPal capture did not complete');
+            }
+            onSuccess({ orderID: data.orderID, capture });
           } catch (err) {
-            onError(err);
+            setMessage({
+              type: 'error',
+              text: 'We could not complete your PayPal payment. You have not been charged — please try again.',
+            });
+            onError?.(err);
           }
         }}
-        onError={(err) => onError(err)}
+        onCancel={() => setMessage({ type: 'info', text: 'PayPal payment was cancelled.' })}
+        onError={(err) => {
+          setMessage({ type: 'error', text: 'PayPal ran into a problem. Please try again.' });
+          onError?.(err);
+        }}
       />
     </PayPalScriptProvider>
   );
 }
-
-export default PayPalPaymentForm;

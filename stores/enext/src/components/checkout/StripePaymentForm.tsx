@@ -1,84 +1,86 @@
 'use client';
 
-import { useState, type FormEvent } from 'react';
-import { loadStripe, type PaymentIntent, type StripeError } from '@stripe/stripe-js';
-import { Elements, useStripe, useElements, CardElement } from '@stripe/react-stripe-js';
+import { useEffect, useState, type FormEvent } from 'react';
+import { loadStripe, type PaymentIntent } from '@stripe/stripe-js';
+import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
+import { useCreateStripeIntentMutation } from '@/lib/redux/api/paymentsApi';
 
 /**
- * MERGE NOTE: original `StripePayment.jsx` used `useStripe`/`useElements` without
- * a visible `<Elements>` ancestor in this file, meaning it was wrapped somewhere
- * else in the tree (not among the uploaded files). Wrapping it here makes the
- * component self-contained, which matters more in Next.js since this now needs to
- * work as an isolated client component loaded lazily under `/checkout/payment`.
+ * Flow:
+ *   1. Outer component POSTs /stripe/intent (via RTK Query) → clientSecret
+ *   2. clientSecret is handed to <Elements options={{ clientSecret }}>
+ *   3. Inner form renders <PaymentElement/> and calls stripe.confirmPayment
  *
- * Env var renamed: `REACT_APP_STRIPE_PUBLISHABLE_KEY` (CRA) →
- * `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` (Next.js) — CRA's `REACT_APP_` prefix
- * convention does not apply here; Next.js requires `NEXT_PUBLIC_` for any env var
- * read in client-side code.
+ * The intent is re-created whenever the amount (in cents) or orderId changes,
+ * e.g. after a discount code is applied, so the charge never goes stale.
+ *
+ * NOTE: in React StrictMode (dev only) the effect runs twice and creates two
+ * intents. Harmless — the unused one is never confirmed.
  */
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? '');
 
-const CARD_ELEMENT_OPTIONS = {
-  style: {
-    base: {
-      color: '#32325d',
-      fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
-      fontSmoothing: 'antialiased',
-      fontSize: '16px',
-      '::placeholder': { color: '#aab7c4' },
-    },
-    invalid: { color: '#fa755a', iconColor: '#fa755a' },
+const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+const stripePromise = publishableKey ? loadStripe(publishableKey) : null;
+
+const APPEARANCE = {
+  theme: 'night' as const,
+  variables: {
+    colorPrimary: '#b30e1c',
+    colorBackground: '#141414',
+    colorText: 'rgba(255,255,255,0.9)',
+    colorDanger: '#e63946',
+    fontFamily: 'var(--font-space-mono), monospace',
+    borderRadius: '0px',
+    spacingUnit: '4px',
   },
-  hidePostalCode: false,
 };
 
 interface StripePaymentFormProps {
-  clientSecret: string;
+  /** Order total in dollars. */
   amount: number;
+  /** Pass once the order exists server-side; the backend links the intent to it. */
+  orderId?: string;
   onSuccess: (result: { paymentIntent: PaymentIntent }) => void;
-  onError: (error: StripeError | Error) => void;
+  onError?: (error: unknown) => void;
 }
 
-function InnerForm({ clientSecret, amount, onSuccess, onError }: StripePaymentFormProps) {
+function InnerForm({
+  amount,
+  onSuccess,
+  onError,
+}: Pick<StripePaymentFormProps, 'amount' | 'onSuccess' | 'onError'>) {
   const stripe = useStripe();
   const elements = useElements();
-
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [cardholderName, setCardholderName] = useState('');
 
-  const handleSubmit = async (event: FormEvent) => {
-    event.preventDefault();
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
     if (!stripe || !elements) return;
-
-    if (!cardholderName.trim()) {
-      setErrorMessage('Please enter the cardholder name');
-      return;
-    }
 
     setIsProcessing(true);
     setErrorMessage('');
 
     try {
-      const cardElement = elements.getElement(CardElement);
-      if (!cardElement) throw new Error('Card element not mounted');
-
-      const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
-        payment_method: {
-          card: cardElement,
-          billing_details: { name: cardholderName },
-        },
+      const { error, paymentIntent } = await stripe.confirmPayment({
+        elements,
+        // Only used if the customer picks a redirect-based method (e.g. bank
+        // redirect). Cards resolve in place thanks to redirect: 'if_required'.
+        confirmParams: { return_url: `${window.location.origin}/checkout/review` },
+        redirect: 'if_required',
       });
 
       if (error) {
         setErrorMessage(error.message || 'Payment failed. Please try again.');
-        onError(error);
-      } else if (paymentIntent && paymentIntent.status === 'succeeded') {
+        onError?.(error);
+      } else if (paymentIntent?.status === 'succeeded') {
         onSuccess({ paymentIntent });
+      } else {
+        // e.g. 'processing' / 'requires_action' that didn't redirect
+        setErrorMessage(`Payment status: ${paymentIntent?.status ?? 'unknown'}. Please check your order history.`);
       }
     } catch (err) {
       setErrorMessage('An unexpected error occurred. Please try again.');
-      onError(err instanceof Error ? err : new Error(String(err)));
+      onError?.(err);
     } finally {
       setIsProcessing(false);
     }
@@ -87,26 +89,7 @@ function InnerForm({ clientSecret, amount, onSuccess, onError }: StripePaymentFo
   return (
     <form onSubmit={handleSubmit}>
       <div className="mb-3">
-        <label className="form-label">Cardholder Name *</label>
-        <input
-          type="text"
-          className="form-control rounded-0"
-          placeholder="John Doe"
-          value={cardholderName}
-          onChange={(e) => setCardholderName(e.target.value)}
-          required
-        />
-      </div>
-
-      <div className="mb-3">
-        <label className="form-label">Card Details *</label>
-        <div className="form-control rounded-0" style={{ padding: '12px' }}>
-          <CardElement options={CARD_ELEMENT_OPTIONS} />
-        </div>
-        <small className="text-muted">
-          <i className="bx bx-lock-alt me-1" />
-          Your payment information is encrypted and secure
-        </small>
+        <PaymentElement options={{ layout: 'tabs' }} />
       </div>
 
       {errorMessage && (
@@ -116,15 +99,13 @@ function InnerForm({ clientSecret, amount, onSuccess, onError }: StripePaymentFo
         </div>
       )}
 
-      <div className="mb-3">
-        <div className="d-flex justify-content-between align-items-center">
-          <span>Amount to be charged:</span>
-          <strong className="text-primary h5 mb-0">${amount.toFixed(2)}</strong>
-        </div>
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <span>Amount to be charged:</span>
+        <strong className="h5 mb-0">${amount.toFixed(2)}</strong>
       </div>
 
       <div className="d-grid">
-        <button type="submit" className="btn btn-white btn-ecomm rounded-0" disabled={!stripe || isProcessing}>
+        <button type="submit" className="btn btn-white btn-ecomm rounded-0" disabled={!stripe || !elements || isProcessing}>
           {isProcessing ? (
             <>
               <span className="spinner-border spinner-border-sm me-2" role="status" />
@@ -146,11 +127,7 @@ function InnerForm({ clientSecret, amount, onSuccess, onError }: StripePaymentFo
       {process.env.NODE_ENV === 'development' && (
         <div className="alert alert-info mt-3 rounded-0">
           <small>
-            <strong>Test Card:</strong> 4242 4242 4242 4242
-            <br />
-            <strong>Expiry:</strong> Any future date
-            <br />
-            <strong>CVC:</strong> Any 3 digits
+            <strong>Test Card:</strong> 4242 4242 4242 4242 · any future expiry · any CVC
           </small>
         </div>
       )}
@@ -158,11 +135,61 @@ function InnerForm({ clientSecret, amount, onSuccess, onError }: StripePaymentFo
   );
 }
 
-/** Public export — wraps the inner form with its own `<Elements>` provider. */
-export default function StripePaymentForm(props: StripePaymentFormProps) {
+export default function StripePaymentForm({ amount, orderId, onSuccess, onError }: StripePaymentFormProps) {
+  const cents = Math.round(amount * 100);
+  const [createIntent] = useCreateStripeIntentMutation();
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [initError, setInitError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (cents <= 0) return;
+    let cancelled = false;
+    setClientSecret(null);
+    setInitError(null);
+
+    createIntent({ amount: cents, orderId })
+      .unwrap()
+      .then((res) => {
+        if (!cancelled) setClientSecret(res.clientSecret);
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        setInitError('Could not start secure payment. Please refresh and try again.');
+        onError?.(err);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+    // onError intentionally omitted — parent callbacks are not stable identities.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cents, orderId, createIntent]);
+
+  if (!stripePromise) {
+    return (
+      <div className="alert alert-danger rounded-0">
+        Stripe is not configured (missing NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY).
+      </div>
+    );
+  }
+
+  if (initError) {
+    return <div className="alert alert-danger rounded-0">{initError}</div>;
+  }
+
+  if (!clientSecret) {
+    return (
+      <div className="co-pay-loading">
+        <div className="co-pay-spinner" />
+        <span className="co-pay-loading-txt">Initialising secure payment...</span>
+      </div>
+    );
+  }
+
   return (
-    <Elements stripe={stripePromise} options={{ clientSecret: props.clientSecret }}>
-      <InnerForm {...props} />
+    // key forces a clean remount when a new intent replaces the old one
+    <Elements key={clientSecret} stripe={stripePromise} options={{ clientSecret, appearance: APPEARANCE }}>
+      <InnerForm amount={amount} onSuccess={onSuccess} onError={onError} />
     </Elements>
   );
 }
