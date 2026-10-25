@@ -1,0 +1,687 @@
+/* phantom.css :: V-CHAT theme matched to fear_bg_5.jpg
+ *
+ * Palette sampled from the artwork:
+ *   FEAR red      #e0183a / glow #ff2a4a
+ *   V-CHAT purple #8a3dff / glow #b44cff
+ *   mask magenta  #d13bff
+ *   void          #07030d
+ *
+ * Complete stylesheet (layout + skin) for the markup in views.js, so it can
+ * be swapped in by the theme module like vchat.css / blackout.css.
+ */
+
+:root {
+    color-scheme: dark;
+    --void: #07030d;
+    --panel: rgba(13, 6, 26, 0.78);
+    --panel-solid: #0d061a;
+    --line: rgba(138, 61, 255, 0.45);
+    --line-strong: #8a3dff;
+    --red: #e0183a;
+    --red-hot: #ff4a63;
+    --red-glow: rgba(255, 42, 74, 0.55);
+    --purple: #8a3dff;
+    --purple-hot: #b44cff;
+    --purple-glow: rgba(138, 61, 255, 0.5);
+    --magenta: #d13bff;
+    --text: #eadffc;
+    --muted: #a58fcb;
+    --mono: ui-monospace, "SF Mono", "Cascadia Mono", Consolas, "Liberation Mono", monospace;
+    --display: Impact, Haettenschweiler, "Arial Narrow Bold", "Arial Black", sans-serif;
+    --radius: 4px;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+[hidden] {
+    display: none !important;
+}
+
+html {
+    min-height: 100%;
+    background: var(--void);
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    color: var(--text);
+    font: 15px/1.5 var(--mono);
+    background: linear-gradient(180deg, rgba(7, 3, 13, 0.55) 0%, rgba(7, 3, 13, 0.82) 100%), url("/assets/img/fear_bg_5.jpg") center / cover no-repeat fixed, var(--void);
+    -webkit-font-smoothing: antialiased;
+}
+
+    /* faint scanlines over everything */
+    body::after {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 100;
+        background: repeating-linear-gradient( 0deg, rgba(0, 0, 0, 0.14) 0, rgba(0, 0, 0, 0.14) 1px, transparent 1px, transparent 3px );
+        mix-blend-mode: multiply;
+    }
+
+#app {
+    min-height: 100vh;
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+::selection {
+    background: var(--red);
+    color: #fff;
+}
+
+/* ------------------------------------------------------------ type */
+
+h1,
+h2 {
+    margin: 0;
+    font-weight: 700;
+}
+
+h1 {
+    font-family: var(--display);
+    font-style: italic;
+    font-size: clamp(3.5rem, 12vw, 6rem);
+    line-height: 0.95;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--red);
+    text-shadow: 0 0 6px var(--red-glow), 0 0 24px rgba(224, 24, 58, 0.45), 2px 0 0 rgba(180, 76, 255, 0.35);
+    transform: skewX(-4deg);
+}
+
+h2 {
+    font-size: 1.05rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--purple-hot);
+    text-shadow: 0 0 12px var(--purple-glow);
+}
+
+.center {
+    text-align: center;
+}
+
+.lede {
+    margin: 0.75rem 0;
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+    .lede::before {
+        content: "> ";
+        color: var(--purple);
+    }
+
+p {
+    margin: 0.5rem 0;
+}
+
+a {
+    color: var(--purple-hot);
+}
+
+    a:hover {
+        color: var(--red-hot);
+    }
+
+/* ----------------------------------------------------------- forms */
+
+.stack {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+}
+
+label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    font-size: 0.78rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+input {
+    width: 100%;
+    padding: 0.65rem 0.8rem;
+    font: inherit;
+    letter-spacing: normal;
+    text-transform: none;
+    color: var(--text);
+    background: rgba(7, 3, 13, 0.85);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    caret-color: var(--red-hot);
+}
+
+    input::placeholder {
+        color: #6f5f92;
+    }
+
+    input:focus {
+        outline: none;
+        border-color: var(--magenta);
+        box-shadow: 0 0 0 1px var(--magenta), 0 0 16px var(--purple-glow);
+    }
+
+button {
+    padding: 0.6rem 1.1rem;
+    font: inherit;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text);
+    background: rgba(138, 61, 255, 0.1);
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: background 0.15s, box-shadow 0.15s, border-color 0.15s, color 0.15s;
+}
+
+    button:hover {
+        background: rgba(138, 61, 255, 0.24);
+        box-shadow: 0 0 14px var(--purple-glow);
+    }
+
+    button:focus-visible,
+    a:focus-visible,
+    summary:focus-visible {
+        outline: 2px solid var(--magenta);
+        outline-offset: 2px;
+    }
+
+    button:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+        box-shadow: none;
+    }
+
+    button.primary {
+        color: #fff;
+        background: linear-gradient(180deg, #e8203f 0%, #a80f2b 100%);
+        border-color: var(--red-hot);
+        box-shadow: 0 0 14px rgba(224, 24, 58, 0.4);
+    }
+
+        button.primary:hover {
+            background: linear-gradient(180deg, #ff3355 0%, #c0122f 100%);
+            box-shadow: 0 0 24px var(--red-glow);
+        }
+
+    button.danger {
+        color: var(--red-hot);
+        background: rgba(224, 24, 58, 0.1);
+        border-color: var(--red);
+    }
+
+        button.danger:hover {
+            color: #fff;
+            background: var(--red);
+            box-shadow: 0 0 20px var(--red-glow);
+        }
+
+    button.quiet {
+        background: transparent;
+        border-color: transparent;
+        color: var(--muted);
+        font-weight: 400;
+    }
+
+        button.quiet:hover {
+            color: var(--text);
+            border-color: var(--line);
+            box-shadow: none;
+        }
+
+    button[aria-pressed="true"] {
+        color: var(--red-hot);
+        border-color: var(--red);
+        background: rgba(224, 24, 58, 0.14);
+    }
+
+a.secondary {
+    display: inline-block;
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.error {
+    margin: 0;
+    padding: 0.5rem 0.7rem;
+    font-size: 0.85rem;
+    color: var(--red-hot);
+    background: rgba(224, 24, 58, 0.1);
+    border-left: 3px solid var(--red);
+}
+
+    .error::before {
+        content: "! ";
+    }
+
+/* ----------------------------------------------------- HUD frames */
+
+.gate,
+.panel,
+.chat,
+.safety {
+    position: relative;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    backdrop-filter: blur(6px);
+}
+
+    /* corner brackets, like the boxes in the artwork */
+    .gate::before,
+    .gate::after,
+    .panel::before,
+    .panel::after {
+        content: "";
+        position: absolute;
+        width: 14px;
+        height: 14px;
+        border: 2px solid var(--purple-hot);
+        pointer-events: none;
+    }
+
+    .gate::before,
+    .panel::before {
+        top: -2px;
+        left: -2px;
+        border-right: 0;
+        border-bottom: 0;
+    }
+
+    .gate::after,
+    .panel::after {
+        right: -2px;
+        bottom: -2px;
+        border-left: 0;
+        border-top: 0;
+    }
+
+/* ------------------------------------------------- login / register */
+
+.gate {
+    width: min(92vw, 420px);
+    margin: 8vh auto;
+    padding: 2rem 1.75rem;
+    box-shadow: 0 0 60px rgba(138, 61, 255, 0.18), inset 0 0 40px rgba(0, 0, 0, 0.5);
+}
+
+    .gate h2 {
+        margin-top: 0.35rem;
+        font-size: 1.6rem;
+        letter-spacing: 0.3em;
+    }
+
+    .gate .lede {
+        text-align: center;
+        margin: 1rem 0 1.5rem;
+    }
+
+        .gate .lede::before {
+            content: "";
+        }
+
+    .gate .primary {
+        margin-top: 0.25rem;
+    }
+
+    .gate .secondary {
+        display: block;
+        text-align: center;
+    }
+
+/* ---------------------------------------------------------- header */
+
+header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.7rem 1.25rem;
+    background: rgba(7, 3, 13, 0.82);
+    border-bottom: 1px solid var(--line);
+}
+
+    header .quiet,
+    header #copy-invite {
+        margin-left: auto;
+    }
+
+    header .room-name ~ .quiet {
+        margin-left: 0;
+    }
+
+.brand {
+    font-family: var(--display);
+    font-style: italic;
+    font-size: 1.4rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--red);
+    text-shadow: 0 0 12px var(--red-glow);
+}
+
+.room-name {
+    color: var(--purple-hot);
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+}
+
+.badge {
+    padding: 0.15rem 0.6rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--purple-hot);
+    border: 1px solid var(--line-strong);
+    border-radius: 999px;
+}
+
+    .badge:empty {
+        display: none;
+    }
+
+/* theme switcher mounted in .bar by the theme module */
+.bar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* ----------------------------------------------------------- lobby */
+
+.lobby-body {
+    width: min(94vw, 760px);
+    margin: 0 auto;
+    padding: 2.5rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+    .lobby-body h1 {
+        font-size: clamp(2rem, 6vw, 3rem);
+        transform: none;
+    }
+
+.split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+}
+
+.panel {
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+    .panel p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.88rem;
+    }
+
+    .panel button {
+        margin-top: auto;
+    }
+
+/* ------------------------------------------------------------ room */
+
+.room {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.room-main {
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 1rem;
+    padding: 1rem;
+}
+
+.stage {
+    min-width: 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.grid {
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    grid-auto-rows: minmax(160px, 1fr);
+    gap: 0.75rem;
+    overflow: auto;
+}
+
+    /* tiles are created by room.js; style whatever it appends */
+    .grid > * {
+        position: relative;
+        min-height: 0;
+        overflow: hidden;
+        background: #000;
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: 0 0 22px rgba(138, 61, 255, 0.18);
+    }
+
+    .grid video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        background: #000;
+    }
+
+    .grid figcaption,
+    .grid .name,
+    .grid .label {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        padding: 0.2rem 0.6rem;
+        font-size: 0.75rem;
+        letter-spacing: 0.08em;
+        color: var(--text);
+        background: rgba(7, 3, 13, 0.78);
+        border-top-right-radius: var(--radius);
+    }
+
+.controls {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.6rem;
+    padding: 0.6rem;
+    background: var(--panel);
+    border: 1px solid var(--line);
+}
+
+.status {
+    min-height: 1.2em;
+    margin: 0;
+    font-size: 0.78rem;
+    color: var(--muted);
+    text-align: center;
+}
+
+/* ------------------------------------------------------------ chat */
+
+.chat {
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1rem;
+}
+
+.chat-log {
+    flex: 1;
+    min-height: 120px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+    .chat-log li {
+        padding: 0.4rem 0.6rem;
+        font-size: 0.85rem;
+        overflow-wrap: anywhere;
+        background: rgba(138, 61, 255, 0.08);
+        border-left: 2px solid var(--purple);
+    }
+
+        .chat-log li.self,
+        .chat-log li.me {
+            background: rgba(224, 24, 58, 0.09);
+            border-left-color: var(--red);
+        }
+
+    .chat-log b,
+    .chat-log strong,
+    .chat-log .who {
+        color: var(--purple-hot);
+    }
+
+#chat-form,
+#invite-form {
+    display: flex;
+    gap: 0.5rem;
+}
+
+#invite-form {
+    flex-direction: column;
+}
+
+details.safety {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.82rem;
+}
+
+    details.safety summary {
+        cursor: pointer;
+        font-size: 0.78rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--purple-hot);
+    }
+
+    details.safety[open] summary {
+        margin-bottom: 0.5rem;
+    }
+
+    details.safety ul {
+        margin: 0;
+        padding-left: 1.1rem;
+        font-size: 0.8rem;
+        color: var(--text);
+        overflow-wrap: anywhere;
+    }
+
+    details.safety p {
+        color: var(--muted);
+        font-size: 0.78rem;
+    }
+
+/* --------------------------------------------------------- scrollbars */
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--purple) transparent;
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--purple);
+    border-radius: 8px;
+}
+
+/* ------------------------------------------------------------ motion */
+
+@media (prefers-reduced-motion: no-preference) {
+    h1 {
+        animation: fear-flicker 6s infinite;
+    }
+}
+
+@keyframes fear-flicker {
+    0%, 92%, 100% {
+        opacity: 1;
+    }
+
+    93% {
+        opacity: 0.82;
+    }
+
+    94% {
+        opacity: 1;
+    }
+
+    96% {
+        opacity: 0.7;
+    }
+
+    97% {
+        opacity: 1;
+    }
+}
+
+/* ------------------------------------------------------- small screens */
+
+@media (max-width: 900px) {
+    .room {
+        height: auto;
+        min-height: 100vh;
+    }
+
+    .room-main {
+        grid-template-columns: 1fr;
+    }
+
+    .grid {
+        grid-auto-rows: minmax(200px, 40vh);
+    }
+
+    .chat {
+        min-height: 320px;
+    }
+
+    .split {
+        grid-template-columns: 1fr;
+    }
+}

@@ -9,6 +9,7 @@ import lobbyModule from './modules/lobby.js';
 import roomModule from './modules/room.js';
 import themeModule from './modules/theme.js';
 import inviteModule from './modules/invite.js';
+import backgroundModule from './modules/background.js';
 
 FEAR.configure({ logLevel: 2, name: 'vchat' });
 
@@ -16,12 +17,14 @@ FEAR.create('auth', authModule);
 FEAR.create('lobby', lobbyModule);
 FEAR.create('room', roomModule);
 FEAR.create('invite', inviteModule);
+FEAR.create('background', backgroundModule, { hookCamera: true });
 FEAR.create('theme', themeModule, {
     themes: [
         { id: 'cyan', name: 'Cyan Ring', href: '/assets/css/vchat.css', swatch: '#19c8ff' },
         { id: 'blackout', name: 'Blackout', href: '/assets/css/blackout.css', swatch: '#d4161f' },
+        { id: 'phantom', name: 'Phantom', href: '/assets/css/phantom.css', swatch: '#b44cff' },
     ],
-    default: 'cyan',
+    default: 'phantom',
     storageKey: 'vchat:theme',
     linkId: 'theme-css',
     mount: '.bar',
@@ -53,7 +56,7 @@ async function main() {
     }
 
     await FEAR.boot(); // once, before the parallel module starts (boot() isn't re-entrant)
-    await FEAR.start(['auth', 'lobby', 'room', 'invite', 'theme']);
+    await FEAR.start(['auth', 'lobby', 'room', 'invite', 'theme', 'background']);
 
     const router = new Router({
         container: '#app',

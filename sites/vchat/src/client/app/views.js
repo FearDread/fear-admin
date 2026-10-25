@@ -84,6 +84,8 @@ export const views = {
       <div class="controls">
         <button id="btn-mic" type="button" aria-pressed="false">Mute</button>
         <button id="btn-cam" type="button" aria-pressed="false">Camera off</button>
+        <button id="btn-bg" type="button">Background</button>
+        <button id="btn-bg-clear" type="button" aria-label="Remove custom background" style="display:none">&#10005;</button>
         <button id="btn-leave" class="danger" type="button">Leave</button>
       </div>
       <p id="room-status" class="status" role="status"></p>
