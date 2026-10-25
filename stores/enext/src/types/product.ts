@@ -20,7 +20,11 @@ export interface Product {
   inStock?: boolean;
   sizes?: string[];
   colors?: string[];
-  images?: { url: string }[];
   image?: string;
-  [key: string]: unknown;
+    [key: string]: unknown;
+    brandId?: string;
+    fullDescription?: string;
+    features?: string[];
+    tags?: string[];
+    images?: { url: string; alt?: string }[];
 }

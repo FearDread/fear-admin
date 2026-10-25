@@ -31,9 +31,10 @@ export const productsApi = apiSlice.injectEndpoints({
                     : [{ type: 'Product' as const, id: 'LIST' }],
         }),
 
+
         getProductById: builder.query<Product, string>({
-            query: (id) => `/product/${id}`,
-            transformResponse: (response: FearItemEnvelope<Product>) => response.result,
+            query: (id) => `product/${id}`,
+            transformResponse: (response: { result: Product }) => response.result,
             providesTags: (_result, _error, id) => [{ type: 'Product', id }],
         }),
 

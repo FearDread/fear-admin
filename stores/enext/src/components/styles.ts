@@ -2,17 +2,17 @@ export const FONT_MONO = 'var(--font-space-mono), "Space Mono", monospace';
 export const FONT_ANTON = 'var(--font-anton), Anton, Impact, sans-serif';
 
 export const T = {
-  red: '#b30e1c',
-  orange: '#6120d9',
-  teal: '#2a9d8f',
-  dark0: 'rgba(0,0,0,.9)',
-  dark1: '#111111',
-  dark2: '#141414',
-  dark3: '#1a1a1a',
-  border: '#222222',
-  textDim: 'rgba(255,255,255,0.30)',
-  textMid: 'rgba(255,255,255,0.55)',
-  textHi: 'rgba(255,255,255,0.90)',
+    red: '#b30e1c',
+    orange: '#6120d9',
+    teal: '#2a9d8f',
+    dark0: 'rgba(0,0,0,.9)',
+    dark1: '#111111',
+    dark2: '#141414',
+    dark3: '#1a1a1a',
+    border: '#222222',
+    textDim: 'rgba(255,255,255,0.30)',
+    textMid: 'rgba(255,255,255,0.55)',
+    textHi: 'rgba(255,255,255,0.90)',
 };
 
 export const C = {
