@@ -1,10 +1,15 @@
 // Route templates. The router injects `html` into #app; each route's callback then
 // emits `view:<name>` on the broker and the owning module binds its events.
+
 export const views = {
     login: {
         title: 'Sign in · vchat',
         html: `
 <section class="gate">
+  <header class="gate-bar">
+    <span class="brand">vchat</span>
+     <div class="bar" data-theme-cycle></div>
+  </header>
   <h1 class="center">FEAR</h1>
   <h2 class="center">Virtual Chat</h2>
   <p class="lede">Video rooms where only the people in the call can see the call.</p>
@@ -22,6 +27,10 @@ export const views = {
         title: 'Get Credentials · vchat',
         html: `
 <section class="gate">
+  <header class="gate-bar">
+    <span class="brand">vchat</span>
+     <div class="bar" data-theme-cycle></div>
+  </header>
   <h1 class="center">FEAR</h1>
   <h2 class="center">Virtual Chat</h2>
   <p class="lede">Video rooms where only the people in the call can see the call.</p>
@@ -41,10 +50,11 @@ export const views = {
         title: 'Rooms · vchat',
         html: `
 <section>
-  <header>
-    <span class="brand">vchat</span>
-    <button id="logout" class="quiet" type="button">Sign out</button>
-  </header>
+<header>
+  <span class="brand">vchat</span>
+  <button id="logout" class="quiet" type="button">Sign out</button>
+  <div class="bar" data-theme-cycle></div>
+</header>
   <div class="lobby-body">
     <div>
       <h1>Start or join a room</h1>
@@ -72,12 +82,12 @@ export const views = {
         title: 'Room · vchat',
         html: `
 <section class="room">
-  <header>
-    <span class="brand">vchat</span>
-    <span id="room-name" class="room-name"></span>
-    <span id="e2ee-badge" class="badge"></span>
-    <button id="copy-invite" class="quiet" type="button">Copy invite link</button>
-  </header>
+<header>
+  <span class="brand">vchat</span>
+  <span id="room-name" class="room-name"></span>
+  <span id="e2ee-badge" class="badge"></span>
+  <button id="copy-invite" class="quiet" type="button">Copy invite link</button>
+</header>
   <div class="room-main">
     <div class="stage">
       <div id="grid" class="grid"></div>

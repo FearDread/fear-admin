@@ -27,8 +27,8 @@ FEAR.create('theme', themeModule, {
     default: 'phantom',
     storageKey: 'vchat:theme',
     linkId: 'theme-css',
-    mount: '.bar',
-    button: true
+    mount: '.bar',       // was `anchor`, which the module never read
+    control: 'select',   // was `button: true`
 });
 
 // Auth/room guard. Returning false cancels the load; go() then sends the router elsewhere.

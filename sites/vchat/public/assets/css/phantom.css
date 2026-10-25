@@ -41,33 +41,77 @@
     display: none !important;
 }
 
+/* --- phantom: no white frame ----------------------------------------
+ * html owns the whole background (image + void fallback), so the canvas is
+ * painted edge to edge from the first frame. body is transparent, which also
+ * removes any seam between the body box and the canvas.
+ */
 html {
+    margin: 0;
+    padding: 0;
     min-height: 100%;
-    background: var(--void);
+    background: url("../img/fear_bg_5.jpg") center center / cover no-repeat fixed, var(--void);
+    color-scheme: dark;
 }
 
 body {
     margin: 0;
+    padding: 0;
     min-height: 100vh;
-    color: var(--text);
-    font: 15px/1.5 var(--mono);
-    background: linear-gradient(180deg, rgba(7, 3, 13, 0.55) 0%, rgba(7, 3, 13, 0.82) 100%), url("/assets/img/fear_bg_5.jpg") center / cover no-repeat fixed, var(--void);
-    -webkit-font-smoothing: antialiased;
+    min-height: 100dvh;
+    background: transparent;
 }
-
-    /* faint scanlines over everything */
-    body::after {
-        content: "";
-        position: fixed;
-        inset: 0;
-        pointer-events: none;
-        z-index: 100;
-        background: repeating-linear-gradient( 0deg, rgba(0, 0, 0, 0.14) 0, rgba(0, 0, 0, 0.14) 1px, transparent 1px, transparent 3px );
-        mix-blend-mode: multiply;
-    }
 
 #app {
     min-height: 100vh;
+    min-height: 100dvh;
+    margin: 0;
+}
+
+/* The router focuses its container after each view loads (tabindex="-1"), and
+ * on first load the browser draws its default white focus ring around it.
+ * The container isn't an interactive control, so no ring is needed. */
+#app,
+main,
+[tabindex="-1"] {
+    outline: none;
+    border: 0;
+}
+
+    #app:focus,
+    #app:focus-visible,
+    main:focus,
+    main:focus-visible,
+    [tabindex="-1"]:focus,
+    [tabindex="-1"]:focus-visible {
+        outline: none;
+        box-shadow: none;
+    }
+
+/* theme select in .bar: no white native border or focus ring */
+select.quiet,
+#theme-select {
+    background: var(--panel-solid);
+    color: var(--text);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    outline: none;
+}
+
+    select.quiet:focus-visible,
+    #theme-select:focus-visible {
+        border-color: var(--magenta);
+        box-shadow: 0 0 0 1px var(--magenta), 0 0 16px var(--purple-glow);
+    }
+
+/* browser autofill paints inputs white/pale blue; keep them dark */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+    -webkit-text-fill-color: var(--text);
+    caret-color: var(--red-hot);
+    box-shadow: 0 0 0 1000px #07030d inset;
+    transition: background-color 9999s ease-out 0s;
 }
 
 .sr-only {
@@ -399,14 +443,6 @@ header {
     .badge:empty {
         display: none;
     }
-
-/* theme switcher mounted in .bar by the theme module */
-.bar {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
 /* ----------------------------------------------------------- lobby */
 
 .lobby-body {

@@ -220,37 +220,6 @@ button {
 
 /* ----------------------------------------------------------------- bar */
 
-/* The bar's bottom edge is the artwork's horizon beam: blue, violet, magenta. */
-.bar {
-    position: fixed;
-    bottom: 10px;
-    width: 100px;
-    height: 100px;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 0.7rem 1.25rem;
-    background: rgba(3, 5, 10, 0.72);
-    border-bottom: 1px solid var(--line);
-}
-
-    .bar::after {
-        content: "";
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: -1px;
-        height: 1px;
-        background: linear-gradient(90deg, var(--blue-deep), var(--violet) 50%, var(--pink));
-        box-shadow: 0 0 10px rgba(123, 77, 255, 0.55);
-    }
-
-@supports (backdrop-filter: blur(1px)) {
-    .bar {
-        backdrop-filter: blur(14px) saturate(140%);
-    }
-}
-
 .brand {
     margin-right: auto;
     font-size: 1.2rem;

@@ -6,8 +6,8 @@ const DEFAULTS = {
     default: null, // theme id; falls back to whatever the page loaded with, then the first theme
     storageKey: 'vchat:theme',
     linkId: 'theme-css', // id of the <link rel="stylesheet"> to manage; created if missing
-    mount: '.bar', // where the built-in button goes
-    button: true, // false = no built-in button, use data-theme-* attributes or the broker
+    mount: '.bar', // where the built-in control goes
+    control: 'select', // 'select' | 'button' | 'none' (none = use data-theme-* attributes or the broker)
     version: '', // cache-buster appended as ?v=... (the server caches .css for a year)
 };
 
@@ -15,6 +15,7 @@ export default function themeModule(sb) {
     const $ = sb.$;
     const NS = '.themeswitcher';
     const BUTTON_ID = 'theme-toggle';
+    const SELECT_ID = 'theme-select';
 
     let opts = null;
     let themes = [];
@@ -65,14 +66,45 @@ export default function themeModule(sb) {
             else document.head.appendChild(el);
         });
 
-    // ----------------------------------------------------------------- button
+    // --------------------------------------------------------------- controls
 
-    const renderButton = () => {
-        if (!opts.button || themes.length < 2) return;
+    // Fills a <select> with the theme list and points it at the current theme.
+    // Works for the built-in select and for any hand-written <select data-theme-select>.
+    const fillSelect = (el) => {
+        // Never touch a select the user is interacting with: rebuilding options or
+        // resetting its value while the dropdown is open closes it and can fire change.
+        if (el === document.activeElement) return;
 
-        const $mount = $(opts.mount).first();
-        if (!$mount.length) return; // this view has no bar; it is picked up on components:init
+        const $sel = $(el);
+        const ids = themes.map((t) => t.id);
+        const have = $sel.children().map((_, o) => o.value).get();
 
+        if (ids.length !== have.length || ids.some((id, i) => id !== have[i])) {
+            $sel.empty();
+            themes.forEach((t) => {
+                const opt = document.createElement('option');
+                opt.value = t.id;
+                opt.textContent = t.name;
+                $sel.append(opt);
+            });
+        }
+
+        if (current && $sel.val() !== current.id) $sel.val(current.id);
+    };
+
+    const renderSelect = ($mount) => {
+        let $sel = $(`#${SELECT_ID}`);
+
+        if (!$sel.length) {
+            $sel = $(
+                `<select id="${SELECT_ID}" class="quiet" data-theme-select aria-label="Theme"></select>`
+            ).appendTo($mount);
+        }
+
+        fillSelect($sel[0]);
+    };
+
+    const renderButton = ($mount) => {
         let $btn = $(`#${BUTTON_ID}`);
 
         if (!$btn.length) {
@@ -102,9 +134,22 @@ export default function themeModule(sb) {
             });
     };
 
+    const renderControl = () => {
+        // Hand-written selects in view markup get populated and synced regardless of `control`.
+        $('[data-theme-select]').each((_, el) => fillSelect(el));
+
+        if (opts.control === 'none' || themes.length < 2) return;
+
+        const $mount = $(opts.mount).first();
+        if (!$mount.length) return; // this view has no bar; picked up on components:init
+
+        if (opts.control === 'button') renderButton($mount);
+        else renderSelect($mount);
+    };
+
     const reflect = () => {
         if (current) document.documentElement.dataset.theme = current.id;
-        renderButton();
+        renderControl();
     };
 
     // ----------------------------------------------------------------- switch
@@ -131,9 +176,7 @@ export default function themeModule(sb) {
             if (persist) write(theme.id);
             reflect();
 
-            sandbox
-                .emit('theme:changed', { id: theme.id, name: theme.name })
-                .catch(fail);
+            sb.emit('theme:changed', { id: theme.id, name: theme.name }).catch(fail);
 
             return theme;
         });
@@ -151,7 +194,7 @@ export default function themeModule(sb) {
         return swap(theme, persist);
     };
 
-    const cycle = () => set(nextAfter(current).id);
+    const cycle = () => set(nextAfter(current || themes[0]).id);
 
     return {
         set,
@@ -189,12 +232,24 @@ export default function themeModule(sb) {
                 .on(`click${NS}`, '[data-theme-set]', (e) => {
                     e.preventDefault();
                     set($(e.currentTarget).attr('data-theme-set')).catch(fail);
+                })
+                .on(`change${NS}`, '[data-theme-select]', (e) => {
+                    const el = e.currentTarget;
+                    const id = $(el).val();
+
+                    // Ignore events that don't change the theme (opening the list, re-selecting).
+                    if (!id || (current && id === current.id)) return;
+
+                    set(id).catch((err) => {
+                        fail(err);
+                        if (current) $(el).val(current.id); // roll the select back
+                    });
                 });
 
             // broker: other modules can drive the switcher, and views re-render the bar
             const onSet = (data) => set(data && data.id).catch(fail);
             const onCycle = () => cycle().catch(fail);
-            const onMount = () => renderButton();
+            const onMount = () => renderControl();
 
             [
                 ['theme:set', onSet],
@@ -214,7 +269,7 @@ export default function themeModule(sb) {
         },
         unload: () => {
             $(document).off(NS);
-            $(`#${BUTTON_ID}`).remove();
+            $(`#${BUTTON_ID}, #${SELECT_ID}`).remove();
             delete document.documentElement.dataset.theme;
 
             // Leave the stylesheet in place; unloading the switcher should not unstyle the page.

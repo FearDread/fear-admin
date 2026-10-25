@@ -4,14 +4,34 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>vchat</title>
-    <!-- <link rel="stylesheet" href="/assets/css/blackout.css?v=__BUILD__"> -->
-    <link id="theme-css" href='/assets/css/styles.css' type="text/css" rel="stylesheet" />
+    <meta name="color-scheme" content="dark">
+    <meta name="theme-color" content="#07030d">
+    <style>
+        html {
+            background: #07030d
+        }
+    </style>
+    <script>
+          // pick the saved theme's stylesheet before first paint (default: phantom)
+          (function () {
+            var map = { cyan: 'vchat', blackout: 'blackout', phantom: 'phantom' };
+            var id = 'phantom';
+            try { id = localStorage.getItem('vchat:theme') || id; } catch (e) {}
+            var file = map[id] || 'phantom';
+            document.write('<link id="theme-css" rel="stylesheet" href="/assets/css/' + file + '.css?v=__BUILD__">');
+          })();
+    </script>
 </head>
 
 <body>
-    <div class="bar" data-theme-cycle></div>
     <main id="app" class="app"></main>
 
+    <script>
+          try {
+            var t = localStorage.getItem('vchat-theme');
+            if (t && t !== 'system') document.documentElement.setAttribute('data-theme', t);
+          } catch (e) {}
+    </script>
     <script type="module" src="/vchat-client.js"></script>
 </body>
 </html>
