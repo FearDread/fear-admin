@@ -1,0 +1,17 @@
+{
+  "name": "hipcomic-import",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Import a HipComic seller's inventory into MongoDB (public listing pages)",
+  "scripts": {
+    "import": "node hipcomic-import.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "cheerio": "^1.0.0",
+    "mongodb": "^6.10.0"
+  }
+}
