@@ -8,7 +8,11 @@ export default function backgroundModule(sb) {
     let bgImage = null; // canvas holding the downscaled background
     let seg = null;
     let segReady = null;
-    let pipeline = null; // { video, canvas, ctx, out, source, owned, running, busy }
+    const pipelines = new Set(); // { video, canvas, ctx, out, source, owned, running }
+    let segBusy = false; // the segmenter handles one frame at a time, shared by all pipelines
+    let segTarget = null; // pipeline whose frame is currently in the segmenter
+    let loopOn = false;
+    let rr = 0; // round-robin cursor so no pipeline starves
     let input = null;
     let origGetUserMedia = null;
     const channels = [];
@@ -110,7 +114,7 @@ export default function backgroundModule(sb) {
     }
 
     function onResults(results) {
-        const p = pipeline;
+        const p = segTarget;
         if (!p || !p.running) return;
 
         const { ctx, canvas } = p;
@@ -135,18 +139,27 @@ export default function backgroundModule(sb) {
         else requestAnimationFrame(fn);
     }
 
-    function loop() {
-        const p = pipeline;
-        if (!p || !p.running) return;
+    function tick() {
+        if (!pipelines.size) {
+            loopOn = false;
+            return;
+        }
 
-        if (p.video.readyState >= 2) {
+        const list = [...pipelines];
+        rr = (rr + 1) % list.length;
+
+        for (let i = 0; i < list.length; i++) {
+            const p = list[(rr + i) % list.length];
+            if (!p.running || p.video.readyState < 2) continue;
+
             if (bgImage && seg) {
-                if (!p.busy) {
-                    p.busy = true;
+                if (!segBusy) {
+                    segBusy = true;
+                    segTarget = p;
                     seg.send({ image: p.video })
                         .catch(() => { })
                         .then(() => {
-                            p.busy = false;
+                            segBusy = false;
                         });
                 }
             } else {
@@ -155,19 +168,27 @@ export default function backgroundModule(sb) {
             }
         }
 
-        schedule(loop);
+        schedule(tick);
+    }
+
+    function startLoop() {
+        if (loopOn) return;
+        loopOn = true;
+        schedule(tick);
+    }
+
+    function detachOne(p) {
+        if (!pipelines.delete(p)) return;
+
+        p.running = false;
+        p.out.getVideoTracks().forEach((t) => t.stop()); // patched stop() sees the pipeline is gone
+        p.video.pause();
+        p.video.srcObject = null;
+        if (p.owned) p.source.stop(); // we opened the camera via the hook, so we release it
     }
 
     function detach() {
-        const p = pipeline;
-        if (!p) return Promise.resolve();
-
-        pipeline = null; // first, so the patched track.stop() below doesn't recurse
-        p.running = false;
-        p.out.getVideoTracks().forEach((t) => t.stop());
-        p.video.srcObject = null;
-        if (p.owned) p.source.stop(); // we opened the camera via the hook, so we release it
-
+        [...pipelines].forEach(detachOne);
         return Promise.resolve();
     }
 
@@ -177,13 +198,15 @@ export default function backgroundModule(sb) {
 
         if (!track) return Promise.resolve({ stream, processed: false });
 
-        detach();
-
         const settings = track.getSettings();
         const video = document.createElement('video');
         video.muted = true;
         video.playsInline = true;
         video.srcObject = new MediaStream([track]);
+
+        // Not awaited: tick() waits for readyState, and an awaited play() rejects with
+        // AbortError whenever the element is torn down mid-start.
+        video.play().catch(() => { });
 
         const canvas = document.createElement('canvas');
         canvas.width = settings.width || 640;
@@ -200,29 +223,21 @@ export default function backgroundModule(sb) {
             source: track,
             owned: !!(data && data.owned),
             running: true,
-            busy: false,
         };
-        pipeline = p;
+        pipelines.add(p);
 
-        // room.js stops tracks on leave; make that tear the pipeline down too.
+        // room.js stops tracks on leave; make that tear this pipeline down too.
         const outTrack = out.getVideoTracks()[0];
         const stopOut = outTrack.stop.bind(outTrack);
         outTrack.stop = function () {
             stopOut();
-            if (pipeline === p) detach();
+            detachOne(p);
         };
 
-        return video
-            .play()
-            .then(ensureSegmenter)
-            .then(() => {
-                loop();
-                return { stream: out, processed: true };
-            })
-            .catch((err) => {
-                if (pipeline === p) detach();
-                throw err;
-            });
+        return ensureSegmenter().then(() => {
+            startLoop();
+            return { stream: out, processed: true };
+        });
     }
 
     // -------------------------------------------------------- set / clear
