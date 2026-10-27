@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-// fmv = price
+
 // Mirrors the documents written by import-collection.mjs
 const hipcomicItemSchema = new mongoose.Schema({
     hipcomicId: { type: String, required: true, unique: true, trim: true },
@@ -20,6 +20,8 @@ const hipcomicItemSchema = new mongoose.Schema({
     seriesSlug: { type: String },
     issueSlug: { type: String },
     variantSlug: { type: String },
+    image: { type: String, default: null },
+    images: [{ type: String }],
     rawText: { type: String },
     importedAt: { type: Date },
     firstImportedAt: { type: Date },
