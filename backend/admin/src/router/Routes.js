@@ -14,6 +14,7 @@ import ProfilePage from "../pages/dashboard/Profile/Profile.jsx";
 import ReviewList from "../pages/dashboard/ReviewList.jsx";
 import ProductView from "../pages/dashboard/ProductView.jsx";
 import ProductEdit from "../pages/dashboard/ProductEdit.jsx";
+import HipcomicList from "../pages/dashboard/HipcomicList.jsx";
 import Ebay from "../pages/integrations/Ebay.jsx";
 import GoogleAnalytics from "../pages/integrations/Analytics.jsx";
 
@@ -40,9 +41,10 @@ export const routes = {
     { path: "/admin/product/edit/:id", element: <ProductEdit /> },
     { path: "/admin/product/view/:id", element: <ProductView /> }
   ],
-  apps: [
+    apps: [
+    { path: "/admin/hipcomics", label: "Hip-Comics", icon: "fa fa-shopping-bag", element: <HipcomicList /> },
     { path: "/admin/ebay", label: 'EBay', icon: 'fa fa-dollar', element: <Ebay /> },
-    { path: "/admin/analytics", label: 'Analytics', icon: 'zmdi zmdi-google', element: <GoogleAnalytics /> }
+    { path: "/admin/analytics", label: 'Analytics', icon: 'zmdi zmdi-google', element: <GoogleAnalytics /> },
   ]
 };
 

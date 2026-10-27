@@ -5,6 +5,7 @@ import logger from 'redux-logger';
 // Import reducers
 import user, { restoreUser } from './user/slice';
 import product from './products/slice';
+import hipcomic from './hipcomics/slice';
 import category from "./categories/slice";
 import brand from "./brands/slice";
 import order from "./orders/slice";
@@ -24,6 +25,7 @@ export const initializeStore = () => {
         brands: brand.reducer,
         orders: order.reducer,
         events: event.reducer,
+        hipcomic: hipcomic.reducer,
         blog: blogposts.reducer,
   },
     middleware: (getDefaultMiddleware) =>
@@ -47,140 +49,3 @@ export const initializeStore = () => {
 export const store = initializeStore();
 
 export default store;
-
-// ========================================
-// index.js - Store Provider Setup
-// ========================================
-
-/*
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import { Provider } from 'react-redux';
-import { BrowserRouter } from 'react-router-dom';
-import App from './App';
-import store from './store/store';
-import './App.css';
-
-const root = ReactDOM.createRoot(document.getElementById('root'));
-
-root.render(
-  <React.StrictMode>
-    <Provider store={store}>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    </Provider>
-  </React.StrictMode>
-);
-*/
-
-
-// ========================================
-// Example Usage in Components
-// ========================================
-
-/*
-// In ProductList.jsx
-import { useProductFeature } from 'features/product/productHooks';
-
-function ProductList() {
-  const {
-    products,
-    loading,
-    error,
-    fetchProducts,
-    deleteProduct,
-    setFilters,
-    clearError
-  } = useProductFeature();
-
-  useEffect(() => {
-    fetchProducts();
-  }, [fetchProducts]);
-
-  return (
-    // Your component JSX
-  );
-}
-
-// In ProductEdit.jsx
-import { useProduct } from 'features/product/productHooks';
-
-function ProductEdit({ productId }) {
-  const {
-    product,
-    loading,
-    error,
-    updateProduct,
-    deleteProduct
-  } = useProduct(productId);
-
-  const handleSubmit = async (formData) => {
-    try {
-      await updateProduct(formData);
-      // Handle success
-    } catch (err) {
-      // Handle error
-    }
-  };
-
-  return (
-    // Your component JSX
-  );
-}
-
-// With search functionality
-import { useProductSearch } from 'features/product/productHooks';
-
-function ProductSearch() {
-  const {
-    searchTerm,
-    results,
-    loading,
-    setSearch,
-    clearSearch
-  } = useProductSearch();
-
-  return (
-    <div>
-      <input
-        value={searchTerm}
-        onChange={(e) => setSearch(e.target.value)}
-        placeholder="Search products..."
-      />
-      {results.map(product => (
-        <ProductCard key={product._id} product={product} />
-      ))}
-    </div>
-  );
-}
-
-// With pagination
-import { useProductPagination } from 'features/product/productHooks';
-
-function ProductListPaginated() {
-  const {
-    products,
-    pagination,
-    goToPage,
-    nextPage,
-    previousPage
-  } = useProductPagination();
-
-  return (
-    <div>
-      {products.map(product => (
-        <ProductCard key={product._id} product={product} />
-      ))}
-      
-      <Pagination
-        current={pagination.currentPage}
-        total={pagination.totalPages}
-        onPageChange={goToPage}
-        onNext={nextPage}
-        onPrevious={previousPage}
-      />
-    </div>
-  );
-}
-*/
