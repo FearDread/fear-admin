@@ -2,95 +2,57 @@
 // Run this in YOUR browser, on your own collection page:
 //   1. Open https://www.hipcomic.com/myc/@<you>/collection (sign in if needed)
 //   2. F12 -> Console -> paste this whole file -> Enter
-//   3. It walks every page of your collection, then opens each comic's own page
-//      to read its cover image URL, and downloads hipcomic-collection.json
+//   3. It loads each page of your collection in a hidden frame, scrolls to every comic tile and
+//      waits for its cover to actually finish loading, then downloads hipcomic-collection.json
 //
 // It runs as you, in your real browser session, so there is no scraping
 // client for the site to block.
 
 (async () => {
-    const PAGE_PARAM = 'page';       // if the URL changes to something else when you click page 2, change this
-    const DELAY_MS = 1200;           // pause between collection pages
-    const DETAIL_DELAY_MS = 500;     // pause after each comic page (per worker)
-    const CONCURRENCY = 2;           // comic pages loaded at once
-    const IFRAME_TIMEOUT_MS = 10000; // per-comic wait in iframe mode
+    const PAGE_PARAM = 'page';        // if the URL changes to something else when you click page 2, change this
+    const PAGE_DELAY_MS = 800;        // pause between collection pages
+    const PAGE_TIMEOUT_MS = 20000;    // max wait for a page's tiles to appear
+    const COVER_TIMEOUT_MS = 5000;    // max wait for ONE tile's cover (comics with no cover hit this)
+    const POLL_MS = 100;
+    const MAX_PAGES = 300;
     const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-    /* ------------------------------------------------------------ image helpers */
-
+    // Each comic is <a class="my-comic-tile">. Its cover is the CSS background-image of the
+    // .v-image__image div inside it. That div does not exist until the tile scrolls into view,
+    // and while the cover downloads it carries the class v-image__image--preload (a blurred
+    // placeholder). A cover only counts as loaded once that class is gone.
+    const TILE_SEL = 'a.my-comic-tile, a[href*="/collection/"][href*="/comic/"]';
     const BG_RE = /url\((['"]?)(.*?)\1\)/i;
-    const SKIP_IMG = /(^data:|nxt-static|hipicon|placeholder|favicon|\/logo|\.svg(\?|$))/i;
 
-    // Vuetify draws images as a div with a CSS background-image, not an <img>
-    function bgUrl(el) {
-        const view = el.ownerDocument.defaultView;
-        const computed = view ? view.getComputedStyle(el).backgroundImage : '';
-        const m = (computed || '').match(BG_RE) || (el.getAttribute('style') || '').match(BG_RE);
-        return m ? m[2] : null;
-    }
-
-    // All candidate cover URLs on a comic page, best guess first
-    function extractImages(doc) {
-        const found = [];
-        const add = (u) => {
-            if (!u || SKIP_IMG.test(u)) return;
-            try {
-                const abs = new URL(u, location.origin).href;
-                if (!found.includes(abs)) found.push(abs);
-            } catch { /* ignore bad URLs */ }
-        };
-        doc.querySelectorAll('.v-image__image, [style*="background-image"]').forEach((el) => add(bgUrl(el)));
-        doc.querySelectorAll('img').forEach((img) => add(img.getAttribute('src') || img.getAttribute('data-src')));
-        add(doc.querySelector('meta[property="og:image"]')?.getAttribute('content'));
-        return found;
-    }
-
-    // Mode 1: fetch the comic page's HTML (fast, works if the image is in the server-rendered HTML)
-    async function imagesViaFetch(url) {
-        const res = await fetch(url, { credentials: 'include' });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return extractImages(new DOMParser().parseFromString(await res.text(), 'text/html'));
-    }
-
-    // Mode 2: load the comic page in a hidden iframe and wait for the page's JS to draw the image
-    function imagesViaIframe(url) {
-        return new Promise((resolve, reject) => {
-            const frame = document.createElement('iframe');
-            frame.style.cssText = 'position:fixed;left:-9999px;top:0;width:1024px;height:768px;opacity:0;pointer-events:none;';
-            const started = Date.now();
-            const finish = (fn, val) => { clearInterval(timer); frame.remove(); fn(val); };
-            const timer = setInterval(() => {
-                try {
-                    const doc = frame.contentDocument;
-                    if (doc && doc.readyState !== 'loading') {
-                        const imgs = extractImages(doc);
-                        if (imgs.length) return finish(resolve, imgs);
-                    }
-                } catch (err) {
-                    return finish(reject, err);
-                }
-                if (Date.now() - started > IFRAME_TIMEOUT_MS) finish(resolve, []);
-            }, 300);
-            frame.src = url;
-            document.body.appendChild(frame);
-        });
-    }
-
-    let useIframe = false;
-    async function fillImage(item) {
-        try {
-            const imgs = useIframe ? await imagesViaIframe(item.url) : await imagesViaFetch(item.url);
-            item.image = imgs[0] || null;
-            item.images = imgs;
-            delete item.imageError;
-        } catch (err) {
-            item.image = null;
-            item.images = [];
-            item.imageError = String(err.message || err);
+    async function waitFor(fn, timeoutMs) {
+        const end = Date.now() + timeoutMs;
+        for (;;) {
+            let v = null;
+            try { v = fn(); } catch { /* frame not ready yet */ }
+            if (v) return v;
+            if (Date.now() > end) return null;
+            await sleep(POLL_MS);
         }
     }
 
-    /* ------------------------------------------------------------- list parsing */
+    /* ------------------------------------------------------------ image helpers */
+
+    // Cover URL of a tile, or null if it isn't drawn yet / is still the preload placeholder
+    function tileImage(a) {
+        const el = a.querySelector('.v-image__image');
+        if (!el || el.classList.contains('v-image__image--preload')) return null;
+        const view = el.ownerDocument.defaultView;
+        const computed = view ? view.getComputedStyle(el).backgroundImage : '';
+        const m = (computed || '').match(BG_RE) || (el.getAttribute('style') || '').match(BG_RE);
+        if (!m || !m[2]) return null;
+        try {
+            return new URL(m[2], location.origin).href;
+        } catch {
+            return null;
+        }
+    }
+
+    /* ------------------------------------------------------------- tile parsing */
 
     function parseAnchor(a) {
         const href = a.getAttribute('href') || '';
@@ -140,23 +102,56 @@
             seriesSlug: full ? rest[3] : null,
             issueSlug: full ? rest[4] : null,
             variantSlug: full && rest.length > 6 ? rest.slice(5, -1).join('/') : null,
-            image: null,   // filled from each comic's own page below
-            images: [],
+            image: tileImage(a),
             rawText: text,
         };
     }
 
-    const all = new Map();
-    function addFrom(root) {
-        let added = 0;
-        for (const a of root.querySelectorAll('a[href*="/collection/"]')) {
+    function harvest(doc) {
+        const items = [];
+        for (const a of doc.querySelectorAll(TILE_SEL)) {
             const item = parseAnchor(a);
-            if (item && !all.has(item.hipcomicId)) {
-                all.set(item.hipcomicId, item);
-                added++;
-            }
+            if (item) items.push(item);
         }
-        return added;
+        const m = (doc.body.innerText || '').match(/Showing\s+\d+\s+to\s+\d+\s+of\s+(\d+)/);
+        return { items, total: m ? Number(m[1]) : null, missing: items.filter((i) => !i.image).length };
+    }
+
+    /* ------------------------------------------------- render one page in a frame */
+
+    // Loads `url` in a hidden same-origin iframe. The frame sits inside the viewport (but is
+    // invisible) because the site loads covers when a tile intersects the viewport. Each tile is
+    // scrolled into view in turn and we wait until ITS cover has finished loading before moving on.
+    async function renderPage(url) {
+        const frame = document.createElement('iframe');
+        frame.style.cssText =
+            'position:fixed;left:0;top:0;width:1100px;height:900px;border:0;opacity:0;pointer-events:none;z-index:-1;';
+        frame.src = url;
+        document.body.appendChild(frame);
+        try {
+            const doc = await waitFor(() => {
+                const d = frame.contentDocument;
+                return d && d.readyState !== 'loading' && d.querySelectorAll(TILE_SEL).length ? d : null;
+            }, PAGE_TIMEOUT_MS);
+            if (!doc) return { items: [], total: null, missing: 0 };
+
+            await sleep(300); // let the page finish adding its tiles
+            const tiles = [...doc.querySelectorAll(TILE_SEL)];
+            let slow = 0;
+            for (const a of tiles) {
+                if (tileImage(a)) continue; // already loaded
+                a.scrollIntoView({ block: 'center' });
+                const ok = await waitFor(() => tileImage(a), COVER_TIMEOUT_MS);
+                if (!ok) slow++;
+            }
+            if (slow) console.log(`  ${slow} tile(s) never finished loading a cover (probably comics with no cover image)`);
+            return harvest(doc);
+        } catch (err) {
+            console.warn('Frame error:', err);
+            return { items: [], total: null, missing: 0 };
+        } finally {
+            frame.remove();
+        }
     }
 
     function download(items) {
@@ -169,76 +164,59 @@
         link.remove();
     }
 
-    /* --------------------------------------------------- 1) walk the list pages */
+    /* ------------------------------------------------------------------- main */
 
-    addFrom(document);
-    const totalMatch = document.body.innerText.match(/Showing\s+\d+\s+to\s+\d+\s+of\s+(\d+)/);
-    const total = totalMatch ? Number(totalMatch[1]) : null;
-    console.log(`Page 1: ${all.size} items${total ? ` (collection total ${total})` : ''}`);
-
-    for (let p = 2; p <= 300; p++) {
-        if (total && all.size >= total) break;
-        await sleep(DELAY_MS);
-        const url = new URL(location.href);
-        url.searchParams.set(PAGE_PARAM, String(p));
-        const res = await fetch(url, { credentials: 'include' });
-        if (!res.ok) {
-            console.warn(`Page ${p}: HTTP ${res.status}, stopping.`);
-            break;
-        }
-        const doc = new DOMParser().parseFromString(await res.text(), 'text/html');
-        const added = addFrom(doc);
-        console.log(`Page ${p}: +${added} (running total ${all.size}${total ? `/${total}` : ''})`);
-        if (!added) {
-            console.warn(
-                `No new items on page ${p}. Either "${PAGE_PARAM}" is not the pagination parameter, or the list is ` +
-                'rendered client-side. Click page 2 manually, look at the address bar, and update PAGE_PARAM.',
-            );
-            break;
-        }
-    }
-
-    const items = [...all.values()];
-    window.__hipcomicItems = items; // still reachable from the console if anything below is interrupted
-
-    /* ------------------------------------ 2) visit each comic's page for its image */
+    const all = new Map();
+    let total = null;
+    window.__hipcomicItems = []; // still reachable from the console if anything is interrupted
 
     try {
-        console.log(`Reading cover images for ${items.length} comics...`);
-        const PROBE = Math.min(5, items.length);
+        for (let p = 1; p <= MAX_PAGES; p++) {
+            if (total && all.size >= total) break;
 
-        // Probe a few first: if the fetched HTML has no image, the page draws it with JS, so switch to iframes
-        for (const item of items.slice(0, PROBE)) {
-            await fillImage(item);
-            await sleep(DETAIL_DELAY_MS);
-        }
-        if (PROBE && items.slice(0, PROBE).every((i) => !i.image)) {
-            console.warn('No image in the fetched HTML, so the page is drawn by JavaScript. Switching to hidden-iframe mode (slower).');
-            useIframe = true;
-            for (const item of items.slice(0, PROBE)) await fillImage(item);
-        }
+            const url = new URL(location.href);
+            url.searchParams.set(PAGE_PARAM, String(p));
+            const page = await renderPage(url.href);
+            if (total == null) total = page.total;
 
-        let next = PROBE;
-        let done = PROBE;
-        const worker = async () => {
-            while (next < items.length) {
-                const item = items[next++];
-                await fillImage(item);
-                done++;
-                if (done % 25 === 0 || done === items.length) console.log(`Images: ${done}/${items.length}`);
-                await sleep(DETAIL_DELAY_MS);
+            let added = 0;
+            for (const item of page.items) {
+                const prev = all.get(item.hipcomicId);
+                if (!prev) {
+                    all.set(item.hipcomicId, item);
+                    added++;
+                } else if (!prev.image && item.image) {
+                    prev.image = item.image;
+                }
             }
-        };
-        await Promise.all(Array.from({ length: CONCURRENCY }, worker));
+            window.__hipcomicItems = [...all.values()];
+            console.log(
+                `Page ${p}: ${page.items.length} tiles, +${added} new, ${page.missing} without a cover ` +
+                `(running total ${all.size}${total ? `/${total}` : ''})`,
+            );
+
+            if (!page.items.length) {
+                console.warn(
+                    `Page ${p} rendered no comic tiles. If this is page 1, the site may block framing: check the console ` +
+                    `for a frame error and tell me what it says. Otherwise "${PAGE_PARAM}" may not be the pagination ` +
+                    'parameter (click page 2 manually, look at the address bar, and update PAGE_PARAM).',
+                );
+                break;
+            }
+            if (!added) {
+                console.warn(`No new items on page ${p}, stopping.`);
+                break;
+            }
+            await sleep(PAGE_DELAY_MS);
+        }
     } finally {
+        const items = [...all.values()];
         const withImage = items.filter((i) => i.image).length;
-        download(items);
+        if (items.length) download(items);
         console.log(
-            `Done: ${items.length}${total ? ` of ${total}` : ''} items saved to hipcomic-collection.json ` +
+            `Done: ${items.length}${total ? ` of ${total}` : ''} items` +
+            `${items.length ? ' saved to hipcomic-collection.json' : ' (nothing to save)'} ` +
             `(${withImage} with an image, ${items.length - withImage} without)`,
         );
-        if (withImage === 0 && items.length) {
-            console.warn('No images found. Open one comic page, inspect its cover in DevTools, and send me that element\'s HTML.');
-        }
     }
 })();
