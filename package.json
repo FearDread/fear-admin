@@ -10,7 +10,9 @@
     "docker:build": "docker build -t fear-app .",
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down",
-    "docker:logs": "docker-compose logs -f fear-app"
+    "docker:logs": "docker-compose logs -f fear-app",
+    "hipcomic:convert": "node scripts/hipconvert.js",
+    "hipcomic:convert:dry": "node scripts/hipconvert.js --dry-run"
   },
   "keywords": [
     "express",
