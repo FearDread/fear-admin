@@ -16,14 +16,14 @@ try {
 }
 const { parseArgs } = require("node:util");
 const mongoose = require("mongoose");
-const Product = require("../models/product");
-const HipcomicItem = require("../models/hipcomic");
+const Product = require("../backend/src/models/product");
+const HipcomicItem = require("../backend/src/models/hipcomic");
 const {
     convertHipcomicItem,
     convertMany,
     hipcomicToProductData,
     marker,
-} = require("../services/hipcomicToProduct");
+} = require("../backend/src/libs/converter");
 
 const USAGE = `Usage: npm run hipcomic:convert -- [options]
 
@@ -127,8 +127,8 @@ async function main(argv = process.argv.slice(2)) {
     if (a.publisher) filter.publisherSlug = a.publisher;
     if (a["key-only"]) filter.keyIssue = true;
 
-    const uri = a.mongo || process.env.MONGODB_URI || process.env.MONGO_URI;
-    if (!uri) fail("No database URL. Set MONGODB_URI (or MONGO_URI) in .env, or pass --mongo <uri>.");
+    const uri = a.mongo || process.env.DB_LINK || process.env.MONGO_URI;
+    if (!uri) fail("No database URL. Set DB_LINK (or MONGO_URI) in .env, or pass --mongo <uri>.");
 
     await mongoose.connect(uri);
     try {
