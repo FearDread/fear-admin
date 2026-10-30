@@ -1,649 +1,658 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  Card,
-  CardHeader,
-  CardBody,
-  CardTitle,
-  Row,
-  Col,
-  Badge,
-  Button,
-} from 'reactstrap';
-import {
-  LineChart,
-  Line,
-  BarChart,
-  Bar,
-  PieChart,
-  Pie,
-  Cell,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  AreaChart,
-  Area,
-} from 'recharts';
-
-// Import order slice
-import {
-  fetchOrders,
-  fetchRecentOrders,
-  selectAllOrders,
-  selectRecentOrders,
-  selectOrdersLoading,
-  selectOrderStatistics,
-  selectPendingOrders,
-  selectShippedOrders,
-  selectDeliveredOrders,
-} from '../features/orders/slice';
-
-// Import product slice
-import {
-  fetchProducts,
-  selectProducts,
-  selectLoading as selectProductsLoading,
-} from '../features/products/slice';
-
+import { Card, CardHeader, CardBody, CardTitle, Row, Col, Badge, Button } from 'reactstrap';
+import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { fetchOrders, fetchRecentOrders, selectAllOrders, selectRecentOrders, selectOrdersLoading } from '../features/orders/slice';
+import { fetchProducts, selectProducts, selectLoading as selectProductsLoading } from '../features/products/slice';
 import Loader from '../components/Loader/Loading';
 
-const Dashboard = () => {
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
+/* -------------------------------------------------------------------------
+   Constants (kept outside the component so they are not rebuilt each render)
+   ---------------------------------------------------------------------- */
 
-  // Redux selectors
-  const orders = useSelector(selectAllOrders);
-  const recentOrders = useSelector(selectRecentOrders);
-  const ordersLoading = useSelector(selectOrdersLoading);
-  const statistics = useSelector(selectOrderStatistics);
-  const pendingOrders = useSelector(selectPendingOrders);
-  const shippedOrders = useSelector(selectShippedOrders);
-  const deliveredOrders = useSelector(selectDeliveredOrders);
-  const products = useSelector(selectProducts);
-  const productsLoading = useSelector(selectProductsLoading);
+const LOW_STOCK_THRESHOLD = 10;
+const RECENT_ORDERS_COUNT = 6;
 
-  // Order status configuration
-  const ORDER_STATUS = {
-    pending: { color: 'warning', icon: 'fa-clock-o', label: 'Pending' },
-    processing: { color: 'info', icon: 'fa-refresh', label: 'Processing' },
-    shipped: { color: 'primary', icon: 'fa-truck', label: 'Shipped' },
-    delivered: { color: 'success', icon: 'fa-check-circle', label: 'Delivered' },
-    cancelled: { color: 'danger', icon: 'fa-times-circle', label: 'Cancelled' },
-  };
+// `hex` values match the CSS tokens in dark-theme.css
+const ORDER_STATUS = {
+    pending: { color: 'warning', hex: '#f0a63a', icon: 'fa-clock-o', label: 'Pending' },
+    processing: { color: 'info', hex: '#4cc3e8', icon: 'fa-refresh', label: 'Processing' },
+    shipped: { color: 'primary', hex: '#14abef', icon: 'fa-truck', label: 'Shipped' },
+    delivered: { color: 'success', hex: '#2fbf71', icon: 'fa-check-circle', label: 'Delivered' },
+    cancelled: { color: 'danger', hex: '#f0566a', icon: 'fa-times-circle', label: 'Cancelled' },
+};
 
-  // Mock data for charts
-  const revenueData = [
-    { month: 'Jan', revenue: 12400, orders: 45 },
-    { month: 'Feb', revenue: 15800, orders: 52 },
-    { month: 'Mar', revenue: 18900, orders: 61 },
-    { month: 'Apr', revenue: 16200, orders: 48 },
-    { month: 'May', revenue: 21500, orders: 68 },
-    { month: 'Jun', revenue: 24800, orders: 75 },
-  ];
+const CHART = {
+    accent: '#14abef',
+    info: '#4cc3e8',
+    grid: 'rgba(255, 255, 255, 0.08)',
+    axis: '#8b94a1',
+    tooltip: {
+        backgroundColor: '#0c0f14',
+        border: '1px solid rgba(255, 255, 255, 0.12)',
+        borderRadius: 6,
+    },
+};
 
-  const orderStatusData = [
-    { name: 'Pending', value: pendingOrders?.length || 12, color: '#ffc107' },
-    { name: 'Shipped', value: shippedOrders?.length || 8, color: '#007bff' },
-    { name: 'Delivered', value: deliveredOrders?.length || 25, color: '#28a745' },
-    { name: 'Processing', value: 5, color: '#17a2b8' },
-  ];
+/* -------------------------------------------------------------------------
+   Formatting + data helpers
+   ---------------------------------------------------------------------- */
 
-  const topProductsData = [
-    { name: 'Product A', sales: 45 },
-    { name: 'Product B', sales: 38 },
-    { name: 'Product C', sales: 32 },
-    { name: 'Product D', sales: 28 },
-    { name: 'Product E', sales: 22 },
-  ];
+const formatCurrency = (amount, digits = 2) =>
+    new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits: digits,
+        maximumFractionDigits: digits,
+    }).format(Number(amount) || 0);
 
-  const dailyOrdersData = [
-    { day: 'Mon', orders: 12 },
-    { day: 'Tue', orders: 19 },
-    { day: 'Wed', orders: 15 },
-    { day: 'Thu', orders: 22 },
-    { day: 'Fri', orders: 28 },
-    { day: 'Sat', orders: 18 },
-    { day: 'Sun', orders: 14 },
-  ];
+const toDate = (value) => {
+    if (!value) return null;
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? null : date;
+};
 
-  // Fetch data on mount
-  useEffect(() => {
-    dispatch(fetchOrders());
-    dispatch(fetchRecentOrders(6));
-    dispatch(fetchProducts());
-  }, [dispatch]);
+const formatDate = (value) => {
+    const date = toDate(value);
+    return date
+        ? date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+        : 'N/A';
+};
 
-  // Calculate total revenue from orders
-  const totalRevenue = useMemo(() => {
-    if (!orders || orders.length === 0) return 0;
-    return orders.reduce((sum, order) => sum + (order.total || 0), 0);
-  }, [orders]);
+const formatTime = (value) => {
+    const date = toDate(value);
+    return date ? date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : '';
+};
 
-  // Calculate low stock products
-  const lowStockProducts = useMemo(() => {
-    if (!products || products.length === 0) return 0;
-    return products.filter(p => p.quantity < 10).length;
-  }, [products]);
+const orderTotal = (order) => Number(order?.total) || 0;
 
-  // Format currency
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(amount || 0);
-  };
+const percentChange = (current, previous) =>
+    previous > 0 ? ((current - previous) / previous) * 100 : null;
 
-  // Format date
-  const formatDate = (dateString) => {
-    if (!dateString) return 'N/A';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
+/** Last 6 calendar months, oldest first. `initial()` supplies each bucket's counters. */
+const monthBuckets = (initial) => {
+    const now = new Date();
+    const buckets = [];
+    for (let i = 5; i >= 0; i -= 1) {
+        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        buckets.push({
+            key: `${d.getFullYear()}-${d.getMonth()}`,
+            month: d.toLocaleDateString('en-US', { month: 'short' }),
+            ...initial(),
+        });
+    }
+    return buckets;
+};
+
+/** Orders and revenue for the last 6 calendar months. Cancelled orders earn no revenue. */
+const buildMonthlySeries = (orders) => {
+    const buckets = monthBuckets(() => ({ revenue: 0, orders: 0 }));
+    const byKey = new Map(buckets.map((b) => [b.key, b]));
+
+    orders.forEach((order) => {
+        const date = toDate(order.orderDate);
+        const bucket = date && byKey.get(`${date.getFullYear()}-${date.getMonth()}`);
+        if (!bucket) return;
+        bucket.orders += 1;
+        if (order.orderStatus !== 'cancelled') bucket.revenue += orderTotal(order);
     });
-  };
+    return buckets;
+};
 
-  // Show loader while fetching initial data
-  if ((ordersLoading || productsLoading) && (!orders || orders.length === 0)) {
-    return <Loader />;
-  }
+/** Accepts 'Name', { name }, or an array of either. */
+const labelsOf = (value) => {
+    if (Array.isArray(value)) return value.flatMap(labelsOf);
+    const label = value && typeof value === 'object' ? value.name || value.title : value;
+    return label ? [String(label)] : [];
+};
 
-  return (
-    <div className="container-fluid">
-      {/* Statistics Cards */}
-      <Row className="mb-4">
-        <Col lg="3" md="6">
-          <Card className="card-stats">
+/** Product count, units in stock and low-stock count per category or brand. Top `limit`. */
+const buildCatalogSeries = (products, field, fallback, limit = 8) => {
+    const groups = new Map();
+    products.forEach((product) => {
+        const labels = labelsOf(product[field]);
+        const units = Number(product.quantity) || 0;
+        (labels.length > 0 ? labels : [fallback]).forEach((name) => {
+            const group = groups.get(name) || { name, products: 0, units: 0, lowStock: 0 };
+            group.products += 1;
+            group.units += units;
+            if (units < LOW_STOCK_THRESHOLD) group.lowStock += 1;
+            groups.set(name, group);
+        });
+    });
+    return [...groups.values()].sort((a, b) => b.products - a.products).slice(0, limit);
+};
+
+/** Mongo ObjectIds start with a creation timestamp, a useful fallback when there is no createdAt. */
+const objectIdDate = (id) =>
+    typeof id === 'string' && /^[0-9a-f]{24}$/i.test(id)
+        ? new Date(parseInt(id.slice(0, 8), 16) * 1000)
+        : null;
+
+const productDate = (product) =>
+    toDate(product.createdAt || product.dateAdded) || objectIdDate(product._id);
+
+const productName = (product) => product.name || product.title || 'Untitled';
+
+/** Products added per calendar month, last 6 months. */
+const buildProductSeries = (products) => {
+    const buckets = monthBuckets(() => ({ added: 0 }));
+    const byKey = new Map(buckets.map((b) => [b.key, b]));
+    products.forEach((product) => {
+        const date = productDate(product);
+        const bucket = date && byKey.get(`${date.getFullYear()}-${date.getMonth()}`);
+        if (bucket) bucket.added += 1;
+    });
+    return buckets;
+};
+
+const truncate = (text, max) => (text && text.length > max ? `${text.slice(0, max - 1)}…` : text);
+
+/* -------------------------------------------------------------------------
+   Small presentational components
+   ---------------------------------------------------------------------- */
+
+const Trend = ({ value, label }) => {
+    if (value === null || value === undefined) {
+        return <span className="text-light-2">{label || 'No prior data'}</span>;
+    }
+    const up = value >= 0;
+    return (
+        <span className={up ? 'text-success' : 'text-danger'}>
+            <i className={`fa ${up ? 'fa-arrow-up' : 'fa-arrow-down'} mr-1`} aria-hidden="true"></i>
+            {Math.abs(value).toFixed(1)}% vs last month
+        </span>
+    );
+};
+
+const StatCard = ({ icon, tone, label, value, footer }) => (
+    <Col lg="3" md="6">
+        <Card className="card-stats media-object">
             <CardBody>
-              <Row>
-                <Col xs="5">
-                  <div className="icon-big text-center circle-1 bg-primary-light2">
-                    <i className="fa fa-shopping-cart text-primary"></i>
-                  </div>
-                </Col>
-                <Col xs="7">
-                  <div className="numbers">
-                    <p className="card-category text-light-2">Total Orders</p>
-                    <CardTitle tag="h3" className="text-white">
-                      {orders?.length || 0}
-                    </CardTitle>
-                    <p className="mb-0">
-                      <span className="text-success">
-                        <i className="fa fa-arrow-up mr-1"></i>
-                        4.2%
-                      </span>
-                    </p>
-                  </div>
-                </Col>
-              </Row>
+                <Row>
+                    <Col xs="5">
+                        <div className={`icon-big text-center circle-1 bg-${tone}-light2`}>
+                            <i className={`fa ${icon} text-${tone}`} aria-hidden="true"></i>
+                        </div>
+                    </Col>
+                    <Col xs="7">
+                        <div className="numbers">
+                            <p className="card-category text-light-2">{label}</p>
+                            <CardTitle tag="h3" className="text-white">{value}</CardTitle>
+                            <p className="mb-0">{footer}</p>
+                        </div>
+                    </Col>
+                </Row>
             </CardBody>
-          </Card>
-        </Col>
+        </Card>
+    </Col>
+);
 
-        <Col lg="3" md="6">
-          <Card className="card-stats">
-            <CardBody>
-              <Row>
-                <Col xs="5">
-                  <div className="icon-big text-center circle-1 bg-success-light2">
-                    <i className="fa fa-dollar text-success"></i>
-                  </div>
-                </Col>
-                <Col xs="7">
-                  <div className="numbers">
-                    <p className="card-category text-light-2">Total Revenue</p>
-                    <CardTitle tag="h3" className="text-white">
-                      {formatCurrency(totalRevenue).replace('.00', '')}
-                    </CardTitle>
-                    <p className="mb-0">
-                      <span className="text-success">
-                        <i className="fa fa-arrow-up mr-1"></i>
-                        1.2%
-                      </span>
-                    </p>
-                  </div>
-                </Col>
-              </Row>
-            </CardBody>
-          </Card>
-        </Col>
-
-        <Col lg="3" md="6">
-          <Card className="card-stats">
-            <CardBody>
-              <Row>
-                <Col xs="5">
-                  <div className="icon-big text-center circle-1 bg-info-light2">
-                    <i className="fa fa-shopping-bag text-info"></i>
-                  </div>
-                </Col>
-                <Col xs="7">
-                  <div className="numbers">
-                    <p className="card-category text-light-2">Products</p>
-                    <CardTitle tag="h3" className="text-white">
-                      {products?.length || 0}
-                    </CardTitle>
-                    <p className="mb-0">
-                      <span className="text-warning">
-                        <i className="fa fa-exclamation-triangle mr-1"></i>
-                        {lowStockProducts} low stock
-                      </span>
-                    </p>
-                  </div>
-                </Col>
-              </Row>
-            </CardBody>
-          </Card>
-        </Col>
-
-        <Col lg="3" md="6">
-          <Card className="card-stats">
-            <CardBody>
-              <Row>
-                <Col xs="5">
-                  <div className="icon-big text-center circle-1 bg-warning-light2">
-                    <i className="fa fa-clock-o text-warning"></i>
-                  </div>
-                </Col>
-                <Col xs="7">
-                  <div className="numbers">
-                    <p className="card-category text-light-2">Pending</p>
-                    <CardTitle tag="h3" className="text-white">
-                      {pendingOrders?.length || 0}
-                    </CardTitle>
-                    <p className="mb-0">
-                      <span className="text-info">
-                        <i className="fa fa-info-circle mr-1"></i>
-                        Needs attention
-                      </span>
-                    </p>
-                  </div>
-                </Col>
-              </Row>
-            </CardBody>
-          </Card>
-        </Col>
-      </Row>
-
-      {/* Charts Row 1 */}
-      <Row className="mb-4">
-        <Col lg="8">
-          <Card className="media-object">
+const ChartCard = ({ lg, icon, title, subtitle, hasData, emptyText, children }) => (
+    <Col lg={lg}>
+        <Card className="media-object">
             <CardHeader>
-              <CardTitle tag="h4" className="mb-0">
-                <i className="fa fa-line-chart mr-2"></i>
-                Revenue & Orders Trend
-              </CardTitle>
-              <small className="text-light-2">Last 6 months performance</small>
-            </CardHeader>
-            <CardBody>
-              <ResponsiveContainer width="100%" height={300}>
-                <AreaChart data={revenueData}>
-                  <defs>
-                    <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#28a745" stopOpacity={0.8}/>
-                      <stop offset="95%" stopColor="#28a745" stopOpacity={0}/>
-                    </linearGradient>
-                    <linearGradient id="colorOrders" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#007bff" stopOpacity={0.8}/>
-                      <stop offset="95%" stopColor="#007bff" stopOpacity={0}/>
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#444" />
-                  <XAxis dataKey="month" stroke="#999" />
-                  <YAxis yAxisId="left" stroke="#28a745" />
-                  <YAxis yAxisId="right" orientation="right" stroke="#007bff" />
-                  <Tooltip 
-                    contentStyle={{ backgroundColor: '#2b2b2b', border: '1px solid #444' }}
-                    formatter={(value, name) => {
-                      if (name === 'revenue') return formatCurrency(value);
-                      return value;
-                    }}
-                  />
-                  <Legend />
-                  <Area 
-                    yAxisId="left"
-                    type="monotone" 
-                    dataKey="revenue" 
-                    stroke="#28a745" 
-                    fillOpacity={1} 
-                    fill="url(#colorRevenue)" 
-                  />
-                  <Area 
-                    yAxisId="right"
-                    type="monotone" 
-                    dataKey="orders" 
-                    stroke="#007bff" 
-                    fillOpacity={1} 
-                    fill="url(#colorOrders)" 
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            </CardBody>
-          </Card>
-        </Col>
-
-        <Col lg="4">
-          <Card className="media-object">
-            <CardHeader>
-              <CardTitle tag="h4" className="mb-0">
-                <i className="fa fa-pie-chart mr-2"></i>
-                Order Status Distribution
-              </CardTitle>
-              <small className="text-light-2">Current breakdown</small>
-            </CardHeader>
-            <CardBody>
-              <ResponsiveContainer width="100%" height={300}>
-                <PieChart>
-                  <Pie
-                    data={orderStatusData}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="value"
-                  >
-                    {orderStatusData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip contentStyle={{ backgroundColor: '#2b2b2b', border: '1px solid #444' }} />
-                </PieChart>
-              </ResponsiveContainer>
-            </CardBody>
-          </Card>
-        </Col>
-      </Row>
-
-      {/* Charts Row 2 */}
-      <Row className="mb-4">
-        <Col lg="6">
-          <Card className="media-object">
-            <CardHeader>
-              <CardTitle tag="h4" className="mb-0">
-                <i className="fa fa-bar-chart mr-2"></i>
-                Top Selling Products
-              </CardTitle>
-              <small className="text-light-2">This month's best performers</small>
-            </CardHeader>
-            <CardBody>
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={topProductsData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#444" />
-                  <XAxis dataKey="name" stroke="#999" />
-                  <YAxis stroke="#999" />
-                  <Tooltip contentStyle={{ backgroundColor: '#2b2b2b', border: '1px solid #444' }} />
-                  <Bar dataKey="sales" fill="#007bff" radius={[8, 8, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </CardBody>
-          </Card>
-        </Col>
-
-        <Col lg="6">
-          <Card className="media-object">
-            <CardHeader>
-              <CardTitle tag="h4" className="mb-0">
-                <i className="fa fa-calendar mr-2"></i>
-                Weekly Order Activity
-              </CardTitle>
-              <small className="text-light-2">Orders by day of week</small>
-            </CardHeader>
-            <CardBody>
-              <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={dailyOrdersData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#444" />
-                  <XAxis dataKey="day" stroke="#999" />
-                  <YAxis stroke="#999" />
-                  <Tooltip contentStyle={{ backgroundColor: '#2b2b2b', border: '1px solid #444' }} />
-                  <Line 
-                    type="monotone" 
-                    dataKey="orders" 
-                    stroke="#ffc107" 
-                    strokeWidth={3}
-                    dot={{ fill: '#ffc107', r: 5 }}
-                    activeDot={{ r: 8 }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </CardBody>
-          </Card>
-        </Col>
-      </Row>
-
-      {/* Order Status Overview */}
-      <Row className="mb-4">
-        <Col lg="8">
-          <Card className="media-object">
-            <CardHeader>
-              <CardTitle tag="h4" className="mb-0">
-                <i className="fa fa-bar-chart mr-2"></i>
-                Order Status Overview
-              </CardTitle>
-              <small className="text-light-2">Current order distribution</small>
-            </CardHeader>
-            <CardBody>
-              <Row>
-                <Col md="4">
-                  <div className="text-center p-3">
-                    <div className="icon-big text-center circle-1 bg-warning-light2 mx-auto mb-3">
-                      <i className="fa fa-clock-o text-warning"></i>
-                    </div>
-                    <h3 className="text-white mb-1">{pendingOrders?.length || 0}</h3>
-                    <p className="text-light-2 mb-0">Pending Orders</p>
-                  </div>
-                </Col>
-                <Col md="4">
-                  <div className="text-center p-3">
-                    <div className="icon-big text-center circle-1 bg-primary-light2 mx-auto mb-3">
-                      <i className="fa fa-truck text-primary"></i>
-                    </div>
-                    <h3 className="text-white mb-1">{shippedOrders?.length || 0}</h3>
-                    <p className="text-light-2 mb-0">Shipped Orders</p>
-                  </div>
-                </Col>
-                <Col md="4">
-                  <div className="text-center p-3">
-                    <div className="icon-big text-center circle-1 bg-success-light2 mx-auto mb-3">
-                      <i className="fa fa-check-circle text-success"></i>
-                    </div>
-                    <h3 className="text-white mb-1">{deliveredOrders?.length || 0}</h3>
-                    <p className="text-light-2 mb-0">Delivered Orders</p>
-                  </div>
-                </Col>
-              </Row>
-            </CardBody>
-          </Card>
-        </Col>
-
-        <Col lg="4">
-          <Card className="media-object">
-            <CardHeader>
-              <CardTitle tag="h4" className="mb-0">
-                <i className="fa fa-line-chart mr-2"></i>
-                Quick Stats
-              </CardTitle>
-              <small className="text-light-2">Performance metrics</small>
-            </CardHeader>
-            <CardBody>
-              <div className="mb-3 pb-3 border-bottom border-light-3">
-                <div className="d-flex justify-content-between align-items-center">
-                  <span className="text-light-1">Average Order Value</span>
-                  <span className="text-success font-weight-bold">
-                    {formatCurrency(totalRevenue / (orders?.length || 1))}
-                  </span>
-                </div>
-              </div>
-              <div className="mb-3 pb-3 border-bottom border-light-3">
-                <div className="d-flex justify-content-between align-items-center">
-                  <span className="text-light-1">Completion Rate</span>
-                  <span className="text-info font-weight-bold">
-                    {orders?.length > 0
-                      ? Math.round(
-                          ((deliveredOrders?.length || 0) / orders.length) * 100
-                        )
-                      : 0}
-                    %
-                  </span>
-                </div>
-              </div>
-              <div>
-                <div className="d-flex justify-content-between align-items-center">
-                  <span className="text-light-1">Active Products</span>
-                  <span className="text-white font-weight-bold">
-                    {products?.filter(p => p.quantity > 0).length || 0}
-                  </span>
-                </div>
-              </div>
-            </CardBody>
-          </Card>
-        </Col>
-      </Row>
-
-      {/* Recent Orders Table */}
-      <Row>
-        <Col md="12">
-          <Card className="media-object">
-            <CardHeader className="d-flex justify-content-between align-items-center">
-              <div>
                 <CardTitle tag="h4" className="mb-0">
-                  <i className="fa fa-shopping-cart mr-2"></i>
-                  Recent Orders
+                    <i className={`fa ${icon} mr-2`} aria-hidden="true"></i>
+                    {title}
                 </CardTitle>
-                <small className="text-light-2">Latest customer orders</small>
-              </div>
-              <Button
-                color="primary"
-                size="sm"
-                className="btn-round"
-                onClick={() => navigate('/admin/orders')}
-              >
-                <i className="fa fa-list mr-2"></i>
-                View All
-              </Button>
+                <small className="text-light-2">{subtitle}</small>
             </CardHeader>
             <CardBody>
-              {orders && orders.length > 0 ? (
-                <div className="table-responsive">
-                  <table className="table table-hover mb-0">
-                    <thead className="bg-secondary text-white">
-                      <tr>
-                        <th>Order #</th>
-                        <th>Customer</th>
-                        <th>Status</th>
-                        <th>Items</th>
-                        <th>Total</th>
-                        <th>Date</th>
-                        <th>Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {orders.slice(0,5).map((order) => {
-                        const statusConfig =
-                          ORDER_STATUS[order.orderStatus] || ORDER_STATUS.pending;
-                        return (
-                          <tr key={order._id}>
-                            <td>
-                              <div className="d-flex flex-column">
-                                <span className="text-white font-weight-bold">
-                                  #{order.orderNumber}
-                                </span>
-                                <code className="text-info small">
-                                  {order._id?.substring(0, 8)}
-                                </code>
-                              </div>
-                            </td>
-                            <td>
-                              <div className="d-flex flex-column">
-                                <span className="text-white">
-                                  {order.customerName || 'Guest'}
-                                </span>
-                                <small className="text-light-2">
-                                  {order.customerEmail}
-                                </small>
-                              </div>
-                            </td>
-                            <td>
-                              <Badge color={statusConfig.color} pill className="px-3">
-                                <i className={`fa ${statusConfig.icon} mr-2`}></i>
-                                {statusConfig.label}
-                              </Badge>
-                            </td>
-                            <td>
-                              <Badge color="light" pill>
-                                {order.itemsCount || order.items?.length || 0} items
-                              </Badge>
-                            </td>
-                            <td>
-                              <span className="text-success font-weight-bold">
-                                {formatCurrency(order.total)}
-                              </span>
-                            </td>
-                            <td>
-                              <div className="d-flex flex-column">
-                                <span className="text-light-1">
-                                  {formatDate(order.orderDate)}
-                                </span>
-                                <small className="text-light-2">
-                                  {new Date(order.orderDate).toLocaleTimeString(
-                                    'en-US',
-                                    {
-                                      hour: '2-digit',
-                                      minute: '2-digit',
-                                    }
-                                  )}
-                                </small>
-                              </div>
-                            </td>
-                            <td>
-                              <Button
-                                color="info"
-                                size="sm"
-                                className="btn-round"
-                                onClick={() =>
-                                  navigate(`/admin/order/view/${order._id}`)
-                                }
-                                title="View Order"
-                              >
-                                <i className="fa fa-eye"></i>
-                              </Button>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              ) : (
-                <div className="text-center py-5">
-                  <i
-                    className="fa fa-shopping-cart"
-                    style={{ fontSize: '64px', opacity: 0.3 }}
-                  ></i>
-                  <p className="text-light-2 mt-3">No recent orders found</p>
-                  <Button
-                    color="primary"
-                    onClick={() => navigate('/admin/order/new')}
-                    className="btn-round mt-3"
-                  >
-                    <i className="fa fa-plus mr-2"></i>
-                    Create First Order
-                  </Button>
-                </div>
-              )}
+                {hasData ? (
+                    <ResponsiveContainer width="100%" height={300}>
+                        {children}
+                    </ResponsiveContainer>
+                ) : (
+                    <div className="d-flex align-items-center justify-content-center text-light-2" style={{ height: 300 }}>
+                        {emptyText}
+                    </div>
+                )}
             </CardBody>
-          </Card>
-        </Col>
-      </Row>
-    </div>
-  );
+        </Card>
+    </Col>
+);
+
+/* -------------------------------------------------------------------------
+   Dashboard
+   ---------------------------------------------------------------------- */
+
+const Dashboard = () => {
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+
+    const orders = useSelector(selectAllOrders);
+    const recentOrders = useSelector(selectRecentOrders);
+    const ordersLoading = useSelector(selectOrdersLoading);
+    const products = useSelector(selectProducts);
+    const productsLoading = useSelector(selectProductsLoading);
+
+    useEffect(() => {
+        dispatch(fetchOrders());
+        dispatch(fetchRecentOrders(RECENT_ORDERS_COUNT));
+        dispatch(fetchProducts());
+    }, [dispatch]);
+
+    const orderList = useMemo(() => (Array.isArray(orders) ? orders : []), [orders]);
+    const productList = useMemo(() => (Array.isArray(products) ? products : []), [products]);
+
+    // One source of truth for every status number on the page
+    const statusCounts = useMemo(() => {
+        const counts = Object.fromEntries(Object.keys(ORDER_STATUS).map((key) => [key, 0]));
+        orderList.forEach((order) => {
+            if (counts[order.orderStatus] !== undefined) counts[order.orderStatus] += 1;
+        });
+        return counts;
+    }, [orderList]);
+
+    const monthlySeries = useMemo(() => buildMonthlySeries(orderList), [orderList]);
+
+    const categorySeries = useMemo(
+        () => buildCatalogSeries(productList, 'category', 'Uncategorized'),
+        [productList]
+    );
+    const brandSeries = useMemo(
+        () => buildCatalogSeries(productList, 'brand', 'No brand'),
+        [productList]
+    );
+    const productSeries = useMemo(() => buildProductSeries(productList), [productList]);
+    const recentProducts = useMemo(
+        () =>
+            [...productList]
+                .sort((a, b) => (productDate(b)?.getTime() || 0) - (productDate(a)?.getTime() || 0))
+                .slice(0, 5),
+        [productList]
+    );
+
+    const totalRevenue = useMemo(
+        () =>
+            orderList
+                .filter((order) => order.orderStatus !== 'cancelled')
+                .reduce((sum, order) => sum + orderTotal(order), 0),
+        [orderList]
+    );
+
+    const revenueOrderCount = orderList.length - statusCounts.cancelled;
+    const averageOrderValue = revenueOrderCount > 0 ? totalRevenue / revenueOrderCount : 0;
+    const completionRate =
+        orderList.length > 0 ? Math.round((statusCounts.delivered / orderList.length) * 100) : 0;
+
+    const lowStockCount = useMemo(
+        () => productList.filter((p) => (Number(p.quantity) || 0) < LOW_STOCK_THRESHOLD).length,
+        [productList]
+    );
+    const inStockCount = useMemo(
+        () => productList.filter((p) => (Number(p.quantity) || 0) > 0).length,
+        [productList]
+    );
+
+    // Month-over-month change comes from the real monthly buckets
+    const thisMonth = monthlySeries[monthlySeries.length - 1];
+    const lastMonth = monthlySeries[monthlySeries.length - 2];
+    const ordersTrend = percentChange(thisMonth.orders, lastMonth.orders);
+    const revenueTrend = percentChange(thisMonth.revenue, lastMonth.revenue);
+
+    // Prefer the API's "recent" list, fall back to newest-first from the full list
+    const tableOrders = useMemo(() => {
+        if (Array.isArray(recentOrders) && recentOrders.length > 0) return recentOrders;
+        return [...orderList]
+            .sort((a, b) => (toDate(b.orderDate)?.getTime() || 0) - (toDate(a.orderDate)?.getTime() || 0))
+            .slice(0, RECENT_ORDERS_COUNT);
+    }, [recentOrders, orderList]);
+
+    if ((ordersLoading || productsLoading) && orderList.length === 0) {
+        return <Loader />;
+    }
+
+    return (
+        <div className="container-fluid">
+            {/* Statistics */}
+            <Row className="mb-4">
+                <StatCard
+                    icon="fa-shopping-cart"
+                    tone="primary"
+                    label="Total Orders"
+                    value={orderList.length}
+                    footer={<Trend value={ordersTrend} />}
+                />
+                <StatCard
+                    icon="fa-dollar"
+                    tone="success"
+                    label="Total Revenue"
+                    value={formatCurrency(totalRevenue, 0)}
+                    footer={<Trend value={revenueTrend} />}
+                />
+                <StatCard
+                    icon="fa-shopping-bag"
+                    tone="info"
+                    label="Products"
+                    value={productList.length}
+                    footer={
+                        <span className={lowStockCount > 0 ? 'text-warning' : 'text-success'}>
+                            <i
+                                className={`fa ${lowStockCount > 0 ? 'fa-exclamation-triangle' : 'fa-check'} mr-1`}
+                                aria-hidden="true"
+                            ></i>
+                            {lowStockCount} low stock
+                        </span>
+                    }
+                />
+                <StatCard
+                    icon="fa-clock-o"
+                    tone="warning"
+                    label="Pending"
+                    value={statusCounts.pending}
+                    footer={
+                        <span className="text-info">
+                            <i className="fa fa-info-circle mr-1" aria-hidden="true"></i>
+                            {statusCounts.pending > 0 ? 'Needs attention' : 'All caught up'}
+                        </span>
+                    }
+                />
+            </Row>
+
+            {/* Status overview + quick stats */}
+            <Row className="mb-4">
+                <Col lg="8">
+                    <Card className="media-object">
+                        <CardHeader>
+                            <CardTitle tag="h4" className="mb-0">
+                                <i className="fa fa-tasks mr-2" aria-hidden="true"></i>
+                                Order Status Overview
+                            </CardTitle>
+                            <small className="text-light-2">Orders by fulfilment stage</small>
+                        </CardHeader>
+                        <CardBody>
+                            <Row>
+                                {['pending', 'shipped', 'delivered'].map((key) => {
+                                    const cfg = ORDER_STATUS[key];
+                                    return (
+                                        <Col md="4" key={key}>
+                                            <div className="text-center p-3">
+                                                <div className={`icon-big text-center circle-1 bg-${cfg.color}-light2 mx-auto mb-3`}>
+                                                    <i className={`fa ${cfg.icon} text-${cfg.color}`} aria-hidden="true"></i>
+                                                </div>
+                                                <h3 className="text-white mb-1">{statusCounts[key]}</h3>
+                                                <p className="text-light-2 mb-0">{cfg.label}</p>
+                                            </div>
+                                        </Col>
+                                    );
+                                })}
+                            </Row>
+                        </CardBody>
+                    </Card>
+                </Col>
+
+                <Col lg="4">
+                    <Card className="media-object">
+                        <CardHeader>
+                            <CardTitle tag="h4" className="mb-0">
+                                <i className="fa fa-bolt mr-2" aria-hidden="true"></i>
+                                Quick Stats
+                            </CardTitle>
+                            <small className="text-light-2">Performance metrics</small>
+                        </CardHeader>
+                        <CardBody>
+                            <div className="mb-3 pb-3 border-bottom border-light-3 d-flex justify-content-between align-items-center">
+                                <span className="text-light-1">Average Order Value</span>
+                                <span className="text-success font-weight-bold">{formatCurrency(averageOrderValue)}</span>
+                            </div>
+                            <div className="mb-3 pb-3 border-bottom border-light-3 d-flex justify-content-between align-items-center">
+                                <span className="text-light-1">Completion Rate</span>
+                                <span className="text-info font-weight-bold">{completionRate}%</span>
+                            </div>
+                            <div className="d-flex justify-content-between align-items-center">
+                                <span className="text-light-1">Products In Stock</span>
+                                <span className="text-white font-weight-bold">{inStockCount}</span>
+                            </div>
+                        </CardBody>
+                    </Card>
+                </Col>
+            </Row>
+
+            {/* Catalog: categories + brands */}
+            <Row className="mb-4">
+                <ChartCard
+                    lg="6"
+                    icon="fa-th-large"
+                    title="Products by Category"
+                    subtitle="Product count and units in stock, top 8"
+                    hasData={categorySeries.length > 0}
+                    emptyText="No products yet"
+                >
+                    <BarChart data={categorySeries}>
+                        <CartesianGrid strokeDasharray="3 3" stroke={CHART.grid} />
+                        <XAxis dataKey="name" stroke={CHART.axis} tickFormatter={(v) => truncate(v, 12)} />
+                        <YAxis stroke={CHART.axis} allowDecimals={false} />
+                        <Tooltip contentStyle={CHART.tooltip} cursor={{ fill: 'rgba(255, 255, 255, 0.04)' }} />
+                        <Legend />
+                        <Bar dataKey="products" name="Products" fill={CHART.accent} radius={[6, 6, 0, 0]} />
+                        <Bar dataKey="units" name="Units in stock" fill={CHART.info} radius={[6, 6, 0, 0]} />
+                    </BarChart>
+                </ChartCard>
+
+                <ChartCard
+                    lg="6"
+                    icon="fa-tags"
+                    title="Products by Brand"
+                    subtitle="Top 8 brands by product count"
+                    hasData={brandSeries.length > 0}
+                    emptyText="No products yet"
+                >
+                    <BarChart data={brandSeries} layout="vertical" margin={{ left: 8 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke={CHART.grid} horizontal={false} />
+                        <XAxis type="number" stroke={CHART.axis} allowDecimals={false} />
+                        <YAxis
+                            type="category"
+                            dataKey="name"
+                            stroke={CHART.axis}
+                            width={96}
+                            tickFormatter={(v) => truncate(v, 14)}
+                        />
+                        <Tooltip contentStyle={CHART.tooltip} cursor={{ fill: 'rgba(255, 255, 255, 0.04)' }} />
+                        <Bar dataKey="products" name="Products" fill={CHART.accent} radius={[0, 6, 6, 0]} />
+                    </BarChart>
+                </ChartCard>
+            </Row>
+
+            {/* Recent products */}
+            <Row className="mb-4">
+                <ChartCard
+                    lg="5"
+                    icon="fa-line-chart"
+                    title="Products Added"
+                    subtitle="New products per month, last 6 months"
+                    hasData={productSeries.some((m) => m.added > 0)}
+                    emptyText="No products added in the last 6 months"
+                >
+                    <LineChart data={productSeries}>
+                        <CartesianGrid strokeDasharray="3 3" stroke={CHART.grid} />
+                        <XAxis dataKey="month" stroke={CHART.axis} />
+                        <YAxis stroke={CHART.axis} allowDecimals={false} />
+                        <Tooltip contentStyle={CHART.tooltip} />
+                        <Line
+                            type="monotone"
+                            dataKey="added"
+                            name="Products added"
+                            stroke={CHART.accent}
+                            strokeWidth={3}
+                            dot={{ fill: CHART.accent, r: 4 }}
+                            activeDot={{ r: 7 }}
+                        />
+                    </LineChart>
+                </ChartCard>
+
+                <Col lg="7">
+                    <Card className="media-object">
+                        <CardHeader className="d-flex justify-content-between align-items-center">
+                            <div>
+                                <CardTitle tag="h4" className="mb-0">
+                                    <i className="fa fa-cube mr-2" aria-hidden="true"></i>
+                                    Recent Products
+                                </CardTitle>
+                                <small className="text-light-2">Newest additions to the catalog</small>
+                            </div>
+                            <Button color="primary" size="sm" className="btn-round" onClick={() => navigate('/admin/products')}>
+                                <i className="fa fa-list mr-2" aria-hidden="true"></i>
+                                View All
+                            </Button>
+                        </CardHeader>
+                        <CardBody>
+                            {recentProducts.length > 0 ? (
+                                <div className="table-responsive">
+                                    <table className="table table-hover mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th>Product</th>
+                                                <th>Category</th>
+                                                <th>Brand</th>
+                                                <th>Price</th>
+                                                <th>Stock</th>
+                                                <th>Added</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {recentProducts.map((product) => {
+                                                const qty = Number(product.quantity) || 0;
+                                                const stockColor = qty === 0 ? 'danger' : qty < LOW_STOCK_THRESHOLD ? 'warning' : 'success';
+                                                const stockLabel = qty === 0 ? 'Out of stock' : `${qty} in stock`;
+                                                const name = productName(product);
+                                                return (
+                                                    <tr key={product._id || product.id || name}>
+                                                        <td className="text-white" title={name}>{truncate(name, 30)}</td>
+                                                        <td className="text-light-1">{labelsOf(product.category).join(', ') || '\u2014'}</td>
+                                                        <td className="text-light-1">{labelsOf(product.brand).join(', ') || '\u2014'}</td>
+                                                        <td className="text-success font-weight-bold">{formatCurrency(product.price)}</td>
+                                                        <td>
+                                                            <Badge color={stockColor} pill className="px-3">{stockLabel}</Badge>
+                                                        </td>
+                                                        <td className="text-light-1">{formatDate(productDate(product))}</td>
+                                                    </tr>
+                                                );
+                                            })}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            ) : (
+                                <div className="text-center py-5">
+                                    <i className="fa fa-cube" style={{ fontSize: 64, opacity: 0.3 }} aria-hidden="true"></i>
+                                    <p className="text-light-2 mt-3">No products yet</p>
+                                    <Button color="primary" onClick={() => navigate('/admin/product/new')} className="btn-round mt-3">
+                                        <i className="fa fa-plus mr-2" aria-hidden="true"></i>
+                                        Add First Product
+                                    </Button>
+                                </div>
+                            )}
+                        </CardBody>
+                    </Card>
+                </Col>
+            </Row>
+
+            {/* Recent orders */}
+            <Row>
+                <Col md="12">
+                    <Card className="media-object">
+                        <CardHeader className="d-flex justify-content-between align-items-center">
+                            <div>
+                                <CardTitle tag="h4" className="mb-0">
+                                    <i className="fa fa-shopping-cart mr-2" aria-hidden="true"></i>
+                                    Recent Orders
+                                </CardTitle>
+                                <small className="text-light-2">Latest customer orders</small>
+                            </div>
+                            <Button color="primary" size="sm" className="btn-round" onClick={() => navigate('/admin/orders')}>
+                                <i className="fa fa-list mr-2" aria-hidden="true"></i>
+                                View All
+                            </Button>
+                        </CardHeader>
+                        <CardBody>
+                            {tableOrders.length > 0 ? (
+                                <div className="table-responsive">
+                                    <table className="table table-hover mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th>Order #</th>
+                                                <th>Customer</th>
+                                                <th>Status</th>
+                                                <th>Items</th>
+                                                <th>Total</th>
+                                                <th>Date</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {tableOrders.map((order) => {
+                                                const status = ORDER_STATUS[order.orderStatus] || ORDER_STATUS.pending;
+                                                const itemCount = order.itemsCount ?? order.items?.length ?? 0;
+                                                return (
+                                                    <tr key={order._id}>
+                                                        <td>
+                                                            <div className="d-flex flex-column">
+                                                                <span className="text-white font-weight-bold">#{order.orderNumber}</span>
+                                                                <code className="small">{order._id?.substring(0, 8)}</code>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div className="d-flex flex-column">
+                                                                <span className="text-white">{order.customerName || 'Guest'}</span>
+                                                                <small className="text-light-2">{order.customerEmail}</small>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <Badge color={status.color} pill className="px-3">
+                                                                <i className={`fa ${status.icon} mr-2`} aria-hidden="true"></i>
+                                                                {status.label}
+                                                            </Badge>
+                                                        </td>
+                                                        <td>
+                                                            <Badge color="light" pill>
+                                                                {itemCount} {itemCount === 1 ? 'item' : 'items'}
+                                                            </Badge>
+                                                        </td>
+                                                        <td>
+                                                            <span className="text-success font-weight-bold">{formatCurrency(order.total)}</span>
+                                                        </td>
+                                                        <td>
+                                                            <div className="d-flex flex-column">
+                                                                <span className="text-light-1">{formatDate(order.orderDate)}</span>
+                                                                <small className="text-light-2">{formatTime(order.orderDate)}</small>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <Button
+                                                                color="info"
+                                                                size="sm"
+                                                                className="btn-round"
+                                                                onClick={() => navigate(`/admin/order/view/${order._id}`)}
+                                                                title="View order"
+                                                                aria-label={`View order ${order.orderNumber}`}
+                                                            >
+                                                                <i className="fa fa-eye" aria-hidden="true"></i>
+                                                            </Button>
+                                                        </td>
+                                                    </tr>
+                                                );
+                                            })}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            ) : (
+                                <div className="text-center py-5">
+                                    <i className="fa fa-shopping-cart" style={{ fontSize: 64, opacity: 0.3 }} aria-hidden="true"></i>
+                                    <p className="text-light-2 mt-3">No recent orders found</p>
+                                    <Button color="primary" onClick={() => navigate('/admin/order/new')} className="btn-round mt-3">
+                                        <i className="fa fa-plus mr-2" aria-hidden="true"></i>
+                                        Create First Order
+                                    </Button>
+                                </div>
+                            )}
+                        </CardBody>
+                    </Card>
+                </Col>
+            </Row>
+        </div>
+    );
 };
 
 export default Dashboard;
