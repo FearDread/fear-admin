@@ -37,10 +37,6 @@
 }
 
 /* ---------- Base ---------- */
-html {
-    background: var(--dark-1);
-}
-
 body,
 body.theme-1 {
     background-color: var(--dark-1) !important;
