@@ -872,3 +872,230 @@ label {
         animation: none !important;
     }
 }
+
+
+/* ---------- Aurora background ----------
+   Port of the SCSS "rainbow" streaks to plain CSS, on black instead of white.
+   Markup: <div class="aurora-bg"> 25x <div class="rainbow"></div>, then
+   <div class="h"></div><div class="v"></div> </div>  (see Aurora.jsx).
+   The layer paints its own black base, so the body gradient is turned off
+   whenever .aurora-bg is on the page. */
+.aurora-bg {
+    --aurora-base: #000;
+    --aurora-blue: rgb(96 165 250);
+    --aurora-green: rgb(94 234 212);
+    --aurora-purple: rgb(192 132 252);
+    --aurora-opacity: 0.55; /* lower = calmer, higher = brighter streaks */
+
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+    background: var(--aurora-base);
+}
+
+body:has(.aurora-bg) {
+    background-color: transparent !important;
+    background-image: none !important;
+}
+
+.aurora-bg > .rainbow {
+    position: absolute;
+    top: 0;
+    width: 0;
+    height: 100vh;
+    opacity: var(--aurora-opacity);
+    transform: rotate(10deg);
+    transform-origin: top right;
+}
+/* Black glows that fade the streaks out along the bottom and left edges */
+.aurora-bg > .h {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100vw;
+    height: 0;
+    box-shadow: 0 0 50vh 40vh var(--aurora-base);
+}
+
+.aurora-bg > .v {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 100vh;
+    box-shadow: 0 0 35vw 25vw var(--aurora-base);
+}
+
+@keyframes aurora-slide {
+    from {
+        right: -25vw;
+    }
+
+    to {
+        right: 125vw;
+    }
+}
+
+.aurora-bg > .rainbow:nth-child(1) {
+    box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-green), 0 0 50px 25px var(--aurora-purple), 50px 0 50px 25px var(--aurora-blue), 130px 0 80px 40px var(--aurora-base);
+    animation: aurora-slide 44.1s linear infinite;
+    animation-delay: -1.8s;
+}
+
+.aurora-bg > .rainbow:nth-child(2) {
+    box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-purple), 0 0 50px 25px var(--aurora-green), 50px 0 50px 25px var(--aurora-blue), 130px 0 80px 40px var(--aurora-base);
+    animation: aurora-slide 43.2s linear infinite;
+    animation-delay: -3.6s;
+}
+
+.aurora-bg > .rainbow:nth-child(3) {
+    box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-green), 0 0 50px 25px var(--aurora-blue), 50px 0 50px 25px var(--aurora-purple), 130px 0 80px 40px var(--aurora-base);
+    animation: aurora-slide 42.3s linear infinite;
+    animation-delay: -5.4s;
+}
+
+.aurora-bg > .rainbow:nth-child(4) {
+    box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-blue), 0 0 50px 25px var(--aurora-purple), 50px 0 50px 25px var(--aurora-green), 130px 0 80px 40px var(--aurora-base);
+    animation: aurora-slide 41.4s linear infinite;
+    animation-delay: -7.2s;
+}
+
+.aurora-bg > .rainbow:nth-child(5) {
+    box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-purple), 0 0 50px 25px var(--aurora-blue), 50px 0 50px 25px var(--aurora-green), 130px 0 80px 40px var(--aurora-base);
+    animation: aurora-slide 40.5s linear infinite;
+    animation-delay: -9s;
+}
+
+.aurora-bg > .rainbow:nth-child(6) {
+    box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-purple), 0 0 50px 25px var(--aurora-blue), 50px 0 50px 25px var(--aurora-green), 130px 0 80px 40px var(--aurora-base);
+    animation: aurora-slide 39.6s linear infinite;
+    animation-delay: -10.8s;
+}
+
+.aurora-bg > .rainbow:nth-child(7) {
+    box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-blue), 0 0 50px 25px var(--aurora-green), 50px 0 50px 25px var(--aurora-purple), 130px 0 80px 40px var(--aurora-base);
+    animation: aurora-slide 38.7s linear infinite;
+    animation-delay: -12.6s;
+}
+
+.aurora-bg > .rainbow:nth-child(8) {
+    box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-purple), 0 0 50px 25px var(--aurora-blue), 50px 0 50px 25px var(--aurora-green), 130px 0 80px 40px var(--aurora-base);
+    animation: aurora-slide 37.8s linear infinite;
+    animation-delay: -14.4s;
+}
+
+.aurora-bg > .rainbow:nth-child(9) {
+    box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-green), 0 0 50px 25px var(--aurora-purple), 50px 0 50px 25px var(--aurora-blue), 130px 0 80px 40px var(--aurora-base);
+    animation: aurora-slide 36.9s linear infinite;
+    animation-delay: -16.2s;
+}
+
+.aurora-bg > .rainbow:nth-child(10) {
+    box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-blue), 0 0 50px 25px var(--aurora-green), 50px 0 50px 25px var(--aurora-purple), 130px 0 80px 40px var(--aurora-base);
+    animation: aurora-slide 36s linear infinite;
+    animation-delay: -18s;
+}
+
+.aurora-bg > .rainbow:nth-child(11) {
+    box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-purple), 0 0 50px 25px var(--aurora-blue), 50px 0 50px 25px var(--aurora-green), 130px 0 80px 40px var(--aurora-base);
+    animation: aurora-slide 35.1s linear infinite;
+    animation-delay: -19.8s;
+}
+
+.aurora-bg > .rainbow:nth-child(12) {
+    box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-blue), 0 0 50px 25px var(--aurora-green), 50px 0 50px 25px var(--aurora-purple), 130px 0 80px 40px var(--aurora-base);
+    animation: aurora-slide 34.2s linear infinite;
+    animation-delay: -21.6s;
+}
+
+.aurora-bg > .rainbow:nth-child(13) {
+    box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-purple), 0 0 50px 25px var(--aurora-green), 50px 0 50px 25px var(--aurora-blue), 130px 0 80px 40px var(--aurora-base);
+    animation: aurora-slide 33.3s linear infinite;
+    animation-delay: -23.4s;
+}
+
+.aurora-bg > .rainbow:nth-child(14) {
+    box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-purple), 0 0 50px 25px var(--aurora-blue), 50px 0 50px 25px var(--aurora-green), 130px 0 80px 40px var(--aurora-base);
+    animation: aurora-slide 32.4s linear infinite;
+    animation-delay: -25.2s;
+}
+
+.aurora-bg > .rainbow:nth-child(15) {
+    box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-purple), 0 0 50px 25px var(--aurora-blue), 50px 0 50px 25px var(--aurora-green), 130px 0 80px 40px var(--aurora-base);
+    animation: aurora-slide 31.5s linear infinite;
+    animation-delay: -27s;
+}
+
+.aurora-bg > .rainbow:nth-child(16) {
+    box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-green), 0 0 50px 25px var(--aurora-blue), 50px 0 50px 25px var(--aurora-purple), 130px 0 80px 40px var(--aurora-base);
+    animation: aurora-slide 30.6s linear infinite;
+    animation-delay: -28.8s;
+}
+
+.aurora-bg > .rainbow:nth-child(17) {
+    box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-green), 0 0 50px 25px var(--aurora-blue), 50px 0 50px 25px var(--aurora-purple), 130px 0 80px 40px var(--aurora-base);
+    animation: aurora-slide 29.7s linear infinite;
+    animation-delay: -30.6s;
+}
+
+.aurora-bg > .rainbow:nth-child(18) {
+    box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-purple), 0 0 50px 25px var(--aurora-blue), 50px 0 50px 25px var(--aurora-green), 130px 0 80px 40px var(--aurora-base);
+    animation: aurora-slide 28.8s linear infinite;
+    animation-delay: -32.4s;
+}
+
+.aurora-bg > .rainbow:nth-child(19) {
+    box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-purple), 0 0 50px 25px var(--aurora-green), 50px 0 50px 25px var(--aurora-blue), 130px 0 80px 40px var(--aurora-base);
+    animation: aurora-slide 27.9s linear infinite;
+    animation-delay: -34.2s;
+}
+
+.aurora-bg > .rainbow:nth-child(20) {
+    box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-purple), 0 0 50px 25px var(--aurora-blue), 50px 0 50px 25px var(--aurora-green), 130px 0 80px 40px var(--aurora-base);
+    animation: aurora-slide 27s linear infinite;
+    animation-delay: -36s;
+}
+
+.aurora-bg > .rainbow:nth-child(21) {
+    box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-blue), 0 0 50px 25px var(--aurora-green), 50px 0 50px 25px var(--aurora-purple), 130px 0 80px 40px var(--aurora-base);
+    animation: aurora-slide 26.1s linear infinite;
+    animation-delay: -37.8s;
+}
+
+.aurora-bg > .rainbow:nth-child(22) {
+    box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-green), 0 0 50px 25px var(--aurora-blue), 50px 0 50px 25px var(--aurora-purple), 130px 0 80px 40px var(--aurora-base);
+    animation: aurora-slide 25.2s linear infinite;
+    animation-delay: -39.6s;
+}
+
+.aurora-bg > .rainbow:nth-child(23) {
+    box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-purple), 0 0 50px 25px var(--aurora-blue), 50px 0 50px 25px var(--aurora-green), 130px 0 80px 40px var(--aurora-base);
+    animation: aurora-slide 24.3s linear infinite;
+    animation-delay: -41.4s;
+}
+
+.aurora-bg > .rainbow:nth-child(24) {
+    box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-blue), 0 0 50px 25px var(--aurora-green), 50px 0 50px 25px var(--aurora-purple), 130px 0 80px 40px var(--aurora-base);
+    animation: aurora-slide 23.4s linear infinite;
+    animation-delay: -43.2s;
+}
+
+.aurora-bg > .rainbow:nth-child(25) {
+    box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-purple), 0 0 50px 25px var(--aurora-blue), 50px 0 50px 25px var(--aurora-green), 130px 0 80px 40px var(--aurora-base);
+    animation: aurora-slide 22.5s linear infinite;
+    animation-delay: -45s;
+}
+
+/* ---------- Respect reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+    .aurora-bg > .rainbow {
+        display: none;
+    }
+
+    .animated, .separator-animated-border::before, .media-object::after,
+    .animated-border-box:before, .animated-border-box-glow:before {
+        animation: none !important;
+    }
+}

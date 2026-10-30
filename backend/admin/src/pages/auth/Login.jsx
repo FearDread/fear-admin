@@ -13,6 +13,7 @@ import {
   setIsAuthenticated
 } from '../../features/user/slice';
 import Spotlight from "../../components/animated/SpotLight";
+import Auora from "../../components/animated/Auora";
 
 
 export const Login = () => {
@@ -114,8 +115,8 @@ export const Login = () => {
 
   return (
     <>
-      <Spotlight />
-
+          { /* <Spotlight /> */ }
+      <Auora />
       <div className="card card-authentication1 mx-auto my-5">
         <div className="card-body">
           <div className="card-content p-2">
