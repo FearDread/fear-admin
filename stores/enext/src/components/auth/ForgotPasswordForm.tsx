@@ -1,158 +1,190 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useForgotPasswordMutation } from '@/lib/redux/api/authApi';
+import { AuthLeftPanel, RECOVERY_FEATURES } from '@/components/auth/AuthLeftPanel';
+
+const RESEND_SECONDS = 60;
 
 /**
- * Converted from ForgotPassword.jsx.
- *
- * Key changes:
- *  - `forgotPassword` thunk (+ selectUserLoading/selectUserError/selectUserSuccess
- *    selectors from the old `user/slice`) → `useForgotPasswordMutation()`,
- *    which exposes `isLoading` / `isSuccess` / `error` directly — no separate
- *    Redux selectors needed for this page's own request state.
- *  - `useNavigate` → `useRouter`; the `setTimeout` redirect to /login is kept
- *    as-is (matches original UX of an auto-redirect after showing the
- *    "email sent" confirmation).
- *  - Image path given leading `/` per project convention
- *    (`/assets/images/icons/forgot-2.png`).
+ * Anti-enumeration: the UI shows the same "check your inbox" state whether or
+ * not the email exists. A 404 from the backend is treated as success; only
+ * real failures (network / 5xx / 429) surface as errors.
  */
 export function ForgotPasswordForm() {
-  const router = useRouter();
-  const [forgotPassword, { isLoading, error: mutationError, isSuccess }] = useForgotPasswordMutation();
+  const [forgotPassword, { isLoading }] = useForgotPasswordMutation();
 
   const [email, setEmail] = useState('');
-  const [submitted, setSubmitted] = useState(false);
-
-  const error = (mutationError as any)?.data?.message ?? null;
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email) return;
-
-    try {
-      await forgotPassword({ email }).unwrap();
-      setSubmitted(true);
-      setTimeout(() => {
-        router.push('/login');
-      }, 5000);
-    } catch {
-      // error surfaced via the mutation hook's `error` above
-    }
-  };
+  const [fieldError, setFieldError] = useState('');
+  const [serverError, setServerError] = useState('');
+  const [sentTo, setSentTo] = useState<string | null>(null);
+  const [cooldown, setCooldown] = useState(0);
 
   useEffect(() => {
-    // No-op placeholder retained from the original effect that cleared
-    // errors on success — RTK Query resets `error` automatically on a new
-    // request, so there's nothing to dispatch here anymore.
-  }, [isSuccess]);
+    if (cooldown <= 0) return;
+    const t = setTimeout(() => setCooldown((c) => c - 1), 1000);
+    return () => clearTimeout(t);
+  }, [cooldown]);
+
+  const send = async (address: string) => {
+    setServerError('');
+    try {
+      await forgotPassword({ email: address }).unwrap();
+    } catch (err) {
+      const status = (err as { status?: number })?.status;
+      if (status !== 404) {
+        setServerError(
+          status === 429
+            ? 'Too many requests. Please wait a few minutes and try again.'
+            : 'We could not send the email right now. Please try again.',
+        );
+        return;
+      }
+    }
+    setSentTo(address);
+    setCooldown(RESEND_SECONDS);
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const value = email.trim().toLowerCase();
+    if (!value) return setFieldError('Email is required');
+    if (!/\S+@\S+\.\S+/.test(value)) return setFieldError('Email is invalid');
+    setFieldError('');
+    send(value);
+  };
 
   return (
     <>
-      <section className="py-3 border-bottom d-none d-md-flex">
-        <div className="container">
-          <div className="page-breadcrumb d-flex align-items-center">
-            <h3 className="breadcrumb-title pe-3">Forgot Password</h3>
-            <div className="ms-auto">
-              <nav aria-label="breadcrumb">
-                <ol className="breadcrumb mb-0 p-0">
-                  <li className="breadcrumb-item">
-                    <Link href="/">
-                      <i className="bx bx-home-alt"></i> Home
-                    </Link>
-                  </li>
-                  <li className="breadcrumb-item active" aria-current="page">
-                    Reset Password
-                  </li>
-                </ol>
-              </nav>
-            </div>
-          </div>
-        </div>
-      </section>
+      <div className="auth-page">
+        <AuthLeftPanel
+          ghostLabel="HELP"
+          heading={
+            <>
+              Locked
+              <br />
+              <span>Out?</span>
+            </>
+          }
+          subtext="It happens to the best collectors. Enter your email and we'll send a link to get you back to your stash."
+          features={RECOVERY_FEATURES}
+          footLabel="Need a human?"
+          stats={[
+            { value: '24/7', label: 'Support' },
+            { value: '30', label: 'Day Returns' },
+            { value: 'NM', label: 'Quality' },
+          ]}
+        />
 
-      <section>
-        <div className="container">
-          <div className="authentication-forgot d-flex align-items-center justify-content-center">
-            <div className="card forgot-box">
-              <div className="card-body">
-                <div className="p-4 rounded border">
-                  <div className="text-center">
-                    <img src="/assets/images/icons/forgot-2.png" width={120} alt="Forgot Password" />
+        <main className="auth-right">
+          <div className="auth-form-wrap ct-form-panel">
+            {sentTo ? (
+              <>
+                <span className="auth-form-eyebrow">Email sent</span>
+                <h1 className="auth-form-title">
+                  Check Your <span>Inbox</span>
+                </h1>
+                <div className="auth-alert success" role="status" style={{ marginTop: '1.25rem' }}>
+                  <span className="auth-alert-icon">✓</span>
+                  <span>
+                    If an account exists for <strong>{sentTo}</strong>, a reset link is on its way. Check your spam
+                    folder if it doesn&apos;t show up within a few minutes.
+                  </span>
+                </div>
+
+                {serverError && (
+                  <div className="auth-alert error" role="alert">
+                    <span className="auth-alert-icon">⚠</span>
+                    <span style={{ flex: 1 }}>{serverError}</span>
+                  </div>
+                )}
+
+                <button
+                  type="button"
+                  className="auth-submit"
+                  disabled={isLoading || cooldown > 0}
+                  onClick={() => send(sentTo)}
+                >
+                  {isLoading ? 'Sending…' : cooldown > 0 ? `Resend in ${cooldown}s` : 'Resend Email'}
+                </button>
+
+                <div className="auth-form-foot">
+                  Wrong address?{' '}
+                  <a
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setSentTo(null);
+                      setCooldown(0);
+                    }}
+                  >
+                    Use a different email
+                  </a>
+                  <br />
+                  <Link href="/login">← Back to Sign In</Link>
+                </div>
+              </>
+            ) : (
+              <>
+                <span className="auth-form-eyebrow">Account recovery</span>
+                <h1 className="auth-form-title">
+                  Forgot <span>Password?</span>
+                </h1>
+                <p className="auth-form-sub">
+                  Remembered it? <Link href="/login">Sign in →</Link>
+                </p>
+                <br />
+
+                {serverError && (
+                  <div className="auth-alert error" role="alert">
+                    <span className="auth-alert-icon">⚠</span>
+                    <span style={{ flex: 1 }}>{serverError}</span>
+                  </div>
+                )}
+
+                <form onSubmit={handleSubmit} noValidate>
+                  <div className="auth-field">
+                    <label htmlFor="fp-email" className="auth-label">
+                      Email Address <span className="auth-label-req">*</span>
+                    </label>
+                    <input
+                      id="fp-email"
+                      type="email"
+                      className={`auth-input${fieldError ? ' error' : ''}`}
+                      placeholder="you@example.com"
+                      value={email}
+                      onChange={(e) => {
+                        setEmail(e.target.value);
+                        if (fieldError) setFieldError('');
+                      }}
+                      disabled={isLoading}
+                      autoComplete="email"
+                      autoFocus
+                    />
+                    {fieldError && <div className="auth-field-error">{fieldError}</div>}
                   </div>
 
-                  {!submitted ? (
-                    <>
-                      <h4 className="mt-5 font-weight-bold">Forgot Password?</h4>
-                      <p>Enter your registered email ID to reset the password</p>
+                  <button type="submit" className="auth-submit" disabled={isLoading}>
+                    {isLoading ? (
+                      <>
+                        <div className="auth-spinner" /> Sending…
+                      </>
+                    ) : (
+                      <>✉ &nbsp; Send Reset Link</>
+                    )}
+                  </button>
+                </form>
 
-                      {error && (
-                        <div className="alert alert-danger" role="alert">
-                          {error}
-                        </div>
-                      )}
-
-                      <form onSubmit={handleSubmit}>
-                        <div className="my-4">
-                          <label className="form-label">Email id</label>
-                          <input
-                            type="email"
-                            className="form-control form-control-lg"
-                            placeholder="example@user.com"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            disabled={isLoading}
-                            required
-                          />
-                        </div>
-
-                        <div className="d-grid gap-2">
-                          <button type="submit" className="btn btn-dark btn-ecomm" disabled={isLoading || !email}>
-                            {isLoading ? (
-                              <>
-                                <span
-                                  className="spinner-border spinner-border-sm me-2"
-                                  role="status"
-                                  aria-hidden="true"
-                                ></span>
-                                Sending...
-                              </>
-                            ) : (
-                              'Send'
-                            )}
-                          </button>
-
-                          <Link href="/login" className="btn btn-light btn-ecomm">
-                            <i className="bx bx-arrow-back me-1"></i>Back to Login
-                          </Link>
-                        </div>
-                      </form>
-                    </>
-                  ) : (
-                    <div className="text-center">
-                      <div className="alert alert-success mt-4" role="alert">
-                        <i className="bx bx-check-circle fs-1"></i>
-                        <h5 className="mt-3">Email Sent Successfully!</h5>
-                        <p>
-                          We&apos;ve sent password reset instructions to <strong>{email}</strong>. Please check your
-                          inbox and follow the link to reset your password.
-                        </p>
-                        <p className="text-muted small">Redirecting to login in 5 seconds...</p>
-                      </div>
-
-                      <Link href="/login" className="btn btn-light btn-ecomm mt-3">
-                        <i className="bx bx-arrow-back me-1"></i>Back to Login
-                      </Link>
-                    </div>
-                  )}
+                <div className="auth-form-foot">
+                  <Link href="/register">Create an account</Link> · <Link href="/contact">Contact support</Link>
                 </div>
-              </div>
-            </div>
+              </>
+            )}
           </div>
-        </div>
-      </section>
+        </main>
+      </div>
+      <div className="auth-animated-border" />
     </>
   );
 }

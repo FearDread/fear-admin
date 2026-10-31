@@ -23,11 +23,8 @@ interface AuthLeftPanelProps {
 }
 
 /**
- * Static marketing/brand panel shown to the left of the login & register
- * forms. Pulled out of Login.jsx / Register.jsx since both pages rendered
- * near-identical markup with only copy differing — this is a server
- * component (no hooks/handlers), so it costs nothing to render on the
- * server and keeps the interactive forms as small client islands.
+ * Static marketing/brand panel shown to the left of the login, register and
+ * account-recovery forms. Server component (no hooks/handlers).
  */
 export function AuthLeftPanel({
   ghostLabel,
@@ -86,7 +83,7 @@ export function AuthLeftPanel({
 export const LOGIN_FEATURES: AuthFeature[] = [
   { icon: '📦', title: 'Free Shipping', desc: 'On all orders over $49. No tricks, no asterisks.', accent: T.red },
   { icon: '🧤', title: 'Mint Condition', desc: 'Every comic arrives bagged, boarded, near-mint.', accent: T.orange },
-  { icon: '🔄', title: '30-Day Returns', desc: "Regret your choices? So do we. Send it back.", accent: T.teal },
+  { icon: '🔄', title: '30-Day Returns', desc: 'Regret your choices? So do we. Send it back.', accent: T.teal },
   { icon: '💬', title: '24/7 Support', desc: "We can't sleep either. Send us a message.", accent: T.red },
 ];
 
@@ -95,4 +92,10 @@ export const REGISTER_FEATURES: AuthFeature[] = [
   { icon: '🏷️', title: 'Member Discounts', desc: 'Subscriber-only pricing on select titles.', accent: T.orange },
   { icon: '📋', title: 'Order Tracking', desc: 'Know exactly where your books are at all times.', accent: T.teal },
   { icon: '🎁', title: 'Wishlist', desc: 'Save items, share lists, get notified on drops.', accent: T.red },
+];
+
+export const RECOVERY_FEATURES: AuthFeature[] = [
+  { icon: '📧', title: 'Check Your Inbox', desc: 'Reset links go to the email on your account.', accent: T.red },
+  { icon: '⏱️', title: 'Links Expire', desc: 'For your security, reset links are short-lived.', accent: T.orange },
+  { icon: '🔒', title: 'Private by Default', desc: 'We never confirm whether an email has an account.', accent: T.teal },
 ];

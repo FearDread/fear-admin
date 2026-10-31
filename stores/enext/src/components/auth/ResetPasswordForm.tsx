@@ -1,152 +1,208 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useVerifyResetTokenQuery, useResetPasswordMutation } from '@/lib/redux/api/authApi';
+import { AuthLeftPanel, RECOVERY_FEATURES } from '@/components/auth/AuthLeftPanel';
+import { calcStrength } from '@/lib/auth/passwordStrength';
+import { T } from '@/components/styles';
 
 interface ResetPasswordFormProps {
   token: string;
 }
 
-/**
- * Converted from ResetPassword.jsx.
- *
- * Key changes:
- *  - Direct `axios.get`/`axios.post` calls → `useVerifyResetTokenQuery(token)`
- *    (runs automatically on mount, same as the original `useEffect`) and
- *    `useResetPasswordMutation()`.
- *  - Routes rebased from `/api/users/verify-reset-token/:token` and
- *    `/api/users/reset-password/:token` onto `/fear/api/auth/...` to match
- *    the apiSlice's relative `baseUrl` + this feature's `authApi` naming —
- *    confirm the real Express route names match once the backend is checked.
- *  - `useParams` (react-router) → the dynamic segment is now read server-side
- *    in `page.tsx` and passed down as a prop, since `useParams` from
- *    `next/navigation` returns different shapes and this keeps the token
- *    available even before hydration.
- *  - On successful reset, redirects to `/login?message=...` instead of
- *    passing a `location.state` object (no equivalent in the App Router).
- */
 export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
   const router = useRouter();
 
-  const { data: tokenCheck, isLoading: isVerifying, isError: tokenInvalid } = useVerifyResetTokenQuery(token);
+  const { data: tokenCheck, isLoading: isVerifying, isError } = useVerifyResetTokenQuery(token);
   const [resetPassword, { isLoading: isSubmitting, error: mutationError }] = useResetPasswordMutation();
 
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [localError, setLocalError] = useState('');
+  const [confirm, setConfirm] = useState('');
+  const [showPw, setShowPw] = useState(false);
+  const [errors, setErrors] = useState<{ password?: string; confirm?: string }>({});
 
-  const serverError = (mutationError as any)?.data?.message ?? null;
-  const error = localError || serverError;
+  const strength = useMemo(() => calcStrength(password), [password]);
+  const tokenInvalid = isError || tokenCheck?.valid === false;
+  const serverError = (mutationError as { data?: { message?: string } } | undefined)?.data?.message ?? null;
+  const match = Boolean(confirm) && password === confirm;
 
-  useEffect(() => {
-    if (tokenInvalid) {
-      const timer = setTimeout(() => router.push('/forgot-password'), 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [tokenInvalid, router]);
+  const validate = () => {
+    const e: typeof errors = {};
+    if (!password) e.password = 'Password is required';
+    else if (password.length < 8) e.password = 'Minimum 8 characters';
+    else if (strength.score < 3) e.password = 'Password is too weak';
+    if (!confirm) e.confirm = 'Please confirm your password';
+    else if (password !== confirm) e.confirm = 'Passwords do not match';
+    setErrors(e);
+    return Object.keys(e).length === 0;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLocalError('');
-
-    if (password !== confirmPassword) {
-      setLocalError('Passwords do not match');
-      return;
-    }
-    if (password.length < 8) {
-      setLocalError('Password must be at least 8 characters');
-      return;
-    }
-
+    if (!validate()) return;
     try {
       await resetPassword({ token, password }).unwrap();
-      const params = new URLSearchParams({ message: 'Password reset successfully. Please login.' });
-      router.push(`/login?${params.toString()}`);
+      const params = new URLSearchParams({ message: 'Password reset successfully. Please sign in.' });
+      router.replace(`/login?${params.toString()}`);
     } catch {
-      // error surfaced via `mutationError` above
+      // surfaced via mutationError
     }
   };
 
-  if (isVerifying) {
-    return <div>Verifying reset link...</div>;
-  }
-
   return (
     <>
-      <section className="py-3 border-bottom d-none d-md-flex">
-        <div className="container">
-          <div className="page-breadcrumb d-flex align-items-center">
-            <h3 className="breadcrumb-title pe-3">Forgot Password</h3>
-            <div className="ms-auto">
-              <nav aria-label="breadcrumb">
-                <ol className="breadcrumb mb-0 p-0">
-                  <li className="breadcrumb-item">
-                    <Link href="/">
-                      <i className="bx bx-home-alt"></i> Home
-                    </Link>
-                  </li>
-                  <li className="breadcrumb-item active" aria-current="page">
-                    Reset Password
-                  </li>
-                </ol>
-              </nav>
-            </div>
-          </div>
-        </div>
-      </section>
+      <div className="auth-page">
+        <AuthLeftPanel
+          ghostLabel="RESET"
+          heading={
+            <>
+              Fresh
+              <br />
+              <span>Start.</span>
+            </>
+          }
+          subtext="Pick a strong password you haven't used elsewhere, and you'll be back to hunting back issues in no time."
+          features={RECOVERY_FEATURES}
+          footLabel="Password tips"
+          stats={[
+            { value: '8+', label: 'Characters' },
+            { value: 'Aa1', label: 'Mixed' },
+            { value: '!@#', label: 'Symbols' },
+          ]}
+        />
 
-      <section>
-        <div className="container">
-          <div className="authentication-forgot d-flex align-items-center justify-content-center">
-            <div className="card forgot-box">
-              <div className="card-body">
-                <div className="p-4 rounded border">
-                  <div className="text-center">
-                    <img src="/assets/images/icons/forgot-2.png" width={120} alt="Forgot Password" />
+        <main className="auth-right">
+          <div className="auth-form-wrap ct-form-panel">
+            {isVerifying ? (
+              <div style={{ textAlign: 'center', padding: '3rem 0' }}>
+                <div className="auth-spinner" style={{ margin: '0 auto 1rem' }} />
+                <span className="auth-form-eyebrow">Verifying reset link…</span>
+              </div>
+            ) : tokenInvalid ? (
+              <>
+                <span className="auth-form-eyebrow">Link problem</span>
+                <h1 className="auth-form-title">
+                  Link <span>Expired</span>
+                </h1>
+                <div className="auth-alert error" role="alert" style={{ marginTop: '1.25rem' }}>
+                  <span className="auth-alert-icon">⚠</span>
+                  <span>This reset link is invalid or has expired. Reset links can only be used once.</span>
+                </div>
+                <Link href="/forgot-password" className="auth-submit" style={{ textDecoration: 'none' }}>
+                  Request a New Link
+                </Link>
+                <div className="auth-form-foot">
+                  <Link href="/login">← Back to Sign In</Link>
+                </div>
+              </>
+            ) : (
+              <>
+                <span className="auth-form-eyebrow">Account recovery</span>
+                <h1 className="auth-form-title">
+                  New <span>Password</span>
+                </h1>
+                <br />
+
+                {serverError && (
+                  <div className="auth-alert error" role="alert">
+                    <span className="auth-alert-icon">⚠</span>
+                    <span style={{ flex: 1 }}>{serverError}</span>
+                  </div>
+                )}
+
+                <form onSubmit={handleSubmit} noValidate>
+                  <div className="auth-field">
+                    <label htmlFor="rp-pw" className="auth-label">
+                      New Password <span className="auth-label-req">*</span>
+                    </label>
+                    <div className="auth-pw-wrap">
+                      <input
+                        id="rp-pw"
+                        type={showPw ? 'text' : 'password'}
+                        className={`auth-input${errors.password ? ' error' : ''}`}
+                        placeholder="Choose a strong password"
+                        value={password}
+                        onChange={(e) => {
+                          setPassword(e.target.value);
+                          if (errors.password) setErrors((p) => ({ ...p, password: undefined }));
+                        }}
+                        disabled={isSubmitting}
+                        autoComplete="new-password"
+                        autoFocus
+                      />
+                      <button
+                        type="button"
+                        className="auth-pw-toggle"
+                        onClick={() => setShowPw((s) => !s)}
+                        disabled={isSubmitting}
+                        aria-label={showPw ? 'Hide password' : 'Show password'}
+                      >
+                        {showPw ? '🙈' : '👁'}
+                      </button>
+                    </div>
+                    {password && (
+                      <div className="auth-pw-strength">
+                        <div className="auth-pw-bars">
+                          {[1, 2, 3, 4, 5].map((n) => (
+                            <div
+                              key={n}
+                              className="auth-pw-bar"
+                              style={strength.score >= n ? { background: strength.color } : {}}
+                            />
+                          ))}
+                        </div>
+                        <span className="auth-pw-label" style={{ color: strength.color }}>
+                          Strength: {strength.label}
+                        </span>
+                      </div>
+                    )}
+                    {errors.password && <div className="auth-field-error">{errors.password}</div>}
+                    <p className="auth-pw-hint">Use 8+ characters with letters, numbers &amp; symbols</p>
                   </div>
 
-                  <h4 className="mt-5 font-weight-bold">Forgot Password?</h4>
-                  <p>Enter your registered email ID to reset the password</p>
-
-                  {error && (
-                    <div className="alert alert-danger" role="alert">
-                      {tokenInvalid ? 'Invalid or expired reset link' : error}
-                    </div>
-                  )}
-
-                  <form onSubmit={handleSubmit}>
-                    <h2>Reset Password</h2>
-
+                  <div className="auth-field">
+                    <label htmlFor="rp-confirm" className="auth-label">
+                      Confirm Password <span className="auth-label-req">*</span>
+                      {match && <span style={{ color: T.teal, marginLeft: '.5rem' }}>✓ Match</span>}
+                    </label>
                     <input
-                      type="password"
-                      placeholder="New Password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      disabled={tokenInvalid || isSubmitting}
-                      required
+                      id="rp-confirm"
+                      type={showPw ? 'text' : 'password'}
+                      className={`auth-input${errors.confirm ? ' error' : ''}`}
+                      placeholder="Repeat your password"
+                      value={confirm}
+                      onChange={(e) => {
+                        setConfirm(e.target.value);
+                        if (errors.confirm) setErrors((p) => ({ ...p, confirm: undefined }));
+                      }}
+                      disabled={isSubmitting}
+                      autoComplete="new-password"
                     />
+                    {errors.confirm && <div className="auth-field-error">{errors.confirm}</div>}
+                  </div>
 
-                    <input
-                      type="password"
-                      placeholder="Confirm Password"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      disabled={tokenInvalid || isSubmitting}
-                      required
-                    />
+                  <button type="submit" className="auth-submit" disabled={isSubmitting}>
+                    {isSubmitting ? (
+                      <>
+                        <div className="auth-spinner" /> Resetting…
+                      </>
+                    ) : (
+                      <>🔑 &nbsp; Reset Password</>
+                    )}
+                  </button>
+                </form>
 
-                    <button type="submit" disabled={tokenInvalid || isSubmitting}>
-                      {isSubmitting ? 'Resetting...' : 'Reset Password'}
-                    </button>
-                  </form>
+                <div className="auth-form-foot">
+                  <Link href="/login">← Back to Sign In</Link>
                 </div>
-              </div>
-            </div>
+              </>
+            )}
           </div>
-        </div>
-      </section>
+        </main>
+      </div>
+      <div className="auth-animated-border" />
     </>
   );
 }
