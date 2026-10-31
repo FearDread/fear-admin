@@ -12,8 +12,7 @@ import {
   setCurrentUser,
   setIsAuthenticated
 } from '../../features/user/slice';
-import Spotlight from "../../components/animated/SpotLight";
-import Auora from "../../components/animated/Auora";
+import PipelineBackground from "../../components/animated/PipelineBackground";
 
 
 export const Login = () => {
@@ -24,8 +23,8 @@ export const Login = () => {
   // Redux selectors
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const loading = useSelector(selectUserLoading);
-  const error = useSelector(selectUserError);
-  const rememberMe = useSelector(selectRememberMe);
+  //const error = useSelector(selectUserError);
+  //const rememberMe = useSelector(selectRememberMe);
 
   // Local form state
   const [formData, setFormData] = useState({
@@ -116,8 +115,9 @@ export const Login = () => {
   return (
     <>
           { /* <Spotlight /> */ }
-      <Auora />
-      <div className="card card-authentication1 mx-auto my-5">
+          {/*<SwirlBackground particleCount={700} speed={0.1} background="#000" />*/}
+          <PipelineBackground pipeCount={100} background="#000" />
+          <div className="card card-authentication1 mx-auto my-5" style={{ top: '100px' }} >
         <div className="card-body">
           <div className="card-content p-2">
             <div className="text-center fear-logo">

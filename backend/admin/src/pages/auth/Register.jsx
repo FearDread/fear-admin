@@ -12,7 +12,7 @@ import {
   loginWithGoogle,
   loginWithFacebook,
 } from "../../features/user/slice";
-import Spotlight from "../../components/animated/SpotLight";
+import AuroraBackground from "../../components/animated/AuroraBackground";
 
 export const Register = () => {
   const dispatch = useDispatch();
@@ -21,9 +21,9 @@ export const Register = () => {
   // Redux selectors
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const loading = useSelector(selectUserLoading);
-  const error = useSelector(selectUserError);
-  const success = useSelector(selectUserSuccess);
-  const currentUser = useSelector(selectCurrentUser);
+ // const error = useSelector(selectUserError);
+ // const success = useSelector(selectUserSuccess);
+ // const currentUser = useSelector(selectCurrentUser);
 
   // Local form state
   const [formData, setFormData] = useState({
@@ -192,11 +192,11 @@ export const Register = () => {
 
   return (
     <>
-      <Spotlight />
+          <AuroraBackground rayCount={200} speed={0.1} background="#000000" />
       <div className="container">
         <div className="row">
 
-          <div className="card card-authentication1 mx-auto my-4">
+                  <div className="card card-authentication1 mx-auto my-4" style={{ top: '100px' }} >
             <div className="card-body">
               <div className="card-content p-2">
                 <div className="text-center fear-logo">
