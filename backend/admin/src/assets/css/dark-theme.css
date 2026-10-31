@@ -874,6 +874,7 @@ label {
 }
 
 
+
 /* ---------- Aurora background ----------
    Port of the SCSS "rainbow" streaks to plain CSS, on black instead of white.
    Markup: <div class="aurora-bg"> 25x <div class="rainbow"></div>, then
@@ -882,10 +883,11 @@ label {
    whenever .aurora-bg is on the page. */
 .aurora-bg {
     --aurora-base: #000;
-    --aurora-blue: rgb(96 165 250);
-    --aurora-green: rgb(94 234 212);
-    --aurora-purple: rgb(192 132 252);
-    --aurora-opacity: 0.55; /* lower = calmer, higher = brighter streaks */
+    --aurora-blue: rgb(29 78 216);
+    --aurora-green: rgb(15 118 110);
+    --aurora-purple: rgb(126 34 206);
+    --aurora-opacity: 0.7; /* lower = calmer, higher = brighter streaks */
+    --aurora-time: 120s; /* one full pass; bigger = slower (was 45s) */
 
     position: fixed;
     inset: 0;
@@ -940,152 +942,152 @@ body:has(.aurora-bg) {
 
 .aurora-bg > .rainbow:nth-child(1) {
     box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-green), 0 0 50px 25px var(--aurora-purple), 50px 0 50px 25px var(--aurora-blue), 130px 0 80px 40px var(--aurora-base);
-    animation: aurora-slide 44.1s linear infinite;
-    animation-delay: -1.8s;
+    animation: aurora-slide calc(var(--aurora-time) - var(--aurora-time) / 50 * 1) linear infinite;
+    animation-delay: calc(var(--aurora-time) / -25 * 1);
 }
 
 .aurora-bg > .rainbow:nth-child(2) {
     box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-purple), 0 0 50px 25px var(--aurora-green), 50px 0 50px 25px var(--aurora-blue), 130px 0 80px 40px var(--aurora-base);
-    animation: aurora-slide 43.2s linear infinite;
-    animation-delay: -3.6s;
+    animation: aurora-slide calc(var(--aurora-time) - var(--aurora-time) / 50 * 2) linear infinite;
+    animation-delay: calc(var(--aurora-time) / -25 * 2);
 }
 
 .aurora-bg > .rainbow:nth-child(3) {
     box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-green), 0 0 50px 25px var(--aurora-blue), 50px 0 50px 25px var(--aurora-purple), 130px 0 80px 40px var(--aurora-base);
-    animation: aurora-slide 42.3s linear infinite;
-    animation-delay: -5.4s;
+    animation: aurora-slide calc(var(--aurora-time) - var(--aurora-time) / 50 * 3) linear infinite;
+    animation-delay: calc(var(--aurora-time) / -25 * 3);
 }
 
 .aurora-bg > .rainbow:nth-child(4) {
     box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-blue), 0 0 50px 25px var(--aurora-purple), 50px 0 50px 25px var(--aurora-green), 130px 0 80px 40px var(--aurora-base);
-    animation: aurora-slide 41.4s linear infinite;
-    animation-delay: -7.2s;
+    animation: aurora-slide calc(var(--aurora-time) - var(--aurora-time) / 50 * 4) linear infinite;
+    animation-delay: calc(var(--aurora-time) / -25 * 4);
 }
 
 .aurora-bg > .rainbow:nth-child(5) {
     box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-purple), 0 0 50px 25px var(--aurora-blue), 50px 0 50px 25px var(--aurora-green), 130px 0 80px 40px var(--aurora-base);
-    animation: aurora-slide 40.5s linear infinite;
-    animation-delay: -9s;
+    animation: aurora-slide calc(var(--aurora-time) - var(--aurora-time) / 50 * 5) linear infinite;
+    animation-delay: calc(var(--aurora-time) / -25 * 5);
 }
 
 .aurora-bg > .rainbow:nth-child(6) {
     box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-purple), 0 0 50px 25px var(--aurora-blue), 50px 0 50px 25px var(--aurora-green), 130px 0 80px 40px var(--aurora-base);
-    animation: aurora-slide 39.6s linear infinite;
-    animation-delay: -10.8s;
+    animation: aurora-slide calc(var(--aurora-time) - var(--aurora-time) / 50 * 6) linear infinite;
+    animation-delay: calc(var(--aurora-time) / -25 * 6);
 }
 
 .aurora-bg > .rainbow:nth-child(7) {
     box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-blue), 0 0 50px 25px var(--aurora-green), 50px 0 50px 25px var(--aurora-purple), 130px 0 80px 40px var(--aurora-base);
-    animation: aurora-slide 38.7s linear infinite;
-    animation-delay: -12.6s;
+    animation: aurora-slide calc(var(--aurora-time) - var(--aurora-time) / 50 * 7) linear infinite;
+    animation-delay: calc(var(--aurora-time) / -25 * 7);
 }
 
 .aurora-bg > .rainbow:nth-child(8) {
     box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-purple), 0 0 50px 25px var(--aurora-blue), 50px 0 50px 25px var(--aurora-green), 130px 0 80px 40px var(--aurora-base);
-    animation: aurora-slide 37.8s linear infinite;
-    animation-delay: -14.4s;
+    animation: aurora-slide calc(var(--aurora-time) - var(--aurora-time) / 50 * 8) linear infinite;
+    animation-delay: calc(var(--aurora-time) / -25 * 8);
 }
 
 .aurora-bg > .rainbow:nth-child(9) {
     box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-green), 0 0 50px 25px var(--aurora-purple), 50px 0 50px 25px var(--aurora-blue), 130px 0 80px 40px var(--aurora-base);
-    animation: aurora-slide 36.9s linear infinite;
-    animation-delay: -16.2s;
+    animation: aurora-slide calc(var(--aurora-time) - var(--aurora-time) / 50 * 9) linear infinite;
+    animation-delay: calc(var(--aurora-time) / -25 * 9);
 }
 
 .aurora-bg > .rainbow:nth-child(10) {
     box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-blue), 0 0 50px 25px var(--aurora-green), 50px 0 50px 25px var(--aurora-purple), 130px 0 80px 40px var(--aurora-base);
-    animation: aurora-slide 36s linear infinite;
-    animation-delay: -18s;
+    animation: aurora-slide calc(var(--aurora-time) - var(--aurora-time) / 50 * 10) linear infinite;
+    animation-delay: calc(var(--aurora-time) / -25 * 10);
 }
 
 .aurora-bg > .rainbow:nth-child(11) {
     box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-purple), 0 0 50px 25px var(--aurora-blue), 50px 0 50px 25px var(--aurora-green), 130px 0 80px 40px var(--aurora-base);
-    animation: aurora-slide 35.1s linear infinite;
-    animation-delay: -19.8s;
+    animation: aurora-slide calc(var(--aurora-time) - var(--aurora-time) / 50 * 11) linear infinite;
+    animation-delay: calc(var(--aurora-time) / -25 * 11);
 }
 
 .aurora-bg > .rainbow:nth-child(12) {
     box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-blue), 0 0 50px 25px var(--aurora-green), 50px 0 50px 25px var(--aurora-purple), 130px 0 80px 40px var(--aurora-base);
-    animation: aurora-slide 34.2s linear infinite;
-    animation-delay: -21.6s;
+    animation: aurora-slide calc(var(--aurora-time) - var(--aurora-time) / 50 * 12) linear infinite;
+    animation-delay: calc(var(--aurora-time) / -25 * 12);
 }
 
 .aurora-bg > .rainbow:nth-child(13) {
     box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-purple), 0 0 50px 25px var(--aurora-green), 50px 0 50px 25px var(--aurora-blue), 130px 0 80px 40px var(--aurora-base);
-    animation: aurora-slide 33.3s linear infinite;
-    animation-delay: -23.4s;
+    animation: aurora-slide calc(var(--aurora-time) - var(--aurora-time) / 50 * 13) linear infinite;
+    animation-delay: calc(var(--aurora-time) / -25 * 13);
 }
 
 .aurora-bg > .rainbow:nth-child(14) {
     box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-purple), 0 0 50px 25px var(--aurora-blue), 50px 0 50px 25px var(--aurora-green), 130px 0 80px 40px var(--aurora-base);
-    animation: aurora-slide 32.4s linear infinite;
-    animation-delay: -25.2s;
+    animation: aurora-slide calc(var(--aurora-time) - var(--aurora-time) / 50 * 14) linear infinite;
+    animation-delay: calc(var(--aurora-time) / -25 * 14);
 }
 
 .aurora-bg > .rainbow:nth-child(15) {
     box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-purple), 0 0 50px 25px var(--aurora-blue), 50px 0 50px 25px var(--aurora-green), 130px 0 80px 40px var(--aurora-base);
-    animation: aurora-slide 31.5s linear infinite;
-    animation-delay: -27s;
+    animation: aurora-slide calc(var(--aurora-time) - var(--aurora-time) / 50 * 15) linear infinite;
+    animation-delay: calc(var(--aurora-time) / -25 * 15);
 }
 
 .aurora-bg > .rainbow:nth-child(16) {
     box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-green), 0 0 50px 25px var(--aurora-blue), 50px 0 50px 25px var(--aurora-purple), 130px 0 80px 40px var(--aurora-base);
-    animation: aurora-slide 30.6s linear infinite;
-    animation-delay: -28.8s;
+    animation: aurora-slide calc(var(--aurora-time) - var(--aurora-time) / 50 * 16) linear infinite;
+    animation-delay: calc(var(--aurora-time) / -25 * 16);
 }
 
 .aurora-bg > .rainbow:nth-child(17) {
     box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-green), 0 0 50px 25px var(--aurora-blue), 50px 0 50px 25px var(--aurora-purple), 130px 0 80px 40px var(--aurora-base);
-    animation: aurora-slide 29.7s linear infinite;
-    animation-delay: -30.6s;
+    animation: aurora-slide calc(var(--aurora-time) - var(--aurora-time) / 50 * 17) linear infinite;
+    animation-delay: calc(var(--aurora-time) / -25 * 17);
 }
 
 .aurora-bg > .rainbow:nth-child(18) {
     box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-purple), 0 0 50px 25px var(--aurora-blue), 50px 0 50px 25px var(--aurora-green), 130px 0 80px 40px var(--aurora-base);
-    animation: aurora-slide 28.8s linear infinite;
-    animation-delay: -32.4s;
+    animation: aurora-slide calc(var(--aurora-time) - var(--aurora-time) / 50 * 18) linear infinite;
+    animation-delay: calc(var(--aurora-time) / -25 * 18);
 }
 
 .aurora-bg > .rainbow:nth-child(19) {
     box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-purple), 0 0 50px 25px var(--aurora-green), 50px 0 50px 25px var(--aurora-blue), 130px 0 80px 40px var(--aurora-base);
-    animation: aurora-slide 27.9s linear infinite;
-    animation-delay: -34.2s;
+    animation: aurora-slide calc(var(--aurora-time) - var(--aurora-time) / 50 * 19) linear infinite;
+    animation-delay: calc(var(--aurora-time) / -25 * 19);
 }
 
 .aurora-bg > .rainbow:nth-child(20) {
     box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-purple), 0 0 50px 25px var(--aurora-blue), 50px 0 50px 25px var(--aurora-green), 130px 0 80px 40px var(--aurora-base);
-    animation: aurora-slide 27s linear infinite;
-    animation-delay: -36s;
+    animation: aurora-slide calc(var(--aurora-time) - var(--aurora-time) / 50 * 20) linear infinite;
+    animation-delay: calc(var(--aurora-time) / -25 * 20);
 }
 
 .aurora-bg > .rainbow:nth-child(21) {
     box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-blue), 0 0 50px 25px var(--aurora-green), 50px 0 50px 25px var(--aurora-purple), 130px 0 80px 40px var(--aurora-base);
-    animation: aurora-slide 26.1s linear infinite;
-    animation-delay: -37.8s;
+    animation: aurora-slide calc(var(--aurora-time) - var(--aurora-time) / 50 * 21) linear infinite;
+    animation-delay: calc(var(--aurora-time) / -25 * 21);
 }
 
 .aurora-bg > .rainbow:nth-child(22) {
     box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-green), 0 0 50px 25px var(--aurora-blue), 50px 0 50px 25px var(--aurora-purple), 130px 0 80px 40px var(--aurora-base);
-    animation: aurora-slide 25.2s linear infinite;
-    animation-delay: -39.6s;
+    animation: aurora-slide calc(var(--aurora-time) - var(--aurora-time) / 50 * 22) linear infinite;
+    animation-delay: calc(var(--aurora-time) / -25 * 22);
 }
 
 .aurora-bg > .rainbow:nth-child(23) {
     box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-purple), 0 0 50px 25px var(--aurora-blue), 50px 0 50px 25px var(--aurora-green), 130px 0 80px 40px var(--aurora-base);
-    animation: aurora-slide 24.3s linear infinite;
-    animation-delay: -41.4s;
+    animation: aurora-slide calc(var(--aurora-time) - var(--aurora-time) / 50 * 23) linear infinite;
+    animation-delay: calc(var(--aurora-time) / -25 * 23);
 }
 
 .aurora-bg > .rainbow:nth-child(24) {
     box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-blue), 0 0 50px 25px var(--aurora-green), 50px 0 50px 25px var(--aurora-purple), 130px 0 80px 40px var(--aurora-base);
-    animation: aurora-slide 23.4s linear infinite;
-    animation-delay: -43.2s;
+    animation: aurora-slide calc(var(--aurora-time) - var(--aurora-time) / 50 * 24) linear infinite;
+    animation-delay: calc(var(--aurora-time) / -25 * 24);
 }
 
 .aurora-bg > .rainbow:nth-child(25) {
     box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-purple), 0 0 50px 25px var(--aurora-blue), 50px 0 50px 25px var(--aurora-green), 130px 0 80px 40px var(--aurora-base);
-    animation: aurora-slide 22.5s linear infinite;
-    animation-delay: -45s;
+    animation: aurora-slide calc(var(--aurora-time) - var(--aurora-time) / 50 * 25) linear infinite;
+    animation-delay: calc(var(--aurora-time) / -25 * 25);
 }
 
 /* ---------- Respect reduced motion ---------- */

@@ -22,9 +22,7 @@ import {
   Button as RSButton,
   useToaster,
   Message,
-  SelectPicker,
   Toggle,
-  Uploader
 } from "rsuite";
 import ReactTable from "../../components/ReactTable/ReactTable";
 import Loader from "../../components/Loader/Loading";

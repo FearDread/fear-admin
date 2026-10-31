@@ -1,40 +1,16 @@
+import React from 'react';
 
+const STREAKS = 25; // matches the 25 :nth-child rules in dark-theme.css
 
-export const Auora = (props) => {
+/** Animated black aurora. Render once near the root of the layout. */
+const Aurora = () => (
+    <div className="aurora-bg" aria-hidden="true">
+        {Array.from({ length: STREAKS }, (_, i) => (
+            <div className="rainbow" key={i} />
+        ))}
+        <div className="h" />
+        <div className="v" />
+    </div>
+);
 
-    return (
-        <>
-        <div class="aurora-bg" aria-hidden="true">
-            <div class="rainbow"></div>
-            <div class="rainbow"></div>
-            <div class="rainbow"></div>
-            <div class="rainbow"></div>
-            <div class="rainbow"></div>
-            <div class="rainbow"></div>
-            <div class="rainbow"></div>
-            <div class="rainbow"></div>
-            <div class="rainbow"></div>
-            <div class="rainbow"></div>
-            <div class="rainbow"></div>
-            <div class="rainbow"></div>
-            <div class="rainbow"></div>
-            <div class="rainbow"></div>
-            <div class="rainbow"></div>
-            <div class="rainbow"></div>
-            <div class="rainbow"></div>
-            <div class="rainbow"></div>
-            <div class="rainbow"></div>
-            <div class="rainbow"></div>
-            <div class="rainbow"></div>
-            <div class="rainbow"></div>
-            <div class="rainbow"></div>
-            <div class="rainbow"></div>
-            <div class="rainbow"></div>
-            <div class="h"></div>
-            <div class="v"></div>
-            </div>
-    </>
-    )
-}
-
-export default Auora;
+export default Aurora;
