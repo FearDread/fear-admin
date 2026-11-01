@@ -12,7 +12,7 @@ import {
   setCurrentUser,
   setIsAuthenticated
 } from '../../features/user/slice';
-import PipelineBackground from "../../components/animated/PipelineBackground";
+import SwirlBackground from "../../components/animated/SwirlBackground";
 
 
 export const Login = () => {
@@ -114,9 +114,7 @@ export const Login = () => {
 
   return (
     <>
-          { /* <Spotlight /> */ }
-          {/*<SwirlBackground particleCount={700} speed={0.1} background="#000" />*/}
-          <PipelineBackground pipeCount={100} background="#000" />
+          <SwirlBackground particleCount={700} speed={0.1} background="#000" />
           <div className="card card-authentication1 mx-auto my-5" style={{ top: '100px' }} >
         <div className="card-body">
           <div className="card-content p-2">
