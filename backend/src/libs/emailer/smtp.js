@@ -5,7 +5,7 @@ const templates = require('./templates');
 
 module.exports = function (fear) {
     const _this = {};
-    const logger = fear.getLogger();
+    //const logger = (fear) ? fear.getLogger() : console;
 
     _this.mailConfig = fear.mailinfo || {};
     _this.mailService = fear.mailinfo?.service || 'smtp';
@@ -22,7 +22,7 @@ module.exports = function (fear) {
             const { apiKey, domain, region } = _this.mailConfig.mailgun;
 
             if (!apiKey || !domain) {
-                logger.error('Mailgun requires apiKey and domain in configuration.')
+                console.error('Mailgun requires apiKey and domain in configuration.')
                 return;
             }
 
@@ -40,7 +40,7 @@ module.exports = function (fear) {
             _this.mailgunClient = mailgun.client(clientOptions);
             _this.mailgunDomain = domain;
 
-            logger.info('Mailgun client initialized successfully.');
+            console.info('Mailgun client initialized successfully.');
         } else {
             // Default SMTP setup with nodemailer
             if (!_this.mailConfig.smtp || !_this.mailConfig.smtp[_this.mailService]) {
@@ -49,8 +49,8 @@ module.exports = function (fear) {
 
             _this.transporter = nodemailer.createTransport(_this.mailConfig.smtp[_this.mailService]);
             _this.transporter.verify()
-                .then(() => logger.info('Mail transport setup complete.'))
-                .catch((error) => logger.error('Error loading mail transport :: ', error));
+                .then(() => console.info('Mail transport setup complete.'))
+                .catch((error) => console.error('Error loading mail transport :: ', error));
         }
     };
 
@@ -109,7 +109,7 @@ module.exports = function (fear) {
 
         return _this.mailgunClient.messages.create(_this.mailgunDomain, messageData)
             .then((data) => {
-                logger.info(`Email sent successfully via Mailgun :: messageId: ${data.id}`);
+                console.info(`Email sent successfully via Mailgun :: messageId: ${data.id}`);
                 return {
                     success: true,
                     message: 'Email sent successfully',
@@ -118,7 +118,7 @@ module.exports = function (fear) {
                 };
             })
             .catch((error) => {
-                logger.error('Error sending email via Mailgun :: ', error);
+                console.error('Error sending email via Mailgun :: ', error);
                 return {
                     success: false,
                     message: error.message || 'Failed to send email',
@@ -131,9 +131,9 @@ module.exports = function (fear) {
         return _this.transporter.sendMail(options)
             .then((info) => {
                 if (!info.messageId) {
-                    logger.warn('Email sent but messageId not found :: ', info);
+                    console.warn('Email sent but messageId not found :: ', info);
                 }
-                logger.info(`Email sent successfully via SMTP :: messageId: ${info.messageId}`);
+                console.info(`Email sent successfully via SMTP :: messageId: ${info.messageId}`);
                 return {
                     success: true,
                     message: 'Email sent successfully',
@@ -141,7 +141,7 @@ module.exports = function (fear) {
                 };
             })
             .catch((error) => {
-                logger.error('Error sending email via SMTP :: ', error);
+                console.error('Error sending email via SMTP :: ', error);
                 return {
                     success: false,
                     message: error.message || 'Failed to send email',
@@ -179,7 +179,7 @@ module.exports = function (fear) {
     };
 
     _this.handleError = (res, statusCode, error) => {
-        logger.error(`E-Mailer Error :: `, error);
+        console.error(`E-Mailer Error :: `, error);
         return res.status(statusCode).json({
             success: false,
             message: error.message || 'An error occurred',
@@ -340,9 +340,9 @@ module.exports = function (fear) {
                 text: "Congratulations Garrett Haptonstall, you just sent an email with Mailgun! You are truly awesome!",
             })
                 .then((data) => {
-                    logger.info(data)
+                    console.info(data)
                 })
-                .catch(error => logger.error(error));
+                .catch(error => console.error(error));
         }
     };
 };
