@@ -27,23 +27,27 @@ export function ForgotPasswordForm() {
     return () => clearTimeout(t);
   }, [cooldown]);
 
-  const send = async (address: string) => {
+  const send = (address: string) => {
     setServerError('');
-    try {
-      await forgotPassword({ email: address }).unwrap();
-    } catch (err) {
-      const status = (err as { status?: number })?.status;
-      if (status !== 404) {
+
+    return forgotPassword({ email: address })
+      .unwrap()
+      .then(() => true)
+      .catch((err: unknown) => {
+        const status = (err as { status?: number })?.status;
+        if (status === 404) return true; // unknown email looks identical to success
         setServerError(
           status === 429
             ? 'Too many requests. Please wait a few minutes and try again.'
             : 'We could not send the email right now. Please try again.',
         );
-        return;
-      }
-    }
-    setSentTo(address);
-    setCooldown(RESEND_SECONDS);
+        return false;
+      })
+      .then((ok) => {
+        if (!ok) return;
+        setSentTo(address);
+        setCooldown(RESEND_SECONDS);
+      });
   };
 
   const handleSubmit = (e: React.FormEvent) => {

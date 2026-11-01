@@ -39,16 +39,19 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
     return Object.keys(e).length === 0;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
-    try {
-      await resetPassword({ token, password }).unwrap();
-      const params = new URLSearchParams({ message: 'Password reset successfully. Please sign in.' });
-      router.replace(`/login?${params.toString()}`);
-    } catch {
-      // surfaced via mutationError
-    }
+
+    resetPassword({ token, password })
+      .unwrap()
+      .then(() => {
+        const params = new URLSearchParams({ message: 'Password reset successfully. Please sign in.' });
+        router.replace(`/login?${params.toString()}`);
+      })
+      .catch(() => {
+        // surfaced via mutationError
+      });
   };
 
   return (
