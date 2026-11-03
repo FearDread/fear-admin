@@ -234,13 +234,12 @@ _________________________
         setupMailer() {
             const mailService = (this.env.NODE_ENV === 'production') ? 'mailgun' : 'google';
             const mailinfo = require('./libs/emailer/info');
-            const smtp = require('./libs/emailer/smtp')
+            const smtp = require('./libs/emailer/smtp');
 
             mailinfo.service = mailService;
             this.mailinfo = mailinfo;
-            if (!this.mailer) {
-                this.mailer = new smtp(this);
-            }
+
+            if (!this.mailer) this.mailer = new smtp(this);
 
             this.app.set('mailer', this.mailer);
         },
