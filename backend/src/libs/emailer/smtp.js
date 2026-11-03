@@ -8,50 +8,22 @@ module.exports = function (fear) {
     //const logger = (fear) ? fear.getLogger() : console;
 
     _this.mailConfig = fear.mailinfo || {};
-    _this.mailService = 'smtp';
+    _this.mailService = 'google';
     _this.transporter = null;
     _this.mailgunClient = null;
 
     // Initialize the appropriate mail service
     _this.initializeMailService = () => {
-        if (_this.mailService === 'mailgun') {
-            if (!_this.mailConfig.mailgun) {
-                throw new Error('Missing Mailgun configuration. Please update mail configuration.');
-            }
 
-            const { apiKey, domain, region } = _this.mailConfig.mailgun;
-
-            if (!apiKey || !domain) {
-                console.error('Mailgun requires apiKey and domain in configuration.')
-                return;
-            }
-
-            const mailgun = new Mailgun(_this.mailConfig.mailgun);
-            const clientOptions = {
-                username: 'api',
-                key: apiKey
-            };
-
-            // Add EU endpoint if region is specified
-            if (region === 'EU') {
-                clientOptions.url = 'https://api.eu.mailgun.net';
-            }
-
-            _this.mailgunClient = mailgun.client(clientOptions);
-            _this.mailgunDomain = domain;
-
-            console.info('Mailgun client initialized successfully.');
-        } else {
-            // Default SMTP setup with nodemailer
             if (!_this.mailConfig.smtp || !_this.mailConfig.smtp[_this.mailService]) {
                 throw new Error(`Missing mail configuration for service: ${_this.mailService}. Please update mail configuration.`);
             }
 
-            _this.transporter = nodemailer.createTransport(_this.mailConfig.smtp[_this.mailService]);
-            _this.transporter.verify()
+        _this.transporter = nodemailer.createTransport(_this.mailConfig.smtp[_this.mailService]);
+        _this.transporter.verify()
                 .then(() => console.info('Mail transport setup complete.'))
                 .catch((error) => console.error('Error loading mail transport :: ', error));
-        }
+        
     };
 
     // Initialize on module load
