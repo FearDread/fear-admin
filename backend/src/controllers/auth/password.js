@@ -74,7 +74,7 @@ const assertSent = (result) => {
 const sendPasswordChangedEmail = (req, user) =>
     Promise.resolve()
         .then(() => {
-            const mailService = req.app.get('mailer');
+            const mailService = req.app.get('fear').getMailer();
             return mailService.sendEmail({
                 to: user.email,
                 subject: 'Password Changed Successfully',
@@ -154,7 +154,7 @@ exports.forgotPasswordToken = (req, res) => {
         return response.error(res, 500, 'Password reset is temporarily unavailable');
     }
 
-    const mailService = req.app.get('mailService');
+    const mailService = req.app.get('fear').getMailer();
 
     // Answer immediately and do the lookup/email work afterwards: the response
     // (status, body AND timing) is identical for known and unknown emails, so

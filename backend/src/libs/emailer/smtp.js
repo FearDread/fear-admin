@@ -8,7 +8,7 @@ module.exports = function (fear) {
     //const logger = (fear) ? fear.getLogger() : console;
 
     _this.mailConfig = fear.mailinfo || {};
-    _this.mailService = fear.mailinfo?.service || 'smtp';
+    _this.mailService = 'smtp';
     _this.transporter = null;
     _this.mailgunClient = null;
 

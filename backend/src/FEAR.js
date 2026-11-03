@@ -240,8 +240,6 @@ _________________________
             this.mailinfo = mailinfo;
 
             if (!this.mailer) this.mailer = new smtp(this);
-
-            this.app.set('mailer', this.mailer);
         },
 
         getAllowedOrigins() {
