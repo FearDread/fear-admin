@@ -243,7 +243,7 @@ _________________________
             if (!this.mailer) {
                 this.mailer = new smtp(this);
             }
-        }
+        },
 
         getAllowedOrigins() {
             if (!this.env.ALLOWED_ORIGINS) return [];
