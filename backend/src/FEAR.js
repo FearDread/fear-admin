@@ -232,15 +232,18 @@ _________________________
         },
 
         setupMailer() {
-            const mailService = (this.env.NODE_ENV === 'production') ? 'mailgun' : 'google';
+            //const mailService = (this.env.NODE_ENV === 'production') ? 'mailgun' : 'google';
+            const mailService = 'google';
             const mailinfo = require('./libs/emailer/info');
             const smtp = require('./libs/emailer/smtp');
 
             mailinfo.service = mailService;
             this.mailinfo = mailinfo;
 
-            if (!this.mailer) this.mailer = new smtp(this);
-        },
+            if (!this.mailer) {
+                this.mailer = new smtp(this);
+            }
+        }
 
         getAllowedOrigins() {
             if (!this.env.ALLOWED_ORIGINS) return [];
