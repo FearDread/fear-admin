@@ -2,9 +2,6 @@
 
 const crypto = require('crypto');
 const User = require('../../models/user');
-const TokenService = require('./token');
-const mailinfo = require('../../libs/emailer/info');
-const smtp = require('../../libs/emailer/smtp')
 const MIN_PASSWORD_LENGTH = 8;
 const MAX_PASSWORD_LENGTH = 128;
 const RESET_EXPIRES_IN = '10 minutes'; // keep in sync with createPasswordResetToken()
@@ -62,12 +59,22 @@ const passwordProblem = (password) => {
     return null;
 };
 
+// mailService.sendEmail() resolves `{ success: false }` (it does not reject) when
+// the provider refuses the message, so a bare .then() would treat a failed send
+// as success. Turn that into a rejection so callers' .catch() actually runs.
+const assertSent = (result) => {
+    if (result && result.success === false) {
+        throw new Error(result.message || 'Email provider rejected the message');
+    }
+    return result;
+};
+
 // "Your password changed" notice. Returns a promise that never rejects, so
 // callers can fire it without awaiting and a mail failure can't fail a request.
 const sendPasswordChangedEmail = (req, user) =>
     Promise.resolve()
         .then(() => {
-            const mailService = PassService.mailService;
+            const mailService = req.app.get('mailer');
             return mailService.sendEmail({
                 to: user.email,
                 subject: 'Password Changed Successfully',
@@ -75,6 +82,7 @@ const sendPasswordChangedEmail = (req, user) =>
                 text: mailService.templates.generatePlainText({ email: user.email }, 'passwordResetSuccess')
             });
         })
+        .then(assertSent)
         .catch((emailError) => {
             console.error('Failed to send password-changed confirmation email:', emailError);
         });
@@ -82,7 +90,7 @@ const sendPasswordChangedEmail = (req, user) =>
 // Update password for authenticated user (route must run Auth.isAuthorized first)
 exports.updatePassword = (req, res) => {
     noStore(res);
-    console.log('req mailer? ', req.mailer);
+
     const userId = req.user && req.user._id;
     if (!userId) {
         return response.error(res, 401, 'Not authenticated');
@@ -131,7 +139,6 @@ exports.updatePassword = (req, res) => {
 
 // Request password reset token
 exports.forgotPasswordToken = (req, res) => {
-    const mailService = new smtp({mailinfo});
     noStore(res);
 
     const rawEmail = req.body && req.body.email;
@@ -147,7 +154,7 @@ exports.forgotPasswordToken = (req, res) => {
         return response.error(res, 500, 'Password reset is temporarily unavailable');
     }
 
-    //mailService = req.body.mailer || req.app.get('mailService');
+    const mailService = req.app.get('mailService');
 
     // Answer immediately and do the lookup/email work afterwards: the response
     // (status, body AND timing) is identical for known and unknown emails, so
@@ -162,7 +169,7 @@ exports.forgotPasswordToken = (req, res) => {
             if (!user) return null;
             foundUser = user;
 
-            return Promise.resolve(TokenService.generateToken(user))
+            return Promise.resolve(user.createPasswordResetToken())
                 // The token fields are the only change; don't let unrelated schema
                 // validation on old accounts block a reset.
                 .then((token) => user.save({ validateBeforeSave: false }).then(() => token))
@@ -172,9 +179,9 @@ exports.forgotPasswordToken = (req, res) => {
                     return mailService.sendEmail({
                         to: user.email,
                         subject: 'Password Reset Request',
-                        html: mailService.templates.passwordReset({ resetUrl: resetURL, email: user.email, firstName: user.firstName }),
-                        //text: mailService.templates.generatePlainText({ resetURL, email: user.email }, 'passwordReset')
-                    });
+                        html: mailService.templates.passwordResetTemplate(resetURL, user.email),
+                        text: mailService.templates.generatePlainText({ resetURL, email: user.email }, 'passwordReset')
+                    }).then(assertSent);
                 });
         })
         .catch((error) => {

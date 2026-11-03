@@ -75,1006 +75,523 @@ ${rows}
   </td></tr>
 </tbody></table>`;
 
+const EFEAR = {
+    void: '#080808',
+    card: '#0e0e0e',
+    ink: '#131313',
+    line: '#242424',
+    red: '#c41a1a',
+    text: '#f0f0f0',
+    body: '#b0b0b0',
+    muted: '#8a8a8a', // was #5a5a5a, which failed contrast on the dark card
+    green: '#2a9d8f',
+};
+
+const EF_DISPLAY = "'Anton',Impact,'Arial Narrow',sans-serif";
+const EF_MONO = "'Space Mono','Courier New',monospace";
+const EF_CLIP = 'clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));';
+
+const EF_BUSINESS = {
+    legal: 'FEAR Inc.',
+    address: '2003 E. Veterans Memorial Blvd, Killeen TX 76541',
+    email: 'fear.dread@underworld.dog',
+};
+
+const EF_HEAD = `
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark">
+<meta name="supported-color-schemes" content="dark">
+<link href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Space+Mono:ital@0;1&amp;display=swap" rel="stylesheet">
+<!--[if mso]><style>td,p,a{font-family:Arial,sans-serif!important;}</style><![endif]-->`;
+
+// Read at call time (not module load) so dotenv has already run.
+const efSite = () => (process.env.FRONTEND_URL || process.env.NEXT_PUBLIC_APP_URL || 'https://efear.store').replace(/\/+$/, '');
+const efHost = () => efSite().replace(/^https?:\/\//i, '');
+
+const efEsc = (v) => String(v == null ? '' : v)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+
+// Absolute http(s) URLs pass through (escaped); anything else falls back to a site path.
+const efUrl = (u, fallbackPath = '/') => (/^https?:\/\//i.test(u || '') ? efEsc(u) : efEsc(`${efSite()}${fallbackPath}`));
+const efVal = (v, fallback = '—') => (v == null || v === '' ? fallback : efEsc(v));
+const efText = (v) => efEsc(v).replace(/\r?\n/g, '<br>');
+const efMoney = (v) => {
+    const n = Number(v);
+    return v == null || v === '' || Number.isNaN(n) ? '—' : '$' + n.toFixed(2);
+};
+const efNow = () => new Date().toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'America/Chicago' }) + ' CT';
+
+const efAddress = (d = {}) => {
+    const cityLine = [d.city, [d.state, d.zip].filter(Boolean).join(' ')].filter(Boolean).join(', ');
+    const lines = [d.fullName, d.addressLine1, d.addressLine2, cityLine].filter(Boolean).map(efEsc);
+    return lines.length ? lines.join('<br>') : '—';
+};
+
+const efLogo = (size = 28, color = EFEAR.text) =>
+    `<span style="font-family:${EF_DISPLAY};font-size:${size}px;color:${color};letter-spacing:.05em;">e<span style="color:${EFEAR.red};">Fear</span></span>`;
+
+const efEyebrow = (text) =>
+    `<div style="font-family:${EF_MONO};font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:${EFEAR.red};margin-bottom:8px;">// ${efEsc(text)}</div>`;
+
+const efRow = (html, pad = '0 32px 28px') => `<tr><td style="padding:${pad};">${html}</td></tr>`;
+
+const efHero = (eyebrow, lines) => efRow(
+    `${efEyebrow(eyebrow)}<div style="font-family:${EF_DISPLAY};font-size:30px;color:${EFEAR.text};letter-spacing:.03em;line-height:1.1;">${lines.map(efEsc).join('<br>')}</div>`,
+    '36px 32px 20px',
+);
+
+// `html` must already be safe (use efEsc / efVal for any data).
+const efParagraph = (html) =>
+    `<p style="font-family:${EF_MONO};font-size:12px;color:${EFEAR.body};line-height:1.9;margin:0 0 20px;">${html}</p>`;
+
+const efStrong = (v) => `<strong style="color:${EFEAR.text};">${efEsc(v)}</strong>`;
+
+const efButton = (href, label, variant = 'primary') => {
+    const base = `display:inline-block;font-family:${EF_MONO};font-size:11px;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;`;
+    const look = variant === 'primary'
+        ? `padding:13px 28px;background:${EFEAR.red};color:#ffffff;${EF_CLIP}`
+        : `padding:12px 28px;border:1px solid ${EFEAR.line};color:${EFEAR.body};`;
+    return `<a href="${href}" style="${base}${look}">${efEsc(label)}</a>`;
+};
+
+// buttons: [{ href(already-safe), label, variant }]
+const efButtons = (buttons) =>
+    `<table role="presentation" cellpadding="0" cellspacing="0" border="0"><tbody><tr>${buttons
+        .map((b) => `<td style="padding-right:12px;padding-bottom:8px;">${efButton(b.href, b.label, b.variant)}</td>`)
+        .join('')}</tr></tbody></table>`;
+
+const efRule = () => `<tr><td style="padding:0 32px;"><div style="height:1px;background:${EFEAR.line};"></div></td></tr>`;
+
+const efLabel = (text) =>
+    `<div style="font-family:${EF_MONO};font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:${EFEAR.muted};margin-bottom:6px;">${efEsc(text)}</div>`;
+
+const efValue = (html) =>
+    `<div style="font-family:${EF_MONO};font-size:12px;color:${EFEAR.text};line-height:1.7;">${html}</div>`;
+
+// pairs: [{ label, html }] laid out `cols` per row.
+const efPairs = (pairs, cols = 2) => {
+    const rows = [];
+    for (let i = 0; i < pairs.length; i += cols) rows.push(pairs.slice(i, i + cols));
+    return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tbody>${rows
+        .map((r) => `<tr>${r
+            .map((p) => `<td width="${Math.floor(100 / cols)}%" style="vertical-align:top;padding:0 12px 16px 0;">${efLabel(p.label)}${efValue(p.html)}</td>`)
+            .join('')}</tr>`)
+        .join('')}</tbody></table>`;
+};
+
+const efPanel = (inner, accent = EFEAR.line) =>
+    `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tbody><tr><td style="background:${EFEAR.ink};border:1px solid ${EFEAR.line};border-left:3px solid ${accent};padding:18px 20px;">${inner}</td></tr></tbody></table>`;
+
+const efNotice = (label, html, accent = EFEAR.red) =>
+    efPanel(`<div style="font-family:${EF_MONO};font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:${EFEAR.text};margin-bottom:6px;">${efEsc(label)}</div><div style="font-family:${EF_MONO};font-size:11px;color:${EFEAR.body};line-height:1.8;">${html}</div>`, accent);
+
+// steps: [{ title, copy }] — numbered 01, 02, 03 …
+const efSteps = (steps) =>
+    `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tbody><tr>${steps
+        .map((s, i) => `<td width="${Math.floor(100 / steps.length)}%" style="vertical-align:top;${i ? `border-left:1px solid ${EFEAR.line};padding-left:16px;` : ''}padding-right:16px;">
+            <div style="font-family:${EF_DISPLAY};font-size:22px;color:${EFEAR.red};margin-bottom:6px;">${String(i + 1).padStart(2, '0')}</div>
+            <div style="font-family:${EF_MONO};font-size:10px;font-weight:700;color:${EFEAR.text};letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;">${efEsc(s.title)}</div>
+            <div style="font-family:${EF_MONO};font-size:10px;color:${EFEAR.muted};line-height:1.7;">${efEsc(s.copy)}</div>
+        </td>`)
+        .join('')}</tr></tbody></table>`;
+
+// steps: [{ label, date, done }]
+const efTimeline = (steps) =>
+    `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tbody><tr>${steps
+        .map((s) => `<td width="${Math.floor(100 / steps.length)}%" align="center" style="vertical-align:top;">
+            <div style="font-family:${EF_MONO};font-size:16px;color:${s.done ? EFEAR.green : EFEAR.muted};margin-bottom:6px;">${s.done ? '✓' : '○'}</div>
+            <div style="font-family:${EF_MONO};font-size:10px;font-weight:700;color:${EFEAR.text};letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px;">${efEsc(s.label)}</div>
+            <div style="font-family:${EF_MONO};font-size:10px;color:${EFEAR.muted};">${efVal(s.date)}</div>
+        </td>`)
+        .join('')}</tr></tbody></table>`;
+
+// lines: [{ label, value(already-safe), strong }]
+const efTotals = (lines) =>
+    `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tbody>${lines
+        .map((l) => `<tr>
+            <td style="padding:${l.strong ? '12px 0 0' : '4px 0'};${l.strong ? `border-top:1px solid ${EFEAR.line};` : ''}font-family:${l.strong ? EF_DISPLAY : EF_MONO};font-size:${l.strong ? '16px' : '11px'};letter-spacing:${l.strong ? '.05em' : '.1em'};text-transform:uppercase;color:${l.strong ? EFEAR.text : EFEAR.muted};">${efEsc(l.label)}</td>
+            <td align="right" style="padding:${l.strong ? '12px 0 0' : '4px 0'};${l.strong ? `border-top:1px solid ${EFEAR.line};` : ''}font-family:${l.strong ? EF_DISPLAY : EF_MONO};font-size:${l.strong ? '20px' : '12px'};color:${l.strong ? EFEAR.red : EFEAR.text};">${l.value}</td>
+        </tr>`)
+        .join('')}</tbody></table>`;
+
+// Accepts items[] or the legacy single-item fields.
+const efItems = (d = {}) => {
+    if (Array.isArray(d.items) && d.items.length) return d.items;
+    return d.itemName ? [{ name: d.itemName, qty: d.qty, variant: d.variant, price: d.itemPrice }] : [];
+};
+
+const efItemRows = (items) => {
+    if (!items.length) return efParagraph(efEsc('Item details are available in your account.'));
+    return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tbody>${items
+        .map((it) => {
+            const qty = Number(it.qty) > 0 ? Number(it.qty) : 1;
+            const unit = Number(it.price);
+            const line = Number.isNaN(unit) ? '—' : efMoney(unit * qty);
+            const meta = [`Qty: ${qty}`, it.variant].filter(Boolean).map(efEsc).join(' &nbsp;·&nbsp; ');
+            return `<tr>
+                <td style="padding:12px 0;border-bottom:1px solid ${EFEAR.line};">
+                    <div style="font-family:${EF_MONO};font-size:12px;font-weight:700;color:${EFEAR.text};margin-bottom:4px;">${efVal(it.name, 'Item')}</div>
+                    <div style="font-family:${EF_MONO};font-size:10px;color:${EFEAR.muted};">${meta}</div>
+                </td>
+                <td align="right" style="padding:12px 0;border-bottom:1px solid ${EFEAR.line};font-family:${EF_MONO};font-size:12px;color:${EFEAR.text};vertical-align:top;">${line}</td>
+            </tr>`;
+        })
+        .join('')}</tbody></table>`;
+};
+
+const efFooterLinks = (marketing) => {
+    const link = (href, label) =>
+        `<a href="${href}" style="font-family:${EF_MONO};font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:${EFEAR.muted};text-decoration:none;margin:0 10px;">${label}</a>`;
+    return [
+        link(efUrl('', '/shop'), 'Shop'),
+        link(efUrl('', '/account/orders'), 'Orders'),
+        link(efUrl('', '/faq'), 'Help'),
+        link(efUrl('', '/contact'), 'Contact'),
+        marketing ? link(efEsc(`mailto:${EF_BUSINESS.email}?subject=Unsubscribe`), 'Unsubscribe') : '',
+    ].join('');
+};
+
+// The one shell every eFear email goes through.
+//   tag        right-hand label in the header
+//   preheader  inbox preview text
+//   rows       concatenated <tr>…</tr> body rows
+//   reason     "You're receiving this because …"
+//   marketing  adds an Unsubscribe link (transactional mail must not)
+const efShell = ({ tag, preheader = '', rows, reason, marketing = false }) => `<!DOCTYPE html>
+<html lang="en">
+<head>${EF_HEAD}
+<title>${efEsc(tag)} · eFear</title>
+</head>
+<body style="margin:0;padding:0;background:${EFEAR.void};">
+<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;mso-hide:all;">${efEsc(preheader)}</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background:${EFEAR.void};">
+  <tbody><tr><td align="center" style="padding:24px 16px;">
+    <table role="presentation" width="640" cellpadding="0" cellspacing="0" border="0" style="max-width:640px;width:100%;background:${EFEAR.card};border:1px solid ${EFEAR.line};">
+      <tbody>
+      <tr>
+        <td style="background:${EFEAR.ink};border-bottom:3px solid ${EFEAR.red};padding:22px 32px;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tbody><tr>
+            <td>${efLogo(28)}<span style="font-family:${EF_MONO};font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:${EFEAR.muted};display:inline-block;padding-left:14px;margin-left:10px;border-left:1px solid ${EFEAR.line};">Comics · Collectibles</span></td>
+            <td align="right" style="font-family:${EF_MONO};font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:${EFEAR.muted};">${efEsc(tag)}</td>
+          </tr></tbody></table>
+        </td>
+      </tr>
+${rows}
+      <tr>
+        <td style="background:${EFEAR.ink};border-top:1px solid ${EFEAR.line};padding:24px 32px;" align="center">
+          <div style="margin-bottom:12px;">${efLogo(18, EFEAR.muted)}</div>
+          <div style="margin-bottom:14px;">${efFooterLinks(marketing)}</div>
+          <div style="font-family:${EF_MONO};font-size:10px;color:${EFEAR.muted};line-height:1.8;">
+            © ${new Date().getFullYear()} ${efEsc(EF_BUSINESS.legal)} · ${efEsc(EF_BUSINESS.address)} · All rights reserved<br>
+            <span style="color:${EFEAR.muted};">${efEsc(reason)}</span>
+          </div>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </td></tr></tbody>
+</table>
+</body>
+</html>`;
+
+// ---------------------------------------------------------------------------
+// eFear templates
+// ---------------------------------------------------------------------------
+const efWelcome = (data = {}) => efShell({
+    tag: 'Account Confirmation',
+    preheader: 'Your eFear account is live. Welcome to the crew.',
+    reason: `You're receiving this because you signed up at ${efHost()}`,
+    rows: [
+        efHero('welcome aboard', ["You're part", 'of the crew.']),
+        efRow(
+            efParagraph(`Hey ${efStrong(data.firstName || 'there')},<br><br>Your eFear account is live. Comics, graphic novels, trading cards, manga — all of it, one login. We don't do junk mail. We do drops, restocks, and members-only deals.`) +
+            efButtons([
+                { href: efUrl(data.userUrl, '/account/dashboard'), label: 'Go to My Account →' },
+                { href: efUrl('', '/shop'), label: 'Browse the Store', variant: 'ghost' },
+            ]),
+        ),
+        efRule(),
+        efRow(efSteps([
+            { title: 'Browse & Wishlist', copy: 'Save items before they sell out.' },
+            { title: 'Checkout Fast', copy: 'Saved addresses & payment methods.' },
+            { title: 'Track Orders', copy: 'Real-time updates on every order.' },
+        ]), '28px 32px'),
+    ].join('\n'),
+});
+
+const efConfirm = (data = {}) => efShell({
+    tag: 'Order Receipt',
+    preheader: `Order #${data.orderId || ''} confirmed — we're picking it now.`,
+    reason: `You're receiving this because you placed an order at ${efHost()}`,
+    rows: [
+        efHero('order confirmed', ['Got it.', "You're good."]),
+        efRow(
+            efParagraph(`Hey ${efStrong(data.firstName || 'there')} — your order is confirmed and being picked. We'll send tracking as soon as it ships.`) +
+            efPairs([
+                { label: 'Order', html: `#${efVal(data.orderId)}` },
+                { label: 'Date', html: efVal(data.orderDate) },
+            ]),
+            '0 32px 8px',
+        ),
+        efRow(efItemRows(efItems(data)), '0 32px 20px'),
+        efRow(efTotals([
+            { label: 'Subtotal', value: efMoney(data.subtotal) },
+            { label: 'Shipping', value: Number(data.shipping) === 0 ? 'FREE' : efMoney(data.shipping) },
+            { label: 'Total', value: efMoney(data.total), strong: true },
+        ])),
+        efRule(),
+        efRow(
+            efPairs([
+                { label: 'Ship To', html: efAddress(data) },
+                { label: 'Payment', html: `${efVal(data.paymentMethod)}${data.cardLast4 ? ` ending in ${efEsc(data.cardLast4)}` : ''}` },
+            ]) + efButtons([{ href: efUrl(data.orderUrl, '/account/orders'), label: 'Track My Order →' }]),
+            '28px 32px',
+        ),
+    ].join('\n'),
+});
+
+const efUpdate = (data = {}) => efShell({
+    tag: 'Shipping Update',
+    preheader: `Order #${data.orderId || ''} has shipped.`,
+    reason: `You're receiving this because you placed an order at ${efHost()}`,
+    rows: [
+        efHero('dispatched', ['Your order', 'just shipped.']),
+        efRow(
+            efParagraph(`Order ${efStrong(`#${data.orderId || '—'}`)} left our warehouse and is heading your way. Use the tracking number below to follow it.`) +
+            efPanel(`${efLabel('Tracking Number')}<div style="font-family:${EF_MONO};font-size:14px;color:${EFEAR.text};letter-spacing:.06em;word-break:break-all;">${efVal(data.trackingNumber)}</div>`, EFEAR.red),
+        ),
+        efRow(efTimeline([
+            { label: 'Order Placed', date: data.placedDate, done: true },
+            { label: 'Dispatched', date: data.shipDate, done: true },
+            { label: 'Delivered', date: data.etaDate ? `Est. ${data.etaDate}` : '', done: false },
+        ])),
+        efRule(),
+        efRow(
+            efPairs([
+                { label: 'Delivering To', html: efAddress(data) },
+                { label: 'Carrier', html: `${efVal(data.carrier)}${data.serviceLevel ? `<br>${efEsc(data.serviceLevel)}` : ''}` },
+            ]) + efButtons([{ href: efUrl(data.trackingUrl, '/account/orders'), label: 'Track Package →' }]),
+            '28px 32px',
+        ),
+    ].join('\n'),
+});
+
+const efOrderComplete = (data = {}) => efShell({
+    tag: 'Order Complete',
+    preheader: `Order #${data.orderId || ''} has been delivered.`,
+    reason: `You're receiving this because you placed an order at ${efHost()}`,
+    rows: [
+        efHero('delivered', ['Your haul', 'has landed.']),
+        efRow(
+            efParagraph(`Order ${efStrong(`#${data.orderId || '—'}`)} has been delivered. We hope everything is in perfect condition — if not, we'll make it right.`) +
+            efPairs([
+                { label: 'Delivered To', html: efAddress(data) },
+                { label: 'Delivered On', html: efVal(data.deliveredDate) },
+            ]),
+        ),
+        efRow(efTimeline([
+            { label: 'Order Placed', date: data.placedDate, done: true },
+            { label: 'Dispatched', date: data.shippedDate, done: true },
+            { label: 'Delivered', date: data.deliveredDate, done: true },
+        ])),
+        efRule(),
+        efRow(
+            efLabel('What Was Inside') + efItemRows(efItems(data)) +
+            `<div style="height:12px;"></div>` +
+            efTotals([{ label: 'Order Total', value: efMoney(data.total), strong: true }]),
+            '28px 32px 20px',
+        ),
+        efRow(efButtons([
+            { href: efUrl(data.reviewUrl, '/account/orders'), label: 'Leave a Review →' },
+            { href: efUrl(data.shopUrl, '/shop'), label: 'Shop Again', variant: 'ghost' },
+        ])),
+        efRow(efNotice('Something not right?',
+            `Missing items, damage, wrong product — <a href="${efUrl(data.supportUrl, '/contact')}" style="color:${EFEAR.red};">contact our team</a> within 7 days and we'll sort it out, no hassle.`,
+            EFEAR.green)),
+    ].join('\n'),
+});
+
+const EF_DEFAULT_PRODUCTS = [
+    { category: 'Comic Books', name: 'Spawn #1', price: 30.99 },
+    { category: 'Comic Books', name: 'Teenage Mutant Ninja Turtles', price: 29.99 },
+    { category: 'E-Books', name: 'F.E.A.R. The Vegan Manifesto', price: 5.99 },
+];
+
+const efPromo = (data = {}) => {
+    const products = Array.isArray(data.products) && data.products.length ? data.products : EF_DEFAULT_PRODUCTS;
+    const cta = efUrl(data.ctaUrl, '/shop');
+    return efShell({
+        tag: 'New Arrival',
+        preheader: 'Fresh drops just hit the shelves at eFear.',
+        reason: "You're receiving this because you subscribed to eFear updates",
+        marketing: true,
+        rows: [
+            efHero('new drop', [data.heading || 'Collection Update!']),
+            efRow(
+                efParagraph(efEsc(data.intro || 'Check out our latest rare comics!')) +
+                efButtons([{ href: cta, label: 'Shop the Drop →' }]),
+            ),
+            efRule(),
+            efRow(
+                efLabel('Featured') +
+                `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tbody>${products
+                    .slice(0, 6)
+                    .map((p) => `<tr>
+                        <td style="padding:12px 0;border-bottom:1px solid ${EFEAR.line};">
+                            <div style="font-family:${EF_MONO};font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:${EFEAR.red};margin-bottom:4px;">${efVal(p.category, 'Shop')}</div>
+                            <a href="${efUrl(p.url, '/shop')}" style="font-family:${EF_MONO};font-size:12px;font-weight:700;color:${EFEAR.text};text-decoration:none;">${efVal(p.name, 'Item')}</a>
+                        </td>
+                        <td align="right" style="padding:12px 0;border-bottom:1px solid ${EFEAR.line};font-family:${EF_MONO};font-size:12px;color:${EFEAR.text};vertical-align:bottom;">${efMoney(p.price)}</td>
+                    </tr>`)
+                    .join('')}</tbody></table>`,
+                '28px 32px 20px',
+            ),
+            efRow(efButtons([{ href: cta, label: 'See All New Arrivals →', variant: 'ghost' }])),
+        ].join('\n'),
+    });
+};
+
+const efContactForm = (data = {}) => efShell({
+    tag: 'Contact Form',
+    preheader: 'We got your message and will reply within 1–2 business days.',
+    reason: `You're receiving this because you submitted a contact form at ${efHost()}`,
+    rows: [
+        efHero('message received', ['We got your', 'message.']),
+        efRow(
+            efParagraph(`Hey ${efStrong(data.$name || 'there')},<br><br>Thanks for reaching out. Our team has received your message and will get back to you within 1–2 business days. Here's a copy of what you sent.`) +
+            efPairs([
+                { label: 'Subject', html: efVal(data.$subject) },
+                { label: 'Submitted', html: efVal(data.submittedAt || efNow()) },
+            ]),
+            '0 32px 12px',
+        ),
+        efRow(efLabel('Your Message') + efPanel(`<div style="font-family:${EF_MONO};font-size:12px;color:${EFEAR.body};line-height:1.9;">${efText(data.$message)}</div>`)),
+        efRule(),
+        efRow(
+            efParagraph('Need faster help? Most answers are in the FAQ.') +
+            efButtons([
+                { href: efUrl('', '/faq'), label: 'Browse FAQ →' },
+                { href: efUrl('', '/shop'), label: 'Back to Store', variant: 'ghost' },
+            ]),
+            '28px 32px',
+        ),
+    ].join('\n'),
+});
+
+// ---------------------------------------------------------------------------
+// Account recovery
+// ---------------------------------------------------------------------------
+const efPasswordReset = (data = {}) => {
+    const resetUrl = efUrl(data.resetUrl || data.resetURL, '/forgot-password');
+    const expires = data.expiresAt || `in ${data.expiresIn || '10 minutes'}`;
+    return efShell({
+        tag: 'Password Reset',
+        preheader: `Reset your eFear password — this link expires ${expires}.`,
+        reason: `You're receiving this because a password reset was requested for your account at ${efHost()}`,
+        rows: [
+            efHero('access request', ['Reset your', 'password.']),
+            efRow(
+                efParagraph(`Hey ${efStrong(data.firstName || 'there')},<br><br>We received a request to reset the password for your eFear account. Use the button below to choose a new one. This link expires ${efStrong(expires)} and can only be used once. If you didn't request this, you can safely ignore this email — your password won't change.`) +
+                efPairs([
+                    { label: 'Account', html: efVal(data.email) },
+                    { label: 'Link Expires', html: efEsc(expires) },
+                ]) +
+                efButtons([{ href: resetUrl, label: 'Reset My Password →' }]),
+            ),
+            efRow(
+                `<div style="font-family:${EF_MONO};font-size:10px;color:${EFEAR.muted};line-height:1.7;margin-bottom:6px;">Button not working? Paste this link into your browser:</div>` +
+                `<div style="font-family:${EF_MONO};font-size:10px;color:${EFEAR.body};line-height:1.7;word-break:break-all;"><a href="${resetUrl}" style="color:${EFEAR.body};">${resetUrl}</a></div>`,
+            ),
+            efRule(),
+            efRow(efSteps([
+                { title: 'Click the Link', copy: 'Opens a secure reset page.' },
+                { title: 'Set New Password', copy: 'Choose something strong.' },
+                { title: 'Back in Business', copy: 'Log in and get back to the haul.' },
+            ]), '28px 32px 20px'),
+            efRow(efNotice('Keep this link private',
+                `Never share it. eFear will never ask for your password by email, text, or phone.`, EFEAR.red)),
+        ].join('\n'),
+    });
+};
+
+const efPasswordResetSuccess = (data = {}) => efShell({
+    tag: 'Security Notice',
+    preheader: 'The password on your eFear account was just changed.',
+    reason: `You're receiving this because the password changed on your account at ${efHost()}`,
+    rows: [
+        efHero('password updated', ['Password', 'changed.']),
+        efRow(
+            efParagraph(`Hey ${efStrong(data.firstName || 'there')},<br><br>The password for your eFear account was just changed. You can sign in with your new password right away.`) +
+            efPairs([
+                { label: 'Account', html: efVal(data.email) },
+                { label: 'Changed', html: efEsc(data.changedAt || efNow()) },
+            ]) +
+            efButtons([{ href: efUrl('', '/login'), label: 'Sign In →' }]),
+        ),
+        efRow(efNotice("Wasn't you?",
+            `Someone else may have access to your account. <a href="${efUrl('', '/forgot-password')}" style="color:${EFEAR.red};">Reset your password again</a> right away, then contact us at <a href="mailto:${efEsc(EF_BUSINESS.email)}" style="color:${EFEAR.red};">${efEsc(EF_BUSINESS.email)}</a>.`,
+            EFEAR.red)),
+    ].join('\n'),
+});
+
+// Plain-text bodies (the `text` half of multipart mail) for the templates that
+// are sent programmatically. Unknown types fall back to a generic line.
+const efPlainText = (data = {}, type) => {
+    const name = data.firstName || 'there';
+    const site = efSite();
+    switch (type) {
+        case 'passwordReset': {
+            const url = data.resetUrl || data.resetURL || `${site}/forgot-password`;
+            return [
+                `Hey ${name},`,
+                '',
+                'We received a request to reset the password for your eFear account.',
+                `Choose a new password here (the link expires in ${data.expiresIn || '10 minutes'} and works once):`,
+                url,
+                '',
+                "If you didn't request this, you can safely ignore this email — your password won't change.",
+                '',
+                'eFear will never ask for your password by email, text, or phone.',
+                `— eFear · ${site}`,
+            ].join('\n');
+        }
+        case 'passwordResetSuccess':
+            return [
+                `Hey ${name},`,
+                '',
+                `The password for your eFear account${data.email ? ` (${data.email})` : ''} was just changed.`,
+                `Sign in: ${site}/login`,
+                '',
+                `Wasn't you? Reset it again right away: ${site}/forgot-password`,
+                `Then contact us at ${EF_BUSINESS.email}.`,
+                `— eFear · ${site}`,
+            ].join('\n');
+        case 'welcome':
+            return `Hey ${name},\n\nYour eFear account is live. Start shopping: ${site}/shop\n\n— eFear · ${site}`;
+        case 'contactForm':
+            return `Hey ${data.$name || 'there'},\n\nThanks for reaching out — we'll reply within 1–2 business days.\n\nYour message:\n${data.$message || ''}\n\n— eFear · ${site}`;
+        default:
+            return `eFear · ${site}`;
+    }
+};
+
 module.exports = {
+    welcome: efWelcome,
+    confirm: efConfirm,
+    update: efUpdate,
+    orderComplete: efOrderComplete,
+    promo: efPromo,
+    contactForm: efContactForm,
 
-    welcome(data) {
-        return `
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<link href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Space+Mono:ital@0;1&amp;display=swap" rel="stylesheet">
-<!--[if mso]><style>td,p,a{font-family:Arial,sans-serif!important;}</style><![endif]-->
-
-
-<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#080808;">
-  <tbody><tr><td align="center" style="padding:24px 16px;">
-    <table width="640" cellpadding="0" cellspacing="0" border="0" style="max-width:640px;width:100%;background:#0e0e0e;border:1px solid #242424;">
-      
-      
-  <tbody><tr>
-    <td style="background:#131313;border-bottom:3px solid #c41a1a;padding:22px 32px;">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tbody><tr>
-          <td>
-            <span style="font-family:'Anton',Impact,sans-serif;font-size:28px;color:#f0f0f0;letter-spacing:.05em;">
-              e<span style="color:#c41a1a;">Fear</span>
-            </span>
-            <span style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#5a5a5a;display:inline-block;padding-left:14px;margin-left:10px;border-left:1px solid #242424;">
-              Comics · Collectibles
-            </span>
-          </td>
-          <td align="right" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;">
-            Account Confirmation
-          </td>
-        </tr>
-      </tbody></table>
-    </td>
-  </tr>
-      
-  <tr>
-    <td style="padding:36px 32px 20px;">
-      <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:#c41a1a;margin-bottom:8px;">// welcome aboard</div>
-      <div style="font-family:'Anton',Impact,sans-serif;font-size:30px;color:#f0f0f0;letter-spacing:.03em;line-height:1.1;">You're part
-of the crew.</div>
-    </td>
-  </tr>
-      <tr>
-        <td style="padding:0 32px 28px;">
-          <p style="font-family:'Space Mono',monospace;font-size:12px;color:#b0b0b0;line-height:1.9;margin-bottom:20px;">
-            Hey <strong style="color:#f0f0f0;">${data.firstName}</strong>,<br><br>
-            Your eFear account is live. Comics, graphic novels, trading cards, manga — all of it, one login. We don't do junk mail. We do drops, restocks, and members-only deals.
-          </p>
-          <table cellpadding="0" cellspacing="0" border="0">
-            <tbody><tr>
-              <td style="padding-right:12px;">
-  <a href=${data.userUrl} style="display:inline-block;padding:13px 28px;background:#c41a1a;color:#fff;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));">
-    Go to My Account →
-  </a></td>
-              <td>
-  <a href="#" style="display:inline-block;padding:12px 28px;border:1px solid #242424;color:#b0b0b0;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;">
-    Browse the Store
-  </a></td>
-            </tr>
-          </tbody></table>
-        </td>
-      </tr>
-      <tr><td style="padding:0 32px;"><div style="height:1px;background:#242424;"></div></td></tr>
-      <tr>
-        <td style="padding:28px 32px;">
-          <table width="100%" cellpadding="0" cellspacing="0" border="0">
-            <tbody><tr>
-              <td width="33%" style="padding-right:16px;vertical-align:top;">
-                <div style="font-family:'Anton',sans-serif;font-size:22px;color:#c41a1a;margin-bottom:6px;">01</div>
-                <div style="font-family:'Space Mono',monospace;font-size:10px;font-weight:700;color:#f0f0f0;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;">Browse &amp; Wishlist</div>
-                <div style="font-family:'Space Mono',monospace;font-size:10px;color:#5a5a5a;line-height:1.7;">Save items before they sell out.</div>
-              </td>
-              <td width="33%" style="padding-right:16px;vertical-align:top;border-left:1px solid #242424;padding-left:16px;">
-                <div style="font-family:'Anton',sans-serif;font-size:22px;color:#c41a1a;margin-bottom:6px;">02</div>
-                <div style="font-family:'Space Mono',monospace;font-size:10px;font-weight:700;color:#f0f0f0;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;">Checkout Fast</div>
-                <div style="font-family:'Space Mono',monospace;font-size:10px;color:#5a5a5a;line-height:1.7;">Saved addresses &amp; payment methods.</div>
-              </td>
-              <td width="33%" style="vertical-align:top;border-left:1px solid #242424;padding-left:16px;">
-                <div style="font-family:'Anton',sans-serif;font-size:22px;color:#c41a1a;margin-bottom:6px;">03</div>
-                <div style="font-family:'Space Mono',monospace;font-size:10px;font-weight:700;color:#f0f0f0;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;">Track Orders</div>
-                <div style="font-family:'Space Mono',monospace;font-size:10px;color:#5a5a5a;line-height:1.7;">Real-time updates on every order.</div>
-              </td>
-            </tr>
-          </tbody></table>
-        </td>
-      </tr>
-      
-  <tr>
-    <td style="background:#131313;border-top:1px solid #242424;padding:28px 32px;">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tbody><tr>
-          <td align="center" style="padding-bottom:16px;">
-            <span style="font-family:'Anton',Impact,sans-serif;font-size:20px;color:#5a5a5a;letter-spacing:.05em;">
-              e<span style="color:#c41a1a;">Fear</span>
-            </span>
-          </td>
-        </tr>
-        <tr>
-          <td align="center" style="padding-bottom:12px;">
-            <a href="#" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;text-decoration:none;margin:0 10px;">Shop</a>
-            <a href="#" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;text-decoration:none;margin:0 10px;">Orders</a>
-            <a href="#" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;text-decoration:none;margin:0 10px;">Contact</a>
-            <a href="#" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;text-decoration:none;margin:0 10px;">Unsubscribe</a>
-          </td>
-        </tr>
-        <tr>
-          <td align="center" style="font-family:'Space Mono',monospace;font-size:9px;color:#5a5a5a;letter-spacing:.06em;line-height:1.8;">
-            © 2026 eFear LLC · 123 Collector's Way, Waco TX · All rights reserved<br>
-            <span style="color:#3a3a3a;">You're receiving this because you signed up at efear.com</span>
-          </td>
-        </tr>
-      </tbody></table>
-    </td>
-  </tr>
-    
-    </tbody></table>
-  </td></tr>
-</tbody></table>
-
-</div>
-    `},
-
-    confirm(data) {
-        return  `
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<link href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Space+Mono:ital@0;1&amp;display=swap" rel="stylesheet">
-<!--[if mso]><style>td,p,a{font-family:Arial,sans-serif!important;}</style><![endif]-->
-
-
-<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#080808;">
-  <tbody><tr><td align="center" style="padding:24px 16px;">
-    <table width="640" cellpadding="0" cellspacing="0" border="0" style="max-width:640px;width:100%;background:#0e0e0e;border:1px solid #242424;">
-      
-      
-  <tbody><tr>
-    <td style="background:#131313;border-bottom:3px solid #c41a1a;padding:22px 32px;">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tbody><tr>
-          <td>
-            <span style="font-family:'Anton',Impact,sans-serif;font-size:28px;color:#f0f0f0;letter-spacing:.05em;">
-              e<span style="color:#c41a1a;">Fear</span>
-            </span>
-            <span style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#5a5a5a;display:inline-block;padding-left:14px;margin-left:10px;border-left:1px solid #242424;">
-              Comics · Collectibles
-            </span>
-          </td>
-          <td align="right" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;">
-            Order Receipt
-          </td>
-        </tr>
-      </tbody></table>
-    </td>
-  </tr>
-      
-  <tr>
-    <td style="padding:36px 32px 20px;">
-      <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:#c41a1a;margin-bottom:8px;">// order confirmed</div>
-      <div style="font-family:'Anton',Impact,sans-serif;font-size:30px;color:#f0f0f0;letter-spacing:.03em;line-height:1.1;">Got it.
-You're good.</div>
-    </td>
-  </tr>
-      <tr>
-        <td style="padding:0 32px 24px;">
-          <p style="font-family:'Space Mono',monospace;font-size:12px;color:#b0b0b0;line-height:1.9;margin-bottom:0;">
-            Hey <strong style="color:#f0f0f0;">[[FIRST_NAME]]</strong> — your order is confirmed and being picked. We'll send tracking as soon as it ships.
-          </p>
-        </td>
-      </tr>
-      <tr><td style="padding:0 32px;"><div style="height:1px;background:#242424;"></div></td></tr>
-      <tr>
-        <td style="padding:24px 32px;">
-          <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#1a1a1a;border:1px solid #242424;">
-            <tbody><tr>
-              <td style="padding:14px 18px;border-bottom:1px solid #242424;">
-                <table width="100%" cellpadding="0" cellspacing="0" border="0">
-                  <tbody><tr>
-                    <td style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#5a5a5a;">Order</td>
-                    <td style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#5a5a5a;" align="right">Date</td>
-                  </tr>
-                  <tr>
-                    <td style="font-family:'Space Mono',monospace;font-size:13px;color:#f0f0f0;font-weight:700;padding-top:4px;">#[[ORDER_ID]]</td>
-                    <td style="font-family:'Space Mono',monospace;font-size:11px;color:#b0b0b0;padding-top:4px;" align="right">[[ORDER_DATE]]</td>
-                  </tr>
-                </tbody></table>
-              </td>
-            </tr>
-            <!-- Item row template — repeat as needed -->
-            <tr>
-              <td style="padding:14px 18px;border-bottom:1px solid #242424;">
-                <table width="100%" cellpadding="0" cellspacing="0" border="0">
-                  <tbody><tr>
-                    <td style="width:48px;vertical-align:middle;padding-right:14px;">
-                      <div style="width:48px;height:48px;background:#242424;border:1px solid #2e2e2e;"></div>
-                    </td>
-                    <td style="vertical-align:middle;">
-                      <div style="font-family:'Space Mono',monospace;font-size:11px;color:#f0f0f0;font-weight:700;margin-bottom:3px;">[[ITEM_NAME]]</div>
-                      <div style="font-family:'Space Mono',monospace;font-size:10px;color:#5a5a5a;">Qty: [[QTY]] &nbsp;·&nbsp; [[VARIANT]]</div>
-                    </td>
-                    <td align="right" style="vertical-align:middle;font-family:'Space Mono',monospace;font-size:12px;color:#f0f0f0;font-weight:700;">
-                      $[[ITEM_PRICE]]
-                    </td>
-                  </tr>
-                </tbody></table>
-              </td>
-            </tr>
-            <!-- Totals -->
-            <tr>
-              <td style="padding:14px 18px;">
-                <table width="100%" cellpadding="0" cellspacing="0" border="0">
-                  <tbody><tr>
-                    <td style="font-family:'Space Mono',monospace;font-size:10px;color:#5a5a5a;padding-bottom:6px;">Subtotal</td>
-                    <td align="right" style="font-family:'Space Mono',monospace;font-size:10px;color:#b0b0b0;padding-bottom:6px;">$[[SUBTOTAL]]</td>
-                  </tr>
-                  <tr>
-                    <td style="font-family:'Space Mono',monospace;font-size:10px;color:#5a5a5a;padding-bottom:6px;">Shipping</td>
-                    <td align="right" style="font-family:'Space Mono',monospace;font-size:10px;color:#b0b0b0;padding-bottom:6px;">$[[SHIPPING]]</td>
-                  </tr>
-                  <tr>
-                    <td style="font-family:'Space Mono',monospace;font-size:10px;color:#5a5a5a;padding-bottom:0;padding-top:10px;border-top:1px solid #242424;">
-                      <strong style="color:#f0f0f0;font-size:12px;">Total</strong>
-                    </td>
-                    <td align="right" style="font-family:'Space Mono',monospace;font-size:12px;color:#c41a1a;font-weight:700;border-top:1px solid #242424;padding-top:10px;">
-                      $[[TOTAL]]
-                    </td>
-                  </tr>
-                </tbody></table>
-              </td>
-            </tr>
-          </tbody></table>
-        </td>
-      </tr>
-      <tr><td style="padding:0 32px;"><div style="height:1px;background:#242424;"></div></td></tr>
-      <tr>
-        <td style="padding:24px 32px;">
-          <table width="100%" cellpadding="0" cellspacing="0" border="0">
-            <tbody><tr>
-              <td width="50%" style="padding-right:16px;vertical-align:top;">
-                <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#5a5a5a;margin-bottom:8px;">Ship To</div>
-                <div style="font-family:'Space Mono',monospace;font-size:11px;color:#b0b0b0;line-height:1.8;">
-                  [[FULL_NAME]]<br>[[ADDRESS_LINE1]]<br>[[CITY]], [[STATE]] [[ZIP]]
-                </div>
-              </td>
-              <td width="50%" style="vertical-align:top;border-left:1px solid #242424;padding-left:16px;">
-                <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#5a5a5a;margin-bottom:8px;">Payment</div>
-                <div style="font-family:'Space Mono',monospace;font-size:11px;color:#b0b0b0;line-height:1.8;">
-                  [[PAYMENT_METHOD]]<br>ending in [[CARD_LAST4]]
-                </div>
-              </td>
-            </tr>
-          </tbody></table>
-        </td>
-      </tr>
-      <tr>
-        <td style="padding:4px 32px 32px;">
-          
-  <a href="#" style="display:inline-block;padding:13px 28px;background:#c41a1a;color:#fff;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));">
-    Track My Order →
-  </a>
-        </td>
-      </tr>
-      
-  <tr>
-    <td style="background:#131313;border-top:1px solid #242424;padding:28px 32px;">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tbody><tr>
-          <td align="center" style="padding-bottom:16px;">
-            <span style="font-family:'Anton',Impact,sans-serif;font-size:20px;color:#5a5a5a;letter-spacing:.05em;">
-              e<span style="color:#c41a1a;">Fear</span>
-            </span>
-          </td>
-        </tr>
-        <tr>
-          <td align="center" style="padding-bottom:12px;">
-            <a href="#" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;text-decoration:none;margin:0 10px;">Shop</a>
-            <a href="#" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;text-decoration:none;margin:0 10px;">Orders</a>
-            <a href="#" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;text-decoration:none;margin:0 10px;">Contact</a>
-            <a href="#" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;text-decoration:none;margin:0 10px;">Unsubscribe</a>
-          </td>
-        </tr>
-        <tr>
-          <td align="center" style="font-family:'Space Mono',monospace;font-size:9px;color:#5a5a5a;letter-spacing:.06em;line-height:1.8;">
-            © 2026 eFear LLC · 123 Collector's Way, Waco TX · All rights reserved<br>
-            <span style="color:#3a3a3a;">You're receiving this because you signed up at efear.com</span>
-          </td>
-        </tr>
-      </tbody></table>
-    </td>
-  </tr>
-    
-    </tbody></table>
-  </td></tr>
-</tbody></table>
-    
-    `},
-
-    promo(data) {
-        return `
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<link href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Space+Mono:ital@0;1&amp;display=swap" rel="stylesheet">
-<!--[if mso]><style>td,p,a{font-family:Arial,sans-serif!important;}</style><![endif]-->
-
-
-<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#080808;">
-  <tbody><tr><td align="center" style="padding:24px 16px;">
-    <table width="640" cellpadding="0" cellspacing="0" border="0" style="max-width:640px;width:100%;background:#0e0e0e;border:1px solid #242424;">
-      
-      
-  <tbody><tr>
-    <td style="background:#131313;border-bottom:3px solid #c41a1a;padding:22px 32px;">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tbody><tr>
-          <td>
-            <span style="font-family:'Anton',Impact,sans-serif;font-size:28px;color:#f0f0f0;letter-spacing:.05em;">
-              e<span style="color:#c41a1a;">Fear</span>
-            </span>
-            <span style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#5a5a5a;display:inline-block;padding-left:14px;margin-left:10px;border-left:1px solid #242424;">
-              Comics · Collectibles
-            </span>
-          </td>
-          <td align="right" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;">
-            New Arrival
-          </td>
-        </tr>
-      </tbody></table>
-    </td>
-  </tr>
-      <tr>
-        <td style="background:#c41a1a;padding:40px 32px 36px;position:relative;overflow:hidden;">
-          <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:10px;">// new drop</div>
-          <div style="font-family:'Anton',Impact,sans-serif;font-size:48px;color:#fff;letter-spacing:.02em;line-height:1;margin-bottom:12px;">Collection Update!</div>
-          <div style="font-family:'Space Mono',monospace;font-size:11px;color:rgba(255,255,255,.7);line-height:1.8;margin-bottom:24px;max-width:420px;">Check out our latest rare comics!</div>
-          
-  <a href="https://efear.shop/shop" style="display:inline-block;padding:13px 28px;background:#fff;color:#c41a1a;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));">
-    Shop the Drop →
-  </a>
-        </td>
-      </tr>
-      <tr>
-        <td style="padding:32px 32px 20px;">
-          <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#5a5a5a;margin-bottom:20px;">Featured Comics</div>
-          <table width="100%" cellpadding="0" cellspacing="0" border="0">
-            <tbody><tr>
-              <!-- Product card — repeat x3 -->
-              <td width="33%" style="padding-right:10px;vertical-align:top;">
-                <div style="background:#1a1a1a;border:1px solid #242424;padding:16px;">
-                  <div style="height:140px;background:url(https://res.cloudinary.com/dgzxxbqa0/image/upload/v1773358297/products/hlfzruocsnoa2rg4piiv.webp);margin-bottom:14px;"></div>
-                  <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;margin-bottom:4px;">Comic Books</div>
-                  <div style="font-family:'Space Mono',monospace;font-size:11px;color:#f0f0f0;font-weight:700;margin-bottom:10px;line-height:1.4;">Spawn #1</div>
-                  <div style="font-family:'Anton',sans-serif;font-size:18px;color:#c41a1a;">$30.99</div>
-                </div>
-              </td>
-              <td width="33%" style="padding-right:10px;vertical-align:top;">
-                <div style="background:#1a1a1a;border:1px solid #242424;padding:16px;">
-                  <div style="height:140px;background:url(https://res.cloudinary.com/dgzxxbqa0/image/upload/v1773358023/products/vcerejp5tz3d3jp57wub.webp);margin-bottom:14px;"></div>
-                  <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;margin-bottom:4px;">Comic Books</div>
-                  <div style="font-family:'Space Mono',monospace;font-size:11px;color:#f0f0f0;font-weight:700;margin-bottom:10px;line-height:1.4;">Teenage Mutant Ninja Turtles</div>
-                  <div style="font-family:'Anton',sans-serif;font-size:18px;color:#c41a1a;">$29.99</div>
-                </div>
-              </td>
-              <td width="33%" style="vertical-align:top;">
-                <div style="background:#1a1a1a;border:1px solid #242424;padding:16px;">
-                  <div style="height:140px;background:url(https://res.cloudinary.com/dgzxxbqa0/image/upload/v1766610330/products/ja3y2gzv0ujcafqerk32.jpg);margin-bottom:14px;"></div>
-                  <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;margin-bottom:4px;">E-Books</div>
-                  <div style="font-family:'Space Mono',monospace;font-size:11px;color:#f0f0f0;font-weight:700;margin-bottom:10px;line-height:1.4;">F.E.A.R. The Vegan Manifesto</div>
-                  <div style="font-family:'Anton',sans-serif;font-size:18px;color:#c41a1a;">$5.99</div>
-                </div>
-              </td>
-            </tr>
-          </tbody></table>
-        </td><
-      </tr>
-      <tr>
-        <td style="padding:8px 32px 36px;">
-          
-  <a href="#" style="display:inline-block;padding:13px 28px;background:#c41a1a;color:#fff;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));">
-    See All New Arrivals →
-  </a>
-        </td>
-      </tr>
-      
-  <tr>
-    <td style="background:#131313;border-top:1px solid #242424;padding:28px 32px;">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tbody><tr>
-          <td align="center" style="padding-bottom:16px;">
-            <span style="font-family:'Anton',Impact,sans-serif;font-size:20px;color:#5a5a5a;letter-spacing:.05em;">
-              e<span style="color:#c41a1a;">Fear</span>
-            </span>
-          </td>
-        </tr>
-        <tr>
-          <td align="center" style="padding-bottom:12px;">
-            <a href="#" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;text-decoration:none;margin:0 10px;">Shop</a>
-            <a href="#" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;text-decoration:none;margin:0 10px;">Orders</a>
-            <a href="#" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;text-decoration:none;margin:0 10px;">Contact</a>
-            <a href="#" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;text-decoration:none;margin:0 10px;">Unsubscribe</a>
-          </td>
-        </tr>
-        <tr>
-          <td align="center" style="font-family:'Space Mono',monospace;font-size:9px;color:#5a5a5a;letter-spacing:.06em;line-height:1.8;">
-            © 2026 eFear LLC · 123 Collector's Way, Waco TX · All rights reserved<br>
-            <span style="color:#3a3a3a;">You're receiving this because you signed up at efear.com</span>
-          </td>
-        </tr>
-      </tbody></table>
-    </td>
-  </tr>
-    
-    </tbody></table>
-  </td></tr>
-</tbody></table>
-    `},
-
-    contactForm(data) {
-        return `
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<link href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Space+Mono:ital@0;1&amp;display=swap" rel="stylesheet">
-<!--[if mso]><style>td,p,a{font-family:Arial,sans-serif!important;}</style><![endif]-->
-
-<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#080808;">
-  <tbody><tr><td align="center" style="padding:24px 16px;">
-    <table width="640" cellpadding="0" cellspacing="0" border="0" style="max-width:640px;width:100%;background:#0e0e0e;border:1px solid #242424;">
-
-  <tbody><tr>
-    <td style="background:#131313;border-bottom:3px solid #c41a1a;padding:22px 32px;">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tbody><tr>
-          <td>
-            <span style="font-family:'Anton',Impact,sans-serif;font-size:28px;color:#f0f0f0;letter-spacing:.05em;">
-              e<span style="color:#c41a1a;">FEAR</span>
-            </span>
-            <span style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#5a5a5a;display:inline-block;padding-left:14px;margin-left:10px;border-left:1px solid #242424;">
-              Comics · Collectibles
-            </span>
-          </td>
-          <td align="right" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;">
-            Contact Form
-          </td>
-        </tr>
-      </tbody></table>
-    </td>
-  </tr>
-
-  <tr>
-    <td style="padding:36px 32px 20px;">
-      <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:#c41a1a;margin-bottom:8px;">// message received</div>
-      <div style="font-family:'Anton',Impact,sans-serif;font-size:30px;color:#f0f0f0;letter-spacing:.03em;line-height:1.1;">We got your message.</div>
-    </td>
-  </tr>
-  <tr>
-    <td style="padding:0 32px 28px;">
-      <p style="font-family:'Space Mono',monospace;font-size:12px;color:#b0b0b0;line-height:1.9;margin-bottom:0;">
-        Hey <strong style="color:#f0f0f0;">${data.$name}</strong>,<br><br>
-        Thanks for reaching out. Our team has received your message and will get back to you within 1–2 business days. Here's a copy of what you sent.
-      </p>
-    </td>
-  </tr>
-  <tr><td style="padding:0 32px;"><div style="height:1px;background:#242424;"></div></td></tr>
-  <tr>
-    <td style="padding:24px 32px;">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#1a1a1a;border:1px solid #242424;">
-        <tbody>
-          <tr>
-            <td style="padding:14px 18px;border-bottom:1px solid #242424;">
-              <table width="100%" cellpadding="0" cellspacing="0" border="0">
-                <tbody><tr>
-                  <td style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#5a5a5a;">Subject</td>
-                  <td align="right" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#5a5a5a;">Submitted</td>
-                </tr>
-                <tr>
-                  <td style="font-family:'Space Mono',monospace;font-size:13px;color:#f0f0f0;font-weight:700;padding-top:4px;">${data.$subject}</td>
-                  <td align="right" style="font-family:'Space Mono',monospace;font-size:11px;color:#b0b0b0;padding-top:4px;">${new Date()}</td>
-                </tr>
-              </tbody></table>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding:18px 18px;">
-              <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#5a5a5a;margin-bottom:10px;">Your Message</div>
-              <div style="font-family:'Space Mono',monospace;font-size:11px;color:#b0b0b0;line-height:1.9;border-left:3px solid #c41a1a;padding-left:14px;">
-                ${data.$message}
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </td>
-  </tr>
-  <tr><td style="padding:0 32px;"><div style="height:1px;background:#242424;"></div></td></tr>
-  <tr>
-    <td style="padding:24px 32px 32px;">
-      <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#5a5a5a;margin-bottom:12px;">Need faster help?</div>
-      <table cellpadding="0" cellspacing="0" border="0">
-        <tbody><tr>
-          <td style="padding-right:12px;">
-<a href="https://efear.shop/faq" style="display:inline-block;padding:13px 28px;background:#c41a1a;color:#fff;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));">
-  Browse FAQ →
-</a></td>
-          <td>
-<a href="https://efear.shop/shop" style="display:inline-block;padding:12px 28px;border:1px solid #242424;color:#b0b0b0;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;">
-  Back to Store
-</a></td>
-        </tr>
-      </tbody></table>
-    </td>
-  </tr>
-
-  <tr>
-    <td style="background:#131313;border-top:1px solid #242424;padding:28px 32px;">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tbody><tr>
-          <td align="center" style="padding-bottom:16px;">
-            <span style="font-family:'Anton',Impact,sans-serif;font-size:20px;color:#5a5a5a;letter-spacing:.05em;">
-              e<span style="color:#c41a1a;">FEAR</span>
-            </span>
-          </td>
-        </tr>
-        <tr>
-          <td align="center" style="padding-bottom:12px;">
-            <a href="https://efear.shop/shop" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;text-decoration:none;margin:0 10px;">Shop</a>
-            <a href="https://efear.shop/about" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;text-decoration:none;margin:0 10px;">Orders</a>
-            <a href="https://efear.shop/contact" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;text-decoration:none;margin:0 10px;">Contact</a>
-            <a href="https://efear.shop/unsubscribe" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;text-decoration:none;margin:0 10px;">Unsubscribe</a>
-          </td>
-        </tr>
-        <tr>
-          <td align="center" style="font-family:'Space Mono',monospace;font-size:9px;color:#5a5a5a;letter-spacing:.06em;line-height:1.8;">
-            © 2026 FEAR Inc. · 2003 E. Veterans Memorial Blvd, Killeen TX · All rights reserved<br>
-            <span style="color:#3a3a3a;">You're receiving this because you submitted a contact form at efear.com</span>
-          </td>
-        </tr>
-      </tbody></table>
-    </td>
-  </tr>
-
-    </tbody></table>
-  </td></tr>
-</tbody></table>
-`},
-
-    passwordReset(data) {
-        return `
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<link href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Space+Mono:ital@0;1&amp;display=swap" rel="stylesheet">
-<!--[if mso]><style>td,p,a{font-family:Arial,sans-serif!important;}</style><![endif]-->
-
-<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#080808;">
-  <tbody><tr><td align="center" style="padding:24px 16px;">
-    <table width="640" cellpadding="0" cellspacing="0" border="0" style="max-width:640px;width:100%;background:#0e0e0e;border:1px solid #242424;">
-
-  <tbody><tr>
-    <td style="background:#131313;border-bottom:3px solid #c41a1a;padding:22px 32px;">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tbody><tr>
-          <td>
-            <span style="font-family:'Anton',Impact,sans-serif;font-size:28px;color:#f0f0f0;letter-spacing:.05em;">
-              e<span style="color:#c41a1a;">Fear</span>
-            </span>
-            <span style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#5a5a5a;display:inline-block;padding-left:14px;margin-left:10px;border-left:1px solid #242424;">
-              Comics · Collectibles
-            </span>
-          </td>
-          <td align="right" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;">
-            Password Reset
-          </td>
-        </tr>
-      </tbody></table>
-    </td>
-  </tr>
-
-  <tr>
-    <td style="padding:36px 32px 20px;">
-      <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:#c41a1a;margin-bottom:8px;">// access request</div>
-      <div style="font-family:'Anton',Impact,sans-serif;font-size:30px;color:#f0f0f0;letter-spacing:.03em;line-height:1.1;">Reset your<br>password.</div>
-    </td>
-  </tr>
-  <tr>
-    <td style="padding:0 32px 28px;">
-      <p style="font-family:'Space Mono',monospace;font-size:12px;color:#b0b0b0;line-height:1.9;margin-bottom:0;">
-        Hey <strong style="color:#f0f0f0;">${data.firstName}</strong>,<br><br>
-        We received a request to reset the password for your eFear account. Click the button below — this link expires in <strong style="color:#f0f0f0;">30 minutes</strong>. If you didn't request this, you can safely ignore this email.
-      </p>
-    </td>
-  </tr>
-  <tr><td style="padding:0 32px;"><div style="height:1px;background:#242424;"></div></td></tr>
-  <tr>
-    <td style="padding:28px 32px;">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#1a1a1a;border:1px solid #242424;">
-        <tbody>
-          <tr>
-            <td style="padding:20px 22px;border-bottom:1px solid #242424;">
-              <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:#5a5a5a;margin-bottom:6px;">Account</div>
-              <div style="font-family:'Space Mono',monospace;font-size:13px;color:#f0f0f0;font-weight:700;">${data.email}</div>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding:20px 22px;border-bottom:1px solid #242424;">
-              <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:#5a5a5a;margin-bottom:6px;">Link Expires</div>
-              <div style="font-family:'Space Mono',monospace;font-size:13px;color:#c41a1a;font-weight:700;">${data.expiresAt}</div>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding:22px 22px;">
-<a href="${data.resetUrl}" style="display:inline-block;padding:13px 28px;background:#c41a1a;color:#fff;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));">
-  Reset My Password →
-</a>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </td>
-  </tr>
-  <tr><td style="padding:0 32px;"><div style="height:1px;background:#242424;"></div></td></tr>
-  <tr>
-    <td style="padding:24px 32px 32px;">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tbody><tr>
-          <td width="33%" style="padding-right:16px;vertical-align:top;">
-            <div style="font-family:'Anton',sans-serif;font-size:22px;color:#c41a1a;margin-bottom:6px;">01</div>
-            <div style="font-family:'Space Mono',monospace;font-size:10px;font-weight:700;color:#f0f0f0;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;">Click the Link</div>
-            <div style="font-family:'Space Mono',monospace;font-size:10px;color:#5a5a5a;line-height:1.7;">Opens a secure reset page.</div>
-          </td>
-          <td width="33%" style="padding-right:16px;vertical-align:top;border-left:1px solid #242424;padding-left:16px;">
-            <div style="font-family:'Anton',sans-serif;font-size:22px;color:#c41a1a;margin-bottom:6px;">02</div>
-            <div style="font-family:'Space Mono',monospace;font-size:10px;font-weight:700;color:#f0f0f0;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;">Set New Password</div>
-            <div style="font-family:'Space Mono',monospace;font-size:10px;color:#5a5a5a;line-height:1.7;">Choose something strong.</div>
-          </td>
-          <td width="33%" style="vertical-align:top;border-left:1px solid #242424;padding-left:16px;">
-            <div style="font-family:'Anton',sans-serif;font-size:22px;color:#c41a1a;margin-bottom:6px;">03</div>
-            <div style="font-family:'Space Mono',monospace;font-size:10px;font-weight:700;color:#f0f0f0;letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;">Back in Business</div>
-            <div style="font-family:'Space Mono',monospace;font-size:10px;color:#5a5a5a;line-height:1.7;">Log in and get back to the haul.</div>
-          </td>
-        </tr>
-      </tbody></table>
-    </td>
-  </tr>
-
-  <tr>
-    <td style="background:#131313;border-top:1px solid #242424;padding:28px 32px;">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tbody><tr>
-          <td align="center" style="padding-bottom:16px;">
-            <span style="font-family:'Anton',Impact,sans-serif;font-size:20px;color:#5a5a5a;letter-spacing:.05em;">
-              e<span style="color:#c41a1a;">Fear</span>
-            </span>
-          </td>
-        </tr>
-        <tr>
-          <td align="center" style="padding-bottom:12px;">
-            <a href="#" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;text-decoration:none;margin:0 10px;">Shop</a>
-            <a href="#" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;text-decoration:none;margin:0 10px;">Orders</a>
-            <a href="#" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;text-decoration:none;margin:0 10px;">Contact</a>
-            <a href="#" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;text-decoration:none;margin:0 10px;">Unsubscribe</a>
-          </td>
-        </tr>
-        <tr>
-          <td align="center" style="font-family:'Space Mono',monospace;font-size:9px;color:#5a5a5a;letter-spacing:.06em;line-height:1.8;">
-            © 2026 eFear LLC · 123 Collector's Way, Waco TX · All rights reserved<br>
-            <span style="color:#3a3a3a;">You're receiving this because a reset was requested for your account at efear.com</span>
-          </td>
-        </tr>
-      </tbody></table>
-    </td>
-  </tr>
-
-    </tbody></table>
-  </td></tr>
-</tbody></table>
-`},
-
-    orderComplete(data) {
-        return `
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<link href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Space+Mono:ital@0;1&amp;display=swap" rel="stylesheet">
-<!--[if mso]><style>td,p,a{font-family:Arial,sans-serif!important;}</style><![endif]-->
-
-<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#080808;">
-  <tbody><tr><td align="center" style="padding:24px 16px;">
-    <table width="640" cellpadding="0" cellspacing="0" border="0" style="max-width:640px;width:100%;background:#0e0e0e;border:1px solid #242424;">
-
-  <tbody><tr>
-    <td style="background:#131313;border-bottom:3px solid #c41a1a;padding:22px 32px;">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tbody><tr>
-          <td>
-            <span style="font-family:'Anton',Impact,sans-serif;font-size:28px;color:#f0f0f0;letter-spacing:.05em;">
-              e<span style="color:#c41a1a;">Fear</span>
-            </span>
-            <span style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#5a5a5a;display:inline-block;padding-left:14px;margin-left:10px;border-left:1px solid #242424;">
-              Comics · Collectibles
-            </span>
-          </td>
-          <td align="right" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;">
-            Order Complete
-          </td>
-        </tr>
-      </tbody></table>
-    </td>
-  </tr>
-
-  <tr>
-    <td style="background:#1a1a1a;border-bottom:1px solid #242424;padding:32px;">
-      <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:#c41a1a;margin-bottom:10px;">// delivered</div>
-      <div style="font-family:'Anton',Impact,sans-serif;font-size:36px;color:#f0f0f0;letter-spacing:.02em;line-height:1.1;margin-bottom:14px;">Your haul<br>has landed.</div>
-      <p style="font-family:'Space Mono',monospace;font-size:12px;color:#b0b0b0;line-height:1.9;margin:0;">
-        Order <strong style="color:#f0f0f0;">#${data.orderId}</strong> has been delivered. We hope everything is in perfect condition — if not, we'll make it right.
-      </p>
-    </td>
-  </tr>
-
-  <tr>
-    <td style="padding:28px 32px;">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#1a1a1a;border:1px solid #242424;">
-        <tbody>
-          <tr>
-            <td style="padding:20px 22px;border-bottom:1px solid #242424;">
-              <table width="100%" cellpadding="0" cellspacing="0" border="0">
-                <tbody><tr>
-                  <td style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:#5a5a5a;">Delivered To</td>
-                  <td align="right" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:#5a5a5a;">Delivered On</td>
-                </tr>
-                <tr>
-                  <td style="font-family:'Space Mono',monospace;font-size:12px;color:#b0b0b0;padding-top:4px;line-height:1.7;">${data.fullName}<br>${data.addressLine1}<br>${data.city}, ${data.state} ${data.zip}</td>
-                  <td align="right" style="font-family:'Space Mono',monospace;font-size:13px;color:#f0f0f0;font-weight:700;padding-top:4px;vertical-align:top;">${data.deliveredDate}</td>
-                </tr>
-              </tbody></table>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding:20px 22px;">
-              <table width="100%" cellpadding="0" cellspacing="0" border="0">
-                <tbody><tr>
-                  <td width="33%" style="text-align:center;vertical-align:top;">
-                    <div style="width:32px;height:32px;border-radius:50%;background:#c41a1a;font-family:'Space Mono',monospace;font-size:13px;color:#fff;line-height:32px;text-align:center;margin:0 auto 8px;">✓</div>
-                    <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#f0f0f0;">Order Placed</div>
-                    <div style="font-family:'Space Mono',monospace;font-size:9px;color:#5a5a5a;margin-top:3px;">${data.placedDate}</div>
-                  </td>
-                  <td width="33%" style="text-align:center;vertical-align:top;">
-                    <div style="width:32px;height:32px;border-radius:50%;background:#c41a1a;font-family:'Space Mono',monospace;font-size:13px;color:#fff;line-height:32px;text-align:center;margin:0 auto 8px;">✓</div>
-                    <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#f0f0f0;">Dispatched</div>
-                    <div style="font-family:'Space Mono',monospace;font-size:9px;color:#5a5a5a;margin-top:3px;">${data.shippedDate}</div>
-                  </td>
-                  <td width="33%" style="text-align:center;vertical-align:top;">
-                    <div style="width:32px;height:32px;border-radius:50%;background:#c41a1a;font-family:'Space Mono',monospace;font-size:13px;color:#fff;line-height:32px;text-align:center;margin:0 auto 8px;">✓</div>
-                    <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#f0f0f0;">Delivered</div>
-                    <div style="font-family:'Space Mono',monospace;font-size:9px;color:#5a5a5a;margin-top:3px;">${data.deliveredDate}</div>
-                  </td>
-                </tr>
-              </tbody></table>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </td>
-  </tr>
-  <tr><td style="padding:0 32px;"><div style="height:1px;background:#242424;"></div></td></tr>
-
-  <tr>
-    <td style="padding:24px 32px 8px;">
-      <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#5a5a5a;margin-bottom:16px;">What Was Inside</div>
-      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#1a1a1a;border:1px solid #242424;">
-        <tbody>
-          <tr>
-            <td style="padding:14px 18px;border-bottom:1px solid #242424;">
-              <table width="100%" cellpadding="0" cellspacing="0" border="0">
-                <tbody><tr>
-                  <td style="width:48px;vertical-align:middle;padding-right:14px;">
-                    <div style="width:48px;height:48px;background:#242424;border:1px solid #2e2e2e;"></div>
-                  </td>
-                  <td style="vertical-align:middle;">
-                    <div style="font-family:'Space Mono',monospace;font-size:11px;color:#f0f0f0;font-weight:700;margin-bottom:3px;">${data.itemName}</div>
-                    <div style="font-family:'Space Mono',monospace;font-size:10px;color:#5a5a5a;">Qty: ${data.qty} &nbsp;·&nbsp; ${data.variant}</div>
-                  </td>
-                  <td align="right" style="vertical-align:middle;font-family:'Space Mono',monospace;font-size:12px;color:#f0f0f0;font-weight:700;">
-                    $${data.itemPrice}
-                  </td>
-                </tr>
-              </tbody></table>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding:14px 18px;">
-              <table width="100%" cellpadding="0" cellspacing="0" border="0">
-                <tbody><tr>
-                  <td style="font-family:'Space Mono',monospace;font-size:10px;color:#5a5a5a;">Order Total</td>
-                  <td align="right" style="font-family:'Space Mono',monospace;font-size:12px;color:#c41a1a;font-weight:700;">$${data.total}</td>
-                </tr>
-              </tbody></table>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </td>
-  </tr>
-
-  <tr>
-    <td style="padding:20px 32px 32px;">
-      <table cellpadding="0" cellspacing="0" border="0">
-        <tbody><tr>
-          <td style="padding-right:12px;">
-<a href="${data.reviewUrl}" style="display:inline-block;padding:13px 28px;background:#c41a1a;color:#fff;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));">
-  Leave a Review →
-</a></td>
-          <td>
-<a href="${data.shopUrl}" style="display:inline-block;padding:12px 28px;border:1px solid #242424;color:#b0b0b0;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;">
-  Shop Again
-</a></td>
-        </tr>
-      </tbody></table>
-    </td>
-  </tr>
-  <tr><td style="padding:0 32px;"><div style="height:1px;background:#242424;"></div></td></tr>
-  <tr>
-    <td style="padding:22px 32px 28px;">
-      <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#5a5a5a;margin-bottom:10px;">Something not right?</div>
-      <p style="font-family:'Space Mono',monospace;font-size:11px;color:#b0b0b0;line-height:1.9;margin:0;">
-        Missing items, damage, wrong product — <a href="${data.supportUrl}" style="color:#c41a1a;text-decoration:none;">contact our team</a> within 7 days and we'll sort it out, no hassle.
-      </p>
-    </td>
-  </tr>
-
-  <tr>
-    <td style="background:#131313;border-top:1px solid #242424;padding:28px 32px;">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tbody><tr>
-          <td align="center" style="padding-bottom:16px;">
-            <span style="font-family:'Anton',Impact,sans-serif;font-size:20px;color:#5a5a5a;letter-spacing:.05em;">
-              e<span style="color:#c41a1a;">Fear</span>
-            </span>
-          </td>
-        </tr>
-        <tr>
-          <td align="center" style="padding-bottom:12px;">
-            <a href="#" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;text-decoration:none;margin:0 10px;">Shop</a>
-            <a href="#" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;text-decoration:none;margin:0 10px;">Orders</a>
-            <a href="#" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;text-decoration:none;margin:0 10px;">Contact</a>
-            <a href="#" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;text-decoration:none;margin:0 10px;">Unsubscribe</a>
-          </td>
-        </tr>
-        <tr>
-          <td align="center" style="font-family:'Space Mono',monospace;font-size:9px;color:#5a5a5a;letter-spacing:.06em;line-height:1.8;">
-            © 2026 eFear LLC · 123 Collector's Way, Waco TX · All rights reserved<br>
-            <span style="color:#3a3a3a;">You're receiving this because you placed an order at efear.com</span>
-          </td>
-        </tr>
-      </tbody></table>
-    </td>
-  </tr>
-
-    </tbody></table>
-  </td></tr>
-</tbody></table>
-`},
-
-    update(data) {
-
-        return `
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<link href="https://fonts.googleapis.com/css2?family=Anton&amp;family=Space+Mono:ital@0;1&amp;display=swap" rel="stylesheet">
-<!--[if mso]><style>td,p,a{font-family:Arial,sans-serif!important;}</style><![endif]-->
-
-
-<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#080808;">
-  <tbody><tr><td align="center" style="padding:24px 16px;">
-    <table width="640" cellpadding="0" cellspacing="0" border="0" style="max-width:640px;width:100%;background:#0e0e0e;border:1px solid #242424;">
-      
-      
-  <tbody><tr>
-    <td style="background:#131313;border-bottom:3px solid #c41a1a;padding:22px 32px;">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tbody><tr>
-          <td>
-            <span style="font-family:'Anton',Impact,sans-serif;font-size:28px;color:#f0f0f0;letter-spacing:.05em;">
-              e<span style="color:#c41a1a;">Fear</span>
-            </span>
-            <span style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:#5a5a5a;display:inline-block;padding-left:14px;margin-left:10px;border-left:1px solid #242424;">
-              Comics · Collectibles
-            </span>
-          </td>
-          <td align="right" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;">
-            Shipping Update
-          </td>
-        </tr>
-      </tbody></table>
-    </td>
-  </tr>
-      <tr>
-        <td style="background:#1a1a1a;border-bottom:1px solid #242424;padding:32px;">
-          <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:#c41a1a;margin-bottom:10px;">// dispatched</div>
-          <div style="font-family:'Anton',Impact,sans-serif;font-size:36px;color:#f0f0f0;letter-spacing:.02em;line-height:1.1;margin-bottom:14px;">Your order<br>just shipped.</div>
-          <p style="font-family:'Space Mono',monospace;font-size:12px;color:#b0b0b0;line-height:1.9;margin:0;">
-            Order <strong style="color:#f0f0f0;">#[[ORDER_ID]]</strong> left our warehouse and is heading your way. Use the tracking number below to follow it.
-          </p>
-        </td>
-      </tr>
-      <!-- Tracking block -->
-      <tr>
-        <td style="padding:28px 32px;">
-          <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#1a1a1a;border:1px solid #242424;">
-            <tbody><tr>
-              <td style="padding:20px 22px;border-bottom:1px solid #242424;">
-                <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:#5a5a5a;margin-bottom:6px;">Tracking Number</div>
-                <div style="font-family:'Space Mono',monospace;font-size:16px;color:#f0f0f0;font-weight:700;letter-spacing:.1em;">[[TRACKING_NUMBER]]</div>
-              </td>
-            </tr>
-            <tr>
-              <td style="padding:20px 22px;">
-                <table width="100%" cellpadding="0" cellspacing="0" border="0">
-                  <tbody><tr>
-                    <td width="33%" style="text-align:center;vertical-align:top;">
-                      <div style="width:32px;height:32px;border-radius:50%;background:#c41a1a;font-family:'Space Mono',monospace;font-size:13px;color:#fff;line-height:32px;text-align:center;margin:0 auto 8px;">✓</div>
-                      <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#f0f0f0;">Order Placed</div>
-                      <div style="font-family:'Space Mono',monospace;font-size:9px;color:#5a5a5a;margin-top:3px;">[[PLACED_DATE]]</div>
-                    </td>
-                    <td width="33%" style="text-align:center;vertical-align:top;">
-                      <div style="width:32px;height:32px;border-radius:50%;background:#c41a1a;font-family:'Space Mono',monospace;font-size:13px;color:#fff;line-height:32px;text-align:center;margin:0 auto 8px;">✓</div>
-                      <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#f0f0f0;">Dispatched</div>
-                      <div style="font-family:'Space Mono',monospace;font-size:9px;color:#5a5a5a;margin-top:3px;">[[SHIP_DATE]]</div>
-                    </td>
-                    <td width="33%" style="text-align:center;vertical-align:top;">
-                      <div style="width:32px;height:32px;border-radius:50%;background:#242424;border:2px solid #242424;font-family:'Space Mono',monospace;font-size:13px;color:#5a5a5a;line-height:28px;text-align:center;margin:0 auto 8px;">○</div>
-                      <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#5a5a5a;">Delivered</div>
-                      <div style="font-family:'Space Mono',monospace;font-size:9px;color:#5a5a5a;margin-top:3px;">Est. [[ETA_DATE]]</div>
-                    </td>
-                  </tr>
-                </tbody></table>
-              </td>
-            </tr>
-          </tbody></table>
-        </td>
-      </tr>
-      <tr><td style="padding:0 32px;"><div style="height:1px;background:#242424;"></div></td></tr>
-      <tr>
-        <td style="padding:24px 32px;">
-          <table width="100%" cellpadding="0" cellspacing="0" border="0">
-            <tbody><tr>
-              <td width="50%" style="padding-right:16px;vertical-align:top;">
-                <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#5a5a5a;margin-bottom:8px;">Delivering To</div>
-                <div style="font-family:'Space Mono',monospace;font-size:11px;color:#b0b0b0;line-height:1.8;">
-                  [[FULL_NAME]]<br>[[ADDRESS_LINE1]]<br>[[CITY]], [[STATE]] [[ZIP]]
-                </div>
-              </td>
-              <td width="50%" style="vertical-align:top;border-left:1px solid #242424;padding-left:16px;">
-                <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#5a5a5a;margin-bottom:8px;">Carrier</div>
-                <div style="font-family:'Space Mono',monospace;font-size:11px;color:#b0b0b0;line-height:1.8;">
-                  [[CARRIER]]<br>[[SERVICE_LEVEL]]
-                </div>
-              </td>
-            </tr>
-          </tbody></table>
-        </td>
-      </tr>
-      <tr>
-        <td style="padding:4px 32px 32px;">
-          
-  <a href="#" style="display:inline-block;padding:13px 28px;background:#c41a1a;color:#fff;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;text-decoration:none;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));">
-    Track Package →
-  </a>
-        </td>
-      </tr>
-      
-  <tr>
-    <td style="background:#131313;border-top:1px solid #242424;padding:28px 32px;">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tbody><tr>
-          <td align="center" style="padding-bottom:16px;">
-            <span style="font-family:'Anton',Impact,sans-serif;font-size:20px;color:#5a5a5a;letter-spacing:.05em;">
-              e<span style="color:#c41a1a;">Fear</span>
-            </span>
-          </td>
-        </tr>
-        <tr>
-          <td align="center" style="padding-bottom:12px;">
-            <a href="#" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;text-decoration:none;margin:0 10px;">Shop</a>
-            <a href="#" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;text-decoration:none;margin:0 10px;">Orders</a>
-            <a href="#" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;text-decoration:none;margin:0 10px;">Contact</a>
-            <a href="#" style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#5a5a5a;text-decoration:none;margin:0 10px;">Unsubscribe</a>
-          </td>
-        </tr>
-        <tr>
-          <td align="center" style="font-family:'Space Mono',monospace;font-size:9px;color:#5a5a5a;letter-spacing:.06em;line-height:1.8;">
-            © 2026 eFear LLC · 123 Collector's Way, Waco TX · All rights reserved<br>
-            <span style="color:#3a3a3a;">You're receiving this because you signed up at efear.com</span>
-          </td>
-        </tr>
-      </tbody></table>
-    </td>
-  </tr>
-    
-    </tbody></table>
-  </td></tr>
-</tbody></table>
-    
-    `},
+    // Account recovery. The (resetURL, email) / (email) signatures are what
+    // controllers/auth/password.js calls through mailService.templates.
+    passwordReset: efPasswordReset,
+    passwordResetTemplate: (resetURL, email, extra = {}) => efPasswordReset({ ...extra, resetUrl: resetURL, email }),
+    passwordResetSuccess: efPasswordResetSuccess,
+    passwordResetSuccessTemplate: (email, extra = {}) => efPasswordResetSuccess({ ...extra, email }),
+    generatePlainText: efPlainText,
 
     vchatWelcome(data = {}) {
         const step = (n, title, copy, edge) => `

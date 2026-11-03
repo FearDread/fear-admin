@@ -200,18 +200,21 @@ _________________________
             this.app.use(express.json({ limit: DEFAULT_JSON_LIMIT }));
             this.app.use(express.urlencoded({ extended: true }));
 
-            this.sessionParser = session({
-                secret: this.env.SESSION_SECRET,
-                resave: false,
-                saveUninitialized: false,
-                cookie: {
-                    maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
-                    httpOnly: true,
-                    secure: this.env.NODE_ENV === 'production',
-                    sameSite: 'lax'
-                }
+            if (this.env.NODE_ENV !== 'production') {
+                this.sessionParser = session({
+                    secret: this.env.SESSION_SECRET,
+                    resave: false,
+                    saveUninitialized: false,
+                    cookie: {
+                        maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
+                        httpOnly: true,
+                        secure: this.env.NODE_ENV === 'production',
+                        sameSite: 'lax'
+                    }
 
-            })
+                })
+            }
+
             this.app.use(this.sessionParser);
             this.app.use(this.morgan);
             this.app.use(compression());
@@ -238,6 +241,8 @@ _________________________
             if (!this.mailer) {
                 this.mailer = new smtp(this);
             }
+
+            this.app.set('mailer', this.mailer);
         },
 
         getAllowedOrigins() {
