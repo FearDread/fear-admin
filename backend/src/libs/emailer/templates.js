@@ -106,7 +106,7 @@ const EF_HEAD = `
 <!--[if mso]><style>td,p,a{font-family:Arial,sans-serif!important;}</style><![endif]-->`;
 
 // Read at call time (not module load) so dotenv has already run.
-const efSite = () => (process.env.FRONTEND_URL || process.env.NEXT_PUBLIC_APP_URL || 'https://efear.store').replace(/\/+$/, '');
+const efSite = () => (process.env.FRONTEND_URL || process.env.NEXT_PUBLIC_APP_URL || 'https://efear.shop').replace(/\/+$/, '');
 const efHost = () => efSite().replace(/^https?:\/\//i, '');
 
 const efEsc = (v) => String(v == null ? '' : v)

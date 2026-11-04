@@ -36,18 +36,12 @@ const hashToken = (token) => crypto.createHash('sha256').update(token).digest('h
 /**
  * Where the *storefront* lives (the Next.js app), used to build the link in
  * the reset email. Returns null if nothing is configured.
- *
- * Never build this from req.get('host'): that header is attacker-controlled,
- * so anyone could request a reset for a victim with a forged Host and the
- * victim would receive a legitimate email linking to the attacker's domain
- * (host-header poisoning). It's also wrong behind the Next proxy, where Host
- * is the backend (:4000), not the storefront.
  */
 const getFrontendOrigin = () => {
     const origin =
         process.env.FRONTEND_URL ||
         process.env.NEXT_PUBLIC_APP_URL ||
-        (process.env.HTTPS_DOMAIN ? `https://${process.env.HTTPS_DOMAIN}` : null);
+        'https://efear.shop';
 
     return origin ? origin.replace(/\/+$/, '') : null;
 };
@@ -257,23 +251,14 @@ exports.verifyResetToken = (req, res) => {
     return User.findOne({
         passwordResetToken: hashToken(token),
         passwordResetExpires: { $gt: Date.now() }
-    })
+        })
         .then((user) => {
-            if (!user) {
-                return response.error(res, 400, 'Token expired or invalid');
-            }
-
-            return response.success(
-                res,
-                {
-                    valid: true,
-                    email: user.email.replace(/(.{2})(.*)(@.*)/, '$1***$3') // partially masked
-                },
-                200,
+            if (!user)  response.error(res, 400, 'Token expired or invalid');
+            
+            return response.success(res,
+                { valid: true, email: user.email.replace(/(.{2})(.*)(@.*)/, '$1***$3') }, 200,
                 'Token is valid'
             );
         })
-        .catch((error) => {
-            return response.error(res, 500, 'Error verifying token', error.message);
-        });
+        .catch((error) => response.error(res, 500, 'Error verifying token', error.message));
 };
