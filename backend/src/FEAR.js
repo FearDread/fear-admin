@@ -240,6 +240,7 @@ _________________________
             if (!this.mailer) {
                 this.mailer = new smtp(this);
             }
+            this.logger.warn('-== Mail transport setup initialized. ==-')
         },
 
         getAllowedOrigins() {

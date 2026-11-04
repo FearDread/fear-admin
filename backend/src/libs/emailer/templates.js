@@ -484,7 +484,7 @@ const efContactForm = (data = {}) => efShell({
 // Account recovery
 // ---------------------------------------------------------------------------
 const efPasswordReset = (data = {}) => {
-    const resetUrl = efUrl(data.resetUrl || data.resetURL, '/forgot-password');
+    const resetUrl = efUrl(data.resetURL || data.resetURL, '/forgot-password');
     const expires = data.expiresAt || `in ${data.expiresIn || '10 minutes'}`;
     return efShell({
         tag: 'Password Reset',

@@ -21,7 +21,7 @@ module.exports = function (fear) {
 
         _this.transporter = nodemailer.createTransport(_this.mailConfig.smtp[_this.mailService]);
         _this.transporter.verify()
-                .then(() => console.info('Mail transport setup complete.'))
+                .then(() => console.warn('-== Mail transport setup complete. ==-'))
                 .catch((error) => console.error('Error loading mail transport :: ', error));
         
     };
