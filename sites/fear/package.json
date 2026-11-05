@@ -1,5 +1,7 @@
 {
   "name": "fear-gui-spa",
+  "description": "Garrett Haptonstall's resume SPA: Linux, code, and controlled panic.",
+  "version": "2.0.0",
   "private": true,
   "type": "commonjs",
   "scripts": {

@@ -8,14 +8,43 @@ import parallaxModule from './modules/parallax.js';
 import contentModule from './modules/content.js';
 import contactModule from './modules/contact.js';
 import introModule from './modules/intro.js';
+import typewriterModule from './modules/typewriter.js';
+import terminalModule from './modules/terminal.js';
+import easterModule from './modules/easter.js';
+
 void Router;
+
+
+// `content` renders the DOM the other modules read, so it always starts first.
+const modules = {
+    content: contentModule,
+    nav: navModule,
+    cursor: cursorModule,
+    clock: clockModule,
+    stats: statsModule,
+    testimonials: testimonialsModule,
+    parallax: parallaxModule,
+    typewriter: typewriterModule,
+    terminal: terminalModule,
+    contact: contactModule,
+    easter: easterModule,
+    intro: introModule
+};
+
 FEAR.configure({ name: 'fear-spa', logLevel: 1 });
-const modules = { nav: navModule, cursor: cursorModule, clock: clockModule, stats: statsModule, testimonials: testimonialsModule, parallax: parallaxModule, content: contentModule, contact: contactModule, intro: introModule };
 Object.entries(modules).forEach(([name, module]) => FEAR.create(name, module));
-$(async function () {
-    try {
-        await FEAR.boot();
-        await Promise.all(Object.keys(modules).map((name) => FEAR.start(name)));
-        console.info('[fear-spa] application started');
-    } catch (error) { console.error('[fear-spa] start failed:', error); }
+
+$(function () {
+    const rest = Object.keys(modules).filter((name) => name !== 'content');
+
+    FEAR.boot()
+        .then(() => FEAR.start('content'))
+        .then(() => Promise.allSettled(rest.map((name) => FEAR.start(name))))
+        .then((results) => {
+            results.forEach((r, n) => {
+                if (r.status === 'rejected') console.error(`[fear-spa] module "${rest[n]}" failed:`, r.reason);
+            });
+            console.info('[fear-spa] application started');
+        })
+        .catch((error) => console.error('[fear-spa] start failed:', error));
 });

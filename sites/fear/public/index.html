@@ -1,427 +1,207 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GHap | Developer & Creative Technologist</title>
-    <!-- Bootstrap 5 -->
-    <link rel="stylesheet" href="css/bootstrap.min.css" />
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="font/bootstrap-icons.min.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=DM+Sans:wght@300;400;500&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
-    <!-- style css -->
-    <link rel="stylesheet" href="css/style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Garrett Haptonstall · Linux, Code &amp; Controlled Panic</title>
+  <meta name="description" content="Garrett Haptonstall: Linux sysadmin, full-stack developer, and infrastructure goblin in Killeen, TX. Keeps servers alive. Accepts that everything fails eventually.">
+  <meta name="theme-color" content="#03050a">
+  <meta property="og:title" content="Garrett Haptonstall · Linux, Code & Controlled Panic">
+  <meta property="og:description" content="I keep servers alive. People are a harder problem.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%92%80%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=DM+Sans:wght@300;400;500&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="/css/style.css?v=__BUILD__">
 </head>
-
 <body>
+  <!-- Backgrounds -->
+  <div class="bg-layer noise-layer"></div>
+  <div class="bg-layer scan-lines"></div>
+  <div id="mesh" aria-hidden="true"><div class="mesh-blob mb1"></div><div class="mesh-blob mb2"></div><div class="mesh-blob mb3"></div></div>
+  <div class="v-line vl1"></div><div class="v-line vl2"></div>
+  <div id="vignette"></div>
 
-    <div id="cur"></div>
-    <div id="cur-r"></div>
+  <!-- Cursor -->
+  <div id="cur" aria-hidden="true"></div><div id="cur-r" aria-hidden="true"></div>
 
-    <!-- Background -->
-    <div id="mesh">
-        <div class="mesh-blob mb1"></div>
-        <div class="mesh-blob mb2"></div>
-        <div class="mesh-blob mb3"></div>
+  <!-- Top bar -->
+  <header id="topbar">
+    <div class="logo">FEAR<em> / garrett</em></div>
+    <div class="top-right">
+      <div class="avail-chip"><span class="avail-dot"></span><span id="avail-text">Available for work</span></div>
+      <div class="top-time"><span id="clock">KILLEEN --:--:--</span> · <span id="wasted">00:00 wasted here</span></div>
     </div>
-    <div class="bg-layer noise-layer"></div>
-    <div class="bg-layer scan-lines"></div>
-    <div id="vignette"></div>
-    <div class="v-line vl1"></div>
-    <div class="v-line vl2"></div>
+  </header>
 
-    <!-- Topbar -->
-    <div id="topbar">
-        <div class="logo">Jawan <em>&</em> Nova</div>
-        <div class="top-right">
-            <div id="clock" class="top-time">00:00:00</div>
-            <div class="avail-chip"><div class="avail-dot"></div>Open to Work</div>
-        </div>
+  <!-- Side nav -->
+  <nav id="side-nav" aria-label="Sections">
+    <div class="snav-item active" data-s="0" data-route="home" tabindex="0" role="button"><span class="snav-tick"></span><span class="snav-label">Home</span></div>
+    <div class="snav-item" data-s="1" data-route="about" tabindex="0" role="button"><span class="snav-tick"></span><span class="snav-label">About</span></div>
+    <div class="snav-item" data-s="2" data-route="work" tabindex="0" role="button"><span class="snav-tick"></span><span class="snav-label">Work</span></div>
+    <div class="snav-item" data-s="3" data-route="services" tabindex="0" role="button"><span class="snav-tick"></span><span class="snav-label">Services</span></div>
+    <div class="snav-item" data-s="4" data-route="process" tabindex="0" role="button"><span class="snav-tick"></span><span class="snav-label">Method</span></div>
+    <div class="snav-item" data-s="5" data-route="clients" tabindex="0" role="button"><span class="snav-tick"></span><span class="snav-label">Testimonials</span></div>
+    <div class="snav-item" data-s="6" data-route="stats" tabindex="0" role="button"><span class="snav-tick"></span><span class="snav-label">Metrics</span></div>
+    <div class="snav-item" data-s="7" data-route="blog" tabindex="0" role="button"><span class="snav-tick"></span><span class="snav-label">Postmortems</span></div>
+    <div class="snav-item" data-s="8" data-route="contact" tabindex="0" role="button"><span class="snav-tick"></span><span class="snav-label">Contact</span></div>
+  </nav>
+
+  <!-- 0 · HOME -->
+  <section class="section active" id="s0" aria-label="Home">
+    <div class="sec-inner hero-inner">
+      <div class="hero-eyebrow">Linux SysAdmin · Full-Stack · Professional Worrier</div>
+      <h1 class="hero-name"><span class="line1">Garrett</span><span class="line2">Haptonstall</span></h1>
+      <p class="hero-sub">I keep servers alive, ship full-stack code, and quietly accept that everything fails eventually. Killeen, TX. Mortality-aware.</p>
+      <p class="hero-type" aria-live="off"><span id="tagline"></span><span class="caret"></span></p>
+      <div class="hero-ctas">
+        <a class="btn-gold" href="#work">See the damage</a>
+        <a class="btn-ghost" href="#contact">Hire me before it breaks</a>
+      </div>
+      <div class="hero-tags">
+        <div class="hero-tag"><strong>Linux</strong>Native tongue</div>
+        <div class="hero-tag"><strong>AWS</strong>Reluctantly fluent</div>
+        <div class="hero-tag"><strong>nginx</strong>Emotionally invested</div>
+      </div>
     </div>
+    <div class="scroll-hint">Scroll to continue the descent</div>
+  </section>
 
-    <!-- Side Nav -->
-    <nav id="side-nav">
-        <div class="snav-item active" data-s="0"><div class="snav-tick"></div><div class="snav-label">Home</div></div>
-        <div class="snav-item" data-s="1"><div class="snav-tick"></div><div class="snav-label">About</div></div>
-        <div class="snav-item" data-s="2"><div class="snav-tick"></div><div class="snav-label">Work</div></div>
-        <div class="snav-item" data-s="3"><div class="snav-tick"></div><div class="snav-label">Services</div></div>
-        <div class="snav-item" data-s="4"><div class="snav-tick"></div><div class="snav-label">Process</div></div>
-        <div class="snav-item" data-s="5"><div class="snav-tick"></div><div class="snav-label">Clients</div></div>
-        <div class="snav-item" data-s="6"><div class="snav-tick"></div><div class="snav-label">Stats</div></div>
-        <div class="snav-item" data-s="7"><div class="snav-tick"></div><div class="snav-label">Blog</div></div>
-        <div class="snav-item" data-s="8"><div class="snav-tick"></div><div class="snav-label">Contact</div></div>
-    </nav>
-
-    <!-- Bottom Bar -->
-    <div id="bottombar">
-        <div class="bottom-copy">© 2026 Jawan Nova — All Rights Reserved</div>
-        <div class="section-counter"><span id="cur-num">01</span> / 09</div>
-        <div class="bottom-socials">
-            <a href="index.html%3Fstorefront=envato-elements.html#" class="b-soc"><i class="bi bi-github"></i></a>
-            <a href="index.html%3Fstorefront=envato-elements.html#" class="b-soc"><i class="bi bi-linkedin"></i></a>
-            <a href="index.html%3Fstorefront=envato-elements.html#" class="b-soc"><i class="bi bi-twitter-x"></i></a>
-            <a href="index.html%3Fstorefront=envato-elements.html#" class="b-soc"><i class="bi bi-dribbble"></i></a>
+  <!-- 1 · ABOUT -->
+  <section class="section" id="s1" aria-label="About">
+    <div class="sec-inner about-layout">
+      <div class="about-photo-col">
+        <div class="photo-frame">
+          <div class="corner-deco"></div>
+          <div class="term" role="img" aria-label="A terminal listing Garrett's hobbies and a refusal to grant sudo">
+            <div class="term-bar"><i></i><i></i><i></i><span>garrett@killeen:~</span></div>
+            <pre class="term-body" id="term-body"></pre>
+          </div>
+          <div class="photo-border-deco"></div><div class="photo-border-deco2"></div>
+          <div class="gold-tab"><div class="gold-tab-num">TX</div><div class="gold-tab-label">Killeen, USA</div></div>
         </div>
+      </div>
+      <div class="about-text-col">
+        <div class="kicker">About</div>
+        <h2 class="about-title">Sysadmin by trade. <span class="gold-span ital">Developer by poor impulse control.</span></h2>
+        <p class="about-body">I&rsquo;m Garrett: a Linux systems administrator who wandered into full-stack development and never found the exit. I live in the gap between &ldquo;works on my machine&rdquo; and &ldquo;why is production on fire,&rdquo; armed with AWS, networking, and DevOps for both starting and extinguishing it. I self-host my own stacks because I enjoy being the single point of failure.</p>
+        <p class="about-body">Off the clock I&rsquo;m a big-time nerd: games, computers, anything with a blinking light. I also camp, hike, and rock climb, hobbies where gravity is the SLA and the postmortem is mercifully short. Easy to get along with, good at explaining outages in plain English, then again, more gently.</p>
+        <div class="exp-row" id="exp-row"></div>
+        <div class="tech-row" id="tech-row"></div>
+      </div>
     </div>
+  </section>
 
-    <!-- ═══════════════════════ SECTION 0 · HERO ═══════════════════════ -->
-    <section class="section active" id="s0">
-        <div class="sec-inner hero-inner">
-            <div class="hero-eyebrow">Digital Architect &amp; Creative Developer</div>
-            <h1 class="hero-name">
-                <span class="line1">Jawan</span>
-                <span class="line2">Nova.</span>
-            </h1>
-            <p class="hero-sub">I build digital products where precision meets artistry — interfaces that breathe, systems that scale, and experiences people remember.</p>
-            <div class="hero-ctas">
-                <a class="btn-gold" onclick="goTo(2)">See My Work</a>
-                <a class="btn-ghost" onclick="goTo(8)">Let's Talk</a>
-            </div>
-            <div class="hero-tags">
-                <div class="hero-tag"><strong>7+</strong>Years Experience</div>
-                <div class="hero-tag"><strong>120+</strong>Projects Shipped</div>
-                <div class="hero-tag"><strong>18</strong>Awards</div>
-                <div class="hero-tag"><strong>60+</strong>Happy Clients</div>
-            </div>
-            <div class="scroll-hint">Scroll to explore</div>
+  <!-- 2 · WORK -->
+  <section class="section" id="s2" aria-label="Work">
+    <div class="sec-inner work-layout">
+      <div class="work-header">
+        <div>
+          <div class="kicker">Selected Work</div>
+          <h2 class="work-title">Things I built and <span class="gold-span ital">survived</span></h2>
         </div>
-    </section>
+        <a class="work-view-all" data-profile="github" href="https://github.com/FearDread" target="_blank" rel="noopener">GitHub <i class="bi bi-arrow-up-right"></i></a>
+      </div>
+      <div class="proj-list" id="proj-list"></div>
+    </div>
+  </section>
 
-    <!-- ═══════════════════════ SECTION 1 · ABOUT ═══════════════════════ -->
-    <section class="section" id="s1">
-        <div class="sec-inner">
-            <div class="about-layout">
-                <div class="about-photo-col">
-                    <div class="photo-frame">
-                        <img class="photo-img" src="img/me.jpg" alt="Zara Nova">
-                        <div class="photo-border-deco"></div>
-                        <div class="photo-border-deco2"></div>
-                        <div class="corner-deco"></div>
-                    </div>
-                    <div class="gold-tab">
-                        <div class="gold-tab-num">7+</div>
-                        <div class="gold-tab-label">Years Crafting</div>
-                    </div>
-                </div>
-                <div>
-                    <div class="kicker">Who I Am</div>
-                    <div class="about-title">A mind that<br><span class="gold-span ital">thinks in systems,</span><br>builds in beauty.</div>
-                    <p class="about-body">I'm Zara — a full-stack developer and product designer who believes great digital work lives at the intersection of clarity, craft, and code. I've shipped products for startups, agencies, and Fortune 500s across 12 countries.<br><br>My work isn't just functional — it's felt.</p>
-                    <div class="exp-row">
-                        <div class="exp-item"><span class="exp-num">120+</span><span class="exp-lbl">Projects</span></div>
-                        <div class="exp-item"><span class="exp-num">60+</span><span class="exp-lbl">Clients</span></div>
-                        <div class="exp-item"><span class="exp-num">18</span><span class="exp-lbl">Awards</span></div>
-                    </div>
-                    <div class="tech-row">
-                        <span class="tech-tag">React</span><span class="tech-tag">Next.js</span><span class="tech-tag">TypeScript</span>
-                        <span class="tech-tag">Figma</span><span class="tech-tag">Three.js</span><span class="tech-tag">Node.js</span>
-                        <span class="tech-tag">AWS</span><span class="tech-tag">Python</span><span class="tech-tag">Swift</span>
-                    </div>
-                </div>
-            </div>
+  <!-- 3 · SERVICES -->
+  <section class="section" id="s3" aria-label="Services">
+    <div class="sec-inner serv-layout">
+      <div class="kicker">Services</div>
+      <h2 class="big-title" style="font-size:clamp(2rem,3.5vw,3rem)">What I do, and what it <span class="gold-span ital">costs me</span></h2>
+      <div class="serv-grid" id="serv-grid"></div>
+    </div>
+  </section>
+
+  <!-- 4 · PROCESS -->
+  <section class="section" id="s4" aria-label="Method">
+    <div class="sec-inner process-layout">
+      <div class="kicker">Method</div>
+      <h2 class="big-title" style="font-size:clamp(2rem,3.5vw,3rem)">The incident response <span class="gold-span ital">liturgy</span></h2>
+      <div class="process-steps" id="process-steps"></div>
+    </div>
+  </section>
+
+  <!-- 5 · TESTIMONIALS -->
+  <section class="section" id="s5" aria-label="Testimonials">
+    <div class="sec-inner testi-layout">
+      <div class="kicker" style="justify-content:center">Testimonials · unsolicited, unverified, inanimate</div>
+      <span class="quote-mark" aria-hidden="true">&ldquo;</span>
+      <div class="testi-cards" id="testi-cards"></div>
+      <div class="testi-dots" id="testi-dots"></div>
+    </div>
+  </section>
+
+  <!-- 6 · STATS -->
+  <section class="section" id="s6" aria-label="Metrics">
+    <div class="sec-inner stats-layout">
+      <div class="kicker">By the numbers</div>
+      <h2 class="big-title" style="font-size:clamp(2rem,3.5vw,3rem)">Metrics I <span class="gold-span ital">definitely</span> track</h2>
+      <div class="stats-top" id="stats-top"></div>
+      <div class="skills-section" id="skills"></div>
+    </div>
+  </section>
+
+  <!-- 7 · POSTMORTEMS -->
+  <section class="section" id="s7" aria-label="Postmortems">
+    <div class="sec-inner blog-layout">
+      <div class="kicker">Postmortems &amp; field notes</div>
+      <h2 class="big-title" style="font-size:clamp(2rem,3.5vw,3rem)">Blameless. <span class="gold-span ital">Mostly.</span></h2>
+      <div class="blog-grid" id="blog-grid"></div>
+    </div>
+  </section>
+
+  <!-- 8 · CONTACT -->
+  <section class="section" id="s8" aria-label="Contact">
+    <div class="sec-inner contact-layout">
+      <div class="contact-top">
+        <div class="contact-left">
+          <div class="kicker">Contact</div>
+          <h2 class="contact-big">Let&rsquo;s talk before it <span class="gold-span ital">catches fire.</span></h2>
+          <p class="contact-sub">Hiring, consulting, or watching something burn right now? Send a message. I read everything and reply as fast as a human with a pager reasonably can.</p>
+          <div class="contact-info">
+            <div class="c-info-row"><i class="bi bi-geo-alt"></i> Killeen, TX · DFW native</div>
+            <div class="c-info-row"><i class="bi bi-github"></i> <a data-profile="github" href="https://github.com/FearDread" target="_blank" rel="noopener">github.com/FearDread</a></div>
+            <div class="c-info-row" style="display:none"><i class="bi bi-envelope"></i> <a id="c-email" href="#"></a></div>
+          </div>
+          <div class="socials-row">
+            <a class="soc-link" data-profile="github" href="https://github.com/FearDread" target="_blank" rel="noopener" aria-label="GitHub"><i class="bi bi-github"></i></a>
+            <a class="soc-link" data-profile="site" href="https://efear.shop" target="_blank" rel="noopener" aria-label="efear.shop"><i class="bi bi-globe2"></i></a>
+          </div>
         </div>
-    </section>
+        <form class="contact-form" id="contact-form" novalidate>
+          <input class="cf2" type="text" name="name" placeholder="Your name" autocomplete="name">
+          <input class="cf2" type="email" name="email" placeholder="Your email" autocomplete="email">
+          <select class="cf2" name="budget" aria-label="What is on fire?">
+            <option value="">What&rsquo;s on fire?</option>
+            <option>Nothing yet. Just browsing</option>
+            <option>One server</option>
+            <option>A deadline</option>
+            <option>Everything</option>
+          </select>
+          <textarea class="cf2" name="message" placeholder="Tell me what happened. Start from the beginning."></textarea>
+          <input class="hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+          <button class="send-btn" type="submit">Send into the void</button>
+          <div class="form-status" id="contact-status" role="status" aria-live="polite"></div>
+        </form>
+      </div>
+    </div>
+  </section>
 
-    <!-- ═══════════════════════ SECTION 2 · WORK ═══════════════════════ -->
-    <section class="section" id="s2">
-        <div class="sec-inner work-layout">
-            <div class="work-header">
-                <div>
-                    <div class="kicker">Portfolio</div>
-                    <div class="work-title">Selected <span class="ital gold-span">Work</span></div>
-                </div>
-                <a href="index.html%3Fstorefront=envato-elements.html#" class="work-view-all">View All <i class="bi bi-arrow-right"></i></a>
-            </div>
-            <div class="proj-list">
-                <div class="proj-row">
-                    <span class="proj-num">01</span>
-                    <img class="proj-thumb" src="img/portfolio/work1.jpg" alt="">
-                    <div class="proj-info">
-                        <div class="proj-name">Luminary — SaaS Dashboard</div>
-                        <div class="proj-cat">UI Design · React · Data Viz</div>
-                    </div>
-                    <div class="proj-year">2026</div>
-                    <i class="bi bi-arrow-up-right proj-arrow"></i>
-                </div>
-                <div class="proj-row">
-                    <span class="proj-num">02</span>
-                    <img class="proj-thumb" src="img/portfolio/work2.jpg" alt="">
-                    <div class="proj-info">
-                        <div class="proj-name">Obsidian — Luxury E-Commerce</div>
-                        <div class="proj-cat">Shopify · Art Direction · Motion</div>
-                    </div>
-                    <div class="proj-year">2024</div>
-                    <i class="bi bi-arrow-up-right proj-arrow"></i>
-                </div>
-                <div class="proj-row">
-                    <span class="proj-num">03</span>
-                    <img class="proj-thumb" src="img/portfolio/work3.jpg" alt="">
-                    <div class="proj-info">
-                        <div class="proj-name">Apex — 3D Product Configurator</div>
-                        <div class="proj-cat">Three.js · WebGL · React</div>
-                    </div>
-                    <div class="proj-year">2024</div>
-                    <i class="bi bi-arrow-up-right proj-arrow"></i>
-                </div>
-                <div class="proj-row">
-                    <span class="proj-num">04</span>
-                    <img class="proj-thumb" src="img/portfolio/work4.jpg" alt="">
-                    <div class="proj-info">
-                        <div class="proj-name">Pulse — Fintech Mobile App</div>
-                        <div class="proj-cat">Flutter · iOS · UX Research</div>
-                    </div>
-                    <div class="proj-year">2023</div>
-                    <i class="bi bi-arrow-up-right proj-arrow"></i>
-                </div>
-                <div class="proj-row">
-                    <span class="proj-num">05</span>
-                    <img class="proj-thumb" src="img/portfolio/work5.jpg" alt="">
-                    <div class="proj-info">
-                        <div class="proj-name">Cogent — AI Workflow Platform</div>
-                        <div class="proj-cat">LLM Integration · Python · Next.js</div>
-                    </div>
-                    <div class="proj-year">2023</div>
-                    <i class="bi bi-arrow-up-right proj-arrow"></i>
-                </div>
-            </div>
-        </div>
-    </section>
+  <!-- Bottom bar -->
+  <footer id="bottombar">
+    <div class="bottom-copy">&copy; <span id="year">2026</span> Garrett Haptonstall · All wrongs reserved</div>
+    <div class="bottom-socials">
+      <a class="b-soc" data-profile="github" href="https://github.com/FearDread" target="_blank" rel="noopener" aria-label="GitHub"><i class="bi bi-github"></i></a>
+      <a class="b-soc" data-profile="site" href="https://efear.shop" target="_blank" rel="noopener" aria-label="efear.shop"><i class="bi bi-globe2"></i></a>
+    </div>
+    <div class="section-counter" id="cur-num">01 / 09</div>
+  </footer>
 
-    <!-- ═══════════════════════ SECTION 3 · SERVICES ═══════════════════════ -->
-    <section class="section" id="s3">
-        <div class="sec-inner serv-layout">
-            <div class="kicker">Capabilities</div>
-            <div class="big-title" style="font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,3.5vw,3rem);font-weight:300;">What I <span class="ital gold-span">bring</span> to the table</div>
-            <div class="serv-grid">
-                <div class="serv-cell">
-                    <span class="serv-num">01</span>
-                    <span class="serv-icon">✦</span>
-                    <div class="serv-name">UI / UX Design</div>
-                    <div class="serv-desc">Research-driven systems, pixel-perfect screens, and design languages that feel intentional.</div>
-                </div>
-                <div class="serv-cell">
-                    <span class="serv-num">02</span>
-                    <span class="serv-icon">⌬</span>
-                    <div class="serv-name">Web Development</div>
-                    <div class="serv-desc">Production-grade React & Next.js apps, clean APIs, and blazing Core Web Vitals scores.</div>
-                </div>
-                <div class="serv-cell">
-                    <span class="serv-num">03</span>
-                    <span class="serv-icon">◈</span>
-                    <div class="serv-name">3D & Motion</div>
-                    <div class="serv-desc">Immersive Three.js worlds, GSAP choreography, and micro-interactions worth obsessing over.</div>
-                </div>
-                <div class="serv-cell">
-                    <span class="serv-num">04</span>
-                    <span class="serv-icon">⬡</span>
-                    <div class="serv-name">Brand Identity</div>
-                    <div class="serv-desc">Visual identities with depth — logos, type systems, color theory, and brand guidelines.</div>
-                </div>
-                <div class="serv-cell" style="border-right:none">
-                    <span class="serv-num">05</span>
-                    <span class="serv-icon">⊕</span>
-                    <div class="serv-name">AI Integration</div>
-                    <div class="serv-desc">LLM-powered features, RAG pipelines, and AI-enhanced products shipped at speed.</div>
-                </div>
-                <div class="serv-cell" style="border-right:none">
-                    <span class="serv-num">06</span>
-                    <span class="serv-icon">❋</span>
-                    <div class="serv-name">Mobile Apps</div>
-                    <div class="serv-desc">Cross-platform Flutter and Swift apps with native performance and polished UX.</div>
-                </div>
-                <div class="serv-cell" style="border-right:none">
-                    <span class="serv-num">07</span>
-                    <span class="serv-icon">◎</span>
-                    <div class="serv-name">Performance</div>
-                    <div class="serv-desc">Lighthouse 100, CDN strategy, edge rendering, and everything that makes sites fast.</div>
-                </div>
-                <div class="serv-cell" style="border-right:none">
-                    <span class="serv-num">08</span>
-                    <span class="serv-icon">⟡</span>
-                    <div class="serv-name">Consulting</div>
-                    <div class="serv-desc">Tech audits, roadmap planning, team mentoring, and fractional CTO engagements.</div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ═══════════════════════ SECTION 4 · PROCESS ═══════════════════════ -->
-    <section class="section" id="s4">
-        <div class="sec-inner process-layout">
-            <div class="kicker">How I Work</div>
-            <div class="big-title" style="font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,3.5vw,3rem);font-weight:300;">My <span class="ital gold-span">Process</span></div>
-            <div class="process-steps">
-                <div class="proc-step">
-                    <div class="proc-circle">01</div>
-                    <div class="proc-content">
-                        <div class="proc-title">Discover & Define</div>
-                        <div class="proc-desc">Deep-dive into your goals, users, and constraints. I ask the questions that matter.</div>
-                        <span class="proc-tag">Strategy · Research · Audit</span>
-                    </div>
-                </div>
-                <div class="proc-step">
-                    <div class="proc-circle">02</div>
-                    <div class="proc-content">
-                        <div class="proc-title">Design & Prototype</div>
-                        <div class="proc-desc">Wireframes, system design, and high-fidelity prototypes tested before a line of code is written.</div>
-                        <span class="proc-tag">Figma · IA · Design System</span>
-                    </div>
-                </div>
-                <div class="proc-step">
-                    <div class="proc-circle">03</div>
-                    <div class="proc-content">
-                        <div class="proc-title">Build & Refine</div>
-                        <div class="proc-desc">Agile sprints, clean code, and continuous feedback loops. No surprises at delivery.</div>
-                        <span class="proc-tag">Development · QA · Performance</span>
-                    </div>
-                </div>
-                <div class="proc-step">
-                    <div class="proc-circle">04</div>
-                    <div class="proc-content">
-                        <div class="proc-title">Launch & Grow</div>
-                        <div class="proc-desc">Smooth deployments, analytics setup, and post-launch support to keep momentum going.</div>
-                        <span class="proc-tag">Deploy · Analytics · Iterate</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ═══════════════════════ SECTION 5 · TESTIMONIALS ═══════════════════════ -->
-    <section class="section" id="s5">
-        <div class="sec-inner testi-layout">
-            <div class="kicker" style="justify-content:center;">Client Words</div>
-            <div class="big-title" style="font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,3.5vw,3rem);font-weight:300;margin-bottom:2rem;">What <span class="ital gold-span">they</span> say</div>
-            <span class="quote-mark">"</span>
-            <div class="testi-cards">
-                <div class="testi-card active">
-                    <div class="testi-quote">Zara didn't just build our product — she redefined how we think about design. The interface she created increased our conversion rate by 340%. Working with her is an unfair advantage.</div>
-                    <div class="testi-author">Marcus Venn</div>
-                    <div class="testi-role">CEO, Luminary Technologies</div>
-                </div>
-                <div class="testi-card">
-                    <div class="testi-quote">We've worked with many agencies over the years. Zara's ability to translate complex business logic into beautiful, intuitive UI is genuinely rare. She's in a different league.</div>
-                    <div class="testi-author">Priya Kohli</div>
-                    <div class="testi-role">CPO, Pulse Finance</div>
-                </div>
-                <div class="testi-card">
-                    <div class="testi-quote">Delivered ahead of schedule, exceeded every spec, and the code was so clean our in-house team applauded. If you get the chance to work with Zara, take it immediately.</div>
-                    <div class="testi-author">James Calloway</div>
-                    <div class="testi-role">Founder, Apex Studio</div>
-                </div>
-            </div>
-            <div class="testi-dots">
-                <div class="testi-dot active" data-t="0"></div>
-                <div class="testi-dot" data-t="1"></div>
-                <div class="testi-dot" data-t="2"></div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ═══════════════════════ SECTION 6 · STATS ═══════════════════════ -->
-    <section class="section" id="s6">
-        <div class="sec-inner stats-layout">
-            <div class="kicker">Numbers</div>
-            <div class="big-title" style="font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,3.5vw,3rem);font-weight:300;">By the <span class="ital gold-span">Numbers</span></div>
-            <div class="stats-top">
-                <div class="stat-box"><div class="stat-bignum counter" data-t="120"><span class="stat-sup">+</span>0</div><div class="stat-lbl">Projects Shipped</div></div>
-                <div class="stat-box"><div class="stat-bignum counter" data-t="60"><span class="stat-sup">+</span>0</div><div class="stat-lbl">Clients Worldwide</div></div>
-                <div class="stat-box"><div class="stat-bignum counter" data-t="18">0</div><div class="stat-lbl">Industry Awards</div></div>
-                <div class="stat-box"><div class="stat-bignum counter" data-t="7"><span class="stat-sup">+</span>0</div><div class="stat-lbl">Years of Craft</div></div>
-            </div>
-            <div class="skills-section">
-                <div class="sk-row"><div class="sk-head"><span class="sk-name">Frontend</span><span class="sk-pct">97%</span></div><div class="sk-track"><div class="sk-fill" data-w="97"></div></div></div>
-                <div class="sk-row"><div class="sk-head"><span class="sk-name">UI/UX Design</span><span class="sk-pct">94%</span></div><div class="sk-track"><div class="sk-fill" data-w="94"></div></div></div>
-                <div class="sk-row"><div class="sk-head"><span class="sk-name">Backend / APIs</span><span class="sk-pct">85%</span></div><div class="sk-track"><div class="sk-fill" data-w="85"></div></div></div>
-                <div class="sk-row"><div class="sk-head"><span class="sk-name">3D & WebGL</span><span class="sk-pct">78%</span></div><div class="sk-track"><div class="sk-fill" data-w="78"></div></div></div>
-                <div class="sk-row"><div class="sk-head"><span class="sk-name">Mobile Dev</span><span class="sk-pct">82%</span></div><div class="sk-track"><div class="sk-fill" data-w="82"></div></div></div>
-                <div class="sk-row"><div class="sk-head"><span class="sk-name">AI / ML</span><span class="sk-pct">70%</span></div><div class="sk-track"><div class="sk-fill" data-w="70"></div></div></div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ═══════════════════════ SECTION 7 · BLOG ═══════════════════════ -->
-    <section class="section" id="s7">
-        <div class="sec-inner blog-layout">
-            <div class="work-header">
-                <div><div class="kicker">Thoughts</div><div class="work-title">From the <span class="ital gold-span">Journal</span></div></div>
-                <a href="index.html%3Fstorefront=envato-elements.html#" class="work-view-all">All Posts <i class="bi bi-arrow-right"></i></a>
-            </div>
-            <div class="blog-grid">
-                <div class="blog-card featured">
-                    <img class="blog-img" src="img/blog/1.jpg" alt="">
-                    <div class="blog-body">
-                        <div class="blog-cat">Design Systems</div>
-                        <div class="blog-title">Why your design system is failing — and how to fix it in 30 days</div>
-                        <div class="blog-date">Apr 2026 · 8 min read</div>
-                    </div>
-                </div>
-                <div class="blog-card">
-                    <img class="blog-img" src="img/blog/2.jpg" alt="">
-                    <div class="blog-body">
-                        <div class="blog-cat">AI & Craft</div>
-                        <div class="blog-title">Building AI-native UIs that don't feel like science experiments</div>
-                        <div class="blog-date">Mar 2026 · 5 min read</div>
-                    </div>
-                </div>
-                <div class="blog-card">
-                    <img class="blog-img" src="img/blog/3.jpg" alt="">
-                    <div class="blog-body">
-                        <div class="blog-cat">Performance</div>
-                        <div class="blog-title">The dark side of Lighthouse 100: what the score doesn't tell you</div>
-                        <div class="blog-date">Feb 2026 · 6 min read</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ═══════════════════════ SECTION 8 · CONTACT ═══════════════════════ -->
-    <section class="section" id="s8">
-        <div class="sec-inner contact-layout">
-            <div class="kicker">Get in Touch</div>
-            <div class="contact-top">
-                <div class="contact-left">
-                    <div class="contact-big">Let's build<br>something <span class="ital gold-span">remarkable</span><br>together.</div>
-                    <p class="contact-sub">Whether you have a brief, a question, or just an idea scribbled on a napkin — I'd love to hear from you. I typically respond within 24 hours.</p>
-                    <div class="contact-info">
-                        <div class="c-info-row"><i class="bi bi-envelope"></i><a href="https://bestwpware.com/cdn-cgi/l/email-protection#563e333a3a39162c372437383920377835393b"><span class="__cf_email__" data-cfemail="e58d8089898aa59f8497848b8a9384cb868a88">[email&#160;protected]</span></a></div>
-                        <div class="c-info-row"><i class="bi bi-geo-alt"></i><span>London, UK · Remote Worldwide</span></div>
-                        <div class="c-info-row"><i class="bi bi-clock"></i><span>GMT+0 · Replies in ~24hrs</span></div>
-                    </div>
-                    <div class="socials-row">
-                        <a href="index.html%3Fstorefront=envato-elements.html#" class="soc-link"><i class="bi bi-github"></i></a>
-                        <a href="index.html%3Fstorefront=envato-elements.html#" class="soc-link"><i class="bi bi-linkedin"></i></a>
-                        <a href="index.html%3Fstorefront=envato-elements.html#" class="soc-link"><i class="bi bi-twitter-x"></i></a>
-                        <a href="index.html%3Fstorefront=envato-elements.html#" class="soc-link"><i class="bi bi-dribbble"></i></a>
-                        <a href="index.html%3Fstorefront=envato-elements.html#" class="soc-link"><i class="bi bi-instagram"></i></a>
-                    </div>
-                </div>
-                <div class="contact-form">
-                    <input class="cf2" type="text" placeholder="Your Name">
-                    <input class="cf2" type="email" placeholder="Email Address">
-                    <input class="cf2" type="text" placeholder="Project Budget (optional)">
-                    <textarea class="cf2" placeholder="Tell me about your project..."></textarea>
-                    <button class="send-btn">Send Message &nbsp; ↗</button>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ===== SCRIPTS ===== -->
-    <!--
-        The complete application is bundled by esbuild.
-
-        main.js imports:
-        - jQuery
-        - jquery.gui.js
-        - GSAP
-        - SPA modules
-
-        Do not add separate jQuery, GSAP, or GUI framework
-        script tags here.
-    -->
-    <script type="module"
-            src="js/main.js?v=__BUILD__"></script>
+  <noscript><p style="position:fixed;inset:0;z-index:99999;display:grid;place-items:center;background:#03050a;color:#f4f0e8;font-family:monospace;text-align:center;padding:2rem">This site needs JavaScript. Garrett needs a vacation. We all have needs.</p></noscript>
+  <script type="module" src="/js/main.js?v=__BUILD__"></script>
 </body>
 </html>
