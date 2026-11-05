@@ -1,16 +1,19 @@
 :root {
-  --black: #03050a;
-  --dark: #080d17;
-  --panel: rgba(255, 255, 255, 0.032);
-  --gold: #c9a84c;
-  --gold2: #f0d080;
-  --gold3: #7a5c1e;
-  --teal: #0af0c8;
-  --red: #ff4560;
-  --white: #f4f0e8;
-  --muted: rgba(244, 240, 232, 0.42);
-  --border: rgba(201, 168, 76, 0.18);
-  --glow-g: rgba(201, 168, 76, 0.22);
+    --black: #03050a;
+    --dark: #080d17;
+    --panel: rgba(255, 255, 255, 0.032);
+    --gold: #c9a84c;
+    --gold2: #f0d080;
+    --gold3: #7a5c1e;
+    --teal: #0af0c8;
+    --red: #e8152fbf;
+    --red2: #e94256bf;
+    --red3: #682c2ce1;
+    --white: #f4f0e8;
+    --muted: rgba(244, 240, 232, 0.42);
+    --border: rgba(201, 168, 76, 0.18);
+    --border: #ff4560;
+    --glow-g: #0af0c8;
 }
 
 *,
@@ -45,14 +48,14 @@ body {
 #cur {
   width: 8px;
   height: 8px;
-  background: var(--gold);
+  background: var(--red);
   z-index: 9999;
   mix-blend-mode: screen;
 }
 #cur-r {
   width: 32px;
   height: 32px;
-  border: 1px solid var(--gold);
+  border: 1px solid var(--red);
   z-index: 9998;
   opacity: 0.6;
 }
@@ -127,7 +130,7 @@ body:not(.cur-ready) #cur-r {
 .mb1 {
   width: 700px;
   height: 700px;
-  background: var(--gold);
+  background: var(--red);
   top: -20%;
   left: -15%;
   animation-delay: 0s;
@@ -135,7 +138,7 @@ body:not(.cur-ready) #cur-r {
 .mb2 {
   width: 500px;
   height: 500px;
-  background: #1a3050;
+  background: var(--teal);
   bottom: -15%;
   right: -10%;
   animation-delay: -6s;
@@ -198,7 +201,7 @@ body:not(.cur-ready) #cur-r {
   font-size: 1.5rem;
   font-weight: 300;
   letter-spacing: 0.3em;
-  color: var(--gold2);
+  color: var(--red2);
   text-transform: uppercase;
 }
 .logo em {
@@ -285,7 +288,7 @@ body:not(.cur-ready) #cur-r {
   transition: color 0.25s, transform 0.25s;
 }
 .b-soc:hover {
-  color: var(--gold);
+  color: var(--red);
   transform: translateY(-2px);
 }
 .section-counter {
@@ -338,12 +341,12 @@ body:not(.cur-ready) #cur-r {
 }
 .snav-item.active .snav-tick {
   width: 36px;
-  background: var(--gold);
-  box-shadow: 0 0 8px var(--gold);
+  background: var(--red);
+  box-shadow: 0 0 8px var(--red);
 }
 .snav-item:hover .snav-tick {
   width: 28px;
-  background: var(--gold2);
+  background: var(--red2);
 }
 
 /* ── SECTIONS ── */
@@ -415,7 +418,7 @@ body:not(.cur-ready) #cur-r {
   font-size: 0.7rem;
   letter-spacing: 0.35em;
   text-transform: uppercase;
-  color: var(--gold);
+  color: var(--red);
   margin-bottom: 1rem;
   display: flex;
   align-items: center;
@@ -425,7 +428,7 @@ body:not(.cur-ready) #cur-r {
   content: "";
   width: 28px;
   height: 1px;
-  background: var(--gold);
+  background: var(--red);
   opacity: 0.5;
 }
 
@@ -436,7 +439,7 @@ body:not(.cur-ready) #cur-r {
   font-weight: 300;
 }
 .gold-span {
-  color: var(--gold2);
+  color: var(--red2);
 }
 .ital {
   font-style: italic;
@@ -453,7 +456,7 @@ body:not(.cur-ready) #cur-r {
   font-size: 0.7rem;
   letter-spacing: 0.4em;
   text-transform: uppercase;
-  color: var(--gold);
+  color: var(--red);
   margin-bottom: 2rem;
   display: flex;
   align-items: center;
@@ -463,7 +466,7 @@ body:not(.cur-ready) #cur-r {
   content: "";
   flex: 1;
   height: 1px;
-  background: linear-gradient(90deg, var(--gold), transparent);
+  background: linear-gradient(90deg, var(--red), transparent);
   opacity: 0.4;
 }
 .hero-name {
@@ -478,7 +481,7 @@ body:not(.cur-ready) #cur-r {
 }
 .hero-name .line2 {
   display: block;
-  color: var(--gold2);
+  color: var(--red2);
   font-style: italic;
 }
 .hero-sub {
@@ -496,7 +499,7 @@ body:not(.cur-ready) #cur-r {
 }
 .btn-gold {
   padding: 0.8rem 2.2rem;
-  background: linear-gradient(135deg, var(--gold), var(--gold3));
+  background: linear-gradient(135deg, var(--red), var(--teal));
   border: none;
   border-radius: 2px;
   font-family: "Rajdhani", sans-serif;
@@ -515,7 +518,7 @@ body:not(.cur-ready) #cur-r {
   content: "";
   position: absolute;
   inset: 0;
-  background: var(--gold2);
+  background: var(--red2);
   opacity: 0;
   transition: opacity 0.3s;
 }
@@ -524,13 +527,13 @@ body:not(.cur-ready) #cur-r {
 }
 .btn-gold:hover {
   transform: translateY(-2px);
-  box-shadow: 0 12px 40px rgba(201, 168, 76, 0.4);
+  box-shadow: 0 12px 40px #ff4560;
   color: var(--black);
 }
 .btn-ghost {
   padding: 0.8rem 2.2rem;
   background: transparent;
-  border: 1px solid var(--border);
+  border: 1px solid var(--teal);
   border-radius: 2px;
   font-family: "Rajdhani", sans-serif;
   font-size: 0.75rem;
@@ -542,8 +545,8 @@ body:not(.cur-ready) #cur-r {
   transition: all 0.3s;
 }
 .btn-ghost:hover {
-  border-color: var(--gold);
-  color: var(--gold);
+  border-color: var(--red);
+  color: var(--red);
 }
 
 .hero-tags {
@@ -622,7 +625,7 @@ body:not(.cur-ready) #cur-r {
 .photo-border-deco2 {
   position: absolute;
   inset: -28px;
-  border: 1px solid rgba(201, 168, 76, 0.07);
+  border: 1px solid rgba(3, 5, 10, 0.4);
   border-radius: 1px;
   pointer-events: none;
 }
@@ -631,7 +634,7 @@ body:not(.cur-ready) #cur-r {
   bottom: 2rem;
   right: -2.5rem;
   background: var(--dark);
-  border: 1px solid var(--border);
+  border: 1px solid var(--teal);
   padding: 1rem 1.2rem;
   min-width: 130px;
 }
@@ -639,7 +642,7 @@ body:not(.cur-ready) #cur-r {
   font-family: "Cormorant Garamond", serif;
   font-size: 2.4rem;
   font-weight: 300;
-  color: var(--gold2);
+  color: var(--red2);
   line-height: 1;
 }
 .gold-tab-label {
@@ -656,8 +659,8 @@ body:not(.cur-ready) #cur-r {
   left: -1rem;
   width: 30px;
   height: 30px;
-  border-top: 1px solid var(--gold);
-  border-left: 1px solid var(--gold);
+  border-top: 1px solid var(--red);
+  border-left: 1px solid var(--teal);
   opacity: 0.5;
 }
 
@@ -687,7 +690,7 @@ body:not(.cur-ready) #cur-r {
   font-family: "Cormorant Garamond", serif;
   font-size: 2rem;
   font-weight: 300;
-  color: var(--gold2);
+  color: var(--red2);
   line-height: 1;
 }
 .exp-lbl {
@@ -715,8 +718,8 @@ body:not(.cur-ready) #cur-r {
   transition: all 0.3s;
 }
 .tech-tag:hover {
-  border-color: var(--gold);
-  color: var(--gold);
+  border-color: var(--red);
+  color: var(--red);
   background: rgba(201, 168, 76, 0.06);
 }
 
@@ -742,7 +745,7 @@ body:not(.cur-ready) #cur-r {
   font-size: 0.65rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--gold);
+  color: var(--red);
   text-decoration: none;
   display: flex;
   align-items: center;
@@ -751,7 +754,7 @@ body:not(.cur-ready) #cur-r {
 }
 .work-view-all:hover {
   gap: 1rem;
-  color: var(--gold2);
+  color: var(--red2);
 }
 
 .proj-list {
@@ -781,7 +784,7 @@ body:not(.cur-ready) #cur-r {
   top: 0;
   bottom: 0;
   width: 2px;
-  background: var(--gold);
+  background: var(--red);
   transform: scaleY(0);
   transform-origin: bottom;
   transition: transform 0.35s;
@@ -790,15 +793,15 @@ body:not(.cur-ready) #cur-r {
   transform: scaleY(1);
 }
 .proj-row:hover {
-  border-color: rgba(201, 168, 76, 0.35);
-  background: rgba(201, 168, 76, 0.05);
+  border-color: #682c2ce1;
+  background: #682c2ce1;
   transform: translateX(4px);
 }
 .proj-num {
   font-family: "Cormorant Garamond", serif;
   font-size: 1.4rem;
   font-weight: 300;
-  color: var(--gold3);
+  color: var(--red3);
 }
 .proj-thumb {
   width: 72px;
@@ -834,7 +837,7 @@ body:not(.cur-ready) #cur-r {
 }
 .proj-arrow {
   font-size: 1rem;
-  color: var(--gold);
+  color: var(--red);
   opacity: 0;
   transform: translateX(-6px);
   transition: all 0.3s;
@@ -895,7 +898,7 @@ body:not(.cur-ready) #cur-r {
   right: 1.2rem;
   font-family: "Cormorant Garamond", serif;
   font-size: 0.85rem;
-  color: var(--gold3);
+  color: var(--red3);
 }
 .serv-name {
   font-family: "Cormorant Garamond", serif;
@@ -930,8 +933,8 @@ body:not(.cur-ready) #cur-r {
   width: 1px;
   background: linear-gradient(
     to bottom,
-    var(--gold),
-    var(--border),
+    var(--red),
+    var(--teal),
     transparent
   );
 }
@@ -949,7 +952,7 @@ body:not(.cur-ready) #cur-r {
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  border: 1px solid var(--gold);
+  border: 1px solid var(--red);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -957,16 +960,16 @@ body:not(.cur-ready) #cur-r {
   font-family: "Rajdhani", sans-serif;
   font-size: 0.75rem;
   font-weight: 700;
-  color: var(--gold);
+  color: var(--red);
   background: var(--black);
   z-index: 1;
   position: relative;
   transition: all 0.3s;
 }
 .proc-step:hover .proc-circle {
-  background: var(--gold);
+  background: var(--red);
   color: var(--black);
-  box-shadow: 0 0 20px rgba(201, 168, 76, 0.4);
+  box-shadow: 0 0 20px #e94256bf;
 }
 .proc-content {
 }
@@ -986,7 +989,7 @@ body:not(.cur-ready) #cur-r {
   font-size: 0.58rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--gold);
+  color: var(--red);
   border: 1px solid rgba(201, 168, 76, 0.25);
   padding: 0.15rem 0.6rem;
   border-radius: 1px;
@@ -1004,7 +1007,7 @@ body:not(.cur-ready) #cur-r {
   font-family: "Cormorant Garamond", serif;
   font-size: 8rem;
   line-height: 0.5;
-  color: var(--gold);
+  color: var(--teal);
   opacity: 0.15;
   display: block;
   margin-bottom: 1rem;
@@ -1038,7 +1041,7 @@ body:not(.cur-ready) #cur-r {
   font-size: 0.7rem;
   letter-spacing: 0.25em;
   text-transform: uppercase;
-  color: var(--gold);
+  color: var(--red);
 }
 .testi-role {
   font-family: "Rajdhani", sans-serif;
@@ -1062,7 +1065,7 @@ body:not(.cur-ready) #cur-r {
   transition: all 0.3s;
 }
 .testi-dot.active {
-  background: var(--gold);
+  background: var(--red);
   width: 36px;
 }
 
@@ -1096,7 +1099,7 @@ body:not(.cur-ready) #cur-r {
   left: 0;
   right: 0;
   height: 2px;
-  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  background: linear-gradient(90deg, transparent, var(--red), transparent);
   transform: scaleX(0);
   transition: transform 0.5s;
 }
@@ -1107,12 +1110,12 @@ body:not(.cur-ready) #cur-r {
   font-family: "Cormorant Garamond", serif;
   font-size: 3.8rem;
   font-weight: 300;
-  color: var(--gold2);
+  color: var(--red2);
   line-height: 1;
 }
 .stat-sup {
   font-size: 1.5rem;
-  color: var(--gold);
+  color: var(--red);
 }
 .stat-lbl {
   font-family: "Rajdhani", sans-serif;
@@ -1146,7 +1149,7 @@ body:not(.cur-ready) #cur-r {
 .sk-pct {
   font-family: "Cormorant Garamond", serif;
   font-size: 0.9rem;
-  color: var(--gold);
+  color: var(--red);
 }
 .sk-track {
   height: 1px;
@@ -1154,7 +1157,7 @@ body:not(.cur-ready) #cur-r {
 }
 .sk-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--gold), var(--gold2));
+  background: linear-gradient(90deg, var(--red), var(--red2));
   width: 0;
   transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -1203,7 +1206,7 @@ body:not(.cur-ready) #cur-r {
   font-size: 0.58rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--gold);
+  color: var(--red);
   margin-bottom: 0.5rem;
 }
 .blog-title {
@@ -1269,7 +1272,7 @@ body:not(.cur-ready) #cur-r {
   color: var(--muted);
 }
 .c-info-row i {
-  color: var(--gold);
+  color: var(--red);
   font-size: 0.85rem;
 }
 .c-info-row a {
@@ -1278,7 +1281,7 @@ body:not(.cur-ready) #cur-r {
   transition: color 0.25s;
 }
 .c-info-row a:hover {
-  color: var(--gold);
+  color: var(--red);
 }
 
 .contact-form {
@@ -1300,7 +1303,7 @@ body:not(.cur-ready) #cur-r {
   color: var(--muted);
 }
 .cf2:focus {
-  border-color: var(--gold);
+  border-color: var(--red);
 }
 textarea.cf2 {
   resize: none;
@@ -1309,7 +1312,7 @@ textarea.cf2 {
 .send-btn {
   width: 100%;
   padding: 1rem;
-  background: linear-gradient(135deg, var(--gold), var(--gold3));
+  background: linear-gradient(135deg, var(--red), var(--red3));
   border: none;
   border-radius: 1px;
   font-family: "Rajdhani", sans-serif;
@@ -1357,8 +1360,8 @@ textarea.cf2 {
   border-radius: 1px;
 }
 .soc-link:hover {
-  border-color: var(--gold);
-  color: var(--gold);
+  border-color: var(--red);
+  color: var(--red);
   transform: translateY(-3px);
   box-shadow: 0 8px 24px rgba(201, 168, 76, 0.2);
 }
@@ -1448,7 +1451,7 @@ textarea.cf2 {
   }
 }
 :focus-visible {
-  outline: 1px dashed var(--gold);
+  outline: 1px dashed var(--red);
   outline-offset: 4px;
 }
 .section {
@@ -1456,21 +1459,21 @@ textarea.cf2 {
 }
 .sec-inner {
   scrollbar-width: thin;
-  scrollbar-color: var(--gold3) transparent;
+  scrollbar-color: var(--red3) transparent;
 }
 .proj-list {
   max-height: calc(100vh - 290px);
   overflow-y: auto;
   padding-right: 4px;
   scrollbar-width: thin;
-  scrollbar-color: var(--gold3) transparent;
+  scrollbar-color: var(--red3) transparent;
 }
 .proj-glyph,
 .blog-art {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--gold);
+  color: var(--red);
   background: linear-gradient(135deg, rgba(201, 168, 76, 0.12), rgba(10, 240, 200, 0.05));
 }
 .proj-glyph {
@@ -1487,7 +1490,7 @@ textarea.cf2 {
   height: 200px;
 }
 .serv-icon {
-  color: var(--gold);
+  color: var(--red);
 }
 .hero-type {
   margin-top: 1.4rem;
@@ -1502,7 +1505,7 @@ textarea.cf2 {
   height: 1.1em;
   margin-left: 2px;
   vertical-align: -0.15em;
-  background: var(--gold);
+  background: var(--red);
   animation: blink 1s steps(1) infinite;
 }
 .testi-cards {
@@ -1545,7 +1548,7 @@ textarea.cf2 {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--gold3);
+  background: var(--red3);
 }
 .term-bar i:first-child {
   background: var(--red);
@@ -1649,5 +1652,153 @@ select.cf2 option {
   .avail-dot,
   .caret {
     animation: none;
+  }
+}
+
+/* ═══════════ Animated background (modules/background.js) ═══════════ */
+#bg-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ═══════════ Boot intro (modules/intro.js) ═══════════ */
+#boot {
+  position: fixed;
+  inset: 0;
+  z-index: 9990; /* above the page, below the custom cursor (9998/9999) */
+  overflow: hidden;
+}
+.no-boot #boot,
+#boot.boot-done {
+  display: none;
+}
+.boot-panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 50.4%;
+  background:
+    repeating-linear-gradient(0deg, transparent 0 2px, rgba(255, 255, 255, 0.018) 2px 3px),
+    radial-gradient(ellipse at center, #0b0a10 0%, var(--black) 75%);
+}
+.boot-top {
+  top: 0;
+}
+.boot-bottom {
+  bottom: 0;
+}
+.boot-seam {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(50% - 1px);
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--red), var(--teal), var(--red), transparent);
+  box-shadow: 0 0 24px var(--red), 0 0 60px var(--teal);
+  transform: scaleX(0);
+  z-index: 3;
+}
+.boot-crt {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 max(1.5rem, 12vw);
+  opacity: 0;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+.boot-head {
+  margin-bottom: 1.2rem;
+  font-size: clamp(0.7rem, 1.4vw, 0.85rem);
+  letter-spacing: 0.12em;
+  color: var(--teal);
+}
+.boot-head span {
+  color: var(--muted);
+}
+.boot-log {
+  max-width: 760px;
+  min-height: 16.5em;
+  font-size: clamp(0.62rem, 1.5vw, 0.82rem);
+  line-height: 1.85;
+  color: rgba(244, 240, 232, 0.72);
+  white-space: pre-wrap;
+}
+.boot-log .ok {
+  color: var(--teal);
+}
+.boot-log .warn {
+  color: var(--gold);
+}
+.boot-log .fail {
+  color: #ff4560;
+  text-shadow: 0 0 10px #ff4560;
+}
+.boot-bar {
+  width: min(420px, 100%);
+  height: 2px;
+  margin-top: 1.2rem;
+  background: rgba(255, 255, 255, 0.08);
+}
+.boot-bar i {
+  display: block;
+  width: 0;
+  height: 100%;
+  background: linear-gradient(90deg, #ff4560, var(--teal));
+  box-shadow: 0 0 10px var(--teal);
+}
+.boot-name {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 1rem;
+  font-family: "Cormorant Garamond", serif;
+  font-size: clamp(2rem, 7vw, 6rem);
+  font-weight: 300;
+  letter-spacing: 0.08em;
+  text-align: center;
+  text-transform: uppercase;
+  color: var(--white);
+  opacity: 0;
+  pointer-events: none;
+}
+.boot-sub {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(50% + clamp(2.2rem, 5.5vw, 4.5rem));
+  z-index: 2;
+  text-align: center;
+  font-family: "Rajdhani", sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--muted);
+  opacity: 0;
+}
+.boot-skip {
+  position: absolute;
+  right: 2rem;
+  bottom: 1.6rem;
+  z-index: 4;
+  font-family: "Rajdhani", sans-serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--muted);
+  animation: blink 2s infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  #boot {
+    display: none;
   }
 }

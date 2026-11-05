@@ -11,14 +11,16 @@ import introModule from './modules/intro.js';
 import typewriterModule from './modules/typewriter.js';
 import terminalModule from './modules/terminal.js';
 import easterModule from './modules/easter.js';
+import backgroundModule from './modules/background.js';
 
 void Router;
-
+FEAR.configure({ name: 'fear-spa', logLevel: 1 });
 
 // `content` renders the DOM the other modules read, so it always starts first.
 const modules = {
     content: contentModule,
     nav: navModule,
+    background: backgroundModule,
     cursor: cursorModule,
     clock: clockModule,
     stats: statsModule,
@@ -30,8 +32,6 @@ const modules = {
     easter: easterModule,
     intro: introModule
 };
-
-FEAR.configure({ name: 'fear-spa', logLevel: 1 });
 Object.entries(modules).forEach(([name, module]) => FEAR.create(name, module));
 
 $(function () {
