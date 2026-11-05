@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <meta name="description"
+          content="GHap — Developer, Systems Administrator and Creative Technologist.">
+
+    <title>GHap | Developer & Creative Technologist</title>
+
+    <!-- Static styles are copied from public/ to build/. -->
+    <link rel="stylesheet" href="css/style.css?v=__BUILD__">
+
+    <!-- Optional favicon. -->
+    <link rel="icon" href="favicon.ico">
+</head>
+
+<body>
+
+    <!-- Custom cursor -->
+    <div id="cur" aria-hidden="true"></div>
+    <div id="cur-r" aria-hidden="true"></div>
+
+
+    <!-- ─────────────── TOP BAR ─────────────── -->
+    <header id="topbar">
+
+        <a href="#home"
+           class="brand"
+           data-route="home"
+           aria-label="GHap home">
+            GHAP<span>.</span>
+        </a>
+
+        <nav class="top-nav"
+             aria-label="Primary navigation">
+            <a href="#home" data-route="home">Home</a>
+            <a href="#about" data-route="about">About</a>
+            <a href="#work" data-route="work">Work</a>
+            <a href="#services" data-route="services">Services</a>
+            <a href="#contact" data-route="contact">Contact</a>
+        </nav>
+
+        <div id="clock" aria-label="Current time">
+            --:--
+        </div>
+
+    </header>
+
+
+    <!-- ─────────────── SIDE NAVIGATION ─────────────── -->
+    <aside id="side-nav"
+           aria-label="Section navigation">
+
+        <a href="#home"
+           class="snav-item active"
+           data-s="0">
+            <span>01</span>
+            Home
+        </a>
+
+        <a href="#about"
+           class="snav-item"
+           data-s="1">
+            <span>02</span>
+            About
+        </a>
+
+        <a href="#work"
+           class="snav-item"
+           data-s="2">
+            <span>03</span>
+            Work
+        </a>
+
+        <a href="#services"
+           class="snav-item"
+           data-s="3">
+            <span>04</span>
+            Services
+        </a>
+
+        <a href="#process"
+           class="snav-item"
+           data-s="4">
+            <span>05</span>
+            Process
+        </a>
+
+        <a href="#clients"
+           class="snav-item"
+           data-s="5">
+            <span>06</span>
+            Clients
+        </a>
+
+        <a href="#stats"
+           class="snav-item"
+           data-s="6">
+            <span>07</span>
+            Stats
+        </a>
+
+        <a href="#blog"
+           class="snav-item"
+           data-s="7">
+            <span>08</span>
+            Journal
+        </a>
+
+        <a href="#contact"
+           class="snav-item"
+           data-s="8">
+            <span>09</span>
+            Contact
+        </a>
+
+    </aside>
+
+
+    <!-- ─────────────── SPA APPLICATION ─────────────── -->
+    <main id="spa-app">
+
+
+        <!-- HOME -->
+        <section id="s0"
+                 class="section active"
+                 data-section="home">
+            <div class="sec-inner">
+
+                <div class="hero">
+                    <div class="hero-eyebrow">
+                        Developer / Systems Administrator
+                    </div>
+
+                    <h1>
+                        BUILDING
+                        <span>DIGITAL</span>
+                        EXPERIENCES.
+                    </h1>
+
+                    <p class="hero-copy">
+                        Creating modern applications, systems,
+                        and digital experiences.
+                    </p>
+
+                    <a href="#work"
+                       class="btn-gold"
+                       data-route="work">
+                        View My Work
+                    </a>
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- ABOUT -->
+        <section id="s1"
+                 class="section"
+                 data-section="about">
+            <div class="sec-inner">
+
+                <div class="section-label">
+                    02 / About
+                </div>
+
+                <h2>About Me</h2>
+
+                <p>
+                    Developer and systems administrator focused
+                    on building reliable applications and creative
+                    technical solutions.
+                </p>
+
+            </div>
+        </section>
+
+
+        <!-- WORK -->
+        <section id="s2"
+                 class="section"
+                 data-section="work">
+            <div class="sec-inner">
+
+                <div class="section-label">
+                    03 / Selected Work
+                </div>
+
+                <h2>Projects</h2>
+
+                <!-- API content module renders here.
+                     Static project markup can be placed here
+                     as a fallback. -->
+                <div id="proj-list"></div>
+
+            </div>
+        </section>
+
+
+        <!-- SERVICES -->
+        <section id="s3"
+                 class="section"
+                 data-section="services">
+            <div class="sec-inner">
+
+                <div class="section-label">
+                    04 / Services
+                </div>
+
+                <h2>What I Do</h2>
+
+                <div class="services-grid">
+
+                    <article class="serv-cell">
+                        <h3>Development</h3>
+                        <p>
+                            Modern web applications and
+                            software solutions.
+                        </p>
+                    </article>
+
+                    <article class="serv-cell">
+                        <h3>Systems</h3>
+                        <p>
+                            Infrastructure, automation,
+                            and systems administration.
+                        </p>
+                    </article>
+
+                    <article class="serv-cell">
+                        <h3>Creative Technology</h3>
+                        <p>
+                            Experimental interfaces and
+                            interactive digital experiences.
+                        </p>
+                    </article>
+
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- PROCESS -->
+        <section id="s4"
+                 class="section"
+                 data-section="process">
+            <div class="sec-inner">
+
+                <div class="section-label">
+                    05 / Process
+                </div>
+
+                <h2>How I Work</h2>
+
+                <div class="process-grid">
+
+                    <div class="proc-step">
+                        <span>01</span>
+                        <h3>Discover</h3>
+                    </div>
+
+                    <div class="proc-step">
+                        <span>02</span>
+                        <h3>Design</h3>
+                    </div>
+
+                    <div class="proc-step">
+                        <span>03</span>
+                        <h3>Build</h3>
+                    </div>
+
+                    <div class="proc-step">
+                        <span>04</span>
+                        <h3>Deploy</h3>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- CLIENTS / TESTIMONIALS -->
+        <section id="s5"
+                 class="section"
+                 data-section="clients">
+            <div class="sec-inner">
+
+                <div class="section-label">
+                    06 / Clients
+                </div>
+
+                <h2>Testimonials</h2>
+
+                <!-- Content module renders testimonials here. -->
+                <div id="testi-cards"></div>
+
+                <!-- Generated dynamically by content.js. -->
+                <div id="testi-dots"></div>
+
+            </div>
+        </section>
+
+
+        <!-- STATS -->
+        <section id="s6"
+                 class="section"
+                 data-section="stats">
+            <div class="sec-inner">
+
+                <div class="section-label">
+                    07 / Skills
+                </div>
+
+                <h2>Experience</h2>
+
+                <div class="stats-grid">
+
+                    <div class="stat">
+                        <div class="counter"
+                             data-t="10">
+                            0<span class="stat-sup">+</span>
+                        </div>
+
+                        <p>Years Building</p>
+                    </div>
+
+                    <div class="stat">
+                        <div class="counter"
+                             data-t="50">
+                            0<span class="stat-sup">+</span>
+                        </div>
+
+                        <p>Projects</p>
+                    </div>
+
+                </div>
+
+                <div class="skills">
+
+                    <div class="skill">
+                        <div class="skill-label">
+                            JavaScript
+                        </div>
+
+                        <div class="skill-track">
+                            <div class="sk-fill"
+                                 data-w="90"></div>
+                        </div>
+                    </div>
+
+                    <div class="skill">
+                        <div class="skill-label">
+                            Systems Administration
+                        </div>
+
+                        <div class="skill-track">
+                            <div class="sk-fill"
+                                 data-w="85"></div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- BLOG -->
+        <section id="s7"
+                 class="section"
+                 data-section="blog">
+            <div class="sec-inner">
+
+                <div class="section-label">
+                    08 / Journal
+                </div>
+
+                <h2>Latest Posts</h2>
+
+                <!-- API content module renders here. -->
+                <div id="blog-grid"></div>
+
+            </div>
+        </section>
+
+
+        <!-- CONTACT -->
+        <section id="s8"
+                 class="section"
+                 data-section="contact">
+            <div class="sec-inner">
+
+                <div class="section-label">
+                    09 / Contact
+                </div>
+
+                <h2>Let's Build Something.</h2>
+
+                <form id="contact-form"
+                      novalidate>
+
+                    <input type="text"
+                           name="name"
+                           placeholder="Your name"
+                           autocomplete="name">
+
+                    <input type="email"
+                           name="email"
+                           placeholder="Email address"
+                           autocomplete="email">
+
+                    <select name="budget">
+                        <option value="">
+                            Select budget
+                        </option>
+                        <option value="small">
+                            Small Project
+                        </option>
+                        <option value="medium">
+                            Medium Project
+                        </option>
+                        <option value="large">
+                            Large Project
+                        </option>
+                    </select>
+
+                    <textarea name="message"
+                              placeholder="Tell me about your project"></textarea>
+
+                    <!-- Honeypot: hidden from real users. -->
+                    <div class="hp-field"
+                         aria-hidden="true">
+                        <label>
+                            Website
+                            <input type="text"
+                                   name="website"
+                                   tabindex="-1"
+                                   autocomplete="off">
+                        </label>
+                    </div>
+
+                    <button type="submit"
+                            class="send-btn">
+                        Send Message
+                    </button>
+
+                    <div id="contact-status"
+                         role="status"
+                         aria-live="polite"></div>
+
+                </form>
+
+            </div>
+        </section>
+
+
+    </main>
+
+
+    <!-- ─────────────── BOTTOM BAR ─────────────── -->
+    <footer id="bottombar">
+
+        <div class="section-counter">
+            <span id="cur-num">01</span>
+            <span class="counter-divider">/</span>
+            <span>09</span>
+        </div>
+
+        <div class="footer-copy">
+            © 2026 GHap
+        </div>
+
+        <div class="footer-social">
+            <a href="#"
+               class="b-soc"
+               aria-label="GitHub">
+                GitHub
+            </a>
+
+            <a href="#"
+               class="b-soc"
+               aria-label="LinkedIn">
+                LinkedIn
+            </a>
+        </div>
+
+    </footer>
+
+
+    <!--
+        The complete application is bundled by esbuild.
+
+        main.js imports:
+        - jQuery
+        - jquery.gui.js
+        - GSAP
+        - SPA modules
+
+        Do not add separate jQuery, GSAP, or GUI framework
+        script tags here.
+    -->
+    <script type="module"
+            src="js/main.js?v=__BUILD__"></script>
+
+</body>
+</html>
