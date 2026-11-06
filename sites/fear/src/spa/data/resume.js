@@ -1,29 +1,29 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Single source of truth for everything repeatable on the site.
-// Edit here, run `npm run build`, and the lies update everywhere.
+// Edit here, run `npm run build`, and the site updates everywhere.
+// Tone: professional, restrained, a little dark.
 // ─────────────────────────────────────────────────────────────────────────────
 
 export const PROFILE = {
     name: 'Garrett Haptonstall',
     handle: 'FearDread',
     location: 'Killeen, TX',
-    email: 'ghaptonstall@gmail.com', // TODO: add a public email to show it in Contact (blank = row hidden)
+    email: '', // TODO: add a public email to show it in Contact (blank = row hidden)
     github: 'https://github.com/FearDread',
     site: 'https://efear.shop',
     taglines: [
-        'I keep servers alive. People are a harder problem.',
-        'Uptime is a bedtime story we tell ourselves.',
-        'Fluent in bash, nginx, and passive-aggressive comments.',
-        'Everything fails eventually. I schedule it for business hours.',
-        'Your outage is just entropy with a ticket number.',
-        'Linux, networking, and the quiet acceptance of the void.'
+        'I build systems that keep running after everyone has gone home.',
+        'Reliability is a discipline, not a feature.',
+        'Linux. Networking. Automation. Quiet nights on call.',
+        'Everything fails eventually. The work is deciding how.',
+        'Infrastructure you stop thinking about.'
     ]
 };
 
 export const EXP = [
-    { num: 'Linux', lbl: 'Native tongue' },
-    { num: 'AWS', lbl: 'Reluctantly fluent' },
-    { num: 'DFW', lbl: 'Origin story' }
+    { num: 'Linux', lbl: 'Systems administration' },
+    { num: 'AWS', lbl: 'Cloud & networking' },
+    { num: 'Node', lbl: 'Full-stack development' }
 ];
 
 export const TECH = ['Linux', 'Ubuntu', 'Bash', 'nginx', 'AWS', 'Networking', 'DevOps', 'Node.js', 'Express', 'JavaScript', 'TypeScript', 'React', 'Next.js', 'WebRTC'];
@@ -31,70 +31,158 @@ export const TECH = ['Linux', 'Ubuntu', 'Bash', 'nginx', 'AWS', 'Networking', 'D
 export const TERMINAL = [
     { cmd: true, s: 'whoami' },
     { s: 'garrett' },
-    { cmd: true, s: 'uptime' },
-    { s: 'up since birth, load: concerning' },
-    { cmd: true, s: 'ls ~/hobbies' },
+    { cmd: true, s: 'uname -a' },
+    { s: 'Linux, full-stack, infrastructure' },
+    { cmd: true, s: 'ls ~/interests' },
     { s: 'gaming/ camping/ hiking/' },
-    { s: 'climbing/ tinkering/' },
+    { s: 'climbing/ computers/' },
     { cmd: true, s: 'echo $HOME' },
-    { s: 'Killeen, TX (DFW at heart)' },
-    { cmd: true, s: 'sudo fix-everything' },
-    { s: 'garrett is not in the sudoers file.' },
-    { s: 'This incident will be reported.' }
+    { s: 'Killeen, TX (DFW roots)' },
+    { cmd: true, s: 'systemctl status garrett' },
+    { s: 'active (running)' },
+    { cmd: true, s: 'cat /etc/motto' },
+    { s: 'Measure twice. Deploy once.' }
 ];
 
+// Each project powers a row in the Work list and the detail modal.
+//   summary / role / highlights → modal. icon is a Bootstrap Icons class.
 export const PROJECTS = [
-    { title: 'FEAR Platform', category: 'Self-hosted', tags: ['Node', 'Express', 'nginx'], year: 'Ongoing', icon: 'bi-hdd-network', link: 'https://efear.shop' },
-    { title: 'The Reverse Proxy Rodeo', category: 'Infrastructure', tags: ['nginx', 'TLS', 'DNS'], year: 'Resolved', icon: 'bi-shield-lock' },
-    { title: 'vchat: WebRTC Signaling', category: 'Real-time', tags: ['WebRTC', 'Node'], year: 'Beta-ish', icon: 'bi-camera-video' },
-    { title: 'HipComic Importer', category: 'Data Liberation', tags: ['Scraping', 'eFear Comics'], year: 'In progress', icon: 'bi-box-arrow-in-down' },
-    { title: 'CRA → Next.js Exodus', category: 'Migration', tags: ['React', 'Next.js', 'Redux/Zustand'], year: 'Survived', icon: 'bi-arrow-left-right' },
-    { title: 'SEOToolkit & SEOManager', category: 'Front-end', tags: ['React', 'SERP/OG previews'], year: 'Shipped', icon: 'bi-search' }
+    {
+        title: 'FEAR Platform',
+        category: 'Self-hosted platform',
+        status: 'Ongoing',
+        icon: 'bi-hdd-network',
+        link: 'https://fear.dedyn.io',
+        role: 'Design, development, operations',
+        tags: ['Node.js', 'Express', 'nginx', 'Linux'],
+        summary: 'A self-hosted Node/Express platform that I build and run across my own domains, including efear.shop. One backend serves the front-end bundle and the API routes behind an nginx reverse proxy.',
+        highlights: [
+            'Single Node/Express backend (FEAR.js and FEARServer.js) serving the SPA and its APIs.',
+            'Fronted by an nginx reverse proxy for multiple domains.',
+            'Self-hosted end to end: application, proxy and certificates all under my control.',
+            'Extended over time with new services, such as the vchat signaling app.'
+        ]
+    },
+    {
+        title: 'E-FEAR E-Commerce Store',
+        category: 'Front-end ecommerce',
+        status: 'Completed',
+        icon: 'bi-arrow-left-right',
+        link: 'https://efear.shop',
+        role: 'Developer',
+        tags: ['React', 'Next.js', 'Node.js'],
+        summary: 'Contains React modules for search optimization work: an on-page analyzer and a meta tag manager with live previews.',
+        highlights: [
+            'Fully functional custom built e-commerece store built with NextJS using the FEAR-Admin API',
+            'Restructured the application around App Router conventions.',
+            'Carried Redux and Zustand state management into the new architecture.',
+            'Converted client-side data fetching to async Server Components.',
+            'SEO JSON-Doc modules and meta information for indexable content and markup for every product page.'
+        ]
+    },
+    {
+        title: 'V-Chat: WebRTC Signaling',
+        category: 'Real-time E2EE communications',
+        status: 'In development',
+        icon: 'bi-camera-video',
+        link: 'https://vchat.efear.shop',
+        role: 'Design and implementation',
+        tags: ['WebRTC', 'Node.js', 'Express'],
+        summary: 'A WebRTC video chat application. Its signaling service lives inside the FEAR Node/Express backend rather than running as a separate system.',
+        highlights: [
+            'Signaling layer coordinates session setup between peers.',
+            'Media flows peer to peer; the server only brokers the connection.',
+            'Integrated into the existing FEAR backend to keep operations simple.'
+        ]
+    },
+    {
+        title: 'Multi-Domain nginx Reverse Proxy',
+        category: 'Infrastructure',
+        status: 'Resolved',
+        icon: 'bi-shield-lock',
+        role: 'Configuration and troubleshooting',
+        tags: ['nginx', 'TLS', 'DNS', 'Linux', 'Cloudflare'],
+        summary: 'Configuration and troubleshooting of an nginx reverse proxy serving two self-hosted domains, efear.shop and fear.dedyn.io.',
+        highlights: [
+            'Traced a TLS certificate mismatch to a missing server_name directive on one of the server blocks.',
+            'Established explicit server blocks per domain so each name resolves to the right certificate and upstream.',
+            'Worked the problem layer by layer: DNS, then TLS, then proxy configuration.'
+        ]
+    },
+    {
+        title: 'HipComic Collection Importer',
+        category: 'Data import',
+        status: 'In progress',
+        icon: 'bi-box-arrow-in-down',
+        role: 'Design and implementation',
+        tags: ['Node.js', 'Scraping', 'Database'],
+        summary: 'A tool that imports my personal HipComic collection into a database I own. With no app or API access available, it works by scraping the public collection page.',
+        highlights: [
+            'Moves collection data out of a third-party app and into my own database.',
+            'Built as a scraper because no official access was available.',
+            'Supports the eFear comics storefront with inventory data.'
+        ]
+    },
+    {
+        title: 'F.E.A.R. Framework (ebook)',
+        category: 'Publication',
+        status: 'Published',
+        icon: 'bi-journal-text',
+        role: 'Author and production',
+        tags: ['Node.js', 'pandoc', 'EPUB3', 'KDP'],
+        summary: 'A nonfiction guide for nurses on using AI and automation to reduce the burden of clinical documentation, titled "Find. Evaluate. Automate. Reclaim."',
+        highlights: [
+            'Authored the framework and manuscript, with chapter visuals produced in matplotlib.',
+            'Generated the DOCX with Node.js and the docx library; packaged EPUB3 with pandoc plus a LibreOffice re-save to normalize heading styles.',
+            'Prepared the title for Kindle Direct Publishing, including product description and pricing strategy.'
+        ]
+    }
 ];
 
 export const SERVICES = [
-    { icon: 'bi-terminal', name: 'Linux Administration', desc: 'Keeping boxes patched, secured, and mildly resentful. Users, services, cron, and the occasional séance for dead processes.' },
-    { icon: 'bi-diagram-3', name: 'Infrastructure & Networking', desc: 'AWS, nginx, DNS, TLS. If packets go missing, I find them. If they left on purpose, I respect that.' },
-    { icon: 'bi-code-slash', name: 'Full-Stack Development', desc: 'Node, Express, React, Next.js. A front end that smiles and a back end that tells the truth.' },
-    { icon: 'bi-gear-wide-connected', name: 'DevOps & Automation', desc: 'Do it twice, script it. Do it three times, script it and leave a deeply honest comment.' }
+    { icon: 'bi-terminal', name: 'Linux Administration', desc: 'Provisioning, hardening, patching and monitoring of Linux servers. Systems stay quiet because they are maintained.' },
+    { icon: 'bi-diagram-3', name: 'Infrastructure & Networking', desc: 'AWS, nginx, DNS and TLS. Proxies, routing and certificates configured so failures are rare and easy to diagnose.' },
+    { icon: 'bi-code-slash', name: 'Full-Stack Development', desc: 'Node.js, Express, React and Next.js. Clean interfaces on top of dependable back ends.' },
+    { icon: 'bi-gear-wide-connected', name: 'DevOps & Automation', desc: 'Scripts, build pipelines and repeatable deployments. If a task happens twice, it gets automated.' }
 ];
 
 export const PROCESS = [
-    { title: 'Acknowledge the fire', desc: 'Read the logs before the chat messages. Logs lie less, and they never say "quick question."', tag: 'journalctl -xe' },
-    { title: 'Find the actual cause', desc: 'It\u2019s DNS. It\u2019s not DNS. It\u2019s a certificate. It was DNS the whole time.', tag: 'dig +trace' },
-    { title: 'Fix it without making it worse', desc: 'Small change, one variable, a rollback plan, and the humility of someone who has made it worse before.', tag: 'git revert' },
-    { title: 'Automate it so it never hurts again', desc: 'It will hurt again. But now a script feels the pain first.', tag: 'cron' },
-    { title: 'Write the postmortem', desc: 'Blameless, thorough, and only slightly haunted. Mostly it was me. Occasionally it was a missing semicolon.', tag: 'docs/' }
+    { title: 'Observe', desc: 'Start with logs and metrics. Establish what is actually happening before deciding what is wrong.', tag: 'journalctl -xe' },
+    { title: 'Isolate', desc: 'Narrow the cause one layer at a time: network, DNS, certificates, application.', tag: 'dig +trace' },
+    { title: 'Change one thing', desc: 'Make a single, reversible change with a rollback ready.', tag: 'git revert' },
+    { title: 'Automate', desc: 'Turn the fix into a script or a check so the problem is caught earlier next time.', tag: 'cron' },
+    { title: 'Document', desc: 'Record what happened, why, and what changed. Whoever inherits the system will need it.', tag: 'docs/' }
 ];
 
+// Working principles. Swap in real client testimonials here when you have them.
 export const TESTIMONIALS = [
-    { quote: 'I was perfectly healthy until the 3 AM deploy. Now I\u2019m a cautionary tale.', author: 'A Production Database', role: 'Formerly Healthy' },
-    { quote: 'One missing server_name directive and I questioned my entire existence. Garrett found it. I have never felt so seen.', author: 'nginx', role: 'Reverse Proxy, Reformed' },
-    { quote: 'He automated me. I wasn\u2019t even mad. I was relieved.', author: 'A Cron Job', role: 'Runs at 3:00 AM, Resents It' },
-    { quote: 'Fourteen hundred dependencies. Zero trust. Exactly how it should be.', author: 'node_modules', role: 'Heavier Than the Sun' },
-    { quote: 'Your backup strategy is a hope with a schedule. He\u2019ll gently make it a plan.', author: 'The Void', role: 'Patient. Always Patient.' }
+    { quote: 'A system you cannot explain is a system you cannot trust.', author: 'Operating principle', role: '01 \u00b7 Clarity' },
+    { quote: 'Every failure mode you plan for is one you will sleep through.', author: 'Operating principle', role: '02 \u00b7 Preparation' },
+    { quote: 'Automate the repeatable. Reserve attention for the unexpected.', author: 'Operating principle', role: '03 \u00b7 Automation' },
+    { quote: 'Simple systems fail in ways you can understand.', author: 'Operating principle', role: '04 \u00b7 Simplicity' },
+    { quote: 'A backup is real only after it has been restored.', author: 'Operating principle', role: '05 \u00b7 Verification' }
 ];
 
 export const POSTS = [
-    { title: 'Postmortem: The Missing server_name Directive', section: 'Postmortem', meta: 'SEV-2 · Resolved · Blame: me', icon: 'bi-bug' },
-    { title: 'I Wrote a Book So Nurses Could Automate the Charting', section: 'Field Notes', meta: 'F.E.A.R. Framework · Shipped', icon: 'bi-journal-text' },
-    { title: 'Bash Scripts for Minecraft: A Sysadmin\u2019s Side Quest', section: 'Side Quest', meta: 'Java + Bedrock · Ubuntu', icon: 'bi-controller' }
+    { title: 'Diagnosing a Certificate Mismatch on a Multi-Domain nginx Proxy', section: 'Incident write-up', meta: 'nginx \u00b7 TLS \u00b7 Resolved', icon: 'bi-bug' },
+    { title: 'Writing and Publishing a Guide on Automation for Clinical Documentation', section: 'Publication', meta: 'F.E.A.R. Framework \u00b7 EPUB3 \u00b7 KDP', icon: 'bi-journal-text' },
+    { title: 'Automating Minecraft Server Management on Ubuntu', section: 'Tooling', meta: 'Bash \u00b7 Java & Bedrock', icon: 'bi-controller' }
 ];
 
-// Counters: t = target, d = decimals, prefix/suffix wrap the number.
+// Counters are derived from the data above so they never drift. Add `d` for decimals, `prefix`/`suffix` to wrap.
 export const STATS = [
-    { t: 99.9, d: 1, suffix: '%', label: 'Uptime (self-reported)' },
-    { t: 3, suffix: ' AM', label: 'Preferred time for things to break' },
-    { t: 404, label: 'Social plans: not found' },
-    { t: 0, label: 'Backups I trust blindly' }
+    { t: PROJECTS.length, label: 'Featured projects' },
+    { t: 2, label: 'Domains self-hosted' },
+    { t: SERVICES.length, label: 'Core disciplines' },
+    { t: 1, label: 'Published title' }
 ];
 
-// Self-assessed. Mostly. The last one is accurate.
+// Self-assessed proficiency (0-100).
 export const SKILLS = [
     { name: 'Linux Administration', w: 92 },
+    { name: 'Bash & Automation', w: 90 },
+    { name: 'Node.js / Express', w: 88 },
     { name: 'Networking & nginx', w: 85 },
-    { name: 'Node / Express', w: 88 },
     { name: 'AWS & DevOps', w: 82 },
-    { name: 'React / Next.js', w: 80 },
-    { name: 'Sleep Schedule', w: 12 }
+    { name: 'React / Next.js', w: 80 }
 ];

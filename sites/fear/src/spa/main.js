@@ -12,6 +12,7 @@ import typewriterModule from './modules/typewriter.js';
 import terminalModule from './modules/terminal.js';
 import easterModule from './modules/easter.js';
 import backgroundModule from './modules/background.js';
+import modalModule from './modules/modal.js';
 
 void Router;
 FEAR.configure({ name: 'fear-spa', logLevel: 1 });
@@ -28,6 +29,7 @@ const modules = {
     parallax: parallaxModule,
     typewriter: typewriterModule,
     terminal: terminalModule,
+    modal: modalModule,
     contact: contactModule,
     easter: easterModule,
     intro: introModule
