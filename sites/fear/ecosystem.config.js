@@ -1,7 +1,7 @@
 /* FEAR SPA RESUME / PORTFOLIO SITE */
 module.exports = {
     apps: [{
-        name: 'fear-spa',
+        name: 'ghap-spa',
         merge_logs: true,                 // one log file instead of one per instance
         min_uptime: '10s',                // must stay up this long to count as a good start
         max_restarts: 5,                 // stop crash-looping after 10 fast failures
@@ -25,6 +25,5 @@ module.exports = {
         merge_logs: true,
         out_file: './logs/fear-spa-out.log',
         error_file: './logs/fear-spa-error.log',
-    },
     }]
 };
