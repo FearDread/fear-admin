@@ -8,7 +8,7 @@ export default function modalModule() {
     let index = -1, want = -1, isOpen = false, returnFocus = null;
 
     const $modal = () => $('#modal');
-    const rows = () => $('#proj-list .proj-row');
+    const rows = () => $('#proj-list .proj-card');
     const focusables = () => $('#modal .modal-card').find('a[href],button:not([disabled])').filter(':visible');
 
     function render(i) {
@@ -63,12 +63,10 @@ export default function modalModule() {
         if (prefersReducedMotion()) return render(want);
         const parts = '#modal .modal-head, #modal .modal-body';
         gsap.killTweensOf(parts);
-        gsap.to(parts, {
-            opacity: 0, x: delta * -14, duration: 0.14, onComplete() {
-                render(want);
-                gsap.fromTo(parts, { opacity: 0, x: delta * 14 }, { opacity: 1, x: 0, duration: 0.22, ease: 'power2.out', clearProps: 'transform,opacity' });
-            }
-        });
+        gsap.to(parts, { opacity: 0, x: delta * -14, duration: 0.14, onComplete() {
+            render(want);
+            gsap.fromTo(parts, { opacity: 0, x: delta * 14 }, { opacity: 1, x: 0, duration: 0.22, ease: 'power2.out', clearProps: 'transform,opacity' });
+        } });
     }
 
     function onKey(e) {
@@ -87,22 +85,13 @@ export default function modalModule() {
     return {
         load() {
             $(document)
-                .on('click.modal', '.proj-row', function() {
-                    open(rows().index(this), this);
-                })
-                .on('keydown.modal', '.proj-row', function (e) {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        open(rows().index(this), this);
-                    }
-                })
+                .on('click.modal', '.proj-card', function () { open(rows().index(this), this); })
+                .on('keydown.modal', '.proj-card', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(rows().index(this), this); } })
                 .on('click.modal', '#modal .modal-backdrop, #modal .modal-close', close)
                 .on('click.modal', '#modal .modal-prev', () => step(-1))
                 .on('click.modal', '#modal .modal-next', () => step(1))
                 .on('keydown.modal', onKey);
         },
-        unload() {
-            close(); $(document).off('.modal');
-        }
+        unload() { close(); $(document).off('.modal'); }
     };
 }

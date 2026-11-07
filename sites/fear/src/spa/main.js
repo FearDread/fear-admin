@@ -13,6 +13,7 @@ import terminalModule from './modules/terminal.js';
 import easterModule from './modules/easter.js';
 import backgroundModule from './modules/background.js';
 import modalModule from './modules/modal.js';
+import cardsModule from './modules/cards.js';
 
 void Router;
 FEAR.configure({ name: 'fear-spa', logLevel: 1 });
@@ -30,6 +31,7 @@ const modules = {
     typewriter: typewriterModule,
     terminal: terminalModule,
     modal: modalModule,
+    cards: cardsModule,
     contact: contactModule,
     easter: easterModule,
     intro: introModule

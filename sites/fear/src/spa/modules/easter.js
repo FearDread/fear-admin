@@ -13,13 +13,14 @@ const PANIC = [
     '(Everything is not fine. Press any key to pretend.)'
 ];
 
-export default function easterModule() {
+export default function easterModule(sb) {
     let seq = 0, timers = [];
 
     function close() { timers.forEach(clearTimeout); timers = []; $('.panic').remove(); $(document).off('keydown.panic click.panic'); }
 
     function panic() {
         if ($('.panic').length) return;
+        sb.emit('bg:chaos');
         const $pre = $('<pre></pre>');
         $('<div class="panic" role="alert"></div>').append($pre).appendTo('body');
         PANIC.forEach((line, n) => timers.push(setTimeout(() => $pre.append(document.createTextNode(line + '\n')), n * 260)));

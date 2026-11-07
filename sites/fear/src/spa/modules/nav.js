@@ -17,10 +17,11 @@ export default function navModule(sb) {
         $('#cur-num').text(`${pad(index + 1)} / ${pad(SECTIONS.length)}`);
         $sections().attr('aria-hidden', 'true').eq(index).attr('aria-hidden', 'false');
         const label = $item.find('.snav-label').text();
-        document.title = label && index ? `${label} · Garrett Haptonstall` : 'Garrett Haptonstall · Linux, Code & Controlled Panic';
+        document.title = label && index ? `${label} · Garrett Haptonstall` : 'Garrett Haptonstall · Linux Systems & Infrastructure';
     }
 
     function activate(index, { updateHash = true } = {}) {
+        if (document.body.classList.contains('booting') || document.body.classList.contains('modal-open')) return Promise.resolve();
         if (!Number.isInteger(index) || index < 0 || index >= SECTIONS.length || busy || index === current) return Promise.resolve();
         busy = true;
         const dir = index > current ? 1 : -1;

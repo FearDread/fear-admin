@@ -6,7 +6,7 @@
   "type": "commonjs",
   "scripts": {
     "build": "node build.js",
-    "dev": "node build && node server.js --watch",
+    "dev": "node build.js --watch",
     "start": "node server.js"
   },
   "devDependencies": {

@@ -1,10 +1,21 @@
 import { pad, esc, safeUrl, icon } from '../utils.js';
+import { placeholderArt, accent } from '../art.js';
 import { PROFILE, EXP, TECH, PROJECTS, SERVICES, PROCESS, TESTIMONIALS, POSTS, STATS, SKILLS } from '../data/resume.js';
 
 const t = {
     exp: (items) => items.map((e) => `<div class="exp-item"><span class="exp-num">${esc(e.num)}</span><span class="exp-lbl">${esc(e.lbl)}</span></div>`).join(''),
     tech: (items) => items.map((x) => `<span class="tech-tag">${esc(x)}</span>`).join(''),
-    projects: (items) => items.map((p, n) => `<div class="proj-row" tabindex="0" role="button" aria-haspopup="dialog"><span class="proj-num">${pad(n + 1)}</span><div class="proj-thumb proj-glyph" aria-hidden="true"><i class="bi ${icon(p.icon)}"></i></div><div class="proj-info"><div class="proj-name">${esc(p.title)}</div><div class="proj-cat">${esc([p.category].concat(p.tags || []).filter(Boolean).slice(0, 4).join(' \u00b7 '))}</div></div><div class="proj-year">${esc(p.status || '')}</div><i class="bi bi-plus-lg proj-arrow"></i></div>`).join(''),
+    projects: (items) => items.map((p, n) => {
+        const img = safeUrl(p.image);
+        const media = img ? `<img class="pc-img" src="${esc(img)}" alt="" loading="lazy">` : placeholderArt(n);
+        return `<article class="proj-card" tabindex="0" role="button" aria-haspopup="dialog" aria-label="${esc('Project details: ' + p.title)}" style="--c1:${accent(n)}">` +
+            `<div class="pc-media">${media}<i class="bi ${icon(p.icon)} pc-glyph" aria-hidden="true"></i>` +
+            `<span class="pc-badge">${esc(p.status || '')}</span><span class="pc-idx">${pad(n + 1)}</span>` +
+            (img ? '' : '<span class="pc-ph">Cover image \u00b7 placeholder</span>') +
+            `<span class="pc-open"><i class="bi bi-arrows-angle-expand"></i> View details</span></div>` +
+            `<div class="pc-body"><div class="pc-cat">${esc(p.category || '')}</div><h3 class="pc-title">${esc(p.title)}</h3>` +
+            `<div class="pc-tags">${(p.tags || []).slice(0, 3).map((t) => `<span>${esc(t)}</span>`).join('')}</div></div><span class="pc-spot"></span></article>`;
+    }).join(''),
     services: (items) => items.map((s, n) => `<div class="serv-cell"><span class="serv-num">${pad(n + 1)}</span><i class="bi ${icon(s.icon)} serv-icon" aria-hidden="true"></i><div class="serv-name">${esc(s.name)}</div><div class="serv-desc">${esc(s.desc)}</div></div>`).join(''),
     process: (items) => items.map((s, n) => `<div class="proc-step"><div class="proc-circle">${pad(n + 1)}</div><div class="proc-content"><div class="proc-title">${esc(s.title)}</div><div class="proc-desc">${esc(s.desc)}</div><span class="proc-tag">${esc(s.tag)}</span></div></div>`).join(''),
     testimonials: (items) => items.map((x, n) => `<figure class="testi-card${n === 0 ? ' active' : ''}"><blockquote class="testi-quote">${esc(x.quote)}</blockquote><figcaption><div class="testi-author">${esc(x.author)}</div><div class="testi-role">${esc(x.role)}</div></figcaption></figure>`).join(''),

@@ -1989,3 +1989,228 @@ select.cf2 option {
     grid-template-columns: 1fr;
   }
 }
+
+/* ═══════════ Project cards (modules/cards.js, art.js) ═══════════ */
+.proj-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.1rem;
+  max-height: calc(100vh - 290px);
+  overflow-y: auto;
+  padding: 6px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--red3) transparent;
+}
+.proj-card:first-child {
+  grid-column: span 2;
+}
+.proj-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: linear-gradient(160deg, rgba(14, 18, 30, 0.9), rgba(6, 8, 14, 0.92));
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  transform-style: preserve-3d;
+  will-change: transform;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.proj-card::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--red), var(--teal));
+  transition: width 0.5s ease;
+}
+.proj-card:hover,
+.proj-card:focus-visible {
+  border-color: var(--red3);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 69, 96, 0.15);
+}
+.proj-card:hover::after,
+.proj-card:focus-visible::after {
+  width: 100%;
+}
+.pc-media {
+  position: relative;
+  height: clamp(96px, 14vh, 130px);
+  overflow: hidden;
+  background: #080b13;
+}
+.pc-media::before {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  z-index: 2;
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+  pointer-events: none;
+}
+.proj-art,
+.pc-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.proj-card:hover .proj-art,
+.proj-card:hover .pc-img {
+  transform: scale(1.1);
+}
+.pc-glyph {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 1;
+  font-size: 2.3rem;
+  color: var(--c1, var(--red));
+  text-shadow: 0 0 28px currentColor;
+  transform: translate(-50%, -50%);
+  transition: transform 0.4s ease, opacity 0.3s;
+}
+.proj-card:hover .pc-glyph,
+.proj-card:focus-visible .pc-glyph {
+  transform: translate(-50%, -62%) scale(1.12);
+  opacity: 0;
+}
+.pc-badge,
+.pc-idx,
+.pc-ph {
+  position: absolute;
+  z-index: 3;
+  font-family: "Rajdhani", sans-serif;
+  text-transform: uppercase;
+}
+.pc-badge {
+  top: 14px;
+  left: 14px;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.58rem;
+  letter-spacing: 0.22em;
+  color: var(--teal);
+  background: rgba(3, 5, 10, 0.78);
+  border: 1px solid var(--red3);
+}
+.pc-idx {
+  top: 14px;
+  right: 16px;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  color: rgba(244, 240, 232, 0.55);
+}
+.pc-ph {
+  left: 16px;
+  bottom: 12px;
+  font-size: 0.5rem;
+  letter-spacing: 0.25em;
+  color: rgba(244, 240, 232, 0.4);
+}
+.pc-open {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: rgba(3, 5, 10, 0.6);
+  backdrop-filter: blur(2px);
+  font-family: "Rajdhani", sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--white);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.proj-card:hover .pc-open,
+.proj-card:focus-visible .pc-open {
+  opacity: 1;
+}
+.pc-body {
+  padding: 0.9rem 1rem 1.05rem;
+}
+.pc-cat {
+  font-family: "Rajdhani", sans-serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--teal);
+}
+.pc-title {
+  margin: 0.3rem 0 0.65rem;
+  font-family: "Cormorant Garamond", serif;
+  font-size: 1.25rem;
+  font-weight: 400;
+  line-height: 1.15;
+  color: var(--white);
+}
+.proj-card:first-child .pc-title {
+  font-size: 1.6rem;
+}
+.pc-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+.pc-tags span {
+  padding: 0.18rem 0.5rem;
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  color: rgba(244, 240, 232, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.pc-spot {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  background: radial-gradient(220px circle at var(--mx, 50%) var(--my, 50%), rgba(255, 255, 255, 0.09), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.proj-card:hover .pc-spot {
+  opacity: 1;
+}
+@media (max-width: 1100px) {
+  .proj-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .proj-card:last-child {
+    grid-column: span 2;
+  }
+}
+@media (max-width: 800px) {
+  .proj-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .proj-card:last-child {
+    grid-column: auto;
+  }
+}
+@media (max-width: 560px) {
+  .proj-grid {
+    grid-template-columns: 1fr;
+  }
+  .proj-card:first-child {
+    grid-column: auto;
+  }
+}
+@media (max-height: 760px), (max-width: 900px) {
+  .proj-grid {
+    max-height: none;
+    overflow: visible;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .proj-art,
+  .pc-img,
+  .pc-glyph {
+    transition: none;
+  }
+}

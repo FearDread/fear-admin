@@ -25,6 +25,7 @@ public/index.html           page shell (sections s0..s8)
 public/css/style.css        theme + additions at the bottom
 src/spa/main.js             boots modules (content first)
 src/spa/config.js           SECTIONS order, selectors, media helpers
+src/spa/art.js              generated placeholder cover art
 src/spa/utils.js            esc / safeUrl / icon / canScrollInside
 src/spa/data/resume.js      all site content
 src/spa/modules/
@@ -32,12 +33,15 @@ src/spa/modules/
   nav.js         section transitions, wheel/touch/keys/hash, nested-scroll aware
   cursor.js      GSAP quickTo cursor (disabled on touch)
   clock.js       Killeen time, time wasted, availability mood
-  intro.js       entrance timeline
   parallax.js    background blobs (disabled for reduced motion / touch)
   typewriter.js  rotating hero taglines
   terminal.js    About-page terminal
   stats.js       counters + skill bars, replay on every visit
   testimonials.js rotates only while visible; pause on hover
+  cards.js       project card spotlight, tilt, entrance
+  modal.js       project detail dialog (prev/next, Esc, focus trap)
+  background.js  animated network canvas (nodes, packets, failures)
+  intro.js       boot-sequence intro, skippable, once per session
   contact.js     validation + POST to /fear/api/portfolio/contact
   easter.js      Konami code -> fake kernel panic
 ```
@@ -50,3 +54,7 @@ src/spa/modules/
 
 - Section order in `config.js` (`SECTIONS`) must match the `<section id="sN">` order and the side-nav `data-s` values.
 - Fonts and Bootstrap Icons load from Google Fonts / jsDelivr. If your FEAR server sets a strict CSP, allow those hosts.
+
+### Project images
+
+Cards show generated placeholder art until a project has an `image`. Drop files in `public/img/projects/` and set e.g. `image: '/img/projects/fear-platform.jpg'` on the project in `resume.js` (16:9 works best, shown cropped to about 3:1 on wide cards).

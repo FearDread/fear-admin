@@ -46,13 +46,14 @@ export const TERMINAL = [
 
 // Each project powers a row in the Work list and the detail modal.
 //   summary / role / highlights → modal. icon is a Bootstrap Icons class.
+//   image (optional) → card cover, e.g. '/img/projects/fear-platform.jpg'. Omit for generated placeholder art.
 export const PROJECTS = [
     {
         title: 'FEAR Platform',
         category: 'Self-hosted platform',
         status: 'Ongoing',
         icon: 'bi-hdd-network',
-        link: 'https://fear.dedyn.io',
+        link: 'https://efear.shop',
         role: 'Design, development, operations',
         tags: ['Node.js', 'Express', 'nginx', 'Linux'],
         summary: 'A self-hosted Node/Express platform that I build and run across my own domains, including efear.shop. One backend serves the front-end bundle and the API routes behind an nginx reverse proxy.',
@@ -64,28 +65,24 @@ export const PROJECTS = [
         ]
     },
     {
-        title: 'E-FEAR E-Commerce Store',
-        category: 'Front-end ecommerce',
-        status: 'Completed',
-        icon: 'bi-arrow-left-right',
-        link: 'https://efear.shop',
-        role: 'Developer',
-        tags: ['React', 'Next.js', 'Node.js'],
-        summary: 'Contains React modules for search optimization work: an on-page analyzer and a meta tag manager with live previews.',
+        title: 'Multi-Domain nginx Reverse Proxy',
+        category: 'Infrastructure',
+        status: 'Resolved',
+        icon: 'bi-shield-lock',
+        role: 'Configuration and troubleshooting',
+        tags: ['nginx', 'TLS', 'DNS', 'Linux'],
+        summary: 'Configuration and troubleshooting of an nginx reverse proxy serving two self-hosted domains, efear.shop and fear.dedyn.io.',
         highlights: [
-            'Fully functional custom built e-commerece store built with NextJS using the FEAR-Admin API',
-            'Restructured the application around App Router conventions.',
-            'Carried Redux and Zustand state management into the new architecture.',
-            'Converted client-side data fetching to async Server Components.',
-            'SEO JSON-Doc modules and meta information for indexable content and markup for every product page.'
+            'Traced a TLS certificate mismatch to a missing server_name directive on one of the server blocks.',
+            'Established explicit server blocks per domain so each name resolves to the right certificate and upstream.',
+            'Worked the problem layer by layer: DNS, then TLS, then proxy configuration.'
         ]
     },
     {
-        title: 'V-Chat: WebRTC Signaling',
-        category: 'Real-time E2EE communications',
+        title: 'vchat: WebRTC Signaling',
+        category: 'Real-time communications',
         status: 'In development',
         icon: 'bi-camera-video',
-        link: 'https://vchat.efear.shop',
         role: 'Design and implementation',
         tags: ['WebRTC', 'Node.js', 'Express'],
         summary: 'A WebRTC video chat application. Its signaling service lives inside the FEAR Node/Express backend rather than running as a separate system.',
@@ -93,20 +90,6 @@ export const PROJECTS = [
             'Signaling layer coordinates session setup between peers.',
             'Media flows peer to peer; the server only brokers the connection.',
             'Integrated into the existing FEAR backend to keep operations simple.'
-        ]
-    },
-    {
-        title: 'Multi-Domain nginx Reverse Proxy',
-        category: 'Infrastructure',
-        status: 'Resolved',
-        icon: 'bi-shield-lock',
-        role: 'Configuration and troubleshooting',
-        tags: ['nginx', 'TLS', 'DNS', 'Linux', 'Cloudflare'],
-        summary: 'Configuration and troubleshooting of an nginx reverse proxy serving two self-hosted domains, efear.shop and fear.dedyn.io.',
-        highlights: [
-            'Traced a TLS certificate mismatch to a missing server_name directive on one of the server blocks.',
-            'Established explicit server blocks per domain so each name resolves to the right certificate and upstream.',
-            'Worked the problem layer by layer: DNS, then TLS, then proxy configuration.'
         ]
     },
     {
@@ -121,6 +104,33 @@ export const PROJECTS = [
             'Moves collection data out of a third-party app and into my own database.',
             'Built as a scraper because no official access was available.',
             'Supports the eFear comics storefront with inventory data.'
+        ]
+    },
+    {
+        title: 'CRA to Next.js Migration',
+        category: 'Front-end migration',
+        status: 'Completed',
+        icon: 'bi-arrow-left-right',
+        role: 'Developer',
+        tags: ['React', 'Next.js', 'Redux', 'Zustand'],
+        summary: 'Migration of a React application from Create React App to the Next.js App Router.',
+        highlights: [
+            'Restructured the application around App Router conventions.',
+            'Carried Redux and Zustand state management into the new architecture.',
+            'Converted client-side data fetching to async Server Components.'
+        ]
+    },
+    {
+        title: 'SEOToolkit & SEOManager',
+        category: 'Front-end modules',
+        status: 'Completed',
+        icon: 'bi-search',
+        role: 'Developer',
+        tags: ['React', 'SEO', 'JavaScript'],
+        summary: 'Two React modules for search optimization work: an on-page analyzer and a meta tag manager with live previews.',
+        highlights: [
+            'SEOToolkit analyzes on-page SEO signals.',
+            'SEOManager edits meta tags and previews the result as a search listing and as an Open Graph card.'
         ]
     },
     {
