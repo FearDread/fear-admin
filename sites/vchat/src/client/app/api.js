@@ -1,31 +1,31 @@
 const BASE = '/fear/api/vchat';
+const AUTH = '/fear/api/auth';
 
-async function request(method, path, body) {
-    const res = await fetch(BASE + path, {
+const request = (method, path, body) => {
+    return fetch(BASE + path, {
         method,
         credentials: 'same-origin',
         headers: body ? { 'Content-Type': 'application/json' } : {},
         body: body ? JSON.stringify(body) : undefined,
-    });
+    })
+        .then((res) => {
+            return res.json()
+                .catch(() => null) /* empty or non-JSON body */
+                .then((data) => ({ res, data }));
+        })
+        .then(({ res, data }) => {
+            if (res.status === 401 && path !== '/login' && path !== '/session') {
+                window.dispatchEvent(new Event('vchat:unauthorized'));
+            }
 
-    let data = null;
-    try {
-        data = await res.json();
-    } catch (err) {
-        /* empty or non-JSON body */
-    }
+            if (!res.ok) {
+                const error = new Error((data && (data.error || data.message)) || `Request failed (${res.status})`);
+                error.status = res.status;
+                throw error;
+            }
 
-    if (res.status === 401 && path !== '/login' && path !== '/session') {
-        window.dispatchEvent(new Event('vchat:unauthorized'));
-    }
-
-    if (!res.ok) {
-        const error = new Error((data && (data.error || data.message)) || `Request failed (${res.status})`);
-        error.status = res.status;
-        throw error;
-    }
-
-    return data;
+            return data;
+        });
 }
 
 export const api = {
