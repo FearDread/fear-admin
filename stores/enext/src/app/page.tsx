@@ -1,10 +1,11 @@
 import Link from 'next/link';
 import { Anton } from 'next/font/google';
-import HeroSection from '@/components/home/v2/ComicHero';
+//import HeroSection from '@/components/home/v2/ComicHero';
 import TrustBar from '@/components/home/v2/TrustBar';
 import FeaturedProducts from '@/components/home/v2/FeaturedProducts';
 import CategoryCards from '@/components/home/v2/CategoryCards';
 import GoogleAdSense from '@/components/common/AdSense';
+import HeroSlider from "@/components/hero/HeroSlider";
 
 // Replaces the manual <link> Google Fonts tags — self-hosted, no render-blocking fetch.
 const anton = Anton({
@@ -273,7 +274,7 @@ const OfferHighlights = () => {
 export default function Home2() {
   return (
     <div className={anton.variable}>
-      <HeroSection />
+      <HeroSlider />
       <TrustBar />
       <CategoryCards />
       <MarqueeBand />
