@@ -759,6 +759,7 @@ module.exports = {
     register: exports.register,
     logout: exports.logout,
     me: exports.getCurrentUser,
+    session: exports.getCurrentUser,
     getCurrentUser: exports.getCurrentUser,
     refreshToken: exports.refreshToken,
     updateProfile: exports.updateProfile,

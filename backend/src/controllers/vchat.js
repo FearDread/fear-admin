@@ -5,7 +5,7 @@ const DEFAULT_STUN = 'stun:stun.l.google.com:19302';
 const DEFAULT_SOCKET_PATH = '/fear/ws/vchat';
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const MAIL_FROM = 'fear.dread@underworld.dog';
+const MAIL_FROM = 'ghaptonstall@gmail.com';
 
 // Invites go to arbitrary addresses, so cap them per user (in-memory, per instance).
 const INVITE_LIMIT = 10;
@@ -24,7 +24,6 @@ const allowInvite = (userId) => {
 
 // Error shape matches the auth controller's response.error
 const fail = (res, status, message) => res.status(status).json({ success: false, message });
-
 const fearOf = (req) => req.app.get('fear');
 
 // session / config / token carry identity or TURN credentials: never cache them.
@@ -115,19 +114,9 @@ const getMailer = (req) => {
     return mailer;
 };
 
-// Public base URL for links in emails. Set VCHAT_PUBLIC_URL in .env (e.g. https://vchat.example.com).
-const baseUrl = (req) => {
-    const env = fearOf(req).getEnvironment() || {};
-    return (env.VCHAT_PUBLIC_URL || `${req.protocol}://${req.get('host')}`).replace(/\/+$/, '');
-};
-
-// Must match what parseRoute() in the client expects for a meeting link.
-const roomLink = (req, room) => `${baseUrl(req)}/#/meeting/${room}`;
-
-const mailFailed = (req, res, detail) => {
-    fearOf(req).getLogger().error(`FEAR vchat :: email failed :: ${detail}`);
-    fail(res, 502, 'Email could not be sent');
-};
+const baseUrl = (req) => (fearOf(req).getEnvironment().VCHAT_PUBLIC_URL || `${req.protocol}://${req.get('host')}`).replace(/\/+$/, '');
+const roomLink = (req, room) => `${baseUrl(req)}/?room=${room}`;
+const mailFailed = (res, result) => res.status(502).json({ error: 'email could not be sent' });
 
 // Welcome email, sent to the signed-in user's own address. Admins may pass { email, firstName }.
 exports.sendWelcome = async (req, res) => {
@@ -154,7 +143,7 @@ exports.sendWelcome = async (req, res) => {
         if (!result.success) return mailFailed(req, res, result.message);
         res.json({ success: true, message: 'Welcome email sent' });
     } catch (error) {
-        mailFailed(req, res, error.message);
+        mailFailed(res, error.message);
     }
 };
 
@@ -194,7 +183,7 @@ exports.sendInvite = async (req, res) => {
         fearOf(req).getLogger().info(`FEAR vchat :: invite sent :: room ${room} :: user ${user.id}`);
         res.json({ success: true, message: 'Invitation sent' });
     } catch (error) {
-        mailFailed(req, res, error.message);
+        mailFailed(res, error.message);
     }
 };
 
