@@ -1,0 +1,1792 @@
+/* ==========================================================================
+   dark-theme.css
+   Load AFTER App.css, animate.css and sidebar-menu.css.
+
+   Three dark shades drive every surface:
+     --dark-1  page background (deepest)
+     --dark-2  chrome + containers: sidebar, topbar, cards (translucent), dropdowns
+     --dark-3  raised / interactive: inputs, hover, active, table hover, borders
+   The page background is a fixed gradient built from these shades plus a
+   faint blue tint; cards are see-through glass so the gradient shows through.
+   One accent (blue) carries primary actions and active states.
+   ========================================================================== */
+
+:root {
+    --dark-1: #06080b;
+    --dark-2: #0c0f14;
+    --dark-3: #141922;
+    --dark-2-rgb: 12, 15, 20;
+    --dark-3-rgb: 20, 25, 34;
+    /* Main background gradient */
+    --bg-gradient: linear-gradient(145deg, #040609 0%, #08101c 45%, #06080b 100%);
+    /* Glass surfaces */
+    --glass: rgba(0,0,0,.7);
+    --glass-strong: rgba(var(--dark-2-rgb), 0.72);
+    --glass-border: rgba(255, 255, 255, 0.07);
+    --text: #e3e7ed;
+    --text-muted: #8b94a1;
+    --accent: #14abef;
+    --accent-hover: #0e95d2;
+    --color-primary: var(--accent); /* used by App.css animated border */
+
+    --success: #2fbf71;
+    --warning: #f0a63a;
+    --danger: #f0566a;
+    --info: #4cc3e8;
+    color-scheme: dark;
+}
+
+/* ---------- Base ---------- */
+body,
+body.theme-1 {
+    background-color: var(--dark-1) !important;
+    background-image: var(--bg-gradient) !important;
+    background-repeat: no-repeat !important;
+    background-size: cover !important;
+    background-attachment: fixed !important;
+    color: var(--text);
+}
+
+a, a:hover {
+    color: var(--text);
+}
+
+h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+    color: var(--text);
+}
+
+hr {
+    border-top-color: var(--dark-3);
+}
+
+code {
+    color: var(--accent);
+}
+
+::selection {
+    background: rgba(20, 171, 239, 0.3);
+}
+
+::placeholder {
+    color: var(--text-muted) !important;
+    opacity: 1 !important;
+}
+
+:-ms-input-placeholder, ::-ms-input-placeholder {
+    color: var(--text-muted) !important;
+}
+
+select option {
+    background: var(--dark-2);
+    color: var(--text);
+}
+
+label {
+    color: var(--text-muted);
+}
+
+.blockquote-footer, a.text-muted:focus, a.text-muted:hover {
+    color: var(--text-muted);
+}
+
+.breadcrumb-item.active, .breadcrumb-item + .breadcrumb-item::before {
+    color: var(--text-muted);
+}
+
+:focus-visible {
+    outline: 2px solid var(--accent) !important;
+    outline-offset: 2px;
+}
+
+/* Dark scrollbars */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--dark-3) var(--dark-1);
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--dark-1);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--dark-3);
+    border-radius: 6px;
+}
+
+/* ---------- Sidebar ---------- */
+#sidebar-wrapper,
+#wrapper.toggled #sidebar-wrapper {
+    background: var(--glass);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    border-right: 1px solid var(--glass-border);
+    box-shadow: none;
+}
+
+.brand-logo {
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.logo-text {
+    color: var(--text);
+}
+
+.sidebar-menu a {
+    color: var(--text-muted);
+}
+
+.sidebar-menu > li > a {
+    color: var(--text-muted);
+    border-left-color: transparent;
+}
+
+.sidebar-menu > li:hover > a,
+.sidebar-menu > li.active > a {
+    color: var(--text);
+    background: var(--dark-3);
+    border-left-color: var(--accent);
+}
+
+.sidebar-menu li.sidebar-header {
+    color: var(--text-muted);
+}
+
+.sidebar-menu .sidebar-submenu {
+    background: rgba(0, 0, 0, 0.25);
+}
+
+    .sidebar-menu .sidebar-submenu > li > a {
+        color: var(--text-muted);
+    }
+
+        .sidebar-menu .sidebar-submenu > li.active > a,
+        .sidebar-menu .sidebar-submenu > li > a:hover {
+            color: var(--text);
+        }
+
+/* Mobile overlay + drawer */
+@media only screen and (max-width: 1024px) {
+    #sidebar-wrapper {
+        background: var(--dark-2);
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+    }
+
+    #wrapper.toggled .overlay {
+        background: var(--dark-1);
+        opacity: 0.6;
+    }
+}
+
+/* ---------- Topbar ---------- */
+.topbar-nav .navbar {
+    background-color: var(--glass);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--glass-border);
+    box-shadow: none;
+}
+
+.toggle-menu i, .right-nav-link a.nav-link {
+    color: var(--text);
+}
+
+.search-bar input {
+    background-color: rgba(var(--dark-3-rgb), 0.6);
+    color: var(--text);
+}
+
+    .search-bar input:focus {
+        background-color: rgba(0, 0, 0, 0.35);
+        box-shadow: 0 0 0 0.2rem rgba(20, 171, 239, 0.35);
+    }
+
+.search-bar a i {
+    color: var(--text-muted);
+}
+
+.user-details .media .media-body .user-title {
+    color: var(--text);
+}
+
+.user-details .media .media-body .user-subtitle {
+    color: var(--text-muted);
+}
+
+/* ---------- Dropdowns ---------- */
+.dropdown-menu {
+    background-color: rgba(var(--dark-2-rgb), 0.92);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    color: var(--text);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5) !important;
+}
+
+.dropdown-divider {
+    border-top-color: var(--dark-3);
+}
+
+.dropdown-item {
+    color: var(--text);
+}
+
+    .dropdown-item:hover,
+    .dropdown-item:focus,
+    .dropdown-item.active,
+    .dropdown-item:active {
+        background-color: var(--dark-3);
+        color: var(--text);
+    }
+
+/* ---------- Cards ---------- */
+.card {
+    background-color: var(--glass);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    box-shadow: none;
+}
+
+.card-header {
+    border-bottom-color: var(--glass-border);
+    color: var(--text);
+}
+
+.card-footer {
+    border-top-color: var(--glass-border);
+}
+
+.card-title {
+    color: var(--text);
+}
+
+.card-action a i {
+    color: var(--text-muted);
+}
+
+.card-group {
+    box-shadow: none;
+}
+
+.row.row-group > div {
+    border-right-color: var(--glass-border);
+}
+
+@media only screen and (max-width: 1199px) {
+    .row.row-group > div {
+        border-bottom-color: var(--glass-border);
+    }
+}
+
+/* ---------- Buttons ---------- */
+.btn {
+    box-shadow: none;
+}
+
+.btn-primary,
+.btn-primary:disabled, .btn-primary.disabled {
+    background-color: var(--accent);
+    border-color: var(--accent);
+    color: #06121a;
+}
+
+    .btn-primary:hover,
+    .btn-primary:not(:disabled):not(.disabled):active,
+    .btn-primary:not(:disabled):not(.disabled).active,
+    .show > .btn-primary.dropdown-toggle {
+        background-color: var(--accent-hover);
+        border-color: var(--accent-hover);
+        color: #06121a;
+    }
+
+.btn-secondary, .btn-light, .btn-dark,
+.btn-secondary:disabled, .btn-light:disabled, .btn-dark:disabled {
+    background-color: var(--dark-3);
+    border-color: var(--dark-3);
+    color: var(--text);
+}
+
+    .btn-secondary:hover, .btn-light:hover, .btn-dark:hover,
+    .btn-secondary:not(:disabled):not(.disabled):active,
+    .btn-light:not(:disabled):not(.disabled):active,
+    .btn-dark:not(:disabled):not(.disabled):active {
+        background-color: var(--dark-1);
+        border-color: var(--dark-3);
+        color: var(--text);
+    }
+
+.btn-success {
+    background-color: var(--success);
+    border-color: var(--success);
+    color: #05160d;
+}
+
+    .btn-success:hover {
+        background-color: #27a763;
+        border-color: #27a763;
+        color: #05160d;
+    }
+
+.btn-warning {
+    background-color: var(--warning);
+    border-color: var(--warning);
+    color: #1c1203;
+}
+
+    .btn-warning:hover {
+        background-color: #d8942f;
+        border-color: #d8942f;
+        color: #1c1203;
+    }
+
+.btn-danger {
+    background-color: var(--danger);
+    border-color: var(--danger);
+    color: #1a0509;
+}
+
+    .btn-danger:hover {
+        background-color: #d94a5d;
+        border-color: #d94a5d;
+        color: #1a0509;
+    }
+
+.btn-info {
+    background-color: var(--info);
+    border-color: var(--info);
+    color: #04141a;
+}
+
+    .btn-info:hover {
+        background-color: #39b0d4;
+        border-color: #39b0d4;
+        color: #04141a;
+    }
+
+.btn-white {
+    background-color: var(--text);
+    border-color: var(--text);
+    color: var(--dark-1);
+}
+
+.btn-outline-primary {
+    color: var(--accent);
+    border-color: var(--accent);
+}
+
+    .btn-outline-primary:hover,
+    .btn-outline-primary:not(:disabled):not(.disabled):active {
+        background-color: var(--accent);
+        color: #06121a;
+    }
+
+.btn-outline-secondary, .btn-outline-light, .btn-outline-white, .btn-outline-dark {
+    color: var(--text-muted);
+    border-color: var(--dark-3);
+}
+
+    .btn-outline-secondary:hover, .btn-outline-light:hover,
+    .btn-outline-white:hover, .btn-outline-dark:hover {
+        background-color: var(--dark-3);
+        border-color: var(--dark-3);
+        color: var(--text);
+    }
+
+.btn-outline-success {
+    color: var(--success);
+    border-color: var(--success);
+}
+
+    .btn-outline-success:hover {
+        background-color: var(--success);
+        color: #05160d;
+    }
+
+.btn-outline-warning {
+    color: var(--warning);
+    border-color: var(--warning);
+}
+
+    .btn-outline-warning:hover {
+        background-color: var(--warning);
+        color: #1c1203;
+    }
+
+.btn-outline-danger {
+    color: var(--danger);
+    border-color: var(--danger);
+}
+
+    .btn-outline-danger:hover {
+        background-color: var(--danger);
+        color: #1a0509;
+    }
+
+.btn-outline-info {
+    color: var(--info);
+    border-color: var(--info);
+}
+
+    .btn-outline-info:hover {
+        background-color: var(--info);
+        color: #04141a;
+    }
+
+.btn-link {
+    color: var(--accent);
+}
+
+.pro-btn {
+    background: var(--dark-3);
+}
+
+/* ---------- Forms ---------- */
+.form-control,
+.custom-select,
+.custom-file-label {
+    background-color: rgba(var(--dark-3-rgb), 0.6);
+    border: 1px solid var(--glass-border);
+    color: var(--text) !important;
+}
+
+    .form-control:focus,
+    .custom-select:focus {
+        background-color: rgba(0, 0, 0, 0.35);
+        border-color: var(--accent);
+        box-shadow: 0 0 0 0.2rem rgba(20, 171, 239, 0.25);
+    }
+
+    .form-control:disabled, .form-control[readonly] {
+        background-color: var(--dark-1);
+        opacity: 0.7;
+    }
+
+    .input-group-text, .custom-file-label::after {
+        background-color: var(--dark-3);
+        border: 1px solid var(--dark-3);
+        color: var(--text-muted);
+    }
+
+.custom-header {
+    background: var(--dark-3);
+}
+
+.error {
+    color: var(--danger);
+}
+
+/* ---------- Tables ---------- */
+.table {
+    color: var(--text);
+}
+
+    .table thead th {
+        border-bottom: 1px solid var(--glass-border);
+        color: var(--text-muted);
+    }
+
+    .table td, .table th, .table-bordered td, .table-bordered th {
+        border-color: var(--glass-border);
+    }
+
+.table-bordered {
+    border-color: var(--glass-border);
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--text);
+}
+
+.table-active, .table-active > td, .table-active > th {
+    background-color: var(--dark-3);
+}
+
+.table .thead-dark th, .table-dark {
+    background-color: var(--dark-1);
+    border-color: var(--dark-3);
+    color: var(--text);
+}
+
+.table .thead-light th, .table-light {
+    background-color: var(--dark-3);
+    border-color: var(--dark-3);
+    color: var(--text);
+}
+
+/* ---------- Alerts: shade 3 surface, severity shown by left rule ---------- */
+.alert {
+    background-color: rgba(var(--dark-3-rgb), 0.7);
+    color: var(--text);
+    border-left: 3px solid var(--text-muted);
+    box-shadow: none;
+}
+
+.alert-success {
+    background-color: rgba(var(--dark-3-rgb), 0.7);
+    color: var(--text);
+    border-color: var(--success);
+}
+
+.alert-info {
+    background-color: rgba(var(--dark-3-rgb), 0.7);
+    color: var(--text);
+    border-color: var(--info);
+}
+
+.alert-warning {
+    background-color: rgba(var(--dark-3-rgb), 0.7);
+    color: var(--text);
+    border-color: var(--warning);
+}
+
+.alert-danger {
+    background-color: rgba(var(--dark-3-rgb), 0.7);
+    color: var(--text);
+    border-color: var(--danger);
+}
+
+.alert-success .alert-icon {
+    color: var(--success);
+}
+
+.alert-info .alert-icon {
+    color: var(--info);
+}
+
+.alert-warning .alert-icon {
+    color: var(--warning);
+}
+
+.alert-danger .alert-icon {
+    color: var(--danger);
+}
+
+.alert .alert-link {
+    color: var(--accent);
+}
+
+/* ---------- Badges ---------- */
+.badge {
+    box-shadow: none;
+}
+
+.badge-primary {
+    background-color: var(--accent);
+    color: #06121a;
+}
+
+.badge-success {
+    background-color: var(--success);
+    color: #05160d;
+}
+
+.badge-warning {
+    background-color: var(--warning);
+    color: #1c1203;
+}
+
+.badge-danger {
+    background-color: var(--danger);
+    color: #1a0509;
+}
+
+.badge-info {
+    background-color: var(--info);
+    color: #04141a;
+}
+
+.badge-secondary, .badge-dark {
+    background-color: var(--dark-3);
+    color: var(--text);
+}
+
+.badge-light {
+    background-color: var(--text);
+    color: var(--dark-1);
+}
+
+/* ---------- Pagination ---------- */
+.page-link {
+    background-color: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--glass-border);
+    box-shadow: none;
+}
+
+    .page-link:hover {
+        background-color: rgba(var(--dark-3-rgb), 0.7);
+        color: var(--text);
+        border-color: var(--dark-3);
+    }
+
+.page-item.active .page-link {
+    background-color: var(--accent);
+    border-color: var(--accent);
+    color: #06121a;
+}
+
+.page-item.disabled .page-link {
+    background-color: var(--dark-1);
+    border-color: var(--dark-3);
+    color: var(--text-muted);
+    opacity: 0.6;
+}
+
+/* ---------- List groups ---------- */
+.list-group {
+    box-shadow: none;
+}
+
+.list-group-item {
+    background-color: var(--glass);
+    border-color: var(--glass-border);
+    color: var(--text);
+}
+
+.list-group-item-action {
+    color: var(--text);
+}
+
+    .list-group-item-action:hover, .list-group-item-action:focus,
+    .list-group-item.disabled, .list-group-item:disabled {
+        background-color: var(--dark-3);
+        color: var(--text);
+    }
+
+.list-group-item.active {
+    background-color: var(--accent);
+    border-color: var(--accent);
+    color: #06121a;
+}
+
+/* ---------- Tabs & pills ---------- */
+.nav-tabs {
+    border-bottom-color: var(--glass-border);
+}
+
+    .nav-tabs .nav-link {
+        color: var(--text-muted);
+    }
+
+        .nav-tabs .nav-link:hover {
+            color: var(--text);
+        }
+
+        .nav-tabs .nav-link.active,
+        .nav-tabs .nav-item.show .nav-link {
+            background-color: transparent;
+            color: var(--accent);
+            border-bottom: 3px solid var(--accent);
+        }
+
+.nav-pills .nav-link {
+    color: var(--text-muted);
+}
+
+    .nav-pills .nav-link:hover {
+        color: var(--text);
+        background-color: var(--dark-3);
+    }
+
+    .nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+        background-color: var(--accent);
+        color: #06121a;
+    }
+
+/* ---------- Progress ---------- */
+.progress {
+    background-color: var(--dark-3);
+    box-shadow: none;
+}
+
+.progress-bar {
+    background-color: var(--accent);
+}
+
+/* ---------- Utilities (keep App.css helper classes on-palette) ---------- */
+.bg-dark, .bg-body {
+    background-color: var(--dark-1) !important;
+}
+
+.bg-dark-light, .bg-dark-light1, .bg-dark-light2 {
+    background-color: var(--dark-2) !important;
+}
+
+.bg-light, .bg-contrast, .bg-white-light1, .bg-white-light2 {
+    background-color: var(--dark-3) !important;
+}
+
+.bg-primary {
+    background-color: var(--accent) !important;
+}
+
+.bg-secondary {
+    background-color: var(--dark-3) !important;
+}
+
+.bg-success {
+    background-color: var(--success) !important;
+}
+
+.bg-warning {
+    background-color: var(--warning) !important;
+}
+
+.bg-danger {
+    background-color: var(--danger) !important;
+}
+
+.bg-info {
+    background-color: var(--info) !important;
+}
+
+.border-primary {
+    border-color: var(--accent) !important;
+}
+
+.border-dark, .border-light, .border-light-2, .border-light-3, .border-secondary-light {
+    border-color: var(--dark-3) !important;
+}
+
+.text-primary {
+    color: var(--accent) !important;
+}
+
+.text-secondary, .text-light, .text-light-1, .text-light-2 {
+    color: var(--text-muted) !important;
+}
+
+.text-dark {
+    color: var(--dark-1) !important;
+}
+
+.text-success {
+    color: var(--success) !important;
+}
+
+.text-warning {
+    color: var(--warning) !important;
+}
+
+.text-danger {
+    color: var(--danger) !important;
+}
+
+.text-info {
+    color: var(--info) !important;
+}
+
+.footer {
+    color: var(--text-muted);
+    border-top-color: var(--glass-border);
+}
+
+.back-to-top {
+    background-color: var(--dark-3);
+}
+
+    .back-to-top:hover {
+        background-color: var(--accent);
+        color: #06121a;
+    }
+
+.popover, .popover-header {
+    background-color: var(--dark-2);
+    color: var(--text);
+}
+
+.animated-border-box:after {
+    background: var(--dark-2);
+}
+
+/* ---------- Animated border: .media-object ----------
+   Same idea as .gradient-border: a 300%-wide rainbow gradient that slides
+   back and forth (moveGradient). The gradient is masked down to the 1px
+   border ring so the translucent glass card stays see-through.
+   Replaces the conic-gradient spinner defined in App.css. */
+.media-object {
+    --border-width: 1px;
+    --radius: 0px;
+    position: relative;
+    border-radius: var(--radius);
+    border: var(--border-width) solid transparent;
+    box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+}
+
+    .media-object::before {
+        content: none;
+        animation: none;
+    }
+    /* retire the old spinner */
+    .media-object::after {
+        content: "";
+        position: absolute;
+        inset: calc(-1 * var(--border-width));
+        border: inherit;
+        border-radius: inherit;
+        pointer-events: none;
+        background: linear-gradient( 60deg, #040609,#27a763, rgba(20, 171, 239, 0.35), #39b0d4, #040609,#27a763, rgba(20, 171, 239, 0.35), #39b0d4);
+        background-size: 300% 300%;
+        background-position: 0 50%;
+        background-origin: border-box;
+        -webkit-mask: linear-gradient(#000, #000), linear-gradient(#000, #000);
+        -webkit-mask-clip: content-box, border-box;
+        -webkit-mask-composite: xor;
+        mask: linear-gradient(#000, #000), linear-gradient(#000, #000);
+        mask-clip: content-box, border-box;
+        mask-composite: exclude;
+        animation: moveGradient 4s alternate infinite;
+    }
+
+@keyframes moveGradient {
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+/* ---------- Respect reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+    .animated, .separator-animated-border::before, .media-object::after,
+    .animated-border-box:before, .animated-border-box-glow:before {
+        animation: none !important;
+    }
+
+    .auth-bg *, .auth-bg::before {
+        animation: none !important;
+    }
+}
+
+
+
+/* ---------- Aurora background ----------
+   Port of the SCSS "rainbow" streaks to plain CSS, on black instead of white.
+   Markup: <div class="aurora-bg"> 25x <div class="rainbow"></div>, then
+   <div class="h"></div><div class="v"></div> </div>  (see Aurora.jsx).
+   The layer paints its own black base, so the body gradient is turned off
+   whenever .aurora-bg is on the page. */
+.aurora-bg {
+    --aurora-base: #000;
+    --aurora-blue: rgb(29 78 216);
+    --aurora-green: rgb(15 118 110);
+    --aurora-purple: rgb(126 34 206);
+    --aurora-opacity: 0.7; /* lower = calmer, higher = brighter streaks */
+    --aurora-time: 120s; /* one full pass; bigger = slower (was 45s) */
+
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+    background: var(--aurora-base);
+}
+
+body:has(.aurora-bg) {
+    background-color: transparent !important;
+    background-image: none !important;
+}
+
+.aurora-bg > .rainbow {
+    position: absolute;
+    top: 0;
+    width: 0;
+    height: 100vh;
+    opacity: var(--aurora-opacity);
+    transform: rotate(10deg);
+    transform-origin: top right;
+}
+/* Black glows that fade the streaks out along the bottom and left edges */
+.aurora-bg > .h {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100vw;
+    height: 0;
+    box-shadow: 0 0 50vh 40vh var(--aurora-base);
+}
+
+.aurora-bg > .v {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 100vh;
+    box-shadow: 0 0 35vw 25vw var(--aurora-base);
+}
+
+@keyframes aurora-slide {
+    from {
+        right: -25vw;
+    }
+
+    to {
+        right: 125vw;
+    }
+}
+
+.aurora-bg > .rainbow:nth-child(1) {
+    box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-green), 0 0 50px 25px var(--aurora-purple), 50px 0 50px 25px var(--aurora-blue), 130px 0 80px 40px var(--aurora-base);
+    animation: aurora-slide calc(var(--aurora-time) - var(--aurora-time) / 50 * 1) linear infinite;
+    animation-delay: calc(var(--aurora-time) / -25 * 1);
+}
+
+.aurora-bg > .rainbow:nth-child(2) {
+    box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-purple), 0 0 50px 25px var(--aurora-green), 50px 0 50px 25px var(--aurora-blue), 130px 0 80px 40px var(--aurora-base);
+    animation: aurora-slide calc(var(--aurora-time) - var(--aurora-time) / 50 * 2) linear infinite;
+    animation-delay: calc(var(--aurora-time) / -25 * 2);
+}
+
+.aurora-bg > .rainbow:nth-child(3) {
+    box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-green), 0 0 50px 25px var(--aurora-blue), 50px 0 50px 25px var(--aurora-purple), 130px 0 80px 40px var(--aurora-base);
+    animation: aurora-slide calc(var(--aurora-time) - var(--aurora-time) / 50 * 3) linear infinite;
+    animation-delay: calc(var(--aurora-time) / -25 * 3);
+}
+
+.aurora-bg > .rainbow:nth-child(4) {
+    box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-blue), 0 0 50px 25px var(--aurora-purple), 50px 0 50px 25px var(--aurora-green), 130px 0 80px 40px var(--aurora-base);
+    animation: aurora-slide calc(var(--aurora-time) - var(--aurora-time) / 50 * 4) linear infinite;
+    animation-delay: calc(var(--aurora-time) / -25 * 4);
+}
+
+.aurora-bg > .rainbow:nth-child(5) {
+    box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-purple), 0 0 50px 25px var(--aurora-blue), 50px 0 50px 25px var(--aurora-green), 130px 0 80px 40px var(--aurora-base);
+    animation: aurora-slide calc(var(--aurora-time) - var(--aurora-time) / 50 * 5) linear infinite;
+    animation-delay: calc(var(--aurora-time) / -25 * 5);
+}
+
+.aurora-bg > .rainbow:nth-child(6) {
+    box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-purple), 0 0 50px 25px var(--aurora-blue), 50px 0 50px 25px var(--aurora-green), 130px 0 80px 40px var(--aurora-base);
+    animation: aurora-slide calc(var(--aurora-time) - var(--aurora-time) / 50 * 6) linear infinite;
+    animation-delay: calc(var(--aurora-time) / -25 * 6);
+}
+
+.aurora-bg > .rainbow:nth-child(7) {
+    box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-blue), 0 0 50px 25px var(--aurora-green), 50px 0 50px 25px var(--aurora-purple), 130px 0 80px 40px var(--aurora-base);
+    animation: aurora-slide calc(var(--aurora-time) - var(--aurora-time) / 50 * 7) linear infinite;
+    animation-delay: calc(var(--aurora-time) / -25 * 7);
+}
+
+.aurora-bg > .rainbow:nth-child(8) {
+    box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-purple), 0 0 50px 25px var(--aurora-blue), 50px 0 50px 25px var(--aurora-green), 130px 0 80px 40px var(--aurora-base);
+    animation: aurora-slide calc(var(--aurora-time) - var(--aurora-time) / 50 * 8) linear infinite;
+    animation-delay: calc(var(--aurora-time) / -25 * 8);
+}
+
+.aurora-bg > .rainbow:nth-child(9) {
+    box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-green), 0 0 50px 25px var(--aurora-purple), 50px 0 50px 25px var(--aurora-blue), 130px 0 80px 40px var(--aurora-base);
+    animation: aurora-slide calc(var(--aurora-time) - var(--aurora-time) / 50 * 9) linear infinite;
+    animation-delay: calc(var(--aurora-time) / -25 * 9);
+}
+
+.aurora-bg > .rainbow:nth-child(10) {
+    box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-blue), 0 0 50px 25px var(--aurora-green), 50px 0 50px 25px var(--aurora-purple), 130px 0 80px 40px var(--aurora-base);
+    animation: aurora-slide calc(var(--aurora-time) - var(--aurora-time) / 50 * 10) linear infinite;
+    animation-delay: calc(var(--aurora-time) / -25 * 10);
+}
+
+.aurora-bg > .rainbow:nth-child(11) {
+    box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-purple), 0 0 50px 25px var(--aurora-blue), 50px 0 50px 25px var(--aurora-green), 130px 0 80px 40px var(--aurora-base);
+    animation: aurora-slide calc(var(--aurora-time) - var(--aurora-time) / 50 * 11) linear infinite;
+    animation-delay: calc(var(--aurora-time) / -25 * 11);
+}
+
+.aurora-bg > .rainbow:nth-child(12) {
+    box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-blue), 0 0 50px 25px var(--aurora-green), 50px 0 50px 25px var(--aurora-purple), 130px 0 80px 40px var(--aurora-base);
+    animation: aurora-slide calc(var(--aurora-time) - var(--aurora-time) / 50 * 12) linear infinite;
+    animation-delay: calc(var(--aurora-time) / -25 * 12);
+}
+
+.aurora-bg > .rainbow:nth-child(13) {
+    box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-purple), 0 0 50px 25px var(--aurora-green), 50px 0 50px 25px var(--aurora-blue), 130px 0 80px 40px var(--aurora-base);
+    animation: aurora-slide calc(var(--aurora-time) - var(--aurora-time) / 50 * 13) linear infinite;
+    animation-delay: calc(var(--aurora-time) / -25 * 13);
+}
+
+.aurora-bg > .rainbow:nth-child(14) {
+    box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-purple), 0 0 50px 25px var(--aurora-blue), 50px 0 50px 25px var(--aurora-green), 130px 0 80px 40px var(--aurora-base);
+    animation: aurora-slide calc(var(--aurora-time) - var(--aurora-time) / 50 * 14) linear infinite;
+    animation-delay: calc(var(--aurora-time) / -25 * 14);
+}
+
+.aurora-bg > .rainbow:nth-child(15) {
+    box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-purple), 0 0 50px 25px var(--aurora-blue), 50px 0 50px 25px var(--aurora-green), 130px 0 80px 40px var(--aurora-base);
+    animation: aurora-slide calc(var(--aurora-time) - var(--aurora-time) / 50 * 15) linear infinite;
+    animation-delay: calc(var(--aurora-time) / -25 * 15);
+}
+
+.aurora-bg > .rainbow:nth-child(16) {
+    box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-green), 0 0 50px 25px var(--aurora-blue), 50px 0 50px 25px var(--aurora-purple), 130px 0 80px 40px var(--aurora-base);
+    animation: aurora-slide calc(var(--aurora-time) - var(--aurora-time) / 50 * 16) linear infinite;
+    animation-delay: calc(var(--aurora-time) / -25 * 16);
+}
+
+.aurora-bg > .rainbow:nth-child(17) {
+    box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-green), 0 0 50px 25px var(--aurora-blue), 50px 0 50px 25px var(--aurora-purple), 130px 0 80px 40px var(--aurora-base);
+    animation: aurora-slide calc(var(--aurora-time) - var(--aurora-time) / 50 * 17) linear infinite;
+    animation-delay: calc(var(--aurora-time) / -25 * 17);
+}
+
+.aurora-bg > .rainbow:nth-child(18) {
+    box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-purple), 0 0 50px 25px var(--aurora-blue), 50px 0 50px 25px var(--aurora-green), 130px 0 80px 40px var(--aurora-base);
+    animation: aurora-slide calc(var(--aurora-time) - var(--aurora-time) / 50 * 18) linear infinite;
+    animation-delay: calc(var(--aurora-time) / -25 * 18);
+}
+
+.aurora-bg > .rainbow:nth-child(19) {
+    box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-purple), 0 0 50px 25px var(--aurora-green), 50px 0 50px 25px var(--aurora-blue), 130px 0 80px 40px var(--aurora-base);
+    animation: aurora-slide calc(var(--aurora-time) - var(--aurora-time) / 50 * 19) linear infinite;
+    animation-delay: calc(var(--aurora-time) / -25 * 19);
+}
+
+.aurora-bg > .rainbow:nth-child(20) {
+    box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-purple), 0 0 50px 25px var(--aurora-blue), 50px 0 50px 25px var(--aurora-green), 130px 0 80px 40px var(--aurora-base);
+    animation: aurora-slide calc(var(--aurora-time) - var(--aurora-time) / 50 * 20) linear infinite;
+    animation-delay: calc(var(--aurora-time) / -25 * 20);
+}
+
+.aurora-bg > .rainbow:nth-child(21) {
+    box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-blue), 0 0 50px 25px var(--aurora-green), 50px 0 50px 25px var(--aurora-purple), 130px 0 80px 40px var(--aurora-base);
+    animation: aurora-slide calc(var(--aurora-time) - var(--aurora-time) / 50 * 21) linear infinite;
+    animation-delay: calc(var(--aurora-time) / -25 * 21);
+}
+
+.aurora-bg > .rainbow:nth-child(22) {
+    box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-green), 0 0 50px 25px var(--aurora-blue), 50px 0 50px 25px var(--aurora-purple), 130px 0 80px 40px var(--aurora-base);
+    animation: aurora-slide calc(var(--aurora-time) - var(--aurora-time) / 50 * 22) linear infinite;
+    animation-delay: calc(var(--aurora-time) / -25 * 22);
+}
+
+.aurora-bg > .rainbow:nth-child(23) {
+    box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-purple), 0 0 50px 25px var(--aurora-blue), 50px 0 50px 25px var(--aurora-green), 130px 0 80px 40px var(--aurora-base);
+    animation: aurora-slide calc(var(--aurora-time) - var(--aurora-time) / 50 * 23) linear infinite;
+    animation-delay: calc(var(--aurora-time) / -25 * 23);
+}
+
+.aurora-bg > .rainbow:nth-child(24) {
+    box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-blue), 0 0 50px 25px var(--aurora-green), 50px 0 50px 25px var(--aurora-purple), 130px 0 80px 40px var(--aurora-base);
+    animation: aurora-slide calc(var(--aurora-time) - var(--aurora-time) / 50 * 24) linear infinite;
+    animation-delay: calc(var(--aurora-time) / -25 * 24);
+}
+
+.aurora-bg > .rainbow:nth-child(25) {
+    box-shadow: -130px 0 80px 40px var(--aurora-base), -50px 0 50px 25px var(--aurora-purple), 0 0 50px 25px var(--aurora-blue), 50px 0 50px 25px var(--aurora-green), 130px 0 80px 40px var(--aurora-base);
+    animation: aurora-slide calc(var(--aurora-time) - var(--aurora-time) / 50 * 25) linear infinite;
+    animation-delay: calc(var(--aurora-time) / -25 * 25);
+}
+
+/* ---------- Animated border glow: .animated-border-box / .animated-border-box-glow ----------
+   Same markup as App.css: put the glow element first, then the box (content goes inside the box).
+       <div class="animated-border-box-glow"></div>
+       <div class="animated-border-box"> ...card... </div>
+   Re-colored to the theme accent. Tune with the --abb-* variables on either element. */
+.animated-border-box,
+.animated-border-box-glow {
+    --abb-width: 250px;
+    --abb-height: 200px;
+    --abb-border: 2px;
+    --abb-radius: 0px;
+    --abb-speed: 4s;
+    max-width: var(--abb-width);
+    max-height: var(--abb-height);
+    border-radius: var(--abb-radius);
+}
+
+.animated-border-box-glow {
+    filter: blur(20px);
+    opacity: 0.75;
+}
+
+    .animated-border-box:before,
+    .animated-border-box-glow:before {
+        width: 200vmax; /* was 99999px: still covers any box, far cheaper to paint */
+        height: 200vmax;
+        background-image: conic-gradient(from 0deg, transparent 0 60%, rgba(20, 171, 239, 0.15) 72%, var(--accent) 86%, var(--info) 94%, transparent 100%);
+        animation: abb-rotate var(--abb-speed) linear infinite;
+    }
+
+.animated-border-box:before {
+    background-image: conic-gradient(from 0deg, rgba(255, 255, 255, 0.1) 0 60%, rgba(20, 171, 239, 0.15) 72%, var(--accent) 86%, var(--info) 94%, rgba(255, 255, 255, 0.1) 100%);
+}
+
+.animated-border-box:after {
+    left: var(--abb-border);
+    top: var(--abb-border);
+    width: calc(100% - var(--abb-border) * 2);
+    height: calc(100% - var(--abb-border) * 2);
+    background: var(--dark-2);
+    border-radius: max(0px, calc(var(--abb-radius) - var(--abb-border)));
+}
+
+@keyframes abb-rotate {
+    to {
+        transform: translate(-50%, -50%) rotate(1turn);
+    }
+}
+
+/* ---------- iCheck (material): dark checkboxes + radios ----------
+   One --ic-color per variant drives the border, fill, check mark and ripple. */
+[class*="icheck-material"] {
+    --ic-color: var(--accent);
+    --ic-check: #06121a;
+    --ic-border: rgba(255, 255, 255, 0.35);
+}
+
+.icheck-material-primary {
+    --ic-color: var(--accent);
+}
+
+.icheck-material-success {
+    --ic-color: var(--success);
+}
+
+.icheck-material-warning {
+    --ic-color: var(--warning);
+}
+
+.icheck-material-danger {
+    --ic-color: var(--danger);
+}
+
+.icheck-material-info {
+    --ic-color: var(--info);
+}
+
+.icheck-material-secondary {
+    --ic-color: var(--text-muted);
+}
+
+.icheck-material-white {
+    --ic-color: var(--text);
+}
+
+[class*="icheck-material"] > label {
+    color: var(--text);
+}
+
+/* Ripple that App.css shows on press */
+[class*="icheck-material"] > input:first-child {
+    background-color: var(--ic-color);
+}
+
+    /* Box */
+    [class*="icheck-material"] > input:first-child + label::before {
+        border-color: var(--ic-border);
+        background-color: rgba(255, 255, 255, 0.04);
+        border-radius: 0;
+        transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    [class*="icheck-material"] > input:first-child:not(:checked):not(:disabled):hover + label::before {
+        border-color: var(--ic-color);
+    }
+
+    [class*="icheck-material"] > input:first-child:checked + label::before {
+        background-color: var(--ic-color);
+        border-color: var(--ic-color);
+    }
+
+    /* Check mark */
+    [class*="icheck-material"] > input:first-child:checked + label::after {
+        border-bottom-color: var(--ic-check);
+        border-right-color: var(--ic-check);
+    }
+
+/* Radios: round, hollow ring with a solid dot */
+[class*="icheck-material"] > input[type="radio"]:first-child + label::before {
+    border-radius: 50%;
+}
+
+[class*="icheck-material"] > input[type="radio"]:first-child:checked + label::before {
+    background-color: transparent;
+    border-color: var(--ic-color);
+}
+
+[class*="icheck-material"] > input[type="radio"]:first-child:checked + label::after {
+    background-color: var(--ic-color);
+}
+
+/* Keyboard focus */
+[class*="icheck-material"] > input:first-child:focus-visible + label::before {
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--ic-color) 35%, transparent);
+}
+
+[class*="icheck-material"] > input:first-child:disabled + label {
+    color: var(--text-muted);
+}
+
+/* ---------- FullCalendar ----------
+   v5/v6 read the --fc-* variables. The v3 class rules (fc-unthemed, fc-state-*, fc-widget-*)
+   are for the older markup App.css was written against. */
+.fc {
+    --fc-border-color: var(--glass-border);
+    --fc-page-bg-color: transparent;
+    --fc-neutral-bg-color: rgba(255, 255, 255, 0.03);
+    --fc-neutral-text-color: var(--text-muted);
+    --fc-today-bg-color: rgba(20, 171, 239, 0.08);
+    --fc-now-indicator-color: var(--danger);
+    --fc-highlight-color: rgba(20, 171, 239, 0.15);
+    --fc-non-business-color: rgba(0, 0, 0, 0.25);
+    --fc-bg-event-color: var(--accent);
+    --fc-bg-event-opacity: 0.25;
+    --fc-event-bg-color: rgba(20, 171, 239, 0.18);
+    --fc-event-border-color: var(--accent);
+    --fc-event-text-color: var(--text);
+    --fc-event-selected-overlay-color: rgba(255, 255, 255, 0.12);
+    --fc-more-link-bg-color: var(--dark-3);
+    --fc-more-link-text-color: var(--text);
+    --fc-list-event-hover-bg-color: rgba(255, 255, 255, 0.05);
+    --fc-button-text-color: var(--text);
+    --fc-button-bg-color: var(--dark-3);
+    --fc-button-border-color: var(--glass-border);
+    --fc-button-hover-bg-color: var(--dark-1);
+    --fc-button-hover-border-color: var(--glass-border);
+    --fc-button-active-bg-color: var(--accent);
+    --fc-button-active-border-color: var(--accent);
+    color: var(--text);
+}
+
+#calendar,
+.fc-view-container {
+    background-color: transparent;
+}
+
+/* Toolbar */
+.fc .fc-toolbar-title,
+.fc-toolbar h2 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text);
+}
+
+.fc .fc-button-primary,
+.fc-state-default {
+    background-color: var(--dark-3);
+    background-image: none;
+    border: 1px solid var(--glass-border);
+    border-radius: 0;
+    color: var(--text);
+    text-shadow: none;
+    box-shadow: none;
+    text-transform: capitalize;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+    .fc .fc-button-primary:hover,
+    .fc .fc-button-primary:not(:disabled):active,
+    .fc-state-hover {
+        background-color: var(--dark-1);
+        border-color: var(--accent);
+        color: var(--accent);
+    }
+
+    .fc .fc-button-primary:not(:disabled).fc-button-active,
+    .fc .fc-button-primary:not(:disabled):active,
+    .fc-state-active,
+    .fc-state-down {
+        background-color: var(--accent);
+        background-image: none;
+        border-color: var(--accent);
+        color: #06121a;
+        box-shadow: none;
+    }
+
+    .fc .fc-button-primary:disabled,
+    .fc-state-disabled {
+        background-color: var(--dark-3);
+        border-color: var(--glass-border);
+        color: var(--text-muted);
+        opacity: 0.5;
+    }
+
+    .fc .fc-button-primary:focus,
+    .fc .fc-button-primary:focus-visible {
+        box-shadow: 0 0 0 3px rgba(20, 171, 239, 0.35);
+    }
+
+/* Grid, headers, day cells */
+.fc-theme-standard td,
+.fc-theme-standard th,
+.fc-theme-standard .fc-scrollgrid,
+.fc-theme-standard .fc-list,
+.fc-unthemed td,
+.fc-unthemed th,
+.fc-unthemed thead,
+.fc-unthemed tbody,
+.fc-unthemed .fc-divider,
+.fc-unthemed .fc-row,
+.fc-unthemed .fc-content,
+.fc-unthemed .fc-popover,
+.fc-unthemed .fc-list-view,
+.fc-unthemed .fc-list-heading td {
+    border-color: var(--glass-border);
+}
+
+.fc-unthemed .fc-widget-content,
+.fc-unthemed .fc-divider {
+    background: transparent;
+}
+
+.fc .fc-col-header-cell,
+.fc th.fc-widget-header {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.fc .fc-col-header-cell-cushion,
+.fc th.fc-widget-header,
+.fc .fc-day-header {
+    padding: 10px 0;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.fc .fc-daygrid-day-number,
+.fc .fc-timegrid-axis-cushion,
+.fc .fc-timegrid-slot-label-cushion,
+.fc .fc-list-day-text,
+.fc .fc-list-day-side-text,
+.fc-day-number {
+    color: var(--text);
+}
+
+.fc .fc-timegrid-axis-cushion,
+.fc .fc-timegrid-slot-label-cushion {
+    color: var(--text-muted);
+}
+
+.fc .fc-day-other .fc-daygrid-day-top,
+.fc-unthemed .fc-other-month .fc-day-number {
+    opacity: 0.4;
+}
+
+.fc .fc-day-today,
+.fc-unthemed td.fc-today {
+    background: rgba(20, 171, 239, 0.08);
+}
+
+    .fc .fc-day-today .fc-daygrid-day-number {
+        color: var(--accent);
+        font-weight: 700;
+    }
+
+.fc .fc-daygrid-day:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+/* Events (also replaces the grey pill from App.css) */
+.fc-event,
+.fc-event-dot {
+    background: rgba(20, 171, 239, 0.18);
+    border: 0;
+    border-left: 3px solid var(--accent);
+    border-radius: 0;
+    color: var(--text) !important;
+    margin: 2px 4px;
+    padding: 1px 5px;
+}
+
+    .fc-event:hover {
+        background: rgba(20, 171, 239, 0.3);
+    }
+
+.fc .fc-event-main {
+    color: var(--text);
+}
+
+.fc .fc-daygrid-dot-event .fc-event-title {
+    color: var(--text);
+}
+
+.fc .fc-more-link {
+    color: var(--accent);
+    font-weight: 600;
+}
+
+/* Popover ("+ more") and list view */
+.fc .fc-popover,
+.fc-unthemed .fc-popover {
+    background: var(--dark-2);
+    border: 1px solid var(--glass-border);
+    border-radius: 0;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+    .fc .fc-popover-header,
+    .fc-unthemed .fc-popover .fc-header {
+        background: var(--dark-3);
+        color: var(--text);
+    }
+
+.fc .fc-list-day-cap,
+.fc .fc-list-day > * {
+    background: var(--dark-3);
+}
+
+.fc .fc-list-event:hover td {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.fc .fc-list-empty {
+    background: transparent;
+    color: var(--text-muted);
+}
+
+.fc .fc-timegrid-now-indicator-line {
+    border-color: var(--danger);
+}
+
+/* ---------- Auth background: .auth-bg ----------
+   For the login and register pages. Layers, back to front:
+     slowly orbiting stars, drifting color orbs, falling data streaks, a scrolling neon grid floor.
+   Markup lives in AuthBackground.jsx. Render it once inside the page; like .aurora-bg it paints
+   its own base, so the body gradient is switched off while it is present. */
+.auth-bg {
+    --auth-accent: 20, 171, 239; /* rgb of --accent, for alpha tints */
+    --auth-floor: 42vh;
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+    background: radial-gradient(120% 90% at 50% 100%, #0a1a33 0%, var(--dark-2) 45%, var(--dark-1) 100%);
+}
+
+body:has(.auth-bg) {
+    background-color: transparent !important;
+    background-image: none !important;
+}
+
+/* Horizon glow where the grid meets the sky */
+.auth-bg::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: var(--auth-floor);
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(var(--auth-accent), 0.9) 50%, transparent);
+    box-shadow: 0 0 40px 14px rgba(var(--auth-accent), 0.35);
+    animation: auth-breathe 6s ease-in-out infinite;
+}
+
+/* Vignette keeps the sign-in card legible */
+.auth-bg::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 45%, transparent 35%, rgba(0, 0, 0, 0.6) 100%);
+}
+
+/* Stars: a square that turns very slowly, three layers of dots drawn with box-shadow */
+.auth-bg__stars {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 142vmax; /* side >= the viewport diagonal, so rotating never exposes a corner */
+    height: 142vmax;
+    margin: -71vmax 0 0 -71vmax;
+    animation: auth-orbit 420s linear infinite;
+}
+
+    .auth-bg__stars i {
+        position: absolute;
+        top: 0;
+        left: 0;
+        border-radius: 50%;
+        animation: auth-twinkle 5s ease-in-out infinite alternate;
+    }
+
+        .auth-bg__stars i:nth-child(1) {
+            width: 1px;
+            height: 1px;
+            animation-duration: 6s;
+            box-shadow: 64.2vmax 79.5vmax 0 0 rgba(255, 255, 255, 0.55), 121.4vmax 27.0vmax 0 0 rgba(255, 255, 255, 0.7), 87.2vmax 26.4vmax 0 0 rgba(255, 255, 255, 0.55), 12.9vmax 115.0vmax 0 0 rgba(255, 255, 255, 0.7), 84.6vmax 56.3vmax 0 0 rgba(255, 255, 255, 0.55), 87.4vmax 22.4vmax 0 0 rgba(255, 255, 255, 0.4), 9.0vmax 5.1vmax 0 0 rgba(255, 255, 255, 0.4), 110.5vmax 46.3vmax 0 0 rgba(255, 255, 255, 0.7), 73.7vmax 90.9vmax 0 0 rgba(20, 171, 239, 0.55), 12.1vmax 93.0vmax 0 0 rgba(255, 255, 255, 0.55), 141.4vmax 119.3vmax 0 0 rgba(255, 255, 255, 0.7), 107.6vmax 72.8vmax 0 0 rgba(20, 171, 239, 0.4), 108.8vmax 56.9vmax 0 0 rgba(255, 255, 255, 0.55), 136.0vmax 120.3vmax 0 0 rgba(255, 255, 255, 0.4), 131.6vmax 7.4vmax 0 0 rgba(255, 255, 255, 0.55), 56.4vmax 10.4vmax 0 0 rgba(255, 255, 255, 0.7), 95.8vmax 47.8vmax 0 0 rgba(255, 255, 255, 0.55), 136.9vmax 107.6vmax 0 0 rgba(255, 255, 255, 0.4), 100.4vmax 1.6vmax 0 0 rgba(255, 255, 255, 0.55), 25.2vmax 79.4vmax 0 0 rgba(255, 255, 255, 0.55), 139.9vmax 109.3vmax 0 0 rgba(255, 255, 255, 0.55), 16.5vmax 59.7vmax 0 0 rgba(20, 171, 239, 0.4), 122.7vmax 138.4vmax 0 0 rgba(255, 255, 255, 0.7), 125.7vmax 29.9vmax 0 0 rgba(255, 255, 255, 0.55), 85.5vmax 81.9vmax 0 0 rgba(255, 255, 255, 0.4), 30.3vmax 36.7vmax 0 0 rgba(255, 255, 255, 0.7), 42.1vmax 10.4vmax 0 0 rgba(255, 255, 255, 0.4), 90.4vmax 2.2vmax 0 0 rgba(255, 255, 255, 0.55), 64.4vmax 136.2vmax 0 0 rgba(255, 255, 255, 0.55), 19.3vmax 54.8vmax 0 0 rgba(255, 255, 255, 0.7), 129.0vmax 116.1vmax 0 0 rgba(255, 255, 255, 0.4), 22.5vmax 89.3vmax 0 0 rgba(255, 255, 255, 0.7), 134.9vmax 125.3vmax 0 0 rgba(20, 171, 239, 0.7), 6.7vmax 15.5vmax 0 0 rgba(255, 255, 255, 0.7), 33.9vmax 100.1vmax 0 0 rgba(255, 255, 255, 0.55), 128.5vmax 69.7vmax 0 0 rgba(255, 255, 255, 0.7), 102.3vmax 9.8vmax 0 0 rgba(255, 255, 255, 0.4), 92.8vmax 87.5vmax 0 0 rgba(255, 255, 255, 0.4), 130.3vmax 29.0vmax 0 0 rgba(20, 171, 239, 0.4), 58.4vmax 35.4vmax 0 0 rgba(255, 255, 255, 0.4), 52.4vmax 81.2vmax 0 0 rgba(20, 171, 239, 0.4), 19.7vmax 63.9vmax 0 0 rgba(255, 255, 255, 0.55), 98.2vmax 83.0vmax 0 0 rgba(255, 255, 255, 0.4), 131.1vmax 67.4vmax 0 0 rgba(255, 255, 255, 0.55), 136.7vmax 3.0vmax 0 0 rgba(20, 171, 239, 0.7), 9.6vmax 44.2vmax 0 0 rgba(255, 255, 255, 0.4), 10.7vmax 77.5vmax 0 0 rgba(20, 171, 239, 0.7), 132.9vmax 104.7vmax 0 0 rgba(255, 255, 255, 0.4), 129.9vmax 50.0vmax 0 0 rgba(255, 255, 255, 0.7), 11.0vmax 121.7vmax 0 0 rgba(255, 255, 255, 0.4), 81.3vmax 88.7vmax 0 0 rgba(255, 255, 255, 0.55), 1.8vmax 10.3vmax 0 0 rgba(255, 255, 255, 0.4), 141.1vmax 124.9vmax 0 0 rgba(255, 255, 255, 0.7), 132.7vmax 98.6vmax 0 0 rgba(255, 255, 255, 0.55), 119.0vmax 11.9vmax 0 0 rgba(20, 171, 239, 0.7), 85.4vmax 68.3vmax 0 0 rgba(255, 255, 255, 0.4), 16.0vmax 110.8vmax 0 0 rgba(255, 255, 255, 0.7), 36.3vmax 1.6vmax 0 0 rgba(255, 255, 255, 0.55), 86.9vmax 73.6vmax 0 0 rgba(255, 255, 255, 0.55), 62.8vmax 126.6vmax 0 0 rgba(255, 255, 255, 0.55), 35.6vmax 90.1vmax 0 0 rgba(255, 255, 255, 0.4), 54.6vmax 82.8vmax 0 0 rgba(255, 255, 255, 0.55), 19.1vmax 49.8vmax 0 0 rgba(255, 255, 255, 0.4), 134.9vmax 39.3vmax 0 0 rgba(20, 171, 239, 0.4), 66.9vmax 131.5vmax 0 0 rgba(255, 255, 255, 0.55), 73.8vmax 95.4vmax 0 0 rgba(255, 255, 255, 0.7), 139.4vmax 64.3vmax 0 0 rgba(255, 255, 255, 0.4), 39.5vmax 86.3vmax 0 0 rgba(255, 255, 255, 0.7), 81.0vmax 43.9vmax 0 0 rgba(20, 171, 239, 0.7), 19.3vmax 64.6vmax 0 0 rgba(255, 255, 255, 0.4), 37.8vmax 110.7vmax 0 0 rgba(255, 255, 255, 0.4), 16.4vmax 15.5vmax 0 0 rgba(255, 255, 255, 0.7), 114.6vmax 136.1vmax 0 0 rgba(255, 255, 255, 0.7), 117.0vmax 36.4vmax 0 0 rgba(20, 171, 239, 0.7), 67.1vmax 101.4vmax 0 0 rgba(255, 255, 255, 0.4), 110.6vmax 76.6vmax 0 0 rgba(255, 255, 255, 0.7), 141.5vmax 22.6vmax 0 0 rgba(255, 255, 255, 0.7), 12.4vmax 132.4vmax 0 0 rgba(255, 255, 255, 0.7), 64.0vmax 28.0vmax 0 0 rgba(255, 255, 255, 0.4), 80.8vmax 124.9vmax 0 0 rgba(255, 255, 255, 0.55), 92.5vmax 29.1vmax 0 0 rgba(255, 255, 255, 0.7), 113.4vmax 131.2vmax 0 0 rgba(255, 255, 255, 0.4), 127.8vmax 139.2vmax 0 0 rgba(255, 255, 255, 0.55), 112.3vmax 45.5vmax 0 0 rgba(255, 255, 255, 0.7), 49.5vmax 11.8vmax 0 0 rgba(255, 255, 255, 0.55), 59.8vmax 39.1vmax 0 0 rgba(255, 255, 255, 0.4), 123.2vmax 60.9vmax 0 0 rgba(255, 255, 255, 0.4), 47.6vmax 111.9vmax 0 0 rgba(255, 255, 255, 0.4), 142.0vmax 127.9vmax 0 0 rgba(255, 255, 255, 0.7), 97.9vmax 134.3vmax 0 0 rgba(255, 255, 255, 0.55), 97.8vmax 107.6vmax 0 0 rgba(255, 255, 255, 0.55), 41.2vmax 103.5vmax 0 0 rgba(255, 255, 255, 0.7), 73.0vmax 128.8vmax 0 0 rgba(255, 255, 255, 0.55), 54.1vmax 120.0vmax 0 0 rgba(255, 255, 255, 0.7), 120.8vmax 137.5vmax 0 0 rgba(255, 255, 255, 0.7), 70.7vmax 58.4vmax 0 0 rgba(255, 255, 255, 0.4), 85.9vmax 3.9vmax 0 0 rgba(255, 255, 255, 0.4), 56.9vmax 113.8vmax 0 0 rgba(255, 255, 255, 0.7), 13.2vmax 23.7vmax 0 0 rgba(255, 255, 255, 0.7), 130.8vmax 113.7vmax 0 0 rgba(255, 255, 255, 0.55), 67.2vmax 18.0vmax 0 0 rgba(255, 255, 255, 0.55), 132.9vmax 130.6vmax 0 0 rgba(255, 255, 255, 0.7), 27.2vmax 87.7vmax 0 0 rgba(255, 255, 255, 0.55), 110.7vmax 3.2vmax 0 0 rgba(255, 255, 255, 0.4), 1.7vmax 40.3vmax 0 0 rgba(255, 255, 255, 0.7), 88.0vmax 14.9vmax 0 0 rgba(255, 255, 255, 0.7), 121.0vmax 88.5vmax 0 0 rgba(255, 255, 255, 0.7), 75.3vmax 62.0vmax 0 0 rgba(255, 255, 255, 0.55), 117.2vmax 87.4vmax 0 0 rgba(255, 255, 255, 0.7), 89.6vmax 90.7vmax 0 0 rgba(255, 255, 255, 0.7), 77.1vmax 83.3vmax 0 0 rgba(255, 255, 255, 0.4), 105.2vmax 115.1vmax 0 0 rgba(255, 255, 255, 0.4), 44.7vmax 131.0vmax 0 0 rgba(255, 255, 255, 0.4), 27.6vmax 13.8vmax 0 0 rgba(255, 255, 255, 0.4), 12.5vmax 55.1vmax 0 0 rgba(255, 255, 255, 0.55), 59.9vmax 112.2vmax 0 0 rgba(255, 255, 255, 0.4), 89.2vmax 113.4vmax 0 0 rgba(255, 255, 255, 0.4), 96.9vmax 129.4vmax 0 0 rgba(20, 171, 239, 0.55), 71.8vmax 107.7vmax 0 0 rgba(255, 255, 255, 0.7), 118.3vmax 114.0vmax 0 0 rgba(20, 171, 239, 0.55), 5.3vmax 78.3vmax 0 0 rgba(255, 255, 255, 0.7), 68.3vmax 26.9vmax 0 0 rgba(255, 255, 255, 0.4), 119.3vmax 140.6vmax 0 0 rgba(20, 171, 239, 0.7), 8.8vmax 135.1vmax 0 0 rgba(20, 171, 239, 0.55), 13.7vmax 55.5vmax 0 0 rgba(255, 255, 255, 0.55), 61.1vmax 85.3vmax 0 0 rgba(255, 255, 255, 0.4), 5.8vmax 28.4vmax 0 0 rgba(255, 255, 255, 0.55), 105.0vmax 57.6vmax 0 0 rgba(255, 255, 255, 0.4), 13.5vmax 112.5vmax 0 0 rgba(255, 255, 255, 0.55), 113.8vmax 100.1vmax 0 0 rgba(255, 255, 255, 0.7), 80.9vmax 27.1vmax 0 0 rgba(255, 255, 255, 0.7), 114.3vmax 36.7vmax 0 0 rgba(255, 255, 255, 0.4), 110.5vmax 115.7vmax 0 0 rgba(255, 255, 255, 0.55), 46.8vmax 76.5vmax 0 0 rgba(255, 255, 255, 0.55), 108.7vmax 57.6vmax 0 0 rgba(255, 255, 255, 0.7), 113.2vmax 42.8vmax 0 0 rgba(20, 171, 239, 0.4), 50.5vmax 90.7vmax 0 0 rgba(20, 171, 239, 0.7), 38.8vmax 136.5vmax 0 0 rgba(255, 255, 255, 0.55), 93.7vmax 80.9vmax 0 0 rgba(20, 171, 239, 0.7), 73.1vmax 70.7vmax 0 0 rgba(255, 255, 255, 0.4), 108.2vmax 139.2vmax 0 0 rgba(20, 171, 239, 0.4), 15.3vmax 33.7vmax 0 0 rgba(255, 255, 255, 0.55), 7.2vmax 27.8vmax 0 0 rgba(20, 171, 239, 0.55), 36.7vmax 39.1vmax 0 0 rgba(255, 255, 255, 0.55), 72.1vmax 137.3vmax 0 0 rgba(255, 255, 255, 0.7), 14.1vmax 63.1vmax 0 0 rgba(20, 171, 239, 0.7), 84.9vmax 107.8vmax 0 0 rgba(255, 255, 255, 0.4), 133.3vmax 54.8vmax 0 0 rgba(255, 255, 255, 0.4), 77.0vmax 84.7vmax 0 0 rgba(255, 255, 255, 0.55), 59.7vmax 74.8vmax 0 0 rgba(255, 255, 255, 0.7), 75.3vmax 68.6vmax 0 0 rgba(255, 255, 255, 0.55), 40.3vmax 101.8vmax 0 0 rgba(20, 171, 239, 0.55), 109.7vmax 83.2vmax 0 0 rgba(255, 255, 255, 0.7), 107.2vmax 55.4vmax 0 0 rgba(255, 255, 255, 0.55), 7.1vmax 140.4vmax 0 0 rgba(20, 171, 239, 0.55), 128.6vmax 61.0vmax 0 0 rgba(255, 255, 255, 0.55), 107.3vmax 6.5vmax 0 0 rgba(255, 255, 255, 0.4), 102.6vmax 66.5vmax 0 0 rgba(255, 255, 255, 0.4), 16.3vmax 88.6vmax 0 0 rgba(20, 171, 239, 0.55), 122.3vmax 50.7vmax 0 0 rgba(255, 255, 255, 0.4), 62.9vmax 94.8vmax 0 0 rgba(255, 255, 255, 0.55), 90.8vmax 96.8vmax 0 0 rgba(255, 255, 255, 0.55), 75.4vmax 141.7vmax 0 0 rgba(255, 255, 255, 0.55), 33.9vmax 16.2vmax 0 0 rgba(255, 255, 255, 0.55), 88.7vmax 51.0vmax 0 0 rgba(255, 255, 255, 0.55), 103.0vmax 99.3vmax 0 0 rgba(255, 255, 255, 0.4), 107.0vmax 27.0vmax 0 0 rgba(255, 255, 255, 0.4), 92.7vmax 27.8vmax 0 0 rgba(20, 171, 239, 0.7), 8.6vmax 38.5vmax 0 0 rgba(20, 171, 239, 0.55), 5.4vmax 31.6vmax 0 0 rgba(20, 171, 239, 0.55), 12.3vmax 96.0vmax 0 0 rgba(255, 255, 255, 0.7), 139.4vmax 68.7vmax 0 0 rgba(255, 255, 255, 0.55), 48.8vmax 105.8vmax 0 0 rgba(255, 255, 255, 0.4), 63.5vmax 116.7vmax 0 0 rgba(255, 255, 255, 0.4), 106.1vmax 55.4vmax 0 0 rgba(255, 255, 255, 0.4), 92.8vmax 140.5vmax 0 0 rgba(255, 255, 255, 0.55), 107.8vmax 117.3vmax 0 0 rgba(255, 255, 255, 0.4), 52.4vmax 13.8vmax 0 0 rgba(20, 171, 239, 0.55), 11.8vmax 80.1vmax 0 0 rgba(255, 255, 255, 0.55), 65.8vmax 116.9vmax 0 0 rgba(20, 171, 239, 0.4), 30.3vmax 94.0vmax 0 0 rgba(255, 255, 255, 0.4), 70.3vmax 108.5vmax 0 0 rgba(255, 255, 255, 0.55), 20.3vmax 50.8vmax 0 0 rgba(255, 255, 255, 0.7), 128.7vmax 45.8vmax 0 0 rgba(255, 255, 255, 0.55), 130.4vmax 133.5vmax 0 0 rgba(255, 255, 255, 0.55), 114.0vmax 43.3vmax 0 0 rgba(255, 255, 255, 0.55), 137.4vmax 103.6vmax 0 0 rgba(255, 255, 255, 0.7), 51.4vmax 51.9vmax 0 0 rgba(255, 255, 255, 0.55), 83.0vmax 113.1vmax 0 0 rgba(255, 255, 255, 0.7), 113.2vmax 76.8vmax 0 0 rgba(255, 255, 255, 0.7), 25.1vmax 107.8vmax 0 0 rgba(255, 255, 255, 0.55), 31.4vmax 8.2vmax 0 0 rgba(255, 255, 255, 0.4), 137.2vmax 92.5vmax 0 0 rgba(20, 171, 239, 0.55), 77.6vmax 111.9vmax 0 0 rgba(255, 255, 255, 0.4), 38.9vmax 15.0vmax 0 0 rgba(20, 171, 239, 0.55), 90.0vmax 20.4vmax 0 0 rgba(255, 255, 255, 0.7), 59.9vmax 101.1vmax 0 0 rgba(255, 255, 255, 0.55), 74.1vmax 108.6vmax 0 0 rgba(255, 255, 255, 0.55), 114.6vmax 47.3vmax 0 0 rgba(255, 255, 255, 0.4), 76.3vmax 102.4vmax 0 0 rgba(255, 255, 255, 0.7), 6.6vmax 107.5vmax 0 0 rgba(255, 255, 255, 0.7), 0.5vmax 53.7vmax 0 0 rgba(255, 255, 255, 0.4), 136.0vmax 90.9vmax 0 0 rgba(255, 255, 255, 0.7), 1.4vmax 15.6vmax 0 0 rgba(255, 255, 255, 0.55), 34.9vmax 23.0vmax 0 0 rgba(255, 255, 255, 0.7), 23.8vmax 29.0vmax 0 0 rgba(255, 255, 255, 0.55), 38.9vmax 125.8vmax 0 0 rgba(255, 255, 255, 0.55), 16.3vmax 92.0vmax 0 0 rgba(255, 255, 255, 0.4), 106.9vmax 2.4vmax 0 0 rgba(255, 255, 255, 0.55), 5.2vmax 15.4vmax 0 0 rgba(255, 255, 255, 0.4), 83.5vmax 85.2vmax 0 0 rgba(255, 255, 255, 0.55), 31.8vmax 26.3vmax 0 0 rgba(255, 255, 255, 0.55), 129.3vmax 133.1vmax 0 0 rgba(255, 255, 255, 0.7), 116.0vmax 68.1vmax 0 0 rgba(255, 255, 255, 0.55), 57.2vmax 135.7vmax 0 0 rgba(255, 255, 255, 0.7), 135.9vmax 68.5vmax 0 0 rgba(255, 255, 255, 0.4), 30.9vmax 19.1vmax 0 0 rgba(255, 255, 255, 0.55), 112.8vmax 109.9vmax 0 0 rgba(255, 255, 255, 0.4), 33.7vmax 1.5vmax 0 0 rgba(255, 255, 255, 0.55), 63.9vmax 35.0vmax 0 0 rgba(255, 255, 255, 0.55), 22.3vmax 22.3vmax 0 0 rgba(255, 255, 255, 0.55), 129.0vmax 115.0vmax 0 0 rgba(255, 255, 255, 0.4), 141.0vmax 37.8vmax 0 0 rgba(20, 171, 239, 0.7), 81.2vmax 25.3vmax 0 0 rgba(255, 255, 255, 0.4), 120.2vmax 116.7vmax 0 0 rgba(255, 255, 255, 0.4), 87.3vmax 75.0vmax 0 0 rgba(255, 255, 255, 0.55), 11.8vmax 106.3vmax 0 0 rgba(255, 255, 255, 0.7), 43.1vmax 112.1vmax 0 0 rgba(255, 255, 255, 0.55), 96.9vmax 111.0vmax 0 0 rgba(255, 255, 255, 0.55), 77.2vmax 74.6vmax 0 0 rgba(255, 255, 255, 0.4), 136.9vmax 44.9vmax 0 0 rgba(20, 171, 239, 0.55), 43.4vmax 66.3vmax 0 0 rgba(20, 171, 239, 0.7), 10.6vmax 20.0vmax 0 0 rgba(255, 255, 255, 0.7), 65.6vmax 137.3vmax 0 0 rgba(255, 255, 255, 0.4), 1.8vmax 53.6vmax 0 0 rgba(255, 255, 255, 0.7), 41.7vmax 16.1vmax 0 0 rgba(255, 255, 255, 0.4), 119.9vmax 102.1vmax 0 0 rgba(255, 255, 255, 0.7), 89.1vmax 133.1vmax 0 0 rgba(255, 255, 255, 0.7), 47.9vmax 55.7vmax 0 0 rgba(20, 171, 239, 0.7), 26.8vmax 53.5vmax 0 0 rgba(255, 255, 255, 0.4), 134.2vmax 79.9vmax 0 0 rgba(255, 255, 255, 0.7), 63.5vmax 54.3vmax 0 0 rgba(255, 255, 255, 0.4), 13.4vmax 96.2vmax 0 0 rgba(255, 255, 255, 0.7), 27.4vmax 5.2vmax 0 0 rgba(255, 255, 255, 0.55), 12.8vmax 32.2vmax 0 0 rgba(255, 255, 255, 0.4), 61.6vmax 109.5vmax 0 0 rgba(255, 255, 255, 0.55), 60.6vmax 72.6vmax 0 0 rgba(255, 255, 255, 0.7), 21.0vmax 98.2vmax 0 0 rgba(255, 255, 255, 0.55), 58.5vmax 2.2vmax 0 0 rgba(255, 255, 255, 0.55), 45.1vmax 112.0vmax 0 0 rgba(255, 255, 255, 0.4), 86.4vmax 2.6vmax 0 0 rgba(255, 255, 255, 0.55), 43.6vmax 62.7vmax 0 0 rgba(255, 255, 255, 0.7), 72.3vmax 112.0vmax 0 0 rgba(255, 255, 255, 0.4), 22.5vmax 108.8vmax 0 0 rgba(255, 255, 255, 0.55), 50.1vmax 71.1vmax 0 0 rgba(255, 255, 255, 0.4), 28.1vmax 132.6vmax 0 0 rgba(255, 255, 255, 0.7), 132.9vmax 80.6vmax 0 0 rgba(255, 255, 255, 0.4), 28.1vmax 11.8vmax 0 0 rgba(255, 255, 255, 0.4), 59.3vmax 47.4vmax 0 0 rgba(255, 255, 255, 0.4), 51.3vmax 65.8vmax 0 0 rgba(255, 255, 255, 0.4), 103.6vmax 33.9vmax 0 0 rgba(255, 255, 255, 0.7), 79.6vmax 79.6vmax 0 0 rgba(255, 255, 255, 0.55), 105.9vmax 127.4vmax 0 0 rgba(255, 255, 255, 0.55), 17.4vmax 117.1vmax 0 0 rgba(255, 255, 255, 0.55), 51.6vmax 107.7vmax 0 0 rgba(255, 255, 255, 0.55), 26.4vmax 77.8vmax 0 0 rgba(255, 255, 255, 0.4), 57.3vmax 111.1vmax 0 0 rgba(255, 255, 255, 0.7), 107.4vmax 120.3vmax 0 0 rgba(255, 255, 255, 0.55), 90.9vmax 108.4vmax 0 0 rgba(255, 255, 255, 0.4), 66.5vmax 20.3vmax 0 0 rgba(20, 171, 239, 0.55), 57.6vmax 47.7vmax 0 0 rgba(255, 255, 255, 0.4), 80.7vmax 47.2vmax 0 0 rgba(255, 255, 255, 0.7), 102.5vmax 111.8vmax 0 0 rgba(255, 255, 255, 0.55), 85.2vmax 66.7vmax 0 0 rgba(255, 255, 255, 0.55), 129.7vmax 80.2vmax 0 0 rgba(255, 255, 255, 0.55), 69.0vmax 141.2vmax 0 0 rgba(255, 255, 255, 0.7), 61.6vmax 80.4vmax 0 0 rgba(255, 255, 255, 0.7), 73.9vmax 59.7vmax 0 0 rgba(255, 255, 255, 0.4), 7.8vmax 103.0vmax 0 0 rgba(255, 255, 255, 0.55), 84.8vmax 106.8vmax 0 0 rgba(255, 255, 255, 0.55), 124.5vmax 34.7vmax 0 0 rgba(255, 255, 255, 0.55), 124.0vmax 138.1vmax 0 0 rgba(255, 255, 255, 0.55), 74.7vmax 34.0vmax 0 0 rgba(255, 255, 255, 0.55), 133.5vmax 124.9vmax 0 0 rgba(255, 255, 255, 0.7), 94.5vmax 123.0vmax 0 0 rgba(255, 255, 255, 0.55), 23.3vmax 92.2vmax 0 0 rgba(255, 255, 255, 0.55), 128.3vmax 14.0vmax 0 0 rgba(255, 255, 255, 0.4), 76.3vmax 135.0vmax 0 0 rgba(255, 255, 255, 0.4), 103.4vmax 3.4vmax 0 0 rgba(20, 171, 239, 0.4), 127.1vmax 115.8vmax 0 0 rgba(255, 255, 255, 0.55), 98.3vmax 32.8vmax 0 0 rgba(20, 171, 239, 0.55), 127.6vmax 43.7vmax 0 0 rgba(255, 255, 255, 0.55), 110.3vmax 110.3vmax 0 0 rgba(255, 255, 255, 0.4), 122.0vmax 98.3vmax 0 0 rgba(255, 255, 255, 0.4), 119.0vmax 50.3vmax 0 0 rgba(20, 171, 239, 0.55), 90.2vmax 99.1vmax 0 0 rgba(255, 255, 255, 0.7), 89.8vmax 27.2vmax 0 0 rgba(255, 255, 255, 0.4), 43.5vmax 116.1vmax 0 0 rgba(255, 255, 255, 0.55), 101.3vmax 19.2vmax 0 0 rgba(255, 255, 255, 0.7), 110.6vmax 59.0vmax 0 0 rgba(255, 255, 255, 0.4), 43.6vmax 100.9vmax 0 0 rgba(255, 255, 255, 0.4), 102.3vmax 71.2vmax 0 0 rgba(255, 255, 255, 0.55), 52.9vmax 94.0vmax 0 0 rgba(255, 255, 255, 0.4), 32.5vmax 42.7vmax 0 0 rgba(255, 255, 255, 0.4), 39.3vmax 90.9vmax 0 0 rgba(255, 255, 255, 0.4), 10.8vmax 130.2vmax 0 0 rgba(255, 255, 255, 0.4), 6.4vmax 85.2vmax 0 0 rgba(255, 255, 255, 0.55), 60.1vmax 80.7vmax 0 0 rgba(255, 255, 255, 0.4), 107.3vmax 34.9vmax 0 0 rgba(255, 255, 255, 0.55), 4.1vmax 112.2vmax 0 0 rgba(255, 255, 255, 0.4), 4.8vmax 65.6vmax 0 0 rgba(255, 255, 255, 0.7), 132.0vmax 71.0vmax 0 0 rgba(20, 171, 239, 0.4), 110.3vmax 129.2vmax 0 0 rgba(255, 255, 255, 0.55), 111.2vmax 73.4vmax 0 0 rgba(255, 255, 255, 0.7), 90.1vmax 139.6vmax 0 0 rgba(255, 255, 255, 0.7), 24.7vmax 110.7vmax 0 0 rgba(20, 171, 239, 0.4), 61.9vmax 94.9vmax 0 0 rgba(255, 255, 255, 0.7), 111.7vmax 112.3vmax 0 0 rgba(255, 255, 255, 0.4), 77.3vmax 121.1vmax 0 0 rgba(255, 255, 255, 0.7), 5.0vmax 84.7vmax 0 0 rgba(20, 171, 239, 0.7);
+        }
+
+        .auth-bg__stars i:nth-child(2) {
+            width: 2px;
+            height: 2px;
+            animation-duration: 4s;
+            animation-delay: -1.5s;
+            box-shadow: 63.7vmax 125.1vmax 0 0 rgba(20, 171, 239, 0.8), 2.5vmax 70.4vmax 0 0 rgba(255, 255, 255, 0.8), 102.7vmax 121.6vmax 0 0 rgba(20, 171, 239, 0.65), 128.8vmax 80.8vmax 0 0 rgba(255, 255, 255, 0.95), 102.6vmax 88.5vmax 0 0 rgba(255, 255, 255, 0.65), 6.0vmax 44.6vmax 0 0 rgba(255, 255, 255, 0.95), 110.9vmax 108.7vmax 0 0 rgba(20, 171, 239, 0.8), 116.5vmax 24.4vmax 0 0 rgba(255, 255, 255, 0.8), 70.6vmax 93.6vmax 0 0 rgba(255, 255, 255, 0.95), 8.7vmax 58.3vmax 0 0 rgba(255, 255, 255, 0.8), 99.9vmax 135.9vmax 0 0 rgba(255, 255, 255, 0.65), 108.1vmax 140.0vmax 0 0 rgba(255, 255, 255, 0.65), 74.1vmax 140.0vmax 0 0 rgba(255, 255, 255, 0.65), 126.4vmax 20.1vmax 0 0 rgba(255, 255, 255, 0.8), 67.0vmax 132.9vmax 0 0 rgba(255, 255, 255, 0.65), 101.8vmax 138.6vmax 0 0 rgba(255, 255, 255, 0.95), 36.0vmax 78.4vmax 0 0 rgba(255, 255, 255, 0.65), 12.2vmax 32.3vmax 0 0 rgba(255, 255, 255, 0.8), 139.3vmax 86.7vmax 0 0 rgba(20, 171, 239, 0.65), 83.1vmax 141.3vmax 0 0 rgba(255, 255, 255, 0.95), 98.6vmax 122.7vmax 0 0 rgba(255, 255, 255, 0.95), 25.2vmax 122.1vmax 0 0 rgba(255, 255, 255, 0.65), 111.0vmax 30.6vmax 0 0 rgba(255, 255, 255, 0.8), 112.6vmax 114.2vmax 0 0 rgba(255, 255, 255, 0.8), 30.5vmax 66.4vmax 0 0 rgba(255, 255, 255, 0.8), 69.6vmax 89.0vmax 0 0 rgba(255, 255, 255, 0.65), 29.1vmax 54.4vmax 0 0 rgba(20, 171, 239, 0.65), 39.3vmax 134.7vmax 0 0 rgba(20, 171, 239, 0.95), 25.9vmax 37.3vmax 0 0 rgba(255, 255, 255, 0.8), 92.2vmax 30.9vmax 0 0 rgba(255, 255, 255, 0.65), 21.8vmax 133.0vmax 0 0 rgba(20, 171, 239, 0.8), 34.2vmax 119.2vmax 0 0 rgba(20, 171, 239, 0.65), 45.7vmax 54.6vmax 0 0 rgba(255, 255, 255, 0.65), 54.2vmax 36.4vmax 0 0 rgba(255, 255, 255, 0.95), 42.9vmax 86.3vmax 0 0 rgba(20, 171, 239, 0.8), 21.4vmax 84.5vmax 0 0 rgba(255, 255, 255, 0.65), 58.3vmax 68.0vmax 0 0 rgba(20, 171, 239, 0.95), 100.3vmax 37.0vmax 0 0 rgba(255, 255, 255, 0.95), 53.5vmax 125.0vmax 0 0 rgba(255, 255, 255, 0.8), 63.8vmax 19.4vmax 0 0 rgba(255, 255, 255, 0.95), 32.1vmax 41.5vmax 0 0 rgba(255, 255, 255, 0.8), 19.9vmax 120.4vmax 0 0 rgba(255, 255, 255, 0.95), 80.4vmax 114.8vmax 0 0 rgba(255, 255, 255, 0.95), 95.2vmax 130.5vmax 0 0 rgba(255, 255, 255, 0.65), 50.2vmax 17.3vmax 0 0 rgba(255, 255, 255, 0.8), 89.8vmax 12.8vmax 0 0 rgba(20, 171, 239, 0.8), 70.0vmax 69.6vmax 0 0 rgba(255, 255, 255, 0.8), 99.9vmax 31.5vmax 0 0 rgba(255, 255, 255, 0.8), 109.1vmax 49.8vmax 0 0 rgba(255, 255, 255, 0.95), 13.2vmax 48.5vmax 0 0 rgba(255, 255, 255, 0.8), 67.9vmax 36.5vmax 0 0 rgba(255, 255, 255, 0.95), 129.9vmax 128.2vmax 0 0 rgba(255, 255, 255, 0.65), 8.9vmax 57.4vmax 0 0 rgba(255, 255, 255, 0.65), 120.2vmax 42.6vmax 0 0 rgba(255, 255, 255, 0.95), 36.0vmax 3.3vmax 0 0 rgba(255, 255, 255, 0.8), 53.0vmax 42.2vmax 0 0 rgba(255, 255, 255, 0.95), 91.2vmax 54.6vmax 0 0 rgba(255, 255, 255, 0.8), 51.5vmax 81.8vmax 0 0 rgba(255, 255, 255, 0.65), 89.1vmax 88.2vmax 0 0 rgba(255, 255, 255, 0.8), 9.0vmax 9.7vmax 0 0 rgba(255, 255, 255, 0.8), 54.2vmax 129.2vmax 0 0 rgba(255, 255, 255, 0.65), 97.0vmax 38.7vmax 0 0 rgba(255, 255, 255, 0.8), 138.7vmax 21.3vmax 0 0 rgba(255, 255, 255, 0.65), 36.7vmax 31.2vmax 0 0 rgba(20, 171, 239, 0.95), 77.2vmax 55.9vmax 0 0 rgba(255, 255, 255, 0.65), 120.6vmax 108.7vmax 0 0 rgba(255, 255, 255, 0.65), 79.6vmax 118.0vmax 0 0 rgba(255, 255, 255, 0.8), 14.8vmax 2.7vmax 0 0 rgba(255, 255, 255, 0.95), 56.3vmax 22.2vmax 0 0 rgba(255, 255, 255, 0.65), 22.6vmax 88.3vmax 0 0 rgba(255, 255, 255, 0.8), 41.7vmax 58.9vmax 0 0 rgba(255, 255, 255, 0.8), 75.8vmax 33.7vmax 0 0 rgba(255, 255, 255, 0.65), 100.3vmax 130.3vmax 0 0 rgba(20, 171, 239, 0.95), 9.0vmax 9.8vmax 0 0 rgba(255, 255, 255, 0.65), 44.0vmax 120.6vmax 0 0 rgba(255, 255, 255, 0.95), 68.3vmax 23.1vmax 0 0 rgba(255, 255, 255, 0.8), 7.6vmax 36.1vmax 0 0 rgba(255, 255, 255, 0.95), 98.5vmax 35.9vmax 0 0 rgba(255, 255, 255, 0.95), 101.6vmax 46.4vmax 0 0 rgba(255, 255, 255, 0.8), 29.1vmax 80.0vmax 0 0 rgba(255, 255, 255, 0.65), 59.7vmax 100.4vmax 0 0 rgba(255, 255, 255, 0.95), 38.2vmax 22.8vmax 0 0 rgba(255, 255, 255, 0.65), 95.0vmax 32.8vmax 0 0 rgba(255, 255, 255, 0.65), 67.0vmax 98.5vmax 0 0 rgba(255, 255, 255, 0.65), 38.5vmax 35.8vmax 0 0 rgba(255, 255, 255, 0.95), 132.5vmax 140.4vmax 0 0 rgba(20, 171, 239, 0.65), 141.6vmax 123.7vmax 0 0 rgba(255, 255, 255, 0.65), 103.8vmax 141.1vmax 0 0 rgba(255, 255, 255, 0.65), 128.5vmax 118.3vmax 0 0 rgba(20, 171, 239, 0.8), 9.6vmax 62.3vmax 0 0 rgba(255, 255, 255, 0.95), 55.6vmax 87.7vmax 0 0 rgba(255, 255, 255, 0.65), 55.3vmax 98.6vmax 0 0 rgba(255, 255, 255, 0.95), 123.1vmax 62.8vmax 0 0 rgba(255, 255, 255, 0.65), 127.3vmax 125.0vmax 0 0 rgba(20, 171, 239, 0.8), 46.0vmax 2.7vmax 0 0 rgba(255, 255, 255, 0.95), 38.9vmax 56.8vmax 0 0 rgba(255, 255, 255, 0.8), 68.5vmax 51.9vmax 0 0 rgba(255, 255, 255, 0.8), 21.5vmax 1.0vmax 0 0 rgba(255, 255, 255, 0.8), 0.6vmax 47.8vmax 0 0 rgba(255, 255, 255, 0.65), 28.7vmax 123.1vmax 0 0 rgba(20, 171, 239, 0.8);
+        }
+
+        .auth-bg__stars i:nth-child(3) {
+            width: 3px;
+            height: 3px;
+            animation-duration: 3s;
+            animation-delay: -0.8s;
+            box-shadow: 49.9vmax 79.5vmax 1px 0 rgba(20, 171, 239, 0.9), 87.6vmax 117.5vmax 1px 0 rgba(20, 171, 239, 1), 133.3vmax 122.8vmax 1px 0 rgba(255, 255, 255, 1), 133.6vmax 6.7vmax 1px 0 rgba(255, 255, 255, 0.9), 76.5vmax 95.8vmax 1px 0 rgba(20, 171, 239, 1), 107.0vmax 44.0vmax 1px 0 rgba(20, 171, 239, 1), 29.8vmax 136.2vmax 1px 0 rgba(255, 255, 255, 0.9), 37.6vmax 34.8vmax 1px 0 rgba(20, 171, 239, 1), 114.0vmax 117.5vmax 1px 0 rgba(255, 255, 255, 0.9), 68.5vmax 119.3vmax 1px 0 rgba(20, 171, 239, 1), 129.2vmax 3.3vmax 1px 0 rgba(20, 171, 239, 0.9), 55.2vmax 52.4vmax 1px 0 rgba(255, 255, 255, 1), 51.8vmax 90.6vmax 1px 0 rgba(20, 171, 239, 1), 9.5vmax 92.8vmax 1px 0 rgba(20, 171, 239, 0.9), 30.3vmax 25.6vmax 1px 0 rgba(255, 255, 255, 0.9), 77.6vmax 96.6vmax 1px 0 rgba(20, 171, 239, 0.9), 22.1vmax 52.9vmax 1px 0 rgba(20, 171, 239, 0.9), 1.3vmax 71.4vmax 1px 0 rgba(20, 171, 239, 1), 135.0vmax 119.3vmax 1px 0 rgba(20, 171, 239, 0.9), 24.8vmax 9.4vmax 1px 0 rgba(255, 255, 255, 0.9), 45.7vmax 67.2vmax 1px 0 rgba(20, 171, 239, 0.9), 110.8vmax 126.1vmax 1px 0 rgba(20, 171, 239, 1), 55.4vmax 130.8vmax 1px 0 rgba(255, 255, 255, 0.9), 74.6vmax 1.4vmax 1px 0 rgba(255, 255, 255, 1), 7.9vmax 87.5vmax 1px 0 rgba(255, 255, 255, 1), 121.6vmax 89.3vmax 1px 0 rgba(20, 171, 239, 0.9);
+        }
+
+/* Orbs */
+.auth-bg__orb {
+    position: absolute;
+    width: 46vmax;
+    height: 46vmax;
+    border-radius: 50%;
+    filter: blur(70px);
+    opacity: 0.4;
+    will-change: transform;
+}
+
+.auth-bg__orb--1 {
+    top: -14vmax;
+    left: -12vmax;
+    background: radial-gradient(circle, rgba(var(--auth-accent), 0.85), transparent 65%);
+    animation: auth-drift-a 38s ease-in-out infinite alternate;
+}
+
+.auth-bg__orb--2 {
+    right: -16vmax;
+    top: 12vh;
+    opacity: 0.3;
+    background: radial-gradient(circle, rgba(126, 34, 206, 0.9), transparent 65%);
+    animation: auth-drift-b 46s ease-in-out infinite alternate;
+}
+
+.auth-bg__orb--3 {
+    bottom: -20vmax;
+    left: 22vw;
+    opacity: 0.28;
+    background: radial-gradient(circle, rgba(76, 195, 232, 0.9), transparent 65%);
+    animation: auth-drift-c 52s ease-in-out infinite alternate;
+}
+
+/* Falling streaks */
+.auth-bg__rain {
+    position: absolute;
+    inset: 0;
+}
+
+    .auth-bg__rain i {
+        position: absolute;
+        top: -30vh;
+        width: 1px;
+        background: linear-gradient(to bottom, transparent, rgba(var(--auth-accent), 0.75));
+        opacity: 0.55;
+        animation: auth-fall 10s linear infinite;
+    }
+
+        .auth-bg__rain i:nth-child(1) {
+            left: 6%;
+            height: 20vh;
+            animation-duration: 10.8s;
+            animation-delay: -3.5s;
+        }
+
+        .auth-bg__rain i:nth-child(2) {
+            left: 9%;
+            height: 23vh;
+            animation-duration: 7.8s;
+            animation-delay: -3.5s;
+        }
+
+        .auth-bg__rain i:nth-child(3) {
+            left: 17%;
+            height: 24vh;
+            animation-duration: 8.7s;
+            animation-delay: -3.9s;
+        }
+
+        .auth-bg__rain i:nth-child(4) {
+            left: 23%;
+            height: 13vh;
+            animation-duration: 10.1s;
+            animation-delay: -10.7s;
+        }
+
+        .auth-bg__rain i:nth-child(5) {
+            left: 34%;
+            height: 14vh;
+            animation-duration: 8.1s;
+            animation-delay: -8.6s;
+        }
+
+        .auth-bg__rain i:nth-child(6) {
+            left: 35%;
+            height: 12vh;
+            animation-duration: 8.1s;
+            animation-delay: -13.6s;
+        }
+
+        .auth-bg__rain i:nth-child(7) {
+            left: 48%;
+            height: 14vh;
+            animation-duration: 8.7s;
+            animation-delay: -3.0s;
+        }
+
+        .auth-bg__rain i:nth-child(8) {
+            left: 50%;
+            height: 15vh;
+            animation-duration: 14.0s;
+            animation-delay: -4.1s;
+        }
+
+        .auth-bg__rain i:nth-child(9) {
+            left: 62%;
+            height: 15vh;
+            animation-duration: 11.3s;
+            animation-delay: -9.5s;
+        }
+
+        .auth-bg__rain i:nth-child(10) {
+            left: 70%;
+            height: 15vh;
+            animation-duration: 8.5s;
+            animation-delay: -13.6s;
+        }
+
+        .auth-bg__rain i:nth-child(11) {
+            left: 82%;
+            height: 16vh;
+            animation-duration: 14.7s;
+            animation-delay: -12.5s;
+        }
+
+        .auth-bg__rain i:nth-child(12) {
+            left: 86%;
+            height: 14vh;
+            animation-duration: 7.2s;
+            animation-delay: -5.8s;
+        }
+
+        .auth-bg__rain i:nth-child(13) {
+            left: 91%;
+            height: 21vh;
+            animation-duration: 9.1s;
+            animation-delay: -4.6s;
+        }
+
+        .auth-bg__rain i:nth-child(14) {
+            left: 97%;
+            height: 23vh;
+            animation-duration: 11.7s;
+            animation-delay: -8.3s;
+        }
+
+/* Neon grid floor */
+.auth-bg__floor {
+    position: absolute;
+    left: -50%;
+    right: -50%;
+    bottom: 0;
+    height: var(--auth-floor);
+    overflow: hidden;
+    perspective: 340px;
+    perspective-origin: 50% 0;
+    background: linear-gradient(to bottom, rgba(4, 8, 14, 0.78), rgba(4, 8, 14, 0.9)); /* ground: hides stars below the horizon */
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 45%);
+    mask-image: linear-gradient(to bottom, transparent 0%, #000 45%);
+}
+
+.auth-bg__grid {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 220%;
+    transform-origin: 50% 0;
+    transform: rotateX(68deg);
+    background-image: linear-gradient(rgba(var(--auth-accent), 0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(var(--auth-accent), 0.5) 1px, transparent 1px);
+    background-size: 72px 72px;
+    background-position: 0 0, 0 0;
+    animation: auth-grid 2.6s linear infinite;
+}
+
+@keyframes auth-orbit {
+    to {
+        transform: rotate(1turn);
+    }
+}
+
+@keyframes auth-twinkle {
+    from {
+        opacity: 0.45;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes auth-breathe {
+    0%, 100% {
+        opacity: 0.6;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+@keyframes auth-drift-a {
+    to {
+        transform: translate3d(22vw, 16vh, 0) scale(1.15);
+    }
+}
+
+@keyframes auth-drift-b {
+    to {
+        transform: translate3d(-24vw, 18vh, 0) scale(0.9);
+    }
+}
+
+@keyframes auth-drift-c {
+    to {
+        transform: translate3d(20vw, -14vh, 0) scale(1.2);
+    }
+}
+
+@keyframes auth-fall {
+    to {
+        transform: translateY(150vh);
+    }
+}
+
+@keyframes auth-grid {
+    to {
+        background-position: 0 72px, 0 0;
+    }
+}
+
+@media (max-width: 640px) {
+    .auth-bg {
+        --auth-floor: 30vh;
+    }
+
+    .auth-bg__orb {
+        filter: blur(48px);
+    }
+
+    .auth-bg__rain i:nth-child(even) {
+        display: none;
+    }
+}
+
+/* ---------- Respect reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+    .aurora-bg > .rainbow {
+        display: none;
+    }
+
+    .animated, .separator-animated-border::before, .media-object::after,
+    .animated-border-box:before, .animated-border-box-glow:before {
+        animation: none !important;
+    }
+
+    .auth-bg *, .auth-bg::before {
+        animation: none !important;
+    }
+}

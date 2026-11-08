@@ -12,7 +12,7 @@ import {
   setCurrentUser,
   setIsAuthenticated
 } from '../../features/user/slice';
-import AlienParticles from "../../components/animated/AlienParticles";
+import AuthBackground from "../../components/animated/AuthBackground";
 
 export const Login = () => {
   const dispatch = useDispatch();
@@ -113,7 +113,7 @@ export const Login = () => {
 
   return (
     <>
-          <AlienParticles colors={["#00ff9c", "#00b8ff", "#ff2bd6"]} background="#000" />
+          <AuthBackground />
           <div className="card card-authentication1 mx-auto my-5" style={{ top: '100px' }} >
         <div className="card-body">
           <div className="card-content p-2">
