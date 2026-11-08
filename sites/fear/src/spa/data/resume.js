@@ -170,4 +170,3 @@ export const SKILLS = [
     { name: 'AWS & DevOps', w: 82 },
     { name: 'React / Next.js', w: 80 }
 ];
-];
