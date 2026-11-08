@@ -1,6 +1,6 @@
 import { pad, esc, safeUrl, icon } from '../utils.js';
 import { placeholderArt, accent } from '../art.js';
-import { PROFILE, EXP, TECH, PROJECTS, SERVICES, PROCESS, TESTIMONIALS, POSTS, STATS, SKILLS } from '../data/resume.js';
+import { PROFILE, EXP, TECH, PROJECTS, SERVICES, PROCESS, TESTIMONIALS, STATS, SKILLS } from '../data/resume.js';
 
 const t = {
     exp: (items) => items.map((e) => `<div class="exp-item"><span class="exp-num">${esc(e.num)}</span><span class="exp-lbl">${esc(e.lbl)}</span></div>`).join(''),
@@ -20,7 +20,6 @@ const t = {
     process: (items) => items.map((s, n) => `<div class="proc-step"><div class="proc-circle">${pad(n + 1)}</div><div class="proc-content"><div class="proc-title">${esc(s.title)}</div><div class="proc-desc">${esc(s.desc)}</div><span class="proc-tag">${esc(s.tag)}</span></div></div>`).join(''),
     testimonials: (items) => items.map((x, n) => `<figure class="testi-card${n === 0 ? ' active' : ''}"><blockquote class="testi-quote">${esc(x.quote)}</blockquote><figcaption><div class="testi-author">${esc(x.author)}</div><div class="testi-role">${esc(x.role)}</div></figcaption></figure>`).join(''),
     dots: (items) => items.map((_, n) => `<button type="button" class="testi-dot${n === 0 ? ' active' : ''}" aria-label="Testimonial ${n + 1}"></button>`).join(''),
-    posts: (items) => items.map((b, n) => `<div class="blog-card${n === 0 ? ' featured' : ''}"${b.link ? ` data-href="${esc(safeUrl(b.link))}"` : ''}><div class="blog-img blog-art" aria-hidden="true"><i class="bi ${icon(b.icon)}"></i></div><div class="blog-body"><div class="blog-cat">${esc(b.section)}</div><div class="blog-title">${esc(b.title)}</div><div class="blog-date">${esc(b.meta)}</div></div></div>`).join(''),
     stats: (items) => items.map((s) => `<div class="stat-box"><div class="stat-bignum counter" data-t="${s.t}" data-d="${s.d || 0}" data-prefix="${esc(s.prefix || '')}" data-suffix="${esc(s.suffix || '')}">0</div><div class="stat-lbl">${esc(s.label)}</div></div>`).join(''),
     skills: (items) => items.map((s) => `<div class="sk-row"><div class="sk-head"><span class="sk-name">${esc(s.name)}</span><span class="sk-pct" data-w="${s.w}">0%</span></div><div class="sk-track"><div class="sk-fill" data-w="${s.w}"></div></div></div>`).join('')
 };
@@ -37,7 +36,6 @@ export default function contentModule(sb) {
             mount('#process-steps', t.process(PROCESS));
             mount('#testi-cards', t.testimonials(TESTIMONIALS));
             mount('#testi-dots', t.dots(TESTIMONIALS));
-            mount('#blog-grid', t.posts(POSTS));
             mount('#stats-top', t.stats(STATS));
             mount('#skills', t.skills(SKILLS));
 

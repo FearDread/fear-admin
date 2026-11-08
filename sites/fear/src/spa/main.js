@@ -14,6 +14,7 @@ import easterModule from './modules/easter.js';
 import backgroundModule from './modules/background.js';
 import modalModule from './modules/modal.js';
 import cardsModule from './modules/cards.js';
+import publicationsModule from './modules/publications.js';
 
 void Router;
 FEAR.configure({ name: 'fear-spa', logLevel: 1 });
@@ -32,6 +33,7 @@ const modules = {
     terminal: terminalModule,
     modal: modalModule,
     cards: cardsModule,
+    publications: publicationsModule,
     contact: contactModule,
     easter: easterModule,
     intro: introModule
