@@ -1,3 +1,5 @@
+import { PUBLICATIONS } from './publications.js';
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Single source of truth for everything repeatable on the site.
 // Edit here, run `npm run build`, and the site updates everywhere.
@@ -8,7 +10,7 @@ export const PROFILE = {
     name: 'Garrett Haptonstall',
     handle: 'FearDread',
     location: 'Killeen, TX',
-    email: '', // TODO: add a public email to show it in Contact (blank = row hidden)
+    email: 'ghaptonstall@gmail.com',
     github: 'https://github.com/FearDread',
     site: 'https://efear.shop',
     taglines: [
@@ -124,20 +126,6 @@ export const PROJECTS = [
             'Built as a scraper because no official access was available.',
             'Supports the eFear comics storefront with inventory data.'
         ]
-    },
-    {
-        title: 'F.E.A.R. Framework (ebook)',
-        category: 'Publication',
-        status: 'Published',
-        icon: 'bi-journal-text',
-        role: 'Author and production',
-        tags: ['Node.js', 'pandoc', 'EPUB3', 'KDP'],
-        summary: 'A nonfiction guide for nurses on using AI and automation to reduce the burden of clinical documentation, titled "Find. Evaluate. Automate. Reclaim."',
-        highlights: [
-            'Authored the framework and manuscript, with chapter visuals produced in matplotlib.',
-            'Generated the DOCX with Node.js and the docx library; packaged EPUB3 with pandoc plus a LibreOffice re-save to normalize heading styles.',
-            'Prepared the title for Kindle Direct Publishing, including product description and pricing strategy.'
-        ]
     }
 ];
 
@@ -165,18 +153,12 @@ export const TESTIMONIALS = [
     { quote: 'A backup is real only after it has been restored.', author: 'Operating principle', role: '05 \u00b7 Verification' }
 ];
 
-export const POSTS = [
-    { title: 'Diagnosing a Certificate Mismatch on a Multi-Domain nginx Proxy', section: 'Incident write-up', meta: 'nginx \u00b7 TLS \u00b7 Resolved', icon: 'bi-bug' },
-    { title: 'Writing and Publishing a Guide on Automation for Clinical Documentation', section: 'Publication', meta: 'F.E.A.R. Framework \u00b7 EPUB3 \u00b7 KDP', icon: 'bi-journal-text' },
-    { title: 'Automating Minecraft Server Management on Ubuntu', section: 'Tooling', meta: 'Bash \u00b7 Java & Bedrock', icon: 'bi-controller' }
-];
-
 // Counters are derived from the data above so they never drift. Add `d` for decimals, `prefix`/`suffix` to wrap.
 export const STATS = [
     { t: PROJECTS.length, label: 'Featured projects' },
     { t: 2, label: 'Domains self-hosted' },
     { t: SERVICES.length, label: 'Core disciplines' },
-    { t: 1, label: 'Published title' }
+    { t: PUBLICATIONS.length, label: 'Published eBooks' }
 ];
 
 // Self-assessed proficiency (0-100).
@@ -187,4 +169,5 @@ export const SKILLS = [
     { name: 'Networking & nginx', w: 85 },
     { name: 'AWS & DevOps', w: 82 },
     { name: 'React / Next.js', w: 80 }
+];
 ];

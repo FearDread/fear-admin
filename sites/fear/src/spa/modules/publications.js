@@ -49,9 +49,12 @@ export default function publicationsModule(sb) {
         if (!tiltOk()) return;
         gsap.to($(e.currentTarget).find('.pub-book'), { rotationX: 0, rotationY: 0, duration: 0.6, ease: 'power3.out', clearProps: 'transform', overwrite: 'auto' });
     }
+    // section:change fires AFTER nav has already faded the section in, so the cards must already be
+    // hidden by then. Otherwise they show, vanish, and animate in again (the double flash).
+    const hide = () => { if (!prefersReducedMotion()) gsap.set('#blog-grid .pub-card', { y: 44, opacity: 0 }); };
     function enter() {
         if (prefersReducedMotion()) return;
-        gsap.fromTo('#blog-grid .pub-card', { y: 44, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7, stagger: 0.09, delay: 0.25, ease: 'power3.out', clearProps: 'transform,opacity', overwrite: 'auto' });
+        gsap.to('#blog-grid .pub-card', { y: 0, opacity: 1, duration: 0.7, stagger: 0.09, delay: 0.1, ease: 'power3.out', clearProps: 'transform,opacity', overwrite: 'auto' });
     }
 
     // ---- dialog ----
@@ -150,7 +153,8 @@ export default function publicationsModule(sb) {
                 .on('click.pubs', '#pub-modal .pub-next', () => step(1))
                 .on('keydown.pubs', onKey);
 
-            sb.add('section:change', (d) => { if (d.name === 'publications') enter(); });
+            if (!$('#s7').hasClass('active')) hide();
+            sb.add('section:change', (d) => (d.name === 'publications' ? enter() : hide()));
         },
         unload() { close(); $(document).off('.pubs'); gsap.killTweensOf('.pub-card'); $('#pub-modal').remove(); }
     };
