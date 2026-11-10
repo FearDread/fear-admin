@@ -3,7 +3,7 @@
  */
 
 import { apiSlice } from '@/lib/redux/api/apiSlice';
-import { setCurrentUser, setIsAuthenticated, setAuthError, resetAuthState } from '../slices/authSlice';
+import { setCurrentUser, setIsAuthenticated, setAuthError, resetAuthState, selectCurrentUser } from '../slices/authSlice';
 import type { User } from '@/types/user';
 
 export interface CurrentUser {
@@ -85,12 +85,13 @@ interface VerifyResetTokenResponse {
 const toMessage = (r: any): MessageResponse => ({
   message: r?.message ?? r?.result?.message ?? r?.data?.message ?? '',
 });
+const unwrap = <T,>(r: any): T => (r?.result ?? r?.data ?? null) as T;
 
 export const authApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     login: builder.mutation<AuthResponse, LoginRequest>({
-      query: (body) => ({ url: '/auth/login', method: 'POST', body }),
-      transformResponse: (response: { result: AuthResponse }) => response.result,
+        query: (body) => ({ url: '/auth/login', method: 'POST', body }),
+        transformResponse: unwrap<AuthResponse>,
       async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
         dispatch(setAuthError(null));
         try {
@@ -188,20 +189,19 @@ export const authApi = apiSlice.injectEndpoints({
 
     // ── Profile ─────────────────────────────────────────────────────────
     updateProfile: builder.mutation<CurrentUser, UpdateProfileInput>({
-      query: (body) => ({ url: '/users/profile', method: 'PUT', body }),
-      transformResponse: (obj: { result: CurrentUser }) => obj.result,
-      invalidatesTags: [{ type: 'User', id: 'CURRENT' }],
+        query: (body) => ({ url: '/auth/update-profile', method: 'PUT', body }),
+        transformResponse: unwrap<CurrentUser>,
+        invalidatesTags: [{ type: 'User', id: 'CURRENT' }],
     }),
 
     changePassword: builder.mutation<{ success: boolean; message?: string }, ChangePasswordInput>({
-      query: (body) => ({ url: '/users/password', method: 'PUT', body }),
+      query: (body) => ({ url: '/auth/password', method: 'PUT', body }),
     }),
 
     getCurrentUser: builder.query<CurrentUser | null, void>({
-      query: () => '/users/me',
-      transformResponse: (obj: { result: CurrentUser | null }) => obj.result ?? null,
-      transformErrorResponse: (response) => (response.status === 401 ? null : response),
-      providesTags: [{ type: 'User', id: 'CURRENT' }],
+        query: () => '/auth/me',
+        transformResponse: (r: any) => unwrap<any>(r)?.user ?? unwrap<CurrentUser>(r) ?? null,
+        providesTags: [{ type: 'User', id: 'CURRENT' }],
     }),
 
     /** Hydrates session state on app load — see StoreProvider's AuthHydrator. */
@@ -244,12 +244,13 @@ export const {
  * authSlice selectors (selectCurrentUser / selectIsAuthenticated) for new code.
  */
 export function useCurrentUser() {
-  const { data: currentUser, isLoading, error } = useGetCurrentUserQuery();
-  return {
-    currentUser: currentUser ?? null,
-    isAuthenticated: Boolean(currentUser),
-    loading: isLoading,
-    lastLoginAt: currentUser?.lastLoginAt ?? null,
-    error,
-  };
+    const reduxUser = useAppSelector(selectCurrentUser);
+    const { data, isLoading } = useGetCurrentUserQuery();
+    const currentUser = (data ?? reduxUser) as CurrentUser | null;
+    return {
+        currentUser,
+        isAuthenticated: Boolean(currentUser),
+        loading: isLoading && !reduxUser,
+        lastLoginAt: currentUser?.lastLoginAt ?? null,
+    };
 }

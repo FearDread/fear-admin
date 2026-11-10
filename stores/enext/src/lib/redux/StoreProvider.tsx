@@ -19,7 +19,7 @@ function AuthHydrator() {
 export function StoreProvider({ children }: { children: React.ReactNode }) {
   const storeRef = useRef<AppStore | null>(null);
 
-  if (!storeRef.current) {
+  if (storeRef.current === null) {
     storeRef.current = makeStore();
   }
 
