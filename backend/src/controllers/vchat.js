@@ -119,72 +119,94 @@ const roomLink = (req, room) => `${baseUrl(req)}/?room=${room}`;
 const mailFailed = (res, result) => res.status(502).json({ error: 'email could not be sent' });
 
 // Welcome email, sent to the signed-in user's own address. Admins may pass { email, firstName }.
-exports.sendWelcome = async (req, res) => {
+exports.sendWelcome = (req, res) => {
     const user = req.vchatUser;
-    const isAdmin = Array.isArray(user.roles) ? user.roles.includes('admin') : user.role === 'admin';
+    const isAdmin = Array.isArray(user.roles)
+        ? user.roles.includes('admin')
+        : user.role === 'admin';
+
     const body = req.body || {};
     const to = String((isAdmin && body.email) || user.email || '').trim();
 
-    if (!EMAIL_PATTERN.test(to)) return fail(res, 400, 'No valid email address for this account');
-
-    try {
-        const mail = getMailer(req);
-        const firstName = String((isAdmin && body.firstName) || user.displayName || '').split(' ')[0];
-        const appUrl = baseUrl(req);
-
-        const result = await mail.sendEmail({
-            to,
-            from: MAIL_FROM,
-            subject: 'Welcome to V-CHAT',
-            html: mail.templates.vchatWelcome({ firstName, appUrl }),
-            text: `Welcome to V-CHAT${firstName ? `, ${firstName}` : ''}! Your account is live. Start a call: ${appUrl}`,
-        });
-
-        if (!result.success) return mailFailed(req, res, result.message);
-        res.json({ success: true, message: 'Welcome email sent' });
-    } catch (error) {
-        mailFailed(res, error.message);
+    if (!EMAIL_PATTERN.test(to)) {
+        return fail(res, 400, 'No valid email address for this account');
     }
+
+    const mail = getMailer(req);
+    const firstName = String(
+        (isAdmin && body.firstName) || user.displayName || ''
+    ).split(' ')[0];
+
+    const appUrl = baseUrl(req);
+
+    mail.sendEmail({
+        to,
+        from: MAIL_FROM,
+        subject: 'Welcome to V-CHAT',
+        html: mail.templates.vchatWelcome({ firstName, appUrl }),
+        text: `Welcome to V-CHAT${firstName ? `, ${firstName}` : ''}! Your account is live. Start a call: ${appUrl}`,
+    })
+        .then((result) => {
+            if (!result.success) {
+                return mailFailed(res, result.message);
+            }
+
+            res.json({success: true, message: 'Welcome email sent'});
+        })
+        .catch((error) => mailFailed(res, error.message));
 };
 
-// Invitation email. Link and inviter name are built server-side so they can't be spoofed.
-// Body: { email, room, message?, scheduledFor?, roomName? }
-exports.sendInvite = async (req, res) => {
+exports.sendInvite = (req, res) => {
     const user = req.vchatUser;
-    const { email, room, message, scheduledFor, roomName } = req.body || {};
+    const {
+        email,
+        room,
+        message,
+        scheduledFor,
+        roomName,
+    } = req.body || {};
+
     const to = String(email || '').trim();
 
-    if (!EMAIL_PATTERN.test(to)) return fail(res, 400, 'Valid email required');
-    if (!ROOM_PATTERN.test(String(room || ''))) return fail(res, 400, 'Invalid room');
-    if (!allowInvite(user.id)) return fail(res, 429, 'Invite limit reached, try again later');
+    if (!EMAIL_PATTERN.test(to)) fail(res, 400, 'Valid email required');
+    if (!ROOM_PATTERN.test(String(room || ''))) fail(res, 400, 'Invalid room');
+    if (!allowInvite(user.id)) fail(res, 429, 'Invite limit reached, try again later');
 
-    try {
-        const mail = getMailer(req);
-        const inviterName = user.displayName || 'A V-CHAT user';
-        const roomUrl = roomLink(req, room);
-        const note = message ? String(message).slice(0, 500) : undefined;
+    const mail = getMailer(req);
+    const inviterName = user.displayName || 'A V-CHAT user';
+    const roomUrl = roomLink(req, room);
+    const note = message
+        ? String(message).slice(0, 500)
+        : undefined;
 
-        const result = await mail.sendEmail({
-            to,
-            from: MAIL_FROM,
-            subject: `${inviterName} invited you to a V-CHAT call`,
-            html: mail.templates.vchatInvite({
-                inviterName,
-                roomUrl,
-                roomName: roomName ? String(roomName).slice(0, 80) : undefined,
-                message: note,
-                scheduledFor: scheduledFor ? String(scheduledFor).slice(0, 100) : undefined,
-            }),
-            text: `${inviterName} invited you to a V-CHAT call.${note ? `\n\n${note}` : ''}\n\nJoin: ${roomUrl}`,
-        });
+    mail.sendEmail({
+        to,
+        from: MAIL_FROM,
+        subject: `${inviterName} invited you to a V-CHAT call`,
+        html: mail.templates.vchatInvite({
+            inviterName,
+            roomUrl,
+            roomName: roomName
+                ? String(roomName).slice(0, 80)
+                : undefined,
+            message: note,
+            scheduledFor: scheduledFor
+                ? String(scheduledFor).slice(0, 100)
+                : undefined,
+        }),
+        text: `${inviterName} invited you to a V-CHAT call.${note ? `\n\n${note}` : ''}\n\nJoin: ${roomUrl}`,
+    })
+        .then((result) => {
+            if (!result.success) {
+                return mailFailed(res, result.message);
+            }
 
-        if (!result.success) return mailFailed(req, res, result.message);
+            fearOf(req)
+                .getLogger().info(`FEAR vchat :: invite sent :: room ${room} :: user ${user.id}`);
 
-        fearOf(req).getLogger().info(`FEAR vchat :: invite sent :: room ${room} :: user ${user.id}`);
-        res.json({ success: true, message: 'Invitation sent' });
-    } catch (error) {
-        mailFailed(res, error.message);
-    }
+            res.json({ success: true, message: 'Invitation sent'});
+        })
+        .catch((error) =>  mailFailed(res, error.message));
 };
 
 module.exports = exports;
