@@ -1,7 +1,7 @@
 /**
  * authApi.ts
  */
-
+import { useAppSelector } from '@/lib/redux/hooks';
 import { apiSlice } from '@/lib/redux/api/apiSlice';
 import { setCurrentUser, setIsAuthenticated, setAuthError, resetAuthState, selectCurrentUser } from '../slices/authSlice';
 import type { User } from '@/types/user';
