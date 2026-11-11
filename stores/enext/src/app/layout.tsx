@@ -74,7 +74,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <JsonLd data={siteJsonLd()} />
         <StoreProvider>
           <SiteLayout>{children}</SiteLayout>
-        </StoreProvider>
+            </StoreProvider>
+        <Script
+          id="adsbygoogle-init"
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7721831965021640"
+          strategy="afterInteractive"
+          crossOrigin="anonymous"
+        />
       </body>
     </html>
   );
