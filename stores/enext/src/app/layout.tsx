@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next';
+import Script from 'next/script';
 import { Anton, Space_Mono } from 'next/font/google';
 import StoreProvider from '@/lib/redux/StoreProvider';
 import SiteLayout from '@/components/layout/SiteLayout';
