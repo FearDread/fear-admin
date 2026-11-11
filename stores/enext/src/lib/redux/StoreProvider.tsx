@@ -31,7 +31,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-      <Provider store={storeRef.current}>
+      <Provider store={storeRef.current!}>
       <AuthHydrator />
       {children}
     </Provider>
