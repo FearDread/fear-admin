@@ -47,35 +47,36 @@ window.addEventListener('vchat:unauthorized', () => {
     go('login');
 });
 
-async function main() {
-    try {
-        const session = await api.session();
-        state.user = session.authenticated ? session.userId : null;
-        if (!state.name && session.displayName) state.name = session.displayName;
-    } catch (err) {
-        state.user = null;
-    }
+function main() {
+    return api.session()
+        .then((session) => {
+            state.user = session.authenticated ? session.userId : null;
+            if (!state.name && session.displayName) state.name = session.displayName;
+        })
+        .catch(() => {
+            state.user = null;
+        })
+        .then(() => FEAR.boot()) // once, before the parallel module starts (boot() isn't re-entrant)
+        .then(() => FEAR.start(['auth', 'lobby', 'room', 'invite', 'theme', 'background']))
+        .then(() => {
+            const router = new Router({
+                container: '#app',
+                defaultRoute: 'lobby',
+                pushState: false, // navigate() only loads a route via hashchange
+                animations: { enabled: true, fadeSpeed: 120 },
+                callbacks: { beforeRouteChange: guard },
+            });
 
-    await FEAR.boot(); // once, before the parallel module starts (boot() isn't re-entrant)
-    await FEAR.start(['auth', 'lobby', 'room', 'invite', 'theme', 'background']);
+            Object.entries(views).forEach(([name, view]) => {
+                router.addRoute(name, {
+                    title: view.title,
+                    html: view.html,
+                    callback: () => FEAR.broker.emit(`view:${name}`),
+                });
+            });
 
-    const router = new Router({
-        container: '#app',
-        defaultRoute: 'lobby',
-        pushState: false, // navigate() only loads a route via hashchange
-        animations: { enabled: true, fadeSpeed: 120 },
-        callbacks: { beforeRouteChange: guard },
-    });
-
-    Object.entries(views).forEach(([name, view]) => {
-        router.addRoute(name, {
-            title: view.title,
-            html: view.html,
-            callback: () => FEAR.broker.emit(`view:${name}`),
+            router.init();
         });
-    });
-
-    router.init();
 }
 
 main().catch((err) => {

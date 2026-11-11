@@ -1,31 +1,36 @@
 /* vchat — "Daylight"
-   Light, professional theme. Same selectors and variable names as the other themes,
-   so it drops in wherever they do.
-   Cool gray-white ground, blue is chrome and emphasis; teal (--sky) is reserved for
-   "live / yours / secure"; rose flags mute and leave; dark amber appears only for the
-   not-encrypted warning. Video tiles stay dark so footage reads cleanly. */
+   Light, professional theme over the blue network artwork. Every surface that holds
+   content is a white, semi-transparent, rounded box with a soft blur, so text inside
+   stays dark and readable; only the few things that sit directly on the artwork
+   (brand, status, quiet buttons) use light text.
+   Blue is chrome and emphasis; teal (--sky) is reserved for "live / yours / secure";
+   rose flags mute and leave; dark amber appears only for the not-encrypted warning.
+   Needs vchat-bg-5.png at /assets/img/ (change the url() below if yours lives elsewhere). */
 
 :root {
-    --void: #f3f5f9;
+    --void: #07101f;
     --ink: #172033;
-    --panel: rgba(255, 255, 255, 0.88);
+    --panel: rgba(255, 255, 255, 0.84);
     --panel-solid: #ffffff;
-    --line: #d8dee9;
-    --line-hi: #aab6c9;
+    --line: rgba(170, 182, 201, 0.7);
+    --line-hi: #9aa9c0;
     --text: #172033;
-    --muted: #5a6678;
+    --muted: #556176;
     --violet: #4f46e5;
     --violet-soft: #1e3a8a;
     --violet-deep: #3730a3;
     --blue-deep: #1d4ed8;
     --sky: #0b78a6;
     --sky-soft: #0e7490;
+    --ring: #4cc3f1;
     --pink: #c9254d;
     --pink-deep: #be123c;
     --amber: #a15c00;
-    --glow-violet: rgba(37, 84, 214, 0.22);
-    --glow-sky: rgba(11, 120, 166, 0.22);
+    --on-art: #eaf3ff;
+    --glow-violet: rgba(37, 84, 214, 0.28);
+    --glow-sky: rgba(76, 195, 241, 0.4);
     --radius: 12px;
+    --box-radius: 18px;
     color-scheme: light;
 }
 
@@ -38,19 +43,14 @@ html, body {
     margin: 0;
 }
 
+/* The artwork is the ground. A light navy wash keeps the lettering-free middle calm
+   and darkens the very bottom a little for the controls. */
 body {
     color: var(--text);
     font: 16px/1.5 "Avenir Next", "Segoe UI", system-ui, -apple-system, sans-serif;
-    background: radial-gradient(900px 600px at 8% -10%, rgba(59, 130, 246, 0.12), transparent 62%), radial-gradient(800px 560px at 102% 0%, rgba(14, 116, 144, 0.08), transparent 58%), var(--void);
-    background-imgage: url("/assets/img/vchat-bg-5.jpg") center center / cover no-repeat background-attachment: fixed;
+    background: linear-gradient(180deg, rgba(7, 16, 31, 0.15), rgba(7, 16, 31, 0) 30%, rgba(7, 16, 31, 0.25)), url("/assets/img/vchat-bg-5.png") center center / cover no-repeat, var(--void);
+    background-attachment: fixed;
     scrollbar-color: var(--line-hi) transparent;
-}
-body {
-    background-image: url("/assets/img/vchat-bg-5.png");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    min-height: 100vh;
 }
 
 .center {
@@ -123,9 +123,9 @@ input {
     padding: 0.7rem 0.85rem;
     color: var(--text);
     font: inherit;
-    background: #fff;
+    background: rgba(255, 255, 255, 0.95);
     border: 1px solid var(--line);
-    border-radius: 10px;
+    border-radius: 12px;
     transition: border-color 0.15s, box-shadow 0.15s;
 }
 
@@ -140,24 +140,25 @@ input {
     input:focus-visible {
         outline: none;
         border-color: var(--blue-deep);
-        box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.2);
+        box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.22);
     }
 
 button {
     padding: 0.62rem 1.1rem;
     color: var(--text);
     font: inherit;
-    background: #fff;
-    border: 1px solid var(--line-hi);
-    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.88);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px -3px rgba(7, 16, 31, 0.35);
     cursor: pointer;
     transition: border-color 0.15s, box-shadow 0.15s, transform 0.1s, background 0.15s;
 }
 
     button:hover {
-        border-color: var(--blue-deep);
-        background: #eff4ff;
-        box-shadow: 0 2px 10px -4px var(--glow-violet);
+        border-color: var(--ring);
+        background: #fff;
+        box-shadow: 0 4px 16px -4px var(--glow-sky);
     }
 
     button:active {
@@ -166,7 +167,7 @@ button {
 
     button:focus-visible,
     summary:focus-visible {
-        outline: 2px solid var(--blue-deep);
+        outline: 2px solid var(--ring);
         outline-offset: 2px;
     }
 
@@ -175,12 +176,12 @@ button {
         font-weight: 650;
         background: linear-gradient(135deg, #2563eb, var(--blue-deep));
         border-color: transparent;
-        box-shadow: 0 6px 18px -8px rgba(29, 78, 216, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+        box-shadow: 0 6px 18px -8px rgba(29, 78, 216, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.2);
     }
 
         button.primary:hover {
             background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-            box-shadow: 0 8px 22px -6px rgba(29, 78, 216, 0.55);
+            box-shadow: 0 8px 22px -6px rgba(59, 130, 246, 0.6);
         }
 
     button.danger {
@@ -188,7 +189,7 @@ button {
         font-weight: 650;
         background: linear-gradient(135deg, #e11d48, var(--pink-deep));
         border-color: transparent;
-        box-shadow: 0 6px 18px -8px rgba(190, 18, 60, 0.55);
+        box-shadow: 0 6px 18px -8px rgba(190, 18, 60, 0.6);
     }
 
         button.danger:hover {
@@ -196,24 +197,40 @@ button {
             box-shadow: 0 8px 22px -6px rgba(225, 29, 72, 0.55);
         }
 
+    /* quiet buttons often sit straight on the artwork, so default to light text... */
     button.quiet {
-        color: var(--muted);
+        color: var(--on-art);
         background: none;
         border-color: transparent;
+        box-shadow: none;
     }
 
         button.quiet:hover {
-            color: var(--text);
-            background: rgba(23, 32, 51, 0.06);
+            color: #fff;
+            background: rgba(255, 255, 255, 0.14);
             box-shadow: none;
         }
 
-    /* mic / camera toggles: pressed means "off" */
-    button[aria-pressed="true"] {
-        color: var(--pink);
-        background: #fff1f4;
-        border-color: var(--pink);
+/* ...and switch to dark text when inside a white box */
+.gate button.quiet,
+.panel button.quiet,
+.chat button.quiet {
+    color: var(--muted);
+}
+
+    .gate button.quiet:hover,
+    .panel button.quiet:hover,
+    .chat button.quiet:hover {
+        color: var(--text);
+        background: rgba(23, 32, 51, 0.07);
     }
+
+/* mic / camera toggles: pressed means "off" */
+button[aria-pressed="true"] {
+    color: var(--pink);
+    background: #fff1f4;
+    border-color: var(--pink);
+}
 
 .stack {
     display: grid;
@@ -227,20 +244,21 @@ button {
     font-size: 1.2rem;
     font-weight: 800;
     letter-spacing: -0.02em;
-    color: var(--violet-soft);
-    background: linear-gradient(90deg, #1e3a8a, var(--sky-soft));
+    color: #fff;
+    background: linear-gradient(90deg, #ffffff, #9fdcff);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 1px 6px rgba(7, 16, 31, 0.6));
 }
 
 .room-name {
     font: 0.85rem ui-monospace, "SF Mono", Menlo, monospace;
-    color: var(--muted);
-    padding: 0.15rem 0.55rem;
-    border: 1px solid var(--line);
-    border-radius: 6px;
-    background: #fff;
+    color: var(--text);
+    padding: 0.15rem 0.65rem;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 999px;
+    background: var(--panel);
 }
 
 /* ---------------------------------------------------------- login / lobby */
@@ -249,10 +267,21 @@ button {
     width: min(420px, 92vw);
     margin: auto;
     padding: 2.25rem 2rem;
-    background: rgba(255,255,255,.7);
-    border: 1px solid var(--line);
-    border-radius: 18px;
-    box-shadow: 0 24px 60px -28px rgba(23, 32, 51, 0.28), 0 2px 6px rgba(23, 32, 51, 0.05);
+    background: var(--panel);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 22px;
+    box-shadow: 0 30px 70px -28px rgba(0, 0, 0, 0.7), 0 0 60px -24px var(--glow-sky);
+}
+
+@supports (backdrop-filter: blur(1px)) {
+    .gate,
+    .panel,
+    .chat,
+    .room-name,
+    .status,
+    .badge {
+        backdrop-filter: blur(14px) saturate(120%);
+    }
 }
 
 .lobby-body {
@@ -274,16 +303,16 @@ button {
     align-content: start;
     padding: 1.35rem;
     background: var(--panel);
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    box-shadow: 0 1px 3px rgba(23, 32, 51, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: var(--box-radius);
+    box-shadow: 0 14px 36px -22px rgba(0, 0, 0, 0.7);
     transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
 }
 
     .panel:hover,
     .panel:focus-within {
-        border-color: var(--line-hi);
-        box-shadow: 0 16px 40px -22px rgba(23, 32, 51, 0.3);
+        border-color: var(--ring);
+        box-shadow: 0 18px 44px -20px var(--glow-sky);
         transform: translateY(-2px);
     }
 
@@ -330,21 +359,21 @@ button {
     min-height: 160px;
     margin: 0;
     overflow: hidden;
-    background: #111827;
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    box-shadow: 0 10px 28px -16px rgba(23, 32, 51, 0.4);
+    background: #0b1220;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: var(--box-radius);
+    box-shadow: 0 14px 36px -18px rgba(0, 0, 0, 0.8);
     transition: border-color 0.2s, box-shadow 0.2s;
 }
 
     .tile:hover {
-        border-color: var(--line-hi);
+        border-color: rgba(255, 255, 255, 0.7);
     }
 
-    /* your own tile gets the teal ring */
+    /* your own tile gets the cyan ring */
     .tile[data-peer="local"] {
-        border-color: var(--sky);
-        box-shadow: 0 0 0 1px rgba(11, 120, 166, 0.55), 0 0 24px -6px var(--glow-sky);
+        border-color: var(--ring);
+        box-shadow: 0 0 0 1px rgba(76, 195, 241, 0.6), 0 0 30px -6px var(--glow-sky);
     }
 
     .tile video {
@@ -358,11 +387,10 @@ button {
         position: absolute;
         left: 0.6rem;
         bottom: 0.6rem;
-        padding: 0.18rem 0.6rem;
+        padding: 0.18rem 0.7rem;
         font-size: 0.85rem;
-        color: #fff;
-        background: rgba(15, 23, 42, 0.72);
-        border: 1px solid rgba(255, 255, 255, 0.18);
+        color: var(--text);
+        background: rgba(255, 255, 255, 0.85);
         border-radius: 999px;
     }
 
@@ -384,12 +412,22 @@ button {
     }
 
 .status {
+    width: fit-content;
+    max-width: 100%;
     min-height: 1.5em;
-    margin: 0;
+    margin: 0 auto;
+    padding: 0.2rem 0.9rem;
     font-size: 0.9rem;
     text-align: center;
-    color: var(--muted);
+    color: var(--text);
+    background: var(--panel);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 999px;
 }
+
+    .status:empty {
+        display: none;
+    }
 
 /* ----------------------------------------------------------------- chat */
 
@@ -398,9 +436,12 @@ button {
     flex-direction: column;
     gap: 0.75rem;
     min-height: 0;
+    margin: 1rem 1rem 1rem 0;
     padding: 1rem;
     background: var(--panel);
-    border-left: 1px solid var(--line);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: var(--box-radius);
+    box-shadow: 0 14px 36px -22px rgba(0, 0, 0, 0.7);
 }
 
 .chat-log {
@@ -419,9 +460,9 @@ button {
         gap: 0.1rem;
         padding: 0.5rem 0.75rem;
         overflow-wrap: anywhere;
-        background: #eef1f7;
+        background: rgba(23, 32, 51, 0.06);
         border-left: 2px solid var(--line-hi);
-        border-radius: 4px 10px 10px 4px;
+        border-radius: 4px 12px 12px 4px;
     }
 
     .chat-log b {
@@ -431,7 +472,7 @@ button {
     }
 
     .chat-log li.me {
-        background: #e6f3f8;
+        background: rgba(11, 120, 166, 0.1);
         border-left-color: var(--sky);
     }
 
@@ -454,7 +495,8 @@ button {
     padding: 0.2rem 0.7rem;
     font-size: 0.8rem;
     color: var(--muted);
-    border: 1px solid var(--line);
+    background: var(--panel);
+    border: 1px solid rgba(255, 255, 255, 0.6);
     border-radius: 999px;
 }
 
@@ -464,8 +506,7 @@ button {
 
     .badge.on {
         color: var(--sky);
-        background: #e6f3f8;
-        border-color: rgba(11, 120, 166, 0.5);
+        border-color: rgba(11, 120, 166, 0.55);
     }
 
         .badge.on::before {
@@ -484,7 +525,7 @@ button {
     .badge.off {
         color: var(--amber);
         border-color: var(--amber);
-        background: #fff6e5;
+        background: rgba(255, 246, 229, 0.92);
     }
 
 @keyframes beacon {
@@ -550,17 +591,17 @@ button {
 }
 
 .theme-select {
-    background: #fff;
+    background: var(--panel);
     color: var(--text);
-    border: 1px solid var(--line);
-    border-radius: 6px;
-    padding: .3rem .5rem;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 999px;
+    padding: .3rem .7rem;
     font: inherit;
     font-size: .85rem;
 }
 
     .theme-select:focus-visible {
-        outline: 2px solid var(--blue-deep);
+        outline: 2px solid var(--ring);
         outline-offset: 2px;
     }
 
@@ -577,14 +618,18 @@ button {
         font-size: 2rem;
     }
 
+    /* keep the globe and the lock in view on narrow screens */
+    body {
+        background-position: center, 50% 40%, center;
+    }
+
     .room-main {
         grid-template-columns: 1fr;
         grid-template-rows: 1fr 260px;
     }
 
     .chat {
-        border-left: 0;
-        border-top: 1px solid var(--line);
+        margin: 0 1rem 1rem;
     }
 
     .split {
@@ -598,3 +643,4 @@ button {
         animation: none !important;
     }
 }
+
