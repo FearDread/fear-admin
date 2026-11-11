@@ -1,23 +1,45 @@
-const mongoose = require('mongoose');
-const Wishlist = require('../models/Wishlist');
-const Product = require('../models/Product');
+"use strict";
 
-const isValidId = (id) => mongoose.Types.ObjectId.isValid(id);
+const mongoose = require("mongoose");
+const { tryCatch } = require("../libs/handler/error");
+const Wishlist = require("../models/wishlist");
+const Product = require("../models/product");
 
-// Build the snapshot from the Product doc — never trust client-supplied
-// price/title/image.
-const snapshotFromProduct = (p) => ({
-    title: p.title ?? p.name ?? 'Untitled',
-    image: p.images?.[0]?.url ?? p.image ?? '',
-    price: p.salePrice ?? p.price ?? 0,
-    originalPrice: p.salePrice && p.salePrice < p.price ? p.price : undefined,
-    rating: p.rating,
-    sku: p.sku,
-    category: p.category,
-});
+const PRODUCT_FIELDS =
+    "title name price salePrice discountPrice images image category rating sku isActive";
 
-// Shape the client's WishlistItem expects: id + string productId.
-const serialize = (row, product) => {
+const sendError = (res, status, message) => res.status(status).json({ success: false, message });
+
+const isObjectId = (value) =>
+    typeof value === "string" && value.length === 24 && mongoose.isValidObjectId(value);
+
+/**
+ * Same pricing rule as controllers/cart.js normalizeProduct: a sale price only
+ * counts when it is > 0 and below the base price.
+ */
+function snapshotFromProduct(p) {
+    const base = Number(p.price) || 0;
+    const sale = Number(p.salePrice ?? p.discountPrice) || 0;
+    const onSale = sale > 0 && sale < base;
+
+    const rating = Number(p.rating);
+    const category =
+        typeof p.category === "string" ? p.category : p.category?.title ?? p.category?.name;
+
+    return {
+        title: p.title ?? p.name ?? "Untitled",
+        image: (p.images && p.images[0] && p.images[0].url) || p.image || "",
+        price: onSale ? sale : base,
+        originalPrice: onSale ? base : undefined,
+        rating: Number.isFinite(rating) ? Math.min(Math.max(rating, 0), 5) : undefined,
+        sku: p.sku || undefined,
+        category: category || undefined,
+    };
+}
+
+// Shape the storefront's WishlistItem expects. Live product data wins over the
+// stored snapshot so sale prices / renamed titles show up without re-saving.
+function serialize(row, product) {
     const live = product ? snapshotFromProduct(product) : {};
     return {
         id: String(row._id),
@@ -25,91 +47,99 @@ const serialize = (row, product) => {
         title: live.title ?? row.title,
         image: live.image || row.image,
         price: live.price ?? row.price,
-        originalPrice: live.originalPrice ?? row.originalPrice,
+        originalPrice: live.originalPrice,
         rating: live.rating ?? row.rating,
         sku: live.sku ?? row.sku,
         category: live.category ?? row.category,
         addedAt: row.addedAt,
     };
-};
+}
 
-// GET /wishlist
-exports.getWishlist = async (req, res) => {
-    try {
-        const rows = await Wishlist.find({ user: req.user._id }).sort({ addedAt: -1 }).lean();
+/** GET /wishlist (also /wishlist/all) */
+const getWishlist = tryCatch(async (req, res) => {
+    const rows = await Wishlist.find({ user: req.user._id }).sort({ addedAt: -1 }).lean();
 
-        const products = await Product.find({ _id: { $in: rows.map((r) => r.productId) } })
-            .select('title name price salePrice images image category rating sku')
-            .lean();
-        const byId = new Map(products.map((p) => [String(p._id), p]));
+    const products = rows.length
+        ? await Product.find({ _id: { $in: rows.map((r) => r.productId) } })
+            .select(PRODUCT_FIELDS)
+            .lean()
+        : [];
+    const live = new Map(products.map((p) => [String(p._id), p]));
 
-        const result = rows.map((r) => serialize(r, byId.get(String(r.productId))));
-        return res.json({ result, success: true, message: 'Wishlist fetched', count: result.length });
-    } catch (err) {
-        console.error('[wishlist] getWishlist:', err);
-        return res.status(500).json({ success: false, message: 'Failed to fetch wishlist' });
-    }
-};
-
-// POST /wishlist   body: { productId }  (other fields are ignored)
-exports.addToWishlist = async (req, res) => {
-    try {
-        const { productId } = req.body ?? {};
-        if (!isValidId(productId)) {
-            return res.status(400).json({ success: false, message: 'A valid productId is required' });
-        }
-
-        const product = await Product.findById(productId).lean();
+    const result = [];
+    const orphanIds = [];
+    for (const row of rows) {
+        const product = live.get(String(row.productId));
         if (!product) {
-            return res.status(404).json({ success: false, message: 'Product not found' });
+            orphanIds.push(row._id); // product was deleted — self-heal
+            continue;
         }
-
-        // Atomic upsert: safe against double-clicks and concurrent requests,
-        // and returns the existing row if it's already saved.
-        const row = await Wishlist.findOneAndUpdate(
-            { user: req.user._id, productId: product._id },
-            { $setOnInsert: { user: req.user._id, productId: product._id, ...snapshotFromProduct(product) } },
-            { new: true, upsert: true, setDefaultsOnInsert: true },
-        ).lean();
-
-        return res.status(201).json({
-            result: serialize(row, product),
-            success: true,
-            message: 'Added to wishlist',
-        });
-    } catch (err) {
-        console.error('[wishlist] addToWishlist:', err);
-        return res.status(500).json({ success: false, message: 'Failed to add to wishlist' });
+        if (product.isActive === false) continue; // hidden, but keep the row in case it returns
+        result.push(serialize(row, product));
     }
-};
 
-// DELETE /wishlist/:id   (id = wishlist entry id)
-exports.removeFromWishlist = async (req, res) => {
+    if (orphanIds.length) {
+        Wishlist.deleteMany({ _id: { $in: orphanIds } }).catch((err) =>
+            console.error("[wishlist] orphan cleanup failed:", err)
+        );
+    }
+
+    return res.status(200).json({
+        success: true,
+        message: "Wishlist retrieved successfully",
+        result,
+        count: result.length,
+    });
+});
+
+/**
+ * POST /wishlist (also /wishlist/new)   { productId }
+ * Everything except productId is ignored on purpose — title/price/image are
+ * looked up server-side, never trusted from the client. Idempotent.
+ */
+const addToWishlist = tryCatch(async (req, res) => {
+    const { productId } = req.body ?? {};
+    if (!isObjectId(productId)) return sendError(res, 400, "A valid productId is required");
+
+    const product = await Product.findById(productId).lean();
+    if (!product || product.isActive === false) return sendError(res, 404, "Product not found");
+
+    const filter = { user: req.user._id, productId: product._id };
+    // user/productId come from the filter on insert; only the snapshot goes in $setOnInsert.
+    const update = { $setOnInsert: snapshotFromProduct(product) };
+    const options = { new: true, upsert: true };
+
+    let row;
     try {
-        const { id } = req.params;
-        if (!isValidId(id)) {
-            return res.status(400).json({ success: false, message: 'Invalid wishlist id' });
-        }
-
-        // Scoped to the session user so one user can't delete another's rows.
-        // Idempotent: a missing row still returns success so a double-click or
-        // an optimistic-update retry doesn't surface as an error.
-        await Wishlist.deleteOne({ _id: id, user: req.user._id });
-
-        return res.json({ result: { id }, success: true, message: 'Removed from wishlist' });
+        row = await Wishlist.findOneAndUpdate(filter, update, options).lean();
     } catch (err) {
-        console.error('[wishlist] removeFromWishlist:', err);
-        return res.status(500).json({ success: false, message: 'Failed to remove from wishlist' });
+        // Two concurrent upserts can race on the unique index; the loser just reads the winner's row.
+        if (err.code !== 11000) throw err;
+        row = await Wishlist.findOne(filter).lean();
     }
-};
 
-// DELETE /wishlist   (optional — clear everything)
-exports.clearWishlist = async (req, res) => {
-    try {
-        await Wishlist.deleteMany({ user: req.user._id });
-        return res.json({ result: null, success: true, message: 'Wishlist cleared' });
-    } catch (err) {
-        console.error('[wishlist] clearWishlist:', err);
-        return res.status(500).json({ success: false, message: 'Failed to clear wishlist' });
-    }
-};
+    return res.status(201).json({
+        success: true,
+        message: "Added to wishlist",
+        result: serialize(row, product),
+    });
+});
+
+/** DELETE /wishlist/:id — id is the wishlist entry id. Idempotent. */
+const removeFromWishlist = tryCatch(async (req, res) => {
+    const { id } = req.params;
+    if (!isObjectId(id)) return sendError(res, 400, "Invalid wishlist id");
+
+    // Scoped to the session user so nobody can delete another user's rows.
+    await Wishlist.deleteOne({ _id: id, user: req.user._id });
+
+    return res.status(200).json({ success: true, message: "Removed from wishlist", result: { id } });
+});
+
+/** DELETE /wishlist (also /wishlist/all) */
+const clearWishlist = tryCatch(async (req, res) => {
+    await Wishlist.deleteMany({ user: req.user._id });
+    return res.status(200).json({ success: true, message: "Wishlist cleared", result: null });
+});
+
+module.exports = { getWishlist, addToWishlist, removeFromWishlist, clearWishlist };
