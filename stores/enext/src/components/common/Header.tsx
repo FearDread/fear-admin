@@ -24,7 +24,6 @@ interface NavLink {
 }
 
 const topMenuLinks: NavLink[] = [
-  { label: 'Compare', path: '/product-comparison' },
   { label: 'About', path: '/about' },
   { label: 'Our Store', path: '/shop' },
   { label: 'Blog', path: '/blog' },
