@@ -76,6 +76,7 @@ main,
 [tabindex="-1"] {
     outline: none;
     border: 0;
+    background:rgba(0,0,0,.5);
 }
 
     #app:focus,
