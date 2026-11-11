@@ -13,6 +13,7 @@ export const PROFILE = {
     email: 'ghaptonstall@gmail.com',
     github: 'https://github.com/FearDread',
     site: 'https://efear.shop',
+    resume: '/docs/Garrett_Haptonstall_Resume.pdf',
     taglines: [
         'I build systems that keep running after everyone has gone home.',
         'Reliability is a discipline, not a feature.',

@@ -39,6 +39,12 @@ export default function contentModule(sb) {
             mount('#stats-top', t.stats(STATS));
             mount('#skills', t.skills(SKILLS));
 
+            const resume = safeUrl(PROFILE.resume);
+            $('[data-profile="resume"]').each(function () {
+                if (resume) $(this).attr('href', resume).show();
+                else $(this).hide();
+            });
+
             $('#year').text(new Date().getFullYear());
             $('[data-profile="github"]').attr('href', safeUrl(PROFILE.github));
             $('[data-profile="site"]').attr('href', safeUrl(PROFILE.site));
