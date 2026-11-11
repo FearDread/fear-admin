@@ -3,17 +3,16 @@
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useAppSelector } from '@/lib/redux/hooks';
 import { Toast, type ToastType } from '@/components/common/Toast';
-import { selectIsAuthenticated } from '@/lib/redux/slices/authSlice';
 import { useAddToCartMutation } from '@/lib/redux/api/cartApi';
 import {
     useGetWishlistQuery,
     useAddToWishlistMutation,
     useRemoveFromWishlistMutation,
 } from '@/lib/redux/api/wishlistApi';
-import ProductQuickView from './ProductQuickView';
+//import ProductQuickView from './ProductQuickView';
 import { Product } from '@/types/product';
+import { useWishlist } from '@/hooks/useWishlist';
 
 const MAX_COMPARE_PRODUCTS = 4;
 const COMPARE_STORAGE_KEY = 'comparisonProductIds';
@@ -26,11 +25,10 @@ interface ToastItem {
 
 export const ProductCard = (product: Product) => {
     const router = useRouter();
-    const isAuthenticated = useAppSelector(selectIsAuthenticated);
-
     const productId = (product._id || product.id) as string;
     const detailsLink = `/product/${productId}`;
-
+    const { isInWishlist, toggle, items } = useWishlist();
+    const inWishlist = isInWishlist(productId);
     const productImage = useMemo(
         () =>
             product.images && product.images.length > 0
@@ -57,25 +55,18 @@ export const ProductCard = (product: Product) => {
     const [addToCartMutation, { isLoading: isAddingToCart }] = useAddToCartMutation();
     const [quantity] = useState(1);
 
-    // ── Wishlist ──────────────────────────────────────────────────────────
-    // Guests have no wishlist to fetch — skip rather than 401 on every card.
-    const { data: wishlist = [] } = useGetWishlistQuery(undefined, {
-        skip: !isAuthenticated,
-    });
     const [addToWishlist] = useAddToWishlistMutation();
     const [removeFromWishlist] = useRemoveFromWishlistMutation();
 
     // Memoized so this only re-scans the wishlist cache when it or this
     // card's productId actually changes, not on every render.
     const wishlistEntry = useMemo(
-        () => wishlist.find((w) => w.productId === productId),
-        [wishlist, productId],
+        () => items.find((w) => w.productId === productId),
+        [items, productId],
     );
-    const isInWishlist = Boolean(wishlistEntry);
     const [isAddingToWishlist, setIsAddingToWishlist] = useState(false);
 
     // ── Local UI state ────────────────────────────────────────────────────
-    const [showQuickView, setShowQuickView] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
     const [toasts, setToasts] = useState<ToastItem[]>([]);
 
@@ -108,41 +99,29 @@ export const ProductCard = (product: Product) => {
         return ids;
     };
 
-    const handleWishlist = async (e: React.MouseEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-
-        if (!isAuthenticated) {
-            const from = encodeURIComponent(window.location.pathname);
-            const message = encodeURIComponent('Please login to add items to your wishlist');
-            router.push(`/login?from=${from}&message=${message}`);
-            return;
-        }
-
-        setIsAddingToWishlist(true);
-        try {
-            if (isInWishlist && wishlistEntry) {
-                await removeFromWishlist(wishlistEntry.id).unwrap();
-                addToast('Removed from Wishlist!', 'success');
-            } else {
-                await addToWishlist({
-                    id: productId,
-                    productId,
-                    title: product.title,
-                    image: productImage,
-                    price: currentPrice,
-                    originalPrice: product.price,
-                    rating: product.rating,
-                    sku: productId,
-                }).unwrap();
-                addToast('Product added to Wishlist!', 'success');
-            }
-        } catch {
-            addToast('Failed to update wishlist. Please try again.', 'error');
-        } finally {
-            setIsAddingToWishlist(false);
-        }
-    };
+const handleWishlist = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsAddingToWishlist(true);
+    try {
+        const result = await toggle({
+            productId,
+            title: product.title ?? product.name ?? '',
+            image: productImage,
+            price: currentPrice ?? 0,
+            originalPrice: hasDiscount ? product.price : undefined,
+            rating: product.rating,
+            sku: product.sku ?? productId,
+            category: product.category,
+        });
+        if (result === 'added') addToast('Added to wishlist!', 'success');
+        if (result === 'removed') addToast('Removed from wishlist', 'success');
+    } catch {
+        addToast('Could not update wishlist. Please try again.', 'error');
+    } finally {
+        setIsAddingToWishlist(false);
+    }
+};
 
     const handleAddToCart = async () => {
         if (!product) return;
@@ -205,10 +184,10 @@ export const ProductCard = (product: Product) => {
                                 onClick={handleWishlist}
                                 className="btn btn-link p-0 text-decoration-none"
                                 disabled={isAddingToWishlist}
-                                title={isInWishlist ? 'Remove from Wishlist' : 'Add to Wishlist'}
+                                title={ isInWishlist ? 'Remove from Wishlist' : 'Add to Wishlist'}
                             >
                                 <div className="product-wishlist">
-                                    {isAddingToWishlist ? (
+                                    {isInWishlist ? (
                                         <span className="spinner-border spinner-border-sm" />
                                     ) : (
                                         <i className={`bx ${isInWishlist ? 'bxs-heart text-danger' : 'bx-heart'}`} />
@@ -287,24 +266,11 @@ export const ProductCard = (product: Product) => {
                                         </>
                                     )}
                                 </button>
-
-                                <button onClick={handleQuickView} className="btn btn-link btn-ecomm">
-                                    <i className="bx bx-zoom-in" /> Quick View
-                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-
-            {/* Quick View Modal */}
-            {showQuickView && selectedProduct && (
-                <ProductQuickView
-                    product={selectedProduct}
-                    isOpen={showQuickView}
-                    onClose={() => setShowQuickView(false)}
-                />
-            )}
 
             {/* Toast Notifications */}
             {toasts.map((toast) => (

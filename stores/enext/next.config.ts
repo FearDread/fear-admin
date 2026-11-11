@@ -5,7 +5,10 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
-     remotePatterns: [new URL('https://res.cloudinary.com/dgzxxbqa0/**')],
+      remotePatterns: [
+          new URL('https://res.cloudinary.com/dgzxxbqa0/**'),
+          new URL('https://storage.googleapis.com/hipcomic-catalog/**')
+      ],
   },
   allowedDevOrigins: ['10.10.1.140', 'efear.shop'],
   async rewrites() {

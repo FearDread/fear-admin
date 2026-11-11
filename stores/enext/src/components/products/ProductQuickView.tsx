@@ -5,13 +5,13 @@ import { useRouter } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/lib/redux/hooks';
 import { addItem as addToCart } from '@/lib/redux/slices/cartSlice';
 import {
-  addToWishlist,
-  removeFromWishlist,
-  selectIsInWishlist,
-} from '@/lib/redux/slices/wishSlice';
+    useGetWishlistQuery,
+    useAddToWishlistMutation,
+    useRemoveFromWishlistMutation,
+} from '@/lib/redux/api/wishlistApi';
 import { selectIsAuthenticated } from '@/lib/redux/slices/authSlice';
 import type { Product } from './ProductCard';
-
+import { useWishlist } from '@/hooks/useWishlist';
 interface ProductQuickViewProps {
   product: Product | null;
   isOpen: boolean;
@@ -24,11 +24,8 @@ export const ProductQuickView = ({ product, isOpen, onClose }: ProductQuickViewP
 
   const productId = (product?._id || product?.id) as string | undefined;
 
-  const isAuthenticated = useAppSelector(selectIsAuthenticated);
-  const isInWishlist = useAppSelector((state) =>
-    productId ? selectIsInWishlist(state, productId) : false,
-  );
-
+  const { isInWishlist, toggle } = useWishlist();
+  const inWishlist = isInWishlist(productId);
   // Local state
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);

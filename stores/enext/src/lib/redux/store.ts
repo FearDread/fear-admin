@@ -1,6 +1,5 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit';
 import { apiSlice } from '@/lib/redux/api/apiSlice';
-import wishlistReducer from '@/lib/redux/slices/wishSlice';
 import checkoutReducer from '@/lib/redux/slices/checkoutSlice';
 import authReducer from './slices/authSlice';
 
@@ -16,12 +15,12 @@ import './api/mailApi';
 import './api/postsApi';
 import './api/ordersApi';
 import './api/paymentsApi';
+import './api/wishlistApi';
 
 
 const rootReducer = combineReducers({
   [apiSlice.reducerPath]: apiSlice.reducer,
     auth: authReducer,
-    wishlist: wishlistReducer,
     checkout: checkoutReducer
 });
 
