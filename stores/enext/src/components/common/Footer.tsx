@@ -168,13 +168,13 @@ export const Footer = ({ categories }: Footer2Props) => {
                   <div className="ftr-contact-item">
                     <span className="ftr-contact-label">Phone</span>
                     <span className="ftr-contact-val">
-                      <a href="tel:+12543450130">+1 (254) 345-0130</a>
+                      <a href="tel:+12543450130">+1 (254) 435-0130</a>
                     </span>
                   </div>
                   <div className="ftr-contact-item">
                     <span className="ftr-contact-label">Email</span>
                     <span className="ftr-contact-val">
-                      <a href="mailto:fear.dread@underworld.dog">fear.dread@underworld.dog</a>
+                      <a href="mailto:ghaptonstall@gmail.com">ghaptonstall@gmail.com</a>
                     </span>
                   </div>
                   <div className="ftr-contact-item">

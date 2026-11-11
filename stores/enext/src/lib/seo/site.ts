@@ -1,6 +1,6 @@
 /** Single source of truth for canonical URLs and business facts used in SEO. */
 
-export const SITE_URL = (process.env.NEXT_PUBLIC_APP_URL ?? 'https://efear.store').replace(/\/+$/, '');
+export const SITE_URL = (process.env.NEXT_PUBLIC_APP_URL ?? 'https://efear.shop').replace(/\/+$/, '');
 export const SITE_NAME = 'eFear';
 export const SITE_TAGLINE = 'Comics, E-Books & Collectibles';
 export const SITE_DESCRIPTION =
@@ -11,7 +11,7 @@ export const DEFAULT_OG_IMAGE = '/assets/images/fear/efear-logo.png';
 export const BUSINESS = {
   name: 'eFear',
   legalName: 'FEAR Inc.',
-  email: 'fear.dread@underworld.dog',
+  email: 'ghaptonstall@gmail.com',
   phone: '+1-254-435-0130',
   address: {
     streetAddress: '2003 E. Veterans Memorial Blvd',

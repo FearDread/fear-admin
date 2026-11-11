@@ -5,8 +5,8 @@ import { usePathname } from 'next/navigation';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 
-import Header2 from '@/components/common/Header';
-import Footer2 from '@/components/common/Footer';
+import Header from '@/components/common/Header';
+import Footer from '@/components/common/Footer';
 import BestSelling from '@/components/products/BestSelling';
 import ProductQuickView from '@/components/products/ProductQuickView';
 import CookieBanner from '@/components/common/CookieBanner';
@@ -91,7 +91,7 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
       <Elements stripe={stripePromise} options={stripeOptions}>
         <b className="screen-overlay" />
         <div className="wrapper">
-          <Header2 />
+          <Header />
         </div>
         <div className="page-wrapper">
           <div className="page-content">
@@ -99,7 +99,7 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
             <BestSelling />
           </div>
         </div>
-        <Footer2 categories={!categoriesLoading ? categories : []} products={products} />
+        <Footer categories={!categoriesLoading ? categories : []} products={products} />
 
         {status === 'visible' && <CookieBanner onAccept={handleAccept} onReject={handleReject} />}
 
