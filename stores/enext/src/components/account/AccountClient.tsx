@@ -45,7 +45,7 @@ export default function AccountClient({ section }: { section: AccountSection }) 
                 from: pathname,
                 message: 'Please login to access your account',
             });
-            router.replace(`/login?${params.toString()}`);
+            router.replace(`/login`);
         }
     }, [isAuthenticated, isHydrating, pathname, router]);
 

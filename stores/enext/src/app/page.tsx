@@ -271,7 +271,7 @@ const OfferHighlights = () => {
   );
 };
 
-export default function Home2() {
+export default function Home() {
   return (
     <div className={anton.variable}>
       <HeroSlider />

@@ -7,7 +7,8 @@ const nextConfig: NextConfig = {
   images: {
       remotePatterns: [
           new URL('https://res.cloudinary.com/dgzxxbqa0/**'),
-          new URL('https://storage.googleapis.com/hipcomic-catalog/**')
+          new URL('https://storage.googleapis.com/hipcomic-catalog/**'),
+          new URL('https://covers.hipcomic.com/**')
       ],
   },
   allowedDevOrigins: ['10.10.1.140', 'efear.shop'],

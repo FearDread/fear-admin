@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAppSelector } from '@/lib/redux/hooks';
@@ -9,17 +9,23 @@ import {
   useGetWishlistQuery,
   useRemoveFromWishlistMutation,
   useMoveToCartMutation,
-  type WishlistItem,
+  type WishlistItem as BaseWishlistItem,
 } from '@/lib/redux/api/wishlistApi';
 import Toast, { type ToastType } from '@/components/common/Toast';
 import ProductCarousel from '@/components/products/ProductCarousel';
 import { wishlistStyles } from '@/components/wishlist/styles';
+
+// `category` is rendered below but missing from wishlistApi's interface.
+// Add `category?: string` there, then this alias can go.
+type WishlistItem = BaseWishlistItem & { category?: string };
 
 interface ToastItem {
   id: number;
   message: string;
   type: ToastType;
 }
+
+const LOGIN_URL = `/login`;
 
 export default function WishlistClient() {
   const router = useRouter();
@@ -30,6 +36,7 @@ export default function WishlistClient() {
     data: items = [],
     isLoading,
     isError,
+    error,
     refetch,
   } = useGetWishlistQuery(undefined, { skip: !isAuthenticated });
   const [removeFromWishlist] = useRemoveFromWishlistMutation();
@@ -37,9 +44,10 @@ export default function WishlistClient() {
 
   const [pending, setPending] = useState<Set<string>>(new Set());
   const [toasts, setToasts] = useState<ToastItem[]>([]);
-
+  const toastId = useRef(0);
+  const ready = !isHydrating && isAuthenticated;
   const addToast = (message: string, type: ToastType) =>
-    setToasts((prev) => [...prev, { id: Date.now(), message, type }]);
+    setToasts((prev) => [...prev, { id: ++toastId.current, message, type }]);
   const removeToast = (id: number) => setToasts((prev) => prev.filter((t) => t.id !== id));
 
   const setBusy = (id: string, busy: boolean) =>
@@ -50,15 +58,9 @@ export default function WishlistClient() {
       return next;
     });
 
-  // Single guard — wait for session hydration before deciding.
+  // Single guard: wait for hydration, then redirect (preserving where the user was going).
   useEffect(() => {
-    if (!isHydrating && !isAuthenticated) {
-      const params = new URLSearchParams({
-        from: '/wishlist',
-        message: 'Please login to view your wishlist',
-      });
-      router.replace(`/login?${params.toString()}`);
-    }
+    if (!isHydrating && !isAuthenticated) router.replace(LOGIN_URL);
   }, [isHydrating, isAuthenticated, router]);
 
   const handleRemove = async (item: WishlistItem) => {
@@ -76,7 +78,8 @@ export default function WishlistClient() {
   const handleMoveToCart = async (item: WishlistItem) => {
     setBusy(item.id, true);
     try {
-      await moveToCart({ id: item.id, productId: item.productId }).unwrap();
+      // Matches wishlistApi.moveToCart's body: { productId, quantity }.
+      await moveToCart({ productId: item.productId, quantity: 1 }).unwrap();
       addToast('Moved to cart!', 'success');
     } catch {
       addToast('Could not move item to cart.', 'error');
@@ -85,16 +88,36 @@ export default function WishlistClient() {
     }
   };
 
-  if (isHydrating || !isAuthenticated) {
+  // Still checking the session.
+  if (isHydrating) {
     return (
       <>
         <style>{wishlistStyles}</style>
         <div className="wl-state">
           <div className="wl-spinner" />
+          <span className="wl-state-label">Checking your session…</span>
         </div>
       </>
     );
   }
+
+  // Hydrated and logged out: redirect is in flight, but never show an endless
+  // spinner. Give a manual way out in case navigation stalls.
+  if (!isAuthenticated) {
+    return (
+      <>
+        <style>{wishlistStyles}</style>
+        <div className="wl-state">
+          <h2 className="wl-state-title">Please sign in</h2>
+          <Link href={LOGIN_URL} className="wl-btn-primary">
+            Go to Login
+          </Link>
+        </div>
+      </>
+    );
+  }
+
+    const sessionExpired = !isAuthenticated;
 
   return (
     <>
@@ -130,12 +153,24 @@ export default function WishlistClient() {
             </div>
           )}
 
-          {isError && (
+{
+    !ready && (
             <div className="wl-state">
-              <h2 className="wl-state-title">We couldn&apos;t load your wishlist</h2>
-              <button className="wl-btn-primary" onClick={() => refetch()}>
-                Try Again
-              </button>
+              <h2 className="wl-state-title">
+                {sessionExpired
+                  ? 'Your session has expired'
+                  : 'We couldn\u2019t load your wishlist'}
+              </h2>
+    {
+        !ready ? (
+                <Link href={LOGIN_URL} className="wl-btn-primary">
+                  Sign in again
+                </Link>
+              ) : (
+                <button className="wl-btn-primary" onClick={() => refetch()}>
+                  Try Again
+                </button>
+              )}
             </div>
           )}
 
@@ -154,11 +189,12 @@ export default function WishlistClient() {
 
           {!isLoading && !isError && items.length > 0 && (
             <ul className="wl-grid">
-              {items.map((item) => {
-                const busy = pending.has(item.id) || item.id.startsWith('temp-');
+              {items.map((item: WishlistItem) => {
+                const id = String(item.id ?? item.productId);
+                const busy = pending.has(id) || id.startsWith('temp-');
                 const hasDiscount = !!item.originalPrice && item.originalPrice > item.price;
                 return (
-                  <li key={item.id} className="wl-card">
+                  <li key={id} className="wl-card">
                     <Link href={`/product/${item.productId}`} className="wl-card-img-wrap">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
@@ -186,14 +222,14 @@ export default function WishlistClient() {
                       <div className="wl-card-actions">
                         <button
                           className="wl-btn-primary"
-                          onClick={() => handleMoveToCart(item)}
+                          onClick={() => handleMoveToCart({ ...item, id })}
                           disabled={busy}
                         >
                           {busy ? '…' : 'Move to Cart'}
                         </button>
                         <button
                           className="wl-btn-ghost"
-                          onClick={() => handleRemove(item)}
+                          onClick={() => handleRemove({ ...item, id })}
                           disabled={busy}
                           aria-label={`Remove ${item.title} from wishlist`}
                         >

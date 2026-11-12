@@ -68,20 +68,17 @@ export const viewport: Viewport = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return (
+    return (
+       <>
     <html lang="en" className={`${anton.variable} ${spaceMono.variable}`}>
       <body>
         <JsonLd data={siteJsonLd()} />
         <StoreProvider>
           <SiteLayout>{children}</SiteLayout>
-            </StoreProvider>
-        <Script
-          id="adsbygoogle-init"
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7721831965021640"
-          strategy="afterInteractive"
-          crossOrigin="anonymous"
-        />
-      </body>
-    </html>
+        </StoreProvider>
+
+            </body>
+            </html>
+        </>
   );
 }

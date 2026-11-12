@@ -103,16 +103,6 @@ export default function SiteLayout({ children }: SiteLayoutProps) {
 
         {status === 'visible' && <CookieBanner onAccept={handleAccept} onReject={handleReject} />}
 
-        {selectedProduct && (
-          <ProductQuickView
-            product={selectedProduct}
-            isOpen={showQuickView}
-            onClose={() => {
-              setShowQuickView(false);
-              setSelectedProduct(null);
-            }}
-          />
-        )}
       </Elements>
     </>
   );

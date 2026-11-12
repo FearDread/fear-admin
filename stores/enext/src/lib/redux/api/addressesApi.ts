@@ -39,7 +39,7 @@ export type AddressInput = Omit<Address, 'id'> & { userId: string };
 export const addressesApi = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         getAddresses: builder.query<Address[], void>({
-            query: () => '/addresses',
+            query: () => '/address/all',
             transformResponse: (obj: { result: Address[] }) => obj.result,
             providesTags: (result) =>
                 result
@@ -52,7 +52,7 @@ export const addressesApi = apiSlice.injectEndpoints({
 
         createAddress: builder.mutation<Address, AddressInput>({
             query: (body) => ({
-                url: '/addresses',
+                url: '/address/new',
                 method: 'POST',
                 body,
             }),
@@ -62,7 +62,7 @@ export const addressesApi = apiSlice.injectEndpoints({
 
         updateAddress: builder.mutation<Address, { id: string; updates: Partial<AddressInput> }>({
             query: ({ id, updates }) => ({
-                url: `/addresses/${id}`,
+                url: `/address/${id}`,
                 method: 'PUT',
                 body: updates,
             }),
@@ -75,7 +75,7 @@ export const addressesApi = apiSlice.injectEndpoints({
 
         removeAddress: builder.mutation<{ success: boolean }, string>({
             query: (id) => ({
-                url: `/addresses/${id}`,
+                url: `/address/${id}`,
                 method: 'DELETE',
             }),
             invalidatesTags: (_result, _error, id) => [

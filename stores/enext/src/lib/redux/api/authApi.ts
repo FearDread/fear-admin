@@ -11,20 +11,23 @@
  *   POST /auth/forgot-password, /auth/reset-password/:token
  *   GET  /auth/verify-reset-token/:token
  *
- * Envelope handling: the backend isn't consistent (`{ result }` in some
- * controllers, `{ data }` in others), so every response goes through
- * `unwrap` / `extractUser`, which tolerate both.
+ * The backend isn't consistent about envelopes (`{ result }`, `{ data }`, or
+ * top-level `{ user }`), so every response goes through `extractUser`.
  */
 import { useAppSelector } from '@/lib/redux/hooks';
 import { apiSlice } from '@/lib/redux/api/apiSlice';
 import {
+    setSession,
     setCurrentUser,
     setIsAuthenticated,
     setAuthError,
     setHydrating,
     resetAuthState,
     selectCurrentUser,
+    selectIsAuthenticated,
+    selectIsAuthHydrating,
 } from '../slices/authSlice';
+import type { RootState } from '@/lib/redux/store';
 import type { User } from '@/types/user';
 
 export interface CurrentUser {
@@ -103,19 +106,17 @@ interface VerifyResetTokenResponse {
 
 /* ── Response helpers ─────────────────────────────────────────────────── */
 
-/** Pull the payload out of `{ result }` or `{ data }` envelopes. */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const unwrap = (r: any): any => r?.result ?? r?.data ?? null;
-
 /**
- * The user may be at `payload.user` or be the payload itself
- * (e.g. `{ data: { _id, email, ... } }`). Returns null if neither.
+ * Find the user in any of: `{ user }`, `{ result: { user } }`,
+ * `{ data: { user } }`, `{ result: user }`, `{ data: user }`, or the bare user.
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const extractUser = (r: any): any => {
-    const payload = unwrap(r);
-    if (!payload) return null;
-    return payload.user ?? (payload._id || payload.id || payload.email ? payload : null);
+    const candidates = [r?.user, r?.result?.user, r?.data?.user, r?.result, r?.data, r];
+    for (const c of candidates) {
+        if (c && typeof c === 'object' && (c._id || c.id || c.email)) return c;
+    }
+    return null;
 };
 
 /** Auth-style responses: always `{ user }`, never throws on odd shapes. */
@@ -137,6 +138,7 @@ const makeLoginHandler =
                 dispatch,
                 queryFulfilled,
             }: {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 dispatch: (a: any) => any;
                 queryFulfilled: Promise<{ data: AuthResponse }>;
             },
@@ -149,8 +151,8 @@ const makeLoginHandler =
                     dispatch(setAuthError('Signed in, but the server returned no user.'));
                     return;
                 }
-                dispatch(setCurrentUser(user));
-                dispatch(setIsAuthenticated(true));
+                // Atomic: user + isAuthenticated + isHydrating=false in one dispatch.
+                dispatch(setSession(user));
             } catch (err: any) {
                 dispatch(setAuthError(err?.error?.data?.message || fallbackError));
             }
@@ -173,7 +175,7 @@ export const authApi = apiSlice.injectEndpoints({
                 dispatch(setAuthError(null));
                 try {
                     await queryFulfilled;
-                    // Intentionally NOT authenticating here — redirect to /login instead.
+                    // Intentionally NOT authenticating here: redirect to /login instead.
                 } catch (err: any) {
                     dispatch(setAuthError(err?.error?.data?.message || 'Registration failed'));
                 }
@@ -224,10 +226,9 @@ export const authApi = apiSlice.injectEndpoints({
                 try {
                     await queryFulfilled;
                 } finally {
-                    // resetAuthState restores isHydrating: true, but no hydrator will
-                    // re-run, so flip it off to avoid anything waiting on it forever.
+                    // resetAuthState keeps isHydrating=false (we definitely know the
+                    // user is signed out) and preserves rememberMe.
                     dispatch(resetAuthState());
-                    dispatch(setHydrating(false));
                     dispatch(apiSlice.util.resetApiState());
                 }
             },
@@ -250,20 +251,27 @@ export const authApi = apiSlice.injectEndpoints({
             providesTags: [{ type: 'User', id: 'CURRENT' }],
         }),
 
-        /** Hydrates session state on app load — see StoreProvider's AuthHydrator. */
+        /** Hydrates session state on app load: see StoreProvider's AuthHydrator. */
         getSession: builder.query<AuthResponse, void>({
             query: () => '/auth/session',
             transformResponse: toAuthResponse,
-            async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+            async onQueryStarted(_arg, { dispatch, queryFulfilled, getState }) {
                 try {
                     const { data } = await queryFulfilled;
                     const user = data?.user ?? null;
-                    dispatch(setCurrentUser(user));
-                    dispatch(setIsAuthenticated(Boolean(user)));
+                    // Don't let an empty result clobber a login that finished while
+                    // this probe was in flight.
+                    if (user || !(getState() as RootState).auth.isAuthenticated) {
+                        dispatch(setCurrentUser(user));
+                        dispatch(setIsAuthenticated(Boolean(user)));
+                    }
                 } catch {
-                    // 401 for a logged-out visitor is expected, not an error state.
-                    dispatch(setCurrentUser(null));
-                    dispatch(setIsAuthenticated(false));
+                    // 401 / timeout for a logged-out visitor is expected, not an error.
+                    // Same guard: a late failure must not undo a successful login.
+                    if (!(getState() as RootState).auth.isAuthenticated) {
+                        dispatch(setCurrentUser(null));
+                        dispatch(setIsAuthenticated(false));
+                    }
                 } finally {
                     dispatch(setHydrating(false));
                 }
@@ -290,23 +298,25 @@ export const {
 } = authApi;
 
 /**
- * useCurrentUser() — kept because the account views import it. Prefers the
- * live /auth/me result and falls back to the Redux user (set by login /
- * getSession), so a slow or failed /me can't strand the UI on a spinner.
+ * useCurrentUser(): Redux is the source of truth for "is anyone logged in";
+ * /auth/me only enriches the profile and only runs when authenticated (so a
+ * logged-out visitor never triggers a pointless 401).
  *
- * `loading` is true only while we genuinely have no user AND /me is still
- * in flight for the first time.
+ * `loading` is `isHydrating`: true only until the initial session check (or a
+ * login/logout) resolves, so route guards can't redirect before we know.
  */
 export function useCurrentUser() {
     const reduxUser = useAppSelector(selectCurrentUser);
-    const { data, isLoading } = useGetCurrentUserQuery();
+    const isAuthenticated = useAppSelector(selectIsAuthenticated);
+    const isHydrating = useAppSelector(selectIsAuthHydrating);
+    const { data } = useGetCurrentUserQuery(undefined, { skip: !isAuthenticated });
 
     const currentUser = (data ?? reduxUser ?? null) as CurrentUser | null;
 
     return {
         currentUser,
-        isAuthenticated: Boolean(currentUser),
-        loading: isLoading && !reduxUser,
+        isAuthenticated,
+        loading: isHydrating,
         lastLoginAt: currentUser?.lastLoginAt ?? null,
     };
 }

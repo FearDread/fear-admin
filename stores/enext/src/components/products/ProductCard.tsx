@@ -157,10 +157,6 @@ const handleWishlist = async (e: React.MouseEvent) => {
         router.push(`/product-comparison?products=${updatedIds.join(',')}`);
     };
 
-    const handleQuickView = () => {
-        setSelectedProduct(product);
-        setShowQuickView(true);
-    };
 
     return (
         <>
@@ -186,12 +182,8 @@ const handleWishlist = async (e: React.MouseEvent) => {
                                 disabled={isAddingToWishlist}
                                 title={ isInWishlist ? 'Remove from Wishlist' : 'Add to Wishlist'}
                             >
-                                <div className="product-wishlist">
-                                    {isInWishlist ? (
-                                        <span className="spinner-border spinner-border-sm" />
-                                    ) : (
-                                        <i className={`bx ${isInWishlist ? 'bxs-heart text-danger' : 'bx-heart'}`} />
-                                    )}
+    <div className="product-wishlist" >
+    <i className={ `bx ${isInWishlist ? 'bxs-heart text-danger' : 'bx-heart'}` } />
                                 </div>
                             </button>
                         </div>

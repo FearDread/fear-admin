@@ -6,35 +6,27 @@ import { setupListeners } from '@reduxjs/toolkit/query';
 import { makeStore, type AppStore } from '@/lib/redux/store';
 import { useGetSessionQuery } from '@/lib/redux/api/authApi';
 
-// Silently hydrates authSlice from the session cookie on first load, via
-// getCurrentUser's onQueryStarted (see features/auth/api.ts). A 401 here is
-// expected/normal for a logged-out visitor — the query's onQueryStarted
-// already dispatches logout() in that case, so there's nothing to render
-// here either way.
+// Silently hydrates authSlice from the session cookie on first load.
 function AuthHydrator() {
-  useGetSessionQuery();
-  return null;
+    useGetSessionQuery();
+    return null;
 }
 
 export function StoreProvider({ children }: { children: React.ReactNode }) {
-  const storeRef = useRef<AppStore | null>(null);
+    const storeRef = useRef<AppStore | null>(null);
+    if (!storeRef.current) storeRef.current = makeStore();
+    const store = storeRef.current;
 
-  if (storeRef.current === null) {
-    storeRef.current = makeStore();
-  }
+    useEffect(() => setupListeners(store.dispatch), [store]);
 
-  useEffect(() => {
-    // Enables refetchOnFocus / refetchOnReconnect for RTK Query — must run
-    // client-side only, and only once per store instance.
-    const unsubscribe = setupListeners(storeRef.current!.dispatch);
-    return unsubscribe;
-  }, []);
-
-  return (
-      <Provider store={storeRef.current!}>
-      <AuthHydrator />
-      {children}
-    </Provider>
+    // FIX: this used to be <Provider store={makeStore()}>, i.e. a brand-new
+    // (empty) store on every render, while setupListeners was wired to a
+    // different, orphaned one. Any re-render wiped auth state.
+    return (
+        <Provider store={ store } >
+            <AuthHydrator />
+            { children }
+        </Provider>
   );
 }
 

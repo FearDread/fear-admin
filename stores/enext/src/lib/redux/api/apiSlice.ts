@@ -2,58 +2,85 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import type { BaseQueryFn, FetchArgs, FetchBaseQueryError } from '@reduxjs/toolkit/query/react';
 import { logout } from '@/lib/redux/slices/authSlice';
 
+const isServer = typeof window === 'undefined';
+
 /**
- * Environment-aware base URL.
- *  - Browser: relative `/fear/api` (goes through the Next rewrite → Express).
- *  - Server (RSC, generateMetadata, sitemap.ts, ISR): Node's fetch needs an
- *    absolute URL. Without this every server-side `store.dispatch(...initiate())`
- *    — product/blog pages, sitemap, JSON-LD — fails with "Invalid URL".
+ * Browser: relative URL, so requests go through the Next rewrite (/fear/api/* -> Express)
+ * and the httpOnly `jwt` cookie stays first-party.
  */
-const baseUrl =
-  typeof window === 'undefined'
-    ? (process.env.INTERNAL_API_BASE_URL ??
+const BASE_URL = isServer
+    ? (process.env.API_INTERNAL_URL ??
         process.env.NEXT_PUBLIC_API_BASE_URL ??
-        'http://localhost:4000/fear/api')
+        'http://localhost:4000/fear/api'
+    ).replace(/\/+$/, '')
     : '/fear/api';
 
 const rawBaseQuery = fetchBaseQuery({
-  baseUrl,
-  credentials: 'include', // send/receive the FEAR session cookie on every request
+    baseUrl: BASE_URL,
+    credentials: 'include', // send/receive the FEAR session cookie on every browser request
+    timeout: 10_000, // a stalled proxy now errors instead of hanging hydration forever
 });
 
-// Any 401 clears client-side auth state instead of leaving the UI showing a
-// "logged in" user against a dead session. Cookie-session auth: no refresh.
-const baseQueryWithAuthHandling: BaseQueryFn<string | FetchArgs, unknown, FetchBaseQueryError> = async (
-  args,
-  api,
-  extraOptions,
-) => {
-  const result = await rawBaseQuery(args, api, extraOptions);
+/**
+ * Endpoints that legitimately return 401 for a logged-out visitor or a bad
+ * password. A 401 from these must NOT wipe session state: e.g. a late 401 from
+ * the initial /auth/session probe would otherwise log out a user who just
+ * signed in.
+ */
+const AUTH_PROBES = [
+    '/auth/session',
+    '/auth/me',
+    '/auth/login',
+    '/auth/google',
+    '/auth/facebook',
+    '/auth/register',
+    '/auth/forgot-password',
+    '/auth/reset-password',
+    '/auth/verify-reset-token',
+];
 
-  if (result.error?.status === 401) {
-    api.dispatch(logout(true));
-  }
+const baseQueryWithAuthHandling: BaseQueryFn<
+    string | FetchArgs,
+    unknown,
+    FetchBaseQueryError
+> = async (args, api, extraOptions) => {
+    const result = await rawBaseQuery(args, api, extraOptions);
 
-  return result;
+    if (result.error?.status === 401) {
+        const url = typeof args === 'string' ? args : args.url;
+        const isProbe = AUTH_PROBES.some((p) => url.startsWith(p));
+
+        if (!isProbe && !isServer) {
+
+            try {
+                const probe = await rawBaseQuery('/auth/session', api, extraOptions);
+                if (probe.error?.status === 401) api.dispatch(logout());
+            } catch {
+                // A failed probe (network blip, timeout) is inconclusive: keep the session.
+            }
+        }
+    }
+
+    return result;
 };
 
 export const apiSlice = createApi({
-  reducerPath: 'api',
-  baseQuery: baseQueryWithAuthHandling,
-  tagTypes: [
-    'Product',
-    'Category',
-    'Brand',
-    'Post',
-    'Blog',
-    'Cart',
-    'Auth',
-    'User',
-    'Review',
-    'Wishlist',
-    'Order',
-    'Address',
-    'Payment',
-  ],
-  endpoints: () => ({}),
+    reducerPath: 'api',
+    baseQuery: baseQueryWithAuthHandling,
+    tagTypes: [
+        'Product',
+        'Category',
+        'Brand',
+        'Post',
+        'Blog',
+        'Cart',
+        'Auth',
+        'User',
+        'Review',
+        'Wishlist',
+        'Order',
+        'Address',
+        'Payment',
+    ],
+    endpoints: () => ({}),
 });

@@ -39,7 +39,7 @@ interface MoveToCartArgs {
 export const wishlistApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getWishlist: builder.query<WishlistItem[], void>({
-      query: () => '/wishlist',
+      query: () => '/wishlist/all',
       transformResponse: (response: FearEnvelope<RawItem>) => response.result.map(normalize),
       providesTags: (result) =>
         result
