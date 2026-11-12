@@ -34,4 +34,14 @@ addressSchema.pre('save', async function(next) {
   next();
 });
 
+addressSchema.set('toJSON', {
+    versionKey: false,
+    transform(_doc, ret) {
+        ret.id = String(ret._id);
+        delete ret._id;
+        delete ret.userId;
+        return ret;
+    },
+});
+
 module.exports = mongoose.model('Address', addressSchema);

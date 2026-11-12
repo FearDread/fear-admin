@@ -2,6 +2,8 @@
 
 const crypto = require('crypto');
 const User = require('../../models/user');
+const TokenService = require('./token');
+
 const MIN_PASSWORD_LENGTH = 8;
 const MAX_PASSWORD_LENGTH = 128;
 const RESET_EXPIRES_IN = '10 minutes'; // keep in sync with createPasswordResetToken()
@@ -10,10 +12,9 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 // Same answer whether or not the email has an account (anti-enumeration).
 const FORGOT_MESSAGE = 'If an account exists for that email, a reset link has been sent.';
 
-// Response helper
 const response = {
     success: (res, data, statusCode = 200, message = 'Operation successful') => {
-        return res.status(statusCode).json({ success: true, message, data });
+        return res.status(statusCode).json({ success: true, message, data, result: data });
     },
 
     error: (res, statusCode, message, error = null) => {
@@ -33,10 +34,6 @@ const noStore = (res) => {
 
 const hashToken = (token) => crypto.createHash('sha256').update(token).digest('hex');
 
-/**
- * Where the *storefront* lives (the Next.js app), used to build the link in
- * the reset email. Returns null if nothing is configured.
- */
 const getFrontendOrigin = () => {
     const origin =
         process.env.FRONTEND_URL ||
@@ -53,9 +50,18 @@ const passwordProblem = (password) => {
     return null;
 };
 
-// mailService.sendEmail() resolves `{ success: false }` (it does not reject) when
-// the provider refuses the message, so a bare .then() would treat a failed send
-// as success. Turn that into a rejection so callers' .catch() actually runs.
+/**
+ * The auth controller's login uses user.comparePassword(); this file used
+ * user.isPasswordMatched(). Whichever your User model actually defines is used,
+ * so one of them can't silently 500 the change-password endpoint.
+ */
+const matchPassword = (user, plain) => {
+    if (typeof user.comparePassword === 'function') return user.comparePassword(plain);
+    if (typeof user.isPasswordMatched === 'function') return user.isPasswordMatched(plain);
+    throw new Error('User model defines neither comparePassword nor isPasswordMatched');
+};
+
+// mailService.sendEmail() resolves `{ success: false }` instead of rejecting.
 const assertSent = (result) => {
     if (result && result.success === false) {
         throw new Error(result.message || 'Email provider rejected the message');
@@ -63,8 +69,7 @@ const assertSent = (result) => {
     return result;
 };
 
-// "Your password changed" notice. Returns a promise that never rejects, so
-// callers can fire it without awaiting and a mail failure can't fail a request.
+// Never rejects: callers fire it without awaiting.
 const sendPasswordChangedEmail = (req, user) =>
     Promise.resolve()
         .then(() => {
@@ -81,7 +86,17 @@ const sendPasswordChangedEmail = (req, user) =>
             console.error('Failed to send password-changed confirmation email:', emailError);
         });
 
-// Update password for authenticated user (route must run Auth.isAuthorized first)
+/**
+ * Stamp "password changed" one second in the past. auth.isAuthorized rejects
+ * any JWT whose `iat` is earlier than this, so every session issued before the
+ * change dies. Requires `passwordChangedAt: Date` on the User schema (ignored
+ * silently by Mongoose strict mode if the field doesn't exist).
+ */
+const stampPasswordChanged = (user) => {
+    user.passwordChangedAt = new Date(Date.now() - 1000);
+};
+
+// PUT /auth/update-password  (route must run Auth.isAuthorized first)
 exports.updatePassword = (req, res) => {
     noStore(res);
 
@@ -105,33 +120,43 @@ exports.updatePassword = (req, res) => {
         return response.error(res, 400, 'New password must be different from the current password');
     }
 
-    // Each branch returns its own response *inside* its own .then, so nothing
-    // is chained after an early response (the previous version fell through to
-    // the next .then with `res` as its value and tried to respond twice).
+    // `+password`: the field is normally excluded from queries (login selects it
+    // explicitly). Without it the comparison runs against undefined.
     return User.findById(userId)
+        .select('+password')
         .then((user) => {
             if (!user) {
                 return response.error(res, 404, 'User not found');
             }
 
-            return Promise.resolve(user.isPasswordMatched(currentPassword)).then((isMatch) => {
+            return Promise.resolve(matchPassword(user, currentPassword)).then((isMatch) => {
                 if (!isMatch) {
                     return response.error(res, 401, 'Current password is incorrect');
                 }
 
                 user.password = newPassword;
+                stampPasswordChanged(user);
+
                 return user.save().then(() => {
                     sendPasswordChangedEmail(req, user); // intentionally not awaited
+
+                    // Old sessions are now stale; give THIS browser a fresh cookie so
+                    // changing your password doesn't log you out of the tab you're in.
+                    const token = TokenService.generateToken(user);
+                    res.cookie('jwt', token, TokenService.getCookieOptions());
+
                     return response.success(res, { updated: true }, 200, 'Password updated successfully');
                 });
             });
         })
         .catch((error) => {
+            console.error('[password] update failed:', error);
+            if (res.headersSent) return null;
             return response.error(res, 500, 'Error updating password', error.message);
         });
 };
 
-// Request password reset token
+// POST /auth/forgot-password
 exports.forgotPasswordToken = (req, res) => {
     noStore(res);
 
@@ -144,28 +169,30 @@ exports.forgotPasswordToken = (req, res) => {
 
     const origin = getFrontendOrigin();
     if (!origin) {
-        console.error('[password] FRONTEND_URL (or HTTPS_DOMAIN) must be set to build password reset links');
+        console.error('[password] FRONTEND_URL must be set to build password reset links');
         return response.error(res, 500, 'Password reset is temporarily unavailable');
     }
 
-    const mailService = req.app.get('fear').getMailer();
+    let mailService;
+    try {
+        mailService = req.app.get('fear').getMailer();
+    } catch (err) {
+        console.error('[password] mailer unavailable:', err);
+        return response.error(res, 500, 'Password reset is temporarily unavailable');
+    }
 
-    // Answer immediately and do the lookup/email work afterwards: the response
-    // (status, body AND timing) is identical for known and unknown emails, so
-    // this endpoint can't be used to discover which emails have accounts.
-    // Trade-off: mail/DB failures are logged rather than returned to the client.
+    // Reply first, work after: identical status/body/timing for known and
+    // unknown emails, so this can't be used to enumerate accounts.
     response.success(res, { expiresIn: RESET_EXPIRES_IN }, 200, FORGOT_MESSAGE);
 
     let foundUser = null;
 
-    return User.findOne({ email })
+    return User.findOne({ email, status: { $nin: ['deleted', 'suspended'] } })
         .then((user) => {
             if (!user) return null;
             foundUser = user;
 
             return Promise.resolve(user.createPasswordResetToken())
-                // The token fields are the only change; don't let unrelated schema
-                // validation on old accounts block a reset.
                 .then((token) => user.save({ validateBeforeSave: false }).then(() => token))
                 .then((token) => {
                     const resetURL = `${origin}/reset-password/${encodeURIComponent(token)}`;
@@ -181,7 +208,7 @@ exports.forgotPasswordToken = (req, res) => {
         .catch((error) => {
             console.error('[password] forgot-password failed:', error);
 
-            // If the token was issued but the email didn't go out, clear it.
+            // Token issued but email didn't go out: clear it.
             if (!foundUser) return null;
 
             foundUser.passwordResetToken = undefined;
@@ -192,7 +219,7 @@ exports.forgotPasswordToken = (req, res) => {
         });
 };
 
-// Reset password with token
+// POST /auth/reset-password/:token
 exports.resetPassword = (req, res) => {
     noStore(res);
 
@@ -217,28 +244,31 @@ exports.resetPassword = (req, res) => {
                 return response.error(res, 400, 'Token expired or invalid. Please request a new link');
             }
 
-            // Update password and burn the token (single use)
             user.password = password;
-            user.passwordResetToken = undefined;
+            user.passwordResetToken = undefined; // single use
             user.passwordResetExpires = undefined;
-            // If your schema tracks it, also stamp passwordChangedAt here and have
-            // Auth.isAuthorized reject sessions issued before it — a reset should
-            // log out any session an attacker might already hold.
+            stampPasswordChanged(user); // kills any session an attacker may hold
 
             return user.save().then(() => {
                 sendPasswordChangedEmail(req, user); // intentionally not awaited
 
-                // Deliberately no user object and no auto-login: the storefront
-                // sends the person to /login after a reset.
+                // No user object, no cookie, no auto-login: the storefront sends the
+                // person to /login. Also clear any stale cookie in THIS browser.
+                // eslint-disable-next-line no-unused-vars
+                const { maxAge, expires, ...cookieOpts } = TokenService.getCookieOptions();
+                res.clearCookie('jwt', cookieOpts);
+
                 return response.success(res, { reset: true }, 200, 'Password reset successfully');
             });
         })
         .catch((error) => {
+            console.error('[password] reset failed:', error);
+            if (res.headersSent) return null;
             return response.error(res, 500, 'Error resetting password', error.message);
         });
 };
 
-// Verify reset token validity — called by the reset page before showing the form
+// GET /auth/verify-reset-token/:token: the reset page calls this before showing the form
 exports.verifyResetToken = (req, res) => {
     noStore(res);
 
@@ -251,14 +281,25 @@ exports.verifyResetToken = (req, res) => {
     return User.findOne({
         passwordResetToken: hashToken(token),
         passwordResetExpires: { $gt: Date.now() }
-        })
+    })
         .then((user) => {
-            if (!user)  response.error(res, 400, 'Token expired or invalid');
-            
-            return response.success(res,
-                { valid: true, email: user.email.replace(/(.{2})(.*)(@.*)/, '$1***$3') }, 200,
+            // BUG FIX: this used to be `if (!user) response.error(...)` with no
+            // `return`, so it sent the 400 and then crashed on `user.email`, whose
+            // catch tried to send a second response ("headers already sent").
+            if (!user) {
+                return response.error(res, 400, 'Token expired or invalid');
+            }
+
+            return response.success(
+                res,
+                { valid: true, email: user.email.replace(/(.{2})(.*)(@.*)/, '$1***$3') },
+                200,
                 'Token is valid'
             );
         })
-        .catch((error) => response.error(res, 500, 'Error verifying token', error.message));
+        .catch((error) => {
+            console.error('[password] verify token failed:', error);
+            if (res.headersSent) return null;
+            return response.error(res, 500, 'Error verifying token', error.message);
+        });
 };

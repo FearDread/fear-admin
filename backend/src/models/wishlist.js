@@ -21,4 +21,4 @@ const wishlistSchema = new Schema(
 // "all items for this user" lookups, so no separate `user` index is needed.
 wishlistSchema.index({ user: 1, productId: 1 }, { unique: true });
 
-module.exports = mongoose.models.Wishlist || mongoose.model("Wishlist", wishlistSchema);
+module.exports = mongoose.model("Wishlist", wishlistSchema);

@@ -7,14 +7,13 @@ module.exports = (fear) => {
     const router = fear.createRouter();
     const handler = fear.getHandler();
     const validator = fear.getValidator();
-    const mailer = fear.getMailer();
     const { requireUser, optionalUser, withoutToken, loginLimiter } = fear.getVchatAuth();
 
     router.post('/login', loginLimiter, withoutToken, handler.async(Auth.login));
     router.post("/logout", handler.async(Auth.logout));
     router.post("/register", handler.async(Auth.register));
     router.post('/google', handler.async(Auth.googleAuth));
-    router.get('/session', Auth.isAuthorized, handler.async(Auth.session));
+    router.get('/session', handler.async(Auth.session));
 
     // Protected — all of these read req.user, so isAuthorized must run first.
     router.get("/me", Auth.isAuthorized, handler.async(Auth.getCurrentUser));

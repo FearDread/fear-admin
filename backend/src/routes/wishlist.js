@@ -1,6 +1,8 @@
 const Wish = require("../controllers/wishlist");
+const Auth = require("../controllers/auth");
 
 const requireUser = (req, res, next) => {
+    console.log('')
     if (req.user && req.user._id) return next();
     return res.status(401).json({ success: false, message: "Please log in to use your wishlist" });
 };
@@ -8,7 +10,7 @@ const requireUser = (req, res, next) => {
 module.exports = (fear) => {
     const router = fear.createRouter();
 
-    router.use(requireUser);
+    router.use(Auth.isAuthorized);
 
     // Collection routes the storefront's RTK Query layer calls...
     router.get("/", Wish.getWishlist);
