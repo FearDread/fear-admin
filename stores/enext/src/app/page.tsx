@@ -6,6 +6,7 @@ import FeaturedProducts from '@/components/home/v2/FeaturedProducts';
 import CategoryCards from '@/components/home/v2/CategoryCards';
 import GoogleAdSense from '@/components/common/AdSense';
 import HeroSlider from "@/components/hero/HeroSlider";
+import ComicSlider from "@/components/comic/ComicSlider";
 
 // Replaces the manual <link> Google Fonts tags — self-hosted, no render-blocking fetch.
 const anton = Anton({
@@ -274,7 +275,7 @@ const OfferHighlights = () => {
 export default function Home() {
   return (
     <div className={anton.variable}>
-      <HeroSlider />
+    <HeroSlider />
       <TrustBar />
       <CategoryCards />
       <MarqueeBand />

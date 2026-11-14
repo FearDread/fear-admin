@@ -1,0 +1,650 @@
+/* ─────────────────────────────────────────────────────────────
+   ComicPanelSlider — full-bleed comic page, four fixed panels.
+   Frames/gutters are static; each slide's art wipes in/out per panel.
+   Panel polygons below MUST match FRAMES_* in ComicPanelSlider.tsx.
+   Lettering font: add Bangers to layout.tsx as --font-bangers (falls back to Anton).
+   ───────────────────────────────────────────────────────────── */
+
+.hero {
+    --hdr-h: 9.5rem; /* fixed site header (topbar + main + nav) */
+    --ink: #111;
+    --paper: #f2ead7;
+    --yellow: #ffd23f;
+    --letter: var(--font-bangers), var(--font-anton), Impact, sans-serif;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-height: 100svh;
+    padding-top: var(--hdr-h);
+    overflow: hidden;
+    background: #070708;
+    outline: none;
+}
+
+    .hero:focus-visible {
+        box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.7);
+    }
+
+.srOnly {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* ── Stage = the paper ── */
+.stage {
+    position: relative;
+    flex: 1;
+    width: 100%;
+    min-height: 520px;
+    background-color: var(--paper);
+    background-image: radial-gradient(circle, rgba(0, 0, 0, 0.08) 1.2px, transparent 1.6px);
+    background-size: 14px 14px;
+    touch-action: pan-y;
+    user-select: none;
+}
+
+/* ── Slots: static, clipped to the panel shape ── */
+.slot {
+    position: absolute;
+    inset: 0;
+}
+
+.p1 {
+    --d: 0ms;
+    --hide: inset(0 100% 0 0); /* wipes in from the left */
+    clip-path: polygon(0 0, 58% 0, 50% 100%, 0 100%);
+}
+
+.p2 {
+    --d: 140ms;
+    --hide: inset(0 0 0 100%); /* from the right */
+    clip-path: polygon(60.2% 0, 100% 0, 100% 45%, 56% 53%);
+}
+
+.p3 {
+    --d: 280ms;
+    --hide: inset(100% 0 0 0); /* from the bottom */
+    clip-path: polygon(55.7% 55.6%, 78.5% 51.5%, 72.5% 100%, 52.2% 100%);
+}
+
+.p4 {
+    --d: 420ms;
+    --hide: inset(0 0 100% 0); /* from the top */
+    clip-path: polygon(80.9% 51.1%, 100% 47.6%, 100% 100%, 74.9% 100%);
+}
+
+/* ── Layers: one per slide per panel ── */
+.layer {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    clip-path: var(--hide);
+    /* Leaving layer stays put until the incoming one has covered it, then collapses unseen. */
+    transition: clip-path 0s linear 1.4s;
+}
+
+.layerOn {
+    z-index: 2;
+    clip-path: inset(0 0 0 0);
+    transition: clip-path 0.8s cubic-bezier(0.77, 0, 0.18, 1) var(--d);
+}
+
+/* Panel backgrounds (only the panel's own shape is ever visible) */
+.p2 .layer {
+    background-color: var(--accent);
+    background-image: radial-gradient(circle, rgba(0, 0, 0, 0.28) 0.14vw, transparent 0.17vw);
+    background-size: 0.9vw 0.9vw;
+}
+
+.p4 .layer {
+    background-color: var(--yellow);
+    background-image: radial-gradient(circle, rgba(0, 0, 0, 0.16) 0.14vw, transparent 0.17vw);
+    background-size: 0.9vw 0.9vw;
+}
+
+/* ── Panel 1: hero art + title ── */
+.p1Art {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 60%;
+    overflow: hidden;
+    background: #1a1a1a;
+}
+
+.img {
+    object-fit: cover;
+    pointer-events: none;
+}
+
+.layerOn .p1Art .img {
+    animation: kenburns 9s ease-out both;
+}
+
+.halftone {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, var(--accent) 0.18vw, transparent 0.2vw);
+    background-size: 0.85vw 0.85vw;
+    mix-blend-mode: multiply;
+    opacity: 0.6;
+    mask-image: linear-gradient(35deg, #000, transparent 55%);
+    -webkit-mask-image: linear-gradient(35deg, #000, transparent 55%);
+}
+
+.scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.75), transparent 55%);
+}
+
+.heading {
+    position: absolute;
+    left: 3%;
+    bottom: 7%;
+    margin: 0;
+    max-width: 50%;
+    font-family: var(--font-anton), Impact, sans-serif;
+    font-weight: 400;
+    font-size: clamp(3.4rem, 8.6vw, 9.5rem);
+    line-height: 0.88;
+    text-transform: uppercase;
+    letter-spacing: 0.005em;
+    color: #fff;
+    text-shadow: 0.5vw 0.5vw 0 var(--ink), 0.5vw 0.5vw 0 var(--ink), -0.12vw -0.12vw 0 var(--ink);
+    transform: rotate(-1.5deg);
+    transform-origin: left bottom;
+}
+
+.layerOn .heading {
+    animation: slamText 0.65s cubic-bezier(0.2, 1.4, 0.3, 1) calc(var(--d) + 0.5s) both;
+}
+
+/* ── Panel 2: copy ── */
+.copy {
+    position: absolute;
+    left: 62.5%;
+    right: 3.5%;
+    top: 5%;
+    bottom: 51%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: clamp(0.5rem, 1.2vh, 1rem);
+}
+
+.caption {
+    align-self: flex-start;
+    margin: 0;
+    padding: 0.35rem 0.8rem;
+    background: var(--yellow);
+    border: 3px solid var(--ink);
+    box-shadow: 4px 4px 0 var(--ink);
+    font-family: var(--font-space-mono), monospace;
+    font-weight: 700;
+    font-size: clamp(0.72rem, 1vw, 0.95rem);
+    line-height: 1.25;
+    color: var(--ink);
+    transform: rotate(-1deg);
+}
+
+.captionTag {
+    display: block;
+    font-size: 0.7em;
+    font-weight: 400;
+    opacity: 0.75;
+}
+
+.bubble {
+    position: relative;
+    margin: 0 0 0.4rem;
+    padding: 0.8rem 1.1rem;
+    background: #fff;
+    border: 3px solid var(--ink);
+    border-radius: 1.2rem;
+    font-family: var(--font-space-mono), monospace;
+    font-weight: 700;
+    font-size: clamp(0.78rem, 1.05vw, 1.05rem);
+    line-height: 1.4;
+    color: var(--ink);
+}
+
+    .bubble::after {
+        content: '';
+        position: absolute;
+        bottom: -0.65rem;
+        left: 2rem;
+        width: 1.1rem;
+        height: 1.1rem;
+        background: #fff;
+        border-right: 3px solid var(--ink);
+        border-bottom: 3px solid var(--ink);
+        transform: rotate(45deg) skew(8deg, 8deg);
+    }
+
+.layerOn .bubble {
+    animation: popIn 0.5s cubic-bezier(0.2, 1.4, 0.3, 1) calc(var(--d) + 0.6s) both;
+}
+
+.cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+}
+
+.btnMain,
+.btnGhost {
+    display: inline-block;
+    padding: 0.55rem 1.3rem;
+    border: 3px solid var(--ink);
+    font-family: var(--letter);
+    font-size: clamp(0.95rem, 1.3vw, 1.3rem);
+    line-height: 1;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--ink);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s, color 0.15s;
+}
+
+.btnMain {
+    background: var(--yellow);
+    box-shadow: 4px 4px 0 var(--ink);
+}
+
+    .btnMain:hover {
+        transform: translate(3px, 3px);
+        box-shadow: 1px 1px 0 var(--ink);
+    }
+
+.btnGhost {
+    background: rgba(255, 255, 255, 0.85);
+}
+
+    .btnGhost:hover {
+        background: var(--ink);
+        color: #fff;
+    }
+
+    .btnMain:focus-visible,
+    .btnGhost:focus-visible {
+        outline: 3px solid #fff;
+        outline-offset: 3px;
+        box-shadow: 0 0 0 6px var(--ink);
+    }
+
+/* ── Panel 3: zoomed detail + speed lines ── */
+.p3Art {
+    position: absolute;
+    left: 50%;
+    top: 48%;
+    bottom: 0;
+    width: 31%;
+    overflow: hidden;
+    background: #1a1a1a;
+}
+
+.zoom {
+    position: absolute;
+    inset: 0;
+    transform: scale(1.9);
+    transform-origin: 72% 28%;
+}
+
+.layerOn .zoom {
+    animation: drift 9s ease-out both;
+}
+
+.speed {
+    position: absolute;
+    inset: 0;
+    background: repeating-conic-gradient( from 0deg at 55% 62%, color-mix(in srgb, var(--accent) 55%, #fff) 0 1.3deg, transparent 1.3deg 5deg );
+    mask-image: radial-gradient(circle at 55% 62%, transparent 10%, #000 70%);
+    -webkit-mask-image: radial-gradient(circle at 55% 62%, transparent 10%, #000 70%);
+    opacity: 0.4;
+    mix-blend-mode: screen;
+}
+
+/* ── Panel 4: burst ── */
+.burstPos {
+    position: absolute;
+    left: 77%;
+    top: 50%;
+    width: 22.5%;
+    height: 49%;
+}
+
+.layerOn .burstPos {
+    animation: slam 0.7s cubic-bezier(0.2, 1.5, 0.3, 1) calc(var(--d) + 0.45s) both;
+}
+
+.burstSvg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(5px 5px 0 var(--ink));
+}
+
+.burstText {
+    font-family: var(--letter);
+    fill: #fff;
+    stroke: var(--ink);
+    stroke-width: 7px;
+    stroke-linejoin: round;
+    paint-order: stroke fill;
+    letter-spacing: 1px;
+}
+
+/* ── Inked frames on top of everything ── */
+.frames {
+    position: absolute;
+    inset: 0;
+    z-index: 6;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+    .frames polygon {
+        fill: none;
+        stroke: var(--ink);
+        stroke-width: 5px;
+        stroke-linejoin: miter;
+        vector-effect: non-scaling-stroke;
+    }
+
+.framesMobile {
+    display: none;
+}
+
+/* ── Keyframes ── */
+@keyframes kenburns {
+    from {
+        transform: scale(1.14);
+    }
+
+    to {
+        transform: scale(1);
+    }
+}
+
+@keyframes drift {
+    from {
+        transform: scale(1.95);
+    }
+
+    to {
+        transform: scale(1.7);
+    }
+}
+
+@keyframes slam {
+    from {
+        transform: scale(0.15) rotate(-28deg);
+        opacity: 0;
+    }
+
+    to {
+        transform: none;
+        opacity: 1;
+    }
+}
+
+@keyframes slamText {
+    from {
+        transform: translate(-6%, 8%) rotate(-5deg) scale(1.25);
+        opacity: 0;
+    }
+
+    to {
+        transform: rotate(-1.5deg);
+        opacity: 1;
+    }
+}
+
+@keyframes popIn {
+    from {
+        transform: scale(0.6);
+        opacity: 0;
+    }
+
+    to {
+        transform: none;
+        opacity: 1;
+    }
+}
+
+/* ── Controls ── */
+.controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 4.5rem;
+    padding: 0 clamp(1rem, 3vw, 2.5rem) 0.5rem;
+}
+
+.tabs {
+    display: flex;
+    gap: 0.25rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.tab {
+    position: relative;
+    padding: 0.7rem 1rem;
+    background: none;
+    border: 0;
+    font-family: var(--font-space-mono), monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    color: rgba(255, 255, 255, 0.55);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: color 0.2s;
+}
+
+    .tab::after {
+        content: '';
+        position: absolute;
+        left: 1rem;
+        right: 1rem;
+        bottom: 0.35rem;
+        height: 2px;
+        background: var(--accent);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.4s cubic-bezier(0.22, 0.8, 0.18, 1);
+    }
+
+    .tab:hover,
+    .tabOn {
+        color: #fff;
+    }
+
+        .tabOn::after {
+            transform: scaleX(1);
+        }
+
+    .tab:focus-visible,
+    .arrow:focus-visible {
+        outline: 2px solid #fff;
+        outline-offset: 2px;
+    }
+
+.arrows {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.count {
+    margin-right: 0.75rem;
+    font-family: var(--font-space-mono), monospace;
+    font-size: 0.75rem;
+    font-variant-numeric: tabular-nums;
+    color: rgba(255, 255, 255, 0.55);
+}
+
+.arrow {
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    color: #fff;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+    .arrow:hover {
+        background: rgba(255, 255, 255, 0.12);
+        border-color: rgba(255, 255, 255, 0.5);
+    }
+
+.progress {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.progressBar {
+    display: block;
+    height: 100%;
+    transform-origin: left;
+    animation-name: fill;
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
+}
+
+@keyframes fill {
+    from {
+        transform: scaleX(0);
+    }
+
+    to {
+        transform: scaleX(1);
+    }
+}
+
+/* ── Tablet / mobile: stacked panels ── */
+@media (max-width: 991px) {
+    .hero {
+        --hdr-h: 5rem; /* topbar + category nav are hidden below 992px */
+    }
+}
+
+@media (max-width: 900px) {
+    .stage {
+        min-height: 600px;
+    }
+
+    .p1 {
+        clip-path: polygon(0 0, 100% 0, 100% 42%, 0 47%);
+    }
+
+    .p2 {
+        clip-path: polygon(0 49.4%, 100% 44.4%, 100% 84%, 0 89%);
+    }
+
+    .p3 {
+        display: none;
+    }
+
+    .p4 {
+        clip-path: polygon(0 91.4%, 100% 86.4%, 100% 100%, 0 100%);
+    }
+
+    .framesDesktop {
+        display: none;
+    }
+
+    .framesMobile {
+        display: block;
+    }
+
+    .p1Art {
+        width: 100%;
+        bottom: 56%;
+    }
+
+    .heading {
+        left: 5%;
+        bottom: 60%;
+        max-width: 90%;
+        font-size: clamp(2.8rem, 15vw, 4.6rem);
+    }
+
+    .copy {
+        left: 5%;
+        right: 5%;
+        top: 51%;
+        bottom: 18%;
+        gap: 0.45rem;
+    }
+
+    .caption {
+        font-size: 0.7rem;
+        padding: 0.25rem 0.6rem;
+    }
+
+    .bubble {
+        font-size: 0.78rem;
+        padding: 0.55rem 0.8rem;
+        margin-bottom: 0.2rem;
+    }
+
+    .btnMain,
+    .btnGhost {
+        font-size: 0.95rem;
+        padding: 0.45rem 1rem;
+    }
+
+    .p2 .layer,
+    .p4 .layer {
+        background-size: 2.6vw 2.6vw;
+        background-image: radial-gradient(circle, rgba(0, 0, 0, 0.25) 0.5vw, transparent 0.6vw);
+    }
+
+    .burstPos {
+        left: 0;
+        top: 87%;
+        width: 100%;
+        height: 13%;
+    }
+
+    .count {
+        display: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .layer,
+    .layerOn,
+    .tab::after {
+        transition-duration: 0.01ms !important;
+        transition-delay: 0s !important;
+    }
+
+        .layerOn .p1Art .img,
+        .layerOn .zoom,
+        .layerOn .heading,
+        .layerOn .bubble,
+        .layerOn .burstPos {
+            animation: none !important;
+        }
+}
