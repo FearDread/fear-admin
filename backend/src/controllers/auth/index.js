@@ -3,7 +3,7 @@ const TokenService = require('./token');
 const validator = require('../../libs/validator');
 const logger = require('../../libs/logger');
 const { OAuth2Client } = require('google-auth-library');
-
+const request = require('../request');
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 /**
@@ -29,6 +29,7 @@ const isSessionStale = (user, decoded) => {
 /**
  * Authentication response helper
  */
+/*
 const response = {
     success: (res, user, token, statusCode = 200, message = "Authentication successful") => {
         noStore(res);
@@ -54,7 +55,7 @@ const response = {
         return res.status(statusCode).json(body);
     }
 };
-
+*/
 /**
  * POST /fear/api/auth/login
  */
@@ -62,7 +63,7 @@ exports.login = (req, res) => {
     const { email, password } = req.body;
     const validation = validator.input.login({ email, password });
     if (!validation.isValid) {
-        return response.error(res, 400, validation.message);
+        return request.auth.fail(res, 400, validation.message);
     }
 
     logger.info('Authentication attempt for:', email);
@@ -74,27 +75,27 @@ exports.login = (req, res) => {
         .select('+password')
         .then(user => {
             if (!user) {
-                return response.error(res, 401, "Invalid credentials");
+                return request.auth.fail(res, 401, "Invalid credentials");
             }
 
             if (user.isLocked()) {
-                return response.error(res, 423,
+                return request.auth.fail(res, 423,
                     "Account temporarily locked due to too many failed login attempts. Please try again later."
                 );
             }
 
             if (user.status === 'suspended') {
-                return response.error(res, 403, "Your account has been suspended. Please contact support.");
+                return request.auth.fail(res, 403, "Your account has been suspended. Please contact support.");
             }
             if (user.status === 'inactive') {
-                return response.error(res, 403, "Your account is inactive. Please contact support to reactivate.");
+                return request.auth.fail(res, 403, "Your account is inactive. Please contact support to reactivate.");
             }
 
             return user.comparePassword(password)
                 .then(isPasswordValid => {
                     if (!isPasswordValid) {
                         return user.incLoginAttempts()
-                            .then(() => response.error(res, 401, "Invalid credentials"));
+                            .then(() => request.auth.fail(res, 401, "Invalid credentials"));
                     }
 
                     return user.resetLoginAttempts()
@@ -104,13 +105,13 @@ exports.login = (req, res) => {
                         }))
                         .then(() => {
                             const token = TokenService.generateToken(user);
-                            return response.success(res, user, token, 200, "Login successful");
+                            return request.auth.success(res, user, token, 200, "Login successful");
                         });
                 });
         })
         .catch(error => {
             logger.error('Login error:', error);
-            return response.error(res, 500, "Authentication failed", error.message);
+            return request.auth.fail(res, 500, "Authentication failed", error);
         });
 };
 
@@ -135,13 +136,13 @@ exports.register = (req, res) => {
 
     const validation = validator.input.register({ email, password, firstName, lastName });
     if (!validation.isValid) {
-        return response.error(res, 400, validation.message);
+        return request.auth.fail(res, 400, validation.message);
     }
 
     User.findOne({ email: email.toLowerCase() })
         .then(existingUser => {
             if (existingUser) {
-                return response.error(res, 409, "User with this email already exists");
+                return request.auth.fail(res, 409, "User with this email already exists");
             }
 
             const userData = {
@@ -165,19 +166,19 @@ exports.register = (req, res) => {
 
             logger.info('New user registered:', user.email);
             const token = TokenService.generateToken(user);
-            return response.success(res, user, token, 201, "Registration successful");
+            return request.auth.success(res, user, token, 201, "Registration successful");
         })
         .catch(error => {
             logger.error('Registration error:', error);
 
             if (error.code === 11000) {
-                return response.error(res, 409, "User with this email already exists");
+                return request.auth.fail(res, 409, "User with this email already exists");
             }
             if (error.name === 'ValidationError') {
                 const messages = Object.values(error.errors).map(err => err.message);
-                return response.error(res, 400, messages.join(', '));
+                return request.auth.fail(res, 400, messages.join(', '));
             }
-            return response.error(res, 500, "Registration failed", error.message);
+            return request.auth.fail(res, 500, "Registration failed", error.message);
         });
 };
 
@@ -232,7 +233,7 @@ exports.getSession = (req, res) => {
  */
 exports.refreshToken = (req, res) => {
     const newToken = TokenService.generateToken(req.user);
-    return response.success(res, req.user, newToken, 200, "Token refreshed successfully");
+    return request.auth.success(res, req.user, newToken, 200, "Token refreshed successfully");
 };
 
 /**
@@ -247,7 +248,7 @@ exports.updateProfile = (req, res) => {
     User.findById(req.user._id)
         .then(user => {
             if (!user) {
-                return response.error(res, 404, "User not found");
+                return request.auth.fail(res, 404, "User not found");
             }
 
             if (typeof firstName === 'string' && firstName.trim()) user.firstName = firstName.trim();
@@ -277,9 +278,9 @@ exports.updateProfile = (req, res) => {
 
             if (error.name === 'ValidationError') {
                 const messages = Object.values(error.errors).map(err => err.message);
-                return response.error(res, 400, messages.join(', '));
+                return request.auth.fail(res, 400, messages.join(', '));
             }
-            return response.error(res, 500, "Profile update failed", error.message);
+            return request.auth.fail(res, 500, "Profile update failed", error.message);
         });
 };
 
@@ -292,7 +293,7 @@ exports.updatePreferences = (req, res) => {
     User.findById(req.user._id)
         .then(user => {
             if (!user) {
-                return response.error(res, 404, "User not found");
+                return request.auth.fail(res, 404, "User not found");
             }
 
             user.preferences = user.preferences || {};
@@ -319,7 +320,7 @@ exports.updatePreferences = (req, res) => {
         })
         .catch(error => {
             logger.error('Preferences update error:', error);
-            return response.error(res, 500, "Preferences update failed", error.message);
+            return request.auth.fail(res, 500, "Preferences update failed", error.message);
         });
 };
 
@@ -336,7 +337,7 @@ exports.isAuthorized = (req, res, next) => {
     const token = getTokenFromRequest(req);
 
     if (!token) {
-        return response.error(res, 401, "Access denied. Authentication required.");
+        return request.auth.fail(res, 401, "Access denied. Authentication required.");
     }
 
     let decodedToken;
@@ -344,32 +345,32 @@ exports.isAuthorized = (req, res, next) => {
         decodedToken = TokenService.verifyToken(token);
     } catch (error) {
         if (error.name === 'JsonWebTokenError') {
-            return response.error(res, 401, "Invalid token.");
+            return request.auth.fail(res, 401, "Invalid token.");
         }
         if (error.name === 'TokenExpiredError') {
-            return response.error(res, 401, "Token has expired. Please login again.");
+            return request.auth.fail(res, 401, "Token has expired. Please login again.");
         }
         logger.error('Authorization error:', error);
-        return response.error(res, 500, "Authentication failed", error.message);
+        return request.auth.fail(res, 500, "Authentication failed", error.message);
     }
 
     return User.findById(decodedToken.id)
         .then(user => {
             if (!user) {
-                return response.error(res, 401, "Invalid token. User not found.");
+                return request.auth.fail(res, 401, "Invalid token. User not found.");
             }
             if (user.status === 'deleted') {
-                return response.error(res, 401, "Account has been deleted.");
+                return request.auth.fail(res, 401, "Account has been deleted.");
             }
             if (user.status === 'suspended') {
-                return response.error(res, 403, "Account has been suspended.");
+                return request.auth.fail(res, 403, "Account has been suspended.");
             }
             if (user.status === 'inactive') {
-                return response.error(res, 403, "Account is inactive.");
+                return request.auth.fail(res, 403, "Account is inactive.");
             }
             // A password change/reset should kill sessions issued before it.
             if (isSessionStale(user, decodedToken)) {
-                return response.error(res, 401, "Password was changed. Please login again.");
+                return request.auth.fail(res, 401, "Password was changed. Please login again.");
             }
 
             req.user = user;
@@ -378,7 +379,7 @@ exports.isAuthorized = (req, res, next) => {
         })
         .catch(error => {
             logger.error('Authorization error:', error);
-            return response.error(res, 500, "Authentication failed", error.message);
+            return request.auth.fail(res, 500, "Authentication failed", error.message);
         });
 };
 
@@ -387,10 +388,10 @@ exports.isAuthorized = (req, res, next) => {
  */
 exports.isAdmin = (req, res, next) => {
     if (!req.user) {
-        return response.error(res, 401, "Authentication required");
+        return request.auth.fail(res, 401, "Authentication required");
     }
     if (req.user.role !== "admin") {
-        return response.error(res, 403, "Access denied. Admin privileges required.");
+        return request.auth.fail(res, 403, "Access denied. Admin privileges required.");
     }
     next();
 };
@@ -401,10 +402,10 @@ exports.isAdmin = (req, res, next) => {
 exports.authorizeRoles = (...roles) => {
     return (req, res, next) => {
         if (!req.user) {
-            return response.error(res, 401, "Authentication required");
+            return request.auth.fail(res, 401, "Authentication required");
         }
         if (!roles.includes(req.user.role)) {
-            return response.error(
+            return request.auth.fail(
                 res,
                 403,
                 `Access denied. Required roles: ${roles.join(', ')}. Your role: ${req.user.role}`
@@ -454,11 +455,11 @@ exports.googleAuth = async (req, res) => {
     const { credential } = req.body;
 
     if (!credential) {
-        return response.error(res, 400, "Google credential is required");
+        return request.auth.fail(res, 400, "Google credential is required");
     }
     if (!process.env.GOOGLE_CLIENT_ID) {
         logger.error('GOOGLE_CLIENT_ID is not configured');
-        return response.error(res, 500, "Google sign-in is not configured");
+        return request.auth.fail(res, 500, "Google sign-in is not configured");
     }
 
     try {
@@ -478,7 +479,7 @@ exports.googleAuth = async (req, res) => {
         } = payload;
 
         if (!email_verified) {
-            return response.error(res, 401, "Google email is not verified");
+            return request.auth.fail(res, 401, "Google email is not verified");
         }
 
         logger.info('Google authentication attempt for:', email);
@@ -494,10 +495,10 @@ exports.googleAuth = async (req, res) => {
         // ── Existing user: login ────────────────────────────────────────────
         if (user) {
             if (user.status === 'suspended') {
-                return response.error(res, 403, "Your account has been suspended. Please contact support.");
+                return request.auth.fail(res, 403, "Your account has been suspended. Please contact support.");
             }
             if (user.status === 'inactive') {
-                return response.error(res, 403, "Your account is inactive. Please contact support to reactivate.");
+                return request.auth.fail(res, 403, "Your account is inactive. Please contact support to reactivate.");
             }
 
             if (!user.oauth?.google?.id) {
@@ -520,7 +521,7 @@ exports.googleAuth = async (req, res) => {
             logger.info('Google login successful for:', savedUser.email);
 
             const token = TokenService.generateToken(savedUser);
-            return response.success(res, savedUser, token, 200, "Google login successful");
+            return request.auth.success(res, savedUser, token, 200, "Google login successful");
         }
 
         // ── New user: registration ──────────────────────────────────────────
@@ -548,7 +549,7 @@ exports.googleAuth = async (req, res) => {
         logger.info('New user registered via Google:', newUser.email);
 
         const token = TokenService.generateToken(newUser);
-        return response.success(res, newUser, token, 201, "Google registration successful");
+        return request.auth.success(res, newUser, token, 201, "Google registration successful");
 
     } catch (error) {
         logger.error('Google authentication error:', error);
@@ -556,16 +557,16 @@ exports.googleAuth = async (req, res) => {
         if (error.message?.includes('Token used too late') ||
             error.message?.includes('Invalid token') ||
             error.message?.includes('Wrong recipient')) {
-            return response.error(res, 401, "Invalid or expired Google credential");
+            return request.auth.fail(res, 401, "Invalid or expired Google credential");
         }
         if (error.code === 11000) {
-            return response.error(res, 409, "User with this email already exists");
+            return request.auth.fail(res, 409, "User with this email already exists");
         }
         if (error.name === 'ValidationError') {
             const messages = Object.values(error.errors).map(err => err.message);
-            return response.error(res, 400, messages.join(', '));
+            return request.auth.fail(res, 400, messages.join(', '));
         }
-        return response.error(res, 500, "Google authentication failed", error.message);
+        return request.auth.fail(res, 500, "Google authentication failed", error.message);
     }
 };
 
@@ -577,19 +578,19 @@ exports.linkGoogleAccount = (req, res) => {
     const userId = req.user._id;
 
     if (!googleId || !email) {
-        return response.error(res, 400, "Google ID and email are required");
+        return request.auth.fail(res, 400, "Google ID and email are required");
     }
 
     User.findOne({ 'oauth.google.id': googleId, _id: { $ne: userId } })
         .then(existingUser => {
             if (existingUser) {
-                return response.error(res, 409, "This Google account is already linked to another user");
+                return request.auth.fail(res, 409, "This Google account is already linked to another user");
             }
             return User.findById(userId);
         })
         .then(user => {
             if (!user || typeof user.save !== 'function') {
-                if (!res.headersSent) return response.error(res, 404, "User not found");
+                if (!res.headersSent) return request.auth.fail(res, 404, "User not found");
                 return;
             }
 
@@ -618,7 +619,7 @@ exports.linkGoogleAccount = (req, res) => {
         })
         .catch(error => {
             logger.error('Google account linking error:', error);
-            return response.error(res, 500, "Failed to link Google account", error.message);
+            return request.auth.fail(res, 500, "Failed to link Google account", error.message);
         });
 };
 
@@ -632,16 +633,16 @@ exports.unlinkGoogleAccount = (req, res) => {
         .select('+password')
         .then(user => {
             if (!user) {
-                return response.error(res, 404, "User not found");
+                return request.auth.fail(res, 404, "User not found");
             }
 
             if (!user.oauth || !user.oauth.google) {
-                return response.error(res, 400, "No Google account is linked to this user");
+                return request.auth.fail(res, 400, "No Google account is linked to this user");
             }
 
             // Don't strand a Google-only account with no way to sign in.
             if (!user.password) {
-                return response.error(
+                return request.auth.fail(
                     res,
                     400,
                     "Cannot unlink Google account. Please set a password first to maintain access to your account."
@@ -663,7 +664,7 @@ exports.unlinkGoogleAccount = (req, res) => {
         })
         .catch(error => {
             logger.error('Google account unlinking error:', error);
-            return response.error(res, 500, "Failed to unlink Google account", error.message);
+            return request.auth.fail(res, 500, "Failed to unlink Google account", error.message);
         });
 };
 
@@ -687,5 +688,5 @@ module.exports = {
     isAdmin: exports.isAdmin,
     authorizeRoles: exports.authorizeRoles,
     optionalAuth: exports.optionalAuth,
-    AuthResponse: response,
+    AuthRequest: request.auth,
 };

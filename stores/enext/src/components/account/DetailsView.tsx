@@ -24,12 +24,51 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useCurrentUser, useUpdateProfileMutation, useChangePasswordMutation } from '@/lib/redux/api/authApi';
-import AccountSidebar from './AccountSidebar';
+import { useAppSelector } from '@/lib/redux/hooks';
+import { selectCurrentUser } from '@/lib/redux/slices/authSlice';
+import { useUpdateProfileMutation, useChangePasswordMutation, type Profile } from '@/lib/redux/api/authApi';
+import { fullName, formatDate } from '@/lib/account/helpers';
 import { T } from './styles';
 
+const ACTIONS = [
+    { icon: '🛍️', label: 'Continue Shopping', to: '/shop', primary: true },
+    { icon: '📋', label: 'View Orders', to: '/account/orders' },
+    { icon: '❤️', label: 'Wishlist', to: '/wishlist' },
+    { icon: '✏️', label: 'Edit Profile', to: '/account/details' },
+    { icon: '📍', label: 'Addresses', to: '/account/addresses' },
+];
+
+type ProfileForm = Omit<Profile, 'id'>;
+type FormKey = keyof ProfileForm;
+
 export const DetailsView = () => {
-    const { currentUser } = useCurrentUser();
+    const currentUser = useAppSelector(selectCurrentUser);
+
+    if (!currentUser) return null;
+
+    const stat = (loading: boolean, failed: boolean, count?: number) => (loading ? '…' : failed ? '—' : (count ?? 0));
+    const STATS = [
+        { icon: '📦', label: 'Total Orders', val: stat(ordersLoading, ordersError, orders?.length), accent: T.red },
+        { icon: '❤️', label: 'Wishlist Items', val: stat(wishLoading, wishError, wishlist?.length), accent: T.orange },
+        { icon: '📍', label: 'Saved Addresses', val: stat(addrLoading, addrError, addresses?.length), accent: T.teal },
+    ];
+
+    const INFO = [
+        { label: 'Email', val: currentUser.email },
+        { label: 'Phone', val: currentUser.phone, empty: 'Not provided' },
+        { label: 'Country', val: currentUser.country, empty: 'Not specified' },
+        {
+            label: 'Member Since',
+            val: currentUser.createdAt ? formatDate(currentUser.createdAt, { year: 'numeric', month: 'long', day: 'numeric' }) : null,
+            empty: 'N/A',
+        },
+    ];
+    const FIELDS: { name: FormKey; label: string; ph?: string; required?: boolean; full?: boolean; type?: string }[] = [
+        { name: 'firstName', label: 'First Name', ph: currentUser.firstName, required: true, full: true },
+        { name: 'lastName', label: 'Last Name', ph: currentUser.lastName, required: true, full: true },
+        { name: 'email', label: 'Email', ph: currentUser.email, full: true },
+        { name: 'displayName', label: 'Display Name', ph: fullname(currentUser), required: true },
+    ];
     const [updateProfile, { isLoading: savingProfile, isSuccess: profileSaved, error: profileError }] = useUpdateProfileMutation();
     const [changePassword, { isLoading: savingPassword, isSuccess: passwordSaved, error: passwordError }] = useChangePasswordMutation();
 
@@ -139,10 +178,52 @@ export const DetailsView = () => {
 
     return (
         <>
-            <style>{ /* userStyles */}</style>
+            <div className="acct-section-head"><h3>Quick Actions</h3><i /></div>
+            <div className="acct-actions">
+                {ACTIONS.map((a) => (
+                    <Link key={a.to} href={a.to} className={`acct-btn acct-btn--sm${a.primary ? '' : ' acct-btn--ghost'}`}>
+                        <span aria-hidden="true">{a.icon}</span> {a.label}
+                    </Link>
+                ))}
+            </div>
+
+                                    <div className="acct-field-row" style={{ marginBottom: '.25rem' }}>
+                            {FIELDS.map((f) => (
+                                <div key={f.name} className={`acct-field${f.full ? ' acct-field--full' : ''}`}>
+                                    <label className="acct-label" htmlFor={`${type}-${f.name}`}>
+                                        {f.label}{f.required && <em>*</em>}
+                                    </label>
+                                    {f.name === 'country' ? (
+                                        <select
+                                            id={`${type}-country`}
+                                            className={`acct-select${errors.country ? ' err' : ''}`}
+                                            value={form.country}
+                                            onChange={(e) => setField('country', e.target.value)}
+                                        >
+                                            {COUNTRIES.map((c) => <option key={c} value={c}>{c}</option>)}
+                                        </select>
+                                    ) : (
+                                        <input
+                                            id={`${type}-${f.name}`}
+                                            type={f.type ?? 'text'}
+                                            className={`acct-input${errors[f.name] ? ' err' : ''}`}
+                                            placeholder={f.ph}
+                                            value={(form[f.name] as string) ?? ''}
+                                            onChange={(e) => setField(f.name, e.target.value)}
+                                            disabled={saving}
+                                        />
+                                    )}
+                                    {errors[f.name] && <div className="acct-err">{errors[f.name]}</div>}
+                                </div>
+                            ))}
+                        </div>
+        </>
+       );
+        { /*
+
             <link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Mono:ital@0;1&display=swap" rel="stylesheet" />
             <div className="ud-page">
-                {/* HERO */}
+
                 <section className="ud-hero">
                     <div className="ud-hero-stripe" />
                     <div className="ud-hero-ghost" aria-hidden>
@@ -168,7 +249,6 @@ export const DetailsView = () => {
                 </section>
 
                 <div className="ud-layout">
-                    <AccountSidebar currentUser={currentUser} />
 
                     <main>
                         {showToast && (
@@ -187,7 +267,6 @@ export const DetailsView = () => {
                             </div>
                         )}
 
-                        {/* PROFILE PANEL */}
                         <div className="ud-panel" style={{ ['--pa' as string]: T.orange }}>
                             <div className="ud-panel-head">
                                 <h2 className="ud-panel-title">Profile Information</h2>
@@ -271,8 +350,6 @@ export const DetailsView = () => {
                                 </form>
                             </div>
                         </div>
-
-                        {/* PASSWORD PANEL */}
                         <div className="ud-panel" style={{ ['--pa' as string]: T.red }}>
                             <div className="ud-panel-head">
                                 <h2 className="ud-panel-title">Password</h2>
@@ -350,7 +427,8 @@ export const DetailsView = () => {
                 <div className="ud-animated-border" />
             </div>
         </>
-    );
+        */}
+
 };
 
 export default DetailsView;

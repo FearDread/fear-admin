@@ -13,7 +13,7 @@ const MENU_ITEMS = [
     { label: 'Orders', path: '/account/orders', icon: '📦' },
     { label: 'Addresses', path: '/account/addresses', icon: '📍' },
     { label: 'Payment Methods', path: '/account/payment-methods', icon: '💳' },
-    { label: 'Account Details', path: '/account/details', icon: '👤' },
+    //{ label: 'Account Details', path: '/account/details', icon: '👤' },
 ] as const;
 
 // Module scope on purpose — declaring this inside AccountSidebar would remount it every render.

@@ -15,7 +15,7 @@ const ACTIONS = [
     { icon: '🛍️', label: 'Continue Shopping', to: '/shop', primary: true },
     { icon: '📋', label: 'View Orders', to: '/account/orders' },
     { icon: '❤️', label: 'Wishlist', to: '/wishlist' },
-    { icon: '✏️', label: 'Edit Profile', to: '/account/details' },
+    //{ icon: '✏️', label: 'Edit Profile', to: '/account/details' },
     { icon: '📍', label: 'Addresses', to: '/account/addresses' },
 ];
 
