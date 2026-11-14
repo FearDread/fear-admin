@@ -21,7 +21,7 @@ import { MongoClient } from 'mongodb';
 const { values: opt, positionals } = parseArgs({
   allowPositionals: true,
   options: {
-    mongo: { type: 'string', default: process.env.MONGODB_URI },
+    mongo: { type: 'string', default: process.env.DB_LINK },
     db: { type: 'string' }, // defaults to the database named in the URI
     collection: { type: 'string', default: 'hipcomic_collection' },
     'dry-run': { type: 'boolean', default: false },
