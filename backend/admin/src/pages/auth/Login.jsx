@@ -3,9 +3,8 @@ import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser, selectIsAuthenticated, selectUserLoading, setRememberMe, clearError } from '../../features/user/slice';
 import AuthBackground from "../../components/animated/AuthBackground";
+import { EMAIL_PATTERN } from "../../utils/password";
 
-// Same pattern the API validates with (libs/validator)
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export const Login = () => {
     const dispatch = useDispatch();
@@ -15,6 +14,9 @@ export const Login = () => {
     // Redux selectors
     const isAuthenticated = useSelector(selectIsAuthenticated);
     const loading = useSelector(selectUserLoading);
+    //const error = useSelector(selectUserError);
+    //const rememberMe = useSelector(selectRememberMe);
+
     // Local form state
     const [formData, setFormData] = useState({
         email: '',
@@ -91,13 +93,10 @@ export const Login = () => {
             password: formData.password,
             rememberMe: localRememberMe,
         }));
-        console.log('login result = ', result);
-        if (!result.success) return null;
-        /*
+
         if (loginUser.fulfilled.match(result)) {
             dispatch(setRememberMe(localRememberMe));
         }
-        */
     };
 
     return (
@@ -157,10 +156,13 @@ export const Login = () => {
                                         </div>
                                     )}
                                     <div className="form-control-position">
-                                        <i className={`icon-eye bx ${showPassword ? 'bx-show' : 'bx-hide'}`}
-                                            onClick={togglePasswordVisibility}
-                                            disabled={loading}>
-                                        </i>
+      
+                                            <i
+                                               onClick={togglePasswordVisibility}
+                                               disabled={loading}
+                                               className={`icon-eye bx ${showPassword ? 'bx-show' : 'bx-hide'}`}></i>
+
+
                                     </div>
                                 </div>
                             </div>
@@ -180,7 +182,7 @@ export const Login = () => {
                                     </div>
                                 </div>
                                 <div className="form-group col-6 text-right">
-                                    <Link to="/reset-password">Reset Password</Link>
+                                    <Link to="/auth/reset-password">Reset Password</Link>
                                 </div>
                             </div>
                             <button

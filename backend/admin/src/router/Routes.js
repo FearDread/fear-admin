@@ -1,5 +1,6 @@
 import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
+import ForgotPassword from "../pages/auth/ForgotPassword";
 
 import Dashboard from "../pages/Dashboard";
 import ProductList from "../pages/dashboard/ProductList";
@@ -21,7 +22,8 @@ import GoogleAnalytics from "../pages/integrations/Analytics.jsx";
 export const routes = {
   auth: [
     { path: "/auth/login", label: 'Login', element: <Login /> },
-    { path: "/auth/register", label: 'Register', element: <Register /> },
+      { path: "/auth/register", label: 'Register', element: <Register /> },
+      { path: "/auth/reset-password", label: 'Forgot Password', element: <ForgotPassword /> },
   ],
   admin: [
     { path: "/admin/dashboard", label: "Dashboard", icon: 'zmdi zmdi-view-dashboard', element: <Dashboard /> },
