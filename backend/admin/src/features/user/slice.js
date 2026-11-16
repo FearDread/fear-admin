@@ -125,14 +125,15 @@ export const {
   loginWithFacebook,
   register,
   logout,
+  create: createUser,
   delete: deleteUser,
+  update: updateUser,
   forgotPassword,
   resetPassword,
   verifyEmail,
   getCurrentUser,
   updateProfile,
   changePassword,
-  updateUser,
   updateAvatar,
 } = User;
 

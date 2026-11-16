@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardHeader, CardBody, CardTitle, Row, Col, Input, Button, Badge, UncontrolledDropdown, DropdownToggle, DropdownMenu, DropdownItem } from "reactstrap";
-import { Modal, Form, Button as RSButton, SelectPicker, Toggle, Message, useToaster } from "rsuite";
+import { Message, useToaster } from "rsuite";
 import { useSelector, useDispatch } from "react-redux";
 import ReactTable from "../../components/ReactTable/ReactTable";
 import normalizeCells from "../../components/ReactTable/NormalizeCells";
 import Loader from "../../components/Loader/Loading";
 import StatCard from "../../components/common/StatCard";
-import { selectUserLoading, selectUserError, selectAllUsers, fetchUsers, deleteUser, updateUser, clearError, setSearchTerm, selectSearchTerm, selectFilters, setFilters } from "../../features/user/slice.js";
-
-const { Group: FormGroup, Control: FormControl, ControlLabel } = Form;
+import FormModal from "../../components/Modal/Form";
+import ConfirmModal from "../../components/Modal/Confirm";
+import { selectUserLoading, selectUserError, selectAllUsers, fetchUsers, createUser, deleteUser, updateUser, clearError, setSearchTerm, selectSearchTerm, selectFilters, setFilters } from "../../features/user/slice.js";
 
 /* -------------------------------------------------------------------------
    Constants + helpers (outside the component so they are not rebuilt on render)
@@ -29,7 +29,21 @@ const USER_STATUS = {
     inactive: { color: "danger", icon: "fa-times-circle", label: "Inactive" },
 };
 
-const EMPTY_FORM = { firstName: "", lastName: "", email: "", role: "user", isActive: true };
+const EMPTY_FORM = { firstName: "", lastName: "", email: "", password: "", role: "user", isActive: true };
+
+const MIN_PASSWORD_LENGTH = 8;
+
+// Passed to <FormModal>. `addOnly` fields are left out of the edit form.
+const USER_FIELDS = [
+    { name: "firstName", label: "First Name", required: true, col: 6, placeholder: "Enter first name..." },
+    { name: "lastName", label: "Last Name", col: 6, placeholder: "Enter last name..." },
+    { name: "email", label: "Email", type: "email", required: true, placeholder: "Enter email address..." },
+    { name: "password", label: "Password", type: "password", required: true, addOnly: true, placeholder: `At least ${MIN_PASSWORD_LENGTH} characters` },
+    { name: "role", label: "Role", type: "select", placeholder: "Select role", props: { data: ROLE_OPTIONS, searchable: false, cleanable: false } },
+    { name: "isActive", label: "Active Status", type: "toggle", col: 6, props: { checkedChildren: "Active", unCheckedChildren: "Inactive" } },
+];
+const ADD_USER_FIELDS = USER_FIELDS;
+const EDIT_USER_FIELDS = USER_FIELDS.filter((field) => !field.addOnly);
 
 const GAP = { gap: 8 }; // Bootstrap 4 has no `gap-*` utilities
 
@@ -87,6 +101,7 @@ const UsersList = () => {
     // Local state
     const [roleFilter, setRoleFilter] = useState("all");
     const [viewMode, setViewMode] = useState("list");
+    const [showAddModal, setShowAddModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
@@ -113,10 +128,17 @@ const UsersList = () => {
     /* ----- Modal handlers ----- */
 
     const resetModals = useCallback(() => {
+        setShowAddModal(false);
         setShowEditModal(false);
         setShowDeleteModal(false);
         setSelectedUser(null);
         setFormValue(EMPTY_FORM);
+    }, []);
+
+    const handleOpenAddModal = useCallback(() => {
+        setSelectedUser(null);
+        setFormValue(EMPTY_FORM); // never reuse values left over from an edit
+        setShowAddModal(true);
     }, []);
 
     const handleOpenEditModal = useCallback((user) => {
@@ -138,12 +160,10 @@ const UsersList = () => {
 
     const handleViewUser = useCallback((id) => navigate(`/admin/user/view/${id}`), [navigate]);
 
-    /* ----- Update / delete ----- */
+    /* ----- Create / update / delete ----- */
 
-    // Closes only on success. The old version relied on a `success` flag in an effect, so a flag left
-    // over from an earlier fetch could pop a fake "User updated" toast and shut the modal on open.
-    const handleUpdateUser = async () => {
-        if (!selectedUser) return;
+    // Shared by create and update. Returns null (after warning the user) when the form is invalid.
+    const buildUserData = () => {
         const data = {
             firstName: formValue.firstName?.trim(),
             lastName: formValue.lastName?.trim() || "",
@@ -151,8 +171,40 @@ const UsersList = () => {
             role: formValue.role,
             isActive: formValue.isActive,
         };
-        if (!data.firstName) return notify("warning", "First name is required.");
-        if (!EMAIL_PATTERN.test(data.email || "")) return notify("warning", "Enter a valid email address.");
+        if (!data.firstName) {
+            notify("warning", "First name is required.");
+            return null;
+        }
+        if (!EMAIL_PATTERN.test(data.email || "")) {
+            notify("warning", "Enter a valid email address.");
+            return null;
+        }
+        return data;
+    };
+
+    // Each handler closes its modal only on success, so a failed request keeps the user's input.
+    const handleCreateUser = async () => {
+        const data = buildUserData();
+        if (!data) return;
+        if ((formValue.password || "").length < MIN_PASSWORD_LENGTH) {
+            return notify("warning", `Password must be at least ${MIN_PASSWORD_LENGTH} characters.`);
+        }
+        try {
+            await dispatch(createUser({ ...data, password: formValue.password })).unwrap();
+            notify("success", <><strong>Success!</strong> User created successfully.</>);
+            resetModals();
+            dispatch(fetchUsers());
+        } catch (err) {
+            console.error("Error creating user:", err);
+        }
+    };
+
+    // Closes only on success. The old version relied on a `success` flag in an effect, so a flag left
+    // over from an earlier fetch could pop a fake "User updated" toast and shut the modal on open.
+    const handleUpdateUser = async () => {
+        if (!selectedUser) return;
+        const data = buildUserData();
+        if (!data) return;
 
         try {
             await dispatch(updateUser({ id: selectedUser._id, data })).unwrap();
@@ -354,7 +406,7 @@ const UsersList = () => {
                                             <i className="fa fa-th" aria-hidden="true"></i>
                                         </Button>
                                     </div>
-                                    <Button color="primary" size="sm" onClick={() => navigate("/admin/user/new")} className="btn-round">
+                                    <Button color="primary" size="sm" onClick={handleOpenAddModal} className="btn-round">
                                         <i className="fa fa-plus mr-2" aria-hidden="true"></i>
                                         Add User
                                     </Button>
@@ -426,7 +478,7 @@ const UsersList = () => {
                                             <i className="fa fa-users" aria-hidden="true" style={{ fontSize: 64, opacity: 0.3 }}></i>
                                             <p className="text-light-2 mt-3">{hasFilters ? "No users match your filters" : "No users found. Create your first user!"}</p>
                                             {!hasFilters && (
-                                                <Button color="primary" onClick={() => navigate("/admin/user/new")} className="btn-round mt-3">
+                                                <Button color="primary" onClick={handleOpenAddModal} className="btn-round mt-3">
                                                     <i className="fa fa-plus mr-2" aria-hidden="true"></i>
                                                     Create First User
                                                 </Button>
@@ -486,80 +538,40 @@ const UsersList = () => {
                 </Row>
             </div>
 
+            {/* Add user */}
+            <FormModal
+                open={showAddModal}
+                onClose={resetModals}
+                onSubmit={handleCreateUser}
+                title="Add New User"
+                icon="fa-user-plus"
+                submitLabel="Create User"
+                formValue={formValue}
+                onChange={setFormValue}
+                fields={ADD_USER_FIELDS}
+            />
+
             {/* Edit user */}
-            <Modal open={showEditModal} onClose={resetModals} size="md" className="rs-theme-dark">
-                <Modal.Header>
-                    <Modal.Title>
-                        <i className="fa fa-edit mr-2" aria-hidden="true"></i>
-                        Edit User
-                    </Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <Form fluid formValue={formValue} onChange={setFormValue}>
-                        <Row>
-                            <Col md={6}>
-                                <FormGroup>
-                                    <ControlLabel>First Name *</ControlLabel>
-                                    <FormControl name="firstName" placeholder="Enter first name..." />
-                                </FormGroup>
-                            </Col>
-                            <Col md={6}>
-                                <FormGroup>
-                                    <ControlLabel>Last Name</ControlLabel>
-                                    <FormControl name="lastName" placeholder="Enter last name..." />
-                                </FormGroup>
-                            </Col>
-                        </Row>
-                        <FormGroup>
-                            <ControlLabel>Email *</ControlLabel>
-                            <FormControl name="email" type="email" placeholder="Enter email address..." />
-                        </FormGroup>
-                        <FormGroup>
-                            <ControlLabel>Role</ControlLabel>
-                            <FormControl name="role" accepter={SelectPicker} data={ROLE_OPTIONS} block placeholder="Select role" searchable={false} cleanable={false} />
-                        </FormGroup>
-                        <Row>
-                            <Col md={6}>
-                                <FormGroup>
-                                    <ControlLabel>Active Status</ControlLabel>
-                                    <div className="mt-2">
-                                        <Toggle checked={formValue.isActive} onChange={(checked) => setFormValue((prev) => ({ ...prev, isActive: checked }))} checkedChildren="Active" unCheckedChildren="Inactive" />
-                                    </div>
-                                </FormGroup>
-                            </Col>
-                        </Row>
-                    </Form>
-                </Modal.Body>
-                <Modal.Footer>
-                    <RSButton onClick={handleUpdateUser} appearance="primary">
-                        <i className="fa fa-check mr-2" aria-hidden="true"></i>
-                        Update User
-                    </RSButton>
-                    <RSButton onClick={resetModals} appearance="subtle">Cancel</RSButton>
-                </Modal.Footer>
-            </Modal>
+            <FormModal
+                open={showEditModal}
+                onClose={resetModals}
+                onSubmit={handleUpdateUser}
+                title="Edit User"
+                icon="fa-edit"
+                submitLabel="Update User"
+                formValue={formValue}
+                onChange={setFormValue}
+                fields={EDIT_USER_FIELDS}
+            />
 
             {/* Delete confirmation */}
-            <Modal open={showDeleteModal} onClose={resetModals} size="xs" className="rs-theme-dark">
-                <Modal.Header>
-                    <Modal.Title>
-                        <i className="fa fa-exclamation-triangle mr-2 text-danger" aria-hidden="true"></i>
-                        Delete User?
-                    </Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <p style={{ color: "rgba(255,255,255,0.7)" }}>
-                        Are you sure you want to delete &quot;<strong style={{ color: "white" }}>{selectedUser ? fullNameOf(selectedUser) || selectedUser.email : ""}</strong>&quot;? This action cannot be undone.
-                    </p>
-                </Modal.Body>
-                <Modal.Footer>
-                    <RSButton onClick={handleDeleteUser} appearance="primary" color="red">
-                        <i className="fa fa-trash mr-2" aria-hidden="true"></i>
-                        Yes, Delete It
-                    </RSButton>
-                    <RSButton onClick={resetModals} appearance="subtle">Cancel</RSButton>
-                </Modal.Footer>
-            </Modal>
+            <ConfirmModal
+                open={showDeleteModal}
+                onClose={resetModals}
+                onConfirm={handleDeleteUser}
+                title="Delete User?"
+                itemName={selectedUser ? fullNameOf(selectedUser) || selectedUser.email : ""}
+            />
         </>
     );
 };

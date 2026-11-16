@@ -1,15 +1,14 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { Card, CardHeader, CardBody, CardTitle, Row, Col, Button, Input, Badge, UncontrolledDropdown, DropdownToggle, DropdownMenu, DropdownItem } from "reactstrap";
-import { Modal, Form, Input as RSInput, Button as RSButton, useToaster, Message, SelectPicker, Toggle } from "rsuite";
+import { useToaster, Message } from "rsuite";
 import { useSelector, useDispatch } from "react-redux";
 import ReactTable from "../../components/ReactTable/ReactTable";
 import normalizeCells from "../../components/ReactTable/NormalizeCells";
 import Loader from "../../components/Loader/Loading";
 import StatCard from "../../components/common/StatCard";
+import FormModal from "../../components/Modal/Form";
+import ConfirmModal from "../../components/Modal/Confirm";
 import { fetchCategories, updateCategory, deleteCategory, selectAllCategories, selectLoading, selectError, setSearchTerm, selectSearchTerm, selectFilters, setFilters, clearError, createCustomCat } from "../../features/categories/slice.js";
-
-const { Group: FormGroup, Control: FormControl, ControlLabel } = Form;
-const Textarea = React.forwardRef((props, ref) => <RSInput {...props} as="textarea" ref={ref} />);
 
 /* -------------------------------------------------------------------------
    Constants + helpers (outside the component so they are not rebuilt on render)
@@ -84,103 +83,61 @@ const ColorSwatch = ({ color }) => (
     <span style={{ display: "inline-block", width: 16, height: 16, backgroundColor: color, borderRadius: 3, marginRight: 8 }} />
 );
 
-/** Shared fields for the add and edit modals. */
-const CategoryFormFields = ({ formValue, setFormValue, parentOptions, slugHint }) => (
-    <Form fluid formValue={formValue} onChange={setFormValue}>
-        <FormGroup>
-            <ControlLabel>Category Title *</ControlLabel>
-            <FormControl name="title" placeholder="Enter category name..." />
-        </FormGroup>
-        <FormGroup>
-            <ControlLabel>Description</ControlLabel>
-            <FormControl name="description" rows={3} accepter={Textarea} placeholder="Enter category description..." />
-        </FormGroup>
-        <Row>
-            <Col md={12}>
-                <FormGroup>
-                    <ControlLabel>Slug</ControlLabel>
-                    <FormControl name="slug" placeholder={slugHint} />
-                </FormGroup>
-            </Col>
-            <Col md={12}>
-                <FormGroup>
-                    <ControlLabel>Parent Category</ControlLabel>
-                    <FormControl name="parent" accepter={SelectPicker} data={parentOptions} block searchable placeholder="Select parent category (optional)" />
-                </FormGroup>
-            </Col>
-        </Row>
-        <Row>
-            <Col md={6}>
-                <FormGroup>
-                    <ControlLabel>Icon</ControlLabel>
-                    <FormControl
-                        name="icon"
-                        accepter={SelectPicker}
-                        data={ICON_OPTIONS}
-                        block
-                        cleanable={false}
-                        placeholder="Select icon"
-                        renderMenuItem={(label, item) => (
-                            <div className="d-flex align-items-center">
-                                <i className={`fa ${item.value} mr-2`} aria-hidden="true"></i>
-                                {label}
-                            </div>
-                        )}
-                        renderValue={(value, item) => (
-                            <div className="d-flex align-items-center">
-                                <i className={`fa ${value} mr-2`} aria-hidden="true"></i>
-                                {item?.label}
-                            </div>
-                        )}
-                    />
-                </FormGroup>
-            </Col>
-            <Col md={6}>
-                <FormGroup>
-                    <ControlLabel>Color</ControlLabel>
-                    <FormControl
-                        name="color"
-                        accepter={SelectPicker}
-                        data={COLOR_OPTIONS}
-                        block
-                        cleanable={false}
-                        placeholder="Select color"
-                        renderMenuItem={(label, item) => (
-                            <div className="d-flex align-items-center">
-                                <ColorSwatch color={item.value} />
-                                {label}
-                            </div>
-                        )}
-                        renderValue={(value, item) => (
-                            <div className="d-flex align-items-center">
-                                <ColorSwatch color={value} />
-                                {item?.label}
-                            </div>
-                        )}
-                    />
-                </FormGroup>
-            </Col>
-        </Row>
-        <Row>
-            <Col md={6}>
-                <FormGroup>
-                    <ControlLabel>Active Status</ControlLabel>
-                    <div className="mt-2">
-                        <Toggle checked={formValue.isActive} onChange={(checked) => setFormValue((prev) => ({ ...prev, isActive: checked }))} checkedChildren="Active" unCheckedChildren="Inactive" />
-                    </div>
-                </FormGroup>
-            </Col>
-            <Col md={6}>
-                <FormGroup>
-                    <ControlLabel>Featured</ControlLabel>
-                    <div className="mt-2">
-                        <Toggle checked={formValue.isFeatured} onChange={(checked) => setFormValue((prev) => ({ ...prev, isFeatured: checked }))} checkedChildren="Featured" unCheckedChildren="Normal" />
-                    </div>
-                </FormGroup>
-            </Col>
-        </Row>
-    </Form>
-);
+/** Field config for <FormModal>. Depends on the parent list, so it is a function. */
+const getCategoryFields = ({ parentOptions, slugHint }) => [
+    { name: "title", label: "Category Title", required: true, placeholder: "Enter category name..." },
+    { name: "description", label: "Description", type: "textarea", placeholder: "Enter category description..." },
+    { name: "slug", label: "Slug", placeholder: slugHint },
+    { name: "parent", label: "Parent Category", type: "select", placeholder: "Select parent category (optional)", props: { data: parentOptions, searchable: true } },
+    {
+        name: "icon",
+        label: "Icon",
+        type: "select",
+        col: 6,
+        placeholder: "Select icon",
+        props: {
+            data: ICON_OPTIONS,
+            cleanable: false,
+            renderMenuItem: (label, item) => (
+                <div className="d-flex align-items-center">
+                    <i className={`fa ${item.value} mr-2`} aria-hidden="true"></i>
+                    {label}
+                </div>
+            ),
+            renderValue: (value, item) => (
+                <div className="d-flex align-items-center">
+                    <i className={`fa ${value} mr-2`} aria-hidden="true"></i>
+                    {item?.label}
+                </div>
+            ),
+        },
+    },
+    {
+        name: "color",
+        label: "Color",
+        type: "select",
+        col: 6,
+        placeholder: "Select color",
+        props: {
+            data: COLOR_OPTIONS,
+            cleanable: false,
+            renderMenuItem: (label, item) => (
+                <div className="d-flex align-items-center">
+                    <ColorSwatch color={item.value} />
+                    {label}
+                </div>
+            ),
+            renderValue: (value, item) => (
+                <div className="d-flex align-items-center">
+                    <ColorSwatch color={value} />
+                    {item?.label}
+                </div>
+            ),
+        },
+    },
+    { name: "isActive", label: "Active Status", type: "toggle", col: 6, props: { checkedChildren: "Active", unCheckedChildren: "Inactive" } },
+    { name: "isFeatured", label: "Featured", type: "toggle", col: 6, props: { checkedChildren: "Featured", unCheckedChildren: "Normal" } },
+];
 
 /* -------------------------------------------------------------------------
    Page
@@ -250,6 +207,9 @@ const CategoryList = () => {
                 .map((category) => ({ label: categoryTitle(category), value: categoryId(category) })),
         [categories, selectedCategory]
     );
+
+    const addFields = useMemo(() => getCategoryFields({ parentOptions, slugHint: "category-slug (leave empty to auto-generate)" }), [parentOptions]);
+    const editFields = useMemo(() => getCategoryFields({ parentOptions, slugHint: "category-slug" }), [parentOptions]);
 
     /* ----- Modal handlers ----- */
 
@@ -655,66 +615,39 @@ const CategoryList = () => {
             </div>
 
             {/* Add category */}
-            <Modal open={showAddModal} onClose={resetModals} size="md" className="rs-theme-dark">
-                <Modal.Header>
-                    <Modal.Title>
-                        <i className="fa fa-plus-circle mr-2" aria-hidden="true"></i>
-                        Add New Category
-                    </Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <CategoryFormFields formValue={formValue} setFormValue={setFormValue} parentOptions={parentOptions} slugHint="category-slug (leave empty to auto-generate)" />
-                </Modal.Body>
-                <Modal.Footer>
-                    <RSButton onClick={handleCreate} appearance="primary">
-                        <i className="fa fa-check mr-2" aria-hidden="true"></i>
-                        Create Category
-                    </RSButton>
-                    <RSButton onClick={resetModals} appearance="subtle">Cancel</RSButton>
-                </Modal.Footer>
-            </Modal>
+            <FormModal
+                open={showAddModal}
+                onClose={resetModals}
+                onSubmit={handleCreate}
+                title="Add New Category"
+                icon="fa-plus-circle"
+                submitLabel="Create Category"
+                formValue={formValue}
+                onChange={setFormValue}
+                fields={addFields}
+            />
 
             {/* Edit category */}
-            <Modal open={showEditModal} onClose={resetModals} size="md" className="rs-theme-dark">
-                <Modal.Header>
-                    <Modal.Title>
-                        <i className="fa fa-edit mr-2" aria-hidden="true"></i>
-                        Edit Category
-                    </Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <CategoryFormFields formValue={formValue} setFormValue={setFormValue} parentOptions={parentOptions} slugHint="category-slug" />
-                </Modal.Body>
-                <Modal.Footer>
-                    <RSButton onClick={handleUpdate} appearance="primary">
-                        <i className="fa fa-check mr-2" aria-hidden="true"></i>
-                        Update Category
-                    </RSButton>
-                    <RSButton onClick={resetModals} appearance="subtle">Cancel</RSButton>
-                </Modal.Footer>
-            </Modal>
+            <FormModal
+                open={showEditModal}
+                onClose={resetModals}
+                onSubmit={handleUpdate}
+                title="Edit Category"
+                icon="fa-edit"
+                submitLabel="Update Category"
+                formValue={formValue}
+                onChange={setFormValue}
+                fields={editFields}
+            />
 
             {/* Delete confirmation */}
-            <Modal open={showDeleteModal} onClose={resetModals} size="xs" className="rs-theme-dark">
-                <Modal.Header>
-                    <Modal.Title>
-                        <i className="fa fa-exclamation-triangle mr-2 text-danger" aria-hidden="true"></i>
-                        Delete Category?
-                    </Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <p style={{ color: "rgba(255,255,255,0.7)" }}>
-                        Are you sure you want to delete &quot;<strong style={{ color: "white" }}>{selectedCategory && categoryTitle(selectedCategory)}</strong>&quot;? This action cannot be undone.
-                    </p>
-                </Modal.Body>
-                <Modal.Footer>
-                    <RSButton onClick={handleDelete} appearance="primary" color="red">
-                        <i className="fa fa-trash mr-2" aria-hidden="true"></i>
-                        Yes, Delete It
-                    </RSButton>
-                    <RSButton onClick={resetModals} appearance="subtle">Cancel</RSButton>
-                </Modal.Footer>
-            </Modal>
+            <ConfirmModal
+                open={showDeleteModal}
+                onClose={resetModals}
+                onConfirm={handleDelete}
+                title="Delete Category?"
+                itemName={selectedCategory ? categoryTitle(selectedCategory) : ""}
+            />
         </>
     );
 };
