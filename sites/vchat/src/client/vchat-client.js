@@ -25,7 +25,7 @@ FEAR.create('theme', themeModule, {
         { id: 'blackout', name: 'Blackout', href: '/assets/css/blackout.css', swatch: '#d4161f' },
         { id: 'phantom', name: 'Phantom', href: '/assets/css/phantom.css', swatch: '#b44cff' },
     ],
-    default: 'light',
+    default: 'cyan',
     storageKey: 'vchat:theme',
     linkId: 'theme-css',
     mount: '.bar',       // was `anchor`, which the module never read
