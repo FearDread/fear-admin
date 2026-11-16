@@ -1,17 +1,35 @@
-const Fear = require('@feardread/fear');
 const path = require('path');
+const FearServer = require('../../backend/src/FEARServer');
 
-async function main() {
-    const server = new Fear.FearServer();
 
-    server.initialize({
-            root: path.resolve(),
-            app: 'build',
-            build: 'build',
-        })
+//TODO: add login command to pass auth credintials via agent terminal.
+
+function main() {
+    const server = new FearServer();
+
+    return server.initialize({
+        root: path.resolve(),
+        app: 'build',
+        build: 'build',
+    })
         .then(() => server.startServer())
-        .then(() => server.fear.getLogger().warn('AI Agent Server Running.'))
-        .catch((error) => { process.exit(1);});
+        .then(() => {
+            server.fear.getLogger().warn('AI Agent Server Running.')
+            let stopping = false;
+
+            const stop = (signal) => {
+                if (stopping) return;
+                stopping = true;
+
+                server.fear.getLogger().warn(`${signal} received, shutting down`);
+
+                setTimeout(() => process.exit(1), 8000).unref();
+                Promise.resolve(server.fear.shutdown()).finally(() => process.exit(0));
+            };
+            ['SIGINT', 'SIGTERM'].forEach((signal) => process.on(signal, () => stop(signal)));
+        })
+
+        .catch((error) => { process.exit(1); });
 }
 
 main().catch((error) => {

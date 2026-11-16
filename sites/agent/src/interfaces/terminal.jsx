@@ -144,7 +144,19 @@ export default function SecurityAgentTerminal() {
       // Handle special API routes
       let result;
       
-      switch(command) {
+        switch (command) {
+
+            case 'login':
+                setApiBaseUrl('http://localhost:4000/fear/api/auth');
+                let output = 'Enter login credentials:'
+                result = await callAgentApi('/login', 'POST', {
+                    email: args[0],
+                    password: args[1]
+                });
+
+                if (result && result.success) output += ' Authorization Successful.';
+                addOutput(output);
+
         case 'status':
           result = await callAgentAPI('/status', 'GET');
           if (result.success) {
