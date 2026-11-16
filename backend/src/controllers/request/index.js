@@ -85,6 +85,7 @@ auth.fail = fail;
 
 module.exports = {
     send, ok, created, list, fail, auth, me, logout, noStore,
+    error: fail,
     success: ok,
     fear: { success: send, fail },
     AuthResponse: { success: auth, error: fail },

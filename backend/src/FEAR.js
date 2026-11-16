@@ -234,6 +234,8 @@ _________________________
             const mailinfo = require('./libs/emailer/info');
             const smtp = require('./libs/emailer/smtp');
 
+            // emailer/smtp.js reads `service`; `mailService` is kept for anything else that looks there
+            mailinfo.service = 'google';
             mailinfo.mailService = 'google';
             this.mailinfo = mailinfo;
 

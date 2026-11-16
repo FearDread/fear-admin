@@ -3,15 +3,19 @@
 const crypto = require('crypto');
 const User = require('../../models/user');
 const TokenService = require('./token');
+const response = require('../request');
 
 const MIN_PASSWORD_LENGTH = 8;
 const MAX_PASSWORD_LENGTH = 128;
-const RESET_EXPIRES_IN = '10 minutes'; // keep in sync with createPasswordResetToken()
+const RESET_EXPIRES_MINUTES = 10; // passed to createPasswordResetToken(), so the two can't drift apart
+const RESET_EXPIRES_IN = `${RESET_EXPIRES_MINUTES} minutes`;
+const RESET_COOLDOWN_MS = 60 * 1000; // at most one reset email per account per minute
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 // Same answer whether or not the email has an account (anti-enumeration).
 const FORGOT_MESSAGE = 'If an account exists for that email, a reset link has been sent.';
 
+/*
 const response = {
     success: (res, data, statusCode = 200, message = 'Operation successful') => {
         return res.status(statusCode).json({ success: true, message, data, result: data });
@@ -27,27 +31,40 @@ const response = {
 };
 
 // Recovery responses must never be cached by browsers, proxies or the CDN.
-const noStore = (res) => {
+const response.noStore = (res) => {
     res.set('Cache-Control', 'no-store');
     res.set('Pragma', 'no-cache');
 };
-
+*/
 const hashToken = (token) => crypto.createHash('sha256').update(token).digest('hex');
 
-const getFrontendOrigin = () => {
-    const origin =
-        process.env.FRONTEND_URL ||
-        process.env.NEXT_PUBLIC_APP_URL ||
-        'https://efear.shop';
-
-    return origin ? origin.replace(/\/+$/, '') : null;
-};
+const getFrontendOrigin = () =>
+    (process.env.FRONTEND_URL || process.env.NEXT_PUBLIC_APP_URL || 'https://efear.shop').replace(/\/+$/, '');
 
 const passwordProblem = (password) => {
     if (typeof password !== 'string' || !password) return 'New password is required';
     if (password.length < MIN_PASSWORD_LENGTH) return `Password must be at least ${MIN_PASSWORD_LENGTH} characters`;
     if (password.length > MAX_PASSWORD_LENGTH) return `Password must be at most ${MAX_PASSWORD_LENGTH} characters`;
     return null;
+};
+
+/* ----- small helpers for the emails ----- */
+
+// Names come from the user's own profile and go into HTML templates unescaped.
+const escapeHtml = (value) =>
+    String(value == null ? '' : value)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+
+const firstNameOf = (user) => user.firstName || String(user.displayName || '').split(' ')[0] || 'there';
+
+const formatDate = (date) =>
+    `${date.toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'UTC' })} UTC`;
+
+// "jo***@example.com". Also safe for one-character names.
+const maskEmail = (email) => {
+    const [name, domain = ''] = String(email).split('@');
+    return `${name.slice(0, 2)}***@${domain}`;
 };
 
 /**
@@ -69,6 +86,23 @@ const assertSent = (result) => {
     return result;
 };
 
+const sendResetEmail = (mailService, user, resetUrl) =>
+    mailService.sendEmail({
+        to: user.email,
+        subject: 'Password Reset Request',
+        html: mailService.templates.passwordReset({
+            firstName: escapeHtml(firstNameOf(user)),
+            email: escapeHtml(user.email),
+            expiresAt: formatDate(user.passwordResetExpires),
+            expiresIn: RESET_EXPIRES_IN,
+            resetUrl
+        }),
+        text:
+            `Hi ${firstNameOf(user)},\n\n` +
+            `Use this link to reset your eFear password. It expires in ${RESET_EXPIRES_IN}:\n\n${resetUrl}\n\n` +
+            `If you didn't request this, you can ignore this email.`
+    }).then(assertSent);
+
 // Never rejects: callers fire it without awaiting.
 const sendPasswordChangedEmail = (req, user) =>
     Promise.resolve()
@@ -77,8 +111,14 @@ const sendPasswordChangedEmail = (req, user) =>
             return mailService.sendEmail({
                 to: user.email,
                 subject: 'Password Changed Successfully',
-                html: mailService.templates.passwordResetSuccessTemplate(user.email),
-                text: mailService.templates.generatePlainText({ email: user.email }, 'passwordResetSuccess')
+                html: mailService.templates.passwordChanged({
+                    firstName: escapeHtml(firstNameOf(user)),
+                    email: escapeHtml(user.email),
+                    changedAt: formatDate(new Date())
+                }),
+                text:
+                    `Hi ${firstNameOf(user)},\n\nThe password for your eFear account was just changed. ` +
+                    `If this wasn't you, reset your password right away and contact support.`
             });
         })
         .then(assertSent)
@@ -96,9 +136,9 @@ const stampPasswordChanged = (user) => {
     user.passwordChangedAt = new Date(Date.now() - 1000);
 };
 
-// PUT /auth/update-password  (route must run Auth.isAuthorized first)
+// PUT /update-password  (route must run Auth.isAuthorized first)
 exports.updatePassword = (req, res) => {
-    noStore(res);
+    response.noStore(res);
 
     const userId = req.user && req.user._id;
     if (!userId) {
@@ -156,9 +196,9 @@ exports.updatePassword = (req, res) => {
         });
 };
 
-// POST /auth/forgot-password
+// POST /forgot-password
 exports.forgotPasswordToken = (req, res) => {
-    noStore(res);
+    response.noStore(res);
 
     const rawEmail = req.body && req.body.email;
     const email = typeof rawEmail === 'string' ? rawEmail.trim().toLowerCase() : '';
@@ -168,10 +208,6 @@ exports.forgotPasswordToken = (req, res) => {
     }
 
     const origin = getFrontendOrigin();
-    if (!origin) {
-        console.error('[password] FRONTEND_URL must be set to build password reset links');
-        return response.error(res, 500, 'Password reset is temporarily unavailable');
-    }
 
     let mailService;
     try {
@@ -190,20 +226,18 @@ exports.forgotPasswordToken = (req, res) => {
     return User.findOne({ email, status: { $nin: ['deleted', 'suspended'] } })
         .then((user) => {
             if (!user) return null;
+
+            // A link went out seconds ago: don't let this endpoint be used to flood someone's inbox.
+            const issuedAt = user.passwordResetExpires
+                ? user.passwordResetExpires.getTime() - RESET_EXPIRES_MINUTES * 60 * 1000
+                : 0;
+            if (Date.now() - issuedAt < RESET_COOLDOWN_MS) return null;
+
             foundUser = user;
+            const token = user.createPasswordResetToken(RESET_EXPIRES_MINUTES);
 
-            return Promise.resolve(user.createPasswordResetToken())
-                .then((token) => user.save({ validateBeforeSave: false }).then(() => token))
-                .then((token) => {
-                    const resetURL = `${origin}/reset-password/${encodeURIComponent(token)}`;
-
-                    return mailService.sendEmail({
-                        to: user.email,
-                        subject: 'Password Reset Request',
-                        html: mailService.templates.passwordResetTemplate(resetURL, user.email),
-                        text: mailService.templates.generatePlainText({ resetURL, email: user.email }, 'passwordReset')
-                    }).then(assertSent);
-                });
+            return user.save({ validateBeforeSave: false })
+                .then(() => sendResetEmail(mailService, user, `${origin}/reset-password/${token}`));
         })
         .catch((error) => {
             console.error('[password] forgot-password failed:', error);
@@ -219,9 +253,9 @@ exports.forgotPasswordToken = (req, res) => {
         });
 };
 
-// POST /auth/reset-password/:token
+// POST /reset-password/:token
 exports.resetPassword = (req, res) => {
-    noStore(res);
+    response.noStore(res);
 
     const { token } = req.params;
     const password = req.body && req.body.password;
@@ -247,16 +281,17 @@ exports.resetPassword = (req, res) => {
             user.password = password;
             user.passwordResetToken = undefined; // single use
             user.passwordResetExpires = undefined;
+            // Someone locked out by failed logins is exactly who uses this flow
+            user.loginAttempts = 0;
+            user.lockUntil = undefined;
             stampPasswordChanged(user); // kills any session an attacker may hold
 
             return user.save().then(() => {
                 sendPasswordChangedEmail(req, user); // intentionally not awaited
 
-                // No user object, no cookie, no auto-login: the storefront sends the
-                // person to /login. Also clear any stale cookie in THIS browser.
-                // eslint-disable-next-line no-unused-vars
-                const { maxAge, expires, ...cookieOpts } = TokenService.getCookieOptions();
-                res.clearCookie('jwt', cookieOpts);
+                // No user object, no cookie, no auto-login: the page sends the person to
+                // sign in. Also clear any stale cookie in THIS browser.
+                res.clearCookie('jwt', TokenService.getClearCookieOptions());
 
                 return response.success(res, { reset: true }, 200, 'Password reset successfully');
             });
@@ -268,9 +303,9 @@ exports.resetPassword = (req, res) => {
         });
 };
 
-// GET /auth/verify-reset-token/:token: the reset page calls this before showing the form
+// GET /verify-reset-token/:token: the reset page calls this before showing the form
 exports.verifyResetToken = (req, res) => {
-    noStore(res);
+    response.noStore(res);
 
     const { token } = req.params;
 
@@ -283,19 +318,11 @@ exports.verifyResetToken = (req, res) => {
         passwordResetExpires: { $gt: Date.now() }
     })
         .then((user) => {
-            // BUG FIX: this used to be `if (!user) response.error(...)` with no
-            // `return`, so it sent the 400 and then crashed on `user.email`, whose
-            // catch tried to send a second response ("headers already sent").
             if (!user) {
                 return response.error(res, 400, 'Token expired or invalid');
             }
 
-            return response.success(
-                res,
-                { valid: true, email: user.email.replace(/(.{2})(.*)(@.*)/, '$1***$3') },
-                200,
-                'Token is valid'
-            );
+            return response.success(res, { valid: true, email: maskEmail(user.email) }, 200, 'Token is valid');
         })
         .catch((error) => {
             console.error('[password] verify token failed:', error);
