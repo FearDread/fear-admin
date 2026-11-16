@@ -1,437 +1,469 @@
+'use strict';
+
+const util = require('util');
+const { AsyncLocalStorage } = require('async_hooks');
 const SecurityAgent = require('../libs/agent');
+const policy = require('../libs/agent/policy');
+
+const COMMAND_TIMEOUT_MS = 60 * 1000;
+const MAX_CONCURRENT = 3;
+const MAX_OUTPUT_BYTES = 200 * 1024;
+const MAX_BATCH = 10;
+const RATE_LIMIT = 60; // commands per user per window
+const RATE_WINDOW_MS = 60 * 1000;
+
+const BUILT_IN_DESCRIPTIONS = {
+    help: 'Show help information',
+    status: 'Show system status',
+    history: 'Show command history',
+    banner: 'Show banner',
+    version: 'Show version info',
+    tips: 'Show tips and tricks',
+};
+
+// Error shape matches the auth controller's response.error
+const fail = (res, status, message) => res.status(status).json({ success: false, message });
+
+// eslint-disable-next-line no-control-regex
+const stripAnsi = (text) => text.replace(/\x1b\[[0-9;]*[A-Za-z]/g, '');
+
+class CommandTimeout extends Error { }
+
+const withTimeout = (promise, ms) =>
+    new Promise((resolve, reject) => {
+        const timer = setTimeout(() => reject(new CommandTimeout('Command timed out')), ms);
+        promise.then(
+            (value) => { clearTimeout(timer); resolve(value); },
+            (error) => { clearTimeout(timer); reject(error); }
+        );
+    });
+
+/* -------------------------------------------------------------------------
+   Output capture
+
+   The agent's modules print with console.log, so a command's "output" is whatever it logs while it
+   runs. The old code swapped console.log globally for the duration of a command. With concurrent
+   requests that mixes their output, and it also swallowed unrelated log lines from the rest of the
+   server (request bodies, user objects) into the response. Here console.log is patched once and
+   routes to a buffer only for calls made inside that command's own async context.
+   ---------------------------------------------------------------------- */
+
+const outputStore = new AsyncLocalStorage();
+
+if (!console.log.__agentCapture) {
+    const rawLog = console.log;
+    const patched = function (...args) {
+        const sink = outputStore.getStore();
+        if (sink) return sink.write(util.format(...args));
+        return rawLog.apply(this, args);
+    };
+    patched.__agentCapture = true;
+    console.log = patched;
+}
+
+const createSink = () => {
+    const lines = [];
+    let bytes = 0;
+    let truncated = false;
+
+    return {
+        write(line) {
+            if (truncated) return;
+            bytes += Buffer.byteLength(line) + 1;
+            if (bytes > MAX_OUTPUT_BYTES) {
+                truncated = true;
+                lines.push('... output truncated ...');
+                return;
+            }
+            lines.push(line);
+        },
+        text: () => stripAnsi(lines.join('\n')),
+    };
+};
+
+const captureOutput = async (commandFn) => {
+    const sink = createSink();
+    await outputStore.run(sink, () => withTimeout(Promise.resolve().then(commandFn), COMMAND_TIMEOUT_MS));
+    return sink.text();
+};
+
+/* -------------------------------------------------------------------------
+   Controller
+
+   Every handler requires an admin. The route file enforces this too; checking here as well means
+   the dangerous part still fails closed if a route is ever mounted without its middleware.
+   ---------------------------------------------------------------------- */
 
 class AgentController {
-  constructor() {
-    this.agentInstance = null;
-    this.isInitialized = false;
-  }
-
-  /**
-   * Get or create agent instance (singleton pattern)
-   */
-  getInstance() {
-    if (!this.agentInstance) {
-      this.agentInstance = new SecurityAgent();
-      this.isInitialized = false;
+    constructor() {
+        this.agentInstance = null;
+        this.isInitialized = false;
+        this.activeCommands = 0;
+        this.rateLog = new Map(); // userId -> [timestamps]
     }
-    return this.agentInstance;
-  }
 
-  /**
-   * Initialize the security agent
-   */
-  async initialize(req, res, handler, logger) {
-    try {
-      const agent = this.getInstance();
-      
-      if (this.isInitialized) {
-        return res.status(200).json({
-          success: true,
-          message: 'Agent already initialized',
-          initialized: true
-        });
-      }
-
-      // Agent auto-loads modules in constructor
-      this.isInitialized = true;
-
-      logger.info('Agent initialized via API');
-      
-      return handler.success(res, {
-        success: true,
-        message: 'Agent initialized successfully',
-        initialized: true,
-        modulesLoaded: Object.keys(agent.modules).length,
-        commandsRegistered: Object.keys(agent.commands).length
-      });
-
-    } catch (error) {
-      logger.error('Agent initialization error:', error);
-      return new handler.error(res, error.message || 'Failed to initialize agent', 500);
+    /** Get or create agent instance (singleton pattern) */
+    getInstance() {
+        if (!this.agentInstance) {
+            this.agentInstance = new SecurityAgent();
+            this.isInitialized = false;
+        }
+        return this.agentInstance;
     }
-  }
 
-  /**
-   * Execute a single command
-   */
-  async executeCommand(req, res, handler, logger) {
-    try {
-      const { command, args } = req.body;
-
-      if (!command) {
-        return handler.error(res, 'Command is required', 400);
-      }
-
-      const agent = this.getInstance();
-      
-      if (!this.isInitialized) {
-        this.isInitialized = true;
-      }
-
-      // Check if command exists
-      if (!agent.commands[command]) {
-        return handler.error(res, `Unknown command: ${command}`, 400);
-      }
-
-      // Parse args
-      const parsedArgs = Array.isArray(args) ? args : (args ? [args] : []);
-
-      // Execute command and capture output
-      const output = await this.captureCommandOutput(
-        () => agent.commands[command](parsedArgs)
-      );
-
-      logger.info(`Agent command executed: ${command}`);
-      
-      return handler.success(res, {
-        success: true,
-        command,
-        output,
-        executedAt: new Date().toISOString()
-      });
-
-    } catch (error) {
-      logger.error('Agent command execution error:', error);
-      return new handler.error(res, error.message || 'Command execution failed', 500);
+    logger(req) {
+        const fear = req.app && req.app.get('fear');
+        return (fear && fear.getLogger()) || console;
     }
-  }
 
-  /**
-   * Execute multiple commands in sequence
-   */
-  async executeBatch(req, res, handler, logger) {
-    try {
-      const { commands } = req.body;
+    /** Sends the 401/403 itself and returns null, or returns the admin user. */
+    authorize(req, res) {
+        const user = req.user;
 
-      if (!Array.isArray(commands) || commands.length === 0) {
-        return handler.error(res, 'Commands array is required', 400);
-      }
+        if (!user) {
+            fail(res, 401, 'Authentication required');
+            return null;
+        }
+        if (user.role !== 'admin') {
+            this.logger(req).warn(`FEAR agent :: non-admin blocked :: user ${user._id} :: ${req.method} ${req.originalUrl}`);
+            fail(res, 403, 'Admin access required');
+            return null;
+        }
+        return user;
+    }
 
-      const agent = this.getInstance();
-      
-      if (!this.isInitialized) {
-        this.isInitialized = true;
-      }
+    withinRateLimit(userId) {
+        const key = String(userId);
+        const now = Date.now();
+        const recent = (this.rateLog.get(key) || []).filter((t) => now - t < RATE_WINDOW_MS);
 
-      const results = [];
+        if (recent.length >= RATE_LIMIT) {
+            this.rateLog.set(key, recent);
+            return false;
+        }
+        recent.push(now);
+        this.rateLog.set(key, recent);
+        return true;
+    }
 
-      for (const cmdConfig of commands) {
-        const { command, args } = cmdConfig;
-        
-        if (!command) {
-          results.push({
-            success: false,
-            error: 'Command name is required'
-          });
-          continue;
+    /** The commands this API exposes AND this server actually loaded. */
+    exposedCommands(agent) {
+        return policy.list().filter((command) => typeof agent.commands[command] === 'function');
+    }
+
+    describeCommand(agent, command) {
+        const mapping = agent.mappings && agent.mappings[command];
+        return mapping
+            ? { description: mapping.description, module: mapping.module }
+            : { description: BUILT_IN_DESCRIPTIONS[command] || '', module: 'core' };
+    }
+
+    /**
+     * The one place a command runs. Returns { ok, status, message } or { ok: true, output }.
+     * Used by single execution, batch and the module-specific routes.
+     */
+    async execute(req, user, command, rawArgs) {
+        const logger = this.logger(req);
+        const who = `user ${user._id} (${user.email || 'no email'}) ip ${req.ip}`;
+
+        if (!policy.isAllowed(command)) {
+            logger.warn(`FEAR agent :: denied :: ${who} :: ${JSON.stringify(String(command)).slice(0, 60)}`);
+            return { ok: false, status: 403, message: 'Command not available' };
         }
 
-        if (!agent.commands[command]) {
-          results.push({
-            success: false,
-            command,
-            error: `Unknown command: ${command}`
-          });
-          continue;
+        const normalized = policy.normalizeArgs(rawArgs);
+        if (normalized.error) return { ok: false, status: 400, message: normalized.error };
+
+        const problem = policy.validate(command, normalized.args);
+        if (problem) return { ok: false, status: 400, message: problem };
+
+        const agent = this.getInstance();
+        this.isInitialized = true;
+
+        const run = agent.commands[command];
+        if (typeof run !== 'function') {
+            return { ok: false, status: 503, message: 'Command is not loaded on this server' };
         }
 
+        if (!this.withinRateLimit(user._id)) {
+            return { ok: false, status: 429, message: 'Too many commands, slow down' };
+        }
+        if (this.activeCommands >= MAX_CONCURRENT) {
+            return { ok: false, status: 429, message: 'The agent is busy, try again shortly' };
+        }
+
+        this.activeCommands++;
         try {
-          const parsedArgs = Array.isArray(args) ? args : (args ? [args] : []);
-          const output = await this.captureCommandOutput(
-            () => agent.commands[command](parsedArgs)
-          );
+            const output = await captureOutput(() => run(normalized.args));
+            logger.info(`FEAR agent :: ran ${command} :: ${who} :: args ${JSON.stringify(normalized.args.join(' ').slice(0, 100))}`);
+            return { ok: true, output };
+        } catch (error) {
+            if (error instanceof CommandTimeout) {
+                logger.error(`FEAR agent :: timed out ${command} :: ${who}`);
+                return { ok: false, status: 504, message: 'Command timed out' };
+            }
+            logger.error(`FEAR agent :: ${command} failed :: ${who} :: ${error.message}`);
+            const detail = process.env.NODE_ENV === 'production' ? 'Command failed' : error.message || 'Command failed';
+            return { ok: false, status: 500, message: detail };
+        } finally {
+            this.activeCommands--;
+        }
+    }
 
-          results.push({
+    /** Run one command and send the result. Also what the module-specific routes call. */
+    async runCommand(req, res, command, rawArgs) {
+        const user = this.authorize(req, res);
+        if (!user) return null;
+
+        const result = await this.execute(req, user, command, rawArgs);
+        if (!result.ok) return fail(res, result.status, result.message);
+
+        return res.status(200).json({
             success: true,
             command,
-            output
-          });
+            output: result.output,
+            executedAt: new Date().toISOString(),
+        });
+    }
+
+    /** POST /initialize */
+    async initialize(req, res) {
+        if (!this.authorize(req, res)) return null;
+
+        try {
+            const agent = this.getInstance();
+            const already = this.isInitialized;
+            this.isInitialized = true;
+
+            return res.status(200).json({
+                success: true,
+                message: already ? 'Agent already initialized' : 'Agent initialized successfully',
+                initialized: true,
+                modulesLoaded: Object.keys(agent.modules).length,
+                commandsRegistered: this.exposedCommands(agent).length,
+            });
         } catch (error) {
-          results.push({
-            success: false,
-            command,
-            error: error.message
-          });
+            this.logger(req).error(`FEAR agent :: initialize failed :: ${error.message}`);
+            return fail(res, 500, 'Failed to initialize agent');
         }
-      }
-
-      logger.info(`Agent batch execution: ${commands.length} commands`);
-      
-      return handler.success(res, {
-        success: true,
-        totalCommands: commands.length,
-        results,
-        executedAt: new Date().toISOString()
-      });
-
-    } catch (error) {
-      logger.error('Agent batch execution error:', error);
-      return handler.error(res, error.message || 'Batch execution failed', 500);
     }
-  }
 
-  /**
-   * Get all available commands
-   */
-  async getCommands(req, res, handler, logger) {
-    try {
-      const agent = this.getInstance();
-      
-      if (!this.isInitialized) {
-        this.isInitialized = true;
-      }
-
-      const commands = {};
-      
-      // Build command list with descriptions
-      Object.entries(agent.mappings).forEach(([cmd, config]) => {
-        commands[cmd] = {
-          description: config.description,
-          module: config.module,
-          method: config.method
-        };
-      });
-
-      // Add built-in commands
-      const builtInCommands = {
-        'help': { description: 'Show help information', module: 'core', method: 'showHelp' },
-        'status': { description: 'Show system status', module: 'core', method: 'showStatus' },
-        'history': { description: 'Show command history', module: 'core', method: 'showHistory' },
-        'clear': { description: 'Clear screen', module: 'core', method: 'clearScreen' },
-        'banner': { description: 'Show banner', module: 'core', method: 'showBanner' },
-        'version': { description: 'Show version info', module: 'core', method: 'showVersion' },
-        'tips': { description: 'Show tips and tricks', module: 'core', method: 'showTips' },
-        'exit': { description: 'Exit agent', module: 'core', method: 'exit' }
-      };
-
-      Object.assign(commands, builtInCommands);
-
-      return handler.success(res, {
-        success: true,
-        totalCommands: Object.keys(commands).length,
-        commands
-      });
-
-    } catch (error) {
-      logger.error('Error fetching commands:', error);
-      return handler.error(res, 'Failed to fetch commands', 500);
+    /** POST /execute  { command, args } */
+    async executeCommand(req, res) {
+        const { command, args } = req.body || {};
+        if (!command) {
+            return this.authorize(req, res) && fail(res, 400, 'Command is required');
+        }
+        return this.runCommand(req, res, command, args);
     }
-  }
 
-  /**
-   * Check if a specific command exists
-   */
-  async checkCommand(req, res, handler, logger) {
-    try {
-      const { command } = req.params;
-      const agent = this.getInstance();
-      
-      if (!this.isInitialized) {
-        this.isInitialized = true;
-      }
+    /** POST /batch  { commands: [{ command, args }] }, run in order */
+    async executeBatch(req, res) {
+        const user = this.authorize(req, res);
+        if (!user) return null;
 
-      const exists = !!agent.commands[command];
-      const config = agent.mappings[command];
+        const { commands } = req.body || {};
+        if (!Array.isArray(commands) || commands.length === 0) {
+            return fail(res, 400, 'Commands array is required');
+        }
+        if (commands.length > MAX_BATCH) {
+            return fail(res, 400, `A batch can hold at most ${MAX_BATCH} commands`);
+        }
 
-      return handler.success(res, {
-        success: true,
-        command,
-        exists,
-        details: config || null
-      });
+        const results = [];
+        for (const item of commands) {
+            const command = item && item.command;
+            if (!command) {
+                results.push({ success: false, error: 'Command name is required' });
+                continue;
+            }
 
-    } catch (error) {
-      logger.error('Error checking command:', error);
-      return handler.error(res, 'Failed to check command', 500);
-    }
-  }
+            const result = await this.execute(req, user, command, item.args);
+            results.push(
+                result.ok
+                    ? { success: true, command, output: result.output }
+                    : { success: false, command: typeof command === 'string' ? command.slice(0, 40) : undefined, error: result.message }
+            );
+        }
 
-  /**
-   * Get agent and module status
-   */
-  async getStatus(req, res, handler, logger) {
-    try {
-      const agent = this.getInstance();
-      
-      if (!this.isInitialized) {
-        return handler.success(res, {
-          success: true,
-          initialized: false,
-          message: 'Agent not initialized'
+        return res.status(200).json({
+            success: true,
+            totalCommands: commands.length,
+            results,
+            executedAt: new Date().toISOString(),
         });
-      }
+    }
 
-      // Get module status
-      const modules = {};
-      agent.definitions.forEach(moduleDef => {
-        const module = agent.modules[moduleDef.name];
-        modules[moduleDef.name] = {
-          displayName: moduleDef.displayName,
-          loaded: !!module,
-          status: module ? 'ready' : 'unavailable'
+    /** GET /commands: only what this API can actually run */
+    async getCommands(req, res) {
+        if (!this.authorize(req, res)) return null;
+
+        try {
+            const agent = this.getInstance();
+            const commands = {};
+            this.exposedCommands(agent).forEach((command) => {
+                commands[command] = this.describeCommand(agent, command);
+            });
+
+            return res.status(200).json({ success: true, totalCommands: Object.keys(commands).length, commands });
+        } catch (error) {
+            this.logger(req).error(`FEAR agent :: list commands failed :: ${error.message}`);
+            return fail(res, 500, 'Failed to fetch commands');
+        }
+    }
+
+    /** GET /commands/:command */
+    async checkCommand(req, res) {
+        if (!this.authorize(req, res)) return null;
+
+        try {
+            const { command } = req.params;
+            const agent = this.getInstance();
+            const exists = policy.isAllowed(command) && typeof agent.commands[command] === 'function';
+
+            return res.status(200).json({
+                success: true,
+                command,
+                exists,
+                details: exists ? this.describeCommand(agent, command) : null,
+            });
+        } catch (error) {
+            this.logger(req).error(`FEAR agent :: check command failed :: ${error.message}`);
+            return fail(res, 500, 'Failed to check command');
+        }
+    }
+
+    /** GET /status */
+    async getStatus(req, res) {
+        if (!this.authorize(req, res)) return null;
+
+        try {
+            if (!this.isInitialized) {
+                return res.status(200).json({ success: true, initialized: false, message: 'Agent not initialized' });
+            }
+
+            const agent = this.getInstance();
+
+            const modules = {};
+            agent.definitions.forEach((moduleDef) => {
+                const module = agent.modules[moduleDef.name];
+                modules[moduleDef.name] = {
+                    displayName: moduleDef.displayName,
+                    loaded: !!module,
+                    status: module ? 'ready' : 'unavailable',
+                };
+
+                if (moduleDef.name === 'aiAnalyzer' && module) {
+                    modules[moduleDef.name].configured = module.isConfigured ? module.isConfigured() : false;
+                    modules[moduleDef.name].provider = module.getProviderName ? module.getProviderName() : null;
+                }
+                if (moduleDef.name === 'aiChat' && module) {
+                    modules[moduleDef.name].configured = module.isConfigured ? module.isConfigured() : false;
+                }
+            });
+
+            const services = {};
+            agent.backgroundServices.forEach((service, name) => {
+                services[name] = agent.serviceStatus.get(name) || 'stopped';
+            });
+
+            return res.status(200).json({
+                success: true,
+                initialized: true,
+                version: this.getVersionInfo(agent),
+                modules,
+                services,
+                stats: {
+                    modulesLoaded: Object.keys(agent.modules).length,
+                    commandsAvailable: this.exposedCommands(agent).length,
+                    servicesRunning: Array.from(agent.serviceStatus.values()).filter((s) => s === 'running').length,
+                    commandHistory: agent.commandHistory.length,
+                },
+            });
+        } catch (error) {
+            this.logger(req).error(`FEAR agent :: status failed :: ${error.message}`);
+            return fail(res, 500, 'Failed to fetch status');
+        }
+    }
+
+    /** GET /history?limit= */
+    async getHistory(req, res) {
+        if (!this.authorize(req, res)) return null;
+
+        try {
+            if (!this.isInitialized) {
+                return res.status(200).json({ success: true, history: [], message: 'Agent not initialized' });
+            }
+
+            const agent = this.getInstance();
+            const requested = parseInt(req.query.limit, 10);
+            const limit = Number.isNaN(requested) ? 20 : Math.min(Math.max(requested, 1), 100);
+
+            return res.status(200).json({
+                success: true,
+                total: agent.commandHistory.length,
+                limit,
+                history: agent.commandHistory.slice(-limit),
+            });
+        } catch (error) {
+            this.logger(req).error(`FEAR agent :: history failed :: ${error.message}`);
+            return fail(res, 500, 'Failed to fetch history');
+        }
+    }
+
+    /** GET /version */
+    async getVersion(req, res) {
+        if (!this.authorize(req, res)) return null;
+
+        try {
+            return res.status(200).json({ success: true, ...this.getVersionInfo(this.getInstance()) });
+        } catch (error) {
+            this.logger(req).error(`FEAR agent :: version failed :: ${error.message}`);
+            return fail(res, 500, 'Failed to fetch version');
+        }
+    }
+
+    /** POST /shutdown: stops the agent's services and drops the instance (the server keeps running) */
+    async shutdown(req, res) {
+        const user = this.authorize(req, res);
+        if (!user) return null;
+
+        try {
+            const agent = this.getInstance();
+
+            const stoppedServices = [];
+            agent.backgroundServices.forEach((service, name) => {
+                if (agent.serviceStatus.get(name) === 'running') {
+                    agent.stopService(name);
+                    stoppedServices.push(name);
+                }
+            });
+
+            if (agent.modules.trafficMonitor && agent.modules.trafficMonitor.stopMonitoring) {
+                agent.modules.trafficMonitor.stopMonitoring();
+            }
+
+            this.isInitialized = false;
+            this.agentInstance = null;
+
+            this.logger(req).info(`FEAR agent :: shutdown :: user ${user._id}`);
+            return res.status(200).json({ success: true, message: 'Agent shutdown successfully', servicesStopped: stoppedServices });
+        } catch (error) {
+            this.logger(req).error(`FEAR agent :: shutdown failed :: ${error.message}`);
+            return fail(res, 500, 'Failed to shutdown agent');
+        }
+    }
+
+    getVersionInfo(agent) {
+        return {
+            version: '2.4.0',
+            nodeVersion: process.version,
+            platform: process.platform,
+            architecture: process.arch,
+            modulesLoaded: Object.keys(agent.modules).length,
+            commandsAvailable: this.exposedCommands(agent).length,
         };
-
-        // Special handling for AI modules
-        if (moduleDef.name === 'aiAnalyzer' && module) {
-          modules[moduleDef.name].configured = module.isConfigured ? module.isConfigured() : false;
-          modules[moduleDef.name].provider = module.getProviderName ? module.getProviderName() : null;
-        }
-        if (moduleDef.name === 'aiChat' && module) {
-          modules[moduleDef.name].configured = module.isConfigured ? module.isConfigured() : false;
-        }
-      });
-
-      // Get background services status
-      const services = {};
-      agent.backgroundServices.forEach((service, name) => {
-        services[name] = agent.serviceStatus.get(name) || 'stopped';
-      });
-
-      const version = this.getVersionInfo(agent);
-
-      return handler.success(res, {
-        success: true,
-        initialized: true,
-        version,
-        modules,
-        services,
-        stats: {
-          modulesLoaded: Object.keys(agent.modules).length,
-          commandsAvailable: Object.keys(agent.commands).length,
-          servicesRunning: Array.from(agent.serviceStatus.values()).filter(s => s === 'running').length,
-          commandHistory: agent.commandHistory.length
-        }
-      });
-
-    } catch (error) {
-      logger.error('Error fetching agent status:', error);
-      return handler.error(res, 'Failed to fetch status', 500);
     }
-  }
-
-  /**
-   * Get command history
-   */
-  async getHistory(req, res, handler, logger) {
-    try {
-      const { limit } = req.query;
-      const agent = this.getInstance();
-      
-      if (!this.isInitialized) {
-        return handler.success(res, {
-          success: true,
-          history: [],
-          message: 'Agent not initialized'
-        });
-      }
-
-      const limitNum = limit ? parseInt(limit) : 20;
-      const history = agent.commandHistory.slice(-limitNum);
-
-      return handler.success(res, {
-        success: true,
-        total: agent.commandHistory.length,
-        limit: limitNum,
-        history
-      });
-
-    } catch (error) {
-      logger.error('Error fetching history:', error);
-      return handler.error(res, 'Failed to fetch history', 500);
-    }
-  }
-
-  /**
-   * Get agent version information
-   */
-  async getVersion(req, res, handler, logger) {
-    try {
-      const agent = this.getInstance();
-      const version = this.getVersionInfo(agent);
-
-      return handler.success(res, {
-        success: true,
-        ...version
-      });
-
-    } catch (error) {
-      logger.error('Error fetching version:', error);
-      return handler.error(res, 'Failed to fetch version', 500);
-    }
-  }
-
-  /**
-   * Shutdown the agent
-   */
-  async shutdown(req, res, handler, logger) {
-    try {
-      const agent = this.getInstance();
-
-      // Stop all background services
-      const stoppedServices = [];
-      agent.backgroundServices.forEach((service, name) => {
-        if (agent.serviceStatus.get(name) === 'running') {
-          agent.stopService(name);
-          stoppedServices.push(name);
-        }
-      });
-
-      // Cleanup modules
-      if (agent.modules.trafficMonitor && agent.modules.trafficMonitor.stopMonitoring) {
-        agent.modules.trafficMonitor.stopMonitoring();
-      }
-
-      this.isInitialized = false;
-      this.agentInstance = null;
-
-      logger.info('Agent shutdown via API');
-      
-      return handler.success(res, {
-        success: true,
-        message: 'Agent shutdown successfully',
-        servicesStopped: stoppedServices
-      });
-
-    } catch (error) {
-      logger.error('Agent shutdown error:', error);
-      return handler.error(res, 'Failed to shutdown agent', 500);
-    }
-  }
-
-  /**
-   * Helper: Capture command output
-   */
-  async captureCommandOutput(commandFn) {
-    const originalLog = console.log;
-    const output = [];
-
-    console.log = (...args) => {
-      output.push(args.map(arg => 
-        typeof arg === 'string' ? arg : JSON.stringify(arg)
-      ).join(' '));
-    };
-
-    try {
-      await commandFn();
-      return output.join('\n');
-    } finally {
-      console.log = originalLog;
-    }
-  }
-
-  /**
-   * Helper: Get version info
-   */
-  getVersionInfo(agent) {
-    return {
-      version: '2.4.0',
-      nodeVersion: process.version,
-      platform: process.platform,
-      architecture: process.arch,
-      modulesLoaded: Object.keys(agent.modules).length,
-      commandsAvailable: Object.keys(agent.commands).length
-    };
-  }
 }
 
 // Export singleton instance
