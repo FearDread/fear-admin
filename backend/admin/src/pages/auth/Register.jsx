@@ -19,9 +19,6 @@ export const Register = () => {
     // Redux selectors
     const isAuthenticated = useSelector(selectIsAuthenticated);
     const loading = useSelector(selectUserLoading);
-    // const error = useSelector(selectUserError);
-    // const success = useSelector(selectUserSuccess);
-    // const currentUser = useSelector(selectCurrentUser);
 
     // Local form state: the keys match the inputs, and only some of them are sent to the API
     const [formData, setFormData] = useState({

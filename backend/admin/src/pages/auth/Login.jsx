@@ -94,8 +94,10 @@ export const Login = () => {
             rememberMe: localRememberMe,
         }));
 
-        if (loginUser.fulfilled.match(result)) {
-            dispatch(setRememberMe(localRememberMe));
+        dispatch(setRememberMe(localRememberMe));
+        if (!result.success) {
+            console.log('login error = ', result);
+            return null
         }
     };
 
@@ -156,13 +158,10 @@ export const Login = () => {
                                         </div>
                                     )}
                                     <div className="form-control-position">
-      
                                             <i
                                                onClick={togglePasswordVisibility}
                                                disabled={loading}
                                                className={`icon-eye bx ${showPassword ? 'bx-show' : 'bx-hide'}`}></i>
-
-
                                     </div>
                                 </div>
                             </div>
