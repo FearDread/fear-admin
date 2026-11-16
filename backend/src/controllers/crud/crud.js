@@ -2,7 +2,7 @@ const { tryCatch } = require("../../libs/handler/error");
 const cloud = require("../../libs/cloud");
 const SearchApi = require("../../libs/search/api");
 const mongoose = require("mongoose");
-const R = require("../request");
+const request = require("../request");
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
@@ -12,7 +12,7 @@ const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id) && /^[0-9a-f
 const checkId = (res, id) => {
     if (id && isValidObjectId(id)) return null;
     // tryCatch expects a Promise back, so early exits resolve too.
-    return Promise.resolve(R.fail(res, 400, id ? "Invalid document ID format" : "Document ID is required"));
+    return Promise.resolve(REQfail(res, 400, id ? "Invalid document ID format" : "Document ID is required"));
 };
 
 /** Maps the errors Mongoose throws onto the right status + envelope. */
@@ -22,17 +22,17 @@ const handleError = (res, error, message) => {
     if (error.name === "ValidationError") {
         const errors = {};
         Object.keys(error.errors).forEach((field) => { errors[field] = [error.errors[field].message]; });
-        return R.fail(res, 400, message, errors);
+        return request.fail(res, 400, message, errors);
     }
     if (error.name === "CastError") {
-        return R.fail(res, 400, `Invalid value for ${error.path}`);
+        return request.fail(res, 400, `Invalid value for ${error.path}`);
     }
     if (error.code === 11000) {
         const errors = {};
         Object.keys(error.keyPattern || error.keyValue || {}).forEach((field) => { errors[field] = ["Already exists"]; });
-        return R.fail(res, 409, "Duplicate value", errors);
+        return request.fail(res, 409, "Duplicate value", errors);
     }
-    return R.fail(res, 500, message, error); // `error` only reaches the client in development
+    return request.fail(res, 500, message, error); // `error` only reaches the client in development
 };
 
 const sanitizeUpdateData = (data) => {
@@ -68,8 +68,8 @@ exports.all = tryCatch((Model, req, res) => {
     return query
         .exec()
         .then((result) => {
-            if (!result || result.length === 0) return R.ok(res, [], "No documents found");
-            return R.ok(res, result, `Found ${result.length} documents`);
+            if (!result || result.length === 0) return request.ok(res, [], "No documents found");
+            return request.ok(res, result, `Found ${result.length} documents`);
         })
         .catch((error) => handleError(res, error, "Error fetching documents"));
 });
@@ -82,8 +82,8 @@ exports.read = tryCatch((Model, req, res) => {
 
     return Model.findById(id).exec()
         .then((result) => {
-            if (!result) return R.fail(res, 404, `Document with ID ${id} not found`);
-            return R.ok(res, result, "Document found successfully");
+            if (!result) return request.fail(res, 404, `Document with ID ${id} not found`);
+            return request.ok(res, result, "Document found successfully");
         })
         .catch((error) => handleError(res, error, "Error reading document"));
 });
@@ -103,7 +103,7 @@ exports.create = tryCatch((Model, req, res) => {
             if (imageLinks) documentData.images = imageLinks;
             return new Model(documentData).save();
         })
-        .then((result) => R.created(res, result, `Document created successfully in ${Model.modelName} collection`))
+        .then((result) => request.created(res, result, `Document created successfully in ${Model.modelName} collection`))
         .catch((error) => handleError(res, error, "Error creating document"));
 });
 
@@ -125,8 +125,8 @@ exports.update = tryCatch((Model, req, res) => {
             return Model.findByIdAndUpdate(id, updateData, { new: true, runValidators: true }).exec();
         })
         .then((result) => {
-            if (!result) return R.fail(res, 404, `Document with ID ${id} not found`);
-            return R.ok(res, result, `Document updated successfully with ID: ${id}`);
+            if (!result) return request.fail(res, 404, `Document with ID ${id} not found`);
+            return request.ok(res, result, `Document updated successfully with ID: ${id}`);
         })
         .catch((error) => handleError(res, error, "Error updating document"));
 });
@@ -139,14 +139,14 @@ exports.delete = tryCatch((Model, req, res) => {
 
     return Model.findByIdAndDelete(id).exec()
         .then((result) => {
-            if (!result) return R.fail(res, 404, `Document with ID ${id} not found`);
+            if (!result) return request.fail(res, 404, `Document with ID ${id} not found`);
 
             if (Array.isArray(result.images) && result.images.length > 0) {
                 // TODO: cloud.deleteImages(result.images) once it exists
                 console.log("Document had images that should be cleaned up:", result.images);
             }
 
-            return R.ok(res, result, `Document deleted successfully with ID: ${id}`);
+            return request.ok(res, result, `Document deleted successfully with ID: ${id}`);
         })
         .catch((error) => handleError(res, error, "Error deleting document"));
 });
@@ -176,7 +176,7 @@ exports.list = tryCatch((Model, req, res) => {
                 hasPrevPage: page > 1,
             };
 
-            return R.list(res, result, pagination, count > 0 ? `Found ${result.length} of ${count} documents` : "Collection is empty");
+            return request.list(res, result, pagination, count > 0 ? `Found ${result.length} of ${count} documents` : "Collection is empty");
         })
         .catch((error) => handleError(res, error, "Error listing documents"));
 });
@@ -220,7 +220,7 @@ exports.search = tryCatch((Model, req, res) => {
         .populate("reviews")
         .paginate(parseInt(limit), 50)
         .execute()
-        .then(({ result, meta }) => R.send(res, 200, result, `Found ${meta.total} documents`, { meta, ...(meta.pagination ? { pagination: meta.pagination } : {}) }))
+        .then(({ result, meta }) => request.send(res, 200, result, `Found ${meta.total} documents`, { meta, ...(meta.pagination ? { pagination: meta.pagination } : {}) }))
         .catch((error) => handleError(res, error, "Error searching documents"));
 });
 
