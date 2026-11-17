@@ -164,6 +164,7 @@ const UsersList = () => {
 
     // Shared by create and update. Returns null (after warning the user) when the form is invalid.
     const buildUserData = () => {
+
         const data = {
             firstName: formValue.firstName?.trim(),
             lastName: formValue.lastName?.trim() || "",

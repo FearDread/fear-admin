@@ -122,7 +122,7 @@ exports.update = tryCatch((Model, req, res) => {
     return imagePromise
         .then((uploadedImages) => {
             if (uploadedImages) updateData.images = uploadedImages;
-            return Model.findByIdAndUpdate(id, updateData, { new: true, runValidators: true }).exec();
+            return Model.findByIdAndUpdate(id, { $set: updateData.data || updateData }, { new: true, runValidators: true }).exec();
         })
         .then((result) => {
             if (!result) return request.fail(res, 404, `Document with ID ${id} not found`);
