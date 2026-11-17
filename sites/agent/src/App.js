@@ -3,7 +3,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 import TerminalAgent from "./interfaces/terminal";
-import AIChatInterface from "./interfaces/chat"
+import AIChatInterface from "./interfaces/chat";
+import AgentConsole from "./interfaces/console";
 
 import "./assets/css/main.css";
 
@@ -14,8 +15,7 @@ export const App = () => {
         <BrowserRouter>
             <Suspense>
                 <Routes>
-	    		    <Route path="/" element={<TerminalAgent/>} />
-			        <Route path="/chat" element={<AIChatInterface/>} />
+                    <Route path="/" element={<AgentConsole />} />
                 </Routes>
             </Suspense>
         </BrowserRouter>
