@@ -11,9 +11,6 @@
   "author": "FearDread",
   "license": "MIT",
   "dependencies": {
-    "@feardread/fear": "^1.0.4",
-    "@feardread/fear-ai-agent": "^2.0.2",
-    "@feardread/feature-factory": "^5.0.5",
     "@tailwindcss/postcss": "^4.1.17",
     "aos": "^2.3.4",
     "lucide-react": "^0.554.0",
