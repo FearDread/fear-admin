@@ -9,13 +9,6 @@
  * it — see VCHAT_INTEGRATION.md §3 for the vhost config that does that,
  * including the `upgrade`/`Connection` headers the WebSocket needs.
  *
- * That's a deliberate change from the previous version of this file, which
- * carried its own manual HTTPS server, cert loading, and an HTTP→HTTPS
- * redirect server. All of that duplicated what nginx already does in front
- * of it — two places to update certs, two places TLS config could drift —
- * and it's gone. If you ever run this without nginx in front (bare EC2
- * instance, local dev exposed directly), put a reverse proxy in front of it
- * rather than reintroducing manual HTTPS here.
  */
 
 const path = require('path');
@@ -45,6 +38,7 @@ const FearServer = (function () {
         this.reactApps = []; // Track multiple React apps
         this.envLoaded = false;
         this._handlersSetup = false;
+        this._spaFallbacks = []; // mounted in startServer(), after anything attached post-initialize()
     }
 
     FearServer.prototype = {
@@ -195,29 +189,11 @@ const FearServer = (function () {
                 })
             );
 
-            // SPA fallback for anything under basePath that isn't a static file or
-            // an API route. `app.use(prefix, handler)` already prefix-matches
-            // every path under `prefix` — no wildcard segment needed. The previous
-            // version of this route used `${normalizedBasePath}/*`, which
-            // path-to-regexp rejects with "Missing parameter name" as of the
-            // version Express 5 ships (unnamed `*` wildcards were removed); this
-            // form works on both Express 4 and 5.
-            this.fear.getApp().use(normalizedBasePath || '/', (req, res, next) => {
-                this.fear.getLogger().debug(`Route request: ${req.path}`);
-
-                // Skip if it's an API route
-                if (req.path.startsWith('/fear')) {
-                    this.fear.getLogger().debug('Skipping - API route');
-                    return next();
-                }
-
-                res.sendFile(indexPath, (err) => {
-                    if (err) {
-                        this.fear.getLogger().error('Error serving index.html:', err);
-                        res.status(500).send('Internal Server Error');
-                    }
-                });
-            });
+            // The SPA fallback is deferred to startServer(). A catch-all mounted here would sit
+            // ahead of anything attached between initialize() and startServer() — server.js
+            // attaches the SSR middleware in that window, and an earlier catch-all swallowed
+            // every request before SSR ever saw it.
+            this._spaFallbacks.push({ basePath: normalizedBasePath, indexPath });
 
             // Track registered React apps
             this.reactApps.push({
@@ -227,6 +203,38 @@ const FearServer = (function () {
             });
 
             this.fear.getLogger().info(`React app configured at: ${normalizedBasePath || '/'}`);
+        },
+
+        /**
+         * Mount the SPA fallbacks registered by setupStaticFiles(). Longest base path first so
+         * '/admin' wins over '/'. `app.use(prefix, fn)` prefix-matches already, so no wildcard
+         * segment is needed (and `/*` breaks on Express 5).
+         */
+        _mountSpaFallbacks() {
+            const logger = this.fear.getLogger();
+            const assetPattern = /\.(js|mjs|css|map|png|jpe?g|gif|svg|ico|webp|avif|woff2?|ttf|eot|json|txt|xml)$/i;
+
+            [...this._spaFallbacks]
+                .sort((a, b) => b.basePath.length - a.basePath.length)
+                .forEach(({ basePath, indexPath }) => {
+                    this.fear.getApp().use(basePath || '/', (req, res, next) => {
+                        // Only page navigations get index.html. API routes (originalUrl: req.path is
+                        // stripped of the mount prefix), non-GET requests and missing assets fall
+                        // through, so a missing bundle is a 404 instead of HTML served as JS.
+                        if (req.method !== 'GET' && req.method !== 'HEAD') return next();
+                        if (/^\/fear(\/|\?|$)/.test(req.originalUrl)) return next();
+                        if (assetPattern.test(req.path)) return next();
+
+                        res.sendFile(indexPath, (err) => {
+                            if (err && !res.headersSent) {
+                                logger.error('Error serving index.html:', err);
+                                res.status(500).send('Internal Server Error');
+                            }
+                        });
+                    });
+                });
+
+            this._spaFallbacks = [];
         },
 
         /**
@@ -266,7 +274,14 @@ const FearServer = (function () {
             };
 
             this.fear.getApp().use((req, res, next) => {
-                res.header('Access-Control-Allow-Origin', defaultOptions.origin);
+                // Browsers reject `*` together with credentials, so reflect the caller's origin instead
+                let origin = defaultOptions.origin;
+                if (defaultOptions.credentials && origin === '*' && req.headers.origin) {
+                    origin = req.headers.origin;
+                    res.header('Vary', 'Origin');
+                }
+
+                res.header('Access-Control-Allow-Origin', origin);
                 res.header('Access-Control-Allow-Methods', defaultOptions.methods.join(', '));
                 res.header('Access-Control-Allow-Headers', defaultOptions.allowedHeaders.join(', '));
 
@@ -334,37 +349,31 @@ const FearServer = (function () {
         },
 
         /**
-         * Initialize database connection. Skips cleanly when no DB_LINK is
-         * configured, rather than the previous version's inverted check
-         * (`if (!env || env.DB_LINK) resolve()`, which — backwards — resolved
-         * early exactly when a DB_LINK *was* present, then fell through and
-         * called `.connect()` anyway, racing two resolutions of the same
-         * promise).
+         * Initialize database connection. Skips cleanly when no DB_LINK is configured.
+         * Uses the promise db.connect() returns rather than its callback: the callback never
+         * receives an error, and a failed connect used to surface as an unhandled rejection
+         * that killed the process through the unhandledRejection handler.
          */
         initializeDatabase() {
-            return new Promise((resolve, reject) => {
-                try {
-                    const env = this.fear.getEnvironment();
+            const logger = this.fear.getLogger();
+            const env = this.fear.getEnvironment();
 
-                    if (!env || !env.DB_LINK) {
-                        this.fear.getLogger().warn('No DB_LINK configured — skipping database connection');
-                        return resolve();
-                    }
+            if (!env || !env.DB_LINK) {
+                logger.warn('No DB_LINK configured — skipping database connection');
+                return Promise.resolve();
+            }
 
-                    this.fear.getDatabase().connect(env, (err) => {
-                        if (err) {
-                            this.fear.getLogger().error('Database initialization failed:', err);
-                            return reject(err);
-                        }
+            if (!env.DB_NAME) {
+                logger.warn('DB_NAME is not set — mongoose will use the database named in DB_LINK');
+            }
 
-                        this.fear.getLogger().info('Database initialized successfully');
-                        resolve();
-                    });
-                } catch (error) {
-                    this.fear.getLogger().error('Database setup error:', error);
-                    reject(error);
-                }
-            });
+            return Promise.resolve()
+                .then(() => this.fear.getDatabase().connect(env))
+                .then(() => logger.info('Database initialized successfully'))
+                .catch((error) => {
+                    logger.error('Database initialization failed:', error);
+                    throw error;
+                });
         },
 
         /**
@@ -373,7 +382,7 @@ const FearServer = (function () {
          * you're running inside a container where nginx is a separate hop and
          * loopback wouldn't reach this process).
          */
-        async _startHttpServer(port, host) {
+        _startHttpServer(port, host) {
             return new Promise((resolve, reject) => {
                 // Note: Express/Node's listen() callback takes no error argument —
                 // failures surface only via the server's 'error' event. The
@@ -402,34 +411,39 @@ const FearServer = (function () {
             }
 
             this.isShuttingDown = true;
-            this.fear.getLogger().info(`Graceful shutdown initiated by: ${signal}`);
+            const logger = this.fear.getLogger();
+            logger.info(`Graceful shutdown initiated by: ${signal}`);
+
+            // A crash is not a clean exit — PM2/systemd should see a failure code
+            const crashed = signal === 'uncaughtException' || signal === 'unhandledRejection';
+            const exitCode = crashed ? 1 : 0;
 
             const forceShutdownTimeout = setTimeout(() => {
-                this.fear.getLogger().error('Forced shutdown after timeout');
+                logger.error('Forced shutdown after timeout');
                 process.exit(1);
             }, SHUTDOWN_TIMEOUT);
             if (typeof forceShutdownTimeout.unref === 'function') forceShutdownTimeout.unref();
 
-            const closeServer = this.server
-                ? new Promise((resolve) => this.server.close(resolve))
-                : Promise.resolve();
+            // server.close() only resolves once every connection ends, and the vchat WebSockets
+            // never will on their own. So: stop accepting, drop idle keep-alives, close the signal
+            // server (which closes the sockets) and the database, then wait for the listener.
+            let serverClosed = Promise.resolve();
+            if (this.server) {
+                serverClosed = new Promise((resolve) => this.server.close(() => resolve()));
+                if (typeof this.server.closeIdleConnections === 'function') this.server.closeIdleConnections();
+            }
 
-            return closeServer
-                .then(() => {
-                    // Closes the signal server (open WebSocket connections, room
-                    // state) and the database — see FEAR.js's shutdown().
-                    if (this.fear && typeof this.fear.shutdown === 'function') {
-                        return this.fear.shutdown();
-                    }
-                })
+            return Promise.resolve()
+                .then(() => (this.fear && typeof this.fear.shutdown === 'function') ? this.fear.shutdown() : null)
+                .then(() => serverClosed)
                 .then(() => {
                     clearTimeout(forceShutdownTimeout);
-                    this.fear.getLogger().info('Graceful shutdown completed');
-                    process.exit(0);
+                    logger.info('Graceful shutdown completed');
+                    process.exit(exitCode);
                 })
                 .catch((error) => {
                     clearTimeout(forceShutdownTimeout);
-                    this.fear.getLogger().error('Error during shutdown:', error);
+                    logger.error('Error during shutdown:', error);
                     process.exit(1);
                 });
         },
@@ -477,7 +491,7 @@ const FearServer = (function () {
                 return Promise.resolve(this.fear);
             } catch (error) {
                 console.error('Failed to initialize FEAR application:', error);
-                process.exit(1);
+                return Promise.reject(error);
             }
         },
 
@@ -492,7 +506,13 @@ const FearServer = (function () {
             // its X-Forwarded-* headers (req.secure, req.ip, and — critically —
             // the session cookie's `secure` flag, which otherwise never gets set
             // and the cookie never gets sent).
-            app.set('trust proxy', 1);
+            // Don't clobber a more specific TRUST_PROXY that FEAR.js already applied from .env.
+            if (!env.TRUST_PROXY) {
+                app.set('trust proxy', 1);
+            }
+
+            // Everything attached since initialize() (e.g. SSR) is now ahead of the SPA fallback.
+            this._mountSpaFallbacks();
 
             if (this.fear.logo) {
                 logger.warn(this.fear.logo);

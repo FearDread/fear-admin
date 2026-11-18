@@ -9,21 +9,21 @@ const cors = require("cors");
 const MongoStore = require('connect-mongo');
 const passport = require('passport');
 
-module.exports = FEAR = (() => {
+const FEAR = (() => {
     // Private constants
     const DEFAULT_PORT = 4000;
     const DEFAULT_JSON_LIMIT = '10mb';
     const DEFAULT_ROUTE_PATH = '/fear/api';
-    const AGENT_ROUTE_PATH = '/fear/api/agent';
-    const FEAR_LOGO = `
+    // String.raw keeps the backslashes in the ASCII art intact
+    const FEAR_LOGO = String.raw`
 _________________________
-|  ___| ____|  / \  |  _ \ 
+|  ___| ____|  / \  |  _ \
 | |_  |  _|   / _ \ | |_) |
-|  _| | |___ / ___ \|  _ < 
+|  _| | |___ / ___ \|  _ <
 |_|   |_____/_/   \_\_| \_\
 ----The Quieter we become----
 -- the more we are able to hear.--
-`
+`;
 
     // Constructor function
     const FEAR = function (config) {
@@ -31,6 +31,7 @@ _________________________
         this.Router = express.Router;
         this.server = null;
         this.registeredRouters = [];
+        this.excludedRoutes = []; // names actually skipped, filled in by setupRoutes()
         this.env = null;
         this.logger = null;
         this.morgan = null;
@@ -61,7 +62,7 @@ _________________________
         this.setupVchatAuth(); // must precede setupSignal: the socket authenticates through it
         this.setupSignal();
         this.setupRoutes();
-
+        this.setupErrorHandling(); // must come after routes so it can catch their errors
     };
 
     FEAR.prototype = {
@@ -115,18 +116,30 @@ _________________________
         getCorsConfigValue() {
             return this.corsConfig;
         },
+        getExcludedRoutes() {
+            return [...this.excludedRoutes];
+        },
+
         setupEnvironment() {
             const envResult = require("dotenv").config({ path: ".env" });
+            const parsed = (envResult && !envResult.error && envResult.parsed) || {};
 
-            if (!envResult || envResult.error) {
-                throw new Error(`Environment configuration error: ${envResult?.error?.message || 'Unknown error'}`);
+            // FEARServer may already have loaded a .env from another location into process.env,
+            // so a missing ./.env in the cwd is not fatal as long as the environment is populated.
+            if (envResult && envResult.error && !process.env.SESSION_SECRET) {
+                throw new Error(`Environment configuration error: ${envResult.error.message}`);
             }
 
             // Real environment variables win over the .env file (PM2 sets NODE_PORT per instance)
-            this.env = { ...envResult.parsed };
+            this.env = { ...parsed };
             Object.keys(this.env).forEach((key) => {
                 if (process.env[key] !== undefined) this.env[key] = process.env[key];
             });
+            // Keys that only exist in process.env (e.g. loaded by FEARServer) still need to be visible
+            ['EXCLUDE_ROUTES', 'NODE_ENV', 'NODE_PORT', 'SESSION_SECRET', 'DB_LINK', 'DB_NAME', 'ADD_PAYMENTS',
+                'TRUST_PROXY', 'ALLOWED_ORIGINS'].forEach((key) => {
+                    if (this.env[key] === undefined && process.env[key] !== undefined) this.env[key] = process.env[key];
+                });
         },
 
         setupDependencies() {
@@ -179,15 +192,34 @@ _________________________
                 authenticate: this.vchatAuth.authenticateSocket,
                 requireAuth: this.env.VCHAT_REQUIRE_AUTH !== 'false'
             });
-
-            // Static client: public/vchat/{index.html,vchat-client.js}
-            //this.app.use('/vchat', express.static(path.join(__dirname, 'public', 'vchat')));
         },
 
         attachSignal(server) {
             if (!this.signal || !server) return this;
             this.signal.attach(server);
             return this;
+        },
+
+        /**
+         * Session store: Mongo-backed when DB_LINK is set (survives restarts and is shared
+         * across PM2 instances), otherwise express-session's in-memory store (dev only).
+         */
+        createSessionStore() {
+            if (!this.env.DB_LINK) {
+                this.logger.warn('No DB_LINK — using in-memory session store (not for production)');
+                return undefined;
+            }
+
+            try {
+                return MongoStore.create({
+                    mongoUrl: this.env.DB_LINK,
+                    dbName: this.env.DB_NAME,
+                    ttl: 60 * 60 * 24 * 7 // matches cookie maxAge, in seconds
+                });
+            } catch (err) {
+                this.logger.error(`Mongo session store failed, falling back to memory :: ${err.message}`);
+                return undefined;
+            }
         },
 
         setupMiddleware() {
@@ -200,19 +232,22 @@ _________________________
             this.app.use(express.json({ limit: DEFAULT_JSON_LIMIT }));
             this.app.use(express.urlencoded({ extended: true }));
 
+            if (!this.env.SESSION_SECRET) {
+                throw new Error('SESSION_SECRET is required (sessions and vchat handoff tokens depend on it)');
+            }
+
             this.sessionParser = session({
                 secret: this.env.SESSION_SECRET,
                 resave: false,
                 saveUninitialized: false,
+                store: this.createSessionStore(),
                 cookie: {
                     maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
                     httpOnly: true,
                     secure: this.env.NODE_ENV === 'production',
                     sameSite: 'lax'
                 }
-
-            })
-
+            });
 
             this.app.use(this.sessionParser);
             this.app.use(this.morgan);
@@ -222,7 +257,6 @@ _________________________
             this.app.use(passport.initialize());
             this.app.use(passport.session());
 
-            //require('./libs/passport');
             this.app.use((req, res, next) => {
                 this.logger.info(`FEAR API Query :: ${req.url}`);
                 res.locals.user = req.user || null;
@@ -242,7 +276,7 @@ _________________________
             if (!this.mailer) {
                 this.mailer = new smtp(this);
             }
-            this.logger.warn('-== Mail transport setup initialized. ==-')
+            this.logger.warn('-== Mail transport setup initialized. ==-');
         },
 
         getAllowedOrigins() {
@@ -270,6 +304,37 @@ _________________________
             };
         },
 
+        /**
+         * EXCLUDE_ROUTES=agent,ebay,analytics   skip those route files
+         * EXCLUDE_ROUTES=*                      skip every route file
+         * EXCLUDE_ROUTES=*,!auth,!vchat         skip everything except auth and vchat
+         *
+         * Names are route file names without .js, case-insensitive. `!name` always wins over
+         * `*` or an explicit exclude. Excluded files are never require()d, so their
+         * controllers and libs don't load either.
+         */
+        parseExcludedRoutes() {
+            const rules = { all: false, exclude: new Set(), keep: new Set() };
+
+            (this.env.EXCLUDE_ROUTES || '')
+                .split(',')
+                .map((token) => token.trim().toLowerCase().replace(/\.js$/, ''))
+                .filter(Boolean)
+                .forEach((token) => {
+                    if (token === '*') rules.all = true;
+                    else if (token.startsWith('!')) rules.keep.add(token.slice(1));
+                    else rules.exclude.add(token);
+                });
+
+            return rules;
+        },
+
+        isRouteExcluded(name, rules) {
+            const key = name.toLowerCase();
+            if (rules.keep.has(key)) return false;
+            return rules.all || rules.exclude.has(key);
+        },
+
         setupRoutes() {
             const routesDir = path.join(__dirname, "routes");
 
@@ -278,13 +343,37 @@ _________________________
                 return;
             }
 
+            const rules = this.parseExcludedRoutes();
+            this.excludedRoutes = [];
+
             try {
                 const routeFiles = fs.readdirSync(routesDir)
                     .filter(file => file.endsWith('.js'));
 
+                const available = new Set(routeFiles.map(file => file.replace(/\.js$/, '').toLowerCase()));
+
+                // Catch typos in .env early
+                [...rules.exclude, ...rules.keep].forEach((name) => {
+                    if (!available.has(name)) this.logger.warn(`EXCLUDE_ROUTES :: no route file named "${name}"`);
+                });
+
+                if (rules.all) {
+                    this.logger.warn('EXCLUDE_ROUTES=* :: all routes excluded' +
+                        (rules.keep.size ? ` except: ${[...rules.keep].join(', ')}` : ''));
+                }
+
                 routeFiles.forEach(file => {
+                    const routeName = file.replace(/\.js$/, '');
+
+                    if (this.isRouteExcluded(routeName, rules)) {
+                        this.excludedRoutes.push(routeName);
+                        if (!rules.all) {
+                            this.logger.warn(`Route excluded via EXCLUDE_ROUTES :: ${DEFAULT_ROUTE_PATH}/${routeName}`);
+                        }
+                        return;
+                    }
+
                     try {
-                        const routeName = file.replace(/\.js$/, '');
                         const routeModule = require(`./routes/${file}`);
                         const routePath = `${DEFAULT_ROUTE_PATH}/${routeName}`;
 
@@ -296,6 +385,14 @@ _________________________
                 });
             } catch (error) {
                 this.logger.error(`Failed to read routes directory:`, error);
+            }
+        },
+
+        // Errors thrown/forwarded by route handlers (handler.async, tryCatch) end up here.
+        // No 404 handler on purpose: FEARServer mounts the SPA fallback after this.
+        setupErrorHandling() {
+            if (this.handler && typeof this.handler.global === 'function') {
+                this.app.use(this.handler.global);
             }
         },
 
@@ -351,7 +448,6 @@ _________________________
             router.getAiAgent = () => this.agentService;
             router.getStripe = () => this.stripe;
             router.getPaypal = () => this.paypal;
-            //router.getAgentWebInterface = () => this.agentWebInterface;
 
             return router;
         },
@@ -397,7 +493,7 @@ _________________________
                 getStripe: () => this.stripe,
                 getSignal: () => this.signal,
                 getVchatAuth: () => this.vchatAuth,
-                initProcessors: this.setupProcessors
+                initProcessors: () => this.setupProcessors() // arrow keeps `this`
             };
             return this;
         }
@@ -406,6 +502,6 @@ _________________________
     return FEAR;
 })();
 
-exports.FearFactory = () => {
-    return new FEAR();
-};
+FEAR.FearFactory = (config) => new FEAR(config);
+
+module.exports = FEAR;
