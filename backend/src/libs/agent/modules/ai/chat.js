@@ -1,518 +1,276 @@
-// modules/ai/chat.js - Separate AI Chat Session Module
+'use strict';
+
+/**
+ * AI chat session, backed by a local Ollama model (free, open source). Independent of the analyzer's
+ * provider, so chatting never touches a paid API. Setup is automatic: on load it probes Ollama and
+ * picks a model (see ollama.js); `chat-status` shows what it chose, `chat-model <name>` switches.
+ */
+
 const readline = require('readline');
 const fs = require('fs').promises;
-const path = require('path');
 const colorizer = require('../utils/colorizer');
+const OllamaClient = require('./ollama');
 
-const AiChat = function(agent) {
-  this.agent = agent;
-  this.conversationHistory = [];
-  this.maxHistoryLength = 50;
-  this.sessionName = null;
-  this.streamMode = false;
-  
-  // Get AI config from main AI module
-  this.getConfig = () => {
-    if (this.agent && this.agent.modules && this.agent.modules.aiAnalyzer) {
-      return this.agent.modules.aiAnalyzer.config;
-    }
-    return null;
-  };
+const MAX_HISTORY = 50;      // messages kept
+const CONTEXT_MESSAGES = 20; // messages sent with each request
 
-  this.chatSystemPrompt = `You are a helpful, conversational AI assistant. You can:
-- Answer questions on any topic
-- Help with coding and debugging
-- Provide explanations and tutorials
-- Assist with creative writing
-- Have casual conversations
-- Remember context from earlier in the conversation
+const SYSTEM_PROMPT = `You are a helpful, conversational AI assistant. You can answer questions on any topic, help with coding and debugging, explain concepts, assist with writing, and remember earlier context in the conversation. Be friendly, clear and concise, and match the user's tone.`;
 
-Be friendly, helpful, and conversational. Adapt your tone to match the user's style.`;
+const AiChat = function () {
+    this.ollama = new OllamaClient();
+    this.ready = this.ollama.ready; // the loader waits on this
+    this.conversationHistory = [];
+    this.sessionName = null;
+    this.streamMode = false;
 };
 
 AiChat.prototype = {
 
-  isConfigured() {
-    const config = this.getConfig();
-    return config && config.isConfigured();
-  },
+    isConfigured() {
+        return this.ollama.isReady();
+    },
 
-  startSession(args) {
-    if (!this.isConfigured()) {
-      console.log(colorizer.error('AI not configured. Use "ai-setup <provider> <key>" first.\n'));
-      console.log(colorizer.info('Example: ai-setup anthropic sk-ant-...\n'));
-      return Promise.resolve();
-    }
+    /* ----- core ----- */
 
-    const config = this.getConfig();
-    
-    console.log(colorizer.header('🤖 AI Chat Session'));
-    console.log(colorizer.separator());
-    console.log(colorizer.cyan('Provider: ') + colorizer.bright(config.getProviderName()));
-    console.log(colorizer.cyan('Model: ') + colorizer.dim(config.getModel()));
-    console.log(colorizer.cyan('Session: ') + (this.sessionName || 'Unnamed'));
-    console.log();
-    console.log(colorizer.info('Chat Commands:'));
-    console.log(colorizer.dim('  /exit, /quit     - Exit chat session'));
-    console.log(colorizer.dim('  /clear           - Clear conversation history'));
-    console.log(colorizer.dim('  /history         - Show conversation history'));
-    console.log(colorizer.dim('  /save <file>     - Save conversation to file'));
-    console.log(colorizer.dim('  /load <file>     - Load previous conversation'));
-    console.log(colorizer.dim('  /stream          - Toggle streaming mode'));
-    console.log(colorizer.dim('  /session <name>  - Name current session'));
-    console.log(colorizer.dim('  /export <format> - Export chat (txt/json/md)'));
-    console.log(colorizer.dim('  /help            - Show this help'));
-    console.log();
-    console.log(colorizer.success('Chat started! Ask me anything...\n'));
+    buildMessages(userText) {
+        const recent = this.conversationHistory.slice(-CONTEXT_MESSAGES).map(({ role, content }) => ({ role, content }));
+        return [{ role: 'system', content: SYSTEM_PROMPT }, ...recent, { role: 'user', content: userText }];
+    },
 
-    const rl = readline.createInterface({
-      input: process.stdin,
-      output: process.stdout,
-      prompt: this.getPrompt()
-    });
+    /** One exchange. History is only updated once the model has actually answered. */
+    async reply(userText, onChunk = null) {
+        const answer = await this.ollama.chat(this.buildMessages(userText), { onChunk });
+        this.addToHistory('user', userText);
+        this.addToHistory('assistant', answer);
+        return answer;
+    },
 
-    const handleInput = (input) => {
-      const trimmedInput = input.trim();
-
-      if (!trimmedInput) {
-        rl.prompt();
-        return;
-      }
-
-      // Handle chat commands
-      if (trimmedInput.startsWith('/')) {
-        return this.handleChatCommand(trimmedInput, rl)
-          .then(result => {
-            if (result && result.exit) {
-              rl.close();
-              return;
-            }
-            if (result && result.streamMode !== undefined) {
-              this.streamMode = result.streamMode;
-            }
-            rl.prompt();
-          });
-      }
-
-      // Add user message to history
-      this.addToHistory('user', trimmedInput);
-
-      // Build prompt with context
-      const prompt = this.buildPromptWithHistory(trimmedInput);
-
-      console.log(colorizer.dim('AI: '));
-
-      // Use streaming if enabled and supported
-      if (this.streamMode && (config.provider === 'google' || config.provider === 'ollama')) {
-        let response = '';
-        config.callStream(prompt, 4096, (chunk) => {
-          process.stdout.write(chunk);
-          response += chunk;
-        })
-          .then(() => {
-            console.log('\n');
-            this.addToHistory('assistant', response);
-            rl.prompt();
-          })
-          .catch(err => {
-            console.log(colorizer.error('\n\nError: ' + err.message + '\n'));
-            rl.prompt();
-          });
-      } else {
-        // Regular non-streaming response
-        config.call(prompt, 4096)
-          .then(response => {
-            console.log(response + '\n');
-            this.addToHistory('assistant', response);
-            rl.prompt();
-          })
-          .catch(err => {
-            console.log(colorizer.error('\nError: ' + err.message + '\n'));
-            rl.prompt();
-          });
-      }
-    };
-
-    rl.prompt();
-    rl.on('line', handleInput);
-
-    return new Promise((resolve) => {
-      rl.on('close', () => {
-        console.log(colorizer.info('\n👋 Chat session ended.\n'));
-        resolve();
-      });
-    });
-  },
-
-  quickQuery(args) {
-    if (!this.isConfigured()) {
-      console.log(colorizer.error('AI not configured. Use "ai-setup <provider> <key>" first.\n'));
-      return Promise.resolve();
-    }
-
-    const query = args.join(' ');
-    if (!query) {
-      console.log(colorizer.error('Usage: chat-quick <your question>'));
-      console.log(colorizer.info('Example: chat-quick What is Node.js?\n'));
-      return Promise.resolve();
-    }
-
-    const config = this.getConfig();
-    
-    console.log(colorizer.header('🤖 Quick Chat'));
-    console.log(colorizer.separator());
-    console.log(colorizer.cyan('Query: ') + colorizer.bright(query));
-    console.log(colorizer.cyan('Provider: ') + colorizer.bright(config.getProviderName()));
-    console.log();
-
-    const prompt = this.buildPromptWithHistory(query);
-
-    return config.call(prompt, 3000)
-      .then(response => {
-        console.log(response);
-        console.log('\n' + colorizer.separator());
-        console.log(colorizer.info('💡 Tip: Use "chat" for interactive conversation\n'));
-        
-        // Add to history for context
-        this.addToHistory('user', query);
-        this.addToHistory('assistant', response);
-      })
-      .catch(err => {
-        console.log(colorizer.error('Chat failed: ' + err.message + '\n'));
-      });
-  },
-
-  handleChatCommand(command, rl) {
-    const parts = command.split(' ');
-    const cmd = parts[0].toLowerCase();
-    const args = parts.slice(1);
-
-    switch (cmd) {
-      case '/exit':
-      case '/quit':
-        return Promise.resolve({ exit: true });
-
-      case '/clear':
-        this.conversationHistory = [];
-        console.log(colorizer.success('Conversation history cleared.\n'));
-        return Promise.resolve();
-
-      case '/history':
-        return this.showHistory();
-
-      case '/save':
-        const saveFile = args[0] || `chat_${Date.now()}.txt`;
-        return this.saveToFile(saveFile);
-
-      case '/load':
-        const loadFile = args[0];
-        if (!loadFile) {
-          console.log(colorizer.error('Usage: /load <filename>\n'));
-          return Promise.resolve();
+    addToHistory(role, content) {
+        this.conversationHistory.push({ role, content, timestamp: new Date().toISOString() });
+        if (this.conversationHistory.length > MAX_HISTORY) {
+            this.conversationHistory = this.conversationHistory.slice(-MAX_HISTORY);
         }
-        return this.loadFromFile(loadFile);
+    },
 
-      case '/stream':
-        const config = this.getConfig();
-        if (config.provider === 'google' || config.provider === 'ollama') {
-          this.streamMode = !this.streamMode;
-          console.log(colorizer.success(`Streaming mode ${this.streamMode ? 'enabled' : 'disabled'}.\n`));
-          return Promise.resolve({ streamMode: this.streamMode });
+    /* ----- commands ----- */
+
+    async quickQuery(args) {
+        const query = args.join(' ').trim();
+        if (!query) {
+            console.log(colorizer.error('Usage: chat-quick <your question>'));
+            return;
+        }
+
+        await this.ollama.ready;
+        try {
+            const answer = await this.reply(query);
+            console.log(answer);
+        } catch (err) {
+            console.log(colorizer.error('Chat failed: ' + err.message));
+        }
+    },
+
+    async status() {
+        await this.ollama.refresh();
+        const o = this.ollama;
+
+        console.log(colorizer.header('AI Chat (Ollama)'));
+        console.log(colorizer.separator());
+        console.log(colorizer.cyan('  Host: ') + colorizer.bright(o.host));
+        console.log(colorizer.cyan('  Status: ') + (o.isReady() ? colorizer.green('ready') : colorizer.red('not ready')));
+        console.log(colorizer.cyan('  Model: ') + colorizer.bright(o.model || 'none'));
+        if (o.models.length) console.log(colorizer.cyan('  Installed: ') + colorizer.dim(o.models.join(', ')));
+        console.log(colorizer.cyan('  History: ') + this.conversationHistory.length + ' messages');
+        if (o.problem()) console.log(colorizer.warning('  ' + o.problem()));
+        console.log();
+    },
+
+    /** chat-model            show the current and installed models
+     *  chat-model <name>     switch to an installed model */
+    async setModel(args) {
+        await this.ollama.refresh();
+        const name = args[0];
+
+        if (!name) {
+            console.log(colorizer.cyan('Current model: ') + colorizer.bright(this.ollama.model || 'none'));
+            console.log(colorizer.cyan('Installed: ') + colorizer.dim(this.ollama.models.join(', ') || 'none'));
+            return;
+        }
+
+        if (this.ollama.setModel(name)) {
+            console.log(colorizer.success('Chat model set to ' + this.ollama.model));
         } else {
-          console.log(colorizer.warning('Streaming only available with Google Gemini or Ollama.\n'));
-          return Promise.resolve();
+            console.log(colorizer.error(`"${name}" is not installed. Installed: ${this.ollama.models.join(', ') || 'none'}`));
+            console.log(colorizer.dim(`  ollama pull ${name}`));
+        }
+    },
+
+    showHistory() {
+        if (this.conversationHistory.length === 0) {
+            console.log(colorizer.info('No conversation history yet.\n'));
+            return Promise.resolve();
         }
 
-      case '/session':
-        this.sessionName = args.join(' ') || null;
-        console.log(colorizer.success(`Session named: ${this.sessionName || 'Unnamed'}\n`));
+        console.log(colorizer.header('Conversation History'));
+        console.log(colorizer.separator());
+        console.log(colorizer.cyan('Session: ') + (this.sessionName || 'Unnamed'));
+        console.log(colorizer.cyan('Messages: ') + this.conversationHistory.length + '\n');
+
+        this.conversationHistory.forEach((msg) => {
+            const who = msg.role === 'user' ? colorizer.cyan('You') : colorizer.green('AI');
+            const preview = msg.content.substring(0, 80) + (msg.content.length > 80 ? '...' : '');
+            console.log(`${colorizer.dim('[' + new Date(msg.timestamp).toLocaleTimeString() + ']')} ${who}: ${preview}`);
+        });
+        console.log();
         return Promise.resolve();
+    },
 
-      case '/export':
-        const format = args[0] || 'txt';
-        const exportFile = args[1] || `chat_export_${Date.now()}.${format}`;
-        return this.exportChat(format, exportFile);
-
-      case '/help':
-        console.log(colorizer.info('Available chat commands:'));
-        console.log(colorizer.dim('  /exit, /quit     - Exit chat session'));
-        console.log(colorizer.dim('  /clear           - Clear conversation history'));
-        console.log(colorizer.dim('  /history         - Show conversation history'));
-        console.log(colorizer.dim('  /save <file>     - Save conversation'));
-        console.log(colorizer.dim('  /load <file>     - Load conversation'));
-        console.log(colorizer.dim('  /stream          - Toggle streaming'));
-        console.log(colorizer.dim('  /session <name>  - Name session'));
-        console.log(colorizer.dim('  /export <format> - Export (txt/json/md)'));
-        console.log(colorizer.dim('  /help            - Show this help\n'));
+    clearHistory() {
+        this.conversationHistory = [];
+        console.log(colorizer.success('Chat history cleared.\n'));
         return Promise.resolve();
+    },
 
-      default:
-        console.log(colorizer.warning('Unknown command. Type /help for available commands.\n'));
-        return Promise.resolve();
-    }
-  },
+    /* ----- CLI only (not exposed over HTTP): interactive session and file save / load / export ----- */
 
-  buildPromptWithHistory(currentQuery) {
-    let prompt = this.chatSystemPrompt + '\n\n';
+    async startSession() {
+        await this.ollama.refresh();
+        const problem = this.ollama.problem();
+        if (problem) {
+            console.log(colorizer.error(problem + '\n'));
+            return;
+        }
 
-    // Add recent conversation history
-    if (this.conversationHistory.length > 0) {
-      prompt += 'Previous conversation:\n';
-      // Only include last 10 exchanges for context
-      const recentHistory = this.conversationHistory.slice(-20);
-      recentHistory.forEach(msg => {
-        prompt += `${msg.role === 'user' ? 'User' : 'Assistant'}: ${msg.content}\n`;
-      });
-      prompt += '\n';
-    }
+        console.log(colorizer.header('AI Chat Session'));
+        console.log(colorizer.separator());
+        console.log(colorizer.cyan('Model: ') + colorizer.bright(this.ollama.model) + colorizer.dim('  (Ollama, local)'));
+        console.log(colorizer.dim('Commands: /exit /clear /history /model [name] /stream /session <name> /save <file> /load <file> /export <fmt> /help\n'));
 
-    prompt += `Current user message: ${currentQuery}\n\n`;
-    prompt += 'Provide a helpful, conversational response.';
+        const rl = readline.createInterface({ input: process.stdin, output: process.stdout, prompt: this.getPrompt() });
 
-    return prompt;
-  },
-
-  addToHistory(role, content) {
-    this.conversationHistory.push({
-      role,
-      content,
-      timestamp: new Date().toISOString()
-    });
-
-    // Trim history if too long
-    if (this.conversationHistory.length > this.maxHistoryLength) {
-      this.conversationHistory = this.conversationHistory.slice(-this.maxHistoryLength);
-    }
-  },
-
-  showHistory() {
-    if (this.conversationHistory.length === 0) {
-      console.log(colorizer.info('No conversation history yet.\n'));
-      return Promise.resolve();
-    }
-
-    console.log(colorizer.header('Conversation History'));
-    console.log(colorizer.separator());
-    console.log(colorizer.cyan('Session: ') + (this.sessionName || 'Unnamed'));
-    console.log(colorizer.cyan('Messages: ') + this.conversationHistory.length);
-    console.log();
-
-    this.conversationHistory.forEach((msg, index) => {
-      const role = msg.role === 'user' ? 
-        colorizer.cyan('You') : 
-        colorizer.green('AI');
-      const time = new Date(msg.timestamp).toLocaleTimeString();
-      const preview = msg.content.substring(0, 80) + 
-        (msg.content.length > 80 ? '...' : '');
-      
-      console.log(`${colorizer.dim(`[${time}]`)} ${role}: ${preview}`);
-    });
-
-    console.log();
-    return Promise.resolve();
-  },
-
-  saveToFile(filename) {
-    if (this.conversationHistory.length === 0) {
-      console.log(colorizer.warning('No conversation to save.\n'));
-      return Promise.resolve();
-    }
-
-    const config = this.getConfig();
-    let content = '# AI Chat Session\n\n';
-    content += `**Date:** ${new Date().toISOString()}\n`;
-    content += `**Session:** ${this.sessionName || 'Unnamed'}\n`;
-    content += `**Provider:** ${config.getProviderName()}\n`;
-    content += `**Model:** ${config.getModel()}\n`;
-    content += `**Messages:** ${this.conversationHistory.length}\n\n`;
-    content += '---\n\n';
-
-    this.conversationHistory.forEach((msg, index) => {
-      const time = new Date(msg.timestamp).toLocaleTimeString();
-      content += `### ${msg.role === 'user' ? '👤 You' : '🤖 AI'} - ${time}\n\n`;
-      content += msg.content + '\n\n';
-      content += '---\n\n';
-    });
-
-    return fs.writeFile(filename, content)
-      .then(() => {
-        console.log(colorizer.success(`💾 Conversation saved to ${filename}\n`));
-      })
-      .catch(err => {
-        console.log(colorizer.error(`Failed to save: ${err.message}\n`));
-      });
-  },
-
-  loadFromFile(filename) {
-    return fs.readFile(filename, 'utf8')
-      .then(content => {
-        // Parse the saved conversation
-        // This is a simple implementation - could be enhanced
-        const messages = content.split('---\n\n');
-        let loaded = 0;
-
-        messages.forEach(msg => {
-          if (msg.includes('### 👤 You')) {
-            const content = msg.split('\n\n')[1];
-            if (content) {
-              this.addToHistory('user', content.trim());
-              loaded++;
+        const ask = async (text) => {
+            process.stdout.write(colorizer.dim('AI: '));
+            try {
+                if (this.streamMode) {
+                    await this.reply(text, (chunk) => process.stdout.write(chunk));
+                    console.log('\n');
+                } else {
+                    console.log(await this.reply(text) + '\n');
+                }
+            } catch (err) {
+                console.log(colorizer.error('\nError: ' + err.message + '\n'));
             }
-          } else if (msg.includes('### 🤖 AI')) {
-            const content = msg.split('\n\n')[1];
-            if (content) {
-              this.addToHistory('assistant', content.trim());
-              loaded++;
+        };
+
+        rl.prompt();
+        rl.on('line', async (input) => {
+            const text = input.trim();
+            if (!text) return rl.prompt();
+
+            if (text.startsWith('/')) {
+                const result = await this.handleChatCommand(text);
+                if (result && result.exit) return rl.close();
+            } else {
+                await ask(text);
             }
-          }
+
+            rl.setPrompt(this.getPrompt());
+            rl.prompt();
         });
 
-        console.log(colorizer.success(`📂 Loaded ${loaded} messages from ${filename}\n`));
-      })
-      .catch(err => {
-        console.log(colorizer.error(`Failed to load: ${err.message}\n`));
-      });
-  },
+        return new Promise((resolve) => rl.on('close', () => {
+            console.log(colorizer.info('\nChat session ended.\n'));
+            resolve();
+        }));
+    },
 
-  exportChat(format, filename) {
-    if (this.conversationHistory.length === 0) {
-      console.log(colorizer.warning('No conversation to export.\n'));
-      return Promise.resolve();
+    async handleChatCommand(command) {
+        const [cmd, ...args] = command.split(' ');
+
+        switch (cmd.toLowerCase()) {
+            case '/exit':
+            case '/quit': return { exit: true };
+            case '/clear': return this.clearHistory();
+            case '/history': return this.showHistory();
+            case '/model': return this.setModel(args);
+            case '/stream':
+                this.streamMode = !this.streamMode;
+                console.log(colorizer.success(`Streaming ${this.streamMode ? 'on' : 'off'}.\n`));
+                return null;
+            case '/session':
+                this.sessionName = args.join(' ') || null;
+                console.log(colorizer.success(`Session named: ${this.sessionName || 'Unnamed'}\n`));
+                return null;
+            case '/save': return this.saveSession([args[0] || `session_${Date.now()}.json`]);
+            case '/load': return this.loadSession(args);
+            case '/export': return this.exportChat(args[0] || 'txt', args[1]);
+            default:
+                console.log(colorizer.warning('Unknown command. Commands: /exit /clear /history /model /stream /session /save /load /export\n'));
+                return null;
+        }
+    },
+
+    getPrompt() {
+        return colorizer.cyan('>> ') + (this.sessionName ? colorizer.dim(`[${this.sessionName}] `) : '') + colorizer.bright('You: ');
+    },
+
+    saveSession(args) {
+        const filename = args[0] || `session_${Date.now()}.json`;
+        const data = {
+            name: this.sessionName,
+            created: new Date().toISOString(),
+            provider: 'ollama',
+            model: this.ollama.model,
+            history: this.conversationHistory
+        };
+
+        return fs.writeFile(filename, JSON.stringify(data, null, 2))
+            .then(() => console.log(colorizer.success(`Session saved to ${filename}\n`)))
+            .catch((err) => console.log(colorizer.error(`Failed to save session: ${err.message}\n`)));
+    },
+
+    loadSession(args) {
+        const filename = args[0];
+        if (!filename) {
+            console.log(colorizer.error('Usage: chat-load <filename>\n'));
+            return Promise.resolve();
+        }
+
+        return fs.readFile(filename, 'utf8')
+            .then((raw) => {
+                const data = JSON.parse(raw);
+                this.sessionName = data.name;
+                this.conversationHistory = Array.isArray(data.history) ? data.history.slice(-MAX_HISTORY) : [];
+                console.log(colorizer.success(`Session loaded: ${this.sessionName || 'Unnamed'} (${this.conversationHistory.length} messages)\n`));
+            })
+            .catch((err) => console.log(colorizer.error(`Failed to load session: ${err.message}\n`)));
+    },
+
+    exportChat(format, filename) {
+        if (this.conversationHistory.length === 0) {
+            console.log(colorizer.warning('No conversation to export.\n'));
+            return Promise.resolve();
+        }
+
+        const fmt = String(format || 'txt').toLowerCase();
+        const out = filename || `chat_export_${Date.now()}.${fmt}`;
+        const stamp = new Date().toISOString();
+        let content;
+
+        if (fmt === 'json') {
+            content = JSON.stringify({ session: this.sessionName, date: stamp, provider: 'ollama', model: this.ollama.model, messages: this.conversationHistory }, null, 2);
+        } else if (fmt === 'md' || fmt === 'markdown') {
+            content = `# Chat Session: ${this.sessionName || 'Unnamed'}\n\n- **Date:** ${stamp}\n- **Model:** ${this.ollama.model} (Ollama)\n\n---\n\n` +
+                this.conversationHistory.map((m) => `## ${m.role === 'user' ? 'User' : 'AI'} (${new Date(m.timestamp).toLocaleTimeString()})\n\n${m.content}\n`).join('\n');
+        } else {
+            content = `AI CHAT SESSION\n===============\nSession: ${this.sessionName || 'Unnamed'}\nDate: ${stamp}\nModel: ${this.ollama.model} (Ollama)\n\n` +
+                this.conversationHistory.map((m, i) => `[${i + 1}] ${m.role === 'user' ? 'YOU' : 'AI'}\n${'-'.repeat(60)}\n${m.content}\n`).join('\n');
+        }
+
+        return fs.writeFile(out, content)
+            .then(() => console.log(colorizer.success(`Chat exported to ${out}\n`)))
+            .catch((err) => console.log(colorizer.error(`Export failed: ${err.message}\n`)));
     }
-
-    const config = this.getConfig();
-    let content = '';
-
-    switch (format.toLowerCase()) {
-      case 'json':
-        content = JSON.stringify({
-          session: this.sessionName,
-          date: new Date().toISOString(),
-          provider: config.getProviderName(),
-          model: config.getModel(),
-          messages: this.conversationHistory
-        }, null, 2);
-        break;
-
-      case 'md':
-      case 'markdown':
-        content = this.formatAsMarkdown(config);
-        break;
-
-      case 'txt':
-      default:
-        content = this.formatAsText(config);
-        break;
-    }
-
-    return fs.writeFile(filename, content)
-      .then(() => {
-        console.log(colorizer.success(`📤 Chat exported to ${filename}\n`));
-      })
-      .catch(err => {
-        console.log(colorizer.error(`Export failed: ${err.message}\n`));
-      });
-  },
-
-  formatAsMarkdown(config) {
-    let md = `# Chat Session: ${this.sessionName || 'Unnamed'}\n\n`;
-    md += `- **Date:** ${new Date().toISOString()}\n`;
-    md += `- **Provider:** ${config.getProviderName()}\n`;
-    md += `- **Model:** ${config.getModel()}\n`;
-    md += `- **Messages:** ${this.conversationHistory.length}\n\n`;
-    md += '---\n\n';
-
-    this.conversationHistory.forEach(msg => {
-      const time = new Date(msg.timestamp).toLocaleTimeString();
-      md += `## ${msg.role === 'user' ? '👤 User' : '🤖 AI'} (${time})\n\n`;
-      md += msg.content + '\n\n';
-    });
-
-    return md;
-  },
-
-  formatAsText(config) {
-    let txt = `AI CHAT SESSION\n`;
-    txt += `===============\n\n`;
-    txt += `Session: ${this.sessionName || 'Unnamed'}\n`;
-    txt += `Date: ${new Date().toISOString()}\n`;
-    txt += `Provider: ${config.getProviderName()}\n`;
-    txt += `Model: ${config.getModel()}\n`;
-    txt += `Messages: ${this.conversationHistory.length}\n\n`;
-    txt += `${'='.repeat(60)}\n\n`;
-
-    this.conversationHistory.forEach((msg, index) => {
-      const time = new Date(msg.timestamp).toLocaleTimeString();
-      txt += `[${index + 1}] ${msg.role === 'user' ? 'YOU' : 'AI'} (${time})\n`;
-      txt += `${'-'.repeat(60)}\n`;
-      txt += `${msg.content}\n\n`;
-    });
-
-    return txt;
-  },
-
-  clearHistory() {
-    this.conversationHistory = [];
-    console.log(colorizer.success('Chat history cleared.\n'));
-    return Promise.resolve();
-  },
-
-  saveSession(args) {
-    const filename = args[0] || `session_${Date.now()}.json`;
-    
-    const sessionData = {
-      name: this.sessionName,
-      created: new Date().toISOString(),
-      provider: this.getConfig()?.getProviderName(),
-      model: this.getConfig()?.getModel(),
-      history: this.conversationHistory
-    };
-
-    return fs.writeFile(filename, JSON.stringify(sessionData, null, 2))
-      .then(() => {
-        console.log(colorizer.success(`Session saved to ${filename}\n`));
-      })
-      .catch(err => {
-        console.log(colorizer.error(`Failed to save session: ${err.message}\n`));
-      });
-  },
-
-  loadSession(args) {
-    const filename = args[0];
-    if (!filename) {
-      console.log(colorizer.error('Usage: chat-load <filename>\n'));
-      return Promise.resolve();
-    }
-
-    return fs.readFile(filename, 'utf8')
-      .then(data => {
-        const sessionData = JSON.parse(data);
-        this.sessionName = sessionData.name;
-        this.conversationHistory = sessionData.history || [];
-        
-        console.log(colorizer.success(`Session loaded: ${this.sessionName || 'Unnamed'}`));
-        console.log(colorizer.cyan(`Messages: ${this.conversationHistory.length}\n`));
-      })
-      .catch(err => {
-        console.log(colorizer.error(`Failed to load session: ${err.message}\n`));
-      });
-  },
-
-  getPrompt() {
-    const config = this.getConfig();
-    let prompt = colorizer.cyan('>> ');
-    
-    if (this.sessionName) {
-      prompt += colorizer.dim(`[${this.sessionName}] `);
-    }
-    
-    if (this.streamMode) {
-      prompt += colorizer.yellow('FEAR AI: ');
-    }
-    
-    prompt += colorizer.bright('You: ');
-    return prompt;
-  }
 };
 
 module.exports = AiChat;

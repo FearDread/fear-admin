@@ -52,6 +52,7 @@ const SERVICE_ID = /^[a-z0-9-]{1,32}$/;
 const PACKAGE = /^(@[\w.-]+\/)?[\w.-]{1,100}$/;
 const VERSION = /^[\w.^~<>=*-]{1,40}$/;
 const PROVIDER = /^(anthropic|claude|openai|gpt|google|gemini|ollama)$/i;
+const MODEL = /^[\w][\w.\-:\/]{0,63}$/; // an Ollama model name, e.g. llama3.1:8b
 
 const POLICY = {
     // Print-only
@@ -62,7 +63,7 @@ const POLICY = {
     banner: none,
     history: none,
 
-    // AI. These call the configured provider, so they cost money (hence admin only)
+    // AI analysis. These call the provider set with ai-setup, which may be a paid API (hence admin only)
     'ai-status': none,
     'ai-help': none,
     'ai-provider': positional(arg(PROVIDER)),
@@ -70,7 +71,12 @@ const POLICY = {
     'ai-threat': freeText(1000),
     'ai-ask': freeText(2000),
     'ai-generate': freeText(1000),
+
+    // Chat runs on the local Ollama model (free, open source), so it costs nothing per call.
+    // The Ollama host is fixed by the server's environment; a request can only pick an installed model.
     'chat-quick': freeText(2000),
+    'chat-status': none,
+    'chat-model': positional(arg(MODEL, true)),
     'chat-history': none,
     'chat-clear': none,
 
@@ -78,6 +84,7 @@ const POLICY = {
     'search-cve': freeText(100),
     'check-cwe': positional(arg(/^(CWE-)?\d{1,5}$/i)),
     'check-package': positional(arg(PACKAGE), arg(VERSION, true)),
+    'check-exploits': freeText(100), // only prints a search link, nothing is fetched
 
     // Crypto prices (fixed upstream hosts, symbols checked against the module's own list)
     'crypto-price': positional(arg(SYMBOL), arg(FIAT, true)),
