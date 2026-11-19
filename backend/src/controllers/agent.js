@@ -1,6 +1,7 @@
 const SecurityAgent = require('../libs/agent');
 const policy = require('../libs/agent/policy');
-const output = require('./output');
+const { AsyncLocalStorage } = require('async_hooks');
+const util = require('util');
 
 const COMMAND_TIMEOUT_MS = 60 * 1000;
 const MAX_CONCURRENT = 3;
@@ -20,6 +21,59 @@ const BUILT_IN_DESCRIPTIONS = {
 
 // Error shape matches the auth controller's response.error
 const fail = (res, status, message) => res.status(status).json({ success: false, message });
+
+class CommandTimeout extends Error { }
+
+// eslint-disable-next-line no-control-regex
+const stripAnsi = (text) => text.replace(/\x1b\[[0-9;]*[A-Za-z]/g, '');
+
+const withTimeout = (promise, ms) =>
+    new Promise((resolve, reject) => {
+        const timer = setTimeout(() => reject(new CommandTimeout('Command timed out')), ms);
+        promise.then(
+            (value) => { clearTimeout(timer); resolve(value); },
+            (error) => { clearTimeout(timer); reject(error); }
+        );
+    });
+
+const outputStore = new AsyncLocalStorage();
+
+if (!console.log.__agentCapture) {
+    const rawLog = console.log;
+    const patched = function(...args) {
+        const sink = outputStore.getStore();
+        if (sink) return sink.write(util.format(...args));
+        return rawLog.apply(this, args);
+    };
+    patched.__agentCapture = true;
+    console.log = patched;
+}
+
+const createSink = () => {
+    const lines = [];
+    let bytes = 0;
+    let truncated = false;
+
+    return {
+        write(line) {
+            if (truncated) return;
+            bytes += Buffer.byteLength(line) + 1;
+            if (bytes > MAX_OUTPUT_BYTES) {
+                truncated = true;
+                lines.push('... output truncated ...');
+                return;
+            }
+            lines.push(line);
+        },
+        text: () => stripAnsi(lines.join('\n')),
+    };
+};
+
+const captureOutput = async (commandFn) => {
+    const sink = createSink();
+    await outputStore.run(sink, () => withTimeout(Promise.resolve().then(commandFn), COMMAND_TIMEOUT_MS));
+    return sink.text();
+};
 /* -------------------------------------------------------------------------
    Controller
 
@@ -128,7 +182,7 @@ class AgentController {
 
         this.activeCommands++;
         try {
-            const output = await output.capture(() => run(normalized.args));
+            const output = await captureOutput(() => run(normalized.args));
             logger.info(`FEAR agent :: ran ${command} :: ${who} :: args ${JSON.stringify(normalized.args.join(' ').slice(0, 100))}`);
             return { ok: true, output };
         } catch (error) {

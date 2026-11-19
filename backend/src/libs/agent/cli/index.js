@@ -8,7 +8,7 @@
 
 const readline = require('readline');
 const path = require('path');
-const colorizer = require('./modules/utils/colorizer');
+const colorizer = require('../modules/utils/colorizer');
 
 const VERSION = '2.4.0';
 

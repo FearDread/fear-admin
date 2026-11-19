@@ -68,5 +68,6 @@ const captureOutput = async (commandFn) => {
 
 module.exports = {
     capture: captureOutput,
-    store: outputStore
+    store: outputStore,
+    timeout: new CommandTimeout('Command timout...')
 }
