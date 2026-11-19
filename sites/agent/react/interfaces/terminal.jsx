@@ -19,7 +19,7 @@ export default function SecurityAgentTerminal() {
     const [currentPath, setCurrentPath] = useState('~');
     const [activeServices, setActiveServices] = useState(0);
     const [agentInitialized, setAgentInitialized] = useState(false);
-    const [apiBaseUrl, setApiBaseUrl] = useState('http://localhost:4000/fear/api/agent');
+    const [apiBaseUrl, setApiBaseUrl] = useState('http://fear.dedyn.io:4000/fear/api/agent');
     const [currentUser, setCurrentUser] = useState(null);
     // While set, the input line is collecting a credential: { step: 'email' } or { step: 'password', email }
     const [loginPrompt, setLoginPrompt] = useState(null);
