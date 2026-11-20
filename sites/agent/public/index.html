@@ -1,16 +1,21 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>FEAR - AI</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#05070a">
+  <meta name="color-scheme" content="dark">
+  <title>FEAR · Agent Console</title>
+  <link rel="stylesheet" href="css/fonts.css">
+  <link rel="stylesheet" href="css/app.css">
+  <!-- jquery_gui.js does `import jquery from "./jquery"`. Browsers need a file extension, so map it to the shim.
+       Keys resolve against this page, so this file must be served from the folder that contains js/. -->
+  <script type="importmap">{ "imports": { "./js/gui/jquery": "./js/gui/jquery.js" } }</script>
 </head>
-
 <body>
-    <main id="app" class="app"></main>
-
-
-
-    <script type="module" src="/main.js"></script>
+  <div id="app"><div class="boot"><span class="boot-cursor"></span> booting FEAR agent console…</div></div>
+  <noscript><p class="boot">This console needs JavaScript.</p></noscript>
+  <script src="js/vendor/jquery.min.js"></script>
+  <script type="module" src="js/main.js"></script>
 </body>
 </html>

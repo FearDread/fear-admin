@@ -3,16 +3,16 @@
   "version": "1.0.0",
   "description": "security ai agent site",
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "template": "node server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "node build.js",
+    "dev": "node build.js --watch",
+    "start": "node server.js"
   },
   "author": "FearDread",
   "license": "MIT",
   "dependencies": {
     "@tailwindcss/postcss": "^4.1.17",
     "aos": "^2.3.4",
+    "esbuild": "^0.28.2",
     "lucide-react": "^0.554.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",

@@ -67,7 +67,7 @@ function watchPublic() {
 
 async function build() {
     requireExists(path.join(PUB, 'index.html'), 'SPA page shell');
-    requireExists(path.join(SRC, 'spa/main.js'), 'SPA bundle entry point');
+    requireExists(path.join(SRC, 'main.js'), 'SPA bundle entry point');
 
     cleanBuild();
     copyPublic();
