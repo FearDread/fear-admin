@@ -1,3 +1,4 @@
+import jquery from './jquery';
 
 const utils = {
     /* jQuery $.extend pointer */
