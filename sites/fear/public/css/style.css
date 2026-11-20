@@ -1664,6 +1664,14 @@ select.cf2 option {
   z-index: 0;
   pointer-events: none;
 }
+.bg-canvas {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+}
 
 /* ═══════════ Boot intro (modules/intro.js) ═══════════ */
 #boot {
