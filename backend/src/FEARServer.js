@@ -183,7 +183,7 @@ const FearServer = (function () {
                             res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
                         }
                         else if (filePath.match(/\.(js|css|woff2?|ttf|eot)$/)) {
-                            res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+                            res.setHeader('Cache-Control', 'public, max-age=300');
                         }
                     }
                 })
