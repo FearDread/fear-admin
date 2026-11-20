@@ -188,7 +188,10 @@ const FearServer = (function () {
                     }
                 })
             );
-
+            this.fear.getApp().use((req, res, next) => {
+                res.setHeader('Clear-Site-Data', '"cache"');
+                next();
+            });
             // The SPA fallback is deferred to startServer(). A catch-all mounted here would sit
             // ahead of anything attached between initialize() and startServer() — server.js
             // attaches the SSR middleware in that window, and an earlier catch-all swallowed
