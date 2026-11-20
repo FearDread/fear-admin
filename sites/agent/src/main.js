@@ -6,13 +6,14 @@ import overview from './modules/overview.js';
 import terminal from './modules/terminal.js';
 import chat from './modules/chat.js';
 import shell from './modules/shell.js';
+import background from './modules/background.js';
 
 FEAR.configure({ logLevel: 1 });
 
-[settings, api, overview, terminal, chat, shell].forEach((register) => register(FEAR));
+[settings, api, overview, terminal, chat, shell, background].forEach((register) => register(FEAR));
 
 // View modules start before the shell: the shell's router mounts the first view as soon as it starts.
-const order = ['settings', 'api', 'overview', 'terminal', 'chat', 'shell'];
+const order = ['settings', 'api', 'overview', 'terminal', 'chat', 'shell', 'background'];
 
 FEAR.utils.run.series(order.map((id) => () => FEAR.start(id)))
   .then(() => FEAR.broker.emit('app:ready'))

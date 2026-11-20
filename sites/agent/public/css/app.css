@@ -11,8 +11,8 @@
     --text: #cbd8e4;
     --dim: #6f8194;
     --faint: #3b4856;
-    --green: #2bff88;
-    --green-d: #12c565;
+    --green: #2bff3c;
+    --green-d: rgba(43, 255, 136, 0.28);
     --cyan: #38d9ff;
     --amber: #ffb52e;
     --red: #ff3b4f;
@@ -26,6 +26,10 @@
 
 *, *::before, *::after {
     box-sizing: border-box;
+}
+
+.bg-canvas {
+    position:absolute !important;
 }
 
 html, body {
