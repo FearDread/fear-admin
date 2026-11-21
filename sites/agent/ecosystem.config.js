@@ -20,7 +20,7 @@ module.exports = {
         // port 4001 directly.
         {
             name: 'fear-agent',
-            script: 'sites/agent/server.js',
+            script: 'server.js',
             cwd: __dirname,
             // The agent keeps command history, services and console capture in process
             // memory, so it must be a single fork instance (no cluster mode).

@@ -3,11 +3,11 @@
 module.exports = {
     apps: [        // ── Main site: everything except the agent routes ───────────────────────
         {
-            name: 'fear-main',
+            name: 'fear-api',
             script: 'backend/server.js',
             cwd: __dirname,
-            exec_mode: 'fork',
-            instances: 1,
+            exec_mode: 'cluster',
+            instances: 2,
             autorestart: true,
             max_memory_restart: '512M',
             // Must exceed SHUTDOWN_TIMEOUT (10s) in FEARServer.js so graceful shutdown can finish
