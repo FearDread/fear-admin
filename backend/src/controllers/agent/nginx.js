@@ -104,6 +104,30 @@ exports.history = withMonitor((mod, agent, req, res) => {
         .then((rows) => request.ok(res, rows));
 });
 
+/** GET /trend?limit=60 — compact per-snapshot series for the dashboard graphs */
+exports.trend = withMonitor((mod, agent, req, res) => {
+    const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 60, 2), 200);
+
+    return mod.loadHistory()
+        .then((history) => history.slice(-limit).map((s) => {
+            const hosts = {};
+            let up = 0, down = 0, sum = 0, n = 0;
+
+            Object.entries(s.hosts).forEach(([name, h]) => {
+                const ok = mod.healthy(h);
+                const probe = h.https && h.https.ok ? h.https : (h.http && h.http.ok ? h.http : null);
+                const ms = probe ? probe.ms : null;
+
+                ok ? up++ : down++;
+                if (ms !== null) { sum += ms; n++; }
+                hosts[name] = { ok, ms };
+            });
+
+            return { time: s.time, up, down, avgMs: n ? Math.round(sum / n) : null, hosts };
+        }))
+        .then((rows) => request.ok(res, rows));
+});
+
 /** POST /check-all   { local?: boolean } — run every check now, save snapshot, return changes */
 exports.checkAll = withMonitor((mod, agent, req, res) => {
     return mod.runChecks({ local: !!(req.body && req.body.local) })

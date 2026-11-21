@@ -25,6 +25,7 @@ module.exports = (fear) => {
     router.get("/dns/:domain", handler.async(Nginx.dns));
     router.get("/certs", handler.async(Nginx.certs));
     router.get("/history/:domain", handler.async(Nginx.history));
+    router.get("/trend", handler.async(Nginx.trend));                    // ?limit=60 series for dashboard graphs
 
     return router;
 };
