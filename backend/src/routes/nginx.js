@@ -1,4 +1,4 @@
-const Nginx = require("../controllers/nginx");
+const Nginx = require("../controllers/agent/nginx");
 const Auth = require("../controllers/auth");
 
 module.exports = (fear) => {

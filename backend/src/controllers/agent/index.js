@@ -1,5 +1,5 @@
-const SecurityAgent = require('../libs/agent');
-const policy = require('../libs/agent/policy');
+const SecurityAgent = require('../../libs/agent');
+const policy = require('../../libs/agent/policy');
 const { AsyncLocalStorage } = require('async_hooks');
 const util = require('util');
 
