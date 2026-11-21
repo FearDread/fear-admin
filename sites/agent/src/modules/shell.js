@@ -5,10 +5,11 @@ import { icon } from '../lib/icons.js';
 const $ = window.jQuery;
 
 const ROUTES = [
-  { name: 'overview', label: 'Overview', icon: 'layout-dashboard', sub: 'Agent health, modules and services' },
+    { name: 'overview', label: 'Overview', icon: 'layout-dashboard', sub: 'Agent health, modules and services' },
+    { name: 'nginx', label: 'Vhosts', icon: 'internet', sub: 'View and monitor nginx vhosts'},
   { name: 'terminal', label: 'Terminal', icon: 'terminal', sub: 'Run agent commands' },
   { name: 'chat', label: 'AI Chat', icon: 'message-square', sub: 'Local model via Ollama' },
-  { name: 'settings', label: 'Settings', icon: 'settings', sub: 'API, model and prompt' },
+    { name: 'settings', label: 'Settings', icon: 'settings', sub: 'API, model and prompt' },
 ];
 
 export default function register(FEAR) {

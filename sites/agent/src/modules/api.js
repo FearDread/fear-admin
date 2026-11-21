@@ -82,6 +82,7 @@ export default function register(FEAR) {
           cfg = s;
           sb.add('settings:changed', (s2) => { cfg = s2; });
           sb.add('session:get', () => status());
+          sb.add('api:nginx', (req) => http(`${root()}/nginx${req.path}`, req));
           sb.add('api:agent', (req) => http(`${root()}/agent${req.path}`, req));
           sb.add('api:auth', (req) => http(`${root()}/auth${req.path}`, req));
           sb.add('api:init', () => init());

@@ -7,13 +7,14 @@ import terminal from './modules/terminal.js';
 import chat from './modules/chat.js';
 import shell from './modules/shell.js';
 import background from './modules/background.js';
+import nginx from './modules/nginx.js';
 
 FEAR.configure({ logLevel: 1 });
 
-[settings, background, api, overview, terminal, chat, shell].forEach((register) => register(FEAR));
+[settings, background, nginx, api, overview, terminal, chat, shell].forEach((register) => register(FEAR));
 
 // View modules start before the shell: the shell's router mounts the first view as soon as it starts.
-const order = ['settings', 'background', 'api', 'overview', 'terminal', 'chat', 'shell'];
+const order = ['settings', 'background', 'nginx', 'api', 'overview', 'terminal', 'chat', 'shell'];
 
 FEAR.utils.run.series(order.map((id) => () => FEAR.start(id)))
   .then(() => FEAR.broker.emit('app:ready'))
