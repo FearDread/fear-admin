@@ -17,11 +17,14 @@ export default function register(FEAR) {
     async function http(url, req) {
       const method = (req && req.method) || 'GET';
       try {
+        // Content-Type only when there is a body: a JSON content type makes even a GET "non-simple",
+        // which forces a cross-origin preflight (OPTIONS) before every request.
+        const hasBody = !!(req && req.body) && method !== 'GET';
         const res = await fetch(url, {
           method,
           credentials: 'include',
-          headers: { 'Content-Type': 'application/json' },
-          body: req && req.body && method !== 'GET' ? JSON.stringify(req.body) : undefined,
+          headers: hasBody ? { 'Content-Type': 'application/json' } : undefined,
+          body: hasBody ? JSON.stringify(req.body) : undefined,
           signal: req && req.signal,
         });
         const data = await res.json().catch(() => ({}));

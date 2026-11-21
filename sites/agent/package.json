@@ -1,37 +1,16 @@
 {
-  "name": "agent",
+  "name": "fear-agent-console",
   "version": "1.0.0",
-  "description": "security ai agent site",
+  "private": true,
   "type": "commonjs",
+  "description": "FEAR agent console SPA (terminal, AI chat, overview) built on the FEAR GUI framework",
   "scripts": {
     "build": "node build.js",
-    "dev": "node build.js --watch",
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "node dev/mock-server.mjs",
+    "preview": "node scripts/build.mjs && SERVE=build node dev/mock-server.mjs"
   },
-  "author": "FearDread",
-  "license": "MIT",
-  "dependencies": {
-    "@tailwindcss/postcss": "^4.1.17",
-    "aos": "^2.3.4",
-    "esbuild": "^0.28.2",
-    "lucide-react": "^0.554.0",
-    "react": "^19.1.1",
-    "react-dom": "^19.1.1",
-    "react-redux": "^9.2.0",
-    "react-router-dom": "^7.8.1",
-    "react-scripts": "^5.0.1",
-    "react-toastify": "^11.0.5"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+  "devDependencies": {
+    "esbuild": "^0.25.0"
   }
 }

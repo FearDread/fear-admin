@@ -94,6 +94,7 @@ export default function register(FEAR) {
       ...ROUTES.map((r) => ({ group: 'Go to', label: r.label, hint: r.sub, ic: r.icon, run: () => go(r.name) })),
       ...['status', 'version', 'service-list', 'ai-status', 'help'].map((c) => ({ group: 'Run', label: c, hint: 'in terminal', ic: 'play', run: () => runCmd(c) })),
       { group: 'Chat', label: 'New chat', hint: 'clear the transcript', ic: 'plus', run: () => { go('chat'); sb.emit('chat:new'); } },
+      { group: 'Appearance', label: 'Cycle background', hint: 'matrix · network · off', ic: 'sparkles', run: () => sb.fire('background:cycle') },
       session.user
         ? { group: 'Account', label: 'Sign out', hint: session.user.email, ic: 'log-out', run: () => sb.fire('api:logout') }
         : { group: 'Account', label: 'Sign in', hint: 'admin account', ic: 'log-in', run: () => openLogin() },

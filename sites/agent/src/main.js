@@ -10,10 +10,10 @@ import background from './modules/background.js';
 
 FEAR.configure({ logLevel: 1 });
 
-[settings, api, overview, terminal, chat, shell, background].forEach((register) => register(FEAR));
+[settings, background, api, overview, terminal, chat, shell].forEach((register) => register(FEAR));
 
 // View modules start before the shell: the shell's router mounts the first view as soon as it starts.
-const order = ['settings', 'api', 'overview', 'terminal', 'chat', 'shell', 'background'];
+const order = ['settings', 'background', 'api', 'overview', 'terminal', 'chat', 'shell'];
 
 FEAR.utils.run.series(order.map((id) => () => FEAR.start(id)))
   .then(() => FEAR.broker.emit('app:ready'))

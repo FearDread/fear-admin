@@ -20,6 +20,7 @@ const defaults = () => ({
   ollamaModel: '',
   systemPrompt: DEFAULT_PROMPT,
   collapsed: false,
+  background: 'matrix', // matrix | network | off
 });
 
 const normUrl = (v) => String(v || '').trim().replace(/\/+$/, '');
@@ -48,6 +49,12 @@ export default function register(FEAR) {
           <p class="muted">Stored in this browser only. Credentials are never saved: sign-in uses an httpOnly session cookie.</p>
         </header>
         <form class="panel form" id="settings-form" autocomplete="off" novalidate>
+          <h2>${icon('sparkles')} Appearance</h2>
+          <label class="field"><span>Animated background</span>
+            <select class="bg-select" name="background">${['matrix', 'network', 'off'].map((m) => `<option value="${m}"${s.background === m ? ' selected' : ''}>${m}</option>`).join('')}</select>
+            <small>Applies immediately. Matrix rain or a cursor-reactive network, drawn on a canvas behind the UI. Pauses while the tab is hidden and stays still with reduced-motion on. Choose off on slow GPUs.</small>
+          </label>
+
           <h2>${icon('server')} Agent API</h2>
           <label class="field"><span>API root</span>
             <input name="apiRoot" value="${esc(s.apiRoot)}" spellcheck="false" placeholder="https://host/fear/api">
@@ -91,6 +98,7 @@ export default function register(FEAR) {
     };
 
     const events = {
+      'change .bg-select': (e) => { apply({ background: e.currentTarget.value }); },
       'submit #settings-form': function (e) {
         e.preventDefault();
         const v = formValues();
@@ -102,7 +110,7 @@ export default function register(FEAR) {
       },
       'click .btn-reset': function () {
         const d = defaults();
-        apply({ ...d, collapsed: model.get('collapsed') }).then(() => view.render(model.toJSON())).then(() => toast('ok', 'Defaults restored'));
+        apply({ ...d, collapsed: model.get('collapsed'), background: model.get('background') }).then(() => view.render(model.toJSON())).then(() => toast('ok', 'Defaults restored'));
       },
       'click .btn-test': async function (e) {
         const which = $(e.currentTarget).data('test');
