@@ -5,11 +5,11 @@ import { icon } from '../lib/icons.js';
 const $ = window.jQuery;
 
 const ROUTES = [
-    { name: 'overview', label: 'Overview', icon: 'layout-dashboard', sub: 'Agent health, modules and services' },
-    { name: 'nginx', label: 'Vhosts', icon: 'internet', sub: 'View and monitor nginx vhosts'},
+  { name: 'overview', label: 'Overview', icon: 'layout-dashboard', sub: 'Agent health, modules and services' },
+  { name: 'nginx', label: 'Nginx / DNS', icon: 'globe', sub: 'Vhosts, certificates and DNS health' },
   { name: 'terminal', label: 'Terminal', icon: 'terminal', sub: 'Run agent commands' },
   { name: 'chat', label: 'AI Chat', icon: 'message-square', sub: 'Local model via Ollama' },
-    { name: 'settings', label: 'Settings', icon: 'settings', sub: 'API, model and prompt' },
+  { name: 'settings', label: 'Settings', icon: 'settings', sub: 'API, model and prompt' },
 ];
 
 export default function register(FEAR) {
@@ -94,6 +94,7 @@ export default function register(FEAR) {
     const buildItems = () => [
       ...ROUTES.map((r) => ({ group: 'Go to', label: r.label, hint: r.sub, ic: r.icon, run: () => go(r.name) })),
       ...['status', 'version', 'service-list', 'ai-status', 'help'].map((c) => ({ group: 'Run', label: c, hint: 'in terminal', ic: 'play', run: () => runCmd(c) })),
+      { group: 'Nginx', label: 'Run nginx check', hint: 'probe every vhost now', ic: 'globe', run: () => { go('nginx'); sb.emit('nginx:check'); } },
       { group: 'Chat', label: 'New chat', hint: 'clear the transcript', ic: 'plus', run: () => { go('chat'); sb.emit('chat:new'); } },
       { group: 'Appearance', label: 'Cycle background', hint: 'matrix · network · off', ic: 'sparkles', run: () => sb.fire('background:cycle') },
       session.user

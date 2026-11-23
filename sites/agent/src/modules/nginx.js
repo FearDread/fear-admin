@@ -14,44 +14,44 @@ const $ = window.jQuery;
 const POLL_MS = 10000;
 
 const healthy = (h) => {
-    const ok = (p) => p && p.ok && p.status < 500;
-    return !!(ok(h.http) && (!h.https || ok(h.https)));
+  const ok = (p) => p && p.ok && p.status < 500;
+  return !!(ok(h.http) && (!h.https || ok(h.https)));
 };
 const probeMs = (h) => {
-    const p = h.https && h.https.ok ? h.https : (h.http && h.http.ok ? h.http : null);
-    return p ? p.ms : null;
+  const p = h.https && h.https.ok ? h.https : (h.http && h.http.ok ? h.http : null);
+  return p ? p.ms : null;
 };
 const isAuthErr = (e) => e.status === 401 || e.status === 403 || /auth|denied|forbidden/i.test(e.message || '');
 
 export default function register(FEAR) {
-    FEAR.create('nginx', (sb) => {
-        let view = null;
-        let mounted = false;
-        let poll = null;
-        let line = null;
-        let ring = null;
-        let busy = false;
-        let monitoring = false;
-        let lastEvent = null;
-        let cache = null;        // last { status, trend }: repainted instantly when the view is reopened
-        let pendingCheck = false; // set by the palette before the view exists
+  FEAR.create('nginx', (sb) => {
+    let view = null;
+    let mounted = false;
+    let poll = null;
+    let line = null;
+    let ring = null;
+    let busy = false;
+    let monitoring = false;
+    let lastEvent = null;
+    let cache = null;        // last { status, trend }: repainted instantly when the view is reopened
+    let pendingCheck = false; // set by the palette before the view exists
 
-        const toast = (type, text) => sb.emit('toast', { type, text }).catch(() => { });
-        const r = (name) => view.el.find(`[data-r="${name}"]`);
+    const toast = (type, text) => sb.emit('toast', { type, text }).catch(() => {});
+    const r = (name) => view.el.find(`[data-r="${name}"]`);
 
-        const call = async (method, path, body) => {
-            const res = await sb.fire('api:nginx', { path, method, body });
-            if (!res.ok) { const e = new Error(res.message); e.status = res.status; throw e; }
-            if (res.data && res.data.success === false) throw new Error(res.data.message || 'Request failed');
-            return res.data;
-        };
+    const call = async (method, path, body) => {
+      const res = await sb.fire('api:nginx', { path, method, body });
+      if (!res.ok) { const e = new Error(res.message); e.status = res.status; throw e; }
+      if (res.data && res.data.success === false) throw new Error(res.data.message || 'Request failed');
+      return res.data;
+    };
 
-        // ------------------------------------------------------------------ template
+    // ------------------------------------------------------------------ template
 
-        const tile = (ic, label, key, cls) =>
-            `<div class="stat ${cls || ''}"><div class="stat-ic">${icon(ic)}</div><div><div class="stat-v" data-t="${key}">0</div><div class="stat-l">${label}</div></div></div>`;
+    const tile = (ic, label, key, cls) =>
+      `<div class="stat ${cls || ''}"><div class="stat-ic">${icon(ic)}</div><div><div class="stat-v" data-t="${key}">0</div><div class="stat-l">${label}</div></div></div>`;
 
-        const template = () => `
+    const template = () => `
       <div class="page ng">
         <header class="page-head row-between">
           <div><h1>Nginx / DNS monitor</h1><p class="muted">Vhost health, DNS records and certificate expiry</p></div>
@@ -89,190 +89,190 @@ export default function register(FEAR) {
         <section class="panel"><h2>${icon('circle-alert')} Events</h2><ul class="ng-ev" data-r="events"></ul></section>
       </div>`;
 
-        // ------------------------------------------------------------------ rendering
+    // ------------------------------------------------------------------ rendering
 
-        const note = (text, isErr, isAuth) => {
-            if (!mounted) return;
-            r('msg').toggleClass('hidden', !text).toggleClass('is-err', !!isErr);
-            r('msgText').text(text || '');
-            r('msgLogin').toggleClass('hidden', !isAuth);
-        };
+    const note = (text, isErr, isAuth) => {
+      if (!mounted) return;
+      r('msg').toggleClass('hidden', !text).toggleClass('is-err', !!isErr);
+      r('msgText').text(text || '');
+      r('msgLogin').toggleClass('hidden', !isAuth);
+    };
 
-        const renderCerts = (hosts) => {
-            const rows = hosts.filter((e) => e[1].cert && e[1].cert.ok).sort((a, b) => a[1].cert.daysLeft - b[1].cert.daysLeft);
-            const $c = r('certs');
-            if (!rows.length) { $c.html('<p class="muted">No SSL vhosts checked yet.</p>'); return; }
-            $c.html(rows.map((e) => {
-                const d = e[1].cert.daysLeft;
-                const col = d < 0 ? RED : d <= 14 ? AMBER : GREEN;
-                return `<div class="ng-cert"><span title="${esc(e[0])}">${esc(e[0])}</span>
+    const renderCerts = (hosts) => {
+      const rows = hosts.filter((e) => e[1].cert && e[1].cert.ok).sort((a, b) => a[1].cert.daysLeft - b[1].cert.daysLeft);
+      const $c = r('certs');
+      if (!rows.length) { $c.html('<p class="muted">No SSL vhosts checked yet.</p>'); return; }
+      $c.html(rows.map((e) => {
+        const d = e[1].cert.daysLeft;
+        const col = d < 0 ? RED : d <= 14 ? AMBER : GREEN;
+        return `<div class="ng-cert"><span title="${esc(e[0])}">${esc(e[0])}</span>
           <div class="ng-track"><div class="ng-fill" data-w="${clamp(d / 90, 0.03, 1) * 100}" style="background:${col};box-shadow:0 0 8px ${col}"></div></div>
           <b style="color:${col}">${d}d</b></div>`;
-            }).join(''));
-            // widths are set a frame later so the CSS transition animates from 0
-            requestAnimationFrame(() => requestAnimationFrame(() => {
-                $c.find('.ng-fill').each(function () { this.style.width = this.getAttribute('data-w') + '%'; });
-            }));
-        };
+      }).join(''));
+      // widths are set a frame later so the CSS transition animates from 0
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        $c.find('.ng-fill').each(function () { this.style.width = this.getAttribute('data-w') + '%'; });
+      }));
+    };
 
-        const spark = (series) => {
-            const vals = fillGaps(series);
-            if (vals.length < 2) return '';
-            const max = Math.max.apply(null, vals) || 1;
-            const min = Math.min.apply(null, vals);
-            const span = max - min || 1;
-            const pts = vals.map((v, i) => `${((i / (vals.length - 1)) * 100).toFixed(1)},${(28 - ((v - min) / span) * 26).toFixed(1)}`).join(' ');
-            return `<svg class="ng-spark" viewBox="0 0 100 30" preserveAspectRatio="none"><polyline pathLength="1" vector-effect="non-scaling-stroke" points="${pts}"/></svg>`;
-        };
+    const spark = (series) => {
+      const vals = fillGaps(series);
+      if (vals.length < 2) return '';
+      const max = Math.max.apply(null, vals) || 1;
+      const min = Math.min.apply(null, vals);
+      const span = max - min || 1;
+      const pts = vals.map((v, i) => `${((i / (vals.length - 1)) * 100).toFixed(1)},${(28 - ((v - min) / span) * 26).toFixed(1)}`).join(' ');
+      return `<svg class="ng-spark" viewBox="0 0 100 30" preserveAspectRatio="none"><polyline pathLength="1" vector-effect="non-scaling-stroke" points="${pts}"/></svg>`;
+    };
 
-        // Cards are only rewritten when their signature changes, so unchanged sparklines don't re-animate every poll.
-        const renderHosts = (hosts, trend) => {
-            const $h = r('hosts');
-            const keep = {};
-            hosts.forEach((e) => {
-                const name = e[0], h = e[1], ok = healthy(h);
-                const series = trend.map((t) => (t.hosts && t.hosts[name] ? t.hosts[name].ms : null));
-                const sig = JSON.stringify([ok, h.dns && h.dns.A, h.http && h.http.status, h.https && h.https.status, series]);
-                keep[name] = true;
+    // Cards are only rewritten when their signature changes, so unchanged sparklines don't re-animate every poll.
+    const renderHosts = (hosts, trend) => {
+      const $h = r('hosts');
+      const keep = {};
+      hosts.forEach((e) => {
+        const name = e[0], h = e[1], ok = healthy(h);
+        const series = trend.map((t) => (t.hosts && t.hosts[name] ? t.hosts[name].ms : null));
+        const sig = JSON.stringify([ok, h.dns && h.dns.A, h.http && h.http.status, h.https && h.https.status, series]);
+        keep[name] = true;
 
-                let $el = $h.children().filter(function () { return $(this).data('host') === name; });
-                if ($el.length && $el.data('sig') === sig) return;
+        let $el = $h.children().filter(function () { return $(this).data('host') === name; });
+        if ($el.length && $el.data('sig') === sig) return;
 
-                const st = (p) => (p ? (p.ok ? p.status : p.error) : '-');
-                const html = `<div class="t"><i class="ng-dot"></i><span title="${esc(name)}">${esc(name)}</span><b>${probeMs(h) != null ? probeMs(h) + 'ms' : '-'}</b></div>
+        const st = (p) => (p ? (p.ok ? p.status : p.error) : '-');
+        const html = `<div class="t"><i class="ng-dot"></i><span title="${esc(name)}">${esc(name)}</span><b>${probeMs(h) != null ? probeMs(h) + 'ms' : '-'}</b></div>
           <small>A ${esc(((h.dns && h.dns.A) || []).join(', ') || '-')}</small>
           <small>http ${esc(st(h.http))}${h.https ? `  https ${esc(st(h.https))}` : ''}</small>${spark(series)}`;
 
-                if (!$el.length) $el = $('<div class="ng-host">').data('host', name).appendTo($h);
-                $el.toggleClass('down', !ok).data('sig', sig).html(html);
-            });
-            $h.children().each(function () { if (!keep[$(this).data('host')]) $(this).remove(); });
-        };
+        if (!$el.length) $el = $('<div class="ng-host">').data('host', name).appendTo($h);
+        $el.toggleClass('down', !ok).data('sig', sig).html(html);
+      });
+      $h.children().each(function () { if (!keep[$(this).data('host')]) $(this).remove(); });
+    };
 
-        const renderEvents = (events) => {
-            const rows = events.slice(-25).reverse();
-            const prev = lastEvent;
-            lastEvent = rows.length ? rows[0].time : prev;
+    const renderEvents = (events) => {
+      const rows = events.slice(-25).reverse();
+      const prev = lastEvent;
+      lastEvent = rows.length ? rows[0].time : prev;
 
-            if (prev) {
-                rows.filter((e) => e.time > prev && e.level !== 'info').slice(0, 2)
-                    .forEach((e) => toast('bad', `${e.host}: ${e.msg}`));
-            }
-            r('events').html(rows.length
-                ? rows.map((e) => `<li class="${prev && e.time > prev ? 'new' : ''}"><span class="lv ${esc(e.level)}">${esc(String(e.level).toUpperCase())}</span>${esc(e.host)}: ${esc(e.msg)}<time>${esc(hhmm(e.time))}</time></li>`).join('')
-                : '<li class="muted">No alerts or changes recorded.</li>');
-        };
+      if (prev) {
+        rows.filter((e) => e.time > prev && e.level !== 'info').slice(0, 2)
+          .forEach((e) => toast('bad', `${e.host}: ${e.msg}`));
+      }
+      r('events').html(rows.length
+        ? rows.map((e) => `<li class="${prev && e.time > prev ? 'new' : ''}"><span class="lv ${esc(e.level)}">${esc(String(e.level).toUpperCase())}</span>${esc(e.host)}: ${esc(e.msg)}<time>${esc(hhmm(e.time))}</time></li>`).join('')
+        : '<li class="muted">No alerts or changes recorded.</li>');
+    };
 
-        const render = (status, trend) => {
-            if (!mounted) return;
-            const snap = status.snapshot;
-            monitoring = !!status.monitoring;
-            r('badge').toggleClass('pill-ok', monitoring).html(`<i class="dot"></i>${monitoring ? 'monitor running' : 'monitor off'}`);
-            r('monitorBtn').html(`${icon(monitoring ? 'square' : 'play')} ${monitoring ? 'Stop monitor' : 'Start monitor'}`);
-            r('last').text(status.lastRun ? `last run ${hhmm(status.lastRun)}` : 'no data');
+    const render = (status, trend) => {
+      if (!mounted) return;
+      const snap = status.snapshot;
+      monitoring = !!status.monitoring;
+      r('badge').toggleClass('pill-ok', monitoring).html(`<i class="dot"></i>${monitoring ? 'monitor running' : 'monitor off'}`);
+      r('monitorBtn').html(`${icon(monitoring ? 'square' : 'play')} ${monitoring ? 'Stop monitor' : 'Start monitor'}`);
+      r('last').text(status.lastRun ? `last run ${hhmm(status.lastRun)}` : 'no data');
 
-            const hosts = snap ? Object.entries(snap.hosts) : [];
-            const up = hosts.filter((e) => healthy(e[1])).length;
-            const expiring = hosts.filter((e) => e[1].cert && e[1].cert.ok && e[1].cert.daysLeft <= 14).length;
-            const avgs = hosts.map((e) => probeMs(e[1])).filter((v) => v != null);
-            const avg = avgs.length ? Math.round(avgs.reduce((a, b) => a + b, 0) / avgs.length) : 0;
+      const hosts = snap ? Object.entries(snap.hosts) : [];
+      const up = hosts.filter((e) => healthy(e[1])).length;
+      const expiring = hosts.filter((e) => e[1].cert && e[1].cert.ok && e[1].cert.daysLeft <= 14).length;
+      const avgs = hosts.map((e) => probeMs(e[1])).filter((v) => v != null);
+      const avg = avgs.length ? Math.round(avgs.reduce((a, b) => a + b, 0) / avgs.length) : 0;
 
-            const t = (n) => view.el.find(`[data-t="${n}"]`);
-            countTo(t('hosts'), hosts.length); countTo(t('up'), up); countTo(t('down'), hosts.length - up);
-            countTo(t('certs'), expiring); countTo(t('avg'), avg, 'ms');
-            ring.set(up, hosts.length);
+      const t = (n) => view.el.find(`[data-t="${n}"]`);
+      countTo(t('hosts'), hosts.length); countTo(t('up'), up); countTo(t('down'), hosts.length - up);
+      countTo(t('certs'), expiring); countTo(t('avg'), avg, 'ms');
+      ring.set(up, hosts.length);
 
-            const hasTrend = trend.length >= 2;
-            r('lineEmpty').css('display', hasTrend ? 'none' : 'flex');
-            if (hasTrend) line.setData(trend.map((x) => x.avgMs), trend.map((x) => hhmm(x.time)));
+      const hasTrend = trend.length >= 2;
+      r('lineEmpty').css('display', hasTrend ? 'none' : 'flex');
+      if (hasTrend) line.setData(trend.map((x) => x.avgMs), trend.map((x) => hhmm(x.time)));
 
-            renderCerts(hosts);
-            renderHosts(hosts, trend);
-            renderEvents(status.events || []);
-        };
+      renderCerts(hosts);
+      renderHosts(hosts, trend);
+      renderEvents(status.events || []);
+    };
 
-        // ------------------------------------------------------------------ data
+    // ------------------------------------------------------------------ data
 
-        const refresh = async () => {
-            if (!mounted) return;
-            try {
-                const [s, t] = await Promise.all([call('GET', '/status'), call('GET', '/trend?limit=60')]);
-                cache = { status: s.result, trend: t.result || [] };
-                if (r('msg').hasClass('is-err')) note('');
-                render(cache.status, cache.trend);
-            } catch (err) {
-                if (isAuthErr(err)) note('Admin login required to view monitor data.', true, true);
-                else if (err.status === 404) note('Nginx monitor API not found. Is routes/nginx.js mounted at /fear/api/nginx?', true);
-                else note(err.message, true);
-            }
-        };
+    const refresh = async () => {
+      if (!mounted) return;
+      try {
+        const [s, t] = await Promise.all([call('GET', '/status'), call('GET', '/trend?limit=60')]);
+        cache = { status: s.result, trend: t.result || [] };
+        if (r('msg').hasClass('is-err')) note('');
+        render(cache.status, cache.trend);
+      } catch (err) {
+        if (isAuthErr(err)) note('Admin login required to view monitor data.', true, true);
+        else if (err.status === 404) note('Nginx monitor API not found. Is routes/nginx.js mounted at /fear/api/nginx?', true);
+        else note(err.message, true);
+      }
+    };
 
-        const action = async ($btn) => {
-            const a = $btn.data('a');
-            if (busy) return;
-            busy = true;
-            $btn.prop('disabled', true);
-            try {
-                if (a === 'check') {
-                    note('Running checks on every vhost…');
-                    await call('POST', '/check-all', {});
-                    note('');
-                } else if (a === 'monitor') {
-                    const j = await call('POST', monitoring ? '/monitor/stop' : '/monitor/start', {});
-                    note(j.message);
-                } else {
-                    const j = await call('POST', '/test', {});
-                    note(`nginx -t: ${j.result.output}`);
-                }
-            } catch (err) {
-                note(err.message, true, isAuthErr(err));
-            } finally {
-                busy = false;
-                $btn.prop('disabled', false);
-                await refresh();
-            }
-        };
+    const action = async ($btn) => {
+      const a = $btn.data('a');
+      if (busy) return;
+      busy = true;
+      $btn.prop('disabled', true);
+      try {
+        if (a === 'check') {
+          note('Running checks on every vhost…');
+          await call('POST', '/check-all', {});
+          note('');
+        } else if (a === 'monitor') {
+          const j = await call('POST', monitoring ? '/monitor/stop' : '/monitor/start', {});
+          note(j.message);
+        } else {
+          const j = await call('POST', '/test', {});
+          note(`nginx -t: ${j.result.output}`);
+        }
+      } catch (err) {
+        note(err.message, true, isAuthErr(err));
+      } finally {
+        busy = false;
+        $btn.prop('disabled', false);
+        await refresh();
+      }
+    };
 
-        // ------------------------------------------------------------------ module
+    // ------------------------------------------------------------------ module
 
-        const events = {
-            'click .ng-act': (e) => { action($(e.currentTarget)); },
-        };
+    const events = {
+      'click .ng-act': (e) => { action($(e.currentTarget)); },
+    };
 
-        const mount = () => {
-            view = sb.View({ el: '#view-nginx', template, events });
-            mounted = true;
-            return view.render({}).then(() => {
-                line = new LineChart(r('line')[0]);
-                ring = new Ring(r('ring')[0]);
-                if (cache) render(cache.status, cache.trend);
-                refresh();
-                poll = sb.interval(() => (document.hidden ? null : refresh()), POLL_MS);
-                poll.promise.catch(() => { });
-                if (pendingCheck) { pendingCheck = false; action(view.el.find('[data-a="check"]')); }
-            });
-        };
+    const mount = () => {
+      view = sb.View({ el: '#view-nginx', template, events });
+      mounted = true;
+      return view.render({}).then(() => {
+        line = new LineChart(r('line')[0]);
+        ring = new Ring(r('ring')[0]);
+        if (cache) render(cache.status, cache.trend);
+        refresh();
+        poll = sb.interval(() => (document.hidden ? null : refresh()), POLL_MS);
+        poll.promise.catch(() => {});
+        if (pendingCheck) { pendingCheck = false; action(view.el.find('[data-a="check"]')); }
+      });
+    };
 
-        const unmount = () => {
-            if (!mounted) return;
-            mounted = false;
-            if (poll) poll.stop();
-            if (line) line.destroy();
-            if (ring) ring.destroy();
-            line = null; ring = null; poll = null;
-            view.destroy();
-        };
+    const unmount = () => {
+      if (!mounted) return;
+      mounted = false;
+      if (poll) poll.stop();
+      if (line) line.destroy();
+      if (ring) ring.destroy();
+      line = null; ring = null; poll = null;
+      view.destroy();
+    };
 
-        return {
-            load() {
-                sb.add('view:mount', (m) => (m.name === 'nginx' ? mount() : undefined));
-                sb.add('route:start', (m) => { if (mounted && m.path !== 'nginx') unmount(); });
-                sb.add('nginx:check', () => {
-                    if (mounted) action(view.el.find('[data-a="check"]')); else pendingCheck = true;
-                });
-                sb.add('session:changed', (s) => { if (mounted && s.user) refresh(); });
-            },
-            unload() { unmount(); },
-        };
-    });
+    return {
+      load() {
+        sb.add('view:mount', (m) => (m.name === 'nginx' ? mount() : undefined));
+        sb.add('route:start', (m) => { if (mounted && m.path !== 'nginx') unmount(); });
+        sb.add('nginx:check', () => {
+          if (mounted) action(view.el.find('[data-a="check"]')); else pendingCheck = true;
+        });
+        sb.add('session:changed', (s) => { if (mounted && s.user) refresh(); });
+      },
+      unload() { unmount(); },
+    };
+  });
 }

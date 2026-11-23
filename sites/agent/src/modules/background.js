@@ -75,7 +75,7 @@ export default function register(FEAR) {
         for (let k = 0; k < TRAIL; k++) {
           const row = Math.floor(c.y) - k;
           if (row < 0 || row > rows) continue;
-          const a = k === 0 ? 0.55 : 0.2 * (1 - k / TRAIL);
+          const a = k === 0 ? 0.4 : 0.14 * (1 - k / TRAIL);
           ctx.fillStyle = k === 0 ? `rgba(215,255,232,${a})` : `rgba(${rgb},${a})`;
           ctx.fillText(c.chars[k], i * CELL, row * CELL);
         }

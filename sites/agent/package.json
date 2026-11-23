@@ -2,13 +2,12 @@
   "name": "fear-agent-console",
   "version": "1.0.0",
   "private": true,
-  "type": "commonjs",
   "description": "FEAR agent console SPA (terminal, AI chat, overview) built on the FEAR GUI framework",
   "scripts": {
     "build": "node build.js",
     "start": "node server.js",
     "dev": "node dev/mock-server.mjs",
-    "preview": "node scripts/build.mjs && SERVE=build node dev/mock-server.mjs"
+    "preview": "node build.js && SERVE=build node dev/mock-server.mjs"
   },
   "devDependencies": {
     "esbuild": "^0.25.0"
