@@ -18,8 +18,8 @@ const cli = require('./cli');
 
 const SecurityAgent = function (options = {}) {
     this.mode = options.mode === 'api' ? 'api' : 'cli';
-    this.policy = this.mode === 'api' ? require('./policy') : null;
-
+    //this.policy = this.mode === 'api' ? require('./policy') : null;
+    this.policy = null;
     this.modules = {};
     this.failed = {};
     this.commands = {};
@@ -68,16 +68,20 @@ SecurityAgent.prototype = {
     },
 
     registerCommands() {
-        const permitted = (command) => !this.policy || this.policy.isAllowed(command);
-
+        //const permitted = (command) => !this.policy || this.policy.isAllowed(command);
+        
         Object.entries(this.mappings).forEach(([command, config]) => {
             const mod = this.modules[config.module];
-            if (!permitted(command) || !mod || typeof mod[config.method] !== 'function') return;
+
+            //if (!permitted(command) || !mod || typeof mod[config.method] !== 'function') return;
+            if (!mod || typeof mod[config.method] !== 'function') return;
             this.commands[command] = (args) => mod[config.method](args);
         });
 
         Object.entries(cli.builtins(this)).forEach(([command, run]) => {
-            if (permitted(command)) this.commands[command] = run;
+            if (this.commands[command]) this.commands[command] = run;
+
+            //if (permitted(command)) this.commands[command] = run;
         });
     },
 

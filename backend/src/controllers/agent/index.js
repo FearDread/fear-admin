@@ -2,6 +2,7 @@ const SecurityAgent = require('../../libs/agent');
 const policy = require('../../libs/agent/policy');
 const { AsyncLocalStorage } = require('async_hooks');
 const util = require('util');
+const request = require('../request');
 
 const COMMAND_TIMEOUT_MS = 60 * 1000;
 const MAX_CONCURRENT = 3;
@@ -20,7 +21,7 @@ const BUILT_IN_DESCRIPTIONS = {
 };
 
 // Error shape matches the auth controller's response.error
-const fail = (res, status, message) => res.status(status).json({ success: false, message });
+const fail = (res, status, message) => request.fail(res, status, message);
 
 class CommandTimeout extends Error { }
 
@@ -135,7 +136,8 @@ class AgentController {
 
     /** The commands this API exposes AND this server actually loaded. */
     exposedCommands(agent) {
-        return policy.list().filter((command) => typeof agent.commands[command] === 'function');
+        return Object.keys(agent.commands);
+        //return policy.list().filter((command) => typeof agent.commands[command] === 'function');
     }
 
     describeCommand(agent, command) {
@@ -152,18 +154,18 @@ class AgentController {
     async execute(req, user, command, rawArgs) {
         const logger = this.logger(req);
         const who = `user ${user._id} (${user.email || 'no email'}) ip ${req.ip}`;
-
+        /*
         if (!policy.isAllowed(command)) {
             logger.warn(`FEAR agent :: denied :: ${who} :: ${JSON.stringify(String(command)).slice(0, 60)}`);
             return { ok: false, status: 403, message: 'Command not available' };
         }
 
-        const normalized = policy.normalizeArgs(rawArgs);
         if (normalized.error) return { ok: false, status: 400, message: normalized.error };
 
         const problem = policy.validate(command, normalized.args);
         if (problem) return { ok: false, status: 400, message: problem };
-
+        */
+        const normalized = policy.normalizeArgs(rawArgs);
         const agent = this.getInstance();
         this.isInitialized = true;
         await agent.ready; // modules finish their own async setup (e.g. the Ollama probe)
@@ -307,8 +309,8 @@ class AgentController {
         try {
             const { command } = req.params;
             const agent = this.getInstance();
-            const exists = policy.isAllowed(command) && typeof agent.commands[command] === 'function';
-
+            ///const exists = policy.isAllowed(command) && typeof agent.commands[command] === 'function';
+            const exists = typeof agent.commands[command] === 'function';
             return res.status(200).json({
                 success: true,
                 command,

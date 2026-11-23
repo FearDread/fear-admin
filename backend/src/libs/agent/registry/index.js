@@ -29,8 +29,10 @@ const definitions = [
     { name: 'cryptoChecker', file: './modules/crypto/exchange', displayName: 'Crypto Exchange' },
     // Utils Services
     { name: 'fileBrowser', file: './modules/utils/browser', displayName: 'File Browser' },
+    { name: 'serviceManager', file: './modules/utils/manager', displayName: 'Service Manager' },
+    // Network Services
     { name: 'proxyManager', file: './modules/net/proxy', displayName: 'Proxy Manager' },
-    { name: 'serviceManager', file: './modules/utils/manager', displayName: 'Service Manager' }
+    { name: 'NginxMonitor', file: './modules/net/nginx', displayName: 'Nginx Manager' },
 ];
 
 const mappings = {
@@ -123,18 +125,7 @@ const mappings = {
     // Vulnerability assessment commands
     'vuln-assess': { module: 'vulnAssessment', method: 'assess', description: 'Run vulnerability assessment' },
     'export-vuln': { module: 'vulnAssessment', method: 'exportResults', description: 'Export vulnerability results' },
-    // Proxy Manager commands
-    'check-ip': { module: 'proxyManager', method: 'checkPublicIp', description: 'Check current public IP' },
-    'configure-proxifly': { module: 'proxyManager', method: 'configureProxifly', description: 'Configure Proxifly API' },
-    'configure-proxy5': { module: 'proxyManager', method: 'configureProxy5', description: 'Configure Proxy5 credentials' },
-    'fetch-proxies': { module: 'proxyManager', method: 'fetchProxies', description: 'Fetch proxies from Proxifly' },
-    'add-proxy5': { module: 'proxyManager', method: 'addProxy5Proxies', description: 'Add Proxy5 proxies' },
-    'list-proxies': { module: 'proxyManager', method: 'displayProxyList', description: 'List available proxies' },
-    'select-proxy': { module: 'proxyManager', method: 'selectProxy', description: 'Select and activate proxy' },
-    'test-proxy': { module: 'proxyManager', method: 'testProxy', description: 'Test current proxy' },
-    'clear-proxy': { module: 'proxyManager', method: 'clearProxy', description: 'Clear active proxy' },
-    'proxy-status': { module: 'proxyManager', method: 'showStatus', description: 'Show proxy status' },
-    'proxy-help': { module: 'proxyManager', method: 'showHelp', description: 'Proxy manager help' },
+
     // HTML to React commands
     'html-to-react': { module: 'htmlToReact', method: 'convert', description: 'Convert HTML to React' },
     'batch-convert': { module: 'htmlToReact', method: 'convertBatch', description: 'Batch convert HTML files' },
@@ -175,6 +166,38 @@ const mappings = {
     'load-custom-dorks': { module: 'googleDorks', method: 'loadCustomDorks', description: 'Load custom dorks' },
     'advanced-dorks': { module: 'googleDorks', method: 'generateAdvancedDorks', description: 'Advanced dorks' },
     'dork-help': { module: 'googleDorks', method: 'showHelp', description: 'Dorks help' },
+
+    // Network Services: nginx / DNS monitor
+    'nginx-vhosts': { module: 'NginxMonitor', method: 'listVhosts', description: 'List parsed server blocks, upstreams, certs' },
+
+    'nginx-check': { module: 'NginxMonitor', method: 'checkDomain', description: '<domain> [--local] DNS + HTTP/HTTPS + cert for one vhost' },
+    'nginx-check-all': { module: 'NginxMonitor', method: 'checkAll', description: '[--local] Check every vhost, save snapshot, show changes' },
+
+    'dns-lookup': { module: 'NginxMonitor', method: 'dnsLookup', description: '<domain> A / AAAA / CNAME / NS / MX / TXT records' },
+    'dns-check': { module: 'NginxMonitor', method: 'dnsCheck', description: 'Compare vhost DNS with this server\'s public IP' },
+    'cert-status': { module: 'NginxMonitor', method: 'certStatus', description: 'TLS expiry for all SSL vhosts' },
+    'nginx-test': { module: 'NginxMonitor', method: 'configTest', description: 'Run nginx -t' },
+    'nginx-monitor-start': { module: 'NginxMonitor', method: 'startMonitor', description: '[seconds] Background monitor (default 300s)' },
+    'nginx-monitor-stop': { module: 'NginxMonitor', method: 'stopMonitor', description: 'Stop background monitor' },
+    'nginx-monitor-status': { module: 'NginxMonitor', method: 'monitorStatus', description: 'Monitor state' },
+    'nginx-events': { module: 'NginxMonitor', method: 'showEvents', description: '[n] Recent alerts and changes' },
+    'nginx-history': { module: 'NginxMonitor', method: 'showHistory', description: '<domain> DNS / health history from snapshots' },
+    'nginx-export': { module: 'NginxMonitor', method: 'exportData', description: '[file] Export vhosts + latest snapshot as JSON' },
+
+    'nginx-monitor': { module: 'NginxMonitor', method: 'monitorStatus', description: 'Monitor state (alias of nginx-monitor-status)' },
+
+    // Proxy Manager commands
+    'check-ip': { module: 'proxyManager', method: 'checkPublicIp', description: 'Check current public IP' },
+    'configure-proxifly': { module: 'proxyManager', method: 'configureProxifly', description: 'Configure Proxifly API' },
+    'configure-proxy5': { module: 'proxyManager', method: 'configureProxy5', description: 'Configure Proxy5 credentials' },
+    'fetch-proxies': { module: 'proxyManager', method: 'fetchProxies', description: 'Fetch proxies from Proxifly' },
+    'add-proxy5': { module: 'proxyManager', method: 'addProxy5Proxies', description: 'Add Proxy5 proxies' },
+    'list-proxies': { module: 'proxyManager', method: 'displayProxyList', description: 'List available proxies' },
+    'select-proxy': { module: 'proxyManager', method: 'selectProxy', description: 'Select and activate proxy' },
+    'test-proxy': { module: 'proxyManager', method: 'testProxy', description: 'Test current proxy' },
+    'clear-proxy': { module: 'proxyManager', method: 'clearProxy', description: 'Clear active proxy' },
+    'proxy-status': { module: 'proxyManager', method: 'showStatus', description: 'Show proxy status' },
+    'proxy-help': { module: 'proxyManager', method: 'showHelp', description: 'Proxy manager help' },
 };
 
 module.exports = { definitions, mappings };

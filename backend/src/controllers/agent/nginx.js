@@ -6,7 +6,7 @@ const DOMAIN_RE = /^(?=.{1,253}$)([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,
 // The monitor lives inside the security agent (libs/agent/modules/net/nginx.js).
 const monitor = () => {
     const agent = agentController.getInstance();
-    return agent.modules.nginxMonitor ? { agent, mod: agent.modules.nginxMonitor } : null;
+    return agent.modules.NginxMonitor ? { agent, mod: agent.modules.NginxMonitor } : null;
 };
 
 /**
