@@ -33,6 +33,8 @@ const definitions = [
     // Network Services
     { name: 'proxyManager', file: './modules/net/proxy', displayName: 'Proxy Manager' },
     { name: 'NginxMonitor', file: './modules/net/nginx', displayName: 'Nginx Manager' },
+
+    { name: 'SiteAudit', file: './modules/security/audit', displayName: 'Site Audit' },
 ];
 
 const mappings = {
@@ -198,6 +200,14 @@ const mappings = {
     'clear-proxy': { module: 'proxyManager', method: 'clearProxy', description: 'Clear active proxy' },
     'proxy-status': { module: 'proxyManager', method: 'showStatus', description: 'Show proxy status' },
     'proxy-help': { module: 'proxyManager', method: 'showHelp', description: 'Proxy manager help' },
+
+    // Site audit commands
+    'site-audit': { module: 'SiteAudit', method: 'audit', description: 'Audit cert, headers and DNS for a site' },
+    'audit-cert': { module: 'SiteAudit', method: 'auditCert', description: 'Check TLS certificate dates' },
+    'audit-headers': { module: 'SiteAudit', method: 'auditHeaders', description: 'Check HTTP headers and redirects' },
+    'audit-dns': { module: 'SiteAudit', method: 'auditDns', description: 'Look up DNS records' },
+
+
 };
 
 module.exports = { definitions, mappings };

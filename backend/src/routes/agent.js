@@ -1,4 +1,4 @@
-// routes/agent.js - API routes for the Security Agent
+    // routes/agent.js - API routes for the Security Agent
 //
 // Admin only, command allowlist (libs/agent/policy.js), per-user rate limit and audit log.
 // Off by default in production: set AGENT_API_ENABLED=true to mount it there. Anywhere else it is on
@@ -75,6 +75,8 @@ module.exports = (fear) => {
         const { amount, from, to } = body(req);
         return [amount, from, to];
     }));
+
+    router.post('/audit/site', run('site-audit', (req) => [body(req).site]));
 
     return router;
 };

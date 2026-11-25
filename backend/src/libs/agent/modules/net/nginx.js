@@ -26,7 +26,7 @@ const MAX_EVENTS = 200;
 
 const NginxMonitor = function(agent) {
     this.agent = agent;
-    this.confDir = process.env.NGINX_CONF_DIR || '/etc/nginx';
+    this.confDir = process.env.NGINX_CONF_DIR || '/etc/nginx/conf.d';
     this.nginxBin = process.env.NGINX_BIN || 'nginx';
     this.dataDir = process.env.NGINX_MONITOR_DIR || path.join(process.cwd(), 'monitor-data');
     this.certWarnDays = parseInt(process.env.NGINX_CERT_WARN_DAYS, 10) || 14;
