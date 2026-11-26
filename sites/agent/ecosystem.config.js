@@ -30,20 +30,6 @@ module.exports = {
             max_memory_restart: '512M',
             kill_timeout: 12000,
             time: true,
-            env: {
-                NODE_ENV: 'development',
-                NODE_PORT: 4001,
-                BIND_HOST: '127.0.0.1',
-                TRUST_PROXY: '1',
-                // Skip every route file except agent
-                EXCLUDE_ROUTES: '*,!agent',
-                // The agent doesn't use Mongo; an empty DB_LINK skips the connection and
-                // falls back to the in-memory session store instead of sharing the main DB.
-                DB_LINK: ''
-            },
-            env_production: {
-                NODE_ENV: 'production'
-            },
             out_file: './logs/fear-agent.out.log',
             error_file: './logs/fear-agent.err.log',
             merge_logs: true
