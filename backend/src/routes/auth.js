@@ -18,11 +18,11 @@ module.exports = (fear) => {
     // Protected — all of these read req.user, so isAuthorized must run first.
     router.get("/me", Auth.isAuthorized, handler.async(Auth.getCurrentUser));
     router.put("/refresh-token", Auth.isAuthorized, handler.async(Auth.refreshToken));
-    router.put("/update-profile", Auth.isAuthorized, handler.async(Auth.updateProfile));
+    router.put("/profile", Auth.isAuthorized, handler.async(Auth.updateProfile));
     router.put("/update-preferences", Auth.isAuthorized, handler.async(Auth.updatePreferences));
 
     router.post('/google/link', Auth.isAuthorized, handler.async(Auth.linkGoogleAccount));
-    router.delete('/googl e/unlink', Auth.isAuthorized, handler.async(Auth.unlinkGoogleAccount));
+    router.delete('/google/unlink', Auth.isAuthorized, handler.async(Auth.unlinkGoogleAccount));
     router.get('/google/url', handler.async(GA.auth));
     router.get('/google/callback', handler.async(GA.callback));
 

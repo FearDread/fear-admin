@@ -15,27 +15,6 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 // Same answer whether or not the email has an account (anti-enumeration).
 const FORGOT_MESSAGE = 'If an account exists for that email, a reset link has been sent.';
 
-/*
-const response = {
-    success: (res, data, statusCode = 200, message = 'Operation successful') => {
-        return res.status(statusCode).json({ success: true, message, data, result: data });
-    },
-
-    error: (res, statusCode, message, error = null) => {
-        const responseObj = { success: false, message };
-        if (error && process.env.NODE_ENV === 'development') {
-            responseObj.error = error;
-        }
-        return res.status(statusCode).json(responseObj);
-    }
-};
-
-// Recovery responses must never be cached by browsers, proxies or the CDN.
-const response.noStore = (res) => {
-    res.set('Cache-Control', 'no-store');
-    res.set('Pragma', 'no-cache');
-};
-*/
 const hashToken = (token) => crypto.createHash('sha256').update(token).digest('hex');
 
 const getFrontendOrigin = () =>
@@ -195,6 +174,7 @@ exports.updatePassword = (req, res) => {
             return response.error(res, 500, 'Error updating password', error.message);
         });
 };
+
 
 // POST /forgot-password
 exports.forgotPasswordToken = (req, res) => {

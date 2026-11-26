@@ -63,10 +63,20 @@ const userSchema = new mongoose.Schema({
     lastLoginAt: Date,
     lastLoginIP: String,
     loginAttempts: { type: Number, default: 0 },
-    lockUntil: Date
-}, {
-    timestamps: true
-});
+    lockUntil: Date,
+    website: { type: String, trim: true, maxlength: 200 },
+    location: {
+        city: { type: String, trim: true, maxlength: 100 },
+        state: { type: String, trim: true, maxlength: 100 }
+    },
+    oauth: {
+        google: {
+            id: String,
+            email: String,
+            connectedAt: Date
+        }
+    }},
+    { timestamps: true });
 
 // Indexes
 //userSchema.index({ email: 1 });
