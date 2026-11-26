@@ -99,7 +99,7 @@ export const ordersApi = apiSlice.injectEndpoints({
         }),
 
         createOrder: builder.mutation<Order, Partial<Order>>({
-            query: (body) => ({ url: '/order', method: 'POST', body }),
+            query: (body) => ({ url: '/order/new', method: 'POST', body }),
             transformResponse: (obj: ApiEnvelope<Order>) => obj.result,
             invalidatesTags: [{ type: 'Order', id: 'LIST' }],
         }),

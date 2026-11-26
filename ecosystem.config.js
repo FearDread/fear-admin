@@ -14,7 +14,7 @@ module.exports = {
             kill_timeout: 12000,
             time: true,
             env: {
-                NODE_ENV: 'development',
+                NODE_ENV: 'production',
                 NODE_PORT: 4000,
                 BIND_HOST: '127.0.0.1',
                 TRUST_PROXY: '1',
