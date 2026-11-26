@@ -42,22 +42,22 @@ export const UserService = {
   }),
   
   // Get current user profile
-  getCurrentUser: ThunkFactory.custom('users', 'me', {
+  getCurrentUser: ThunkFactory.custom('auth', 'me', {
     method: 'GET',
   }),
   
   // Update user profile
-  updateProfile: ThunkFactory.custom('users', 'profile', {
+  updateProfile: ThunkFactory.custom('auth', 'profile', {
     method: 'PUT',
   }),
   
   // Change password
-  changePassword: ThunkFactory.custom('users', 'change-password', {
+    changePassword: ThunkFactory.custom('auth', 'change-password', {
     method: 'POST',
   }),
   
   // Update avatar
-  updateAvatar: ThunkFactory.custom('users', 'avatar', {
+    updateAvatar: ThunkFactory.custom('user', 'avatar', {
     method: 'POST',
   }),
 };

@@ -1,581 +1,528 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  selectCurrentUser,
-  selectUserLoading,
-  selectUserError,
-  updateUserProfileWithStorage,
-  updateAvatar,
-  changePassword,
-  clearError
+    selectCurrentUser,
+    selectUserLoading,
+    selectUserError,
+    updateUserProfileWithStorage,
+    changeUserPassword,
+    fetchCurrentUser,
+    clearError,
 } from '../../../features/user/slice';
 
-const ProfilePage = () => {
-  const dispatch = useDispatch();
-  const currentUser = useSelector(selectCurrentUser);
-  const loading = useSelector(selectUserLoading);
-  const error = useSelector(selectUserError);
+const MAX_AVATAR_BYTES = 2 * 1024 * 1024; // 2 MB — request body limit on the API is 10 MB, base64 adds ~33%
+const MIN_PASSWORD_LENGTH = 8; // matches the User schema
 
-  const [activeTab, setActiveTab] = useState('profile');
-  const [formData, setFormData] = useState({
+const emptyProfile = {
     firstName: '',
     lastName: '',
-    email: '',
-    username: '',
+    displayName: '',
+    mobile: '',
+    bio: '',
     website: '',
-    address: '',
     city: '',
     state: '',
-    avatar: null
-  });
-  const [passwordData, setPasswordData] = useState({
-    currentPassword: '',
-    newPassword: '',
-    confirmPassword: ''
-  });
-  const [avatarPreview, setAvatarPreview] = useState(null);
+};
 
-  // Initialize form data from current user
-  useEffect(() => {
-    if (currentUser) {
-      setFormData({
-        firstName: currentUser.firstName || '',
-        lastName: currentUser.lastName || '',
-        email: currentUser.email || '',
-        username: currentUser.username || '',
-        website: currentUser.website || '',
-        address: currentUser.address || '',
-        city: currentUser.city || '',
-        state: currentUser.state || '',
-        avatar: null
-      });
-    }
-  }, [currentUser]);
+const emptyPasswords = { currentPassword: '', newPassword: '', confirmPassword: '' };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
+const profileFromUser = (user) => ({
+    firstName: user?.firstName || '',
+    lastName: user?.lastName || '',
+    displayName: user?.displayName || '',
+    mobile: user?.mobile || '',
+    bio: user?.bio || '',
+    website: user?.website || '',
+    city: user?.location?.city || '',
+    state: user?.location?.state || '',
+});
 
-  const handlePasswordChange = (e) => {
-    const { name, value } = e.target;
-    setPasswordData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
+// avatar is { public_id, secure_url } on the model, but Google sign-in stores a plain URL string
+const avatarUrlOf = (user) => {
+    const a = user?.avatar;
+    if (!a) return '';
+    if (typeof a === 'string') return a;
+    return a.secure_url || a.url || '';
+};
 
-  const handleAvatarChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setFormData(prev => ({ ...prev, avatar: file }));
-      
-      // Create preview
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setAvatarPreview(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+const initialsOf = (user) => {
+    const first = user?.firstName?.[0] || user?.displayName?.[0] || user?.email?.[0] || '?';
+    const last = user?.lastName?.[0] || '';
+    return `${first}${last}`.toUpperCase();
+};
 
-  const handleSaveChanges = async (e) => {
-    e.preventDefault();
-    
-    // Clear any previous errors
-    dispatch(clearError());
+const fullNameOf = (user) => {
+    if (!user) return '';
+    const name = `${user.firstName || ''} ${user.lastName || ''}`.trim();
+    return name || user.displayName || user.email || 'User';
+};
 
-    // Upload avatar if changed
-    if (formData.avatar) {
-      const avatarFormData = new FormData();
-      avatarFormData.append('avatar', formData.avatar);
-      await dispatch(updateAvatar(avatarFormData));
-    }
+const formatDate = (value) => {
+    if (!value) return '';
+    const d = new Date(value);
+    return Number.isNaN(d.getTime()) ? '' : d.toLocaleDateString(undefined, { year: 'numeric', month: 'long' });
+};
 
-    // Update profile
-    const profileData = {
-      firstName: formData.firstName,
-      lastName: formData.lastName,
-      email: formData.email,
-      username: formData.username,
-      website: formData.website,
-      address: formData.address,
-      city: formData.city,
-      state: formData.state
+const ProfilePage = () => {
+    const dispatch = useDispatch();
+    const currentUser = useSelector(selectCurrentUser);
+    const loading = useSelector(selectUserLoading);
+    const error = useSelector(selectUserError);
+
+    const [activeTab, setActiveTab] = useState('profile');
+    const [formData, setFormData] = useState(emptyProfile);
+    const [passwordData, setPasswordData] = useState(emptyPasswords);
+    const [avatarPreview, setAvatarPreview] = useState(null); // data URL of a newly chosen image
+    const [notice, setNotice] = useState(null); // { type: 'success' | 'danger', text }
+
+    // Make sure we have a fresh copy of the account (the persisted one can be stale)
+    useEffect(() => {
+        dispatch(fetchCurrentUser());
+    }, [dispatch]);
+
+    // Fill the form whenever the stored user changes
+    useEffect(() => {
+        if (currentUser) setFormData(profileFromUser(currentUser));
+    }, [currentUser]);
+
+    const showNotice = useCallback((type, text) => setNotice({ type, text }), []);
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
-    const result = await dispatch(updateUserProfileWithStorage(profileData));
-    
-    if (result.success) {
-      alert('Profile updated successfully!');
-      setAvatarPreview(null);
-    }
-  };
+    const handlePasswordChange = (e) => {
+        const { name, value } = e.target;
+        setPasswordData((prev) => ({ ...prev, [name]: value }));
+    };
 
-  const handlePasswordUpdate = async (e) => {
-    e.preventDefault();
-    
-    if (passwordData.newPassword !== passwordData.confirmPassword) {
-      alert('Passwords do not match!');
-      return;
-    }
+    const handleAvatarChange = (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
 
-    const result = await dispatch(changePassword({
-      currentPassword: passwordData.currentPassword,
-      newPassword: passwordData.newPassword
-    }));
+        if (!file.type.startsWith('image/')) {
+            showNotice('danger', 'Choose an image file (PNG, JPG, GIF or WebP).');
+            e.target.value = '';
+            return;
+        }
+        if (file.size > MAX_AVATAR_BYTES) {
+            showNotice('danger', 'That image is over 2 MB. Choose a smaller one.');
+            e.target.value = '';
+            return;
+        }
 
-    if (result.payload?.success) {
-      alert('Password changed successfully!');
-      setPasswordData({
-        currentPassword: '',
-        newPassword: '',
-        confirmPassword: ''
-      });
-    }
-  };
+        const reader = new FileReader();
+        reader.onloadend = () => setAvatarPreview(reader.result);
+        reader.readAsDataURL(file);
+    };
 
-  const handleCancel = () => {
-    if (currentUser) {
-      setFormData({
-        firstName: currentUser.firstName || '',
-        lastName: currentUser.lastName || '',
-        email: currentUser.email || '',
-        username: currentUser.username || '',
-        website: currentUser.website || '',
-        address: currentUser.address || '',
-        city: currentUser.city || '',
-        state: currentUser.state || '',
-        avatar: null
-      });
-      setAvatarPreview(null);
-    }
-  };
+    const handleSaveChanges = async (e) => {
+        e.preventDefault();
+        setNotice(null);
+        dispatch(clearError());
 
-  const getUserAvatar = () => {
-    if (avatarPreview) return avatarPreview;
-    return currentUser?.avatar || currentUser?.avatarUrl || 'https://via.placeholder.com/110x110';
-  };
+        const updates = {
+            firstName: formData.firstName.trim(),
+            lastName: formData.lastName.trim(),
+            displayName: formData.displayName.trim(),
+            mobile: formData.mobile.trim(),
+            bio: formData.bio,
+            website: formData.website.trim(),
+            location: { city: formData.city.trim(), state: formData.state.trim() },
+        };
+        // Sent as a data URL; the API uploads it to Cloudinary and stores { public_id, secure_url }
+        if (avatarPreview) updates.avatar = avatarPreview;
 
-  const getUserFullName = () => {
-    if (!currentUser) return 'Mark Stern';
-    return `${currentUser.firstName || ''} ${currentUser.lastName || ''}`.trim() || currentUser.email || 'User';
-  };
+        const result = await dispatch(updateUserProfileWithStorage(updates));
 
-  const skills = currentUser?.skills || [
-    { name: 'HTML5', percentage: 65, icon: 'assets/images/timeline/html5.svg' },
-    { name: 'Bootstrap 4', percentage: 50, icon: 'assets/images/timeline/bootstrap-4.svg' },
-    { name: 'AngularJS', percentage: 70, icon: 'assets/images/timeline/angular-icon.svg' },
-    { name: 'React JS', percentage: 35, icon: 'assets/images/timeline/react.svg' }
-  ];
+        if (result.success) {
+            setAvatarPreview(null);
+            showNotice('success', 'Profile saved.');
+            setActiveTab('profile');
+        }
+        // failures are already in the store's error state and shown in the alert at the top
+    };
 
-  const recentActivities = currentUser?.recentActivities || [
-    { user: 'Abby', action: 'joined ACME Project Team', context: 'Collaboration' },
-    { user: 'Gary', action: 'deleted My Board1', context: 'Discussions' },
-    { user: 'Kensington', action: 'deleted MyBoard3', context: 'Discussions' },
-    { user: 'John', action: 'deleted My Board1', context: 'Discussions' },
-    { user: 'Skell', action: 'deleted his post Look at Why this is..', context: 'Discussions' }
-  ];
+    const handlePasswordUpdate = async (e) => {
+        e.preventDefault();
+        setNotice(null);
+        dispatch(clearError());
 
-  const messages = currentUser?.messages || [
-    { time: '3 hrs ago', content: 'Here is your a link to the latest summary report from the..' },
-    { time: 'Yesterday', content: 'There has been a request on your account since that was..' },
-    { time: '9/10', content: 'Porttitor vitae ultrices quis, dapibus id dolor. Morbi venenatis lacinia rhoncus.' },
-    { time: '9/4', content: 'Vestibulum tincidunt ullamcorper eros eget luctus.' },
-    { time: '9/4', content: 'Maxamillion ais the fix for tibulum tincidunt ullamcorper eros.' }
-  ];
+        const { currentPassword, newPassword, confirmPassword } = passwordData;
 
-  const badges = currentUser?.badges || ['html5', 'react', 'codeply', 'angularjs', 'css3', 'jquery', 'bootstrap', 'responsive-design'];
-  const stats = currentUser?.stats || { followers: 900, forks: 43, views: 245 };
+        if (!currentPassword || !newPassword) {
+            showNotice('danger', 'Enter your current password and a new one.');
+            return;
+        }
+        if (newPassword.length < MIN_PASSWORD_LENGTH) {
+            showNotice('danger', `New password must be at least ${MIN_PASSWORD_LENGTH} characters.`);
+            return;
+        }
+        if (newPassword !== confirmPassword) {
+            showNotice('danger', 'The new passwords do not match.');
+            return;
+        }
+        if (newPassword === currentPassword) {
+            showNotice('danger', 'Choose a password different from your current one.');
+            return;
+        }
 
-  return (
-    <div className="container-fluid">
-      {error && (
-        <div className="alert alert-danger alert-dismissible" role="alert">
-          <button type="button" className="close" onClick={() => dispatch(clearError())}>&times;</button>
-          <div className="alert-icon">
-            <i className="icon-close"></i>
-          </div>
-          <div className="alert-message">
-            <span><strong>Error!</strong> {error}</span>
-          </div>
-        </div>
-      )}
+        const result = await dispatch(changeUserPassword({ currentPassword, newPassword }));
 
-      <div className="row mt-3">
-        <div className="col-lg-4">
-          <div className="card profile-card-2 media-object">
-            <div className="card-img-block">
-              <img className="img-fluid" src="https://via.placeholder.com/800x500" alt="Card image cap" />
-            </div>
-            <div className="card-body pt-5">
-              <img src={getUserAvatar()} alt="profile-image" className="profile" />
-              <h5 className="card-title">{getUserFullName()}</h5>
-              <p className="card-text">
-                {currentUser?.bio || 'Some quick example text to build on the card title and make up the bulk of the card\'s content.'}
-              </p>
-              <div className="icon-block">
-                {currentUser?.socialLinks?.facebook && (
-                  <a href={currentUser.socialLinks.facebook} target="_blank" rel="noopener noreferrer">
-                    <i className="fa fa-facebook bg-facebook text-white"></i>
-                  </a>
-                )}
-                {currentUser?.socialLinks?.twitter && (
-                  <a href={currentUser.socialLinks.twitter} target="_blank" rel="noopener noreferrer">
-                    <i className="fa fa-twitter bg-twitter text-white"></i>
-                  </a>
-                )}
-                {currentUser?.socialLinks?.googlePlus && (
-                  <a href={currentUser.socialLinks.googlePlus} target="_blank" rel="noopener noreferrer">
-                    <i className="fa fa-google-plus bg-google-plus text-white"></i>
-                  </a>
-                )}
-              </div>
-            </div>
+        if (result.success) {
+            setPasswordData(emptyPasswords);
+            showNotice('success', 'Password updated.');
+        } else {
+            showNotice('danger', result.error);
+        }
+    };
 
-            <div className="card-body border-top border-light">
-              {skills.map((skill, index) => (
-                <React.Fragment key={index}>
-                  <div className="media align-items-center">
-                    <div>
-                      <img src={skill.icon} className="skill-img" alt="skill img" />
-                    </div>
-                    <div className="media-body text-left ml-3">
-                      <div className="progress-wrapper">
-                        <p>{skill.name} <span className="float-right">{skill.percentage}%</span></p>
-                        <div className="progress" style={{ height: '5px' }}>
-                          <div className="progress-bar" style={{ width: `${skill.percentage}%` }}></div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  {index < skills.length - 1 && <hr />}
-                </React.Fragment>
-              ))}
-            </div>
-          </div>
-        </div>
+    const handleCancel = () => {
+        setFormData(currentUser ? profileFromUser(currentUser) : emptyProfile);
+        setAvatarPreview(null);
+        setNotice(null);
+    };
 
-        <div className="col-lg-8">
-          <div className="card media-object">
-            <div className="card-body">
-              <ul className="nav nav-tabs nav-tabs-primary top-icon nav-justified">
-                <li className="nav-item">
-                  <a
-                    href="#"
-                    onClick={(e) => { e.preventDefault(); setActiveTab('profile'); }}
-                    className={`nav-link ${activeTab === 'profile' ? 'active' : ''}`}
-                 >
-                    <i className="icon-user"></i> <span className="hidden-xs">Profile</span>
-                  </a>
-                </li>
-                <li className="nav-item">
-                  <a
-                    href="#"
-                    onClick={(e) => { e.preventDefault(); setActiveTab('messages'); }}
-                    className={`nav-link ${activeTab === 'messages' ? 'active' : ''}`}
-                  >
-                    <i className="icon-envelope-open"></i> <span className="hidden-xs">Messages</span>
-                  </a>
-                </li>
-                <li className="nav-item">
-                  <a
-                    href="#"
-                    onClick={(e) => { e.preventDefault(); setActiveTab('edit'); }}
-                    className={`nav-link ${activeTab === 'edit' ? 'active' : ''}`}
-                  >
-                    <i className="icon-note"></i> <span className="hidden-xs">Edit</span>
-                  </a>
-                </li>
-              </ul>
+    const avatarSrc = avatarPreview || avatarUrlOf(currentUser);
+    const location = [currentUser?.location?.city, currentUser?.location?.state].filter(Boolean).join(', ');
+    const memberSince = formatDate(currentUser?.createdAt);
 
-              <div className="tab-content p-3">
-                {/* Profile Tab */}
-                <div className={`tab-pane ${activeTab === 'profile' ? 'active' : ''}`}>
-                  <h5 className="mb-3">User Profile</h5>
-                  <div className="row">
-                    <div className="col-md-6">
-                      <h6>About</h6>
-                      <p>{currentUser?.about || 'Web Designer, UI/UX Engineer'}</p>
-                      <h6>Hobbies</h6>
-                      <p>{currentUser?.hobbies || 'Indie music, skiing and hiking. I love the great outdoors.'}</p>
-                    </div>
-                    <div className="col-md-6">
-                      <h6>Recent badges</h6>
-                      {badges.map((badge, index) => (
-                        <a href="#" key={index} onClick={(e) => e.preventDefault()} className="badge badge-dark badge-pill">
-                          {badge}
-                        </a>
-                      ))}
-                      <hr />
-                      <span className="badge badge-primary">
-                        <i className="fa fa-user"></i> {stats.followers} Followers
-                      </span>
-                      <span className="badge badge-success">
-                        <i className="fa fa-cog"></i> {stats.forks} Forks
-                      </span>
-                      <span className="badge badge-danger">
-                        <i className="fa fa-eye"></i> {stats.views} Views
-                      </span>
-                    </div>
-                    <div className="col-md-12">
-                      <h5 className="mt-2 mb-3">
-                        <span className="fa fa-clock-o ion-clock float-right"></span> Recent Activity
-                      </h5>
-                      <div className="table-responsive">
-                        <table className="table table-hover table-striped">
-                          <tbody>
-                            {recentActivities.map((activity, index) => (
-                              <tr key={index}>
-                                <td>
-                                  <strong>{activity.user}</strong> {activity.action} in <strong>`{activity.context}`</strong>
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Messages Tab */}
-                <div className={`tab-pane ${activeTab === 'messages' ? 'active' : ''}`}>
-                  <div className="alert alert-info alert-dismissible" role="alert">
-                    <button type="button" className="close" data-dismiss="alert">&times;</button>
-                    <div className="alert-icon">
-                      <i className="icon-info"></i>
-                    </div>
-                    <div className="alert-message">
-                      <span><strong>Info!</strong> Lorem Ipsum is simply dummy text.</span>
-                    </div>
-                  </div>
-                  <div className="table-responsive">
-                    <table className="table table-hover table-striped">
-                      <tbody>
-                        {messages.map((message, index) => (
-                          <tr key={index}>
-                            <td>
-                              <span className="float-right font-weight-bold">{message.time}</span> {message.content}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-
-                {/* Edit Tab */}
-                <div className={`tab-pane ${activeTab === 'edit' ? 'active' : ''}`}>
-                  <form onSubmit={handleSaveChanges}>
-                    <div className="form-group row">
-                      <label className="col-lg-3 col-form-label form-control-label">First name</label>
-                      <div className="col-lg-9">
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="firstName"
-                          value={formData.firstName}
-                          onChange={handleInputChange}
-                          disabled={loading}
-                        />
-                      </div>
-                    </div>
-                    <div className="form-group row">
-                      <label className="col-lg-3 col-form-label form-control-label">Last name</label>
-                      <div className="col-lg-9">
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="lastName"
-                          value={formData.lastName}
-                          onChange={handleInputChange}
-                          disabled={loading}
-                        />
-                      </div>
-                    </div>
-                    <div className="form-group row">
-                      <label className="col-lg-3 col-form-label form-control-label">Email</label>
-                      <div className="col-lg-9">
-                        <input
-                          className="form-control"
-                          type="email"
-                          name="email"
-                          value={formData.email}
-                          onChange={handleInputChange}
-                          disabled={loading}
-                        />
-                      </div>
-                    </div>
-                    <div className="form-group row">
-                      <label className="col-lg-3 col-form-label form-control-label">Change profile</label>
-                      <div className="col-lg-9">
-                        <input
-                          className="form-control"
-                          type="file"
-                          accept="image/*"
-                          onChange={handleAvatarChange}
-                          disabled={loading}
-                        />
-                        {avatarPreview && (
-                          <img src={avatarPreview} alt="Avatar preview" className="mt-2" style={{ maxWidth: '100px', borderRadius: '50%' }} />
+    if (!currentUser) {
+        return (
+            <div className="container-fluid">
+                <div className="row mt-3">
+                    <div className="col-12">
+                        {error ? (
+                            <div className="alert alert-danger">{error}</div>
+                        ) : (
+                            <p className="text-muted">{loading ? 'Loading your profile…' : 'Sign in to view your profile.'}</p>
                         )}
-                      </div>
                     </div>
-                    <div className="form-group row">
-                      <label className="col-lg-3 col-form-label form-control-label">Website</label>
-                      <div className="col-lg-9">
-                        <input
-                          className="form-control"
-                          type="url"
-                          name="website"
-                          value={formData.website}
-                          onChange={handleInputChange}
-                          disabled={loading}
-                        />
-                      </div>
-                    </div>
-                    <div className="form-group row">
-                      <label className="col-lg-3 col-form-label form-control-label">Address</label>
-                      <div className="col-lg-9">
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="address"
-                          value={formData.address}
-                          onChange={handleInputChange}
-                          placeholder="Street"
-                          disabled={loading}
-                        />
-                      </div>
-                    </div>
-                    <div className="form-group row">
-                      <label className="col-lg-3 col-form-label form-control-label"></label>
-                      <div className="col-lg-6">
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="city"
-                          value={formData.city}
-                          onChange={handleInputChange}
-                          placeholder="City"
-                          disabled={loading}
-                        />
-                      </div>
-                      <div className="col-lg-3">
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="state"
-                          value={formData.state}
-                          onChange={handleInputChange}
-                          placeholder="State"
-                          disabled={loading}
-                        />
-                      </div>
-                    </div>
-                    <div className="form-group row">
-                      <label className="col-lg-3 col-form-label form-control-label">Username</label>
-                      <div className="col-lg-9">
-                        <input
-                          className="form-control"
-                          type="text"
-                          name="username"
-                          value={formData.username}
-                          onChange={handleInputChange}
-                          disabled={loading}
-                        />
-                      </div>
-                    </div>
-                    <div className="form-group row">
-                      <label className="col-lg-3 col-form-label form-control-label"></label>
-                      <div className="col-lg-9">
-                        <button
-                          type="button"
-                          className="btn btn-secondary"
-                          onClick={handleCancel}
-                          disabled={loading}
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          type="submit"
-                          className="btn btn-primary ml-2"
-                          disabled={loading}
-                        >
-                          {loading ? 'Saving...' : 'Save Changes'}
-                        </button>
-                      </div>
-                    </div>
-                  </form>
-
-                  <hr className="my-4" />
-
-                  <h5 className="mb-3">Change Password</h5>
-                  <form onSubmit={handlePasswordUpdate}>
-                    <div className="form-group row">
-                      <label className="col-lg-3 col-form-label form-control-label">Current Password</label>
-                      <div className="col-lg-9">
-                        <input
-                          className="form-control"
-                          type="password"
-                          name="currentPassword"
-                          value={passwordData.currentPassword}
-                          onChange={handlePasswordChange}
-                          disabled={loading}
-                        />
-                      </div>
-                    </div>
-                    <div className="form-group row">
-                      <label className="col-lg-3 col-form-label form-control-label">New Password</label>
-                      <div className="col-lg-9">
-                        <input
-                          className="form-control"
-                          type="password"
-                          name="newPassword"
-                          value={passwordData.newPassword}
-                          onChange={handlePasswordChange}
-                          disabled={loading}
-                        />
-                      </div>
-                    </div>
-                    <div className="form-group row">
-                      <label className="col-lg-3 col-form-label form-control-label">Confirm New Password</label>
-                      <div className="col-lg-9">
-                        <input
-                          className="form-control"
-                          type="password"
-                          name="confirmPassword"
-                          value={passwordData.confirmPassword}
-                          onChange={handlePasswordChange}
-                          disabled={loading}
-                        />
-                      </div>
-                    </div>
-                    <div className="form-group row">
-                      <label className="col-lg-3 col-form-label form-control-label"></label>
-                      <div className="col-lg-9">
-                        <button
-                          type="submit"
-                          className="btn btn-primary"
-                          disabled={loading}
-                        >
-                          {loading ? 'Updating...' : 'Update Password'}
-                        </button>
-                      </div>
-                    </div>
-                  </form>
                 </div>
-              </div>
             </div>
-          </div>
+        );
+    }
+
+    const renderAvatar = (size) =>
+        avatarSrc ? (
+            <img src={avatarSrc} alt={`${fullNameOf(currentUser)} avatar`} className="profile" />
+        ) : (
+            <div
+                className="profile d-flex align-items-center justify-content-center bg-primary text-white"
+                style={{ width: size, height: size, borderRadius: '50%', fontSize: size / 3, fontWeight: 600, margin: '0 auto' }}
+                aria-label={`${fullNameOf(currentUser)} avatar`}
+            >
+                {initialsOf(currentUser)}
+            </div>
+        );
+
+    return (
+        <div className="container-fluid">
+            {error && (
+                <div className="alert alert-danger alert-dismissible mt-3" role="alert">
+                    <button type="button" className="close" aria-label="Dismiss" onClick={() => dispatch(clearError())}>
+                        &times;
+                    </button>
+                    <div className="alert-message">
+                        <span>
+                            <strong>Error:</strong> {error}
+                        </span>
+                    </div>
+                </div>
+            )}
+
+            {notice && (
+                <div className={`alert alert-${notice.type} alert-dismissible mt-3`} role="alert">
+                    <button type="button" className="close" aria-label="Dismiss" onClick={() => setNotice(null)}>
+                        &times;
+                    </button>
+                    <div className="alert-message">
+                        <span>{notice.text}</span>
+                    </div>
+                </div>
+            )}
+
+            <div className="row mt-3">
+                {/* Summary card */}
+                <div className="col-lg-4">
+                    <div className="card profile-card-2 media-object">
+                        <div className="card-body pt-4 text-center">
+                            {renderAvatar(110)}
+                            <h5 className="card-title mt-3">{fullNameOf(currentUser)}</h5>
+                            {currentUser.displayName && currentUser.displayName !== fullNameOf(currentUser) && (
+                                <p className="text-muted mb-2">@{currentUser.displayName}</p>
+                            )}
+                            <p className="card-text">{currentUser.bio || 'No bio yet. Add one from the Edit tab.'}</p>
+                        </div>
+
+                        <ul className="list-group list-group-flush">
+                            <li className="list-group-item">
+                                <i className="fa fa-envelope mr-2"></i>
+                                {currentUser.email}{' '}
+                                {currentUser.emailVerified ? (
+                                    <span className="badge badge-success ml-1">Verified</span>
+                                ) : (
+                                    <span className="badge badge-warning ml-1">Not verified</span>
+                                )}
+                            </li>
+                            {currentUser.mobile && (
+                                <li className="list-group-item">
+                                    <i className="fa fa-phone mr-2"></i>
+                                    {currentUser.mobile}
+                                </li>
+                            )}
+                            {location && (
+                                <li className="list-group-item">
+                                    <i className="fa fa-map-marker mr-2"></i>
+                                    {location}
+                                </li>
+                            )}
+                            {currentUser.website && (
+                                <li className="list-group-item">
+                                    <i className="fa fa-globe mr-2"></i>
+                                    <a href={currentUser.website} target="_blank" rel="noopener noreferrer">
+                                        {currentUser.website.replace(/^https?:\/\//, '')}
+                                    </a>
+                                </li>
+                            )}
+                            {memberSince && (
+                                <li className="list-group-item text-muted">
+                                    <i className="fa fa-calendar mr-2"></i>
+                                    Member since {memberSince}
+                                </li>
+                            )}
+                        </ul>
+                    </div>
+                </div>
+
+                {/* Tabs */}
+                <div className="col-lg-8">
+                    <div className="card media-object">
+                        <div className="card-body">
+                            <ul className="nav nav-tabs nav-tabs-primary top-icon nav-justified">
+                                {[
+                                    ['profile', 'icon-user', 'Profile'],
+                                    ['edit', 'icon-note', 'Edit profile'],
+                                    ['security', 'icon-lock', 'Password'],
+                                ].map(([key, icon, label]) => (
+                                    <li className="nav-item" key={key}>
+                                        <a
+                                            href="#"
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                setNotice(null);
+                                                setActiveTab(key);
+                                            }}
+                                            className={`nav-link ${activeTab === key ? 'active' : ''}`}
+                                        >
+                                            <i className={icon}></i> <span className="hidden-xs">{label}</span>
+                                        </a>
+                                    </li>
+                                ))}
+                            </ul>
+
+                            <div className="tab-content p-3">
+                                {/* Profile */}
+                                <div className={`tab-pane ${activeTab === 'profile' ? 'active' : ''}`}>
+                                    <h5 className="mb-3">About {currentUser.firstName || 'you'}</h5>
+                                    <dl className="row">
+                                        <dt className="col-sm-3">Name</dt>
+                                        <dd className="col-sm-9">{fullNameOf(currentUser)}</dd>
+
+                                        <dt className="col-sm-3">Display name</dt>
+                                        <dd className="col-sm-9">{currentUser.displayName || '—'}</dd>
+
+                                        <dt className="col-sm-3">Email</dt>
+                                        <dd className="col-sm-9">{currentUser.email}</dd>
+
+                                        <dt className="col-sm-3">Mobile</dt>
+                                        <dd className="col-sm-9">{currentUser.mobile || '—'}</dd>
+
+                                        <dt className="col-sm-3">Location</dt>
+                                        <dd className="col-sm-9">{location || '—'}</dd>
+
+                                        <dt className="col-sm-3">Website</dt>
+                                        <dd className="col-sm-9">{currentUser.website || '—'}</dd>
+
+                                        <dt className="col-sm-3">Bio</dt>
+                                        <dd className="col-sm-9">{currentUser.bio || '—'}</dd>
+                                    </dl>
+                                    <button type="button" className="btn btn-primary" onClick={() => setActiveTab('edit')}>
+                                        Edit profile
+                                    </button>
+                                </div>
+
+                                {/* Edit */}
+                                <div className={`tab-pane ${activeTab === 'edit' ? 'active' : ''}`}>
+                                    <form onSubmit={handleSaveChanges}>
+                                        <div className="form-group row">
+                                            <label className="col-lg-3 col-form-label form-control-label" htmlFor="firstName">
+                                                First name
+                                            </label>
+                                            <div className="col-lg-9">
+                                                <input id="firstName" className="form-control" type="text" name="firstName"
+                                                    value={formData.firstName} onChange={handleInputChange} disabled={loading} />
+                                            </div>
+                                        </div>
+
+                                        <div className="form-group row">
+                                            <label className="col-lg-3 col-form-label form-control-label" htmlFor="lastName">
+                                                Last name
+                                            </label>
+                                            <div className="col-lg-9">
+                                                <input id="lastName" className="form-control" type="text" name="lastName"
+                                                    value={formData.lastName} onChange={handleInputChange} disabled={loading} />
+                                            </div>
+                                        </div>
+
+                                        <div className="form-group row">
+                                            <label className="col-lg-3 col-form-label form-control-label" htmlFor="displayName">
+                                                Display name
+                                            </label>
+                                            <div className="col-lg-9">
+                                                <input id="displayName" className="form-control" type="text" name="displayName"
+                                                    value={formData.displayName} onChange={handleInputChange} disabled={loading} />
+                                            </div>
+                                        </div>
+
+                                        <div className="form-group row">
+                                            <label className="col-lg-3 col-form-label form-control-label" htmlFor="email">
+                                                Email
+                                            </label>
+                                            <div className="col-lg-9">
+                                                <input id="email" className="form-control" type="email" value={currentUser.email || ''} readOnly disabled />
+                                                <small className="form-text text-muted">Email is your sign-in and can't be changed here.</small>
+                                            </div>
+                                        </div>
+
+                                        <div className="form-group row">
+                                            <label className="col-lg-3 col-form-label form-control-label" htmlFor="mobile">
+                                                Mobile
+                                            </label>
+                                            <div className="col-lg-9">
+                                                <input id="mobile" className="form-control" type="tel" name="mobile"
+                                                    value={formData.mobile} onChange={handleInputChange} disabled={loading} />
+                                            </div>
+                                        </div>
+
+                                        <div className="form-group row">
+                                            <label className="col-lg-3 col-form-label form-control-label" htmlFor="bio">
+                                                Bio
+                                            </label>
+                                            <div className="col-lg-9">
+                                                <textarea id="bio" className="form-control" rows="3" name="bio" maxLength={500}
+                                                    value={formData.bio} onChange={handleInputChange} disabled={loading} />
+                                                <small className="form-text text-muted">{formData.bio.length}/500</small>
+                                            </div>
+                                        </div>
+
+                                        <div className="form-group row">
+                                            <label className="col-lg-3 col-form-label form-control-label" htmlFor="avatar">
+                                                Profile photo
+                                            </label>
+                                            <div className="col-lg-9">
+                                                <input id="avatar" className="form-control" type="file" accept="image/*"
+                                                    onChange={handleAvatarChange} disabled={loading} />
+                                                <small className="form-text text-muted">PNG, JPG, GIF or WebP, up to 2 MB.</small>
+                                                {avatarPreview && (
+                                                    <img src={avatarPreview} alt="New avatar preview" className="mt-2"
+                                                        style={{ width: 80, height: 80, objectFit: 'cover', borderRadius: '50%' }} />
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        <div className="form-group row">
+                                            <label className="col-lg-3 col-form-label form-control-label" htmlFor="website">
+                                                Website
+                                            </label>
+                                            <div className="col-lg-9">
+                                                <input id="website" className="form-control" type="url" name="website"
+                                                    placeholder="https://" value={formData.website} onChange={handleInputChange} disabled={loading} />
+                                            </div>
+                                        </div>
+
+                                        <div className="form-group row">
+                                            <label className="col-lg-3 col-form-label form-control-label" htmlFor="city">
+                                                Location
+                                            </label>
+                                            <div className="col-lg-6">
+                                                <input id="city" className="form-control" type="text" name="city" placeholder="City"
+                                                    value={formData.city} onChange={handleInputChange} disabled={loading} />
+                                            </div>
+                                            <div className="col-lg-3">
+                                                <input className="form-control" type="text" name="state" placeholder="State" aria-label="State"
+                                                    value={formData.state} onChange={handleInputChange} disabled={loading} />
+                                            </div>
+                                        </div>
+
+                                        <div className="form-group row">
+                                            <div className="col-lg-9 offset-lg-3">
+                                                <button type="button" className="btn btn-secondary" onClick={handleCancel} disabled={loading}>
+                                                    Cancel
+                                                </button>
+                                                <button type="submit" className="btn btn-primary ml-2" disabled={loading}>
+                                                    {loading ? 'Saving…' : 'Save changes'}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+
+                                {/* Password */}
+                                <div className={`tab-pane ${activeTab === 'security' ? 'active' : ''}`}>
+                                    <h5 className="mb-3">Change password</h5>
+                                    <form onSubmit={handlePasswordUpdate} autoComplete="off">
+                                        <div className="form-group row">
+                                            <label className="col-lg-3 col-form-label form-control-label" htmlFor="currentPassword">
+                                                Current password
+                                            </label>
+                                            <div className="col-lg-9">
+                                                <input id="currentPassword" className="form-control" type="password" name="currentPassword"
+                                                    autoComplete="current-password" value={passwordData.currentPassword}
+                                                    onChange={handlePasswordChange} disabled={loading} />
+                                            </div>
+                                        </div>
+
+                                        <div className="form-group row">
+                                            <label className="col-lg-3 col-form-label form-control-label" htmlFor="newPassword">
+                                                New password
+                                            </label>
+                                            <div className="col-lg-9">
+                                                <input id="newPassword" className="form-control" type="password" name="newPassword"
+                                                    autoComplete="new-password" minLength={MIN_PASSWORD_LENGTH} value={passwordData.newPassword}
+                                                    onChange={handlePasswordChange} disabled={loading} />
+                                                <small className="form-text text-muted">At least {MIN_PASSWORD_LENGTH} characters.</small>
+                                            </div>
+                                        </div>
+
+                                        <div className="form-group row">
+                                            <label className="col-lg-3 col-form-label form-control-label" htmlFor="confirmPassword">
+                                                Confirm new password
+                                            </label>
+                                            <div className="col-lg-9">
+                                                <input id="confirmPassword" className="form-control" type="password" name="confirmPassword"
+                                                    autoComplete="new-password" value={passwordData.confirmPassword}
+                                                    onChange={handlePasswordChange} disabled={loading} />
+                                            </div>
+                                        </div>
+
+                                        <div className="form-group row">
+                                            <div className="col-lg-9 offset-lg-3">
+                                                <button type="submit" className="btn btn-primary" disabled={loading}>
+                                                    {loading ? 'Updating…' : 'Update password'}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default ProfilePage;

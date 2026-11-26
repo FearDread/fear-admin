@@ -843,7 +843,6 @@ body.bg-theme15 {
 .profile-card-2 .profile {
   border-radius: 50%;
   position: absolute;
-  top: -42px;
   left: 15%;
   max-width: 75px;
   border: 3px solid rgba(255, 255, 255, 1);
